@@ -1,66 +1,119 @@
-#
-# Copyright (C) 2012-2020 Euclid Science Ground Segment
-#
-# This library is free software; you can redistribute it and/or modify it under
-# the terms of the GNU Lesser General Public License as published by the Free
-# Software Foundation; either version 3.0 of the License, or (at your option)
-# any later version.
-#
-# This library is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-# details.
-#
-# You should have received a copy of the GNU Lesser General Public License
-# along with this library; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-#
-
-"""
-File: tests/python/CTI_Tools_test.py
-
-Created on: 06/02/17
-Author: user
-"""
-
 from __future__ import division, print_function
 
+import numpy as np
 import pytest
 from LensData.ArrayTools import *
-import numpy as np
-
-#@pytest.fixture(scope='function')
-#def lh_match():
-#    lh_match.data = np.zeros((2, 2))
-#    return lh_match
 
 class TestArrayTools:
 
-    def test_get_dimensions_pixels_SquareArray_CorrectXYDims(self):
+    def test_get_dimensions__input_arrays__correct_dimensions(self):
 
-        xdim, ydim = get_dimensions_pixels(np.zeros((2,2)))
+        xdim, ydim = get_dimensions(np.zeros((2, 2)))
 
         assert xdim == 2
         assert ydim == 2
 
-    def test_get_dimensions_pixels_RectangleArray1_CorrectXYDims(self):
-
-        xdim, ydim = get_dimensions_pixels(np.zeros((2, 4)))
+        xdim, ydim = get_dimensions(np.zeros((2, 4)))
 
         assert xdim == 2
         assert ydim == 4
 
-    def test_get_dimensions_pixels_RectangleArray2_CorrectXYDims(self):
-
-        xdim, ydim = get_dimensions_pixels(np.zeros((3, 1)))
+        xdim, ydim = get_dimensions(np.zeros((3, 1)))
 
         assert xdim == 3
         assert ydim == 1
 
-    def test_get_dimensions_pixels_Not2DArray_RaiseIndexError(self):
+    def test_get_dimensions__not_2d_array__raise_index_error(self):
 
         with pytest.raises(IndexError):
-            get_dimensions_pixels(np.zeros((2)))
+            get_dimensions(np.zeros((2)))
 
         with pytest.raises(IndexError):
-            get_dimensions_pixels(np.zeros((2,2,2)))
+            get_dimensions(np.zeros((2, 2, 2)))
+
+    def test_get_dimensions__input_not_numpy_array__raises_type_error(self):
+
+        with pytest.raises(TypeError):
+            get_dimensions(array='')
+
+    def test_extract_edges__array_all_zeros__correct_list(self):
+
+        assert (extract_edges(array=np.zeros((3,3))) == [0, 0, 0, 0, 0, 0, 0, 0]).all()
+
+    def test_extract_edges__array_sequential__correct_list(self):
+
+        array=np.zeros((3,3))
+
+        array[0, 0] = 1
+        array[0, 1] = 2
+        array[0, 2] = 3
+        array[1, 0] = 4
+        array[1, 1] = 5
+        array[1, 2] = 6
+        array[2, 0] = 7
+        array[2, 1] = 8
+        array[2, 2] = 9
+
+        assert (extract_edges(array=array) == [1, 2, 3, 6, 7, 8, 9, 4]).all()
+
+    def test_extract_edges__array_sequential_bigger_x__correct_list(self):
+
+        array = np.zeros((4, 3))
+
+        array[0, 0] = 1
+        array[0, 1] = 2
+        array[0, 2] = 3
+        array[1, 0] = 4
+        array[1, 1] = 5
+        array[1, 2] = 6
+        array[2, 0] = 7
+        array[2, 1] = 8
+        array[2, 2] = 9
+        array[3, 0] = 10
+        array[3, 1] = 11
+        array[3, 2] = 12
+
+        assert (extract_edges(array=array) == [1, 2, 3, 6, 9, 10, 11, 12, 4, 7]).all()
+
+    def test_extract_edges__array_sequential_bigger_y__correct_list(self):
+
+        array = np.zeros((3, 4))
+
+        array[0, 0] = 1
+        array[0, 1] = 2
+        array[0, 2] = 3
+        array[0, 3] = 4
+        array[1, 0] = 5
+        array[1, 1] = 6
+        array[1, 2] = 7
+        array[1, 3] = 8
+        array[2, 0] = 9
+        array[2, 1] = 10
+        array[2, 2] = 11
+        array[2, 3] = 12
+
+        assert (extract_edges(array=array) == [1, 2, 3, 4, 8, 9, 10, 11, 12, 5]).all()
+
+        #   def test_median_of_edges__array_all_ones__correct_value(self):
+
+    #    assert get_median_of_edges(array=np.ones((3,3))) == 1
+
+ #   def test_median_of_edges__array_all_zeros__correct_value(self):
+
+  #      assert get_median_of_edges(array=np.zeros((3,3))) == 0
+
+#    def test_median_of_edges__array_all_zeros__correct_value(self):
+#
+#         array = np.zeros((3,3))
+#
+#         array[0][0] = 0
+#         array[0][1] = 0
+#         array[0][2] = 0
+#         array[1][0] = 4
+#         array[1][1] = 5
+#         array[1][2] = 6
+#         array[2][0] = 7
+#         array[2][1] = 8
+#         array[2][2] = 9
+#
+#         assert get_median_of_edges(array=array) == 0
