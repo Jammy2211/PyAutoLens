@@ -1,0 +1,9 @@
+{
+  "test_ImageTools.py::TestArcSec": true,
+  "test_ImageTools.py::TestArcSec::()::test____input_3x3_ones__calculates_correct_arcsecond_dimensions": true,
+  "test_ImageTools.py::TestGetMask": true,
+  "test_ImageTools.py::TestLoadFits": true,
+  "test_ImageTools.py::TestLoadFits::()::test__load_fits__input_3x3_ones__calculates_correct_arcsecond_dimensions": true,
+  "test_ImageTools.py::TestLoadFits::()::test__load_fits__input_3x3_ones__loads_pixel_scale": true,
+  "test_ImageTools.py::TestSkyBg::()::test__estimate_sky_level_via_edges__input_all_zeros__sky_bg_level_0": true
+}

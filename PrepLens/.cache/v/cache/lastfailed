@@ -1,0 +1,4 @@
+{
+  "test_PrepImage.py": true,
+  "test_PrepImage.py::TestPrepImage::()::test__init__input_fits_3x3_ones__loads_as_type_numpy_array": true
+}
