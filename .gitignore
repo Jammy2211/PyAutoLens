@@ -1,3 +1,4 @@
+*.pyc
 pip-selfcheck.json
 .Python
 bin/
