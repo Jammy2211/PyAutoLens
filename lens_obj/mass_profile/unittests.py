@@ -2,7 +2,7 @@ from __future__ import division, print_function
 
 import numpy as np
 import pytest
-from LensObj.MassProfile.MassProfile import *
+import mass_profile
 
 class TestGeom:
 
