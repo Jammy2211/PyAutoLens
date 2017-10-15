@@ -1,3 +1,7 @@
+.Python
+bin/
+include/
+lib/
 .ipynb_checkpoints
 .cache
 .idea
