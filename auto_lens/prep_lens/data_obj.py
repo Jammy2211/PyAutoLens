@@ -1,20 +1,19 @@
-from Tools import ImageTools
+from tools import image_tools
+from scipy.stats import norm
 
 import numpy as np
 
-class Image(object):
 
+class Image(object):
     def __init__(self):
         pass
 
     def load_fits(self, dir, file, hdu, pixel_scale):
-
-        self.image2d, self.xy_dim = ImageTools.load_fits(dir, file, hdu) # Load image from .fits file
-        self.pixel_scale = pixel_scale # Set its pixel scale using the input value
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim)) # Convert image dimensions to arcseconds
+        self.image2d, self.xy_dim = image_tools.load_fits(dir, file, hdu)  # Load image from .fits file
+        self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
+        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
     def set_sky(self, sky_background_level, sky_background_noise):
-
         self.sky_background_level = sky_background_level
         self.sky_background_noise = sky_background_noise
 
@@ -29,8 +28,6 @@ class Image(object):
             Number of edges used to estimate the backgroundd sky properties
 
         """
-
-        from scipy.stats import norm
 
         xdim = self.xy_dim[0]
         ydim = self.xy_dim[1]
@@ -47,16 +44,16 @@ class Image(object):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
-class PSF(object):
 
+class PSF(object):
     def __init__(self):
         pass
 
     def load_fits(self, dir, file, hdu, pixel_scale):
+        self.psf2d, self.xy_dim = ImageTools.load_fits(dir, file, hdu)  # Load image from .fits file
+        self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
+        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
-        self.psf2d, self.xy_dim = ImageTools.load_fits(dir, file, hdu) # Load image from .fits file
-        self.pixel_scale = pixel_scale # Set its pixel scale using the input value
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim)) # Convert image dimensions to arcseconds
 
 class Mask(object):
     "Class for preparing and storing the image mask used for the AutoLens analysis"
@@ -91,4 +88,3 @@ class Mask(object):
 
                 if r_arcsec <= mask_radius_arcsec:
                     self.mask2d[i, j] = int(1)
-
