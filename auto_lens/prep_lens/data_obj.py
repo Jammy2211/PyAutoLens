@@ -8,7 +8,8 @@ class Image(object):
     def __init__(self):
         pass
 
-    # TODO: Some of these functions might be doing what the __init__ should be doing
+    # TODO: Some of these functions might be doing what the constructor should be doing. If you only call these
+    # TODO: functions once per an image then do this in the __init__
     def load_fits(self, dir, file, hdu, pixel_scale):
         self.image2d, self.xy_dim = image_tools.load_fits(dir, file, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
