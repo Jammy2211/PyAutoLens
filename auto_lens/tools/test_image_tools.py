@@ -1,10 +1,10 @@
 from __future__ import division, print_function
 import numpy as np
-from tools import image_tools
+import image_tools
 import os
 
 # TODO: I've used a relative path here so it will work on anyone's computer.
-test_data_dir = "{}../../data/test_data".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 # noinspection PyClassHasNoInit
