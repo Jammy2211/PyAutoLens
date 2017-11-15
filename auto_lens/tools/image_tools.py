@@ -2,14 +2,16 @@ from astropy.io import fits
 import numpy as np
 
 
-def load_fits(workdir, file, hdu):
+# TODO: Some words are reserved because python uses them. I've changed file to filename here because file is one of
+# TODO: words. Also, filename seems like a better description of the variable you're using here.
+def load_fits(work_dir, filename, hdu):
     """Load the input image file and return the image data and dimensions
 
     Parameters
     ----------
-    workdir : str
+    work_dir : str
         Directory holding the image data.
-    file : str
+    filename : str
         The name of the fits file for data to be loaded from.
     hdu : int
         Fits hdu number image is stored in within the fits file.
@@ -26,9 +28,9 @@ def load_fits(workdir, file, hdu):
     data2d, xy_dim = ImageTools.load_fits(workdir=testdir, file=testdir + '3x3_ones.fits', hdu=0)
 
     """
-    hdulist = fits.open(workdir + file)  # Open the fits file
-    #   hdulist.info()  # Display fits header info
-    data2d = np.array(hdulist[hdu].data)  # Store as image, which is returned by function
+    hdu_list = fits.open(work_dir + filename)  # Open the fits file
+    #   hdu_list.info()  # Display fits header info
+    data2d = np.array(hdu_list[hdu].data)  # Store as image, which is returned by function
 
     xy_dim = data2d.shape[:]  # x dimension (pixels)
 
