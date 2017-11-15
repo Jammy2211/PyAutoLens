@@ -89,7 +89,7 @@ class Mask(object):
         # Calculate the central pixel of the mask. This is a half pixel value for an even sized array.
         # Also minus one from value so that mask2d is shifted to python array (i.e. starts at 0)
         self.pixel_scale = pixel_scale
-        self.central_pixel = list(map(lambda l: ((l + 1) / 2) - 1, dimensions))
+        self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
 
 
