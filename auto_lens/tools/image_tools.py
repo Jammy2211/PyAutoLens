@@ -1,6 +1,7 @@
 from astropy.io import fits
 import numpy as np
 
+
 def load_fits(workdir, file, hdu):
     """Load the input image file and return the image data and dimensions
 
@@ -25,10 +26,10 @@ def load_fits(workdir, file, hdu):
     data2d, xy_dim = ImageTools.load_fits(workdir=testdir, file=testdir + '3x3_ones.fits', hdu=0)
 
     """
-    hdulist = fits.open(workdir+file)  # Open the fits file
+    hdulist = fits.open(workdir + file)  # Open the fits file
     #   hdulist.info()  # Display fits header info
     data2d = np.array(hdulist[hdu].data)  # Store as image, which is returned by function
 
-    xy_dim = data2d.shape[:] # x dimension (pixels)
+    xy_dim = data2d.shape[:]  # x dimension (pixels)
 
     return data2d, xy_dim
