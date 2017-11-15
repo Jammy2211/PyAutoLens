@@ -8,6 +8,7 @@ class Image(object):
     def __init__(self):
         pass
 
+    # TODO: Some of these functions might be doing what the __init__ should be doing
     def load_fits(self, dir, file, hdu, pixel_scale):
         self.image2d, self.xy_dim = image_tools.load_fits(dir, file, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
@@ -50,7 +51,7 @@ class PSF(object):
         pass
 
     def load_fits(self, dir, file, hdu, pixel_scale):
-        self.psf2d, self.xy_dim = ImageTools.load_fits(dir, file, hdu)  # Load image from .fits file
+        self.psf2d, self.xy_dim = image_tools.load_fits(dir, file, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
