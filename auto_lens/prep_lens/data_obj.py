@@ -1,4 +1,4 @@
-from tools import image_tools
+from ..tools import image_tools
 from scipy.stats import norm
 
 import numpy as np
@@ -86,7 +86,7 @@ class Mask(object):
         # Also minus one from value so that mask2d is shifted to python array (i.e. starts at 0)
         self.pixel_scale = pixel_scale
         self.central_pixel = list(map(lambda l: ((l + 1) / 2) - 1, dimensions))
-        self.mask_array = np.zeros((dimensions[0], dimensions[1]))
+        self.array = np.zeros((dimensions[0], dimensions[1]))
 
 
 class CircleMask(Mask):
@@ -111,4 +111,4 @@ class CircleMask(Mask):
                     (i - self.central_pixel[0]) ** 2 + (j - self.central_pixel[1]) ** 2)
 
                 if radius_arcsec <= radius:
-                    self.mask_array[i, j] = int(1)
+                    self.array[i, j] = int(1)
