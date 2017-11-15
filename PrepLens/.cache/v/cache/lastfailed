@@ -1,7 +1,0 @@
-{
-  "test_DataObj.py": true,
-  "test_DataObj.py::TestImage::()::test__set_sky_via_edges__3x3_image__correct_values": true,
-  "test_DataObj.py::TestMask::()::test__set_mask_circular__input_big_mask__correct_mask": true,
-  "test_PrepImage.py": true,
-  "test_PrepImage.py::TestPrepImage::()::test__init__input_fits_3x3_ones__loads_as_type_numpy_array": true
-}
