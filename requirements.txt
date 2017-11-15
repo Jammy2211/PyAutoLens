@@ -1,0 +1,5 @@
+astropy==2.0.2
+numpy==1.13.3
+py==1.4.34
+pytest==3.2.3
+scipy==1.0.0
