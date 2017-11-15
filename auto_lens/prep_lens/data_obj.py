@@ -5,10 +5,13 @@ import os
 import numpy as np
 
 
+# TODO: The default data path is determined here to save you always having to pass it in
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class Image(object):
+    # TODO: It seems like an image is associated with one scale and has one pixel scale etc. so it makes sense to put
+    # TODO: all that in the constructor
     def __init__(self, filename, hdu, pixel_scale, path=data_path):
         self.image2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
