@@ -72,8 +72,8 @@ class TestGeom:
 
         x_new, y_new = mass_profile.rotate_coordinates(x=1.0, y=0.0, phi_degrees=45.)
 
-        assert x_new == pytest.approx(0.5, 1e-5)
-        assert y_new == pytest.approx(-0.5, 1e-5)
+        assert x_new == pytest.approx(0.707, 1e-3)
+        assert y_new == pytest.approx(-0.707, 1e-3)
 
     def test__rotate_coordinates__90_deg_rotation_in__rotation_out(self):
 
