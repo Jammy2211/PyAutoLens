@@ -60,7 +60,7 @@ class PSF(object):
 class Mask(object):
     "Class for preparing and storing the image mask used for the AutoLens analysis"
 
-    def __init__(self):
+    def __init__(selfl):
         pass
 
     def set_circle(self, image, mask_radius_arcsec):
