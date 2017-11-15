@@ -46,6 +46,20 @@ class Image(object):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
+    def circle_mask(self, radius):
+        """
+        Create a new circular mask for this image
+
+        Parameters
+        ----------
+        radius The radius of the mask
+
+        Returns
+        -------
+        A circular mask for this image
+        """
+        return CircleMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, radius=radius)
+
 
 class PSF(object):
     def __init__(self):
@@ -58,35 +72,43 @@ class PSF(object):
 
 
 class Mask(object):
-    "Class for preparing and storing the image mask used for the AutoLens analysis"
+    """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
-    def __init__(self):
-        pass
-
-    def set_circle(self, image, mask_radius_arcsec):
-        """Setup the image mask, using a circular mask given the image dimensions (pixels), pixel to arcsecond scale
-         and mask radius (arcseconds).
+    def __init__(self, dimensions, pixel_scale):
+        """
 
         Parameters
         ----------
-        xy_dim : list(int)
-            x and y pixel dimensions of image (xy_dim[0] = x dimension, xy_dim[1] = y dimension)
-        pixel_scale : float
-            Size of each pixel in arcseconds
-        mask_radius_arcsec : float
-            Circular radius of mask to be generated in arcseconds.
+        dimensions The dimensions of the image (x, y)
+        pixel_scale The scale size of a pixel (x, y) in arc seconds
         """
-
         # Calculate the central pixel of the mask. This is a half pixel value for an even sized array.
         # Also minus one from value so that mask2d is shifted to python array (i.e. starts at 0)
-        xy_cen_pix = list(map(lambda l: ((l + 1) / 2) - 1, image.xy_dim))
+        self.pixel_scale = pixel_scale
+        self.central_pixel = list(map(lambda l: ((l + 1) / 2) - 1, dimensions))
+        self.mask_array = np.zeros((dimensions[0], dimensions[1]))
 
-        self.mask2d = np.zeros((image.xy_dim[0], image.xy_dim[1]))
 
-        for i in range(image.xy_dim[0]):
-            for j in range(image.xy_dim[1]):
+class CircleMask(Mask):
+    """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
 
-                r_arcsec = image.pixel_scale * np.sqrt((i - xy_cen_pix[0]) ** 2 + (j - xy_cen_pix[1]) ** 2)
+    def __init__(self, dimensions, pixel_scale, radius):
+        """
 
-                if r_arcsec <= mask_radius_arcsec:
-                    self.mask2d[i, j] = int(1)
+        Parameters
+        ----------
+        dimensions The dimensions of the image (x, y)
+        pixel_scale The scale size of a pixel (x, y) in arc seconds
+        radius The radius of the circle (in arc seconds?)
+        """
+        super(CircleMask, self).__init__(dimensions, pixel_scale)
+        self.radius = radius
+
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+
+                radius_arcsec = pixel_scale * np.sqrt(
+                    (i - self.central_pixel[0]) ** 2 + (j - self.central_pixel[1]) ** 2)
+
+                if radius_arcsec <= radius:
+                    self.mask_array[i, j] = int(1)
