@@ -89,6 +89,9 @@ class Mask(object):
         # Calculate the central pixel of the mask. This is a half pixel value for an even sized array.
         # Also minus one from value so that mask2d is shifted to python array (i.e. starts at 0)
         self.pixel_scale = pixel_scale
+        # TODO: The tests were failing on some even side length arrays because 3 / 2 = 1 for integers, whilst
+        # TODO float(3) / 2 = 1.5 for floats. I've made that fix in the line below but beware that "central_pixel"
+        # TODO: is now a floating point tuple (meaning it doesn't necessarily map to an actual pixel)
         self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
 
