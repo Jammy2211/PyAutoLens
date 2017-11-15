@@ -1,20 +1,21 @@
 from ..tools import image_tools
 from scipy.stats import norm
+import os
 
 import numpy as np
 
 
-class Image(object):
-    def __init__(self):
-        pass
+data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
-    # TODO: Some of these functions might be doing what the constructor should be doing. If you only call these
-    # TODO: functions once per an image then do this in the __init__
-    def load_fits(self, dir, file, hdu, pixel_scale):
-        self.image2d, self.xy_dim = image_tools.load_fits(dir, file, hdu)  # Load image from .fits file
+
+class Image(object):
+    def __init__(self, filename, hdu, pixel_scale, path=data_path):
+        self.image2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
+    # TODO: Some of these functions might be doing what the constructor should be doing. If you only call these
+    # TODO: functions once per an image then do this in the __init__
     def set_sky(self, sky_background_level, sky_background_noise):
         self.sky_background_level = sky_background_level
         self.sky_background_noise = sky_background_noise

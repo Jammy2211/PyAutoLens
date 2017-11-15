@@ -10,7 +10,7 @@ test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpa
 
 @pytest.fixture(scope='class')
 def image():
-    im = data_obj.Image()
+    im = data_obj.Image(filename='3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
     return im
 
 
@@ -20,7 +20,6 @@ def image():
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestImage:
     def test__init__input_image_3x3__all_attributes_correct(self, image):
-        image.load_fits(dir=test_data_dir, file='3x3_ones.fits', hdu=0, pixel_scale=0.1)
 
         assert (image.image2d == np.ones((3, 3))).all()
         assert image.xy_dim[0] == 3
@@ -117,53 +116,48 @@ class TestImage:
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestMask:
     def test__set_circle__input_big_mask__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [3, 3]
+        pixel_scale = 0.1
+        xy_dim = [3, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.5)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.5)
 
         assert (mask.array == np.ones((3, 3))).all()
 
     def test__set_circle__odd_x_odd_mask_input_radius_1__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [3, 3]
+        pixel_scale = 0.1
+        xy_dim = [3, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.05)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.05)
 
         assert (mask.array == np.array([[0, 0, 0],
                                         [0, 1, 0],
                                         [0, 0, 0]])).all()
 
     def test__set_circle__odd_x_odd_mask_input_radius_2__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [3, 3]
+        pixel_scale = 0.1
+        xy_dim = [3, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.1)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.1)
 
         assert (mask.array == np.array([[0, 1, 0],
                                         [1, 1, 1],
                                         [0, 1, 0]])).all()
 
     def test__set_circle__odd_x_odd_mask_input_radius_3__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [3, 3]
+        pixel_scale = 0.1
+        xy_dim = [3, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.3)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.3)
 
         assert (mask.array == np.array([[1, 1, 1],
                                         [1, 1, 1],
                                         [1, 1, 1]])).all()
 
     def test__set_circle__even_x_odd_mask_input_radius_1__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [4, 3]
+        pixel_scale = 0.1
+        xy_dim = [4, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.05)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.05)
 
         assert (mask.array == np.array([[0, 0, 0],
                                         [0, 1, 0],
@@ -171,61 +165,56 @@ class TestMask:
                                         [0, 0, 0]])).all()
 
     def test__set_circle__even_x_odd_mask_input_radius_2__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [4, 3]
+        pixel_scale = 0.1
+        xy_dim = [4, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.150001)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.150001)
 
         assert (mask.array == np.array([[0, 1, 0],
-                                         [1, 1, 1],
-                                         [1, 1, 1],
-                                         [0, 1, 0]])).all()
+                                        [1, 1, 1],
+                                        [1, 1, 1],
+                                        [0, 1, 0]])).all()
 
     def test__set_circle__even_x_odd_mask_input_radius_3__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [4, 3]
+        pixel_scale = 0.1
+        xy_dim = [4, 3]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.3)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.3)
 
         assert (mask.array == np.array([[1, 1, 1],
-                                         [1, 1, 1],
-                                         [1, 1, 1],
-                                         [1, 1, 1]])).all()
+                                        [1, 1, 1],
+                                        [1, 1, 1],
+                                        [1, 1, 1]])).all()
 
     def test__set_circle__even_x_even_mask_input_radius_1__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [4, 4]
+        pixel_scale = 0.1
+        xy_dim = [4, 4]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.072)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.072)
 
         assert (mask.array == np.array([[0, 0, 0, 0],
-                                         [0, 1, 1, 0],
-                                         [0, 1, 1, 0],
-                                         [0, 0, 0, 0]])).all()
+                                        [0, 1, 1, 0],
+                                        [0, 1, 1, 0],
+                                        [0, 0, 0, 0]])).all()
 
     def test__set_circle__even_x_even_mask_input_radius_2__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [4, 4]
+        pixel_scale = 0.1
+        xy_dim = [4, 4]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.17)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.17)
 
         assert (mask.array == np.array([[0, 1, 1, 0],
-                                         [1, 1, 1, 1],
-                                         [1, 1, 1, 1],
-                                         [0, 1, 1, 0]])).all()
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1],
+                                        [0, 1, 1, 0]])).all()
 
     def test__set_circle__even_x_even_mask_input_radius_3__correct_mask(self):
-        image = data_obj.Image()
-        image.pixel_scale = 0.1
-        image.xy_dim = [4, 4]
+        pixel_scale = 0.1
+        xy_dim = [4, 4]
 
-        mask = data_obj.CircleMask(image.xy_dim, image.pixel_scale, 0.3)
+        mask = data_obj.CircleMask(xy_dim, pixel_scale, 0.3)
 
         assert (mask.array == np.array([[1, 1, 1, 1],
-                                         [1, 1, 1, 1],
-                                         [1, 1, 1, 1],
-                                         [1, 1, 1, 1]])).all()
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1],
+                                        [1, 1, 1, 1]])).all()
