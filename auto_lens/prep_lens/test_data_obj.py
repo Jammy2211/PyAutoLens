@@ -106,7 +106,6 @@ class TestImage:
         assert image.sky_background_level == np.mean(np.arange(48))
         assert image.sky_background_noise == np.std(np.arange(48))
 
-
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestMask:
 
@@ -117,7 +116,7 @@ class TestMask:
         assert (mask.array == np.ones((3, 3))).all()
 
     def test__set_circle__odd_x_odd_mask_input_radius_small__correct_mask(self):
-        
+
         mask = data_obj.CircleMask(dimensions=[3, 3], pixel_scale=0.1, radius=0.05)
 
         assert (mask.array == np.array([[0, 0, 0],
@@ -151,7 +150,7 @@ class TestMask:
                                         [0, 0, 0]])).all()
 
     def test__set_circle__even_x_odd_mask_input_radius_medium__correct_mask(self):
-    
+
         mask = data_obj.CircleMask(dimensions=[4, 3], pixel_scale=0.1, radius=0.150001)
 
         assert (mask.array == np.array([[0, 1, 0],
@@ -187,7 +186,7 @@ class TestMask:
                                         [0, 1, 1, 0]])).all()
 
     def test__set_circle__even_x_even_mask_input_radius_large__correct_mask(self):
-        
+
         mask = data_obj.CircleMask(dimensions=[4, 4], pixel_scale=0.1, radius=0.3)
 
         assert (mask.array == np.array([[1, 1, 1, 1],

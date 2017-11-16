@@ -4,10 +4,7 @@ import os
 
 import numpy as np
 
-
-# TODO: The default data path is determined here to save you always having to pass it in
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
-
 
 class Image(object):
 
@@ -46,6 +43,23 @@ class Image(object):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
+    def load_psf(self, filename, hdu, path):
+        """Load the PSF for this image
+
+        Parameters
+        ----------
+        filename : str
+            The PSF filename to be loaded from
+        hdu : int
+            The PSF HDU in the fits file
+        pixel_scale : float
+            The pixel-to-arcsecond conversaion factor of the image
+        path : str
+            The path to the PSF image file
+
+        """
+        return PSF(filename=filename, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
+
     def circle_mask(self, radius_arc):
         """
         Create a new circular mask for this image
@@ -79,17 +93,15 @@ class Image(object):
         return AnnulusMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
                            inner_radius=inner_radius_arc)
 
+# TODO Unit tests for PSF
 
 class PSF(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, filename, hdu, pixel_scale, path=data_path):
 
-    def load_fits(self, dir, file, hdu, pixel_scale):
-        self.psf2d, self.xy_dim = image_tools.load_fits(dir, file, hdu)  # Load image from .fits file
+        self.psf2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
-
 
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
@@ -109,7 +121,6 @@ class Mask(object):
         self.pixel_scale = pixel_scale
         self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
-
 
 class CircleMask(Mask):
     """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
