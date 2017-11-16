@@ -1,4 +1,4 @@
-from ..tools import image_tools
+from auto_lens.tools import image_tools
 from scipy.stats import norm
 import os
 
@@ -10,16 +10,12 @@ data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(_
 
 
 class Image(object):
-    # TODO: It seems like an image is associated with one scale and has one pixel scale etc. so it makes sense to put
-    # TODO: all that in the constructor
-    def __init__(self, filename, hdu, pixel_scale, path=data_path):
+
+    def __init__(self, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None, path=data_path):
+
         self.image2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
-
-    # TODO: Some of these functions might be doing what the constructor should be doing. If you only call these
-    # TODO: functions once per an image then do this in the __init__
-    def set_sky(self, sky_background_level, sky_background_noise):
         self.sky_background_level = sky_background_level
         self.sky_background_noise = sky_background_noise
 
@@ -50,22 +46,42 @@ class Image(object):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
-    def circle_mask(self, radius):
+    def circle_mask(self, radius_arc):
         """
         Create a new circular mask for this image
 
         Parameters
         ----------
-        radius The radius of the mask
+        radius_arc : float
+            The radius of the mask
 
         Returns
         -------
         A circular mask for this image
         """
-        return CircleMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, radius=radius)
+        return CircleMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, radius=radius_arc)
+
+    def annulus_mask(self, inner_radius_arc, outer_radius_arc):
+        """
+        Create a new annular mask for this image
+
+        Parameters
+        ----------
+        inner_radius_arc : float
+            The inner radius of the annular mask
+        outer_radius_arc : float
+            The outer radius of the annular mask
+
+        Returns
+        -------
+        An annulus mask for this image
+        """
+        return AnnulusMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
+                           inner_radius=inner_radius_arc)
 
 
 class PSF(object):
+
     def __init__(self):
         pass
 
@@ -83,15 +99,14 @@ class Mask(object):
 
         Parameters
         ----------
-        dimensions The dimensions of the image (x, y)
-        pixel_scale The scale size of a pixel (x, y) in arc seconds
+        dimensions : int
+            The dimensions of the image (x, y)
+        pixel_scale :
+            The scale size of a pixel (x, y) in arc seconds
         """
         # Calculate the central pixel of the mask. This is a half pixel value for an even sized array.
         # Also minus one from value so that mask2d is shifted to python array (i.e. starts at 0)
         self.pixel_scale = pixel_scale
-        # TODO: The tests were failing on some even side length arrays because 3 / 2 = 1 for integers, whilst
-        # TODO float(3) / 2 = 1.5 for floats. I've made that fix in the line below but beware that "central_pixel"
-        # TODO: is now a floating point tuple (meaning it doesn't necessarily map to an actual pixel)
         self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
 
@@ -104,9 +119,12 @@ class CircleMask(Mask):
 
         Parameters
         ----------
-        dimensions The dimensions of the image (x, y)
-        pixel_scale The scale size of a pixel (x, y) in arc seconds
-        radius The radius of the circle (in arc seconds?)
+        dimensions : int
+            The dimensions of the image (x, y)
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds
+        radius : float
+            The radius of the circle (arc seconds)
         """
         super(CircleMask, self).__init__(dimensions, pixel_scale)
         self.radius = radius
@@ -114,8 +132,43 @@ class CircleMask(Mask):
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                radius_arcsec = pixel_scale * np.sqrt(
-                    (i - self.central_pixel[0]) ** 2 + (j - self.central_pixel[1]) ** 2)
+                x_pix = i - self.central_pixel[0] # Shift x coordinate using central x pixel
+                y_pix = j - self.central_pixel[1] # Shift u coordinate using central y pixel
 
-                if radius_arcsec <= radius:
+                radius_arc = pixel_scale * np.sqrt((x_pix)**2 + (y_pix)**2)
+
+                if radius_arc <= radius:
+                    self.array[i, j] = int(1)
+
+class AnnulusMask(Mask):
+    """Class for preparing and storing an annulus image mask used for the AutoLens analysis"""
+
+    def __init__(self, dimensions, pixel_scale, inner_radius, outer_radius):
+        """
+
+        Parameters
+        ----------
+        dimensions : int
+            The dimensions of the image (x, y)
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds
+        inner_radius : float
+            The inner radius of the circlular annulus (arc seconds)
+
+        outer_radius : float
+            The outer radius of the circlular annulus (arc seconds)
+        """
+        super(AnnulusMask, self).__init__(dimensions, pixel_scale)
+        self.inner_radius = inner_radius
+        self.outer_radius = outer_radius
+
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+
+                x_pix = i - self.central_pixel[0] # Shift x coordinate using central x pixel
+                y_pix = j - self.central_pixel[1] # Shift u coordinate using central y pixel
+
+                radius_arc = pixel_scale * np.sqrt((x_pix)**2 + (y_pix)**2)
+
+                if radius_arc <= outer_radius and radius_arc >= inner_radius:
                     self.array[i, j] = int(1)

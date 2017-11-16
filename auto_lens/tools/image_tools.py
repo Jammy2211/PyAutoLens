@@ -1,9 +1,6 @@
 from astropy.io import fits
 import numpy as np
 
-
-# TODO: Some words are reserved because python uses them. I've changed file to filename here because file is one of
-# TODO: words. Also, filename seems like a better description of the variable you're using here.
 def load_fits(work_dir, filename, hdu):
     """Load the input image file and return the image data and dimensions
 
