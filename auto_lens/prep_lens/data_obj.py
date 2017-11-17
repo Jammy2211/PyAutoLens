@@ -183,5 +183,5 @@ class AnnulusMask(Mask):
 
                 radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
 
-                if radius_arc <= outer_radius and radius_arc >= inner_radius:
+                if outer_radius >= radius_arc >= inner_radius:
                     self.array[i, j] = int(1)
