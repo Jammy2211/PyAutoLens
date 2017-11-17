@@ -111,7 +111,7 @@ class Mask(object):
 
         Parameters
         ----------
-        dimensions : int
+        dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale :
             The scale size of a pixel (x, y) in arc seconds
@@ -131,7 +131,7 @@ class CircleMask(Mask):
 
         Parameters
         ----------
-        dimensions : int
+        dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
@@ -161,12 +161,12 @@ class AnnulusMask(Mask):
 
         Parameters
         ----------
-        dimensions : int
+        dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius : float
-            The inner radius of the circlular annulus (arc seconds)
+            The inner radius of the circular annulus (arc seconds)
 
         outer_radius : float
             The outer radius of the circlular annulus (arc seconds)
