@@ -6,10 +6,10 @@ import numpy as np
 
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
+
 class Image(object):
-
-    def __init__(self, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None, path=data_path):
-
+    def __init__(self, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
+                 path=data_path):
         self.image2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
@@ -93,15 +93,15 @@ class Image(object):
         return AnnulusMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
                            inner_radius=inner_radius_arc)
 
+
 # TODO Unit tests for PSF
 
 class PSF(object):
-
     def __init__(self, filename, hdu, pixel_scale, path=data_path):
-
         self.psf2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+
 
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
@@ -121,6 +121,7 @@ class Mask(object):
         self.pixel_scale = pixel_scale
         self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
+
 
 class CircleMask(Mask):
     """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
@@ -143,13 +144,14 @@ class CircleMask(Mask):
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                x_pix = i - self.central_pixel[0] # Shift x coordinate using central x pixel
-                y_pix = j - self.central_pixel[1] # Shift u coordinate using central y pixel
+                x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt((x_pix)**2 + (y_pix)**2)
+                radius_arc = pixel_scale * np.sqrt((x_pix) ** 2 + (y_pix) ** 2)
 
                 if radius_arc <= radius:
                     self.array[i, j] = int(1)
+
 
 class AnnulusMask(Mask):
     """Class for preparing and storing an annulus image mask used for the AutoLens analysis"""
@@ -176,10 +178,10 @@ class AnnulusMask(Mask):
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                x_pix = i - self.central_pixel[0] # Shift x coordinate using central x pixel
-                y_pix = j - self.central_pixel[1] # Shift u coordinate using central y pixel
+                x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt((x_pix)**2 + (y_pix)**2)
+                radius_arc = pixel_scale * np.sqrt((x_pix) ** 2 + (y_pix) ** 2)
 
                 if radius_arc <= outer_radius and radius_arc >= inner_radius:
                     self.array[i, j] = int(1)
