@@ -39,7 +39,7 @@ class Image(object):
             left_edge = self.image2d[edge_no + 1:xdim - 1 - edge_no, edge_no]
             right_edge = self.image2d[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
 
-            edges = np.concatenate(((edges, top_edge, bottom_edge, right_edge, left_edge)))
+            edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
@@ -147,7 +147,7 @@ class CircleMask(Mask):
                 x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
                 y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt((x_pix) ** 2 + (y_pix) ** 2)
+                radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
 
                 if radius_arc <= radius:
                     self.array[i, j] = int(1)
@@ -181,7 +181,7 @@ class AnnulusMask(Mask):
                 x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
                 y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt((x_pix) ** 2 + (y_pix) ** 2)
+                radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
 
                 if radius_arc <= outer_radius and radius_arc >= inner_radius:
                     self.array[i, j] = int(1)
