@@ -52,8 +52,6 @@ class Image(object):
             The PSF filename to be loaded from
         hdu : int
             The PSF HDU in the fits file
-        pixel_scale : float
-            The pixel-to-arcsecond conversaion factor of the image
         path : str
             The path to the PSF image file
 
@@ -169,7 +167,7 @@ class AnnulusMask(Mask):
             The inner radius of the circular annulus (arc seconds)
 
         outer_radius : float
-            The outer radius of the circlular annulus (arc seconds)
+            The outer radius of the circular annulus (arc seconds)
         """
         super(AnnulusMask, self).__init__(dimensions, pixel_scale)
         self.inner_radius = inner_radius
@@ -183,5 +181,6 @@ class AnnulusMask(Mask):
 
                 radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
 
+                # TODO: Here's something cool. You can check a value is in a range in python without using an "and"
                 if outer_radius >= radius_arc >= inner_radius:
                     self.array[i, j] = int(1)
