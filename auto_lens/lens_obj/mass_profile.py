@@ -33,7 +33,18 @@ def sie_defl_angle(x, y, x_cen, y_cen, ein_r, q, phi):
 
 
 class SingularPowerLawEllipsoid(object):
+    """Represents a circularly symmetrical power law density distribution"""
+
     def __init__(self, slope, scale_length, density_0, coordinates=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        slope The slope of the power law
+        scale_length The scale length
+        density_0 The density at the centre of the mass distribution
+        coordinates The coordinates of the centre of the distribution (x, y)
+        """
         self.slope = slope
         self.scale_length = scale_length
         self.density_0 = density_0
@@ -41,12 +52,42 @@ class SingularPowerLawEllipsoid(object):
         self.y = coordinates[1]
 
     def density_at_radius(self, radius):
+        """
+        Determine the density at some radius
+        Parameters
+        ----------
+        radius The radius
+
+        Returns
+        -------
+        The density at that radius
+        """
         return self.density_0 * (radius / self.scale_length) ** -self.slope
 
     def density_at_coordinate(self, coordinates):
+        """
+        Determine the density as given image coordinates
+        Parameters
+        ----------
+        coordinates Image coordinates (x, y)
+
+        Returns
+        -------
+        The density at those coordinates
+        """
         return self.density_at_radius(self.coordinates_to_radius(coordinates))
 
     def coordinates_to_radius(self, coordinates):
+        """
+        Converts image coordinates to radius
+        Parameters
+        ----------
+        coordinates Image coordinates (x, y)
+
+        Returns
+        -------
+        The radius at those coordinates
+        """
         return math.sqrt((coordinates[0] - self.x) ** 2 + (coordinates[1] - self.y) ** 2)
 
     def surface_mass_density_at_radius(self, radius):
