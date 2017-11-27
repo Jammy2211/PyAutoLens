@@ -4,95 +4,255 @@ import numpy as np
 import pytest
 import mass_profile
 
+class TestEllipticalPowerLaw():
 
-# noinspection PyClassHasNoInit
-class TestGeom:
-    def test_sple_density_at_radius(self):
-        profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=1, density_0=1)
-        assert profile.density_at_radius(1) == 1
-        assert profile.density_at_radius(2) == 0.5
+    def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
 
-        profile = mass_profile.SingularPowerLawEllipsoid(slope=2, scale_length=1, density_0=1)
-        assert profile.density_at_radius(1) == 1
-        assert profile.density_at_radius(2) == 0.25
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-        profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=2, density_0=1)
-        assert profile.density_at_radius(2) == 1
-        assert profile.density_at_radius(4) == 0.5
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
-    def test_sple_density_at_coordinates(self):
-        profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=1, density_0=1)
-        assert profile.coordinates_to_radius((3, 4)) == 5
-        assert profile.density_at_coordinate((3, 4)) == 0.2
+        assert coordinates_shift[0] == 0.0
+        assert coordinates_shift[1] == 0.0
 
-        profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=1, density_0=1, coordinates=(3, 4))
-        assert profile.density_at_coordinate((0, 0)) == 0.2
+    def test__coordinates_to_centre__mass_centre_x_shift__x_shifts(self):
 
-    def test__translate_coordinates__no_shift_in__no_shifts_out(self):
-        x_new, y_new = mass_profile.translate_coordinates(x=0.0, y=0.0, x_cen=0.0, y_cen=0.0)
-        assert x_new == 0.0
-        assert y_new == 0.0
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.5, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-    def test__translate_coordinates__x_shift_in__x_is_shifted(self):
-        x_new, y_new = mass_profile.translate_coordinates(x=0.0, y=0.0, x_cen=0.5, y_cen=0.0)
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
-        assert x_new == -0.5
-        assert y_new == 0.0
+        assert coordinates_shift[0] == -0.5
+        assert coordinates_shift[1] == 0.0
 
-    def test__translate_coordinates__y_shift_in__y_is_shifted(self):
-        x_new, y_new = mass_profile.translate_coordinates(x=0.0, y=0.0, x_cen=0.0, y_cen=0.5)
+    def test__coordinates_to_centre__mass_centre_y_shift__y_shifts(self):
 
-        assert x_new == 0.0
-        assert y_new == -0.5
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.5, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-    def test__translate_coordinates__x_and_y_shift_in__x_and_y_shifted(self):
-        x_new, y_new = mass_profile.translate_coordinates(x=0.0, y=0.0, x_cen=0.5, y_cen=0.5)
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
-        assert x_new == -0.5
-        assert y_new == -0.5
+        assert coordinates_shift[0] == 0.0
+        assert coordinates_shift[1] == -0.5
 
-    def test__translate_coordinates__x_and_y_shift_2_in__x_and_y_shifted(self):
-        x_new, y_new = mass_profile.translate_coordinates(x=0.2, y=-0.4, x_cen=1.0, y_cen=-0.5)
+    def test__coordinates_to_centre__mass_centre_x_and_y_shift__x_and_y_both_shift(self):
 
-        assert x_new == -0.8
-        assert y_new == pytest.approx(0.1, 1e-5)
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.5, y_cen=0.5, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-    def test__calc_radial_distance__x_and_y_zero_in__r_out_zero(self):
-        assert mass_profile.calc_radial_distance(x=0.0, y=0.0) == 0.0
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
-    def test__calc_radial_distance__x_one_y_zero_in__r_out_1(self):
-        assert mass_profile.calc_radial_distance(x=1.0, y=0.0) == 1.0
+        assert coordinates_shift[0] == -0.5
+        assert coordinates_shift[1] == -0.5
 
-    def test__calc_radial_distance__x_one_y_one__r_out_root_2(self):
-        assert mass_profile.calc_radial_distance(x=1.0, y=1.0) == pytest.approx(np.sqrt(2), 1e-5)
+    def test__coordinates_to_centre__mass_centre_and_coordiantes__correct_shifts(self):
 
-    def test__calc_radial_distance__other_x_y_values__correct_value(self):
-        assert mass_profile.calc_radial_distance(x=-1.0, y=1.0) == pytest.approx(np.sqrt(2), 1e-5)
-        assert mass_profile.calc_radial_distance(x=1.0, y=-1.0) == pytest.approx(np.sqrt(2), 1e-5)
-        assert mass_profile.calc_radial_distance(x=-1.0, y=-1.0) == pytest.approx(np.sqrt(2), 1e-5)
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=1.0, y_cen=0.5, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-    def test__rotate_coordinates__no_rotation_in__no_rotation_out(self):
-        x_new, y_new = mass_profile.rotate_coordinates(x=1.0, y=0.0, phi_degrees=0.)
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.2, 0.4))
 
-        assert x_new == pytest.approx(1.0, 1e-5)
-        assert y_new == pytest.approx(0.0, 1e-5)
+        assert coordinates_shift[0] == -0.8
+        assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
 
-    def test__rotate_coordinates__45_deg_rotation_in__rotation_out(self):
-        x_new, y_new = mass_profile.rotate_coordinates(x=1.0, y=0.0, phi_degrees=45.)
+    def test__coordinates_to_radius__coordinates_overlap_mass_profile__r_is_zero(self):
 
-        assert x_new == pytest.approx(0.707, 1e-3)
-        assert y_new == pytest.approx(-0.707, 1e-3)
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0., axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-    def test__rotate_coordinates__90_deg_rotation_in__rotation_out(self):
-        x_new, y_new = mass_profile.rotate_coordinates(x=1.0, y=0.0, phi_degrees=90.)
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0,0))
 
-        assert x_new == pytest.approx(0.0, 1e-5)
-        assert y_new == pytest.approx(-1.0, 1e-5)
+        assert power_law.coordinates_to_radius(coordinates_shift) == 0.0
 
-    def test__rotate_coordinates__180_deg_rotation_in__rotation_out(self):
-        x_new, y_new = mass_profile.rotate_coordinates(x=1.0, y=0.0, phi_degrees=180.)
+    def test__coordinates_to_radius__x_coordinates_is_one__r_is_one(self):
 
-        assert x_new == pytest.approx(-1.0, 1e-5)
-        assert y_new == pytest.approx(0.0, 1e-5)
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0., axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
 
-# def test__sie_defl_angle__mass_model_in__correct_defl_angles(self):
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,0))
+
+        assert power_law.coordinates_to_radius(coordinates_shift) == 1.0
+
+    def test__coordinates_to_radius__x_and_y_coordinates_are_one__r_is_root_two(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0., axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,1.0))
+
+        assert power_law.coordinates_to_radius(coordinates_shift) == pytest.approx(np.sqrt(2), 1e-5)
+
+    def test__coordinates_to_radius__mass_profile_moves_instead__r_is_root_two(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0,0.0))
+
+        assert power_law.coordinates_to_radius(coordinates_shift) == pytest.approx(np.sqrt(2), 1e-5)
+
+    def test__angles_from_x_axis__phi_is_zero__angles_one_and_zero(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        cos_phi, sin_phi = power_law.angles_from_x_axis()
+
+        assert cos_phi == 1.0
+        assert sin_phi == 0.0
+
+    def test__angles_from_x_axis__phi_is_forty_five__angles_follow_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        cos_phi, sin_phi = power_law.angles_from_x_axis()
+
+        assert cos_phi == pytest.approx(0.707, 1e-3)
+        assert sin_phi == pytest.approx(0.707, 1e-3)
+
+    def test__angles_from_x_axis__phi_is_sixty__angles_follow_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=60.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        cos_phi, sin_phi = power_law.angles_from_x_axis()
+
+        assert cos_phi == pytest.approx(0.5, 1e-3)
+        assert sin_phi == pytest.approx(0.866, 1e-3)
+
+    def test__coordinates_angle_from_x__angle_is_zero__angles_follow_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,0.0))
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+
+        assert cos_theta == 1.0
+        assert sin_theta == 0.0
+
+    def test__coordinates_angle_from_x__angle_is_forty_five__angles_follow_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,1.0))
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+
+        assert cos_theta == pytest.approx(0.707, 1e-3)
+        assert sin_theta == pytest.approx(0.707, 1e-3)
+
+    def test__coordinates_angle_from_x__angle_is_sixty__angles_follow_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.7320))
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+
+        assert cos_theta == pytest.approx(0.5, 1e-3)
+        assert sin_theta == pytest.approx(0.866, 1e-3)
+
+    def test__coordinates_angle_to_mass_profile__same_angle__no_rotation(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,0.0))
+
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+
+        assert cos_theta == 1.0
+        assert sin_theta == 0.0
+
+    def test__coordinates_angle_to_mass_profile_both_45___no_rotation(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=45.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,1.0))
+
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+
+        assert cos_theta == pytest.approx(1.0, 1e-3)
+        assert sin_theta == pytest.approx(0.0, 1e-3)
+
+    def test__coordinates_angle_to_mass_profile_45_offset_same_angle__rotation_follows_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,1.0))
+
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+
+        assert cos_theta == pytest.approx(0.707, 1e-3)
+        assert sin_theta == pytest.approx(0.707, 1e-3)
+
+    def test__coordinates_angle_to_mass_profile_negative_60_offset_same_angle__rotation_follows_trig(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=60.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0,0.0))
+
+        radius = power_law.coordinates_to_radius(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift, radius)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+
+        assert cos_theta == pytest.approx(0.5, 1e-3)
+        assert sin_theta == pytest.approx(-0.866, 1e-3)
+
+    def test__coordinates_back_to_cartesian__phi_zero__no_rotation(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_elliptical = (1.0, 1.0)
+
+        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert x == 1.0
+        assert y == 1.0
+
+    def test__coordinates_back_to_cartesian__phi_ninety__correct_calc(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=90.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_elliptical = (1.0, 1.0)
+
+        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert x == pytest.approx(-1.0, 1e-3)
+        assert y == 1.0
+
+    def test__coordinates_back_to_cartesian__phi_forty_five__correct_calc(self):
+
+        power_law = mass_profile.EllpticalPowerLaw(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=45.0,
+                                                   einstein_radius=1.0, slope=2.0)
+
+        coordinates_elliptical = (1.0, 1.0)
+
+        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert x == pytest.approx(0.0, 1e-3)
+        assert y == pytest.approx(2**0.5, 1e-3)

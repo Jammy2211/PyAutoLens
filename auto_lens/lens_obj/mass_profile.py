@@ -1,94 +1,198 @@
 import numpy as np
 import math
 
+class EllpticalPowerLaw(object):
+    """Represents an elliptical power-law density distribution"""
 
-def translate_coordinates(x, y, x_cen, y_cen):
-    return (x - x_cen), (y - y_cen)
-
-
-def calc_radial_distance(x, y):
-    return np.sqrt(x ** 2 + y ** 2)
-
-
-def rotate_coordinates(x, y, phi_degrees):
-    phi_radians = math.radians(phi_degrees)
-    cos_phi = math.cos(phi_radians)
-    sin_phi = math.sin(phi_radians)
-
-    r = calc_radial_distance(x, y)
-
-    # 2D rotation matrix
-    cos_theta = (x / r) * cos_phi + (y / r) * sin_phi
-    sin_theta = (y / r) * cos_phi - (x / r) * sin_phi
-
-    x_rot = r * cos_theta
-    y_rot = r * sin_theta
-
-    return x_rot, y_rot
-
-
-def sie_defl_angle(x, y, x_cen, y_cen, ein_r, q, phi):
-    x_shift, y_shift = translate_coordinates(x=x, y=y, x_cen=x_cen, y_cen=y_cen)
-    x_rot, y_rot = rotate_coordinates(x=x_shift, y=y_shift, phi_degrees=phi)
-
-
-class SingularPowerLawEllipsoid(object):
-    """Represents a circularly symmetrical power law density distribution"""
-
-    def __init__(self, slope, scale_length, density_0, coordinates=(0, 0)):
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, einstein_radius, slope):
         """
 
         Parameters
         ----------
-        slope The slope of the power law
-        scale_length The scale length
-        density_0 The density at the centre of the mass distribution
-        coordinates The coordinates of the centre of the distribution (x, y)
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        slope : float
+            power-law density slope of mass profile
+        slope : float
+            The slope of the power law
         """
+
+        # TODO : Clearly, at some point we can make abstract base classes like EllipicalMassProfile, MassProfile, etc.
+
+        self.x_cen = x_cen
+        self.y_cen = y_cen
+        self.axis_ratio = axis_ratio
+        self.phi = phi
+        self.einstein_radius = einstein_radius
         self.slope = slope
-        self.scale_length = scale_length
-        self.density_0 = density_0
-        self.x = coordinates[0]
-        self.y = coordinates[1]
 
-    def density_at_radius(self, radius):
-        """
-        Determine the density at some radius
-        Parameters
-        ----------
-        radius The radius
+        # normalization used for power-law model, includes rescaling by axis ratio and density slope.
+        self.normalization = (3-slope)/(1+axis_ratio)
 
-        Returns
-        -------
-        The density at that radius
-        """
-        return self.density_0 * (radius / self.scale_length) ** -self.slope
+        self.cos_phi, self.sin_phi = self.angles_from_x_axis()
 
-    def density_at_coordinate(self, coordinates):
+    def angles_from_x_axis(self):
         """
-        Determine the density as given image coordinates
-        Parameters
-        ----------
-        coordinates Image coordinates (x, y)
+        Determine the sin and cosine of the angle between the mass-profile ellipse and positive x-axis, \
+        defined counter-clockwise from x.
 
         Returns
         -------
-        The density at those coordinates
+        The sin and cosine of the angle
         """
-        return self.density_at_radius(self.coordinates_to_radius(coordinates))
+        phi_radians = math.radians(self.phi)
+        return math.cos(phi_radians), math.sin(phi_radians)
+
+    def coordinates_to_centre(self, coordinates):
+        """
+        Converts image coordinates to mass profile's centre
+
+        Parameters
+        ----------
+        coordinates : tuple
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The coordinates at the mass profile centre
+        """
+        return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
 
     def coordinates_to_radius(self, coordinates):
         """
-        Converts image coordinates to radius
+        Compute the distance of image coordinates from (0.0). which should be the mass profile centre
+
         Parameters
         ----------
-        coordinates Image coordinates (x, y)
+        coordinates : float
+            The image coordinates shifted to the mass profile centre (x, y)
 
         Returns
         -------
         The radius at those coordinates
         """
-        return math.sqrt((coordinates[0] - self.x) ** 2 + (coordinates[1] - self.y) ** 2)
 
-    def surface_mass_density_at_radius(self, radius):
-        return 0.5 * (2 - self.slope) * (self.scale_length / radius) ** self.slope
+        # TODO : should this be a generic function for calculating the radius of any two coordinates at an input centre
+        # TODO : (x_cen, y_cen) or should we use the class values like you did before ? (e.g. include self.x_cen, self.y_cen)
+        # TODO: Currently, I've written it assuming the input coordinates are shifted.
+        return math.sqrt((coordinates[0]) ** 2 + (coordinates[1]) ** 2)
+
+    def coordinates_angle_from_x(self, coodinates, radius):
+        """
+        Computes sin and cosine of the angle between the shifted coordinates andd positive x-axis, \
+        defined counter-clockwise.
+
+        Parameters
+        ----------
+        coordinates : float
+            The x and y coordinates of the image.
+
+        Returns
+        ----------
+        The angle between the coordinates and the x-axis coun mass profile centre
+        """
+        # TODO: Again, do we include the shifts explicitly or assume theyre in the input?
+        return coodinates[0] / radius, coodinates[1] / radius
+
+    def coordinates_angle_to_mass_profile(self, cos_theta, sin_theta):
+        """
+        Compute the sin and cosine of the angle between the shifted coordinates and elliptical mass-profile
+
+        Parameters
+        ----------
+        coordinates_shift : float
+            The x and y coordinates of the image shifted to the mass-profile centre
+
+        Returns
+        ----------
+        The sin and cosine of the angle between the shifted coordinates and mass-profile ellipse.
+        """
+        ## TODO : Multiple definitions of theta - this is normal in lensing but clearer names welcome
+        dum = cos_theta
+        cos_theta = cos_theta * self.cos_phi + sin_theta * self.sin_phi
+        sin_theta = sin_theta * self.cos_phi - dum * self.sin_phi
+        return cos_theta, sin_theta
+
+    def coordinates_back_to_cartesian(self, coordinates_elliptical):
+        """
+        Rotate elliptical coordintes back to the original Cartesian grid
+
+        Parameters
+        ----------
+        coordinates_elliptical : float
+            The x and y coordinates of the image translated to the elliptcal coordinate system
+
+        Returns
+        ----------
+        The coordinates (typically deflection angles) on a regular Cartesian grid
+        """
+        dum = coordinates_elliptical[0]
+        x = (dum * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
+        y = (+dum * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
+        return x, y
+
+    def coordinates_rotate_to_ellipse(self, coordinates):
+        """
+        Translate Cartesian image coordinates to elliptical mass profile's reference frame
+
+        Parameters
+        ----------
+        coordinates : float
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The coordinates after the ellpitical translation
+        """
+
+        # TODO: All components below are unit tested, need to add tests for this entire function
+
+        # Shift coordinates to mass profile centre
+        coordinates_shift = self.coordinates_to_centre(coordinates)
+
+        # Compute their disstance to this centre
+        radius = self.coordinates_to_radius(coordinates_shift)
+
+        # Commpute the angle between the coordinates and x-axis
+        cos_theta, sin_theta = self.coordinates_angle_from_x(coordinates_shift, radius)
+
+        # Compute the angle between the coordinates and mass-profile ellipse
+        cos_theta, sin_theta = self.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+
+        # Multiply by radius to get their x / y distance from the mass profile centre in this ellpitical unit system
+        return radius*cos_theta, radius*sin_theta
+
+    def compute_deflection_angle(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : float
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angle at those coordinates
+        """
+
+        # TODO : Unit tests missing - need to sort out scipy.integrate
+
+        coordinates_elliptical = self.coordinates_rotate_to_ellipse(coordinates)
+
+        # TODO: implement a numerical integrator for this profile using scipy and / or c++
+
+        # defl_elliptical = scipy.integrate(coordinates_elliptical, kappa_power_law)
+        # defl_angles = self.coordinates_back_to_cartesian(coordinates_elliptical=defl_elliptical)
+        # defl_angles = self.normalization*defl_angles
+        # return defl_angles
+
+        pass
