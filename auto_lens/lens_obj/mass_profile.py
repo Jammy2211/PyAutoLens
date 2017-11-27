@@ -32,16 +32,17 @@ def sie_defl_angle(x, y, x_cen, y_cen, ein_r, q, phi):
     x_rot, y_rot = rotate_coordinates(x=x_shift, y=y_shift, phi_degrees=phi)
 
 
+class SingularPowerLawEllipsoid(object):
+    def __init__(self, slope, scale_length, density_0):
+        self.slope = slope
+        self.scale_length = scale_length
+        self.density_0 = density_0
 
+    def density_at_radius(self, radius):
+        return self.density_0 * (radius / self.scale_length) ** -self.slope
 
-    # class MassProfile(object):
-    #
-    #     def __init__(self):
-    #
-    #         return
-    #
-    # class SIS(MassProfile):
-    #
-    #     def __init__(self):
-    #
-    #         return
+    def density_at_coordinate(self, coordinates):
+        return self.density_at_radius(calc_radial_distance(coordinates[0], coordinates[1]))
+
+    def surface_mass_density_at_radius(self, radius):
+        return 0.5 * (2 - self.slope) * (self.scale_length / radius) ** self.slope
