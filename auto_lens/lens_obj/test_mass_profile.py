@@ -7,7 +7,7 @@ import mass_profile
 
 # noinspection PyClassHasNoInit
 class TestGeom:
-    def test__sple_density(self):
+    def test_sple_density_at_radius(self):
         profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=1, density_0=1)
         assert profile.density_at_radius(1) == 1
         assert profile.density_at_radius(2) == 0.5
@@ -19,6 +19,14 @@ class TestGeom:
         profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=2, density_0=1)
         assert profile.density_at_radius(2) == 1
         assert profile.density_at_radius(4) == 0.5
+
+    def test_sple_density_at_coordinates(self):
+        profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=1, density_0=1)
+        assert profile.coordinates_to_radius((3, 4)) == 5
+        assert profile.density_at_coordinate((3, 4)) == 0.2
+
+        profile = mass_profile.SingularPowerLawEllipsoid(slope=1, scale_length=1, density_0=1, coordinates=(3, 4))
+        assert profile.density_at_coordinate((0, 0)) == 0.2
 
     def test__translate_coordinates__no_shift_in__no_shifts_out(self):
         x_new, y_new = mass_profile.translate_coordinates(x=0.0, y=0.0, x_cen=0.0, y_cen=0.0)

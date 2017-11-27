@@ -33,16 +33,21 @@ def sie_defl_angle(x, y, x_cen, y_cen, ein_r, q, phi):
 
 
 class SingularPowerLawEllipsoid(object):
-    def __init__(self, slope, scale_length, density_0):
+    def __init__(self, slope, scale_length, density_0, coordinates=(0, 0)):
         self.slope = slope
         self.scale_length = scale_length
         self.density_0 = density_0
+        self.x = coordinates[0]
+        self.y = coordinates[1]
 
     def density_at_radius(self, radius):
         return self.density_0 * (radius / self.scale_length) ** -self.slope
 
     def density_at_coordinate(self, coordinates):
-        return self.density_at_radius(calc_radial_distance(coordinates[0], coordinates[1]))
+        return self.density_at_radius(self.coordinates_to_radius(coordinates))
+
+    def coordinates_to_radius(self, coordinates):
+        return math.sqrt((coordinates[0] - self.x) ** 2 + (coordinates[1] - self.y) ** 2)
 
     def surface_mass_density_at_radius(self, radius):
         return 0.5 * (2 - self.slope) * (self.scale_length / radius) ** self.slope
