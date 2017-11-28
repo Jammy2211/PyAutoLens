@@ -1,12 +1,15 @@
 import math
 
 
-class EllipticalPowerLaw(object):
-    """Represents an elliptical power-law density distribution"""
+# TODO: I've made this all one module for now. As complexity increases it may make sense to have three modules. Even so,
+# TODO: The similarities between mass and light profiles makes lumping them together very tempting.
 
-    def __init__(self, x_cen, y_cen, axis_ratio, phi, einstein_radius, slope):
+# TODO: It looks like mass and light profiles share a lot of methods so let's use a parent class for both
+class EllipticalProfile(object):
+    """Generic elliptical profile class to contain functions shared by light and mass profiles"""
+
+    def __init__(self, x_cen, y_cen, axis_ratio, phi):
         """
-
         Parameters
         ----------
         x_cen : float
@@ -17,27 +20,22 @@ class EllipticalPowerLaw(object):
             Ratio of mass profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
-        einstein_radius : float
-            Einstein radius of power-law mass profile
-        slope : float
-            power-law density slope of mass profile
-        slope : float
-            The slope of the power law
         """
-
-        # TODO : Clearly, at some point we can make abstract base classes like EllipticalMassProfile, MassProfile, etc.
 
         self.x_cen = x_cen
         self.y_cen = y_cen
         self.axis_ratio = axis_ratio
         self.phi = phi
-        self.einstein_radius = einstein_radius
-        self.slope = slope
 
-        # normalization used for power-law model, includes rescaling by axis ratio and density slope.
-        self.normalization = (3 - slope) / (1 + axis_ratio)
+    # TODO: Properties are nice. Rather than calculating lots of stuff in the constructor we can break it down into
+    # TODO: functions that are executed on the fly.
+    @property
+    def cos_phi(self):
+        return self.angles_from_x_axis()[0]
 
-        self.cos_phi, self.sin_phi = self.angles_from_x_axis()
+    @property
+    def sin_phi(self):
+        return self.angles_from_x_axis()[1]
 
     def angles_from_x_axis(self):
         """
@@ -176,6 +174,39 @@ class EllipticalPowerLaw(object):
 
         # Multiply by radius to get their x / y distance from the mass profile centre in this elliptical unit system
         return radius * cos_theta, radius * sin_theta
+
+
+class EllipticalPowerLaw(EllipticalProfile):
+    """Represents an elliptical power-law density distribution"""
+
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, einstein_radius, slope):
+        """
+
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        slope : float
+            power-law density slope of mass profile
+        slope : float
+            The slope of the power law
+        """
+
+        super(EllipticalPowerLaw, self).__init__(x_cen, y_cen, axis_ratio, phi)
+
+        self.einstein_radius = einstein_radius
+        self.slope = slope
+
+        # normalization used for power-law model, includes rescaling by axis ratio and density slope.
+        self.normalization = (3 - slope) / (1 + axis_ratio)
 
     def compute_deflection_angle(self, coordinates):
         """
