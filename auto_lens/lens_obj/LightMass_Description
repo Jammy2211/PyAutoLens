@@ -61,12 +61,12 @@ Light profiles may be specified to use the same centre, axis ratio and / or rota
 =============== Multiple Mass Profiles =================
 ========================================================
 
-If the mass model consists of multiple compoenents (e.g. SIE + PL), each component's deflection angles are
-computed indepedently and they are then added together.
+If the mass model consists of multiple components (e.g. SIE + PL), each component's deflection angles are
+computed indepedantly and they are then added together.
 
 Mass profiles may be specified to use the same centre, axis ratio and / or rotational angle as the previous component
 (e.g. x_2 = x_1, phi_2 = phi_1) or any component in the light model (e.g. a dark matter halo may be aligned with
-the Sersic component representing a galaxy's bulge, or the Expoentnial component representing its disk).
+the Sersic component representing a galaxy's bulge, or the Exponential component representing its disk).
 
 ========================================================
 ============== Decomposed Mass Profiles ================
@@ -78,9 +78,9 @@ its deflection angles.
 
 There are multiple types of LTM models:
 
-One mass-to-light ratio - all components in the light model share the same mass-to=light ratio.
-Multiple mass-to-light ratios - all components in the light model have a different and unique mass-to=light ratio
-Radial gradient - Light does not directly trace mass, but has a radial depedence.
+One mass-to-light ratio - all components in the light model share the same mass-to-light ratio.
+Multiple mass-to-light ratios - all components in the light model have a different and unique mass-to-light ratio
+Radial gradient - Light does not directly trace mass, but has a radial dependence.
 One may even include a radial gradient in every light component, each of which has its own unique mass-to-light ratio!
 
 ##########################################################
@@ -94,7 +94,7 @@ One may even include a radial gradient in every light component, each of which h
 --- Description ---
 
 The Sersic profile is used to fit the light of a galaxy. It can produce both highly concentrated light profiles
-(for high Sersic Index) or extended fallter profiles (for low Sersic Index).
+(for high Sersic Index) or extended flater profiles (for low Sersic Index).
 
 --- Geometry ---
 
@@ -104,7 +104,7 @@ Elliptical or Circular
 
 x_cen, y_cen, q, phi
 
-flux = overall flux internsity normalization in the light profile (electrons per second)
+flux = overall flux intensity normalisation in the light profile (electrons per second)
 effective_radius = The radius containing half the light of this model
 sersic_index = The concentration of the light profile
 
@@ -128,13 +128,13 @@ Stellar Halo). Therefore, we will want classes of Sersic profile (TOTAL, BULGE, 
 on parameters like the sersic_index.
 
 ============================
-======== Expoential ========
+======== Exponential ========
 ============================
 
 --- Description ---
 
 The Exponential profile is used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is
-a subset of the Sersic profile, corresponding exactlly to the solution sersic_index = 1.
+a subset of the Sersic profile, corresponding exactly to the solution sersic_index = 1.
 
 --- Geometry ---
 
@@ -144,7 +144,7 @@ Elliptical or Circular
 
 x_cen, y_cen, q, phi
 
-flux = overall flux internsity normalization in the light profile (electrons per second)
+flux = overall flux intensity normalisation in the light profile (electrons per second)
 effective_radius = The radius containing half the light of this model
 
 --- Other Parameters ---
@@ -179,7 +179,7 @@ Elliptical or Circular
 
 x_cen, y_cen, q, phi
 
-flux = overall flux internsity normalization in the light profile (electrons per second)
+flux = overall flux intensity normalisation in the light profile (electrons per second)
 effective_radius = The radius containing half the light of this model
 
 --- Other Parameters ---
@@ -217,12 +217,12 @@ Elliptical or Circular
 
 x_cen, y_cen, q, phi
 
-flux = overall flux internsity normalization in the Sersic light profile (electrons per second)
+flux = overall flux intensity normalisation in the Sersic light profile (electrons per second)
 effective_radius = The radius containing half the light of this model
 sersic_index = The concentration of the light profile
 
-flux_prime = overall flux internsity normalization in the rescaled Core-Sersic light profile (electrons per second)
-gamma = The logaritmic power-law slope of the inner core profile
+flux_prime = overall flux intensity normalisation in the rescaled Core-Sersic light profile (electrons per second)
+gamma = The logarithmic power-law slope of the inner core profile
 radius_break = The break radius separating the inner power-law (with logarithmic slope gamma) and outer Sersic function.
 flux_break = The intensity at the break radius.
 alpha = Controls the sharpness of the transition between the inner core / outer Sersic profiles.
