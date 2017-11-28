@@ -176,6 +176,118 @@ class EllipticalProfile(object):
         return radius * cos_theta, radius * sin_theta
 
 
+class SersicLightProfile(EllipticalProfile):
+    """Used to fit the light of a galaxy. It can produce both highly concentrated light profiles (for high Sersic Index)
+     or extended flatter profiles (for low Sersic Index)."""
+
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, flux, effective_radius, sersic_index):
+        """
+
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        flux : float
+            Overall flux intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        """
+        super(SersicLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi)
+        self.flux = flux
+        self.effective_radius = effective_radius
+        self.sersic_index = sersic_index
+
+    @property
+    def sersic_constant(self):
+        """
+
+        Returns
+        -------
+        sersic_constant: float
+            A parameter, derived from sersic_index, that ensures that effective_radius always contains 50% of the light.
+        """
+        return (2 * self.sersic_index) - (1. / 3.) + (4. / (405. * self.sersic_index)) + (
+            46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
+                   2194697. / (30690717750. * self.sersic_index ** 4))
+
+    # TODO: I haven't written a test for this. Presumably entering the effective radius would work? You might have to
+    # TODO: sum flux values for a bunch of radii smaller than the effective radius and larger than the effective radius
+    # TODO: and show that they're approximately equal? Or should flux_at_radius(effective_radius) == flux / 2?
+    def flux_at_radius(self, radius):
+        """
+
+        Parameters
+        ----------
+        radius : float
+            The distance from the centre of the profile
+        Returns
+        -------
+        flux: float
+            The flux at that radius
+        """
+        return self.flux * math.exp(
+            -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
+
+
+class ExponentialLightProfile(SersicLightProfile):
+    """Used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is a subset of the
+    Sersic profile, corresponding exactly to the solution sersic_index = 1"""
+
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, flux, effective_radius):
+        """
+
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        flux : float
+            Overall flux intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        """
+        super(ExponentialLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
+
+
+class DevVaucouleurs(SersicLightProfile):
+    """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
+    profile of an elliptical / early-type galaxy. It is a subset of the Sersic profile, corresponding exactly to the
+    solution sersic_index = 4."""
+
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, flux, effective_radius):
+        """
+
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        flux : float
+            Overall flux intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        """
+        super(DevVaucouleurs, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
+
+
 class EllipticalPowerLaw(EllipticalProfile):
     """Represents an elliptical power-law density distribution"""
 

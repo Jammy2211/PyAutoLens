@@ -94,7 +94,7 @@ One may even include a radial gradient in every light component, each of which h
 --- Description ---
 
 The Sersic profile is used to fit the light of a galaxy. It can produce both highly concentrated light profiles
-(for high Sersic Index) or extended flater profiles (for low Sersic Index).
+(for high Sersic Index) or extended flatter profiles (for low Sersic Index).
 
 --- Geometry ---
 
@@ -184,7 +184,7 @@ effective_radius = The radius containing half the light of this model
 
 --- Other Parameters ---
 
-sersic_index = Fixed to 1.
+sersic_index = Fixed to 4.
 sersic_constant = A parameter, derived from sersic_index, that ensures that effective_radius always contains 50% of the
 light.
 
