@@ -1,10 +1,6 @@
 import math
+import numpy as np
 
-
-# TODO: I've made this all one module for now. As complexity increases it may make sense to have three modules. Even so,
-# TODO: The similarities between mass and light profiles makes lumping them together very tempting.
-
-# TODO: It looks like mass and light profiles share a lot of methods so let's use a parent class for both
 class EllipticalProfile(object):
     """Generic elliptical profile class to contain functions shared by light and mass profiles"""
 
@@ -27,8 +23,6 @@ class EllipticalProfile(object):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    # TODO: Properties are nice. Rather than calculating lots of stuff in the constructor we can break it down into
-    # TODO: functions that are executed on the fly.
     @property
     def cos_phi(self):
         return self.angles_from_x_axis()[0]
@@ -50,7 +44,6 @@ class EllipticalProfile(object):
         return math.cos(phi_radians), math.sin(phi_radians)
 
     def coordinates_to_centre(self, coordinates):
-        # TODO: Note that tuples have the type of their components. "tuple" isn't a type but (float, float) is.
         """
         Converts image coordinates to mass profile's centre
 
@@ -78,20 +71,15 @@ class EllipticalProfile(object):
         -------
         The radius at those coordinates
         """
-
-        # TODO: It depends how you're going to use it but the code can be more elegant if you use the internal state
-        # TODO: of the class to define things. If we did move the centre profile around it would still work without the
-        # TODO: user of the class having to understand the internal implementation
-
-        # TODO: DRY (don't repeat yourself)
         shifted_coordinates = self.coordinates_to_centre(coordinates)
 
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
     def coordinates_angle_from_x(self, coordinates):
         """
-        Computes sin and cosine of the angle between the shifted coordinates andd positive x-axis, \
-        defined counter-clockwise.
+        Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
+        are symmetric after 180 degrees, so angles above 180 are converted to their equipvalent value from 0.
+        (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
 
         Parameters
         ----------
@@ -102,11 +90,14 @@ class EllipticalProfile(object):
         ----------
         The angle between the coordinates and the x-axis and mass profile centre
         """
-        # TODO: For example, here we can calculate the radius internally.
-        radius = self.coordinates_to_radius(coordinates)
-        return coordinates[0] / radius, coordinates[1] / radius
+        # TODO: Rewrote to compute the angle theta rather than cos / sin x
+        # TODO : Make a property and / or class variable?
+        theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
+        if theta_from_x < 0:
+            theta_from_x = 180 + theta_from_x
+        return theta_from_x
 
-    def coordinates_angle_to_mass_profile(self, cos_theta, sin_theta):
+    def coordinates_angle_to_mass_profile(self, theta_from_x):
         """
         Compute the sin and cosine of the angle between the shifted coordinates and elliptical mass-profile
 
@@ -119,12 +110,9 @@ class EllipticalProfile(object):
         ----------
         The sin and cosine of the angle between the shifted coordinates and mass-profile ellipse.
         """
-        # TODO: OK, so phi describes the mass profile and theta is some coordinate. Why not pass in theta and determine
-        # TODO: cos_theta and sin_theta using math.cos and math.sin?
-        dum = cos_theta
-        cos_theta = cos_theta * self.cos_phi + sin_theta * self.sin_phi
-        sin_theta = sin_theta * self.cos_phi - dum * self.sin_phi
-        return cos_theta, sin_theta
+        # TODO: Set up using class varibles / a propety?
+        theta_coordinate_to_mass = math.radians(theta_from_x - self.phi)
+        return math.cos(theta_coordinate_to_mass), math.sin(theta_coordinate_to_mass)
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
         """
@@ -167,10 +155,10 @@ class EllipticalProfile(object):
         radius = self.coordinates_to_radius(coordinates)
 
         # Compute the angle between the coordinates and x-axis
-        cos_theta, sin_theta = self.coordinates_angle_from_x(coordinates)
+        theta_from_x = self.coordinates_angle_from_x(coordinates)
 
         # Compute the angle between the coordinates and mass-profile ellipse
-        cos_theta, sin_theta = self.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+        cos_theta, sin_theta = self.coordinates_angle_to_mass_profile(theta_from_x)
 
         # Multiply by radius to get their x / y distance from the mass profile centre in this elliptical unit system
         return radius * cos_theta, radius * sin_theta
@@ -218,9 +206,7 @@ class SersicLightProfile(EllipticalProfile):
             46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
                    2194697. / (30690717750. * self.sersic_index ** 4))
 
-    # TODO: I haven't written a test for this. Presumably entering the effective radius would work? You might have to
-    # TODO: sum flux values for a bunch of radii smaller than the effective radius and larger than the effective radius
-    # TODO: and show that they're approximately equal? Or should flux_at_radius(effective_radius) == flux / 2?
+    # TODO: Tests wrriten
     def flux_at_radius(self, radius):
         """
 
@@ -259,10 +245,10 @@ class ExponentialLightProfile(SersicLightProfile):
         effective_radius : float
             The radius containing half the light of this model
         """
-        super(ExponentialLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
+        super(ExponentialLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 1)
 
 
-class DevVaucouleurs(SersicLightProfile):
+class DevVaucouleursLightProfile(SersicLightProfile):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
     profile of an elliptical / early-type galaxy. It is a subset of the Sersic profile, corresponding exactly to the
     solution sersic_index = 4."""
@@ -285,7 +271,7 @@ class DevVaucouleurs(SersicLightProfile):
         effective_radius : float
             The radius containing half the light of this model
         """
-        super(DevVaucouleurs, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
+        super(DevVaucouleursLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
 
 
 class EllipticalPowerLaw(EllipticalProfile):
@@ -308,8 +294,6 @@ class EllipticalPowerLaw(EllipticalProfile):
             Einstein radius of power-law mass profile
         slope : float
             power-law density slope of mass profile
-        slope : float
-            The slope of the power law
         """
 
         super(EllipticalPowerLaw, self).__init__(x_cen, y_cen, axis_ratio, phi)
@@ -344,5 +328,15 @@ class EllipticalPowerLaw(EllipticalProfile):
         # defl_angles = self.coordinates_back_to_cartesian(coordinates_elliptical=defl_elliptical)
         # defl_angles = self.normalization*defl_angles
         # return defl_angles
+
+        pass
+
+    def compute_deflection_angles_fast(self, coordinate_list):
+        """Place holder for what a c++ deflection angle call will look like"""
+
+        # import fast_lib.defl.PowerLawElliptical
+
+        # return fast_lib.defl.PowerLawElliptical(coordinate_list, self.x_cen, self.y_cen, self.axis_ratio, self.phi,
+        #                                   self.einstein_radius, self.slope)
 
         pass

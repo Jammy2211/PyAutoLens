@@ -4,14 +4,10 @@ import numpy as np
 import pytest
 import profile
 
-
-# TODO: OK, so we hid the coordinate shift internally and made the EllipticalProfile Abstract Class. Note the effect
-# TODO: here. The coordinate shift function doesn't have to be called a bunch of times and all of the tests correspond
-# TODO: to the Abstract class rather than the concrete child. The tests look neater and that's probably a good sign.
-
+#TODO : Split elliptical geomtry tests from power law tests
 
 # noinspection PyClassHasNoInit
-class TestEllipticalPowerLaw:
+class TestEllipticalProfile:
     def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
 
@@ -107,38 +103,63 @@ class TestEllipticalPowerLaw:
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert cos_theta == 1.0
-        assert sin_theta == 0.0
+        assert theta_from_x == 0.0
 
     def test__coordinates_angle_from_x__angle_is_forty_five__angles_follow_trig(self):
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert cos_theta == pytest.approx(0.707, 1e-3)
-        assert sin_theta == pytest.approx(0.707, 1e-3)
+        assert theta_from_x == 45.0
 
     def test__coordinates_angle_from_x__angle_is_sixty__angles_follow_trig(self):
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.7320))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert cos_theta == pytest.approx(0.5, 1e-3)
-        assert sin_theta == pytest.approx(0.866, 1e-3)
+        assert theta_from_x == pytest.approx(60.0, 1e-3)
+
+    def test__coordinates_angle_from_x__top_left_quandrant__angle_goes_above_90(self):
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, 1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 135.0
+
+    def test__coordinates_angle_from_x__bottom_left_quandrant__angle_flips_back_to_45(self):
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, -1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 45.0
+
+    def test__coordinates_angle_from_x__bottom_right_quandrant__angle_flips_back_to_above_90(self):
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, -1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 135.0
 
     def test__coordinates_angle_to_mass_profile__same_angle__no_rotation(self):
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
 
         assert cos_theta == 1.0
         assert sin_theta == 0.0
@@ -148,8 +169,9 @@ class TestEllipticalPowerLaw:
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
 
         assert cos_theta == pytest.approx(1.0, 1e-3)
         assert sin_theta == pytest.approx(0.0, 1e-3)
@@ -159,8 +181,9 @@ class TestEllipticalPowerLaw:
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
 
         assert cos_theta == pytest.approx(0.707, 1e-3)
         assert sin_theta == pytest.approx(0.707, 1e-3)
@@ -170,8 +193,9 @@ class TestEllipticalPowerLaw:
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
-        cos_theta, sin_theta = power_law.coordinates_angle_from_x(coordinates_shift)
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
 
         assert cos_theta == pytest.approx(0.5, 1e-3)
         assert sin_theta == pytest.approx(-0.866, 1e-3)
@@ -205,3 +229,87 @@ class TestEllipticalPowerLaw:
 
         assert x == pytest.approx(0.0, 1e-3)
         assert y == pytest.approx(2 ** 0.5, 1e-3)
+
+# noinspection PyClassHasNoInit
+class TestSersicLightProfile():
+    def test__setup_sersic__correct_values(self):
+
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index = 4.0)
+
+        assert sersic.x_cen == 0.0
+        assert sersic.y_cen == 0.0
+        assert sersic.axis_ratio == 1.0
+        assert sersic.phi == 0.0
+        assert sersic.flux == 1.0
+        assert sersic.effective_radius == 0.6
+        assert sersic.sersic_index == 4.0
+        assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
+
+    def test__flux_at_radius__correct_value(self):
+
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index = 4.0)
+
+        flux_at_radius = sersic.flux_at_radius(radius=1.0) # 1.0 * exp(-7.66926 * (1.0/0.6) ** (1.0 / 4.0)) - 1) = 0.351797
+
+        assert flux_at_radius == pytest.approx(0.351797, 1e-3)
+
+    def test__flux_at_radius_2__correct_value(self):
+
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=3.0,
+                                            effective_radius=2.0, sersic_index = 2.0)
+
+        flux_at_radius = sersic.flux_at_radius(radius=1.5) # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
+
+        assert flux_at_radius == pytest.approx(4.90657319276, 1e-3)
+
+# noinspection PyClassHasNoInit
+class TestExponentialProfile():
+
+    def test__setup_exponential__correct_values(self):
+
+        sersic = profile.ExponentialLightProfile(x_cen=1.0, y_cen=-1.0, axis_ratio=0.5, phi=45.0, flux=3.0,
+                                            effective_radius=0.2)
+
+        assert sersic.x_cen == 1.0
+        assert sersic.y_cen == -1.0
+        assert sersic.axis_ratio == 0.5
+        assert sersic.phi == 45.0
+        assert sersic.flux == 3.0
+        assert sersic.effective_radius == 0.2
+        assert sersic.sersic_index == 1.0
+        assert sersic.sersic_constant == pytest.approx(1.678378, 1e-3)
+
+# noinspection PyClassHasNoInit
+class TestDevVaucouleursProfile():
+
+    def test__setup_dev_vaucouleurs__correct_values(self):
+
+        sersic = profile.DevVaucouleursLightProfile(x_cen=0.0, y_cen=0.1, axis_ratio=0.6, phi=15.0, flux=2.0,
+                                            effective_radius=0.9)
+
+        assert sersic.x_cen == 0.0
+        assert sersic.y_cen == 0.1
+        assert sersic.axis_ratio == 0.6
+        assert sersic.phi == 15.0
+        assert sersic.flux == 2.0
+        assert sersic.effective_radius == 0.9
+        assert sersic.sersic_index == 4.0
+        assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
+
+# noinspection PyClassHasNoInit
+class TestEllipticalPowerLaw():
+
+    def test__setup_elliptical_power_law__correct_values(self):
+
+        power_law = profile.EllipticalPowerLaw(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0, einstein_radius = 1.0
+                                                , slope=2.0)
+
+        assert power_law.x_cen == 1.0
+        assert power_law.y_cen == 1.0
+        assert power_law.axis_ratio == 1.0
+        assert power_law.phi == 45.0
+        assert power_law.einstein_radius == 1.0
+        assert power_law.slope == 2.0
+        assert power_law.normalization == 0.5 # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
