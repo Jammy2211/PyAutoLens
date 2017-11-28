@@ -4,7 +4,7 @@ import numpy as np
 import image
 import os
 
-test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(scope='class')
