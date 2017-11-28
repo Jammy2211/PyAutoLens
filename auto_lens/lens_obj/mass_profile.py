@@ -81,27 +81,32 @@ class EllipticalPowerLaw(object):
         The radius at those coordinates
         """
 
-        # TODO : should this be a generic function for calculating the radius of any two coordinates at an input centre
-        # TODO : (x_cen, y_cen) or should we use the class values like you did before ? (e.g. include self.x_cen, self.y_cen)
-        # TODO: Currently, I've written it assuming the input coordinates are shifted.
-        return math.sqrt((coordinates[0]) ** 2 + (coordinates[1]) ** 2)
+        # TODO: It depends how you're going to use it but the code can be more elegant if you use the internal state
+        # TODO: of the class to define things. If we did move the centre profile around it would still work without the
+        # TODO: user of the class having to understand the internal implementation
 
-    def coordinates_angle_from_x(self, coodinates, radius):
+        # TODO: DRY (don't repeat yourself)
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+
+        return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
+
+    def coordinates_angle_from_x(self, coordinates):
         """
         Computes sin and cosine of the angle between the shifted coordinates andd positive x-axis, \
         defined counter-clockwise.
 
         Parameters
         ----------
-        coordinates : float
+        coordinates : (float, float)
             The x and y coordinates of the image.
 
         Returns
         ----------
-        The angle between the coordinates and the x-axis coun mass profile centre
+        The angle between the coordinates and the x-axis and mass profile centre
         """
-        # TODO: Again, do we include the shifts explicitly or assume theyre in the input?
-        return coodinates[0] / radius, coodinates[1] / radius
+        # TODO: For example, here we can calculate the radius internally.
+        radius = self.coordinates_to_radius(coordinates)
+        return coordinates[0] / radius, coordinates[1] / radius
 
     def coordinates_angle_to_mass_profile(self, cos_theta, sin_theta):
         """
@@ -109,14 +114,15 @@ class EllipticalPowerLaw(object):
 
         Parameters
         ----------
-        coordinates_shift : float
-            The x and y coordinates of the image shifted to the mass-profile centre
+        sin_theta
+        cos_theta
 
         Returns
         ----------
         The sin and cosine of the angle between the shifted coordinates and mass-profile ellipse.
         """
-        # TODO : Multiple definitions of theta - this is normal in lensing but clearer names welcome
+        # TODO: OK, so phi describes the mass profile and theta is some coordinate. Why not pass in theta and determine
+        # TODO: cos_theta and sin_theta using math.cos and math.sin?
         dum = cos_theta
         cos_theta = cos_theta * self.cos_phi + sin_theta * self.sin_phi
         sin_theta = sin_theta * self.cos_phi - dum * self.sin_phi
@@ -156,14 +162,14 @@ class EllipticalPowerLaw(object):
 
         # TODO: All components below are unit tested, need to add tests for this entire function
 
-        # Shift coordinates to mass profile centre
-        coordinates_shift = self.coordinates_to_centre(coordinates)
+        # TODO: This function was made more simple by hiding the coordinate shift calculation in the coordinates to
+        # TODO: radius
 
         # Compute their distance to this centre
-        radius = self.coordinates_to_radius(coordinates_shift)
+        radius = self.coordinates_to_radius(coordinates)
 
         # Compute the angle between the coordinates and x-axis
-        cos_theta, sin_theta = self.coordinates_angle_from_x(coordinates_shift, radius)
+        cos_theta, sin_theta = self.coordinates_angle_from_x(coordinates)
 
         # Compute the angle between the coordinates and mass-profile ellipse
         cos_theta, sin_theta = self.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
