@@ -303,7 +303,7 @@ class EllipticalPowerLaw(EllipticalProfile):
         self.slope = slope
 
         # normalization used for power-law model, includes rescaling by axis ratio and density slope.
-        self.normalization = (3 - slope) / (1 + axis_ratio)
+        self.einstein_radius_rescaled = ((3 - slope) / (1 + axis_ratio))*self.einstein_radius
 
     def compute_deflection_angle(self, coordinates):
         """

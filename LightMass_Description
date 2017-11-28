@@ -128,7 +128,7 @@ Stellar Halo). Therefore, we will want classes of Sersic profile (TOTAL, BULGE, 
 on parameters like the sersic_index.
 
 ============================
-======== Exponential ========
+======== Exponential =======
 ============================
 
 --- Description ---
@@ -241,3 +241,390 @@ sersic_constant = (2*sersic_index) - (1./3.) + (4./(405.*sersic_index)) + (46./(
 
 flux_prime = flux_break*(2.0**(-gamma/alpha))*exp(-sersic_constant*(((2.0**(1.0/alpha))*radius_break)/effective_radius)**(1.0/sersic_index))
 Core_Sersic = flux_prime*((1+((radius_break/radius)^alpha))**(gamma/alpha)) * exp(-sersic_constant* (( ((radius**alpha) + (radius_break^alpha)) / (effective_radius^alpha) ) ** (1.0/(alpha*sersic_index)) ) )
+
+
+
+
+##########################################################
+#################### MASS PROFILES #######################
+##########################################################
+
+NOTE - for the SIS, SIE, SPLE, SISCore, SIECore, SPLECore profiles, there is fortran codde which computes these very fast.
+I may link our deflection angle calculations to this library rather than explicitly coding up c++ routines. I'm not sure
+yet.
+
+For Elliptical mass profiles, we often calculate defl_x and defl_y explicity. For Circular profiles, we calculate
+defl_r, and then compute defl_x = defl_r*cos(theta_from_x_axis) and defl_y = defl_r*sin(theta_from_x_axis)
+
+============================
+======== Point Mass ========
+============================
+
+--- Description ---
+
+The point mass represents a point of mass (duh). It is used to model unresolved sources or black-holes
+
+--- Geometry ---
+
+Circular
+
+--- Model Parameters ---
+
+x_cen, y_cen, einstein_radius
+
+einstein_radius = The normalization of mass, defined in terms of einstein_radius
+
+--- Equation ---
+
+r = (xi**2 + yi**2)
+kappa = ?
+defl_r = einstein_radius/r
+
+============================
+============ SIS ===========
+============================
+
+--- Description ---
+
+The Singular Isothermal Sphere (SIS) profile is used for the total mass of a galaxy. It is a spherical ball of mass.
+Whilst we typically won't use this to model a lens galaxy's mass, it is common for smaller and lower mass nearby galaxies
+to be included in the lens model as SIS's (often with their centre fixed to their light profile centre).
+
+The SIE model is an elliptical generalization of the SIS model.
+
+The EllipticalPowerLaw model corresponds to the SIS model for the case of circulatiry
+(axis_ratio=1.0) and isothermal (slope=2.0)
+
+--- Geometry ---
+
+Circular
+
+--- Model Parameters ---
+
+x_cen, y_cen, einstein_radius
+
+einstein_radius = The normalization of mass, defined in terms of einstein_radius
+normalization = 0.5
+
+--- Equation ---
+
+r = (xi**2 + yi**2)
+kappa = normalization*(u)**(0.5)
+
+defl_r = ? ( There is a simple way to do this, but I've forgot it for now)
+
+Psi = sqrt((x**2) + y**2)
+sie_norm = (normalization/sqrt(1-axis_ratio**2))
+
+defl_x = sie_norm*atan((sqrt(1-axis_ratio**2)*xi)/(Psi))
+defl_y = sie_norm*atanh((sqrt(1-axis_ratio**2)*yi)/(Psi))
+
+============================
+============ SIE ===========
+============================
+
+--- Description ---
+
+The Singular Isothermal Ellipsoid (SIE) profile is used for the mass of a galaxy. It is an ellipsoid of mass.
+
+The EllipticalPowerLaw model corresponds to the SIE model for the case of isothermal (slope=2.0)
+
+--- Geometry ---
+
+Elliptcal
+
+--- Model Parameters ---
+
+x_cen, y_cen, axis_ratio, phi, einstein_radius
+
+einstein_radius = The normalization of mass, defined in terms of einstein_radius
+
+--- Other Parameters ---
+
+normalization = 1/ (1 + axis_ratio) = Rescales the mass distribution to its ellipticity.
+
+--- Equation ---
+
+u = (xi**2 + yi**2/axis_ratio**2)
+kappa = normalization*(u)**(0.5)
+
+Psi = sqrt( (axis_ratio**2)*(xi**2) + yi**2)
+sie_norm = (normalization*axis_ratio/sqrt(1-axis_ratio**2))
+
+defl_x = sie_norm*atan((sqrt(1-axis_ratio**2)*xi)/(Psi))
+defl_y = sie_norm*atanh((sqrt(1-axis_ratio**2)*yi)/(Psi))
+
+The calculations above are equivalent to numerically inegration the kappa function. However, unlike the power-law profiles
+below, the solution (slope=2) means that we can get the deflection angles analytically as above.
+
+============================
+========== SIECore =========
+============================
+
+--- Description ---
+
+The Cored Singular Isothermal Ellipsoid (SIE) profile is used for the mass of a galaxy.It is identical to the SIE above,
+but includes an additional parameter which makes the central density go from a core (instead of rising steeply as a
+power-law)
+
+The CoredEllipticalPowerLaw model corresponds to the SIECore model for the case of isothermal (slope=2.0)
+
+--- Geometry ---
+
+Elliptcal
+
+--- Model Parameters ---
+
+x_cen, y_cen, axis_ratio, phi, einstein_radius, core_radius
+
+einstein_radius = The normalization of mass, defined in terms of einstein_radius
+core_radius = The size of the core (arcseconds)
+
+--- Other Parameters ---
+
+normalization = 1/ (1 + axis_ratio) = Rescales the mass distribution to its ellipticity.
+
+--- Equation ---
+
+u = (xi**2 + yi**2/axis_ratio**2)
+kappa = normalization*(u+core_radius**2)**(0.5)
+
+Psi = sqrt( (axis_ratio**2)*(core_radius**2 + xi**2) + yi**2)
+sie_norm = (normalization*axis_ratio/sqrt(1-axis_ratio**2))
+
+defl_x = sie_norm*atan((sqrt(1-axis_ratio**2)*xi)/(Psi + core_radius))
+defl_y = sie_norm*atanh((sqrt(1-axis_ratio**2)*yi)/(Psi + ((axis_ratio**2)*(core_radius))))
+
+The calculations above are equivalent to numerically inegration the kappa function. However, unlike the power-law profiles
+below, the solution (slope=2) means that we can get the deflection angles analytically as above.
+
+==================================================
+============ SPLE (EllipticalPowerLaw) ===========
+==================================================
+
+--- Description ---
+
+The Softened Power-Law Ellipsoid (SPLE) profile is used for the mass of a galaxy. It is an ellipsoid of mass.
+In contrast to the SIS and SIE, the slope is a free parameter and can thus vary from isothermality (slope=2.0)
+
+--- Geometry ---
+
+Elliptical
+
+--- Model Parameters ---
+
+x_cen, y_cen, axis_ratio, phi, einstein_radius, slope
+
+einstein_radius = The normalization of mass, defined in terms of einstein_radius
+
+--- Other Parameters ---
+
+normalization = (3 - slope) / (1 + axis_ratio) = Rescales the mass distribution to its density and ellipticity.
+
+--- Equation ---
+
+u = (xi**2 + yi**2/axis_ratio**2)
+kappa = normalization*(u+core_radius**2)**((slope-1.0)/2.0)
+defl - perform numerical integral of kappa over ellipticity (Keeton 2003)
+
+===================================
+============= SPLECore ============
+===================================
+
+--- Description ---
+
+The Cored Softened Power-Law Ellipsoid (SPLE) profile is used for the mass of a galaxy. It is identical to the SPLE above,
+but includes an additional parameter which makes the central density go from a core (instead of rising steeply as a
+power-law)
+
+--- Geometry ---
+
+Circular or Elliptical
+
+--- Model Parameters ---
+
+x_cen, y_cen, axis_ratio, phi, einstein_radius, slope, core_radius
+
+einstein_radius = The normalization of mass, defined in terms of einstein_radius
+core_radius = The size of the core (arcseconds)
+
+--- Other Parameters ---
+
+normalization = ((3 - slope) / (1 + axis_ratio))*einstein_radius = Rescales the mass distribution to its density and ellipticity.
+
+--- Equation ---
+
+u = (xi**2 + yi**2/axis_ratio**2)
+kappa = normalization*(u+core_radius**2)**((slope-1.0)/2.0)
+defl - perform numerical integral of kappa over ellipticity (Keeton 2003)
+
+===================================
+========== NFW Spherical ==========
+===================================
+
+--- Description ---
+
+The Navarro-Frenk-White (NFW) profile is used for modeling a galaxy's dark matter halo.
+
+--- Geometry ---
+
+Circular
+
+--- Model Parameters ---
+
+x_cen, y_cen, kappa_s
+
+kappa_s = The normalization of mass, defined in terms of a 'halo mass'
+
+--- Other Parameters ---
+
+inner_slope = 1 = NFW is the solution where the inner_slope is 1
+scale_radius = 50 kilo-parsecs = the outer scale radius of the halo. Could be a free parameter, but typically fix large.
+
+--- Equation ---
+
+r = (1/scale_radius)*(xi**2 + yi**2)
+
+if r > 1:
+   Fx = (1./(sqrt((r**2)-1)))*atan(sqrt((r**2)-1))
+elifr < 1:
+   Fx = (1./(sqrt(1-(r**2))))*atanh(sqrt(1-(r**2)))
+elif r == 1:
+   Fx = 1.
+
+kappa = 2*kappa_s*((1-Fx)/(r**2-1))
+defl_r = 4*kappa_s_Arc*scale_radius*((log(r/2.0)+Fx)/r)
+
+NOTE : YOu could numerically integrate kappa for defl_r, but analytic solution faster
+
+===================================
+========== NFW Elliptical =========
+===================================
+
+--- Description ---
+
+The Navarro-Frenk-White (NFW) profile is used for modeling a galaxy's dark matter halo.
+
+--- Geometry ---
+
+Elliptical
+
+--- Model Parameters ---
+
+x_cen, y_cen, axis_ratio, phi, kappa_s
+
+kappa_s = The normalization of mass, defined in terms of a 'halo mass'
+
+--- Other Parameters ---
+
+inner_slope = 1 = NFW is the solution where the inner_slope is 1
+scale_radius = 50 kilo-parsecs = the outer scale radius of the halo. Could be a free parameter, but typically fix large.
+normalization =  2*kappa_s*axis_ratio
+
+--- Equation ---
+
+NOTE: Using Fx defined above.
+
+r = (1/scale_radius)*(xi**2 + (yi**2)/(axis_ratio**2))
+kappa = 2*kappa_s*((1-Fx)/(r**2-1))
+
+defl_x = normalization*xi*scipy.integrate(eta, NFWIntegral(npow=0), range=0,1) [SCIPY syntax is guessing a bit...]
+defl_y = normalization*yi*scipy.integrate(eta, NFWIntegral(npow=1), range=0,1)
+
+integrate over small steps of u from 0 to 1:
+def NFWIntegral(self, npow):
+    eta = (1.0/scale_radius)*(u*((xi*2) + (yi**2/(1-(1-axis_ratio**2)*u))))**0.5
+    nfw_integral = ((1-Fx)/((eta**2)-1))/((1-(1-axis_ratio**2)*u)**(npow+0.5))
+
+===============================================
+========== generalized NFW Spherical ==========
+===============================================
+
+--- Description ---
+
+The generlized Navarro-Frenk-White (gNFW) profile is used for modeling a galaxy's dark matter halo and includes
+an extra parameter which makes its inner slope variable.
+
+--- Geometry ---
+
+Circular
+
+--- Model Parameters ---
+
+x_cen, y_cen, kappa_s, inner_slope
+
+kappa_s = The normalization of mass, defined in terms of a 'halo mass'
+inner_slope = 1 = NFW is the solution where the inner_slope is 1
+
+--- Other Parameters ---
+
+scale_radius = 50 kilo-parsecs = the outer scale radius of the halo. Could be a free parameter, but typically fix large.
+
+--- Equation ---
+
+r = (1/scale_radius)*(xi**2 + yi**2)
+kappa = 2*kappa_s*r**(1-inner_slope)*[((1+r)**(inner_slope-3))*integral_over_z]
+integral_over_z = scipy.integrate(z, NFWIntegral(npow=1), range=0,1)
+
+def int_z(self, z):
+    int_z = ((z+r)**(inner_slope-3))*((1.0-sqrt(1.0-z**2))/z)
+
+The deflection angles are an even bigger mess of integrals... lets not think about that for now
+
+===============================================
+========== generalized NFW Elliptical ==========
+===============================================
+
+Ssame as above but elliptical - even bigger mess of a deflection angle calculation...
+
+=============================================================
+========== Sersic (and Exponential / Dev Vaucoulers =========
+=============================================================
+
+--- Description ---
+
+For the Sersic light profiles we fit to galaxies, need to have a corresponding mass profile to compute their deflection
+angles.
+
+--- Geometry ---
+
+Elliptical
+
+--- Model Parameters ---
+
+x_cen, y_cen, q, phi, flux, effective_radius, index [Inherited from light model]
+
+mass_to_light = mass to light ratio controlling mass normalization
+radial_gradient (optionoal, if off set to zero) = deviate from light traces mass
+
+--- Equation ---
+
+xi = sqrt(axis_ratio)*(xi**2 + (yi**2)/(axis_ratio**2))
+
+normalization = flux*axis_ratio*mass_to_light*((eta/effective_radius)**radial_gradient)
+kappa = normalization*exp(-1*sersic_constant*(eta/effective_radius)**(1/sersic_index))-1)
+
+deflections are found by integrating kappa over xi from 0 to 1:
+
+defl_x = normalization*xi*scipy.integrate(eta, SersicIntegral(npow=0), range=0,1) [SCIPY syntax is guessing a bit...]
+defl_y = normalization*yi*scipy.integrate(eta, SersicIntegral(npow=1), range=0,1)
+
+def SersicIntegral(self, npow):
+    eta = sqrt(axis_ratio)*(u*((xi*2) + (yi**2/(1-(1-axis_ratio**2)*u))))**0.5
+    normalization = flux*axis_ratio*mass_to_light*((eta/effective_radius)**radial_gradient)
+    sersic_integral = normalization*exp(-1*sersic_constant*(eta/effective_radius)**(1/sersic_index))-1)/((1-(1-axis_ratio**2)*u)**(npow+0.5))
+
+=============================================================
+======================== Light Traces Mass =================
+=============================================================
+
+In my FORTRAN code, I had a LTM model which describes how you would approach modeling multiple light components (e.g. x2 Sersic).
+There are four LTM models:
+
+LTM - Both light profiles (e.g. Sersics) have one, shared, mass-to-light ratio and the radial gradient is off (=0)
+LTM2 - Both light profiles have indepedent mass-to-light ratios and the radial gradient is off (=0)
+LTM_R - Both light profiles (e.g. Sersics) have one, shared, mass-to-light ratio and the radial gradient is a free parameter, for just the bulge component
+LTM2_ - Both light profiles have indepedent mass-to-light ratios and the radial gradient is a free parameter, for each component
+
+It will probably be easieer if we do away with LTM altogether and store in each Sersic mass component whether its
+mass-to-light ratio / radial_gradient are free, fixed or inherited from elsewhere.

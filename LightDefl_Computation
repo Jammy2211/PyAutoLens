@@ -1,0 +1,92 @@
+
+========================================================
+=================== Sub-gridding =======================
+========================================================
+
+For a 2D light or mass profile, we want to compute the intensity of light or deflection ange at the centre of every image
+pixel:
+  _________
+ |         |
+ |         |
+ |    x    |
+ |         |
+0|_________|
+ 0
+
+So for this pixel, its centre is at x = (x,y) = (0.5, 0.5)
+
+However, if the function in this pixel varies over the square area a lot, evaluating its value at just 0.5 risks losing
+a small degree of accuracy. Really, what we want to do is perform a line integral over the square above, but that is
+expensive, so instead we subgrid it. For exmaple, we may use a 2x2 subgrid:
+  _________
+ |         |
+ |  x   x  |
+ |         |
+ |  x   x  |
+0|_________|
+ 0
+
+where the four coordinates are at:
+x1 = (0.25, 0.25)
+x2 = (0.25, 0.75)
+x3 = (0.75, 0.25)
+x4 = (0.75, 0.75)
+
+Using this sub-grid, we can evaulate he funtion at the four coordinates above and then take the average:
+value = (value(x1)+value(x2)+value(x3)+value(x4))/4.0
+
+This is more accurate than using just the centre.
+
+Obviously, the sub-grid can be as coarse as you like - I typically use a 4x4 sub-grid for deflection angles and
+an adaptive sub-grid, describes next, for light profiles.
+
+========================================================
+============ Computing a 2D Light Profile ==============
+========================================================
+
+For a 2D light profile, we what should the sub-grid we use be? Well, this depends on how rapidly changing the
+light profile is over that pixel.
+
+In the centre of a Sersic (pixels whose (x,y) coordinates are near (x_cen, y_cen), the light decays faster than an
+exponential - so we need very dense subgrid.
+
+At the edges of the light profile (x >> x_cen or y >> y_cen), it flat, we probably don't need a subgrid at all!
+
+Therefore, the light profile is computed using an adaptive subgrid. For each pixel, we compute its value using just the
+pixel centre, and then compute it again using a 2x2 subgrid.
+
+If the fractional change in value is small (< ~0.0001), we know that we have accurately sampled that pixels value
+and going to a denser sub-grid will not give us much m ore accuracy!
+
+if the fractional change is large (>~0.0001), we need to use a higher density subgird (8x8). This keeps going until we
+meet our accuracy threshold. Some light profiles require a subgrid of (100 x 100) or more!
+
+CODE: So, we are going to want some sort of generic LightProfile method that given a light profile and a set of x / y
+coordinates, generates the light profile including this sub-gridding. I have fortran code to this, and will write
+a function in c++.
+
+========================================================
+=========== Computing 2D Deflection Angles =============
+========================================================
+
+In contrast to the light profile method above, for the deflection angles we only need the angle at each sub-pixel
+location. Once we've calculated them, we don't average them togehter to get the central value. This is because
+each sub-pixel is traced to the source plane and included in the source reconstruction.
+
+This changes how we can efficiently compute deflection angles in 2D. It is still true that near the lens, the deflection
+angles change rapidly, and away from the lens, they don't change much at all.
+
+This means, near the lens centre, we compute every sub-pixel deflection angles explicitly.
+
+ A bit further out, we compute them on a grid, and bilinearly interpolate (average) the values on this grid to
+ get sub-pixel deflecton angle at every location.
+
+ Even further from the lens centre, the deflection angles are almost flat, so we perform their calculation on a sparse
+ grid and bi-linearly interpolate over this sparse grid to get each sub-pixel value.
+
+CODE: So, we want a MassProfile method that can take a set of x / y points where we compupte the deflection angles,
+computes them, and then knows how to compute the sub-pixel values from these values via bilinear interpolation. I
+have fortran code which does this (its messy) and will write a cleaner c++ code.
+
+IDEA: Could we have a variable sub-grid? So, pixels where the source iss bright are dense (e.g. 8x8), whereas those
+where the source is not are coarse (e.g. 2x2). Might be cool, might not be worth the headache.
