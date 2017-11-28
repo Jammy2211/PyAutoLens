@@ -1,7 +1,7 @@
-import numpy as np
 import math
 
-class EllpticalPowerLaw(object):
+
+class EllipticalPowerLaw(object):
     """Represents an elliptical power-law density distribution"""
 
     def __init__(self, x_cen, y_cen, axis_ratio, phi, einstein_radius, slope):
@@ -25,7 +25,7 @@ class EllpticalPowerLaw(object):
             The slope of the power law
         """
 
-        # TODO : Clearly, at some point we can make abstract base classes like EllipicalMassProfile, MassProfile, etc.
+        # TODO : Clearly, at some point we can make abstract base classes like EllipticalMassProfile, MassProfile, etc.
 
         self.x_cen = x_cen
         self.y_cen = y_cen
@@ -35,7 +35,7 @@ class EllpticalPowerLaw(object):
         self.slope = slope
 
         # normalization used for power-law model, includes rescaling by axis ratio and density slope.
-        self.normalization = (3-slope)/(1+axis_ratio)
+        self.normalization = (3 - slope) / (1 + axis_ratio)
 
         self.cos_phi, self.sin_phi = self.angles_from_x_axis()
 
@@ -52,12 +52,13 @@ class EllpticalPowerLaw(object):
         return math.cos(phi_radians), math.sin(phi_radians)
 
     def coordinates_to_centre(self, coordinates):
+        # TODO: Note that tuples have the type of their components. "tuple" isn't a type but (float, float) is.
         """
         Converts image coordinates to mass profile's centre
 
         Parameters
         ----------
-        coordinates : tuple
+        coordinates : (float, float)
             The x and y coordinates of the image
 
         Returns
@@ -72,7 +73,7 @@ class EllpticalPowerLaw(object):
 
         Parameters
         ----------
-        coordinates : float
+        coordinates : (float, float)
             The image coordinates shifted to the mass profile centre (x, y)
 
         Returns
@@ -115,7 +116,7 @@ class EllpticalPowerLaw(object):
         ----------
         The sin and cosine of the angle between the shifted coordinates and mass-profile ellipse.
         """
-        ## TODO : Multiple definitions of theta - this is normal in lensing but clearer names welcome
+        # TODO : Multiple definitions of theta - this is normal in lensing but clearer names welcome
         dum = cos_theta
         cos_theta = cos_theta * self.cos_phi + sin_theta * self.sin_phi
         sin_theta = sin_theta * self.cos_phi - dum * self.sin_phi
@@ -123,12 +124,12 @@ class EllpticalPowerLaw(object):
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
         """
-        Rotate elliptical coordintes back to the original Cartesian grid
+        Rotate elliptical coordinates back to the original Cartesian grid
 
         Parameters
         ----------
-        coordinates_elliptical : float
-            The x and y coordinates of the image translated to the elliptcal coordinate system
+        coordinates_elliptical : (float, float)
+            The x and y coordinates of the image translated to the elliptical coordinate system
 
         Returns
         ----------
@@ -145,12 +146,12 @@ class EllpticalPowerLaw(object):
 
         Parameters
         ----------
-        coordinates : float
+        coordinates : (float, float)
             The x and y coordinates of the image
 
         Returns
         ----------
-        The coordinates after the ellpitical translation
+        The coordinates after the elliptical translation
         """
 
         # TODO: All components below are unit tested, need to add tests for this entire function
@@ -158,17 +159,17 @@ class EllpticalPowerLaw(object):
         # Shift coordinates to mass profile centre
         coordinates_shift = self.coordinates_to_centre(coordinates)
 
-        # Compute their disstance to this centre
+        # Compute their distance to this centre
         radius = self.coordinates_to_radius(coordinates_shift)
 
-        # Commpute the angle between the coordinates and x-axis
+        # Compute the angle between the coordinates and x-axis
         cos_theta, sin_theta = self.coordinates_angle_from_x(coordinates_shift, radius)
 
         # Compute the angle between the coordinates and mass-profile ellipse
         cos_theta, sin_theta = self.coordinates_angle_to_mass_profile(cos_theta, sin_theta)
 
-        # Multiply by radius to get their x / y distance from the mass profile centre in this ellpitical unit system
-        return radius*cos_theta, radius*sin_theta
+        # Multiply by radius to get their x / y distance from the mass profile centre in this elliptical unit system
+        return radius * cos_theta, radius * sin_theta
 
     def compute_deflection_angle(self, coordinates):
         """
@@ -176,7 +177,7 @@ class EllpticalPowerLaw(object):
 
         Parameters
         ----------
-        coordinates : float
+        coordinates : (float, float)
             The x and y coordinates of the image
 
         Returns
