@@ -76,7 +76,9 @@ class EllipticalProfile(object):
 
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
-    def coordinates_angle_from_x(self, coordinates):
+    # TODO: This isn't using any variable from the class. Should it be?
+    @staticmethod
+    def coordinates_angle_from_x(coordinates):
         """
         Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
         are symmetric after 180 degrees, so angles above 180 are converted to their equipvalent value from 0.
@@ -91,28 +93,27 @@ class EllipticalProfile(object):
         ----------
         The angle between the coordinates and the x-axis and mass profile centre
         """
-        # TODO: Rewrote to compute the angle theta rather than cos / sin x
         # TODO : Make a property and / or class variable? <- doesn't really make sense if you're inputting coordinates
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
         if theta_from_x < 0:
             theta_from_x += 180
         return theta_from_x
 
-    def coordinates_angle_to_mass_profile(self, theta_from_x):
+    def coordinates_angle_to_mass_profile(self, theta):
         """
         Compute the sin and cosine of the angle between the shifted coordinates and elliptical mass-profile
 
         Parameters
         ----------
-        sin_theta
-        cos_theta
+        theta : Float
 
         Returns
         ----------
         The sin and cosine of the angle between the shifted coordinates and mass-profile ellipse.
         """
-        # TODO: Set up using class varibles / a propety?
-        theta_coordinate_to_mass = math.radians(theta_from_x - self.phi)
+        # TODO: Set up using class variables / a property? <- As above, if you're passing stuff in to the class to get
+        # TODO: a result it doesn't really make sense for it to be a property
+        theta_coordinate_to_mass = math.radians(theta - self.phi)
         return math.cos(theta_coordinate_to_mass), math.sin(theta_coordinate_to_mass)
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
@@ -207,7 +208,6 @@ class SersicLightProfile(EllipticalProfile):
             46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
                    2194697. / (30690717750. * self.sersic_index ** 4))
 
-    # TODO: Tests wrriten
     def flux_at_radius(self, radius):
         """
 
