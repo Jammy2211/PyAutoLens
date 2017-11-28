@@ -1,6 +1,7 @@
 import math
 import numpy as np
 
+
 class EllipticalProfile(object):
     """Generic elliptical profile class to contain functions shared by light and mass profiles"""
 
@@ -91,10 +92,10 @@ class EllipticalProfile(object):
         The angle between the coordinates and the x-axis and mass profile centre
         """
         # TODO: Rewrote to compute the angle theta rather than cos / sin x
-        # TODO : Make a property and / or class variable?
+        # TODO : Make a property and / or class variable? <- doesn't really make sense if you're inputting coordinates
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
         if theta_from_x < 0:
-            theta_from_x = 180 + theta_from_x
+            theta_from_x += 180
         return theta_from_x
 
     def coordinates_angle_to_mass_profile(self, theta_from_x):
@@ -127,9 +128,9 @@ class EllipticalProfile(object):
         ----------
         The coordinates (typically deflection angles) on a regular Cartesian grid
         """
-        dum = coordinates_elliptical[0]
-        x = (dum * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
-        y = (+dum * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
+        x_elliptical = coordinates_elliptical[0]
+        x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
+        y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
         return x, y
 
     def coordinates_rotate_to_ellipse(self, coordinates):
