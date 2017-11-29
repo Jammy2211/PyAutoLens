@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 import profile
 
+
 # TODO : Split elliptical geomtry tests from power law tests
 
 # noinspection PyClassHasNoInit
@@ -231,7 +232,6 @@ class TestEllipticalProfile:
         assert y == pytest.approx(2 ** 0.5, 1e-3)
 
     def test__rotate_to_elliptical__phi_is_zero__returns_same_coordinates(self):
-
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
 
         coordinates = (1.0, 1.0)
@@ -242,7 +242,6 @@ class TestEllipticalProfile:
         assert y == pytest.approx(1.0, 1e-3)
 
     def test__rotate_to_elliptical__phi_is_ninety__correct_rotation(self):
-
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=90.0)
 
         # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
@@ -256,7 +255,6 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
     def test__rotate_to_elliptical__phi_is_one_eighty__correct_rotation(self):
-
         # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
         # clockwise
 
@@ -270,7 +268,6 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
     def test__rotate_to_elliptical__phi_is_two_seventy__correct_rotation(self):
-
         # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
         # clockwise
 
@@ -284,7 +281,6 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(1.0, 1e-3)
 
     def test__rotate_to_elliptical__phi_is_three_sixty__correct_rotation(self):
-
         # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
         # clockwise
 
@@ -298,7 +294,6 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(1.0, 1e-3)
 
     def test__rotate_to_elliptical__phi_is_three_one_five__correct_rotation(self):
-
         # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
         # clockwise
 
@@ -309,10 +304,9 @@ class TestEllipticalProfile:
         coordinates = power_law.coordinates_rotate_to_elliptical(coordinates)
 
         assert coordinates[0] == pytest.approx(0.0, 1e-3)
-        assert coordinates[1] == pytest.approx(2**0.5, 1e-3)
+        assert coordinates[1] == pytest.approx(2 ** 0.5, 1e-3)
 
     def test_rotate_to_elliptical_coordinates_back_to_cartesian__are_consistent(self):
-
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=315.0)
 
         coordinates_original = (5.2221, 2.6565)
@@ -325,10 +319,9 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
 
     def test_rotate_to_elliptical_coordinates_back_to_cartesian_2__are_consistent(self):
-
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=160.232)
 
-        coordinates_original = (3.2,  -76.6)
+        coordinates_original = (3.2, -76.6)
 
         coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
 
@@ -338,7 +331,6 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
     def test_rotate_to_elliptical_coordinates_back_to_cartesian_3__are_consistent(self):
-
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=174.342)
 
         coordinates_original = (-42.2, -93.6)
@@ -504,7 +496,6 @@ class TestCircularProfile:
         assert y == 1.0
 
     def test__rotate_to_elliptical__phi_is_zero__returns_same_coordinates(self):
-
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
         coordinates = (1.0, 1.0)
@@ -515,7 +506,6 @@ class TestCircularProfile:
         assert y == pytest.approx(1.0, 1e-3)
 
     def test_rotate_to_elliptical_coordinates_back_to_cartesian__are_consistent(self):
-
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
         coordinates_original = (5.2221, 2.6565)
@@ -528,10 +518,9 @@ class TestCircularProfile:
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
 
     def test_rotate_to_elliptical_coordinates_back_to_cartesian_2__are_consistent(self):
-
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
-        coordinates_original = (3.2,  -76.6)
+        coordinates_original = (3.2, -76.6)
 
         coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
 
@@ -541,7 +530,6 @@ class TestCircularProfile:
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
     def test_rotate_to_elliptical_coordinates_back_to_cartesian_3__are_consistent(self):
-
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
         coordinates_original = (-42.2, -93.6)
@@ -552,6 +540,7 @@ class TestCircularProfile:
 
         assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
+
 
 # noinspection PyClassHasNoInit
 class TestSersicLightProfile:
@@ -648,7 +637,7 @@ class TestEllipticalPowerLaw:
     class TestEllipticalPowerLaw:
         def test__setup_elliptical_power_law__correct_values(self):
             power_law = profile.EllipticalIsothermalMassProfile(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0,
-                                                              einstein_radius=1.0)
+                                                                einstein_radius=1.0)
 
             assert power_law.x_cen == 1.0
             assert power_law.y_cen == 1.0
@@ -657,6 +646,7 @@ class TestEllipticalPowerLaw:
             assert power_law.einstein_radius == 1.0
             assert power_law.slope == 2.0
             assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+
 
 # noinspection PyClassHasNoInit
 class TestArray:
@@ -686,3 +676,13 @@ class TestArray:
 
         array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
         assert array[10][0] < array[0][10]
+
+    # noinspection PyTypeChecker
+    def test__flat_array(self):
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
+        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+        flat_array = sersic.as_flat_array(x_min=0, x_max=100, y_min=0, y_max=100)
+
+        assert all(array[0] == flat_array[:100])
+        assert all(array[1] == flat_array[100:200])
