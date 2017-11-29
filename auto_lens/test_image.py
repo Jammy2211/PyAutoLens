@@ -230,3 +230,27 @@ class TestMask:
                                         [0, 0, 0, 0],
                                         [0, 0, 0, 0],
                                         [1, 0, 0, 1]])).all()
+
+
+# noinspection PyClassHasNoInit
+class TestLoadFits:
+    def test__load_fits__input_fits_3x3_ones__loads_data_as_type_numpy_array(self):
+        assert type(image.Image('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).image2d) == np.ndarray
+
+    def test__load_fits__input_fits_3x3_ones__loads_correct_data(self):
+        assert (image.Image('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).image2d == np.ones((3, 3))).all()
+
+    def test__load_fits__input_fits_4x3_ones__loads_correct_data(self):
+        assert (image.Image('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).image2d == np.ones((4, 3))).all()
+
+    def test__load_fits__input_files_3x3_ones__loads_correct_dimensions(self):
+        xy_dim = image.Image('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).xy_dim
+
+        assert xy_dim[0] == 3
+        assert xy_dim[1] == 3
+
+    def test__load_fits__input_files_4x3_ones__loads_correct_dimensions(self):
+        xy_dim = image.Image('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).xy_dim
+
+        assert xy_dim[0] == 4
+        assert xy_dim[1] == 3
