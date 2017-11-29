@@ -92,7 +92,7 @@ class EllipticalProfile(object):
         The radius at those coordinates
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-        shifted_coordinates = self.coordinates_rotate_to_ellipse(shifted_coordinates)
+        shifted_coordinates = self.coordinates_rotate_to_elliptical(shifted_coordinates)
         return math.sqrt(self.axis_ratio)*math.sqrt(shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
     # TODO: This isn't using any variable from the class. Should it be?
@@ -134,7 +134,8 @@ class EllipticalProfile(object):
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
         """
-        Rotate elliptical coordinates back to the original Cartesian grid
+        Rotate elliptical coordinates back to the original Cartesian grid (for a cirular profile this
+        returns the input coordinates)
 
         Parameters
         ----------
@@ -150,9 +151,10 @@ class EllipticalProfile(object):
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
         return x, y
 
-    def coordinates_rotate_to_ellipse(self, coordinates):
+    def coordinates_rotate_to_elliptical(self, coordinates):
         """
-        Translate Cartesian image coordinates to elliptical profile's reference frame
+        Translate Cartesian image coordinates to the lens profile's reference frame (for a cirular profile this
+        returns the input coordinates)
 
         Parameters
         ----------
@@ -178,6 +180,19 @@ class EllipticalProfile(object):
         # Multiply by radius to get their x / y distance from the profile centre in this elliptical unit system
         return radius * cos_theta, radius * sin_theta
 
+class CircularProfile(EllipticalProfile):
+    """Generic circular profile class to contain functions shared by light and mass profiles"""
+
+    def __init__(self, x_cen, y_cen):
+        """
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of profile centre
+        y_cen : float
+            y-coordinate of profile centre
+        """
+        super(CircularProfile, self).__init__(x_cen, y_cen, 1.0, 0.0)
 
 class SersicLightProfile(EllipticalProfile):
     """Used to fit the light of a galaxy. It can produce both highly concentrated light profiles (for high Sersic Index)
@@ -414,7 +429,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
 
         # TODO : Unit tests missing - need to sort out scipy.integrate
 
-        coordinates_elliptical = self.coordinates_rotate_to_ellipse(coordinates)
+        coordinates_elliptical = self.coordinates_rotate_to_elliptical(coordinates)
 
         # TODO: implement a numerical integrator for this profile using scipy and / or c++
 
