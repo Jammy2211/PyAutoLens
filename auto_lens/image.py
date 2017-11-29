@@ -1,5 +1,5 @@
-from auto_lens.tools import image_tools
 from scipy.stats import norm
+from astropy.io import fits
 import os
 
 import numpy as np
@@ -10,7 +10,9 @@ data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(_
 class Image(object):
     def __init__(self, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
                  path=data_path):
-        self.image2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
+        hdu_list = fits.open(path + filename)  # Open the fits file
+        self.image2d = np.array(hdu_list[hdu].data)
+        self.xy_dim = self.image2d.shape[:]  # x dimension (pixels)
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
         self.sky_background_level = sky_background_level
@@ -96,7 +98,9 @@ class Image(object):
 
 class PSF(object):
     def __init__(self, filename, hdu, pixel_scale, path=data_path):
-        self.psf2d, self.xy_dim = image_tools.load_fits(path, filename, hdu)  # Load image from .fits file
+        hdu_list = fits.open(path + filename)  # Open the fits file
+        self.psf_2d = np.array(hdu_list[hdu].data)
+        self.xy_dim = self.psf_2d.shape[:]  # x dimension (pixels)
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
