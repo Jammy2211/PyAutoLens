@@ -240,7 +240,7 @@ sersic_constant = (2*sersic_index) - (1./3.) + (4./(405.*sersic_index)) + (46./(
 
 
 flux_prime = flux_break*(2.0**(-gamma/alpha))*exp(-sersic_constant*(((2.0**(1.0/alpha))*radius_break)/effective_radius)**(1.0/sersic_index))
-Core_Sersic = flux_prime*((1+((radius_break/radius)^alpha))**(gamma/alpha)) * exp(-sersic_constant* (( ((radius**alpha) + (radius_break^alpha)) / (effective_radius^alpha) ) ** (1.0/(alpha*sersic_index)) ) )
+Core_Sersic = flux_prime*((1+((radius_break/radius)^alpha))**(gamma/alpha)) * exp(sersic_constant* (( ((radius**alpha) + (radius_break^alpha)) / (effective_radius^alpha) ) ** (1.0/(alpha*sersic_index)) ) )
 
 
 
