@@ -370,9 +370,6 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
         self.einstein_radius = einstein_radius
         self.slope = slope
 
-        # normalization used for power-law model, includes rescaling by axis ratio and density slope.
-        self.einstein_radius_rescaled = ((3 - slope) / (1 + axis_ratio)) * self.einstein_radius
-
     def compute_deflection_angle(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -401,8 +398,8 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
         pass
 
     @property
-    def normalisation(self):
-        return (3 - self.slope) / (1 + self.axis_ratio)
+    def einstein_radius_rescaled(self):
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius
 
     def compute_deflection_angles_fast(self, coordinate_list):
         """Place holder for what a c++ deflection angle call will look like"""
