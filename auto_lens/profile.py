@@ -196,7 +196,91 @@ class CircularProfile(EllipticalProfile):
         super(CircularProfile, self).__init__(1.0, 0.0, x_cen, y_cen)
 
 
-class SersicLightProfile(EllipticalProfile):
+class LightProfile(object):
+    """Mixin class that implements functions common to all light profiles"""
+
+    def as_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
+        """
+
+        Parameters
+        ----------
+        x_min : int
+            The minimum x bound
+        y_min : int
+            The minimum y bound
+        x_max : int
+            The maximum x bound
+        y_max : int
+            The maximum y bound
+
+        Returns
+        -------
+        array
+            A numpy array illustrating this light profile between the given bounds
+        """
+        array = np.zeros((x_max - x_min, y_max - y_min))
+        for x in range(x_min, x_max):
+            for y in range(y_min, y_max):
+                array[x, y] = self.flux_at_coordinates((x, y))
+        return array
+
+    def as_flat_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
+        """
+
+        Parameters
+        ----------
+        x_min : int
+            The minimum x bound
+        y_min : int
+            The minimum y bound
+        x_max : int
+            The maximum x bound
+        y_max : int
+            The maximum y bound
+
+        Returns
+        -------
+        array : 1d numpy array
+            A flat array illustrating this light profile between the given bounds
+        """
+        return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max).flatten()
+
+    # noinspection PyMethodMayBeStatic
+    def flux_at_coordinates(self, coordinates):
+        """
+        Abstract method for obtaining flux at given coordinates
+        Parameters
+        ----------
+        coordinates : (int, int)
+            The coordinates in image space
+        Returns
+        -------
+        flux : float
+            The value of flux at the given coordinates
+        """
+        raise AssertionError("Flux at coordinates should be overridden")
+
+
+class CombinedLightProfile(list, LightProfile):
+    def __init__(self, *light_profiles):
+        super(CombinedLightProfile, self).__init__(light_profiles)
+
+    def flux_at_coordinates(self, coordinates):
+        """
+        Method for obtaining flux at given coordinates
+        Parameters
+        ----------
+        coordinates : (int, int)
+            The coordinates in image space
+        Returns
+        -------
+        flux : float
+            The value of flux at the given coordinates
+        """
+        return sum(map(lambda p: p.flux_at_coordinates(coordinates), self))
+
+
+class SersicLightProfile(EllipticalProfile, LightProfile):
     """Used to fit the light of a galaxy. It can produce both highly concentrated light profiles (for high Sersic Index)
      or extended flatter profiles (for low Sersic Index)."""
 
@@ -258,18 +342,19 @@ class SersicLightProfile(EllipticalProfile):
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
     def flux_at_coordinates(self, coordinates):
+        """
+        Method for obtaining flux at given coordinates
+        Parameters
+        ----------
+        coordinates : (int, int)
+            The coordinates in image space
+        Returns
+        -------
+        flux : float
+            The value of flux at the given coordinates
+        """
         radius = self.coordinates_to_eccentric_radius(coordinates)
         return self.flux_at_radius(radius)
-
-    def as_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
-        array = np.zeros((x_max - x_min, y_max - y_min))
-        for x in range(x_min, x_max):
-            for y in range(y_min, y_max):
-                array[x, y] = self.flux_at_coordinates((x, y))
-        return array
-
-    def as_flat_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
-        return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max).flatten()
 
 
 class ExponentialLightProfile(SersicLightProfile):
