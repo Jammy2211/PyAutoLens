@@ -141,7 +141,7 @@ class TestEllipticalProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert theta_from_x == 45.0
+        assert theta_from_x == -135
 
     def test__coordinates_angle_from_x__bottom_right_quandrant__angle_flips_back_to_above_90(self):
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
@@ -150,7 +150,7 @@ class TestEllipticalProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert theta_from_x == 135.0
+        assert theta_from_x == -45.0
 
     def test__coordinates_angle_to_mass_profile__same_angle__no_rotation(self):
         power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
@@ -230,9 +230,129 @@ class TestEllipticalProfile:
         assert x == pytest.approx(0.0, 1e-3)
         assert y == pytest.approx(2 ** 0.5, 1e-3)
 
+    def test__rotate_to_elliptical__phi_is_zero__returns_same_coordinates(self):
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0)
+
+        coordinates = (1.0, 1.0)
+
+        x, y = power_law.coordinates_rotate_to_elliptical(coordinates)
+
+        assert x == pytest.approx(1.0, 1e-3)
+        assert y == pytest.approx(1.0, 1e-3)
+
+    def test__rotate_to_elliptical__phi_is_ninety__correct_rotation(self):
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=90.0)
+
+        # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
+        # clockwise
+
+        coordinates = (1.0, 1.0)
+
+        coordinates = power_law.coordinates_rotate_to_elliptical(coordinates)
+
+        assert coordinates[0] == pytest.approx(1.0, 1e-3)
+        assert coordinates[1] == pytest.approx(-1.0, 1e-3)
+
+    def test__rotate_to_elliptical__phi_is_one_eighty__correct_rotation(self):
+
+        # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
+        # clockwise
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=180.0)
+
+        coordinates = (1.0, 1.0)
+
+        coordinates = power_law.coordinates_rotate_to_elliptical(coordinates)
+
+        assert coordinates[0] == pytest.approx(-1.0, 1e-3)
+        assert coordinates[1] == pytest.approx(-1.0, 1e-3)
+
+    def test__rotate_to_elliptical__phi_is_two_seventy__correct_rotation(self):
+
+        # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
+        # clockwise
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=270.0)
+
+        coordinates = (1.0, 1.0)
+
+        coordinates = power_law.coordinates_rotate_to_elliptical(coordinates)
+
+        assert coordinates[0] == pytest.approx(-1.0, 1e-3)
+        assert coordinates[1] == pytest.approx(1.0, 1e-3)
+
+    def test__rotate_to_elliptical__phi_is_three_sixty__correct_rotation(self):
+
+        # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
+        # clockwise
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=360.0)
+
+        coordinates = (1.0, 1.0)
+
+        coordinates = power_law.coordinates_rotate_to_elliptical(coordinates)
+
+        assert coordinates[0] == pytest.approx(1.0, 1e-3)
+        assert coordinates[1] == pytest.approx(1.0, 1e-3)
+
+    def test__rotate_to_elliptical__phi_is_three_one_five__correct_rotation(self):
+
+        # NOTE - whilst the profile and coordinates are defined counter-clockwise from x, the rotation is performed
+        # clockwise
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=315.0)
+
+        coordinates = (1.0, 1.0)
+
+        coordinates = power_law.coordinates_rotate_to_elliptical(coordinates)
+
+        assert coordinates[0] == pytest.approx(0.0, 1e-3)
+        assert coordinates[1] == pytest.approx(2**0.5, 1e-3)
+
+    def test_rotate_to_elliptical_coordinates_back_to_cartesian__are_consistent(self):
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=315.0)
+
+        coordinates_original = (5.2221, 2.6565)
+
+        coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
+
+        coordinates = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-5)
+        assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
+
+    def test_rotate_to_elliptical_coordinates_back_to_cartesian_2__are_consistent(self):
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=160.232)
+
+        coordinates_original = (3.2,  -76.6)
+
+        coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
+
+        coordinates = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
+        assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
+
+    def test_rotate_to_elliptical_coordinates_back_to_cartesian_3__are_consistent(self):
+
+        power_law = profile.EllipticalProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=174.342)
+
+        coordinates_original = (-42.2, -93.6)
+
+        coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
+
+        coordinates = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
+        assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
+
+
 # noinspection PyClassHasNoInit
 class TestCircularProfile:
-
     def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
@@ -240,7 +360,7 @@ class TestCircularProfile:
 
         assert coordinates_shift[0] == 0.0
         assert coordinates_shift[1] == 0.0
-        
+
     def test__coordinates_to_centre__mass_centre_x_shift__x_shifts(self):
         power_law = profile.CircularProfile(x_cen=0.5, y_cen=0.0)
 
@@ -299,7 +419,7 @@ class TestCircularProfile:
 
         assert power_law.coordinates_to_radius((0.0, 0.0)) == pytest.approx(np.sqrt(2), 1e-5)
 
-    def test__angles_from_x_axis__phi_always_zero__angles_one_and_zero(self):
+    def test__angles_from_x_axis__phi_is_zero__angles_one_and_zero(self):
         power_law = profile.CircularProfile(x_cen=1.0, y_cen=1.0)
 
         cos_phi, sin_phi = power_law.angles_from_x_axis()
@@ -350,7 +470,7 @@ class TestCircularProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert theta_from_x == 45.0
+        assert theta_from_x == -135
 
     def test__coordinates_angle_from_x__bottom_right_quandrant__angle_flips_back_to_above_90(self):
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
@@ -359,9 +479,9 @@ class TestCircularProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        assert theta_from_x == 135.0
+        assert theta_from_x == -45.0
 
-    def test__coordinates_angle_to_mass_profile__phi_always_zero_angle__no_rotation(self):
+    def test__coordinates_angle_to_mass_profile__same_angle__no_rotation(self):
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
         coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
@@ -373,35 +493,65 @@ class TestCircularProfile:
         assert cos_theta == 1.0
         assert sin_theta == 0.0
 
-    def test__coordinates_back_to_cartesian___no_rotation(self):
+    def test__coordinates_back_to_cartesian__phi_zero__no_rotation(self):
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
-        coordinates = (1.0, 1.0)
+        coordinates_elliptical = (1.0, 1.0)
 
-        x, y = power_law.coordinates_back_to_cartesian(coordinates)
+        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
 
         assert x == 1.0
         assert y == 1.0
 
-    def test__coordinates_back_to_cartesian_y__correct_calc(self):
+    def test__rotate_to_elliptical__phi_is_zero__returns_same_coordinates(self):
+
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
-        coordinates = (0.0, 1.0)
+        coordinates = (1.0, 1.0)
 
-        x, y = power_law.coordinates_back_to_cartesian(coordinates)
+        x, y = power_law.coordinates_rotate_to_elliptical(coordinates)
 
-        assert x == pytest.approx(0.0, 1e-3)
-        assert y == 1.0
+        assert x == pytest.approx(1.0, 1e-3)
+        assert y == pytest.approx(1.0, 1e-3)
 
-    def test__coordinates_back_to_cartesian__phi_forty_five__correct_calc(self):
+    def test_rotate_to_elliptical_coordinates_back_to_cartesian__are_consistent(self):
+
         power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
 
-        coordinates_elliptical = (-1.0, -1.0)
+        coordinates_original = (5.2221, 2.6565)
 
-        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+        coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
 
-        assert x == pytest.approx(-1.0, 1e-3)
-        assert y == pytest.approx(-1.0, 1e-3)
+        coordinates = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-5)
+        assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
+
+    def test_rotate_to_elliptical_coordinates_back_to_cartesian_2__are_consistent(self):
+
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_original = (3.2,  -76.6)
+
+        coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
+
+        coordinates = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
+        assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
+
+    def test_rotate_to_elliptical_coordinates_back_to_cartesian_3__are_consistent(self):
+
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_original = (-42.2, -93.6)
+
+        coordinates_elliptical = power_law.coordinates_rotate_to_elliptical(coordinates_original)
+
+        coordinates = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
+        assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
 # noinspection PyClassHasNoInit
 class TestSersicLightProfile:
@@ -494,6 +644,19 @@ class TestEllipticalPowerLaw:
         assert power_law.slope == 2.0
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
+    # noinspection PyClassHasNoInit
+    class TestEllipticalPowerLaw:
+        def test__setup_elliptical_power_law__correct_values(self):
+            power_law = profile.EllipticalIsothermalMassProfile(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0,
+                                                              einstein_radius=1.0)
+
+            assert power_law.x_cen == 1.0
+            assert power_law.y_cen == 1.0
+            assert power_law.axis_ratio == 1.0
+            assert power_law.phi == 45.0
+            assert power_law.einstein_radius == 1.0
+            assert power_law.slope == 2.0
+            assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
 # noinspection PyClassHasNoInit
 class TestArray:
