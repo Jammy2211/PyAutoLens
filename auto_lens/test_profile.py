@@ -303,8 +303,8 @@ class TestEllipticalPowerLaw():
 
     def test__setup_elliptical_power_law__correct_values(self):
 
-        power_law = profile.EllipticalPowerLaw(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0, einstein_radius = 1.0
-                                                , slope=2.0)
+        power_law = profile.EllipticalPowerLawMassProfile(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0, einstein_radius = 1.0
+                                                          , slope=2.0)
 
         assert power_law.x_cen == 1.0
         assert power_law.y_cen == 1.0
@@ -312,4 +312,4 @@ class TestEllipticalPowerLaw():
         assert power_law.phi == 45.0
         assert power_law.einstein_radius == 1.0
         assert power_law.slope == 2.0
-        assert power_law.normalization == 0.5 # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+        assert power_law.normalisation == 0.5 # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5

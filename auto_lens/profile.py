@@ -275,7 +275,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         super(DevVaucouleursLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
 
 
-class EllipticalPowerLaw(EllipticalProfile):
+class EllipticalPowerLawMassProfile(EllipticalProfile):
     """Represents an elliptical power-law density distribution"""
 
     def __init__(self, x_cen, y_cen, axis_ratio, phi, einstein_radius, slope):
@@ -297,7 +297,7 @@ class EllipticalPowerLaw(EllipticalProfile):
             power-law density slope of mass profile
         """
 
-        super(EllipticalPowerLaw, self).__init__(x_cen, y_cen, axis_ratio, phi)
+        super(EllipticalPowerLawMassProfile, self).__init__(x_cen, y_cen, axis_ratio, phi)
 
         self.einstein_radius = einstein_radius
         self.slope = slope
@@ -331,6 +331,10 @@ class EllipticalPowerLaw(EllipticalProfile):
         # return defl_angles
 
         pass
+
+    @property
+    def normalisation(self):
+        return (3 - self.slope) / (1 + self.axis_ratio)
 
     def compute_deflection_angles_fast(self, coordinate_list):
         """Place holder for what a c++ deflection angle call will look like"""
