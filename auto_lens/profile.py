@@ -223,6 +223,17 @@ class SersicLightProfile(EllipticalProfile):
         return self.flux * math.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
+    def flux_at_coordinates(self, coordinates):
+        radius = self.coordinates_to_radius(coordinates)
+        return self.flux_at_radius(radius)
+
+    def as_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
+        array = np.zeros((x_max - x_min, y_max - y_min))
+        for x in range(x_min, x_max):
+            for y in range(y_min, y_max):
+                array[x, y] = self.flux_at_coordinates((x, y))
+        return array
+
 
 class ExponentialLightProfile(SersicLightProfile):
     """Used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is a subset of the

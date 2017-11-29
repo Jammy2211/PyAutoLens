@@ -321,4 +321,16 @@ class TestEllipticalPowerLaw:
         assert power_law.phi == 45.0
         assert power_law.einstein_radius == 1.0
         assert power_law.slope == 2.0
-        assert power_law.normalisation == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+        assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+
+
+# noinspection PyClassHasNoInit
+class TestArray:
+    def test__simple_assumptions(self):
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
+        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+        assert array.shape == (100, 100)
+        assert array[0][0] > array[0][1]
+        assert array[0][0] > array[1][0]
+        assert all(map(lambda i: i > 0, array[0]))
