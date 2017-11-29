@@ -309,11 +309,14 @@ normalization = 0.5
 --- Equation ---
 
 r = (xi**2 + yi**2)
+normalization = 0.5*einstein_radius  = Rescales the mass distribution to its ellipticity.
+
 kappa = normalization*(u)**(0.5)
 
 defl_r = ? ( There is a simple way to do this, but I've forgot it for now)
 
 Psi = sqrt((x**2) + y**2)
+
 sie_norm = (normalization/sqrt(1-axis_ratio**2))
 
 defl_x = sie_norm*atan((sqrt(1-axis_ratio**2)*xi)/(Psi))
@@ -349,6 +352,8 @@ u = (xi**2 + yi**2/axis_ratio**2)
 kappa = normalization*(u)**(0.5)
 
 Psi = sqrt( (axis_ratio**2)*(xi**2) + yi**2)
+
+normalization = 1/ (1 + axis_ratio)*einstein_radius  = Rescales the mass distribution to its ellipticity.
 sie_norm = (normalization*axis_ratio/sqrt(1-axis_ratio**2))
 
 defl_x = sie_norm*atan((sqrt(1-axis_ratio**2)*xi)/(Psi))
@@ -382,7 +387,7 @@ core_radius = The size of the core (arcseconds)
 
 --- Other Parameters ---
 
-normalization = 1/ (1 + axis_ratio) = Rescales the mass distribution to its ellipticity.
+normalization = 1/ (1 + axis_ratio)*einstein_radius  = Rescales the mass distribution to its ellipticity.
 
 --- Equation ---
 
@@ -419,7 +424,7 @@ einstein_radius = The normalization of mass, defined in terms of einstein_radius
 
 --- Other Parameters ---
 
-normalization = (3 - slope) / (1 + axis_ratio) = Rescales the mass distribution to its density and ellipticity.
+normalization = (3 - slope) / (1 + axis_ratio)*einstein_radius  = Rescales the mass distribution to its density and ellipticity.
 
 --- Equation ---
 
