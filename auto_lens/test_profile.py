@@ -230,6 +230,178 @@ class TestEllipticalProfile:
         assert x == pytest.approx(0.0, 1e-3)
         assert y == pytest.approx(2 ** 0.5, 1e-3)
 
+# noinspection PyClassHasNoInit
+class TestCircularProfile:
+
+    def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
+
+        assert coordinates_shift[0] == 0.0
+        assert coordinates_shift[1] == 0.0
+        
+    def test__coordinates_to_centre__mass_centre_x_shift__x_shifts(self):
+        power_law = profile.CircularProfile(x_cen=0.5, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
+
+        assert coordinates_shift[0] == -0.5
+        assert coordinates_shift[1] == 0.0
+
+    def test__coordinates_to_centre__mass_centre_y_shift__y_shifts(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.5)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
+
+        assert coordinates_shift[0] == 0.0
+        assert coordinates_shift[1] == -0.5
+
+    def test__coordinates_to_centre__mass_centre_x_and_y_shift__x_and_y_both_shift(self):
+        power_law = profile.CircularProfile(x_cen=0.5, y_cen=0.5)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
+
+        assert coordinates_shift[0] == -0.5
+        assert coordinates_shift[1] == -0.5
+
+    def test__coordinates_to_centre__mass_centre_and_coordinates__correct_shifts(self):
+        power_law = profile.CircularProfile(x_cen=1.0, y_cen=0.5)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.2, 0.4))
+
+        assert coordinates_shift[0] == -0.8
+        assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
+
+    def test__coordinates_to_radius__coordinates_overlap_mass_profile__r_is_zero(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0, 0))
+
+        assert power_law.coordinates_to_radius(coordinates_shift) == 0.0
+
+    def test__coordinates_to_radius__x_coordinates_is_one__r_is_one(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0))
+
+        assert power_law.coordinates_to_radius(coordinates_shift) == 1.0
+
+    def test__coordinates_to_radius__x_and_y_coordinates_are_one__r_is_root_two(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
+
+        assert power_law.coordinates_to_radius(coordinates_shift) == pytest.approx(np.sqrt(2), 1e-5)
+
+    def test__coordinates_to_radius__mass_profile_moves_instead__r_is_root_two(self):
+        power_law = profile.CircularProfile(x_cen=1.0, y_cen=1.0)
+
+        assert power_law.coordinates_to_radius((0.0, 0.0)) == pytest.approx(np.sqrt(2), 1e-5)
+
+    def test__angles_from_x_axis__phi_always_zero__angles_one_and_zero(self):
+        power_law = profile.CircularProfile(x_cen=1.0, y_cen=1.0)
+
+        cos_phi, sin_phi = power_law.angles_from_x_axis()
+
+        assert cos_phi == 1.0
+        assert sin_phi == 0.0
+
+    def test__coordinates_angle_from_x__angle_is_zero__angles_follow_trig(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 0.0
+
+    def test__coordinates_angle_from_x__angle_is_forty_five__angles_follow_trig(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 45.0
+
+    def test__coordinates_angle_from_x__angle_is_sixty__angles_follow_trig(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.7320))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == pytest.approx(60.0, 1e-3)
+
+    def test__coordinates_angle_from_x__top_left_quandrant__angle_goes_above_90(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, 1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 135.0
+
+    def test__coordinates_angle_from_x__bottom_left_quandrant__angle_flips_back_to_45(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, -1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 45.0
+
+    def test__coordinates_angle_from_x__bottom_right_quandrant__angle_flips_back_to_above_90(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, -1.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        assert theta_from_x == 135.0
+
+    def test__coordinates_angle_to_mass_profile__phi_always_zero_angle__no_rotation(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
+
+        theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
+
+        cos_theta, sin_theta = power_law.coordinates_angle_to_profile(theta_from_x)
+
+        assert cos_theta == 1.0
+        assert sin_theta == 0.0
+
+    def test__coordinates_back_to_cartesian___no_rotation(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates = (1.0, 1.0)
+
+        x, y = power_law.coordinates_back_to_cartesian(coordinates)
+
+        assert x == 1.0
+        assert y == 1.0
+
+    def test__coordinates_back_to_cartesian_y__correct_calc(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates = (0.0, 1.0)
+
+        x, y = power_law.coordinates_back_to_cartesian(coordinates)
+
+        assert x == pytest.approx(0.0, 1e-3)
+        assert y == 1.0
+
+    def test__coordinates_back_to_cartesian__phi_forty_five__correct_calc(self):
+        power_law = profile.CircularProfile(x_cen=0.0, y_cen=0.0)
+
+        coordinates_elliptical = (-1.0, -1.0)
+
+        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+
+        assert x == pytest.approx(-1.0, 1e-3)
+        assert y == pytest.approx(-1.0, 1e-3)
 
 # noinspection PyClassHasNoInit
 class TestSersicLightProfile:
