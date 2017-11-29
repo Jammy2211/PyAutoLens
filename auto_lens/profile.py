@@ -93,7 +93,8 @@ class EllipticalProfile(object):
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         shifted_coordinates = self.coordinates_rotate_to_elliptical(shifted_coordinates)
-        return math.sqrt(self.axis_ratio)*math.sqrt(shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
+        return math.sqrt(self.axis_ratio) * math.sqrt(
+            shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
     # TODO: This isn't using any variable from the class. Should it be?
     @staticmethod
@@ -113,8 +114,8 @@ class EllipticalProfile(object):
         The angle between the coordinates and the x-axis and profile centre
         """
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
-   #     if theta_from_x < 0:
-   #         theta_from_x += 180
+        #     if theta_from_x < 0:
+        #         theta_from_x += 180
         return theta_from_x
 
     def coordinates_angle_to_profile(self, theta):
@@ -227,7 +228,7 @@ class SersicLightProfile(EllipticalProfile):
 
         # TODO : Separate from init in future, as there's no need calculating these during lens modeling.
         # Extra physical parameters not used by the model, but have value scientifically
-        self.elliptical_effective_radius = self.effective_radius/self.axis_ratio
+        self.elliptical_effective_radius = self.effective_radius / self.axis_ratio
 
     @property
     def sersic_constant(self):
@@ -267,6 +268,9 @@ class SersicLightProfile(EllipticalProfile):
             for y in range(y_min, y_max):
                 array[x, y] = self.flux_at_coordinates((x, y))
         return array
+
+    def as_flat_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
+        return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max).flatten()
 
 
 class ExponentialLightProfile(SersicLightProfile):
@@ -446,6 +450,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
     def einstein_radius_rescaled(self):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius
 
+
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
@@ -486,6 +491,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         """
         # TODO: Finish this and add tests
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
-        psi = math.sqrt( (self.axis_ratio**2)*(coordinates[0]**2) + coordinates[1]**2)
+        psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
         defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / (psi))
         defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / (psi))
