@@ -353,7 +353,7 @@ class CoreSersicLightProfile(SersicLightProfile):
     def flux_prime(self):
         """Overall flux intensity normalisation in the rescaled Core-Sersic light profile (electrons per second)"""
         return self.flux_break * (2.0 ** (-self.gamma / self.alpha)) * math.exp(
-            -self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
+            self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
                 1.0 / self.sersic_index))
 
     def flux_at_radius(self, radius):
