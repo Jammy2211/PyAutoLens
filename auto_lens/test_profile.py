@@ -687,8 +687,18 @@ class TestArray:
         assert all(array[0] == flat_array[:100])
         assert all(array[1] == flat_array[100:200])
 
+    def test_combined_array(self):
+        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
 
-# noinspection PyClassHasNoInit
+        combined = profile.CombinedLightProfile(sersic, sersic)
+
+        assert all(map(lambda i: i == 2, combined.as_flat_array() / sersic.as_flat_array()))
+
+
+        # noinspection PyClassHasNoInit
+
+
 class TestCombinedProfiles:
     def test__summation(self):
         sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
