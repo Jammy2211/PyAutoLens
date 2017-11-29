@@ -46,7 +46,7 @@ class EllipticalProfile(object):
 
     def coordinates_to_centre(self, coordinates):
         """
-        Converts image coordinates to mass profile's centre
+        Converts image coordinates to profile's centre
 
         Parameters
         ----------
@@ -61,12 +61,12 @@ class EllipticalProfile(object):
 
     def coordinates_to_radius(self, coordinates):
         """
-        Compute the distance of image coordinates from (0.0). which should be the mass profile centre
+        Convert the coordinates to a radius
 
         Parameters
         ----------
         coordinates : (float, float)
-            The image coordinates shifted to the mass profile centre (x, y)
+            The image coordinates (x, y)
 
         Returns
         -------
@@ -75,6 +75,28 @@ class EllipticalProfile(object):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
 
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
+
+    def coordinates_to_eccentric_radius(self, coordinates, is_elliptical_effective_radius=False):
+        """
+        Convert the coordinates to a radius in elliptical space.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The image coordinates (x, y)
+        is_elliptical_effective_radius: Boolean
+            False -> effective radius for a circular aperture
+            True -> effective radius for an elliptical aperture
+        Returns
+        -------
+        The radius at those coordinates
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+
+        if is_elliptical_effective_radius:
+            return math.sqrt(shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
+        return math.sqrt(
+            self.axis_ratio * shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
     # TODO: This isn't using any variable from the class. Should it be?
     @staticmethod
@@ -224,7 +246,7 @@ class SersicLightProfile(EllipticalProfile):
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
     def flux_at_coordinates(self, coordinates):
-        radius = self.coordinates_to_radius(coordinates)
+        radius = self.coordinates_to_eccentric_radius(coordinates)
         return self.flux_at_radius(radius)
 
     def as_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
