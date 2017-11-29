@@ -275,6 +275,74 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         super(DevVaucouleursLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius, 4)
 
 
+class CoreSersicLightProfile(SersicLightProfile):
+    """The Core-Sersic profile is used to fit the light of a galaxy. It is an extension of the Sersic profile and
+    flattens the light profiles central values (compared to the extrapolation of a pure Sersic profile), by forcing
+    these central regions to behave instead as a power-law."""
+
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, flux, effective_radius, sersic_index, radius_break, flux_break,
+                 gamma, alpha):
+        """
+
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        flux : float
+            Overall flux intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        radius_break : Float
+            The break radius separating the inner power-law (with logarithmic slope gamma) and outer Sersic function.
+        flux_break : Float
+            The intensity at the break radius.
+        gamma : Float
+            The logarithmic power-law slope of the inner core profile
+        alpha :
+            Controls the sharpness of the transition between the inner core / outer Sersic profiles.
+        """
+        super(CoreSersicLightProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, flux, effective_radius,
+                                                     sersic_index)
+        self.radius_break = radius_break
+        self.flux_break = flux_break
+        self.alpha = alpha
+        self.gamma = gamma
+
+    @property
+    def flux_prime(self):
+        """Overall flux intensity normalisation in the rescaled Core-Sersic light profile (electrons per second)"""
+        return self.flux_break * (2.0 ** (-self.gamma / self.alpha)) * math.exp(
+            -self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
+                1.0 / self.sersic_index))
+
+    def flux_at_radius(self, radius):
+        """
+
+        Parameters
+        ----------
+        radius : float
+            The distance from the centre of the profile
+        Returns
+        -------
+        flux: float
+            The flux at that radius
+        """
+        return self.flux_prime * (
+            (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * math.exp(
+            -self.sersic_constant * (
+                (((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
+                    self.effective_radius ** self.alpha)) ** (
+                    1.0 / (self.alpha * self.sersic_index))))
+
+
 class EllipticalPowerLawMassProfile(EllipticalProfile):
     """Represents an elliptical power-law density distribution"""
 
@@ -303,7 +371,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
         self.slope = slope
 
         # normalization used for power-law model, includes rescaling by axis ratio and density slope.
-        self.einstein_radius_rescaled = ((3 - slope) / (1 + axis_ratio))*self.einstein_radius
+        self.einstein_radius_rescaled = ((3 - slope) / (1 + axis_ratio)) * self.einstein_radius
 
     def compute_deflection_angle(self, coordinates):
         """

@@ -233,7 +233,7 @@ class TestEllipticalProfile:
 
 
 # noinspection PyClassHasNoInit
-class TestSersicLightProfile():
+class TestSersicLightProfile:
     def test__setup_sersic__correct_values(self):
         sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
                                             effective_radius=0.6, sersic_index=4.0)
@@ -267,7 +267,7 @@ class TestSersicLightProfile():
 
 
 # noinspection PyClassHasNoInit
-class TestExponentialProfile():
+class TestExponentialProfile:
     def test__setup_exponential__correct_values(self):
         sersic = profile.ExponentialLightProfile(x_cen=1.0, y_cen=-1.0, axis_ratio=0.5, phi=45.0, flux=3.0,
                                                  effective_radius=0.2)
@@ -283,7 +283,7 @@ class TestExponentialProfile():
 
 
 # noinspection PyClassHasNoInit
-class TestDevVaucouleursProfile():
+class TestDevVaucouleursProfile:
     def test__setup_dev_vaucouleurs__correct_values(self):
         sersic = profile.DevVaucouleursLightProfile(x_cen=0.0, y_cen=0.1, axis_ratio=0.6, phi=15.0, flux=2.0,
                                                     effective_radius=0.9)
@@ -299,7 +299,17 @@ class TestDevVaucouleursProfile():
 
 
 # noinspection PyClassHasNoInit
-class TestEllipticalPowerLaw():
+class TestCoreSersicLightProfile:
+    def test__core_sersic_light_profile(self):
+        core_sersic = profile.CoreSersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                     effective_radius=5, sersic_index=4.0, radius_break=0.01,
+                                                     flux_break=0.1, gamma=1, alpha=1)
+        # TODO: This seems way off? "flux_break = The intensity at the break radius."
+        assert core_sersic.flux_at_radius(0.01) == 0.1
+
+
+# noinspection PyClassHasNoInit
+class TestEllipticalPowerLaw:
     def test__setup_elliptical_power_law__correct_values(self):
         power_law = profile.EllipticalPowerLawMassProfile(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0,
                                                           einstein_radius=1.0
