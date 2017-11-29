@@ -240,8 +240,8 @@ class LightProfile(object):
 
         Returns
         -------
-        array : 1d numpy array
-            A flat array illustrating this light profile between the given bounds
+        array
+            A flat numpy array illustrating this light profile between the given bounds
         """
         return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max).flatten()
 
