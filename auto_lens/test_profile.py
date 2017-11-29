@@ -696,12 +696,21 @@ class TestArray:
         assert all(map(lambda i: i == 2, combined.as_flat_array() / sersic.as_flat_array()))
 
 
-        # noinspection PyClassHasNoInit
-
-
+# noinspection PyClassHasNoInit
 class TestCombinedProfiles:
     def test__summation(self):
         sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
                                             effective_radius=0.6, sersic_index=4.0)
         combined = profile.CombinedLightProfile(sersic, sersic)
         assert combined.flux_at_coordinates((0, 0)) == 2 * sersic.flux_at_coordinates((0, 0))
+
+    def test_symmetry(self):
+        sersic1 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                             effective_radius=0.6, sersic_index=4.0, x_cen=0)
+
+        sersic2 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                             effective_radius=0.6, sersic_index=4.0, x_cen=100)
+
+        combined = profile.CombinedLightProfile(sersic1, sersic2)
+        assert combined.flux_at_coordinates((0, 0)) == combined.flux_at_coordinates((100, 0))
+        assert combined.flux_at_coordinates((49, 0)) == combined.flux_at_coordinates((50, 0))
