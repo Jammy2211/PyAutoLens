@@ -115,7 +115,6 @@ class EllipticalProfile(object):
         ----------
         The angle between the coordinates and the x-axis and profile centre
         """
-        # TODO : Make a property and / or class variable? <- doesn't really make sense if you're inputting coordinates
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
         if theta_from_x < 0:
             theta_from_x += 180
@@ -133,8 +132,6 @@ class EllipticalProfile(object):
         ----------
         The sin and cosine of the angle between the shifted coordinates and profile ellipse.
         """
-        # TODO: Set up using class variables / a property? <- As above, if you're passing stuff in to the class to get
-        # TODO: a result it doesn't really make sense for it to be a property
         theta_coordinate_to = math.radians(theta - self.phi)
         return math.cos(theta_coordinate_to), math.sin(theta_coordinate_to)
 
@@ -171,9 +168,6 @@ class EllipticalProfile(object):
         """
 
         # TODO: All components below are unit tested, need to add tests for this entire function
-
-        # TODO: This function was made more simple by hiding the coordinate shift calculation in the coordinates to
-        # TODO: radius
 
         # Compute their distance to this centre
         radius = self.coordinates_to_radius(coordinates)
