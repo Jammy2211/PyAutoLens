@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 import profile
 
-
 # TODO : Split elliptical geomtry tests from power law tests
 
 # noinspection PyClassHasNoInit

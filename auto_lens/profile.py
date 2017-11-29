@@ -76,7 +76,7 @@ class EllipticalProfile(object):
 
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
-    def coordinates_to_eccentric_radius(self, coordinates, is_elliptical_effective_radius=False):
+    def coordinates_to_eccentric_radius(self, coordinates):
         """
         Convert the coordinates to a radius in elliptical space.
 
@@ -93,10 +93,7 @@ class EllipticalProfile(object):
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
 
-        if is_elliptical_effective_radius:
-            return math.sqrt(shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
-        return math.sqrt(
-            self.axis_ratio * shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
+        return math.sqrt(self.axis_ratio)*math.sqrt(shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
     # TODO: This isn't using any variable from the class. Should it be?
     @staticmethod
@@ -210,6 +207,10 @@ class SersicLightProfile(EllipticalProfile):
         self.flux = flux
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
+
+        # TODO : Separate from init in future, as there's no need calculating these during lens modeling.
+        # Extra physical parameters not used by the model, but have value scientifically
+        self.elliptical_effective_radius = self.effective_radius/self.axis_ratio
 
     @property
     def sersic_constant(self):
