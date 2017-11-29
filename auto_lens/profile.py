@@ -92,7 +92,7 @@ class EllipticalProfile(object):
         The radius at those coordinates
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-
+        shifted_coordinates = self.coordinates_rotate_to_ellipse(shifted_coordinates)
         return math.sqrt(self.axis_ratio)*math.sqrt(shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
     # TODO: This isn't using any variable from the class. Should it be?

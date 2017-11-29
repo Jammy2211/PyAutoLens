@@ -340,12 +340,13 @@ class TestArray:
         array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
         assert array[10][0] == array[0][10]
 
-        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=2.0, phi=0.0, flux=1.0,
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=0.5, phi=0.0, flux=1.0,
                                             effective_radius=0.6, sersic_index=4.0)
         array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+
         assert array[10][0] > array[0][10]
 
-        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=2.0, phi=90.0, flux=1.0,
+        sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=0.5, phi=90.0, flux=1.0,
                                             effective_radius=0.6, sersic_index=4.0)
 
         array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
