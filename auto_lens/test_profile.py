@@ -321,7 +321,7 @@ class TestEllipticalPowerLaw:
         assert power_law.phi == 45.0
         assert power_law.einstein_radius == 1.0
         assert power_law.slope == 2.0
-        assert power_law.normalisation == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+        assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
 
 # noinspection PyClassHasNoInit
