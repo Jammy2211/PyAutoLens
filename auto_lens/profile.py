@@ -113,8 +113,8 @@ class EllipticalProfile(object):
         The angle between the coordinates and the x-axis and profile centre
         """
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
-        if theta_from_x < 0:
-            theta_from_x += 180
+   #     if theta_from_x < 0:
+   #         theta_from_x += 180
         return theta_from_x
 
     def coordinates_angle_to_profile(self, theta):
@@ -129,8 +129,8 @@ class EllipticalProfile(object):
         ----------
         The sin and cosine of the angle between the shifted coordinates and profile ellipse.
         """
-        theta_coordinate_to = math.radians(theta - self.phi)
-        return math.cos(theta_coordinate_to), math.sin(theta_coordinate_to)
+        theta_coordinate_to_profile = math.radians(theta - self.phi)
+        return math.cos(theta_coordinate_to_profile), math.sin(theta_coordinate_to_profile)
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
         """
@@ -153,7 +153,7 @@ class EllipticalProfile(object):
 
     def coordinates_rotate_to_elliptical(self, coordinates):
         """
-        Translate Cartesian image coordinates to the lens profile's reference frame (for a cirular profile this
+        Translate Cartesian image coordinates to the lens profile's reference frame (for a circular profile this
         returns the input coordinates)
 
         Parameters
@@ -180,6 +180,7 @@ class EllipticalProfile(object):
         # Multiply by radius to get their x / y distance from the profile centre in this elliptical unit system
         return radius * cos_theta, radius * sin_theta
 
+
 class CircularProfile(EllipticalProfile):
     """Generic circular profile class to contain functions shared by light and mass profiles"""
 
@@ -193,6 +194,7 @@ class CircularProfile(EllipticalProfile):
             y-coordinate of profile centre
         """
         super(CircularProfile, self).__init__(x_cen, y_cen, 1.0, 0.0)
+
 
 class SersicLightProfile(EllipticalProfile):
     """Used to fit the light of a galaxy. It can produce both highly concentrated light profiles (for high Sersic Index)
@@ -444,12 +446,45 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
     def einstein_radius_rescaled(self):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius
 
-    def compute_deflection_angles_fast(self, coordinate_list):
-        """Place holder for what a c++ deflection angle call will look like"""
+class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
+    """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
+    density distribution for the value slope=2.0"""
 
-        # import fast_lib.defl.PowerLawElliptical
+    def __init__(self, x_cen, y_cen, axis_ratio, phi, einstein_radius):
+        """
 
-        # return fast_lib.defl.PowerLawElliptical(coordinate_list, self.x_cen, self.y_cen, self.axis_ratio, self.phi,
-        #                                   self.einstein_radius, self.slope)
+        Parameters
+        ----------
+        x_cen : float
+            x-coordinate of mass profile centre
+        y_cen : float
+            y-coordinate of mass profile centre
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        """
 
-        pass
+        super(EllipticalIsothermalMassProfile, self).__init__(x_cen, y_cen, axis_ratio, phi, einstein_radius, 2.0)
+
+    @property
+    def normalization(self):
+        return self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
+
+    def compute_deflection_angle(self, coordinates):
+        """
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles at these coordinates
+        """
+        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        psi = math.sqrt( (self.axis_ratio**2)*(coordinates[0]**2) + coordinates[1]**2)
+        defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / (psi))
+        defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / (psi))
