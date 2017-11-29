@@ -114,8 +114,7 @@ class EllipticalProfile(object):
         The angle between the coordinates and the x-axis and profile centre
         """
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
-        #     if theta_from_x < 0:
-        #         theta_from_x += 180
+
         return theta_from_x
 
     def coordinates_angle_to_profile(self, theta):
