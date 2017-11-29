@@ -10,13 +10,13 @@ class EllipticalProfile(object):
         Parameters
         ----------
         x_cen : float
-            x-coordinate of mass profile centre
+            x-coordinate of profile centre
         y_cen : float
-            y-coordinate of mass profile centre
+            y-coordinate of profile centre
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of profile ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
         """
 
         self.x_cen = x_cen
@@ -34,7 +34,7 @@ class EllipticalProfile(object):
 
     def angles_from_x_axis(self):
         """
-        Determine the sin and cosine of the angle between the mass-profile ellipse and positive x-axis, \
+        Determine the sin and cosine of the angle between the profile ellipse and positive x-axis, \
         defined counter-clockwise from x.
 
         Returns
@@ -103,7 +103,7 @@ class EllipticalProfile(object):
     def coordinates_angle_from_x(coordinates):
         """
         Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
-        are symmetric after 180 degrees, so angles above 180 are converted to their equipvalent value from 0.
+        are symmetric after 180 degrees, so angles above 180 are converted to their equivalent value from 0.
         (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
 
         Parameters
@@ -113,7 +113,7 @@ class EllipticalProfile(object):
 
         Returns
         ----------
-        The angle between the coordinates and the x-axis and mass profile centre
+        The angle between the coordinates and the x-axis and profile centre
         """
         # TODO : Make a property and / or class variable? <- doesn't really make sense if you're inputting coordinates
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
@@ -121,9 +121,9 @@ class EllipticalProfile(object):
             theta_from_x += 180
         return theta_from_x
 
-    def coordinates_angle_to_mass_profile(self, theta):
+    def coordinates_angle_to_profile(self, theta):
         """
-        Compute the sin and cosine of the angle between the shifted coordinates and elliptical mass-profile
+        Compute the sin and cosine of the angle between the shifted coordinates and elliptical profile
 
         Parameters
         ----------
@@ -131,12 +131,12 @@ class EllipticalProfile(object):
 
         Returns
         ----------
-        The sin and cosine of the angle between the shifted coordinates and mass-profile ellipse.
+        The sin and cosine of the angle between the shifted coordinates and profile ellipse.
         """
         # TODO: Set up using class variables / a property? <- As above, if you're passing stuff in to the class to get
         # TODO: a result it doesn't really make sense for it to be a property
-        theta_coordinate_to_mass = math.radians(theta - self.phi)
-        return math.cos(theta_coordinate_to_mass), math.sin(theta_coordinate_to_mass)
+        theta_coordinate_to = math.radians(theta - self.phi)
+        return math.cos(theta_coordinate_to), math.sin(theta_coordinate_to)
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
         """
@@ -158,7 +158,7 @@ class EllipticalProfile(object):
 
     def coordinates_rotate_to_ellipse(self, coordinates):
         """
-        Translate Cartesian image coordinates to elliptical mass profile's reference frame
+        Translate Cartesian image coordinates to elliptical profile's reference frame
 
         Parameters
         ----------
@@ -181,10 +181,10 @@ class EllipticalProfile(object):
         # Compute the angle between the coordinates and x-axis
         theta_from_x = self.coordinates_angle_from_x(coordinates)
 
-        # Compute the angle between the coordinates and mass-profile ellipse
-        cos_theta, sin_theta = self.coordinates_angle_to_mass_profile(theta_from_x)
+        # Compute the angle between the coordinates and profile ellipse
+        cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
 
-        # Multiply by radius to get their x / y distance from the mass profile centre in this elliptical unit system
+        # Multiply by radius to get their x / y distance from the profile centre in this elliptical unit system
         return radius * cos_theta, radius * sin_theta
 
 
@@ -198,13 +198,13 @@ class SersicLightProfile(EllipticalProfile):
         Parameters
         ----------
         x_cen : float
-            x-coordinate of mass profile centre
+            x-coordinate of profile centre
         y_cen : float
-            y-coordinate of mass profile centre
+            y-coordinate of profile centre
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of profile ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
         flux : float
             Overall flux intensity normalisation in the light profile (electrons per second)
         effective_radius : float
@@ -267,13 +267,13 @@ class ExponentialLightProfile(SersicLightProfile):
         Parameters
         ----------
         x_cen : float
-            x-coordinate of mass profile centre
+            x-coordinate of profile centre
         y_cen : float
-            y-coordinate of mass profile centre
+            y-coordinate of profile centre
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of profile ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
         flux : float
             Overall flux intensity normalisation in the light profile (electrons per second)
         effective_radius : float
@@ -293,13 +293,13 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         Parameters
         ----------
         x_cen : float
-            x-coordinate of mass profile centre
+            x-coordinate of profile centre
         y_cen : float
-            y-coordinate of mass profile centre
+            y-coordinate of profile centre
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of profile ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
         flux : float
             Overall flux intensity normalisation in the light profile (electrons per second)
         effective_radius : float
@@ -320,13 +320,13 @@ class CoreSersicLightProfile(SersicLightProfile):
         Parameters
         ----------
         x_cen : float
-            x-coordinate of mass profile centre
+            x-coordinate of profile centre
         y_cen : float
-            y-coordinate of mass profile centre
+            y-coordinate of profile centre
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of profile ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
         flux : float
             Overall flux intensity normalisation in the light profile (electrons per second)
         effective_radius : float

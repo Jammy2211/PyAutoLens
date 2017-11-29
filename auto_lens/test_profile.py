@@ -160,7 +160,7 @@ class TestEllipticalProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_profile(theta_from_x)
 
         assert cos_theta == 1.0
         assert sin_theta == 0.0
@@ -172,7 +172,7 @@ class TestEllipticalProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_profile(theta_from_x)
 
         assert cos_theta == pytest.approx(1.0, 1e-3)
         assert sin_theta == pytest.approx(0.0, 1e-3)
@@ -184,7 +184,7 @@ class TestEllipticalProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_profile(theta_from_x)
 
         assert cos_theta == pytest.approx(0.707, 1e-3)
         assert sin_theta == pytest.approx(0.707, 1e-3)
@@ -196,7 +196,7 @@ class TestEllipticalProfile:
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
-        cos_theta, sin_theta = power_law.coordinates_angle_to_mass_profile(theta_from_x)
+        cos_theta, sin_theta = power_law.coordinates_angle_to_profile(theta_from_x)
 
         assert cos_theta == pytest.approx(0.5, 1e-3)
         assert sin_theta == pytest.approx(-0.866, 1e-3)
