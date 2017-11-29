@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 import profile
 
-#TODO : Split elliptical geomtry tests from power law tests
+
+# TODO : Split elliptical geomtry tests from power law tests
 
 # noinspection PyClassHasNoInit
 class TestEllipticalProfile:
@@ -230,12 +231,12 @@ class TestEllipticalProfile:
         assert x == pytest.approx(0.0, 1e-3)
         assert y == pytest.approx(2 ** 0.5, 1e-3)
 
+
 # noinspection PyClassHasNoInit
 class TestSersicLightProfile():
     def test__setup_sersic__correct_values(self):
-
         sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index = 4.0)
+                                            effective_radius=0.6, sersic_index=4.0)
 
         assert sersic.x_cen == 0.0
         assert sersic.y_cen == 0.0
@@ -247,30 +248,29 @@ class TestSersicLightProfile():
         assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
 
     def test__flux_at_radius__correct_value(self):
-
         sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index = 4.0)
+                                            effective_radius=0.6, sersic_index=4.0)
 
-        flux_at_radius = sersic.flux_at_radius(radius=1.0) # 1.0 * exp(-7.66926 * (1.0/0.6) ** (1.0 / 4.0)) - 1) = 0.351797
+        flux_at_radius = sersic.flux_at_radius(
+            radius=1.0)  # 1.0 * exp(-7.66926 * (1.0/0.6) ** (1.0 / 4.0)) - 1) = 0.351797
 
         assert flux_at_radius == pytest.approx(0.351797, 1e-3)
 
     def test__flux_at_radius_2__correct_value(self):
-
         sersic = profile.SersicLightProfile(x_cen=0.0, y_cen=0.0, axis_ratio=1.0, phi=0.0, flux=3.0,
-                                            effective_radius=2.0, sersic_index = 2.0)
+                                            effective_radius=2.0, sersic_index=2.0)
 
-        flux_at_radius = sersic.flux_at_radius(radius=1.5) # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
+        flux_at_radius = sersic.flux_at_radius(
+            radius=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
 
         assert flux_at_radius == pytest.approx(4.90657319276, 1e-3)
 
+
 # noinspection PyClassHasNoInit
 class TestExponentialProfile():
-
     def test__setup_exponential__correct_values(self):
-
         sersic = profile.ExponentialLightProfile(x_cen=1.0, y_cen=-1.0, axis_ratio=0.5, phi=45.0, flux=3.0,
-                                            effective_radius=0.2)
+                                                 effective_radius=0.2)
 
         assert sersic.x_cen == 1.0
         assert sersic.y_cen == -1.0
@@ -281,13 +281,12 @@ class TestExponentialProfile():
         assert sersic.sersic_index == 1.0
         assert sersic.sersic_constant == pytest.approx(1.678378, 1e-3)
 
+
 # noinspection PyClassHasNoInit
 class TestDevVaucouleursProfile():
-
     def test__setup_dev_vaucouleurs__correct_values(self):
-
         sersic = profile.DevVaucouleursLightProfile(x_cen=0.0, y_cen=0.1, axis_ratio=0.6, phi=15.0, flux=2.0,
-                                            effective_radius=0.9)
+                                                    effective_radius=0.9)
 
         assert sersic.x_cen == 0.0
         assert sersic.y_cen == 0.1
@@ -298,12 +297,12 @@ class TestDevVaucouleursProfile():
         assert sersic.sersic_index == 4.0
         assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
 
+
 # noinspection PyClassHasNoInit
 class TestEllipticalPowerLaw():
-
     def test__setup_elliptical_power_law__correct_values(self):
-
-        power_law = profile.EllipticalPowerLawMassProfile(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0, einstein_radius = 1.0
+        power_law = profile.EllipticalPowerLawMassProfile(x_cen=1.0, y_cen=1.0, axis_ratio=1.0, phi=45.0,
+                                                          einstein_radius=1.0
                                                           , slope=2.0)
 
         assert power_law.x_cen == 1.0
@@ -312,4 +311,4 @@ class TestEllipticalPowerLaw():
         assert power_law.phi == 45.0
         assert power_law.einstein_radius == 1.0
         assert power_law.slope == 2.0
-        assert power_law.normalisation == 0.5 # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+        assert power_law.normalisation == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
