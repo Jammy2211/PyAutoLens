@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from matplotlib import pyplot
 
 
 class EllipticalProfile(object):
@@ -263,6 +264,12 @@ class LightProfile(object):
             The value of flux at the given coordinates
         """
         raise AssertionError("Flux at coordinates should be overridden")
+
+    def plot(self):
+        array = self.as_array()
+        pyplot.imshow(array)
+        pyplot.clim(vmax=np.mean(array) + np.std(array))
+        pyplot.show()
 
 
 class CombinedLightProfile(list, LightProfile):
