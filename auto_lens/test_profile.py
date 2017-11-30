@@ -648,33 +648,42 @@ class TestEllipticalPowerLaw:
             assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
 
+@pytest.fixture(name='circular')
+def circular_sersic():
+    return profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                      effective_radius=0.6, sersic_index=4.0)
+
+
+@pytest.fixture(name='elliptical')
+def elliptical_sersic():
+    return profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=1.0,
+                                      effective_radius=0.6, sersic_index=4.0)
+
+
+@pytest.fixture(name='vertical')
+def vertical_sersic():
+    return profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
+                                      effective_radius=0.6, sersic_index=4.0)
+
+
 # noinspection PyClassHasNoInit
 class TestArray:
-    def test__simple_assumptions(self):
-        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
-        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+    def test__simple_assumptions(self, circular):
+        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
         assert array.shape == (100, 100)
         assert array[0][0] > array[0][1]
         assert array[0][0] > array[1][0]
         assert all(map(lambda i: i > 0, array[0]))
 
-    def test__ellipticity(self):
-        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
-        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+    def test__ellipticity(self, circular, elliptical, vertical):
+        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
         assert array[10][0] == array[0][10]
 
-        sersic = profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
-        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+        array = elliptical.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
 
         assert array[10][0] > array[0][10]
 
-        sersic = profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
-
-        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+        array = vertical.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
         assert array[10][0] < array[0][10]
 
     # noinspection PyTypeChecker
@@ -694,6 +703,12 @@ class TestArray:
         combined = profile.CombinedLightProfile(sersic, sersic)
 
         assert all(map(lambda i: i == 2, combined.as_flat_array() / sersic.as_flat_array()))
+
+    def test_symmetric_profile(self):
+        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
+
+        array = sersic.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
 
 
 # noinspection PyClassHasNoInit
