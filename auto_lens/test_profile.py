@@ -711,13 +711,11 @@ class TestArray:
 
 # noinspection PyClassHasNoInit
 class TestCombinedProfiles:
-    def test__summation(self):
-        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
-        combined = profile.CombinedLightProfile(sersic, sersic)
-        assert combined.flux_at_coordinates((0, 0)) == 2 * sersic.flux_at_coordinates((0, 0))
+    def test__summation(self, circular):
+        combined = profile.CombinedLightProfile(circular, circular)
+        assert combined.flux_at_coordinates((0, 0)) == 2 * circular.flux_at_coordinates((0, 0))
 
-    def test_symmetry(self):
+    def test_1d_symmetry(self):
         sersic1 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
                                              effective_radius=0.6, sersic_index=4.0)
 
@@ -727,3 +725,22 @@ class TestCombinedProfiles:
         combined = profile.CombinedLightProfile(sersic1, sersic2)
         assert combined.flux_at_coordinates((0, 0)) == combined.flux_at_coordinates((100, 0))
         assert combined.flux_at_coordinates((49, 0)) == combined.flux_at_coordinates((51, 0))
+
+    def test_2d_symmetry(self):
+        sersic1 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                             effective_radius=0.6, sersic_index=4.0)
+
+        sersic2 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                             effective_radius=0.6, sersic_index=4.0, coordinates=(100, 0))
+        sersic3 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                             effective_radius=0.6, sersic_index=4.0, coordinates=(0, 100))
+
+        sersic4 = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                             effective_radius=0.6, sersic_index=4.0, coordinates=(100, 100))
+
+        combined = profile.CombinedLightProfile(sersic1, sersic2, sersic3, sersic4)
+
+        assert combined.flux_at_coordinates((49, 0)) == pytest.approx(combined.flux_at_coordinates((51, 0)), 1e-5)
+        assert combined.flux_at_coordinates((0, 49)) == pytest.approx(combined.flux_at_coordinates((0, 51)), 1e-5)
+        assert combined.flux_at_coordinates((100, 49)) == pytest.approx(combined.flux_at_coordinates((100, 51)), 1e-5)
+        assert combined.flux_at_coordinates((49, 49)) == pytest.approx(combined.flux_at_coordinates((51, 51)), 1e-5)
