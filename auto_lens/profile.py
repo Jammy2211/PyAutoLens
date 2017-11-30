@@ -199,11 +199,13 @@ class CircularProfile(EllipticalProfile):
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def as_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
+    def as_array(self, x_min=0, y_min=0, x_max=10, y_max=10, resolution=0.1):
         """
 
         Parameters
         ----------
+        resolution : float
+            The distance to which a single pixel corresponds
         x_min : int
             The minimum x bound
         y_min : int
@@ -218,17 +220,19 @@ class LightProfile(object):
         array
             A numpy array illustrating this light profile between the given bounds
         """
-        array = np.zeros((x_max - x_min, y_max - y_min))
-        for x in range(x_min, x_max):
-            for y in range(y_min, y_max):
-                array[x, y] = self.flux_at_coordinates((x, y))
+        array = np.zeros((int((x_max - x_min) / resolution), int((y_max - y_min) / resolution)))
+        for x in range(x_min, int(x_max / resolution)):
+            for y in range(y_min, int(y_max / resolution)):
+                array[x, y] = self.flux_at_coordinates((resolution * x, resolution * y))
         return array
 
-    def as_flat_array(self, x_min=0, y_min=0, x_max=100, y_max=100):
+    def as_flat_array(self, x_min=0, y_min=0, x_max=10, y_max=10, resolution=0.1):
         """
 
         Parameters
         ----------
+        resolution : float
+            The distance to which a single pixel corresponds
         x_min : int
             The minimum x bound
         y_min : int
@@ -243,7 +247,7 @@ class LightProfile(object):
         array
             A flat numpy array illustrating this light profile between the given bounds
         """
-        return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max).flatten()
+        return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, resolution=resolution).flatten()
 
     # noinspection PyMethodMayBeStatic
     def flux_at_coordinates(self, coordinates):
