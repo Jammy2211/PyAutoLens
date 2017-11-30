@@ -79,7 +79,6 @@ class EllipticalProfile(object):
         The radius at those coordinates
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
     def coordinates_to_eccentric_radius(self, coordinates):
@@ -169,10 +168,13 @@ class EllipticalProfile(object):
         The coordinates after the elliptical translation
         """
 
-        # TODO: All components below are unit tested, need to add tests for this entire function
+        # TODO: Big error here, coordinates_to_centre is not performed (it is only performed in coordinates_to_radius)
+        # TODO: Our coordinates below are therefore not translated to the lens profile coordinates
+        # TODO: Need to unit test this explicitly - Ill fix tomorrow
 
         # Compute their distance to this centre
         radius = self.coordinates_to_radius(coordinates)
+        # shifted_coordinates, radius = self.coordinates_to_radius(coordinates)
 
         # Compute the angle between the coordinates and x-axis
         theta_from_x = self.coordinates_angle_from_x(coordinates)
@@ -225,8 +227,8 @@ class LightProfile(object):
         array = np.zeros((int((x_max - x_min)), int((y_max - y_min))))
         #TODO : Make own function of generic Profile class?
         x_center, y_center = ((x_max + x_min) / 2.0, (y_max + y_min) / 2.0)
-        for x in range(x_min, int(x_max)):
-            for y in range(y_min, int(y_max)):
+        for x in range(x_min, x_max):
+            for y in range(y_min, y_max):
                 array[x, y] = self.flux_at_coordinates(((x - x_center) * pixel_scale, (y - y_center) * pixel_scale))
         return array
 
@@ -594,8 +596,9 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         ----------
         The deflection angles at these coordinates
         """
-        # TODO: Finish this and add tests
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
+
         defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / (psi))
         defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / (psi))
+        return defl_x, defl_y

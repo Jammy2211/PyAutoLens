@@ -630,19 +630,80 @@ class TestEllipticalPowerLaw:
         assert power_law.slope == 2.0
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
-    # noinspection PyClassHasNoInit
-    class TestEllipticalPowerLaw:
-        def test__setup_elliptical_power_law__correct_values(self):
-            power_law = profile.EllipticalIsothermalMassProfile(center=(1, 1), axis_ratio=1.0, phi=45.0,
-                                                                einstein_radius=1.0)
+# noinspection PyClassHasNoInit
+class TestEllipticalIsotermal:
+    def test__setup_elliptical_power_law__correct_values(self):
+        power_law = profile.EllipticalIsothermalMassProfile(center=(1, 1), axis_ratio=1.0, phi=45.0,
+                                                            einstein_radius=1.0)
 
-            assert power_law.x_cen == 1.0
-            assert power_law.y_cen == 1.0
-            assert power_law.axis_ratio == 1.0
-            assert power_law.phi == 45.0
-            assert power_law.einstein_radius == 1.0
-            assert power_law.slope == 2.0
-            assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+        assert power_law.x_cen == 1.0
+        assert power_law.y_cen == 1.0
+        assert power_law.axis_ratio == 1.0
+        assert power_law.phi == 45.0
+        assert power_law.einstein_radius == 1.0
+        assert power_law.slope == 2.0
+        assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+
+    def test__compute_deflection_angle_no_coordinate_rotation__correct_values(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                            einstein_radius=1.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+       # normalization = (1/(1+q))*einr*q / (sqrt(1-q**2))
+       # normalization = (1/1.5)*1*0.5 / (sqrt(0.75) = 0.3849
+       # Psi = sqrt (q ** 2 * (x**2) + y**2 = 0.25 + 1) = sqrt(1.25)
+
+       # defl_x = normalization * atan(sqrt(1-q**2) x / Psi )
+       # defl_x = 0.3849 * atan(sqrt(0.75)/sqrt(1.25) = 0.25367
+
+        # defl_y = normalization * atanh(sqrt(1-q**2) y / (Psi) )
+
+        assert defls[0] == pytest.approx(0.25367, 1e-3)
+        assert defls[1] == pytest.approx(0.397101,1e-3)
+
+    def test__compute_deflection_angle_coordinate_rotation_90__defl_x_same_defl_y_flip(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(0, 0), axis_ratio=0.5, phi=90.0,
+                                                            einstein_radius=1.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        assert defls[0] == pytest.approx(0.25367, 1e-3)
+        assert defls[1] == pytest.approx(-0.397101,1e-3)
+
+    def test__compute_deflection_angle_coordinate_rotation_180__both_defl_flip(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(0, 0), axis_ratio=0.5, phi=180.0,
+                                                            einstein_radius=1.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        assert defls[0] == pytest.approx(-0.25367, 1e-3)
+        assert defls[1] == pytest.approx(-0.397101,1e-3)
+
+    def test__compute_deflection_angle_coordinate_rotation_45__defl_y_zero_new_defl_x(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                            einstein_radius=1.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        # 45 degree aligns the mass profile with the axes, so there is no deflection acoss y.
+
+        assert defls[0] == pytest.approx(0.40306, 1e-3)
+        assert defls[1] == pytest.approx(0.0,1e-3)
+
+    def test__compute_deflection_angle_double_einr__double_defl_angles(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                            einstein_radius=2.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        assert defls[0] == pytest.approx(0.40306*2.0, 1e-3)
+        assert defls[1] == pytest.approx(0.0,1e-3)
 
 
 @pytest.fixture(name='circular')
