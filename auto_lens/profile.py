@@ -221,11 +221,12 @@ class LightProfile(object):
         array
             A numpy array illustrating this light profile between the given bounds
         """
-        array = np.zeros((int((x_max - x_min) / pixel_scale), int((y_max - y_min) / pixel_scale)))
+
+        array = np.zeros((int((x_max - x_min)), int((y_max - y_min))))
         #TODO : Make own function of generic Profile class?
         x_center, y_center = ((x_max + x_min) / 2.0, (y_max + y_min) / 2.0)
-        for x in range(x_min, int(x_max / pixel_scale)):
-            for y in range(y_min, int(y_max / pixel_scale)):
+        for x in range(x_min, int(x_max)):
+            for y in range(y_min, int(y_max)):
                 array[x, y] = self.flux_at_coordinates(((x - x_center) * pixel_scale, (y - y_center) * pixel_scale))
         return array
 
@@ -267,15 +268,15 @@ class LightProfile(object):
         """
         raise AssertionError("Flux at coordinates should be overridden")
 
-    def plot(self, x_min=0, y_min=0, x_max=10, y_max=10, resolution=0.1):
+    def plot(self, x_min=0, y_min=0, x_max=10, y_max=10, pixel_scale=0.1):
         """
         Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
         deviation
 
         Parameters
         ----------
-        resolution : float
-            The distance to which a single pixel corresponds
+        pixel_scale : float
+            The arcsecond (") size of each pixel
         x_min : int
             The minimum x bound
         y_min : int
@@ -286,7 +287,7 @@ class LightProfile(object):
             The maximum y bound
 
         """
-        array = self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=resolution)
+        array = self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale)
         pyplot.imshow(array)
         pyplot.clim(vmax=np.mean(array) + np.std(array))
         pyplot.show()
