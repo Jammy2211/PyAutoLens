@@ -702,6 +702,7 @@ class TestArray:
     def test_symmetric_profile(self, circular):
         circular.coordinates = (50, 50)
         array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100)
+
         assert array[50][50] > array[50][51]
         assert array[49][50] == array[50][51]
         assert array[50][51] == array[50][49]
