@@ -6,11 +6,11 @@ from matplotlib import pyplot
 class EllipticalProfile(object):
     """Generic elliptical profile class to contain functions shared by light and mass profiles"""
 
-    def __init__(self, axis_ratio, phi, coordinates=(0, 0)):
+    def __init__(self, axis_ratio, phi, center=(0, 0)):
         """
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of profile ellipse's minor and major axes (b/a)
@@ -18,7 +18,7 @@ class EllipticalProfile(object):
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
         """
 
-        self.coordinates = coordinates
+        self.coordinates = center
         self.axis_ratio = axis_ratio
         self.phi = phi
 
@@ -184,17 +184,17 @@ class EllipticalProfile(object):
         return radius * cos_theta, radius * sin_theta
 
 
-class CircularProfile(EllipticalProfile):
+class SphericalProfile(EllipticalProfile):
     """Generic circular profile class to contain functions shared by light and mass profiles"""
 
-    def __init__(self, coordinates=(0, 0)):
+    def __init__(self, center=(0, 0)):
         """
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         """
-        super(CircularProfile, self).__init__(1.0, 0.0, coordinates)
+        super(SphericalProfile, self).__init__(1.0, 0.0, center)
 
 
 class LightProfile(object):
@@ -313,12 +313,12 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
     """Used to fit the light of a galaxy. It can produce both highly concentrated light profiles (for high Sersic Index)
      or extended flatter profiles (for low Sersic Index)."""
 
-    def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, coordinates=(0, 0)):
+    def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, center=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of profile ellipse's minor and major axes (b/a)
@@ -331,7 +331,7 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
         sersic_index : Int
             The concentration of the light profile
         """
-        super(SersicLightProfile, self).__init__(axis_ratio, phi, coordinates)
+        super(SersicLightProfile, self).__init__(axis_ratio, phi, center)
         self.flux = flux
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
@@ -389,12 +389,12 @@ class ExponentialLightProfile(SersicLightProfile):
     """Used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is a subset of the
     Sersic profile, corresponding exactly to the solution sersic_index = 1"""
 
-    def __init__(self, axis_ratio, phi, flux, effective_radius, coordinates=(0, 0)):
+    def __init__(self, axis_ratio, phi, flux, effective_radius, center=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of profile ellipse's minor and major axes (b/a)
@@ -405,7 +405,7 @@ class ExponentialLightProfile(SersicLightProfile):
         effective_radius : float
             The radius containing half the light of this model
         """
-        super(ExponentialLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, 1, coordinates)
+        super(ExponentialLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, 1, center)
 
 
 class DevVaucouleursLightProfile(SersicLightProfile):
@@ -413,12 +413,12 @@ class DevVaucouleursLightProfile(SersicLightProfile):
     profile of an elliptical / early-type galaxy. It is a subset of the Sersic profile, corresponding exactly to the
     solution sersic_index = 4."""
 
-    def __init__(self, axis_ratio, phi, flux, effective_radius, coordinates=(0, 0)):
+    def __init__(self, axis_ratio, phi, flux, effective_radius, center=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of profile ellipse's minor and major axes (b/a)
@@ -429,7 +429,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         effective_radius : float
             The radius containing half the light of this model
         """
-        super(DevVaucouleursLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, 4, coordinates)
+        super(DevVaucouleursLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, 4, center)
 
 
 class CoreSersicLightProfile(SersicLightProfile):
@@ -438,12 +438,12 @@ class CoreSersicLightProfile(SersicLightProfile):
     these central regions to behave instead as a power-law."""
 
     def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, radius_break, flux_break,
-                 gamma, alpha, coordinates=(0, 0)):
+                 gamma, alpha, center=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of profile ellipse's minor and major axes (b/a)
@@ -465,7 +465,7 @@ class CoreSersicLightProfile(SersicLightProfile):
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
         super(CoreSersicLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius,
-                                                     sersic_index, coordinates)
+                                                     sersic_index, center)
         self.radius_break = radius_break
         self.flux_break = flux_break
         self.alpha = alpha
@@ -501,12 +501,12 @@ class CoreSersicLightProfile(SersicLightProfile):
 class EllipticalPowerLawMassProfile(EllipticalProfile):
     """Represents an elliptical power-law density distribution"""
 
-    def __init__(self, axis_ratio, phi, einstein_radius, slope, coordinates=(0, 0)):
+    def __init__(self, axis_ratio, phi, einstein_radius, slope, center=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of mass profile ellipse's minor and major axes (b/a)
@@ -518,7 +518,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile):
             power-law density slope of mass profile
         """
 
-        super(EllipticalPowerLawMassProfile, self).__init__(axis_ratio, phi, coordinates)
+        super(EllipticalPowerLawMassProfile, self).__init__(axis_ratio, phi, center)
 
         self.einstein_radius = einstein_radius
         self.slope = slope
@@ -559,12 +559,12 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
 
-    def __init__(self, axis_ratio, phi, einstein_radius, coordinates=(0, 0)):
+    def __init__(self, axis_ratio, phi, einstein_radius, center=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates: (float, float)
+        center: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
             Ratio of mass profile ellipse's minor and major axes (b/a)
@@ -574,7 +574,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
             Einstein radius of power-law mass profile
         """
 
-        super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, coordinates)
+        super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, center)
 
     @property
     def normalization(self):
