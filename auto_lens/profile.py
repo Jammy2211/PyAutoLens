@@ -309,9 +309,10 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
 
-        # TODO : Separate from init in future, as there's no need calculating these during lens modeling.
+    @property
+    def elliptical_effective_radius(self):
         # Extra physical parameters not used by the model, but have value scientifically
-        self.elliptical_effective_radius = self.effective_radius / self.axis_ratio
+        return self.effective_radius / self.axis_ratio
 
     @property
     def sersic_constant(self):
