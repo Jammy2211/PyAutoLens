@@ -726,4 +726,4 @@ class TestCombinedProfiles:
 
         combined = profile.CombinedLightProfile(sersic1, sersic2)
         assert combined.flux_at_coordinates((0, 0)) == combined.flux_at_coordinates((100, 0))
-        assert combined.flux_at_coordinates((49, 0)) == combined.flux_at_coordinates((50, 0))
+        assert combined.flux_at_coordinates((49, 0)) == combined.flux_at_coordinates((51, 0))
