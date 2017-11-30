@@ -1,0 +1,40 @@
+UNITS
+
+Obviously, for images there are lots of units you can use to define things. We'll define all modeling quantities in
+units of arcseconds ("), which describe how large an angle the image / pixels subtend on the sky.
+
+To make this definition, we associated a pixel_scale with our 2D imaging data (which is known for any telescope).
+So, for a 2D image with 11 x 11 pixels and a pixel scale of 0.1:
+
+(-0.5", 0.5")_____0"____(0.5", 0.5")
+             |          |
+             |          |
+           0"|          | 0"          < ---- Pretend this is 11 x 11 pixels... not just one pixel!
+             |          |
+             |__________|
+(-0.5", -0.5")    0"     (0.5", -0.5")
+
+For our as_array funciton, I have set it up so that our array is just each pixel number (e.g. 0, 1, 2, 3, 4, 5), which
+we shift such that pixel 0 is the central pixel:
+
+x_center = (x_max + x_min)/2.0
+y_center = (y_max + y_min)/2.0
+
+for x in range(x_min, x_max):
+    for y in range(y_min, y_max):
+        array[x, y] = self.flux_at_coordinates(((x - x_center) * pixel_scale, (y - y_center) * pixel_scale))
+
+However, the coordinates we send to flux_at_coordinates have been converted from pixel number (x-x_center) to
+arcseconds ((x-x_center)*pixel_scale). This means the light profile is evaluated in arc seconds also.
+
+the light profile parameters are therefore also now in arcseconds, specifically light_profile.center and
+light_profile.effective_radius :)
+
+Mass profiles are the same! mass_profile.center, mass_profile.einstein_radius, mass_profile.core_radius etc. are all
+arcseconds. (Einstein radius is a weird one, cause its the mass normalization - basically people use some mathmatically
+trickier to define the mass in terms of circular apertures).
+
+Obviously, we do want physical quantities, i.e. we don't really want to know a lens is 3" big, we want to know its
+10 kilo-parsecs in size, or something. Converting from arcseconds to kpc just requires a redshift and a cosmological
+modoel - we'll build this into AutoLens. However, a lot of lenses wown't have a measured redshift, by using arcseconds
+we won't have to deal with weird unit conversions when we doont have redshifts.
