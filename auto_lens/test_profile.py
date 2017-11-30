@@ -666,30 +666,30 @@ def vertical_sersic():
 # noinspection PyClassHasNoInit
 class TestArray:
     def test__simple_assumptions(self, circular):
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
-        assert array.shape == (100, 100)
-        assert array[0][0] > array[0][1]
-        assert array[0][0] > array[1][0]
+        array = circular.as_array(x_min=0, x_max=101, y_min=0, y_max=101, pixel_scale=1)
+        assert array.shape == (101, 101)
+        assert array[51][51] > array[51][52]
+        assert array[51][51] > array[52][51]
         assert all(map(lambda i: i > 0, array[0]))
 
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=0.5)
+        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=0.5)
         assert array.shape == (200, 200)
 
     def test__ellipticity(self, circular, elliptical, vertical):
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
-        assert array[10][0] == array[0][10]
+        array = circular.as_array(x_min=0, x_max=101, y_min=0, y_max=101, pixel_scale=1)
+        assert array[60][0] == array[0][60]
 
-        array = elliptical.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
+        array = elliptical.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
 
-        assert array[10][0] > array[0][10]
+        assert array[60][51] > array[51][60]
 
-        array = vertical.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
-        assert array[10][0] < array[0][10]
+        array = vertical.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
+        assert array[60][51] < array[51][60]
 
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
-        flat_array = circular.as_flat_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
+        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
+        flat_array = circular.as_flat_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
 
         assert all(array[0] == flat_array[:100])
         assert all(array[1] == flat_array[100:200])
@@ -700,8 +700,8 @@ class TestArray:
         assert all(map(lambda i: i == 2, combined.as_flat_array() / circular.as_flat_array()))
 
     def test_symmetric_profile(self, circular):
-        circular.coordinates = (50, 50)
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, resolution=1)
+        circular.center = (0, 0)
+        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
 
         assert array[50][50] > array[50][51]
         assert array[49][50] == array[50][51]
