@@ -265,8 +265,26 @@ class LightProfile(object):
         """
         raise AssertionError("Flux at coordinates should be overridden")
 
-    def plot(self):
-        array = self.as_array()
+    def plot(self, x_min=0, y_min=0, x_max=10, y_max=10, resolution=0.1):
+        """
+        Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
+        deviation
+
+        Parameters
+        ----------
+        resolution : float
+            The distance to which a single pixel corresponds
+        x_min : int
+            The minimum x bound
+        y_min : int
+            The minimum y bound
+        x_max : int
+            The maximum x bound
+        y_max : int
+            The maximum y bound
+
+        """
+        array = self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, resolution=resolution)
         pyplot.imshow(array)
         pyplot.clim(vmax=np.mean(array) + np.std(array))
         pyplot.show()
