@@ -65,7 +65,11 @@ class EllipticalProfile(object):
         """
         return shifted_coordinates[0] - self.x_cen, shifted_coordinates[1] - self.y_cen
 
-    def coordinates_to_radius(self, coordinates):
+    @staticmethod
+    def coordinates_to_radius(coordinates):
+        # TODO: This method seems like a bad idea. The coordinates_to_eccentric_radius method accounts for the centre
+        # TODO: of the ellipse, whereas this one seems to be relative to the origin. That's all fine until the ellipse
+        # TODO: it no longer centred at the origin.
         """
         Convert the coordinates to a radius
 
@@ -228,9 +232,6 @@ class LightProfile(object):
         y_size = int((y_max - y_min) / pixel_scale)
 
         array = np.zeros((x_size, y_size))
-        # TODO : Make own function of generic Profile class?
-        # TODO : Won't doing this give confusing results? I feel like the better solution is to use a range that starts
-        # TODO : negative as defined above
 
         for x in range(int((x_max - x_min) / pixel_scale)):
             for y in range(int((y_max - y_min) / pixel_scale)):
