@@ -638,7 +638,6 @@ class TestCoreSersicLightProfile:
         core_sersic = profile.CoreSersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
                                                      effective_radius=5, sersic_index=4.0, radius_break=0.01,
                                                      flux_break=0.1, gamma=1, alpha=1)
-        # TODO: This seems way off? "flux_break = The intensity at the break radius."
         assert core_sersic.flux_at_radius(0.01) == 0.1
 
 
@@ -829,6 +828,23 @@ class TestArray:
         assert array[49][50] == array[50][51]
         assert array[50][51] == array[50][49]
         assert array[50][49] == array[51][50]
+
+    def test__coordinates_to_eccentric_radius(self, elliptical):
+        assert elliptical.coordinates_to_eccentric_radius((1, 1)) == pytest.approx(
+            elliptical.coordinates_to_eccentric_radius(
+                (-1, -1)), 1e-10)
+
+    def test__flux_at_coordinates(self, elliptical):
+        assert elliptical.flux_at_coordinates((1, 1)) == pytest.approx(
+            elliptical.flux_at_coordinates((-1, -1)), 1e-10)
+
+    def test__side_length(self):
+        assert profile.LightProfile.side_length(-5, 5, 0.1) == 100
+
+    def test__pixel_to_coordinate(self):
+        assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 0) == -5
+        assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 100) == 5
+        assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 50) == 0
 
 
 # noinspection PyClassHasNoInit

@@ -228,15 +228,25 @@ class LightProfile(object):
         array
             A numpy array illustrating this light profile between the given bounds
         """
-        x_size = int((x_max - x_min) / pixel_scale)
-        y_size = int((y_max - y_min) / pixel_scale)
+        x_size = LightProfile.side_length(x_min, x_max, pixel_scale)
+        y_size = LightProfile.side_length(y_min, y_max, pixel_scale)
 
         array = np.zeros((x_size, y_size))
 
-        for x in range(int((x_max - x_min) / pixel_scale)):
-            for y in range(int((y_max - y_min) / pixel_scale)):
-                array[x, y] = self.flux_at_coordinates((x * pixel_scale + x_min, y * pixel_scale + y_min))
+        for i in range(x_size):
+            for j in range(y_size):
+                x = LightProfile.pixel_to_coordinate(x_min, pixel_scale, i)
+                y = LightProfile.pixel_to_coordinate(y_min, pixel_scale, j)
+                array[i, j] = self.flux_at_coordinates((x, y))
         return array
+
+    @staticmethod
+    def side_length(dim_min, dim_max, pixel_scale):
+        return int((dim_max - dim_min) / pixel_scale)
+
+    @staticmethod
+    def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
+        return dim_min + pixel_coordinate * pixel_scale
 
     def as_flat_array(self, x_min=0, y_min=0, x_max=10, y_max=10, pixel_scale=0.1):
         """
