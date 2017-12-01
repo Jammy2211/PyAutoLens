@@ -248,7 +248,7 @@ class LightProfile(object):
     def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
         return dim_min + pixel_coordinate * pixel_scale
 
-    def as_flat_array(self, x_min=0, y_min=0, x_max=10, y_max=10, pixel_scale=0.1):
+    def as_flat_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
 
         Parameters
@@ -286,7 +286,7 @@ class LightProfile(object):
         """
         raise AssertionError("Flux at coordinates should be overridden")
 
-    def plot(self, x_min=0, y_min=0, x_max=10, y_max=10, pixel_scale=0.1):
+    def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
         Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
         deviation
