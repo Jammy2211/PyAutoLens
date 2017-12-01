@@ -50,20 +50,20 @@ class EllipticalProfile(object):
         phi_radians = math.radians(self.phi)
         return math.cos(phi_radians), math.sin(phi_radians)
 
-    def coordinates_to_centre(self, coordinates):
+    def coordinates_to_centre(self, shifted_coordinates):
         """
         Converts image coordinates to profile's centre
 
         Parameters
         ----------
-        coordinates : (float, float)
+        shifted_coordinates : (float, float)
             The x and y coordinates of the image
 
         Returns
         ----------
         The coordinates at the mass profile centre
         """
-        return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
+        return shifted_coordinates[0] - self.x_cen, shifted_coordinates[1] - self.y_cen
 
     def coordinates_to_radius(self, coordinates):
         """
@@ -78,8 +78,7 @@ class EllipticalProfile(object):
         -------
         The radius at those coordinates
         """
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-        return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
+        return math.sqrt(coordinates[0] ** 2 + coordinates[1] ** 2)
 
     def coordinates_to_eccentric_radius(self, coordinates):
         """
@@ -172,12 +171,14 @@ class EllipticalProfile(object):
         # TODO: Our coordinates below are therefore not translated to the lens profile coordinates
         # TODO: Need to unit test this explicitly - Ill fix tomorrow
 
-        # Compute their distance to this centre
-        radius = self.coordinates_to_radius(coordinates)
-        # shifted_coordinates, radius = self.coordinates_to_radius(coordinates)
+        # Shift coordinates to lens profile center
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+
+        # Compute their distance to its centre
+        radius = self.coordinates_to_radius(shifted_coordinates)
 
         # Compute the angle between the coordinates and x-axis
-        theta_from_x = self.coordinates_angle_from_x(coordinates)
+        theta_from_x = self.coordinates_angle_from_x(shifted_coordinates)
 
         # Compute the angle between the coordinates and profile ellipse
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
