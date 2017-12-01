@@ -744,6 +744,16 @@ class TestEllipticalIsotermal:
         assert defls[0] == pytest.approx(0.25367, 1e-3)
         assert defls[1] == pytest.approx(0.397101,1e-3)
 
+    def test__compute_deflection_angle_another_q__new_defl_values(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(0, 0), axis_ratio=0.25, phi=0.0,
+                                                            einstein_radius=2.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(-1.0, -1.0))
+
+        assert defls[0] == pytest.approx(-0.31154393, 1e-3)
+        assert defls[1] == pytest.approx(-0.71567731579, 1e-3)
+
 
 @pytest.fixture(name='circular')
 def circular_sersic():
