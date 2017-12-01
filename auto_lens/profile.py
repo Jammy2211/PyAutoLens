@@ -203,7 +203,7 @@ class SphericalProfile(EllipticalProfile):
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def as_array(self, x_min=0, y_min=0, x_max=10, y_max=10, pixel_scale=0.1):
+    def as_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
 
         Parameters
@@ -226,7 +226,9 @@ class LightProfile(object):
         """
 
         array = np.zeros((int((x_max - x_min)), int((y_max - y_min))))
-        #TODO : Make own function of generic Profile class?
+        # TODO : Make own function of generic Profile class?
+        # TODO : Won't doing this give confusing results? I feel like the better solution is to use a range that starts
+        # TODO : negative as defined above
         x_center, y_center = ((x_max + x_min) / 2.0, (y_max + y_min) / 2.0)
         for x in range(x_min, x_max):
             for y in range(y_min, y_max):
