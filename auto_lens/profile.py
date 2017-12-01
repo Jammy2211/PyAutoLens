@@ -224,15 +224,17 @@ class LightProfile(object):
         array
             A numpy array illustrating this light profile between the given bounds
         """
+        x_size = int((x_max - x_min) / pixel_scale)
+        y_size = int((y_max - y_min) / pixel_scale)
 
-        array = np.zeros((int((x_max - x_min)), int((y_max - y_min))))
+        array = np.zeros((x_size, y_size))
         # TODO : Make own function of generic Profile class?
         # TODO : Won't doing this give confusing results? I feel like the better solution is to use a range that starts
         # TODO : negative as defined above
-        x_center, y_center = ((x_max + x_min) / 2.0, (y_max + y_min) / 2.0)
-        for x in range(x_min, x_max):
-            for y in range(y_min, y_max):
-                array[x, y] = self.flux_at_coordinates(((x - x_center) * pixel_scale, (y - y_center) * pixel_scale))
+
+        for x in range(int((x_max - x_min) / pixel_scale)):
+            for y in range(int((y_max - y_min) / pixel_scale)):
+                array[x, y] = self.flux_at_coordinates((x * pixel_scale + x_min, y * pixel_scale + y_min))
         return array
 
     def as_flat_array(self, x_min=0, y_min=0, x_max=10, y_max=10, pixel_scale=0.1):
