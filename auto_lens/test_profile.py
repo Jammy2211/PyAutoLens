@@ -821,13 +821,20 @@ class TestArray:
     def test_origin_symmetric_profile(self, circular):
         array = circular.as_array()
 
+        assert circular.flux_at_coordinates((-5, 0)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((5, 0)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((0, -5)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((0, 5)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((5, 5)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((-5, -5)) < circular.flux_at_coordinates((0, 0))
+
         assert array.shape == (100, 100)
 
         assert array[50][50] > array[50][51]
         assert array[50][50] > array[49][50]
-        assert array[49][50] == array[50][51]
-        assert array[50][51] == array[50][49]
-        assert array[50][49] == array[51][50]
+        assert array[49][50] == pytest.approx(array[50][51], 1e-10)
+        assert array[50][51] == pytest.approx(array[50][49], 1e-10)
+        assert array[50][49] == pytest.approx(array[51][50], 1e-10)
 
     def test__coordinates_to_eccentric_radius(self, elliptical):
         assert elliptical.coordinates_to_eccentric_radius((1, 1)) == pytest.approx(
