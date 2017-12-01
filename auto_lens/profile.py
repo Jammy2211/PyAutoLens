@@ -604,6 +604,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
 
-        defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / (psi))
-        defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / (psi))
+        defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
+        defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
         return defl_x, defl_y
