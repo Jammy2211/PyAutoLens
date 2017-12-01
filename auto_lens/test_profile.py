@@ -819,6 +819,17 @@ class TestArray:
         assert array[100][101] == array[100][99]
         assert array[100][99] == array[101][100]
 
+    def test_origin_symmetric_profile(self, circular):
+        array = circular.as_array()
+
+        assert array.shape == (100, 100)
+
+        assert array[50][50] > array[50][51]
+        assert array[50][50] > array[49][50]
+        assert array[49][50] == array[50][51]
+        assert array[50][51] == array[50][49]
+        assert array[50][49] == array[51][50]
+
 
 # noinspection PyClassHasNoInit
 class TestCombinedProfiles:
