@@ -900,10 +900,14 @@ class TestEquivalentProfile(object):
         assert copy.flux == circular.flux
         assert copy.sersic_index == circular.sersic_index
 
-    def test_x_as_y(self):
+    def test_x_as_y(self, circular, exponential, dev_vaucouleurs, core):
         def assert_shared_base(x, y):
             assert x.centre == y.centre
             assert x.axis_ratio == y.axis_ratio
             assert x.phi == y.phi
             assert x.flux == y.flux
-            assert x.sersic_index == y.sersic_index
+
+        assert_shared_base(circular, circular.as_exponential_profile())
+        assert_shared_base(exponential, exponential.as_dev_vaucouleurs_profile())
+        assert_shared_base(dev_vaucouleurs, dev_vaucouleurs.as_core_sersic_profile(1, 1, 1, 1))
+        assert_shared_base(core, core.as_sersic_profile())
