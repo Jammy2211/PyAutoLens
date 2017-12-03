@@ -248,6 +248,16 @@ def side_length(dim_min, dim_max, pixel_scale):
 
 
 def avg(results):
+    """
+
+    Parameters
+    ----------
+    results : Sized
+        A collection of numerical values or tuples
+    Returns
+    -------
+        The logical average of that collection
+    """
     try:
         return sum(results) / len(results)
     except TypeError:
