@@ -889,3 +889,15 @@ class TestCombinedProfiles:
         assert combined.flux_at_coordinates((0, 49)) == pytest.approx(combined.flux_at_coordinates((0, 51)), 1e-5)
         assert combined.flux_at_coordinates((100, 49)) == pytest.approx(combined.flux_at_coordinates((100, 51)), 1e-5)
         assert combined.flux_at_coordinates((49, 49)) == pytest.approx(combined.flux_at_coordinates((51, 51)), 1e-5)
+
+    def test_combined_mass_profile(self):
+        isothermal = profile.EllipticalIsothermalMassProfile(center=(1, 1), axis_ratio=0.5, phi=45.0,
+                                                             einstein_radius=1.0)
+
+        combined = profile.CombinedMassProfile(isothermal, isothermal)
+
+        combined_deflection_angle = combined.compute_deflection_angle((0.1, 0.1))
+        isothermal_deflection_angle = isothermal.compute_deflection_angle((0.1, 0.1))
+
+        assert combined_deflection_angle[0] == 2 * isothermal_deflection_angle[0]
+        assert combined_deflection_angle[1] == 2 * isothermal_deflection_angle[1]
