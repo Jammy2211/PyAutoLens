@@ -139,7 +139,7 @@ class EllipticalProfile(object):
 
     def coordinates_back_to_cartesian(self, coordinates_elliptical):
         """
-        Rotate elliptical coordinates back to the original Cartesian grid (for a cirular profile this
+        Rotate elliptical coordinates back to the original Cartesian grid (for a circular profile this
         returns the input coordinates)
 
         Parameters
@@ -213,13 +213,13 @@ def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
         A function that takes coordinates and returns a value
     pixel_scale : float
         The arcsecond (") size of each pixel
-    x_min : int
+    x_min : float
         The minimum x bound
-    y_min : int
+    y_min : float
         The minimum y bound
-    x_max : int
+    x_max : float
         The maximum x bound
-    y_max : int
+    y_max : float
         The maximum y bound
 
     Returns
@@ -230,14 +230,16 @@ def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
     x_size = side_length(x_min, x_max, pixel_scale)
     y_size = side_length(y_min, y_max, pixel_scale)
 
-    array = np.zeros((x_size, y_size))
+    array = []
 
     for i in range(x_size):
+        row = []
         for j in range(y_size):
             x = pixel_to_coordinate(x_min, pixel_scale, i)
             y = pixel_to_coordinate(y_min, pixel_scale, j)
-            array[i, j] = func((x, y))
-    return array
+            row.append(func((x, y)))
+        array.append(row)
+    return np.array(array)
 
 
 def side_length(dim_min, dim_max, pixel_scale):
@@ -258,13 +260,13 @@ class LightProfile(object):
         ----------
         pixel_scale : float
             The arcsecond (") size of each pixel
-        x_min : int
+        x_min : float
             The minimum x bound
-        y_min : int
+        y_min : float
             The minimum y bound
-        x_max : int
+        x_max : float
             The maximum x bound
-        y_max : int
+        y_max : float
             The maximum y bound
 
         Returns
@@ -281,13 +283,13 @@ class LightProfile(object):
         ----------
         pixel_scale : float
             The arcsecond (") size of each pixel
-        x_min : int
+        x_min : float
             The minimum x bound
-        y_min : int
+        y_min : float
             The minimum y bound
-        x_max : int
+        x_max : float
             The maximum x bound
-        y_max : int
+        y_max : float
             The maximum y bound
 
         Returns
@@ -594,7 +596,36 @@ class CoreSersicLightProfile(SersicLightProfile):
                     1.0 / (self.alpha * self.sersic_index))))
 
 
-class CombinedMassProfile(list):
+class MassProfile(object):
+    def deflection_angle_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
+        """
+
+        Parameters
+        ----------
+        pixel_scale : float
+            The arcsecond (") size of each pixel
+        x_min : float
+            The minimum x bound
+        y_min : float
+            The minimum y bound
+        x_max : float
+            The maximum x bound
+        y_max : float
+            The maximum y bound
+
+        Returns
+        -------
+        array
+            A numpy array illustrating this deflection angles for this profile between the given bounds
+        """
+        return array_for_function(self.compute_deflection_angle, x_min, y_min, x_max, y_max, pixel_scale)
+
+    # noinspection PyMethodMayBeStatic
+    def compute_deflection_angle(self, coordinates):
+        raise AssertionError("Compute deflection angles should be overridden")
+
+
+class CombinedMassProfile(list, MassProfile):
     """A mass profile comprising one or more mass profiles"""
 
     def __init__(self, *mass_profiles):
@@ -619,7 +650,7 @@ class CombinedMassProfile(list):
         return sum_tuple
 
 
-class EllipticalPowerLawMassProfile(EllipticalProfile):
+class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
     """Represents an elliptical power-law density distribution"""
 
     def __init__(self, axis_ratio, phi, einstein_radius, slope, centre=(0, 0)):
@@ -715,6 +746,8 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
 
+        # TODO: This line sometimes throws a division by zero error. May need to check value of psi, try/except or even
+        # TODO: throw an assertion error if the inputs causing the error are invalid?
         defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
         defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
         return defl_x, defl_y

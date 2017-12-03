@@ -841,6 +841,13 @@ class TestArray(object):
         assert profile.pixel_to_coordinate(-5, 0.1, 100) == 5
         assert profile.pixel_to_coordinate(-5, 0.1, 50) == 0
 
+    def test__deflection_angle_array(self):
+        mass_profile = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                               einstein_radius=2.0)
+        # noinspection PyTypeChecker
+        assert all(mass_profile.deflection_angle_array(-1, -1, -0.5, -0.5, 0.1)[0][
+                       0] == mass_profile.compute_deflection_angle((-1, -1)))
+
 
 class TestCombinedProfiles(object):
     def test__summation(self, circular):
