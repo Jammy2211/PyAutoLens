@@ -918,3 +918,13 @@ class TestEquivalentProfile(object):
         assert_shared_base(exponential, exponential.as_dev_vaucouleurs_profile())
         assert_shared_base(dev_vaucouleurs, dev_vaucouleurs.as_core_sersic_profile(1, 1, 1, 1))
         assert_shared_base(core, core.as_sersic_profile())
+
+
+class TestSubgrid(object):
+    def test_decorator(self):
+        @profile.subgrid
+        def return_coords(s, coordinates):
+            return abs(coordinates[0]), abs(coordinates[1])
+
+        assert return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1) == (0, 0)
+        assert return_coords(None, (0, 0), pixel_scale=1.0, grid_size=2) == (0.25, 0.25)
