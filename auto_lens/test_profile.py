@@ -5,8 +5,44 @@ import pytest
 import profile
 
 
-# noinspection PyClassHasNoInit
-class TestEllipticalProfile:
+@pytest.fixture(name='circular')
+def circular_sersic():
+    return profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                      effective_radius=0.6, sersic_index=4.0)
+
+
+@pytest.fixture(name='elliptical')
+def elliptical_sersic():
+    return profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=1.0,
+                                      effective_radius=0.6, sersic_index=4.0)
+
+
+@pytest.fixture(name='vertical')
+def vertical_sersic():
+    return profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
+                                      effective_radius=0.6, sersic_index=4.0)
+
+
+@pytest.fixture(name='dev_vaucouleurs')
+def dev_vaucouleurs_profile():
+    return profile.DevVaucouleursLightProfile(centre=(0.0, 0.1), axis_ratio=0.6, phi=15.0, flux=2.0,
+                                              effective_radius=0.9)
+
+
+@pytest.fixture(name="exponential")
+def exponential_profile():
+    return profile.ExponentialLightProfile(centre=(1, -1), axis_ratio=0.5, phi=45.0, flux=3.0,
+                                           effective_radius=0.2)
+
+
+@pytest.fixture(name="core")
+def core_profile():
+    return profile.CoreSersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                          effective_radius=5, sersic_index=4.0, radius_break=0.01,
+                                          flux_break=0.1, gamma=1, alpha=1)
+
+
+class TestEllipticalProfile(object):
     def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
@@ -372,8 +408,7 @@ class TestEllipticalProfile:
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
 
-# noinspection PyClassHasNoInit
-class TestSphericalProfile:
+class TestSphericalProfile(object):
     def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
@@ -566,8 +601,7 @@ class TestSphericalProfile:
         assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
 
-# noinspection PyClassHasNoInit
-class TestLightProfile:
+class TestLightProfile(object):
     def test__setup_sersic__correct_values(self, circular):
         assert circular.x_cen == 0.0
         assert circular.y_cen == 0.0
@@ -616,8 +650,7 @@ class TestLightProfile:
         assert core.flux_at_radius(0.01) == 0.1
 
 
-# noinspection PyClassHasNoInit
-class TestEllipticalPowerLaw:
+class TestEllipticalPowerLaw(object):
     def test__setup_elliptical_power_law__correct_values(self):
         power_law = profile.EllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                           einstein_radius=1.0
@@ -632,8 +665,7 @@ class TestEllipticalPowerLaw:
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
 
-# noinspection PyClassHasNoInit
-class TestEllipticalIsotermal:
+class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):
         power_law = profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                             einstein_radius=1.0)
@@ -721,45 +753,7 @@ class TestEllipticalIsotermal:
         assert defls[1] == pytest.approx(-0.71567731579, 1e-3)
 
 
-@pytest.fixture(name='circular')
-def circular_sersic():
-    return profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                      effective_radius=0.6, sersic_index=4.0)
-
-
-@pytest.fixture(name='elliptical')
-def elliptical_sersic():
-    return profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=1.0,
-                                      effective_radius=0.6, sersic_index=4.0)
-
-
-@pytest.fixture(name='vertical')
-def vertical_sersic():
-    return profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
-                                      effective_radius=0.6, sersic_index=4.0)
-
-
-@pytest.fixture(name='dev_vaucouleurs')
-def dev_vaucouleurs_profile():
-    return profile.DevVaucouleursLightProfile(centre=(0.0, 0.1), axis_ratio=0.6, phi=15.0, flux=2.0,
-                                              effective_radius=0.9)
-
-
-@pytest.fixture(name="exponential")
-def exponential_profile():
-    return profile.ExponentialLightProfile(centre=(1, -1), axis_ratio=0.5, phi=45.0, flux=3.0,
-                                           effective_radius=0.2)
-
-
-@pytest.fixture(name="core")
-def core_profile():
-    return profile.CoreSersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                          effective_radius=5, sersic_index=4.0, radius_break=0.01,
-                                          flux_break=0.1, gamma=1, alpha=1)
-
-
-# noinspection PyClassHasNoInit
-class TestArray:
+class TestArray(object):
     def test__simple_assumptions(self, circular):
         array = circular.as_array(x_min=0, x_max=101, y_min=0, y_max=101, pixel_scale=1)
         assert array.shape == (101, 101)
@@ -848,8 +842,7 @@ class TestArray:
         assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 50) == 0
 
 
-# noinspection PyClassHasNoInit
-class TestCombinedProfiles:
+class TestCombinedProfiles(object):
     def test__summation(self, circular):
         combined = profile.CombinedLightProfile(circular, circular)
         assert combined.flux_at_coordinates((0, 0)) == 2 * circular.flux_at_coordinates((0, 0))
@@ -897,8 +890,7 @@ class TestCombinedProfiles:
         assert combined_deflection_angle[1] == 2 * isothermal_deflection_angle[1]
 
 
-# noinspection PyClassHasNoInit
-class TestEquivalentProfile:
+class TestEquivalentProfile(object):
     def test_as_sersic_profile(self, circular):
         copy = circular.as_sersic_profile()
 
