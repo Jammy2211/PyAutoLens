@@ -204,6 +204,50 @@ class SphericalProfile(EllipticalProfile):
         super(SphericalProfile, self).__init__(1.0, 0.0, centre)
 
 
+def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
+    """
+
+    Parameters
+    ----------
+    func : function(coordinates)
+        A function that takes coordinates and returns a value
+    pixel_scale : float
+        The arcsecond (") size of each pixel
+    x_min : int
+        The minimum x bound
+    y_min : int
+        The minimum y bound
+    x_max : int
+        The maximum x bound
+    y_max : int
+        The maximum y bound
+
+    Returns
+    -------
+    array
+        A 2D numpy array of values returned by the function at each coordinate
+    """
+    x_size = side_length(x_min, x_max, pixel_scale)
+    y_size = side_length(y_min, y_max, pixel_scale)
+
+    array = np.zeros((x_size, y_size))
+
+    for i in range(x_size):
+        for j in range(y_size):
+            x = pixel_to_coordinate(x_min, pixel_scale, i)
+            y = pixel_to_coordinate(y_min, pixel_scale, j)
+            array[i, j] = func((x, y))
+    return array
+
+
+def side_length(dim_min, dim_max, pixel_scale):
+    return int((dim_max - dim_min) / pixel_scale)
+
+
+def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
+    return dim_min + pixel_coordinate * pixel_scale
+
+
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
@@ -228,25 +272,7 @@ class LightProfile(object):
         array
             A numpy array illustrating this light profile between the given bounds
         """
-        x_size = LightProfile.side_length(x_min, x_max, pixel_scale)
-        y_size = LightProfile.side_length(y_min, y_max, pixel_scale)
-
-        array = np.zeros((x_size, y_size))
-
-        for i in range(x_size):
-            for j in range(y_size):
-                x = LightProfile.pixel_to_coordinate(x_min, pixel_scale, i)
-                y = LightProfile.pixel_to_coordinate(y_min, pixel_scale, j)
-                array[i, j] = self.flux_at_coordinates((x, y))
-        return array
-
-    @staticmethod
-    def side_length(dim_min, dim_max, pixel_scale):
-        return int((dim_max - dim_min) / pixel_scale)
-
-    @staticmethod
-    def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
-        return dim_min + pixel_coordinate * pixel_scale
+        return array_for_function(self.flux_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
     def as_flat_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """

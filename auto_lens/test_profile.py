@@ -834,12 +834,12 @@ class TestArray(object):
             elliptical.flux_at_coordinates((-1, -1)), 1e-10)
 
     def test__side_length(self):
-        assert profile.LightProfile.side_length(-5, 5, 0.1) == 100
+        assert profile.side_length(-5, 5, 0.1) == 100
 
     def test__pixel_to_coordinate(self):
-        assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 0) == -5
-        assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 100) == 5
-        assert profile.LightProfile.pixel_to_coordinate(-5, 0.1, 50) == 0
+        assert profile.pixel_to_coordinate(-5, 0.1, 0) == -5
+        assert profile.pixel_to_coordinate(-5, 0.1, 100) == 5
+        assert profile.pixel_to_coordinate(-5, 0.1, 50) == 0
 
 
 class TestCombinedProfiles(object):
