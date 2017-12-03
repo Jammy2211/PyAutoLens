@@ -312,6 +312,8 @@ class LightProfile(object):
 
 
 class CombinedLightProfile(list, LightProfile):
+    """A light profile comprising one or more light profiles"""
+
     def __init__(self, *light_profiles):
         super(CombinedLightProfile, self).__init__(light_profiles)
 
@@ -517,6 +519,31 @@ class CoreSersicLightProfile(SersicLightProfile):
                 (((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
                     self.effective_radius ** self.alpha)) ** (
                     1.0 / (self.alpha * self.sersic_index))))
+
+
+class CombinedMassProfile(list):
+    """A mass profile comprising one or more mass profiles"""
+
+    def __init__(self, *mass_profiles):
+        super(CombinedMassProfile, self).__init__(mass_profiles)
+
+    def compute_deflection_angle(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angle at those coordinates
+        """
+        sum_tuple = (0, 0)
+        for t in map(lambda p: p.compute_deflection_angle(coordinates), self):
+            sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
+        return sum_tuple
 
 
 class EllipticalPowerLawMassProfile(EllipticalProfile):
