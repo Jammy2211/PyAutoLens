@@ -567,26 +567,19 @@ class TestSphericalProfile:
 
 
 # noinspection PyClassHasNoInit
-class TestSersicLightProfile:
-    def test__setup_sersic__correct_values(self):
-        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
+class TestLightProfile:
+    def test__setup_sersic__correct_values(self, circular):
+        assert circular.x_cen == 0.0
+        assert circular.y_cen == 0.0
+        assert circular.axis_ratio == 1.0
+        assert circular.phi == 0.0
+        assert circular.flux == 1.0
+        assert circular.effective_radius == 0.6
+        assert circular.sersic_index == 4.0
+        assert circular.sersic_constant == pytest.approx(7.66925, 1e-3)
 
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.0
-        assert sersic.axis_ratio == 1.0
-        assert sersic.phi == 0.0
-        assert sersic.flux == 1.0
-        assert sersic.effective_radius == 0.6
-        assert sersic.sersic_index == 4.0
-        assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
-
-    def test__flux_at_radius__correct_value(self):
-        sersic = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                            effective_radius=0.6, sersic_index=4.0)
-
-        flux_at_radius = sersic.flux_at_radius(
-            radius=1.0)  # 1.0 * exp(-7.66926 * (1.0/0.6) ** (1.0 / 4.0)) - 1) = 0.351797
+    def test__flux_at_radius__correct_value(self, circular):
+        flux_at_radius = circular.flux_at_radius(radius=1.0)
 
         assert flux_at_radius == pytest.approx(0.351797, 1e-3)
 
@@ -599,46 +592,28 @@ class TestSersicLightProfile:
 
         assert flux_at_radius == pytest.approx(4.90657319276, 1e-3)
 
+    def test__setup_exponential__correct_values(self, exponential):
+        assert exponential.x_cen == 1.0
+        assert exponential.y_cen == -1.0
+        assert exponential.axis_ratio == 0.5
+        assert exponential.phi == 45.0
+        assert exponential.flux == 3.0
+        assert exponential.effective_radius == 0.2
+        assert exponential.sersic_index == 1.0
+        assert exponential.sersic_constant == pytest.approx(1.678378, 1e-3)
 
-# noinspection PyClassHasNoInit
-class TestExponentialProfile:
-    def test__setup_exponential__correct_values(self):
-        sersic = profile.ExponentialLightProfile(centre=(1, -1), axis_ratio=0.5, phi=45.0, flux=3.0,
-                                                 effective_radius=0.2)
+    def test__setup_dev_vaucouleurs__correct_values(self, dev_vaucouleurs):
+        assert dev_vaucouleurs.x_cen == 0.0
+        assert dev_vaucouleurs.y_cen == 0.1
+        assert dev_vaucouleurs.axis_ratio == 0.6
+        assert dev_vaucouleurs.phi == 15.0
+        assert dev_vaucouleurs.flux == 2.0
+        assert dev_vaucouleurs.effective_radius == 0.9
+        assert dev_vaucouleurs.sersic_index == 4.0
+        assert dev_vaucouleurs.sersic_constant == pytest.approx(7.66925, 1e-3)
 
-        assert sersic.x_cen == 1.0
-        assert sersic.y_cen == -1.0
-        assert sersic.axis_ratio == 0.5
-        assert sersic.phi == 45.0
-        assert sersic.flux == 3.0
-        assert sersic.effective_radius == 0.2
-        assert sersic.sersic_index == 1.0
-        assert sersic.sersic_constant == pytest.approx(1.678378, 1e-3)
-
-
-# noinspection PyClassHasNoInit
-class TestDevVaucouleursProfile:
-    def test__setup_dev_vaucouleurs__correct_values(self):
-        sersic = profile.DevVaucouleursLightProfile(centre=(0.0, 0.1), axis_ratio=0.6, phi=15.0, flux=2.0,
-                                                    effective_radius=0.9)
-
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.1
-        assert sersic.axis_ratio == 0.6
-        assert sersic.phi == 15.0
-        assert sersic.flux == 2.0
-        assert sersic.effective_radius == 0.9
-        assert sersic.sersic_index == 4.0
-        assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
-
-
-# noinspection PyClassHasNoInit
-class TestCoreSersicLightProfile:
-    def test__core_sersic_light_profile(self):
-        core_sersic = profile.CoreSersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                                     effective_radius=5, sersic_index=4.0, radius_break=0.01,
-                                                     flux_break=0.1, gamma=1, alpha=1)
-        assert core_sersic.flux_at_radius(0.01) == 0.1
+    def test__core_sersic_light_profile(self, core):
+        assert core.flux_at_radius(0.01) == 0.1
 
 
 # noinspection PyClassHasNoInit
@@ -762,6 +737,25 @@ def elliptical_sersic():
 def vertical_sersic():
     return profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
                                       effective_radius=0.6, sersic_index=4.0)
+
+
+@pytest.fixture(name='dev_vaucouleurs')
+def dev_vaucouleurs_profile():
+    return profile.DevVaucouleursLightProfile(centre=(0.0, 0.1), axis_ratio=0.6, phi=15.0, flux=2.0,
+                                              effective_radius=0.9)
+
+
+@pytest.fixture(name="exponential")
+def exponential_profile():
+    return profile.ExponentialLightProfile(centre=(1, -1), axis_ratio=0.5, phi=45.0, flux=3.0,
+                                           effective_radius=0.2)
+
+
+@pytest.fixture(name="core")
+def core_profile():
+    return profile.CoreSersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                          effective_radius=5, sersic_index=4.0, radius_break=0.01,
+                                          flux_break=0.1, gamma=1, alpha=1)
 
 
 # noinspection PyClassHasNoInit
@@ -913,3 +907,11 @@ class TestEquivalentProfile:
         assert copy.phi == circular.phi
         assert copy.flux == circular.flux
         assert copy.sersic_index == circular.sersic_index
+
+    def test_x_as_y(self):
+        def assert_shared_base(x, y):
+            assert x.centre == y.centre
+            assert x.axis_ratio == y.axis_ratio
+            assert x.phi == y.phi
+            assert x.flux == y.flux
+            assert x.sersic_index == y.sersic_index
