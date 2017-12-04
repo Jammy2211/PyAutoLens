@@ -922,10 +922,15 @@ class TestEquivalentProfile(object):
 
 class TestSubgrid(object):
     def test_decorator(self):
-        @profile.avg
         @profile.subgrid
-        def return_coords(s, coordinates):
-            return abs(coordinates[0]), abs(coordinates[1])
+        def return_coords(s, coords):
+            return coords[0], coords[1]
+
+        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
+        assert coordinates == [(0, 0)]
+
+        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=2)
+        assert coordinates == [(-0.25, -0.25), (-0.25, 0.25), (0.25, -0.25), (0.25, 0.25)]
 
         assert return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1) == (0, 0)
         assert return_coords(None, (0, 0), pixel_scale=1.0, grid_size=2) == (0.25, 0.25)
