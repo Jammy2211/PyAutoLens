@@ -922,6 +922,7 @@ class TestEquivalentProfile(object):
 
 class TestSubgrid(object):
     def test_decorator(self):
+        @profile.avg
         @profile.subgrid
         def return_coords(s, coordinates):
             return abs(coordinates[0]), abs(coordinates[1])

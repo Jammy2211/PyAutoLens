@@ -240,24 +240,29 @@ def side_length(dim_min, dim_max, pixel_scale):
     return int((dim_max - dim_min) / pixel_scale)
 
 
-def avg(results):
-    """
+def avg(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        results = func(*args, **kwargs)
+        """
 
-    Parameters
-    ----------
-    results : Sized
-        A collection of numerical values or tuples
-    Returns
-    -------
-        The logical average of that collection
-    """
-    try:
-        return sum(results) / len(results)
-    except TypeError:
-        sum_tuple = (0, 0)
-        for t in results:
-            sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
-        return sum_tuple[0] / len(results), sum_tuple[1] / len(results)
+        Parameters
+        ----------
+        results : Sized
+            A collection of numerical values or tuples
+        Returns
+        -------
+            The logical average of that collection
+        """
+        try:
+            return sum(results) / len(results)
+        except TypeError:
+            sum_tuple = (0, 0)
+            for t in results:
+                sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
+            return sum_tuple[0] / len(results), sum_tuple[1] / len(results)
+
+    return wrapper
 
 
 def subgrid(func):
@@ -288,8 +293,8 @@ def subgrid(func):
             The side length of the subgrid (i.e. there will be grid_size^2 pixels)
         Returns
         -------
-        result : value or (value, value)
-            The average of the results
+        result : [value] or [(value, value)]
+            A list of results
         """
 
         # TODO : if coordinate = 0.15", a 2x2 subgrid should be at 0.1" and 0.2" for pixel_scale = 0.3"
@@ -305,14 +310,14 @@ def subgrid(func):
         # TODO : half = 0.15", step = 0.3 / 4 = 0.075, so x = 0.075" 0.15", 0.025", as expeected :)
 
         half = pixel_scale / 2
-        step = pixel_scale / (grid_size+1)
+        step = pixel_scale / (grid_size + 1)
         results = []
         for x in range(grid_size):
             for y in range(grid_size):
-                x = coordinates[0] - half + (x+1) * step
-                y = coordinates[1] - half + (y+1) * step
+                x = coordinates[0] - half + (x + 1) * step
+                y = coordinates[1] - half + (y + 1) * step
                 results.append(func(self, (x, y)))
-        return avg(results)
+        return results
 
     return wrapper
 
@@ -371,6 +376,7 @@ class LightProfile(object):
         return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale).flatten()
 
     # noinspection PyMethodMayBeStatic
+    @avg
     @subgrid
     def flux_at_coordinates(self, coordinates):
         """
@@ -417,6 +423,7 @@ class CombinedLightProfile(list, LightProfile):
     def __init__(self, *light_profiles):
         super(CombinedLightProfile, self).__init__(light_profiles)
 
+    @avg
     @subgrid
     def flux_at_coordinates(self, coordinates):
         """
@@ -540,6 +547,7 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
         return self.flux * math.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
+    @avg
     @subgrid
     def flux_at_coordinates(self, coordinates):
         """
@@ -699,6 +707,10 @@ class MassProfile(object):
     def compute_deflection_angle(self, coordinates):
         raise AssertionError("Compute deflection angles should be overridden")
 
+    @subgrid
+    def compute_deflection_angle_subgridded(self, coordinates):
+        return self.compute_deflection_angle(coordinates)
+
 
 class CombinedMassProfile(list, MassProfile):
     """A mass profile comprising one or more mass profiles"""
@@ -706,7 +718,6 @@ class CombinedMassProfile(list, MassProfile):
     def __init__(self, *mass_profiles):
         super(CombinedMassProfile, self).__init__(mass_profiles)
 
-    @subgrid
     def compute_deflection_angle(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -751,7 +762,6 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         self.einstein_radius = einstein_radius
         self.slope = slope
 
-    @subgrid
     def compute_deflection_angle(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -809,7 +819,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     def normalization(self):
         return self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
 
-    @subgrid
     def compute_deflection_angle(self, coordinates):
         """
         Parameters
