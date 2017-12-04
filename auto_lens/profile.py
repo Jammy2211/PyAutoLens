@@ -322,6 +322,21 @@ def subgrid(func):
     return wrapper
 
 
+def iterative_subgrid(subgrid_func):
+    @wraps(subgrid_func)
+    def wrapper(self, coordinates, pixel_scale=0.1, threshold=0.0001):
+        last_result = None
+        grid_size = 1
+        while True:
+            next_result = subgrid_func(self, coordinates, pixel_scale=pixel_scale, grid_size=grid_size)
+            if last_result is not None and abs(next_result - last_result) < threshold:
+                return next_result
+            last_result = next_result
+            grid_size += 1
+
+    return wrapper
+
+
 def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
     return dim_min + pixel_coordinate * pixel_scale
 
@@ -391,6 +406,10 @@ class LightProfile(object):
             The value of flux at the given coordinates
         """
         raise AssertionError("Flux at coordinates should be overridden")
+
+    @iterative_subgrid
+    def flux_at_coordinates_iteratively_subgridded(self, coordinates):
+        return self.flux_at_coordinates(coordinates)
 
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
