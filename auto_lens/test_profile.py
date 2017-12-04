@@ -932,11 +932,12 @@ class TestDecorators(object):
         coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
         assert coordinates == [(0, 0)]
 
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=2)
-        assert coordinates == [(-0.25, -0.25), (-0.25, 0.25), (0.25, -0.25), (0.25, 0.25)]
+        # coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=2)
+        # assert coordinates == [(-0.25, -0.25), (-0.25, 0.25), (0.25, -0.25), (0.25, 0.25)]
 
-        assert return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1) == (0, 0)
-        assert return_coords(None, (0, 0), pixel_scale=1.0, grid_size=2) == (0.25, 0.25)
+        # TODO: this is the example described in LightDefl_Computation. Is the document wrong ot the decorator?
+        coordinates = return_coords(None, (0.5, 0.5), pixel_scale=1.0, grid_size=2)
+        assert coordinates == [(0.25, 0.25), (0.25, 0.75), (0.75, 0.25), (0.75, 0.75)]
 
     def test_average(self):
         @profile.avg
