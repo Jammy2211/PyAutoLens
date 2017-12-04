@@ -302,7 +302,7 @@ def subgrid(func):
         # TODO : now, step = 0.3 / 3, 0.1, so x = 0.1 " and 0.2 ", as expected.
 
         # TODO : Does the 3x3 case work?
-        # TODO : half = 0.15", step = 0.3 / 4 = 0.075, so x = 0.075" 0.15", 0.025", as expeected :)
+        # TODO : half = 0.15", step = 0.3 / 4 = 0.075, so x = 0.075" 0.15", 0.0225", as expeected :)
 
         half = pixel_scale / 2
         step = pixel_scale / (grid_size+1)
