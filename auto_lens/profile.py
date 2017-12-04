@@ -169,10 +169,6 @@ class EllipticalProfile(object):
         The coordinates after the elliptical translation
         """
 
-        # TODO: Big error here, coordinates_to_centre is not performed (it is only performed in coordinates_to_radius)
-        # TODO: Our coordinates below are therefore not translated to the lens profile coordinates
-        # TODO: Need to unit test this explicitly - Ill fix tomorrow
-
         # Compute distance of coordinates to the lens profile centre
         radius = self.coordinates_to_radius(coordinates)
 
@@ -295,13 +291,26 @@ def subgrid(func):
         result : value or (value, value)
             The average of the results
         """
+
+        # TODO : if coordinate = 0.15", a 2x2 subgrid should be at 0.1" and 0.2" for pixel_scale = 0.3"
+        # TODO : below - half = 0.3/2 = 0.15", step = 0.3/2 = 0.15" (for 2x2)
+        # TODO : x = 0.15" - 0.15" + (0.15"/2) + 0*(0.15/2) = 0.075" (x = 0)
+        # TODO : x = 0.15" (x = 1)
+        # TODO : Updated function below using step = pixel_scale / (grid_size+1) and deleting the thierd term in the
+        # TODO : loop equations
+
+        # TODO : now, step = 0.3 / 3, 0.1, so x = 0.1 " and 0.2 ", as expected.
+
+        # TODO : Does the 3x3 case work?
+        # TODO : half = 0.15", step = 0.3 / 4 = 0.075, so x = 0.075" 0.15", 0.025", as expeected :)
+
         half = pixel_scale / 2
-        step = pixel_scale / grid_size
+        step = pixel_scale / (grid_size+1)
         results = []
         for x in range(grid_size):
             for y in range(grid_size):
-                x = coordinates[0] - half + step / 2 + x * step
-                y = coordinates[1] - half + step / 2 + y * step
+                x = coordinates[0] - half + (x+1) * step
+                y = coordinates[1] - half + (y+1) * step
                 results.append(func(self, (x, y)))
         return avg(results)
 
