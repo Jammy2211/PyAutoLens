@@ -433,6 +433,7 @@ class LightProfile(object):
         """
         raise AssertionError("Flux at coordinates should be overridden")
 
+    # TODO: find a good test for subgridding of a light profile
     @iterative_subgrid
     def flux_at_coordinates_iteratively_subgridded(self, coordinates):
         return self.flux_at_coordinates(coordinates)
