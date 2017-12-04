@@ -778,7 +778,7 @@ class TestArray(object):
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
         array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
-        flat_array = circular.as_flat_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
+        flat_array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1).flatten()
 
         assert all(array[0] == flat_array[:100])
         assert all(array[1] == flat_array[100:200])
@@ -786,7 +786,7 @@ class TestArray(object):
     def test_combined_array(self, circular):
         combined = profile.CombinedLightProfile(circular, circular)
 
-        assert all(map(lambda i: i == 2, combined.as_flat_array() / circular.as_flat_array()))
+        assert all(map(lambda i: i == 2, combined.as_array().flatten() / circular.as_array().flatten()))
 
     def test_symmetric_profile(self, circular):
         circular.centre = (50, 50)

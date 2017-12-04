@@ -198,11 +198,14 @@ class SphericalProfile(EllipticalProfile):
         super(SphericalProfile, self).__init__(1.0, 0.0, centre)
 
 
-def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
+def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale, mask=None):
     """
 
     Parameters
     ----------
+    mask : Mask
+        An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
+        return a value)
     func : function(coordinates)
         A function that takes coordinates and returns a value
     x_min : float
@@ -231,8 +234,12 @@ def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
         for j in range(y_size):
             x = pixel_to_coordinate(x_min, pixel_scale, i)
             y = pixel_to_coordinate(y_min, pixel_scale, j)
-            row.append(func((x, y)))
+            if mask is not None and mask.is_masked((x, y)):
+                row.append(None)
+            else:
+                row.append(func((x, y)))
         array.append(row)
+    # This conversion was to resolve a bug with putting tuples in the array. It might increase execution time.
     return np.array(array)
 
 
@@ -370,7 +377,7 @@ def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def as_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
+    def as_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1, mask=None):
         """
 
         Parameters
@@ -385,36 +392,15 @@ class LightProfile(object):
             The maximum x bound
         y_max : float
             The maximum y bound
-
+        mask : Mask
+            An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
+            return a value)
         Returns
         -------
         array
             A numpy array illustrating this light profile between the given bounds
         """
-        return array_for_function(self.flux_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
-
-    def as_flat_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
-        """
-
-        Parameters
-        ----------
-        pixel_scale : float
-            The arcsecond (") size of each pixel
-        x_min : float
-            The minimum x bound
-        y_min : float
-            The minimum y bound
-        x_max : float
-            The maximum x bound
-        y_max : float
-            The maximum y bound
-
-        Returns
-        -------
-        array
-            A flat numpy array illustrating this light profile between the given bounds
-        """
-        return self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale).flatten()
+        return array_for_function(self.flux_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale, mask)
 
     # noinspection PyMethodMayBeStatic
     @avg
@@ -725,7 +711,7 @@ class CoreSersicLightProfile(SersicLightProfile):
 
 
 class MassProfile(object):
-    def deflection_angle_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
+    def deflection_angle_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1, mask=None):
         """
 
         Parameters
@@ -746,7 +732,7 @@ class MassProfile(object):
         array
             A numpy array illustrating this deflection angles for this profile between the given bounds
         """
-        return array_for_function(self.compute_deflection_angle, x_min, y_min, x_max, y_max, pixel_scale)
+        return array_for_function(self.compute_deflection_angle, x_min, y_min, x_max, y_max, pixel_scale, mask)
 
     # noinspection PyMethodMayBeStatic
     def compute_deflection_angle(self, coordinates):
