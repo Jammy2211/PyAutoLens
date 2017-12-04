@@ -952,7 +952,7 @@ class TestDecorators(object):
         def one_over_grid(s, coordinates, pixel_scale, grid_size):
             return 1.0 / grid_size
 
-        assert one_over_grid(None, None, None, 0.5) == pytest.approx(0.3333, 1e-2)
+        assert one_over_grid(None, None, None, 0.5) == pytest.approx(0.333, 1e-2)
         assert one_over_grid(None, None, None, 0.1) == pytest.approx(0.25)
         assert one_over_grid(None, None, None, 0.06) == pytest.approx(0.2)
 
