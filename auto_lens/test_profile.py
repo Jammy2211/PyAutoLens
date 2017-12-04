@@ -46,7 +46,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == 0.0
         assert coordinates_shift[1] == 0.0
@@ -54,7 +54,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_centre__mass_centre_x_shift__x_shifts(self):
         power_law = profile.EllipticalProfile(centre=(0.5, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == -0.5
         assert coordinates_shift[1] == 0.0
@@ -62,7 +62,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_centre__mass_centre_y_shift__y_shifts(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.5), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == 0.0
         assert coordinates_shift[1] == -0.5
@@ -70,7 +70,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_centre__mass_centre_x_and_y_shift__x_and_y_both_shift(self):
         power_law = profile.EllipticalProfile(centre=(0.5, 0.5), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == -0.5
         assert coordinates_shift[1] == -0.5
@@ -78,7 +78,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_centre__mass_centre_and_coordinates__correct_shifts(self):
         power_law = profile.EllipticalProfile(centre=(1.0, 0.5), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.2, 0.4))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.2, 0.4))
 
         assert coordinates_shift[0] == -0.8
         assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
@@ -86,21 +86,21 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_radius__coordinates_overlap_mass_profile__r_is_zero(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0, 0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0, 0))
 
         assert power_law.coordinates_to_radius(coordinates_shift) == 0.0
 
     def test__coordinates_to_radius__x_coordinates_is_one__r_is_one(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0))
 
         assert power_law.coordinates_to_radius(coordinates_shift) == 1.0
 
     def test__coordinates_to_radius__x_and_y_coordinates_are_one__r_is_root_two(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
         assert power_law.coordinates_to_radius(coordinates_shift) == pytest.approx(np.sqrt(2), 1e-5)
 
@@ -131,7 +131,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_from_x__angle_is_zero__angles_follow_trig(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -140,7 +140,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_from_x__angle_is_forty_five__angles_follow_trig(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -149,7 +149,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_from_x__angle_is_sixty__angles_follow_trig(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.7320))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.7320))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -158,7 +158,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_from_x__top_left_quandrant__angle_goes_above_90(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(-1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, 1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -167,7 +167,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_from_x__bottom_left_quandrant__angle_flips_back_to_45(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(-1.0, -1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, -1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -176,7 +176,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_from_x__bottom_right_quandrant__angle_flips_back_to_above_90(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, -1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, -1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -185,7 +185,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_to_mass_profile__same_angle__no_rotation(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -197,7 +197,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_to_mass_profile_both_45___no_rotation(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=45.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -209,7 +209,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_to_mass_profile_45_offset_same_angle__rotation_follows_trig(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -221,7 +221,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_angle_to_mass_profile_negative_60_offset_same_angle__rotation_follows_trig(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=60.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -412,7 +412,7 @@ class TestSphericalProfile(object):
     def test__coordinates_to_centre__mass_centre_zeros__no_shift(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == 0.0
         assert coordinates_shift[1] == 0.0
@@ -420,7 +420,7 @@ class TestSphericalProfile(object):
     def test__coordinates_to_centre__mass_centre_x_shift__x_shifts(self):
         power_law = profile.SphericalProfile(centre=(0.5, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == -0.5
         assert coordinates_shift[1] == 0.0
@@ -428,7 +428,7 @@ class TestSphericalProfile(object):
     def test__coordinates_to_centre__mass_centre_y_shift__y_shifts(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.5))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == 0.0
         assert coordinates_shift[1] == -0.5
@@ -436,7 +436,7 @@ class TestSphericalProfile(object):
     def test__coordinates_to_centre__mass_centre_x_and_y_shift__x_and_y_both_shift(self):
         power_law = profile.SphericalProfile(centre=(0.5, 0.5))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.0, 0.0))
 
         assert coordinates_shift[0] == -0.5
         assert coordinates_shift[1] == -0.5
@@ -444,7 +444,7 @@ class TestSphericalProfile(object):
     def test__coordinates_to_centre__mass_centre_and_coordinates__correct_shifts(self):
         power_law = profile.SphericalProfile(centre=(1.0, 0.5))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0.2, 0.4))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0.2, 0.4))
 
         assert coordinates_shift[0] == -0.8
         assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
@@ -452,21 +452,21 @@ class TestSphericalProfile(object):
     def test__coordinates_to_radius__coordinates_overlap_mass_profile__r_is_zero(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(0, 0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0, 0))
 
         assert power_law.coordinates_to_radius(coordinates_shift) == 0.0
 
     def test__coordinates_to_radius__x_coordinates_is_one__r_is_one(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0))
 
         assert power_law.coordinates_to_radius(coordinates_shift) == 1.0
 
     def test__coordinates_to_radius__x_and_y_coordinates_are_one__r_is_root_two(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
         assert power_law.coordinates_to_radius(coordinates_shift) == pytest.approx(np.sqrt(2), 1e-5)
 
@@ -481,7 +481,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_from_x__angle_is_zero__angles_follow_trig(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -490,7 +490,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_from_x__angle_is_forty_five__angles_follow_trig(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -499,7 +499,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_from_x__angle_is_sixty__angles_follow_trig(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 1.7320))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.7320))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -508,7 +508,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_from_x__top_left_quandrant__angle_goes_above_90(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(-1.0, 1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, 1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -517,7 +517,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_from_x__bottom_left_quandrant__angle_flips_back_to_45(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(-1.0, -1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(-1.0, -1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -526,7 +526,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_from_x__bottom_right_quandrant__angle_flips_back_to_above_90(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, -1.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, -1.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
@@ -535,7 +535,7 @@ class TestSphericalProfile(object):
     def test__coordinates_angle_to_mass_profile__same_angle__no_rotation(self):
         power_law = profile.SphericalProfile(centre=(0.0, 0.0))
 
-        coordinates_shift = power_law.coordinates_to_centre(shifted_coordinates=(1.0, 0.0))
+        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0.0))
 
         theta_from_x = power_law.coordinates_angle_from_x(coordinates_shift)
 
