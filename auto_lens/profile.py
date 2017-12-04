@@ -703,7 +703,6 @@ class MassProfile(object):
         return array_for_function(self.compute_deflection_angle, x_min, y_min, x_max, y_max, pixel_scale)
 
     # noinspection PyMethodMayBeStatic
-    @subgrid
     def compute_deflection_angle(self, coordinates):
         raise AssertionError("Compute deflection angles should be overridden")
 
