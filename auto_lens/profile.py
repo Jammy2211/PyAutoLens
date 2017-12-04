@@ -323,8 +323,31 @@ def subgrid(func):
 
 
 def iterative_subgrid(subgrid_func):
+    """
+    Decorator to iteratively increase the grid size until the difference between results reaches a defined threshold
+    Parameters
+    ----------
+    subgrid_func : function(coordinates, pixel_scale, grid_size) -> value
+        A function decorated with subgrid and average
+    Returns
+    -------
+        A function that will iteratively increase grid size until a desired accuracy is reached
+    """
     @wraps(subgrid_func)
     def wrapper(self, coordinates, pixel_scale=0.1, threshold=0.0001):
+        """
+
+        Parameters
+        ----------
+        self
+        coordinates
+        pixel_scale
+        threshold
+
+        Returns
+        -------
+
+        """
         last_result = None
         grid_size = 1
         while True:
