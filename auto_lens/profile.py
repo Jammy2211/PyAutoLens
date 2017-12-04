@@ -339,14 +339,17 @@ def iterative_subgrid(subgrid_func):
 
         Parameters
         ----------
-        self
-        coordinates
-        pixel_scale
-        threshold
-
+        self : Profile
+            The instance that owns the function being wrapped
+        coordinates : (float, float)
+            x, y coordinates in image space
+        pixel_scale : float
+            The size of a pixel
+        threshold : float
+            The minimum difference between the result at two different grid sizes
         Returns
         -------
-
+            The last result calculated once the difference between two results becomes lower than the threshold
         """
         last_result = None
         grid_size = 1
