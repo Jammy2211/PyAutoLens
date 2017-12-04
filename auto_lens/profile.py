@@ -51,26 +51,22 @@ class EllipticalProfile(object):
         phi_radians = math.radians(self.phi)
         return math.cos(phi_radians), math.sin(phi_radians)
 
-    def coordinates_to_centre(self, shifted_coordinates):
+    def coordinates_to_centre(self, coordinates):
         """
         Converts image coordinates to profile's centre
 
         Parameters
         ----------
-        shifted_coordinates : (float, float)
+        coordinates : (float, float)
             The x and y coordinates of the image
 
         Returns
         ----------
         The coordinates at the mass profile centre
         """
-        return shifted_coordinates[0] - self.x_cen, shifted_coordinates[1] - self.y_cen
+        return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
 
-    @staticmethod
-    def coordinates_to_radius(coordinates):
-        # TODO: This method seems like a bad idea. The coordinates_to_eccentric_radius method accounts for the centre
-        # TODO: of the ellipse, whereas this one seems to be relative to the origin. That's all fine until the ellipse
-        # TODO: it no longer centred at the origin.
+    def coordinates_to_radius(self, coordinates):
         """
         Convert the coordinates to a radius
 
@@ -83,7 +79,8 @@ class EllipticalProfile(object):
         -------
         The radius at those coordinates
         """
-        return math.sqrt(coordinates[0] ** 2 + coordinates[1] ** 2)
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
     def coordinates_to_eccentric_radius(self, coordinates):
         """
@@ -176,11 +173,11 @@ class EllipticalProfile(object):
         # TODO: Our coordinates below are therefore not translated to the lens profile coordinates
         # TODO: Need to unit test this explicitly - Ill fix tomorrow
 
-        # Shift coordinates to lens profile centre
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        # Compute distance of coordinates to the lens profile centre
+        radius = self.coordinates_to_radius(coordinates)
 
-        # Compute their distance to its centre
-        radius = self.coordinates_to_radius(shifted_coordinates)
+        # Shift coordinates to lens profile centre (this is performed internally in the function above)
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
 
         # Compute the angle between the coordinates and x-axis
         theta_from_x = self.coordinates_angle_from_x(shifted_coordinates)
@@ -212,8 +209,6 @@ def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
     ----------
     func : function(coordinates)
         A function that takes coordinates and returns a value
-    pixel_scale : float
-        The arcsecond (") size of each pixel
     x_min : float
         The minimum x bound
     y_min : float
@@ -222,6 +217,8 @@ def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale):
         The maximum x bound
     y_max : float
         The maximum y bound
+    pixel_scale : float
+        The arcsecond (") size of each pixel
 
     Returns
     -------
