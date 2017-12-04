@@ -105,6 +105,8 @@ class PSF(object):
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
 
+# TODO: Should the mask be zeros and not-mask ones? That way an and operation between an image and mask would remove all
+# TODO: masked pixels.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
