@@ -1000,3 +1000,12 @@ class TestDecorators(object):
         assert one_over_grid(None, None, None, 0.1) == pytest.approx(0.25)
         assert one_over_grid(None, None, None, 0.06) == pytest.approx(0.2)
 
+    def test_mask(self):
+        mask = MockMask([(x, 0) for x in range(-5, 6)])
+        array = profile.array_for_function(lambda coordinates: 1, -5, -5, 5, 5, 1, mask=mask)
+
+        assert array[5][5] is None
+        assert array[5][6] is not None
+        assert array[6][5] is None
+        assert array[0][0] is not None
+        assert array[0][5] is None
