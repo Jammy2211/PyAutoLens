@@ -79,14 +79,6 @@ class TestDecorators(object):
 
         coordinates = return_coords((-2.0, 3.0), pixel_scale=0.1, grid_size=4)
 
-        # half = pixel_scale / 2 = 0.05
-        # step = pixel_scale / (4+1) = 0.02
-
-        # first x = -2.0 - 0.05 + 0.02 = -2.03 (and increase in steps of 0.02)
-        # first y = 3.0 - 0.05 + 0.02 = 2.97 (and increse in steps of 0.02)
-
-        # TODO : NEED TO SORT ROUNDING ERRORS BELOW
-
         coordinates = map(lambda coords: (pytest.approx(coords[0], 1e-2), pytest.approx(coords[1], 1e-2)), coordinates)
 
         assert coordinates == [(-2.03, 2.97), (-2.03, 2.99), (-2.03, 3.01), (-2.03, 3.03),
@@ -103,13 +95,13 @@ class TestDecorators(object):
         assert return_input([(1, 10), (2, 20), (3, 30)]) == (2, 20)
 
     def test_iterative_subgrid(self):
+        # noinspection PyUnusedLocal
         @decorator.iterative_subgrid
         def one_over_grid(coordinates, pixel_scale, grid_size):
             return 1.0 / grid_size
 
-        assert one_over_grid(None, None, 0.5) == pytest.approx(0.333, 1e-2)
-        assert one_over_grid(None, None, 0.1) == pytest.approx(0.25)
-        assert one_over_grid(None, None, 0.06) == pytest.approx(0.2)
+        assert one_over_grid(None, None, 0.51) == pytest.approx(0.5)
+        assert one_over_grid(None, None, 0.21) == pytest.approx(0.2)
 
     def test_mask(self):
         mask = MockMask([(x, 0) for x in range(-5, 6)])
