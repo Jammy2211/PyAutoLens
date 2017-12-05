@@ -1024,6 +1024,8 @@ class TestDecorators(object):
         #first x = -2.0 - 0.05 + 0.02 = -2.03 (and increase in steps of 0.02)
         # first y = 3.0 - 0.05 + 0.02 = 2.97 (and increse in steps of 0.02)
 
+        # TODO : NEED TO SORT ROUNDING ERRORS BELOW
+
         assert coordinates == [(-2.03, 2.97), (-2.03, 2.99), (-2.03, 3.01), (-2.03, 3.03),
                                (-2.01, 2.97), (-2.01, 2.99), (-2.01, 3.01), (-2.01, 3.03),
                                (-1.99, 2.97), (-1.99, 2.99), (-1.99, 3.01), (-1.99, 3.03),
