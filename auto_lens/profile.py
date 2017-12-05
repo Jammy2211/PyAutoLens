@@ -201,9 +201,6 @@ class SphericalProfile(EllipticalProfile):
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def __init__(self):
-        self.as_array = decorator.array_function(self.flux_at_coordinates)
-
     # noinspection PyMethodMayBeStatic
     def flux_at_coordinates(self, coordinates):
         """
@@ -242,7 +239,8 @@ class LightProfile(object):
             The maximum y bound
 
         """
-        array = self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale)
+        array = decorator.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
+                                                                   pixel_scale=pixel_scale)
         pyplot.imshow(array)
         pyplot.clim(vmax=np.mean(array) + np.std(array))
         pyplot.show()
@@ -506,9 +504,6 @@ class CoreSersicLightProfile(SersicLightProfile):
 
 
 class MassProfile(object):
-    def __init__(self):
-        self.deflection_angle_array = decorator.array_function(self.compute_deflection_angle)
-
     # noinspection PyMethodMayBeStatic
     def compute_deflection_angle(self, coordinates):
         raise AssertionError("Compute deflection angles should be overridden")
