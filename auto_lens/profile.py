@@ -807,9 +807,21 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The deflection angle at those coordinates
         """
 
+        from scipy.integrate import quad
+
         # TODO : Unit tests missing - need to sort out scipy.integrate
 
-        coordinates_elliptical = self.coordinates_rotate_to_elliptical(coordinates)
+        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+
+        defl = {}
+
+        npow = 0.0
+        defl[0] = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+        defl[0] = self.einstein_radius_rescaled*defl[0]*coordinates[0] / 4.0
+
+        npow = 1.0
+        defl[1] = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+        defl[1] = self.einstein_radius_rescaled*defl[1]*coordinates[1] / 4.0
 
         # TODO: implement a numerical integrator for this profile using scipy and / or c++
 
@@ -818,7 +830,12 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         # defl_angles = self.normalization*defl_angles
         # return defl_angles
 
-        pass
+        return defl
+
+
+    def defl_func(self, u, coordinates, npow):
+        eta = (u*((coordinates[0]**2) + (coordinates[1]**2/(1-(1-self.axis_ratio**2)*u))))**0.5
+        return eta**(-(self.slope-1))/((1-(1-self.axis_ratio**2)*u)**(npow+0.5))
 
     @property
     def einstein_radius_rescaled(self):
@@ -861,6 +878,9 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         ----------
         The deflection angles at these coordinates
         """
+
+        # TODO : Need to rotate the deflection angles computed belo back to othe Cartesian image coordinates
+
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
 

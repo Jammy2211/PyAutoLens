@@ -664,6 +664,40 @@ class TestEllipticalPowerLaw(object):
         assert power_law.slope == 2.0
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
+    def test__compute_deflection_angle_identical_as_sie_compare_ratio__same_ratio(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0)
+
+
+        defls_isothermal = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0, slope=2.0)
+
+        defls_power_law = power_law.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        ratio_isothermal = defls_isothermal[0] / defls_isothermal[1]
+        ratio_power_law = defls_power_law[0] / defls_power_law[1]
+
+        assert ratio_isothermal == pytest.approx(ratio_power_law, 1e-3)
+
+    def test__compute_deflection_angle_identical_as_sie_compare_values__same_values(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0)
+
+
+        defls_isothermal = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0, slope=2.0)
+
+        defls_power_law = power_law.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        assert defls_isothermal[0] == pytest.approx(defls_power_law[0], 1e-3)
+        assert defls_isothermal[1] == pytest.approx(defls_power_law[1], 1e-3)
+
 
 class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):
