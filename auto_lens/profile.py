@@ -809,38 +809,34 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
         from scipy.integrate import quad
 
-        # TODO : Unit tests missing - need to sort out scipy.integrate
-
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
-        defl = {}
-
         npow = 0.0
-        defl[0] = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-        defl[0] = self.einstein_radius_rescaled*defl[0]*coordinates[0] / 4.0
+        defl_x = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+        defl_x = self.defl_normalization * defl_x * coordinates[0]
 
         npow = 1.0
-        defl[1] = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-        defl[1] = self.einstein_radius_rescaled*defl[1]*coordinates[1] / 4.0
+        defl_y = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+        defl_y = self.defl_normalization * defl_y * coordinates[1]
 
-        # TODO: implement a numerical integrator for this profile using scipy and / or c++
+        defls = self.coordinates_back_to_cartesian((defl_x, defl_y))
 
-        # defl_elliptical = scipy.integrate(coordinates_elliptical, kappa_power_law)
-        # defl_angles = self.coordinates_back_to_cartesian(coordinates_elliptical=defl_elliptical)
-        # defl_angles = self.normalization*defl_angles
-        # return defl_angles
-
-        return defl
-
+        return defls
 
     def defl_func(self, u, coordinates, npow):
         eta = (u*((coordinates[0]**2) + (coordinates[1]**2/(1-(1-self.axis_ratio**2)*u))))**0.5
-        return eta**(-(self.slope-1))/((1-(1-self.axis_ratio**2)*u)**(npow+0.5))
+        return self.kappa(eta)/((1-(1-self.axis_ratio**2)*u)**(npow+0.5))
+
+    @property
+    def defl_normalization(self):
+        return self.axis_ratio
+
+    def kappa(self, eta):
+        return self.einstein_radius_rescaled*eta**(-(self.slope-1))
 
     @property
     def einstein_radius_rescaled(self):
-        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius
-
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius**(self.slope-1)
 
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
@@ -863,10 +859,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
 
-    @property
-    def normalization(self):
-        return self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
-
     def compute_deflection_angle(self, coordinates):
         """
         Parameters
@@ -879,13 +871,22 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         The deflection angles at these coordinates
         """
 
-        # TODO : Need to rotate the deflection angles computed belo back to othe Cartesian image coordinates
+        # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
+        # TODO: throw an assertion error if the inputs causing the error are invalid?
 
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
-        psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
 
-        # TODO: This line sometimes throws a division by zero error. May need to check value of psi, try/except or even
-        # TODO: throw an assertion error if the inputs causing the error are invalid?
-        defl_x = self.normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
-        defl_y = self.normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
-        return defl_x, defl_y
+        psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
+        defl_x = self.defl_normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
+        defl_y = self.defl_normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
+
+        defls = self.coordinates_back_to_cartesian((defl_x, defl_y))
+
+        return defls
+
+    def kappa(self, eta):
+        return self.einstein_radius_rescaled*eta
+
+    @property
+    def defl_normalization(self):
+        return 2.0*self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))

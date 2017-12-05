@@ -664,7 +664,7 @@ class TestEllipticalPowerLaw(object):
         assert power_law.slope == 2.0
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
-    def test__compute_deflection_angle_identical_as_sie_compare_ratio__same_ratio(self):
+    def test__compute_deflection_angle_identical_as_sie_compare_ratio__same_defls(self):
 
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0)
@@ -682,7 +682,7 @@ class TestEllipticalPowerLaw(object):
 
         assert ratio_isothermal == pytest.approx(ratio_power_law, 1e-3)
 
-    def test__compute_deflection_angle_identical_as_sie_compare_values__same_values(self):
+    def test__compute_deflection_angle_identical_as_sie_compare_values__same_defls(self):
 
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0)
@@ -698,6 +698,57 @@ class TestEllipticalPowerLaw(object):
         assert defls_isothermal[0] == pytest.approx(defls_power_law[0], 1e-3)
         assert defls_isothermal[1] == pytest.approx(defls_power_law[1], 1e-3)
 
+    def test__compute_deflection_angle_compare_to_fortran_slope_isothermal__same_defls(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0, slope=2.0)
+
+        defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] == pytest.approx(0.50734, 1e-3)
+        assert defls[1] == pytest.approx(0.79421, 1e-3)
+
+    def test__compute_deflection_angle_compare_to_fortran_slope_above_isothermal__same_defls(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0, slope=2.5)
+
+        defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] == pytest.approx(0.99629, 1e-3)
+        assert defls[1] == pytest.approx(1.29641, 1e-3)
+
+    def test__compute_deflection_angle_compare_to_fortran_slope_below_isothermal__same_defls(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0, slope=1.5)
+
+        defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] == pytest.approx(0.26729, 1e-3)
+        assert defls[1] == pytest.approx(0.48036, 1e-3)
+
+    def test__compute_deflection_angle_compare_to_fortran_different_values__same_defls(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                             einstein_radius=1.3, slope=1.9)
+
+        defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] / defls[1] == pytest.approx(-0.53353, 1e-3)
+        assert defls[0] == pytest.approx(-0.60205, 1e-3)
+        assert defls[1] == pytest.approx(1.12841, 1e-3)
+
+    def test__compute_deflection_angle_compare_to_fortran_different_values_2__same_defls(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=150.0,
+                                                             einstein_radius=1.3, slope=2.2)
+
+        defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] / defls[1] == pytest.approx(-0.27855, 1e-3)
+        assert defls[0] == pytest.approx(-0.35096, 1e-3)
+        assert defls[1] == pytest.approx(1.25995, 1e-3)
 
 class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):
@@ -718,17 +769,17 @@ class TestEllipticalIsothermal(object):
 
         defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
 
-        # normalization = (1/(1+q))*einr*q / (sqrt(1-q**2))
-        # normalization = (1/1.5)*1*0.5 / (sqrt(0.75) = 0.3849
+        # normalization = 2.0*(1/(1+q))*einr*q / (sqrt(1-q**2))
+        # normalization = (1/1.5)*1*0.5 / (sqrt(0.75) = 0.7698
         # Psi = sqrt (q ** 2 * (x**2) + y**2 = 0.25 + 1) = sqrt(1.25)
 
         # defl_x = normalization * atan(sqrt(1-q**2) x / Psi )
-        # defl_x = 0.3849 * atan(sqrt(0.75)/sqrt(1.25) = 0.25367
+        # defl_x = 0.7698 * atan(sqrt(0.75)/sqrt(1.25) = 0.50734
 
         # defl_y = normalization * atanh(sqrt(1-q**2) y / (Psi) )
 
-        assert defls[0] == pytest.approx(0.25367, 1e-3)
-        assert defls[1] == pytest.approx(0.397101, 1e-3)
+        assert defls[0] == pytest.approx(0.50734, 1e-3)
+        assert defls[1] == pytest.approx(0.79420, 1e-3)
 
     def test__compute_deflection_angle_coordinate_rotation_90__defl_x_same_defl_y_flip(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=90.0,
@@ -736,8 +787,8 @@ class TestEllipticalIsothermal(object):
 
         defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
 
-        assert defls[0] == pytest.approx(0.25367, 1e-3)
-        assert defls[1] == pytest.approx(-0.397101, 1e-3)
+        assert defls[0] == pytest.approx(0.79420, 1e-3)
+        assert defls[1] == pytest.approx(0.50734, 1e-3)
 
     def test__compute_deflection_angle_coordinate_rotation_180__both_defl_flip(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=180.0,
@@ -745,8 +796,8 @@ class TestEllipticalIsothermal(object):
 
         defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
 
-        assert defls[0] == pytest.approx(-0.25367, 1e-3)
-        assert defls[1] == pytest.approx(-0.397101, 1e-3)
+        assert defls[0] == pytest.approx(0.50734, 1e-3)
+        assert defls[1] == pytest.approx(0.79420, 1e-3)
 
     def test__compute_deflection_angle_coordinate_rotation_45__defl_y_zero_new_defl_x(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
@@ -756,8 +807,8 @@ class TestEllipticalIsothermal(object):
 
         # 45 degree aligns the mass profile with the axes, so there is no deflection acoss y.
 
-        assert defls[0] == pytest.approx(0.40306, 1e-3)
-        assert defls[1] == pytest.approx(0.0, 1e-3)
+        assert defls[0] == pytest.approx(0.5698, 1e-3)
+        assert defls[1] == pytest.approx(0.5700, 1e-3)
 
     def test__compute_deflection_angle_double_einr__double_defl_angles(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
@@ -765,8 +816,8 @@ class TestEllipticalIsothermal(object):
 
         defls = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
 
-        assert defls[0] == pytest.approx(0.40306 * 2.0, 1e-3)
-        assert defls[1] == pytest.approx(0.0, 1e-3)
+        assert defls[0] == pytest.approx(0.5698 * 2.0, 1e-3)
+        assert defls[1] == pytest.approx(0.5700 * 2.0, 1e-3)
 
     def test__compute_deflection_angle_flip_coordinaates_and_centren__same_defl(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(-1, -1), axis_ratio=0.5, phi=0.0,
@@ -774,8 +825,8 @@ class TestEllipticalIsothermal(object):
 
         defls = isothermal.compute_deflection_angle(coordinates=(0.0, 0.0))
 
-        assert defls[0] == pytest.approx(0.25367, 1e-3)
-        assert defls[1] == pytest.approx(0.397101, 1e-3)
+        assert defls[0] == pytest.approx(0.50734, 1e-3)
+        assert defls[1] == pytest.approx(0.79420, 1e-3)
 
     def test__compute_deflection_angle_another_q__new_defl_values(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.25, phi=0.0,
@@ -783,8 +834,27 @@ class TestEllipticalIsothermal(object):
 
         defls = isothermal.compute_deflection_angle(coordinates=(-1.0, -1.0))
 
-        assert defls[0] == pytest.approx(-0.31154393, 1e-3)
-        assert defls[1] == pytest.approx(-0.71567731579, 1e-3)
+        assert defls[0] == pytest.approx(-0.62308, 1e-3)
+        assert defls[1] == pytest.approx(-1.43135, 1e-3)
+
+    def test__compute_deflection_angle_compare_to_fortran__same_values(self):
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
+                                                             einstein_radius=1.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] == pytest.approx(0.50734, 1e-3)
+        assert defls[1] == pytest.approx(0.79421, 1e-3)
+
+    def test__compute_deflection_angle_compare_to_fortran__same_values(self):
+
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                             einstein_radius=1.0)
+
+        defls = isothermal.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert defls[0] == pytest.approx(0.57002, 1e-3)
+        assert defls[1] == pytest.approx(0.57002, 1e-3)
 
 
 class TestArray(object):
