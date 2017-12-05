@@ -648,9 +648,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         defl_x = self.defl_normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
         defl_y = self.defl_normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
-        defls = self.coordinates_back_to_cartesian((defl_x, defl_y))
-
-        return defls
+        return self.coordinates_back_to_cartesian((defl_x, defl_y))
 
     def kappa(self, eta):
         return self.einstein_radius_rescaled * eta
