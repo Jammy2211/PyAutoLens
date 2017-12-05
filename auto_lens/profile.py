@@ -216,10 +216,6 @@ class LightProfile(object):
         """
         raise AssertionError("Flux at coordinates should be overridden")
 
-    # TODO: find a good test for subgridding of a light profile
-    def flux_at_coordinates_iteratively_subgridded(self, coordinates):
-        return self.flux_at_coordinates(coordinates)
-
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
         Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
