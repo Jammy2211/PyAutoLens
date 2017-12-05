@@ -40,7 +40,7 @@ def subgrid(func):
     """
 
     @wraps(func)
-    def wrapper(self, coordinates, pixel_scale=0.1, grid_size=1):
+    def wrapper(coordinates, pixel_scale=0.1, grid_size=1):
         """
 
         Parameters
@@ -65,7 +65,7 @@ def subgrid(func):
             for y in range(grid_size):
                 x1 = coordinates[0] - half + (x + 1) * step
                 y1 = coordinates[1] - half + (y + 1) * step
-                results.append(func(self, (x1, y1)))
+                results.append(func((x1, y1)))
         return results
 
     return wrapper
@@ -84,7 +84,7 @@ def iterative_subgrid(subgrid_func):
     """
 
     @wraps(subgrid_func)
-    def wrapper(self, coordinates, pixel_scale=0.1, threshold=0.0001):
+    def wrapper(coordinates, pixel_scale=0.1, threshold=0.0001):
         """
 
         Parameters
@@ -104,7 +104,7 @@ def iterative_subgrid(subgrid_func):
         last_result = None
         grid_size = 1
         while True:
-            next_result = subgrid_func(self, coordinates, pixel_scale=pixel_scale, grid_size=grid_size)
+            next_result = subgrid_func(coordinates, pixel_scale=pixel_scale, grid_size=grid_size)
             if last_result is not None and abs(next_result - last_result) < threshold:
                 return next_result
             last_result = next_result

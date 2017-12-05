@@ -32,56 +32,52 @@ class MockMask(object):
 
 class TestDecorators(object):
     def test_subgrid_2x2(self):
-        # noinspection PyUnusedLocal
         @decorator.subgrid
-        def return_coords(s, coords):
+        def return_coords(coords):
             return coords[0], coords[1]
 
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
         assert coordinates == [(0, 0)]
 
-        coordinates = return_coords(None, (0.5, 0.5), pixel_scale=1.0, grid_size=2)
+        coordinates = return_coords((0.5, 0.5), pixel_scale=1.0, grid_size=2)
         assert coordinates == [(1. / 3., 1. / 3.), (1. / 3., 2. / 3.), (2. / 3., 1. / 3.), (2. / 3., 2. / 3.)]
 
     def test_subgrid_3x3(self):
-        # noinspection PyUnusedLocal
         @decorator.subgrid
-        def return_coords(s, coords):
+        def return_coords(coords):
             return coords[0], coords[1]
 
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
         assert coordinates == [(0, 0)]
 
-        coordinates = return_coords(None, (0.5, 0.5), pixel_scale=1.0, grid_size=3)
+        coordinates = return_coords((0.5, 0.5), pixel_scale=1.0, grid_size=3)
         assert coordinates == [(0.25, 0.25), (0.25, 0.5), (0.25, 0.75),
                                (0.50, 0.25), (0.50, 0.5), (0.50, 0.75),
                                (0.75, 0.25), (0.75, 0.5), (0.75, 0.75)]
 
     def test_subgrid_3x3_triple_pixel_scale_and_coordinate(self):
-        # noinspection PyUnusedLocal
         @decorator.subgrid
-        def return_coords(s, coords):
+        def return_coords(coords):
             return coords[0], coords[1]
 
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
         assert coordinates == [(0, 0)]
 
-        coordinates = return_coords(None, (1.5, 1.5), pixel_scale=3.0, grid_size=3)
+        coordinates = return_coords((1.5, 1.5), pixel_scale=3.0, grid_size=3)
 
         assert coordinates == [(0.75, 0.75), (0.75, 1.5), (0.75, 2.25),
                                (1.50, 0.75), (1.50, 1.5), (1.50, 2.25),
                                (2.25, 0.75), (2.25, 1.5), (2.25, 2.25)]
 
     def test_subgrid_4x4_new_coordinates(self):
-        # noinspection PyUnusedLocal
         @decorator.subgrid
-        def return_coords(s, coords):
+        def return_coords(coords):
             return coords[0], coords[1]
 
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
         assert coordinates == [(0, 0)]
 
-        coordinates = return_coords(None, (-2.0, 3.0), pixel_scale=0.1, grid_size=4)
+        coordinates = return_coords((-2.0, 3.0), pixel_scale=0.1, grid_size=4)
 
         # half = pixel_scale / 2 = 0.05
         # step = pixel_scale / (4+1) = 0.02
@@ -99,23 +95,21 @@ class TestDecorators(object):
                                (-1.97, 2.97), (-1.97, 2.99), (-1.97, 3.01), (-1.97, 3.03)]
 
     def test_average(self):
-        # noinspection PyUnusedLocal
         @decorator.avg
-        def return_input(s, input_list):
+        def return_input(input_list):
             return input_list
 
-        assert return_input(None, [1, 2, 3]) == 2
-        assert return_input(None, [(1, 10), (2, 20), (3, 30)]) == (2, 20)
+        assert return_input([1, 2, 3]) == 2
+        assert return_input([(1, 10), (2, 20), (3, 30)]) == (2, 20)
 
     def test_iterative_subgrid(self):
-        # noinspection PyUnusedLocal
         @decorator.iterative_subgrid
-        def one_over_grid(s, coordinates, pixel_scale, grid_size):
+        def one_over_grid(coordinates, pixel_scale, grid_size):
             return 1.0 / grid_size
 
-        assert one_over_grid(None, None, None, 0.5) == pytest.approx(0.333, 1e-2)
-        assert one_over_grid(None, None, None, 0.1) == pytest.approx(0.25)
-        assert one_over_grid(None, None, None, 0.06) == pytest.approx(0.2)
+        assert one_over_grid(None, None, 0.5) == pytest.approx(0.333, 1e-2)
+        assert one_over_grid(None, None, 0.1) == pytest.approx(0.25)
+        assert one_over_grid(None, None, 0.06) == pytest.approx(0.2)
 
     def test_mask(self):
         mask = MockMask([(x, 0) for x in range(-5, 6)])
