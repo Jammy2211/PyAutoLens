@@ -321,9 +321,9 @@ def subgrid(func):
         results = []
         for x in range(grid_size):
             for y in range(grid_size):
-                x = coordinates[0] - half + (x + 1) * step
-                y = coordinates[1] - half + (y + 1) * step
-                results.append(func(self, (x, y)))
+                x1 = coordinates[0] - half + (x + 1) * step
+                y1 = coordinates[1] - half + (y + 1) * step
+                results.append(func(self, (x1, y1)))
         return results
 
     return wrapper
