@@ -105,7 +105,7 @@ def iterative_subgrid(subgrid_func):
         grid_size = 1
         while True:
             next_result = subgrid_func(coordinates, pixel_scale=pixel_scale, grid_size=grid_size)
-            if last_result is not None and abs(next_result - last_result) < threshold:
+            if last_result is not None and abs(next_result - last_result) / last_result < threshold:
                 return next_result
             last_result = next_result
             grid_size += 1
