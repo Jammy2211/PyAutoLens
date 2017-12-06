@@ -649,8 +649,10 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
 
-    def compute_deflection_angle(self, coordinates):
+    def compute_potential(self, coordinates):
         """
+        Calculate the gravitational potential at a given set of image plane coordinates
+
         Parameters
         ----------
         coordinates : (float, float)
@@ -658,7 +660,30 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         Returns
         ----------
-        The deflection angles at these coordinates
+        The potential at these coordinates
+        """
+
+        # TODO : The constant rotating of reference frames is messy, how can we clean this up?
+
+        deflections = self.compute_deflection_angle(coordinates)
+
+        deflections = self.coordinates_rotate_to_elliptical(deflections)
+        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+
+        return  (coordinates[0]*deflections[0] + coordinates[1]*deflections[1])
+
+    def compute_deflection_angle(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles (x and y components) at those coordinates
         """
 
         # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
