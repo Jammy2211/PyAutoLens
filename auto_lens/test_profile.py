@@ -865,6 +865,14 @@ class TestEllipticalIsothermal(object):
         assert defls[0] == pytest.approx(0.57002, 1e-3)
         assert defls[1] == pytest.approx(0.57002, 1e-3)
 
+    def test__compute_potential_compare_to_fortran__same_values2(self):
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                             einstein_radius=1.0)
+
+        potential = isothermal.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(0.18525, 1e-3)
+
 
 class TestCombinedProfiles(object):
     def test__summation(self, circular):
