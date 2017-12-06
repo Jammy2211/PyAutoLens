@@ -99,7 +99,6 @@ class EllipticalProfile(object):
         return math.sqrt(self.axis_ratio) * math.sqrt(
             shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
-    # TODO: This isn't using any variable from the class. Should it be?
     @staticmethod
     def coordinates_angle_from_x(coordinates):
         """
@@ -126,7 +125,7 @@ class EllipticalProfile(object):
 
         Parameters
         ----------
-        theta : Float
+        theta : float
 
         Returns
         ----------
@@ -303,19 +302,6 @@ def subgrid(func):
         result : [value] or [(value, value)]
             A list of results
         """
-
-        # TODO : if coordinate = 0.15", a 2x2 subgrid should be at 0.1" and 0.2" for pixel_scale = 0.3"
-        # TODO : below - half = 0.3/2 = 0.15", step = 0.3/2 = 0.15" (for 2x2)
-        # TODO : x = 0.15" - 0.15" + (0.15"/2) + 0*(0.15/2) = 0.075" (x = 0)
-        # TODO : x = 0.15" (x = 1)
-        # TODO : Updated function below using step = pixel_scale / (grid_size+1) and deleting the thierd term in the
-        # TODO : loop equations
-
-        # TODO : now, step = 0.3 / 3, 0.1, so x = 0.1 " and 0.2 ", as expected.
-
-        # TODO : Does the 3x3 case work?
-        # TODO : half = 0.15", step = 0.3 / 4 = 0.075, so x = 0.075" 0.15", 0.0225", as expeected :)
-
         half = pixel_scale / 2
         step = pixel_scale / (grid_size + 1)
         results = []
