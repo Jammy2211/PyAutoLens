@@ -2,6 +2,7 @@ import math
 import numpy as np
 from matplotlib import pyplot
 import decorator
+from scipy.integrate import quad
 
 
 class EllipticalProfile(object):
@@ -570,21 +571,16 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The deflection angle at those coordinates
         """
 
-        from scipy.integrate import quad
-
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
-        npow = 0.0
-        defl_x = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-        defl_x = self.defl_normalization * defl_x * coordinates[0]
+        def calculate_deflection_component(npow, index):
+            deflection = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+            return self.defl_normalization * deflection * coordinates[index]
 
-        npow = 1.0
-        defl_y = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-        defl_y = self.defl_normalization * defl_y * coordinates[1]
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
-        defls = self.coordinates_back_to_cartesian((defl_x, defl_y))
-
-        return defls
+        return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
     def defl_func(self, u, coordinates, npow):
         eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
