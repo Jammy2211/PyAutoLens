@@ -574,6 +574,8 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The gravitational potential (r-direction) at those coordinates
         """
 
+        #TODO : ONLY WORKS FOR ISOTHERMAL CASE (Slope = 2.0)
+
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         def calculate_potential():
@@ -584,11 +586,12 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
     def potential_func(self, u, coordinates):
         eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
-        return (eta/u)* (1.0/(self.slope-1)**2) * self.einstein_radius_rescaled * eta ** (self.slope-1) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+        # TODO : The expression below is missing a dependence on slope, meaning it doesn't work for power-law case
+        return (eta/u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5) )
 
     @property
     def potential_normalization(self):
-        return self.axis_ratio/2.0
+        return 2.0 * self.einstein_radius_rescaled * ((self.slope-1)**-2) * self.axis_ratio/2.0
 
     def compute_deflection_angle(self, coordinates):
         """
