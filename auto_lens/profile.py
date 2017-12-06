@@ -574,20 +574,20 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         def calculate_deflection_component(npow, index):
-            deflection = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-            return self.defl_normalization * deflection * coordinates[index]
+            deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+            return self.deflection_normalization * deflection * coordinates[index]
 
         deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
-    def defl_func(self, u, coordinates, npow):
+    def deflection_func(self, u, coordinates, npow):
         eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
         return self.kappa(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @property
-    def defl_normalization(self):
+    def deflection_normalization(self):
         return self.axis_ratio
 
     def kappa(self, eta):
@@ -637,14 +637,16 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
-        defl_x = self.defl_normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
-        defl_y = self.defl_normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
+        deflection_x = self.deflection_normalization * math.atan(
+            (math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
+        deflection_y = self.deflection_normalization * math.atanh(
+            (math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
-        return self.coordinates_back_to_cartesian((defl_x, defl_y))
+        return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
     def kappa(self, eta):
         return self.einstein_radius_rescaled * eta
 
     @property
-    def defl_normalization(self):
+    def deflection_normalization(self):
         return 2.0 * self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
