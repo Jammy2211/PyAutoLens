@@ -562,7 +562,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
     def compute_potential(self, coordinates):
         """
-        Calculate the gravitatioonal potential at a given set of image plane coordinates
+        Calculate the gravitational potential at a given set of image plane coordinates
 
         Parameters
         ----------
@@ -577,7 +577,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         def calculate_potential():
-            potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates))[0]
+            potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
             return self.potential_normalization * potential
 
         return calculate_potential()
