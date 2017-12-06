@@ -556,11 +556,11 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         self.einstein_radius = einstein_radius
         self.slope = slope
 
-    def kappa(self, eta):
+    def surface_density_func(self, eta):
         return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
     def eta_u(self, u, coordinates):
-        return (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
+        return math.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
     def compute_surface_density(self, coordinates):
         """
@@ -580,7 +580,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
         eta = math.sqrt((coordinates[0] ** 2) + ( coordinates[1] ** 2) / (self.axis_ratio**2))
 
-        return self.kappa(eta)
+        return self.surface_density_func(eta)
 
     def compute_potential(self, coordinates):
         """
@@ -639,7 +639,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
     def deflection_func(self, u, coordinates, npow):
         eta = self.eta_u(u, coordinates)
-        return self.kappa(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        return self.surface_density_func(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @property
     def deflection_normalization(self):
@@ -649,6 +649,44 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
     def einstein_radius_rescaled(self):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
+
+class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
+    """Represents a cored elliptical power-law density distribution"""
+
+    def __init__(self, axis_ratio, phi, einstein_radius, slope, core_radius, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        slope : float
+            power-law density slope of mass profile
+        core_radius : float
+            The radius of the inner core
+        """
+        super(CoredEllipticalPowerLawMassProfile, self).__init__(axis_ratio, phi, einstein_radius, slope, centre)
+
+        self.core_radius = core_radius
+
+    def surface_density_func(self, eta):
+        return self.einstein_radius_rescaled * (self.core_radius**2 + eta**2) ** (-(self.slope - 1)/2.0)
+
+    def potential_func(self, u, coordinates):
+        eta = self.eta_u(u, coordinates)
+        return (eta/u) * ((3.0-self.slope)*eta)**-1.0 *\
+             ((self.core_radius**2 + eta**2)**((3.0-self.slope)/2.0) - self.core_radius**(3-self.slope)) \
+             / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5) )
+
+    @property
+    def einstein_radius_rescaled(self):
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * (self.einstein_radius + self.core_radius**2) ** (self.slope - 1)
 
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
@@ -721,7 +759,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
-    def kappa(self, eta):
+    def surface_density_func(self, eta):
         return self.einstein_radius_rescaled * eta
 
     @property
