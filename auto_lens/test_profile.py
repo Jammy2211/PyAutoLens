@@ -768,21 +768,21 @@ class TestEllipticalPowerLaw(object):
 
         assert isothermal_ratio == pytest.approx(power_law_ratio, 1e-3)
 
-    # def test__compute_potential__compare_to_fortran_ratio_of_two_power_laws__same_ratio(sefl):
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=2.2)
-    #
-    #     potential_1 = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=2.1)
-    #
-    #     potential_2 = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     ratio = potential_1 / potential_2
-    #
-    #     assert ratio == pytest.approx((1.53341/1.34381), 1e-3)
+    def test__compute_potential__compare_to_fortran_ratio_of_two_power_laws__same_ratio(sefl):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=2.2)
+
+        potential_1 = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=2.1)
+
+        potential_2 = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        ratio = potential_1 / potential_2
+
+        assert ratio == pytest.approx((1.53341/1.34381), 1e-3)
 
     def test__compute_potential__compare_to_isothermal__same_potential(self):
 
@@ -798,51 +798,153 @@ class TestEllipticalPowerLaw(object):
 
         assert potential_isothermal == pytest.approx(potential_power_law, 1e-3)
 
-    # def test__compute_potential__compare_to_fortran_values_slope_22__same_potential(self):
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=2.2)
-    #
-    #     potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     assert potential == pytest.approx(1.53341, 1e-3)
-    #
-    # def test__compute_potential__compare_to_fortran_values_slope_21__same_potential(self):
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=2.1)
-    #
-    #     potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     assert potential == pytest.approx(1.34381, 1e-3)
-    #
-    # def test__compute_potential__compare_to_fortran_values_slope_20__same_potential(self):
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=2.0)
-    #
-    #     potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     assert potential == pytest.approx(1.19268, 1e-3)
-    #
-    # def test__compute_potential__compare_to_fortran_values_slope_19__same_potential(self):
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=1.9)
-    #
-    #     potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     assert potential == pytest.approx(1.06949, 1e-3)
-    #
-    # def test__compute_potential__compare_to_fortran_values_slope_18__same_potential(self):
-    #
-    #     power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-    #                                                       einstein_radius=1.3, slope=1.8)
-    #
-    #     potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
-    #
-    #     assert potential == pytest.approx(0.96723, 1e-3)
+    def test__compute_potential__compare_to_fortran_values_slope_22__same_potential(self):
 
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=2.2)
+
+        potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(1.53341, 1e-3)
+
+    def test__compute_potential__compare_to_fortran_values_slope_21__same_potential(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=2.1)
+
+        potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(1.34381, 1e-3)
+
+    def test__compute_potential__compare_to_fortran_values_slope_20__same_potential(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=2.0)
+
+        potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(1.19268, 1e-3)
+
+    def test__compute_potential__compare_to_fortran_values_slope_19__same_potential(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=1.9)
+
+        potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(1.06949, 1e-3)
+
+    def test__compute_potential__compare_to_fortran_values_slope_18__same_potential(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=1.8)
+
+        potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(0.96723, 1e-3)
+
+    def test__compute_surface_density__flip_coordinates_lens_center__same_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.0)
+
+        surface_density_1 = power_law.compute_surface_density(coordinates=(1.0, 1.0))
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.0)
+
+        surface_density_2 = power_law.compute_surface_density(coordinates=(0.0, 0.0))
+
+        assert surface_density_1 == surface_density_2
+
+    def test__compute_surface_density__rotation_coordinates_90_circular__same_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.0)
+
+        surface_density_1 = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                          einstein_radius=1.0, slope=2.0)
+
+        surface_density_2 = power_law.compute_surface_density(coordinates=(0.0, 1.0))
+
+        assert surface_density_1 == surface_density_2
+
+    def test__compute_surface_density__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.2)
+
+        surface_density_1 = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                          einstein_radius=1.0, slope=2.2)
+
+        surface_density_2 = power_law.compute_surface_density(coordinates=(0.0, 1.0))
+
+        assert surface_density_1 == surface_density_2
+
+    def test__compute_surface_density__simple_case__correct_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.0)
+
+        surface_density = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(0.5, 1e-3)
+
+    def test__compute_surface_density__double_einr__doubles_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=2.0, slope=2.0)
+
+        surface_density = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(0.5*2.0, 1e-3)
+
+    def test__compute_surface_density__different_axis_ratio__new_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.0)
+
+        surface_density = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(0.66666, 1e-3)
+
+    def test__compute_surface_density__slope_increase__new_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                          einstein_radius=1.0, slope=2.3)
+
+        surface_density = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(0.466666, 1e-3)
+
+
+    def test__compute_surface_density__slope_increase__new_value(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                          einstein_radius=2.0, slope=1.7)
+
+        surface_density = power_law.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(1.4079, 1e-3)
 
 class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):
