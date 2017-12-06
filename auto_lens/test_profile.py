@@ -1037,6 +1037,7 @@ class TestEllipticalPowerLaw(object):
         assert defls[0] == pytest.approx(-0.35096, 1e-3)
         assert defls[1] == pytest.approx(1.25995, 1e-3)
 
+
 class TestCoredEllipticalPowerLaw(object):
 
     def test__setup_cored_elliptical_power_law__correct_values(self):
@@ -1052,7 +1053,7 @@ class TestCoredEllipticalPowerLaw(object):
         assert power_law.core_radius == 0.1
         assert power_law.einstein_radius_rescaled == pytest.approx(0.40480, 1e-3)  # (3 - slope) / (1 + axis_ratio) * (1.0+0.1**2)**1.2 = (3 - 2) / (1 + 1) * (1.1)**1.2 = 0.5
 
-    def test__kappa__gives_correct_values(self):
+    def test__surface_density_func__gives_correct_values(self):
 
         power_law = profile.CoredEllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                           einstein_radius=1.0, slope=2.2, core_radius=0.1)
@@ -1061,7 +1062,7 @@ class TestCoredEllipticalPowerLaw(object):
 
         assert kappa == pytest.approx(0.40239, 1e-4)
 
-    def test__kappa__same_as_power_law_no_core(self):
+    def test__surface_density_func__same_as_power_law_no_core(self):
 
         power_law_core = profile.CoredEllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                           einstein_radius=1.0, slope=2.2, core_radius=0.)
@@ -1343,6 +1344,7 @@ class TestCoredEllipticalPowerLaw(object):
         assert deflections[0] == pytest.approx(0.20117, 1e-3)
         assert deflections[1] == pytest.approx(0.01960, 1e-3)
 
+
 class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):
         power_law = profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
@@ -1465,6 +1467,304 @@ class TestEllipticalIsothermal(object):
         assert defls[0] == pytest.approx(0.57002, 1e-3)
         assert defls[1] == pytest.approx(0.57002, 1e-3)
 
+
+class TestCoredEllipticalIsothermal(object):
+    def test__setup_elliptical_isothermal_core__correct_values(self):
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
+                                                            einstein_radius=1.0, core_radius=0.2)
+
+        assert isothermal_core.x_cen == 1.0
+        assert isothermal_core.y_cen == 1.0
+        assert isothermal_core.axis_ratio == 1.0
+        assert isothermal_core.phi == 45.0
+        assert isothermal_core.einstein_radius == 1.0
+        assert isothermal_core.slope == 2.0
+        assert isothermal_core.core_radius == 0.2
+        assert isothermal_core.einstein_radius_rescaled == 0.52  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+
+    def test__surface_density_func__gives_correct_values(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
+                                                          einstein_radius=1.0, core_radius=0.1)
+
+        kappa = isothermal_core.surface_density_func(eta=1.0)
+
+        assert kappa == pytest.approx(0.50249, 1e-4)
+
+    def test__surface_density_func__same_as_isothermal_core_no_core(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
+                                                          einstein_radius=1.0, core_radius=0.0)
+
+        kappa_core = isothermal_core.surface_density_func(eta=3.0)
+
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
+                                                          einstein_radius=1.0)
+
+        kappa = isothermal.surface_density_func(eta=3.0)
+
+        assert kappa == kappa_core
+
+    def test__compute_surface_density__flip_coordinates_lens_center__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density_1 = isothermal_core.compute_surface_density(coordinates=(1.0, 1.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density_2 = isothermal_core.compute_surface_density(coordinates=(0.0, 0.0))
+
+        assert surface_density_1 == surface_density_2
+
+    def test__compute_surface_density__rotation_coordinates_90_circular__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density_1 = isothermal_core.compute_surface_density(coordinates=(1.0, 0.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density_2 = isothermal_core.compute_surface_density(coordinates=(0.0, 1.0))
+
+        assert surface_density_1 == surface_density_2
+
+    def test__compute_surface_density__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density_1 = isothermal_core.compute_surface_density(coordinates=(1.0, 0.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density_2 = isothermal_core.compute_surface_density(coordinates=(0.0, 1.0))
+
+        assert surface_density_1 == surface_density_2
+
+    def test__compute_surface_density__simple_case__correct_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density = isothermal_core.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(0.50990, 1e-3)
+
+    def test__compute_surface_density__double_einr__new_value_now_isnt_quite_double(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=2.0, core_radius=0.2)
+
+        surface_density = isothermal_core.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # eta = 1.0
+        # kappa = 0.5 * 1.0 ** 1.0
+
+        assert surface_density == pytest.approx(1.0002, 1e-3)
+
+    def test__compute_surface_density__different_axis_ratio__new_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        surface_density = isothermal_core.compute_surface_density(coordinates=(1.0, 0.0))
+
+        # axis ratio changes only einstein_rescaled, so wwe can use the above value and times by 1.0/1.5.
+
+        assert surface_density == pytest.approx(0.50990*1.33333, 1e-3)
+
+    def test__compute_potential__flip_coordinates_lens_center__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        potential_1 = isothermal_core.compute_potential(coordinates=(1.0, 1.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        potential_2 = isothermal_core.compute_potential(coordinates=(0.0, 0.0))
+
+        assert potential_1 == potential_2
+
+    def test__compute_potential__rotation_coordinates_90_circular__same_value(self):
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        potential_1 = isothermal_core.compute_potential(coordinates=(1.0, 0.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        potential_2 = isothermal_core.compute_potential(coordinates=(0.0, 1.0))
+
+        assert potential_1 == potential_2
+
+    def test__compute_potential__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        potential_1 = isothermal_core.compute_potential(coordinates=(1.0, 0.0))
+
+        isothermal = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                          einstein_radius=1.0, core_radius=0.2)
+
+        potential_2 = isothermal.compute_potential(coordinates=(0.0, 1.0))
+
+        assert potential_1 == potential_2
+
+    # def test__compute_potential__same_as_sie_for_no_core(self):
+    #
+    #     isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
+    #                                                       einstein_radius=1.0, core_radius=0.)
+    #
+    #     potential_core = isothermal_core.compute_potential(coordinates=(0.1, 0.1))
+    #
+    #     isothermal = profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
+    #                                                       einstein_radius=1.0)
+    #
+    #     potential = isothermal.compute_potential(coordinates=(0.1, 0.1))
+    #
+    #     assert potential_core == potential
+
+    def test__compute_potential__ratio_via_fortran__same_ratio(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, core_radius=0.2)
+
+        potential_1 = isothermal_core.compute_potential(coordinates=(0.1625, 0.1625))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
+                                                          einstein_radius=0.5, core_radius=0.5)
+
+        potential_2 = isothermal_core.compute_potential(coordinates=(0.1625, 0.1625))
+
+        ratio = potential_1 / potential_2
+
+        assert ratio == pytest.approx(0.76642 / 0.06036, 1e-3)
+
+    def test__compute_potential__value_via_fortran__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, core_radius=0.2)
+
+        potential = isothermal_core.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(0.76642, 1e-3)
+
+    def test__compute_potential__value_via_fortran_2__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
+                                                          einstein_radius=0.5, core_radius=0.5)
+
+        potential = isothermal_core.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(0.06036, 1e-3)
+
+    def test__compute_deflection_angle__flip_coordinates_lens_center__flips_deflection_angles(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.3)
+
+        deflection_angle_1 = isothermal_core.compute_deflection_angle(coordinates=(1.0, 1.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.3)
+
+        deflection_angle_2 = isothermal_core.compute_deflection_angle(coordinates=(0.0, 0.0))
+
+        # Foro deflection angles, a flip of coordinates also reverses the deflection angles
+        deflection_angle_2 = list(map(lambda l: -1.0*l, deflection_angle_2))
+
+        assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+        assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+    def test__compute_deflection_angle__rotation_coordinates_90_circular__flips_x_and_y_deflection_angles(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.3)
+
+        deflection_angle_1 = isothermal_core.compute_deflection_angle(coordinates=(1.0, 0.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                          einstein_radius=1.0, core_radius=0.3)
+
+        deflection_angle_2 = isothermal_core.compute_deflection_angle(coordinates=(0.0, 1.0))
+
+        # Foro deflection angles, a 90 degree rtation flips the x / y coordinates
+
+        assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+        assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+    def test__compute_deflection_angle__rotation_90_ellpitical_cordinates_on_corners__flips_x_and_y_deflection_angles(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0,
+                                                          einstein_radius=1.0, core_radius=0.3)
+
+        deflection_angle_1 = isothermal_core.compute_deflection_angle(coordinates=(1.0, 0.0))
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                          einstein_radius=1.0, core_radius=0.3)
+
+        deflection_angle_2 = isothermal_core.compute_deflection_angle(coordinates=(0.0, 1.0))
+
+        assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+        assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+    def test__compute_deflection__same_as_isothermal_core_for_core_0(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.3, -0.1), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.1, core_radius=0.0)
+
+        deflections_core = isothermal_core.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        isothermal_core = profile.EllipticalIsothermalMassProfile(centre=(0.3, -0.1), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.1)
+
+        deflections_isothermal_core = isothermal_core.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert deflections_core[0] == pytest.approx(deflections_isothermal_core[0],1e-6)
+        assert deflections_core[1] == pytest.approx(deflections_isothermal_core[1],1e-6)
+
+    def test__compute_deflection__ratio_via_fortran__same_ratio(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, core_radius=0.2)
+
+        deflections = isothermal_core.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        ratio = deflections[0] / deflections[1]
+
+        assert ratio == pytest.approx(-0.53649/0.98365, 1e-3)
+
+    def test__compute_deflection__value_via_fortran__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, core_radius=0.2)
+
+        deflections = isothermal_core.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert deflections[0] == pytest.approx(-0.53649, 1e-3)
+        assert deflections[1] == pytest.approx(0.98365, 1e-3)
+
+    def test__compute_deflection__value_via_fortran_2__same_value(self):
+
+        isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
+                                                          einstein_radius=0.5, core_radius=0.5)
+
+        deflections = isothermal_core.compute_deflection_angle(coordinates=(0.1625, 0.1625))
+
+        assert deflections[0] == pytest.approx(0.30750, 1e-3)
+        assert deflections[1] == pytest.approx(0.03144, 1e-3)
 
 class TestCombinedProfiles(object):
     def test__summation(self, circular):
