@@ -505,7 +505,6 @@ class MassProfile(object):
     def compute_deflection_angle(self, coordinates):
         raise AssertionError("Compute deflection angles should be overridden")
 
-
 class CombinedMassProfile(list, MassProfile):
     """A mass profile comprising one or more mass profiles"""
 
@@ -560,6 +559,29 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
     def kappa(self, eta):
         return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
+    def eta_u(self, u, coordinates):
+        return (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
+
+    def compute_surface_density(self, coordinates):
+        """
+        Calculate the projected surface density in dimensionless units at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those coordinates
+        """
+
+        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+
+        eta = math.sqrt((coordinates[0] ** 2) + ( coordinates[1] ** 2) / (self.axis_ratio**2))
+
+        return self.kappa(eta)
+
     def compute_potential(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -571,10 +593,8 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
         Returns
         ----------
-        The gravitational potential (r-direction) at those coordinates
+        The gravitational potential [phi(eta)] (r-direction) at those coordinates
         """
-
-        #TODO : ONLY WORKS FOR ISOTHERMAL CASE (Slope = 2.0)
 
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
@@ -585,13 +605,12 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         return calculate_potential()
 
     def potential_func(self, u, coordinates):
-        eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
-        # TODO : The expression below is missing a dependence on slope, meaning it doesn't work for power-law case
-        return (eta/u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5) )
+        eta = self.eta_u(u, coordinates)
+        return (eta/u) * ((3.0-self.slope)*eta)**-1.0 * eta**(3.0-self.slope) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5) )
 
     @property
     def potential_normalization(self):
-        return 2.0 * self.einstein_radius_rescaled * ((self.slope-1)**-2) * self.axis_ratio/2.0
+        return 2.0 * self.einstein_radius_rescaled * self.axis_ratio/2.0
 
     def compute_deflection_angle(self, coordinates):
         """
@@ -604,7 +623,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
         Returns
         ----------
-        The deflection angles (x and y components) at those coordinates
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
         """
 
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
@@ -619,7 +638,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
     def deflection_func(self, u, coordinates, npow):
-        eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
+        eta = self.eta_u(u, coordinates)
         return self.kappa(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @property
@@ -663,7 +682,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         Returns
         ----------
-        The potential at these coordinates
+        The gravitional potential [phi(eta)] at these coordinates
         """
 
         # TODO : The constant rotating of reference frames is messy, how can we clean this up?
@@ -686,7 +705,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         Returns
         ----------
-        The deflection angles (x and y components) at those coordinates
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
         """
 
         # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
