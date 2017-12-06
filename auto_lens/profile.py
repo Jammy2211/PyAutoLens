@@ -1,7 +1,8 @@
 import math
 import numpy as np
 from matplotlib import pyplot
-from functools import wraps
+import decorator
+from scipy.integrate import quad
 
 
 class EllipticalProfile(object):
@@ -99,6 +100,7 @@ class EllipticalProfile(object):
         return math.sqrt(self.axis_ratio) * math.sqrt(
             shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
+    # TODO: This isn't using any variable from the class. Should it be?
     @staticmethod
     def coordinates_angle_from_x(coordinates):
         """
@@ -125,7 +127,7 @@ class EllipticalProfile(object):
 
         Parameters
         ----------
-        theta : float
+        theta : Float
 
         Returns
         ----------
@@ -197,200 +199,10 @@ class SphericalProfile(EllipticalProfile):
         super(SphericalProfile, self).__init__(1.0, 0.0, centre)
 
 
-def array_for_function(func, x_min, y_min, x_max, y_max, pixel_scale, mask=None):
-    """
-
-    Parameters
-    ----------
-    mask : Mask
-        An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
-        return a value)
-    func : function(coordinates)
-        A function that takes coordinates and returns a value
-    x_min : float
-        The minimum x bound
-    y_min : float
-        The minimum y bound
-    x_max : float
-        The maximum x bound
-    y_max : float
-        The maximum y bound
-    pixel_scale : float
-        The arcsecond (") size of each pixel
-
-    Returns
-    -------
-    array
-        A 2D numpy array of values returned by the function at each coordinate
-    """
-    x_size = side_length(x_min, x_max, pixel_scale)
-    y_size = side_length(y_min, y_max, pixel_scale)
-
-    array = []
-
-    for i in range(x_size):
-        row = []
-        for j in range(y_size):
-            x = pixel_to_coordinate(x_min, pixel_scale, i)
-            y = pixel_to_coordinate(y_min, pixel_scale, j)
-            if mask is not None and mask.is_masked((x, y)):
-                row.append(None)
-            else:
-                row.append(func((x, y)))
-        array.append(row)
-    # This conversion was to resolve a bug with putting tuples in the array. It might increase execution time.
-    return np.array(array)
-
-
-def side_length(dim_min, dim_max, pixel_scale):
-    return int((dim_max - dim_min) / pixel_scale)
-
-
-def avg(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        results = func(*args, **kwargs)
-        """
-
-        Parameters
-        ----------
-        results : Sized
-            A collection of numerical values or tuples
-        Returns
-        -------
-            The logical average of that collection
-        """
-        try:
-            return sum(results) / len(results)
-        except TypeError:
-            sum_tuple = (0, 0)
-            for t in results:
-                sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
-            return sum_tuple[0] / len(results), sum_tuple[1] / len(results)
-
-    return wrapper
-
-
-def subgrid(func):
-    """
-    Decorator to permit generic subgridding
-    Parameters
-    ----------
-    func : function(coordinates) -> value OR (value, value)
-        Function that takes coordinates and calculates some value
-    Returns
-    -------
-    func: function(coordinates, pixel_scale, grid_size)
-        Function that takes coordinates and pixel scale/grid_size required for subgridding
-    """
-
-    @wraps(func)
-    def wrapper(self, coordinates, pixel_scale=0.1, grid_size=1):
-        """
-
-        Parameters
-        ----------
-        self
-        coordinates : (float, float)
-            A coordinate pair
-        pixel_scale : float
-            The scale of a pixel
-        grid_size : int
-            The side length of the subgrid (i.e. there will be grid_size^2 pixels)
-        Returns
-        -------
-        result : [value] or [(value, value)]
-            A list of results
-        """
-        half = pixel_scale / 2
-        step = pixel_scale / (grid_size + 1)
-        results = []
-        for x in range(grid_size):
-            for y in range(grid_size):
-                x1 = coordinates[0] - half + (x + 1) * step
-                y1 = coordinates[1] - half + (y + 1) * step
-                results.append(func(self, (x1, y1)))
-        return results
-
-    return wrapper
-
-
-def iterative_subgrid(subgrid_func):
-    """
-    Decorator to iteratively increase the grid size until the difference between results reaches a defined threshold
-    Parameters
-    ----------
-    subgrid_func : function(coordinates, pixel_scale, grid_size) -> value
-        A function decorated with subgrid and average
-    Returns
-    -------
-        A function that will iteratively increase grid size until a desired accuracy is reached
-    """
-    @wraps(subgrid_func)
-    def wrapper(self, coordinates, pixel_scale=0.1, threshold=0.0001):
-        """
-
-        Parameters
-        ----------
-        self : Profile
-            The instance that owns the function being wrapped
-        coordinates : (float, float)
-            x, y coordinates in image space
-        pixel_scale : float
-            The size of a pixel
-        threshold : float
-            The minimum difference between the result at two different grid sizes
-        Returns
-        -------
-            The last result calculated once the difference between two results becomes lower than the threshold
-        """
-        last_result = None
-        grid_size = 1
-        while True:
-            next_result = subgrid_func(self, coordinates, pixel_scale=pixel_scale, grid_size=grid_size)
-            if last_result is not None and abs(next_result - last_result) < threshold:
-                return next_result
-            last_result = next_result
-            grid_size += 1
-
-    return wrapper
-
-
-def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
-    return dim_min + pixel_coordinate * pixel_scale
-
-
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def as_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1, mask=None):
-        """
-
-        Parameters
-        ----------
-        pixel_scale : float
-            The arcsecond (") size of each pixel
-        x_min : float
-            The minimum x bound
-        y_min : float
-            The minimum y bound
-        x_max : float
-            The maximum x bound
-        y_max : float
-            The maximum y bound
-        mask : Mask
-            An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
-            return a value)
-        Returns
-        -------
-        array
-            A numpy array illustrating this light profile between the given bounds
-        """
-        return array_for_function(self.flux_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale, mask)
-
     # noinspection PyMethodMayBeStatic
-    @avg
-    @subgrid
     def flux_at_coordinates(self, coordinates):
         """
         Abstract method for obtaining flux at given coordinates
@@ -404,11 +216,6 @@ class LightProfile(object):
             The value of flux at the given coordinates
         """
         raise AssertionError("Flux at coordinates should be overridden")
-
-    # TODO: find a good test for subgridding of a light profile
-    @iterative_subgrid
-    def flux_at_coordinates_iteratively_subgridded(self, coordinates):
-        return self.flux_at_coordinates(coordinates)
 
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
@@ -429,7 +236,8 @@ class LightProfile(object):
             The maximum y bound
 
         """
-        array = self.as_array(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale)
+        array = decorator.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
+                                                                   pixel_scale=pixel_scale)
         pyplot.imshow(array)
         pyplot.clim(vmax=np.mean(array) + np.std(array))
         pyplot.show()
@@ -441,8 +249,6 @@ class CombinedLightProfile(list, LightProfile):
     def __init__(self, *light_profiles):
         super(CombinedLightProfile, self).__init__(light_profiles)
 
-    @avg
-    @subgrid
     def flux_at_coordinates(self, coordinates):
         """
         Method for obtaining flux at given coordinates
@@ -565,8 +371,6 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
         return self.flux * math.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
-    @avg
-    @subgrid
     def flux_at_coordinates(self, coordinates):
         """
         Method for obtaining flux at given coordinates
@@ -697,36 +501,9 @@ class CoreSersicLightProfile(SersicLightProfile):
 
 
 class MassProfile(object):
-    def deflection_angle_array(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1, mask=None):
-        """
-
-        Parameters
-        ----------
-        pixel_scale : float
-            The arcsecond (") size of each pixel
-        x_min : float
-            The minimum x bound
-        y_min : float
-            The minimum y bound
-        x_max : float
-            The maximum x bound
-        y_max : float
-            The maximum y bound
-
-        Returns
-        -------
-        array
-            A numpy array illustrating this deflection angles for this profile between the given bounds
-        """
-        return array_for_function(self.compute_deflection_angle, x_min, y_min, x_max, y_max, pixel_scale, mask)
-
     # noinspection PyMethodMayBeStatic
     def compute_deflection_angle(self, coordinates):
         raise AssertionError("Compute deflection angles should be overridden")
-
-    @subgrid
-    def compute_deflection_angle_subgridded(self, coordinates):
-        return self.compute_deflection_angle(coordinates)
 
 
 class CombinedMassProfile(list, MassProfile):
@@ -775,6 +552,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         """
 
         super(EllipticalPowerLawMassProfile, self).__init__(axis_ratio, phi, centre)
+        super(MassProfile, self).__init__()
 
         self.einstein_radius = einstein_radius
         self.slope = slope
@@ -793,36 +571,32 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The deflection angle at those coordinates
         """
 
-        from scipy.integrate import quad
-
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
-        npow = 0.0
-        defl_x = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-        defl_x = self.defl_normalization * defl_x * coordinates[0]
+        def calculate_deflection_component(npow, index):
+            deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+            return self.deflection_normalization * deflection * coordinates[index]
 
-        npow = 1.0
-        defl_y = quad(self.defl_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-        defl_y = self.defl_normalization * defl_y * coordinates[1]
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
-        defls = self.coordinates_back_to_cartesian((defl_x, defl_y))
+        return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
-        return defls
-
-    def defl_func(self, u, coordinates, npow):
-        eta = (u*((coordinates[0]**2) + (coordinates[1]**2/(1-(1-self.axis_ratio**2)*u))))**0.5
-        return self.kappa(eta)/((1-(1-self.axis_ratio**2)*u)**(npow+0.5))
+    def deflection_func(self, u, coordinates, npow):
+        eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
+        return self.kappa(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @property
-    def defl_normalization(self):
+    def deflection_normalization(self):
         return self.axis_ratio
 
     def kappa(self, eta):
-        return self.einstein_radius_rescaled*eta**(-(self.slope-1))
+        return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
     @property
     def einstein_radius_rescaled(self):
-        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius**(self.slope-1)
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
+
 
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
@@ -863,16 +637,16 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
-        defl_x = self.defl_normalization * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
-        defl_y = self.defl_normalization * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
+        deflection_x = self.deflection_normalization * math.atan(
+            (math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
+        deflection_y = self.deflection_normalization * math.atanh(
+            (math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
-        defls = self.coordinates_back_to_cartesian((defl_x, defl_y))
-
-        return defls
+        return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
     def kappa(self, eta):
-        return self.einstein_radius_rescaled*eta
+        return self.einstein_radius_rescaled * eta
 
     @property
-    def defl_normalization(self):
-        return 2.0*self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
+    def deflection_normalization(self):
+        return 2.0 * self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))

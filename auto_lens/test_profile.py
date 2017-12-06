@@ -665,15 +665,13 @@ class TestEllipticalPowerLaw(object):
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
     def test__compute_deflection_angle_identical_as_sie_compare_ratio__same_defls(self):
-
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0)
-
 
         defls_isothermal = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
 
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
-                                                             einstein_radius=1.0, slope=2.0)
+                                                          einstein_radius=1.0, slope=2.0)
 
         defls_power_law = power_law.compute_deflection_angle(coordinates=(1.0, 1.0))
 
@@ -683,15 +681,13 @@ class TestEllipticalPowerLaw(object):
         assert ratio_isothermal == pytest.approx(ratio_power_law, 1e-3)
 
     def test__compute_deflection_angle_identical_as_sie_compare_values__same_defls(self):
-
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0)
-
 
         defls_isothermal = isothermal.compute_deflection_angle(coordinates=(1.0, 1.0))
 
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
-                                                             einstein_radius=1.0, slope=2.0)
+                                                          einstein_radius=1.0, slope=2.0)
 
         defls_power_law = power_law.compute_deflection_angle(coordinates=(1.0, 1.0))
 
@@ -699,9 +695,8 @@ class TestEllipticalPowerLaw(object):
         assert defls_isothermal[1] == pytest.approx(defls_power_law[1], 1e-3)
 
     def test__compute_deflection_angle_compare_to_fortran_slope_isothermal__same_defls(self):
-
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
-                                                             einstein_radius=1.0, slope=2.0)
+                                                          einstein_radius=1.0, slope=2.0)
 
         defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
 
@@ -709,9 +704,8 @@ class TestEllipticalPowerLaw(object):
         assert defls[1] == pytest.approx(0.79421, 1e-3)
 
     def test__compute_deflection_angle_compare_to_fortran_slope_above_isothermal__same_defls(self):
-
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
-                                                             einstein_radius=1.0, slope=2.5)
+                                                          einstein_radius=1.0, slope=2.5)
 
         defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
 
@@ -719,9 +713,8 @@ class TestEllipticalPowerLaw(object):
         assert defls[1] == pytest.approx(1.29641, 1e-3)
 
     def test__compute_deflection_angle_compare_to_fortran_slope_below_isothermal__same_defls(self):
-
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
-                                                             einstein_radius=1.0, slope=1.5)
+                                                          einstein_radius=1.0, slope=1.5)
 
         defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
 
@@ -729,9 +722,8 @@ class TestEllipticalPowerLaw(object):
         assert defls[1] == pytest.approx(0.48036, 1e-3)
 
     def test__compute_deflection_angle_compare_to_fortran_different_values__same_defls(self):
-
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
-                                                             einstein_radius=1.3, slope=1.9)
+                                                          einstein_radius=1.3, slope=1.9)
 
         defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
 
@@ -740,15 +732,15 @@ class TestEllipticalPowerLaw(object):
         assert defls[1] == pytest.approx(1.12841, 1e-3)
 
     def test__compute_deflection_angle_compare_to_fortran_different_values_2__same_defls(self):
-
         power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=150.0,
-                                                             einstein_radius=1.3, slope=2.2)
+                                                          einstein_radius=1.3, slope=2.2)
 
         defls = power_law.compute_deflection_angle(coordinates=(0.1625, 0.1625))
 
         assert defls[0] / defls[1] == pytest.approx(-0.27855, 1e-3)
         assert defls[0] == pytest.approx(-0.35096, 1e-3)
         assert defls[1] == pytest.approx(1.25995, 1e-3)
+
 
 class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):
@@ -762,6 +754,15 @@ class TestEllipticalIsothermal(object):
         assert power_law.einstein_radius == 1.0
         assert power_law.slope == 2.0
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+
+    def test__coordinates_to_eccentric_radius(self, elliptical):
+        assert elliptical.coordinates_to_eccentric_radius((1, 1)) == pytest.approx(
+            elliptical.coordinates_to_eccentric_radius(
+                (-1, -1)), 1e-10)
+
+    def test__flux_at_coordinates(self, elliptical):
+        assert elliptical.flux_at_coordinates((1, 1)) == pytest.approx(
+            elliptical.flux_at_coordinates((-1, -1)), 1e-10)
 
     def test__compute_deflection_angle_no_coordinate_rotation__correct_values(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
@@ -846,8 +847,7 @@ class TestEllipticalIsothermal(object):
         assert defls[0] == pytest.approx(0.50734, 1e-3)
         assert defls[1] == pytest.approx(0.79421, 1e-3)
 
-    def test__compute_deflection_angle_compare_to_fortran__same_values(self):
-
+    def test__compute_deflection_angle_compare_to_fortran__same_values2(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
                                                              einstein_radius=1.0)
 
@@ -855,102 +855,6 @@ class TestEllipticalIsothermal(object):
 
         assert defls[0] == pytest.approx(0.57002, 1e-3)
         assert defls[1] == pytest.approx(0.57002, 1e-3)
-
-
-class TestArray(object):
-    def test__simple_assumptions(self, circular):
-        array = circular.as_array(x_min=0, x_max=101, y_min=0, y_max=101, pixel_scale=1)
-        assert array.shape == (101, 101)
-        assert array[51][51] > array[51][52]
-        assert array[51][51] > array[52][51]
-        assert all(map(lambda i: i > 0, array[0]))
-
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=0.5)
-        assert array.shape == (200, 200)
-
-    def test__ellipticity(self, circular, elliptical, vertical):
-        array = circular.as_array(x_min=0, x_max=101, y_min=0, y_max=101, pixel_scale=1)
-        assert array[60][0] == array[0][60]
-
-        array = elliptical.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
-
-        assert array[60][51] > array[51][60]
-
-        array = vertical.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
-        assert array[60][51] < array[51][60]
-
-    # noinspection PyTypeChecker
-    def test__flat_array(self, circular):
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1)
-        flat_array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1).flatten()
-
-        assert all(array[0] == flat_array[:100])
-        assert all(array[1] == flat_array[100:200])
-
-    def test_combined_array(self, circular):
-        combined = profile.CombinedLightProfile(circular, circular)
-
-        assert all(map(lambda i: i == 2, combined.as_array().flatten() / circular.as_array().flatten()))
-
-    def test_symmetric_profile(self, circular):
-        circular.centre = (50, 50)
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=1.0)
-
-        assert array[50][50] > array[50][51]
-        assert array[50][50] > array[49][50]
-        assert array[49][50] == array[50][51]
-        assert array[50][51] == array[50][49]
-        assert array[50][49] == array[51][50]
-
-        array = circular.as_array(x_min=0, x_max=100, y_min=0, y_max=100, pixel_scale=0.5)
-
-        assert array[100][100] > array[100][101]
-        assert array[100][100] > array[99][100]
-        assert array[99][100] == array[100][101]
-        assert array[100][101] == array[100][99]
-        assert array[100][99] == array[101][100]
-
-    def test_origin_symmetric_profile(self, circular):
-        array = circular.as_array()
-
-        assert circular.flux_at_coordinates((-5, 0)) < circular.flux_at_coordinates((0, 0))
-        assert circular.flux_at_coordinates((5, 0)) < circular.flux_at_coordinates((0, 0))
-        assert circular.flux_at_coordinates((0, -5)) < circular.flux_at_coordinates((0, 0))
-        assert circular.flux_at_coordinates((0, 5)) < circular.flux_at_coordinates((0, 0))
-        assert circular.flux_at_coordinates((5, 5)) < circular.flux_at_coordinates((0, 0))
-        assert circular.flux_at_coordinates((-5, -5)) < circular.flux_at_coordinates((0, 0))
-
-        assert array.shape == (100, 100)
-
-        assert array[50][50] > array[50][51]
-        assert array[50][50] > array[49][50]
-        assert array[49][50] == pytest.approx(array[50][51], 1e-10)
-        assert array[50][51] == pytest.approx(array[50][49], 1e-10)
-        assert array[50][49] == pytest.approx(array[51][50], 1e-10)
-
-    def test__coordinates_to_eccentric_radius(self, elliptical):
-        assert elliptical.coordinates_to_eccentric_radius((1, 1)) == pytest.approx(
-            elliptical.coordinates_to_eccentric_radius(
-                (-1, -1)), 1e-10)
-
-    def test__flux_at_coordinates(self, elliptical):
-        assert elliptical.flux_at_coordinates((1, 1)) == pytest.approx(
-            elliptical.flux_at_coordinates((-1, -1)), 1e-10)
-
-    def test__side_length(self):
-        assert profile.side_length(-5, 5, 0.1) == 100
-
-    def test__pixel_to_coordinate(self):
-        assert profile.pixel_to_coordinate(-5, 0.1, 0) == -5
-        assert profile.pixel_to_coordinate(-5, 0.1, 100) == 5
-        assert profile.pixel_to_coordinate(-5, 0.1, 50) == 0
-
-    def test__deflection_angle_array(self):
-        mass_profile = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
-                                                               einstein_radius=2.0)
-        # noinspection PyTypeChecker
-        assert all(mass_profile.deflection_angle_array(-1, -1, -0.5, -0.5, 0.1)[0][
-                       0] == mass_profile.compute_deflection_angle((-1, -1)))
 
 
 class TestCombinedProfiles(object):
@@ -1022,109 +926,3 @@ class TestEquivalentProfile(object):
         assert_shared_base(exponential, exponential.as_dev_vaucouleurs_profile())
         assert_shared_base(dev_vaucouleurs, dev_vaucouleurs.as_core_sersic_profile(1, 1, 1, 1))
         assert_shared_base(core, core.as_sersic_profile())
-
-
-class MockMask(object):
-    def __init__(self, masked_coordinates):
-        self.masked_coordinates = masked_coordinates
-
-    def is_masked(self, coordinates):
-        # It's probably a good idea to use a numpy array in the real class for efficiency
-        return coordinates in self.masked_coordinates
-
-
-class TestDecorators(object):
-
-    def test_subgrid_2x2(self):
-        # noinspection PyUnusedLocal
-        @profile.subgrid
-        def return_coords(s, coords):
-            return coords[0], coords[1]
-
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
-        assert coordinates == [(0, 0)]
-
-        coordinates = return_coords(None, (0.5, 0.5), pixel_scale=1.0, grid_size=2)
-        assert coordinates == [(1./3., 1./3.), (1./3., 2./3.), (2./3., 1./3.), (2./3., 2./3.)]
-
-    def test_subgrid_3x3(self):
-        # noinspection PyUnusedLocal
-        @profile.subgrid
-        def return_coords(s, coords):
-            return coords[0], coords[1]
-
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
-        assert coordinates == [(0, 0)]
-
-        coordinates = return_coords(None, (0.5, 0.5), pixel_scale=1.0, grid_size=3)
-        assert coordinates == [(0.25, 0.25), (0.25, 0.5), (0.25, 0.75),
-                               (0.50, 0.25), (0.50, 0.5), (0.50, 0.75),
-                               (0.75, 0.25), (0.75, 0.5), (0.75, 0.75)]
-
-    def test_subgrid_3x3_triple_pixel_scale_and_coordinate(self):
-        # noinspection PyUnusedLocal
-        @profile.subgrid
-        def return_coords(s, coords):
-            return coords[0], coords[1]
-
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
-        assert coordinates == [(0, 0)]
-
-        coordinates = return_coords(None, (1.5, 1.5), pixel_scale=3.0, grid_size=3)
-
-        assert coordinates == [(0.75, 0.75), (0.75, 1.5), (0.75, 2.25),
-                               (1.50, 0.75), (1.50, 1.5), (1.50, 2.25),
-                               (2.25, 0.75), (2.25, 1.5),  (2.25, 2.25)]
-
-
-    def test_subgrid_4x4_new_coordinates(self):
-        # noinspection PyUnusedLocal
-        @profile.subgrid
-        def return_coords(s, coords):
-            return coords[0], coords[1]
-
-        coordinates = return_coords(None, (0, 0), pixel_scale=1.0, grid_size=1)
-        assert coordinates == [(0, 0)]
-
-        coordinates = return_coords(None, (-2.0, 3.0), pixel_scale=0.1, grid_size=4)
-
-        # half = pixel_scale / 2 = 0.05
-        # step = pixel_scale / (4+1) = 0.02
-
-        #first x = -2.0 - 0.05 + 0.02 = -2.03 (and increase in steps of 0.02)
-        # first y = 3.0 - 0.05 + 0.02 = 2.97 (and increse in steps of 0.02)
-
-        # TODO : NEED TO SORT ROUNDING ERRORS BELOW
-
-        assert coordinates == [(-2.03, 2.97), (-2.03, 2.99), (-2.03, 3.01), (-2.03, 3.03),
-                               (-2.01, 2.97), (-2.01, 2.99), (-2.01, 3.01), (-2.01, 3.03),
-                               (-1.99, 2.97), (-1.99, 2.99), (-1.99, 3.01), (-1.99, 3.03),
-                               (-1.97, 2.97), (-1.97, 2.99), (-1.97, 3.01), (-1.97, 3.03)]
-
-    def test_average(self):
-        @profile.avg
-        def return_input(s, input_list):
-            return input_list
-
-        assert return_input(None, [1, 2, 3]) == 2
-        assert return_input(None, [(1, 10), (2, 20), (3, 30)]) == (2, 20)
-
-    def test_iterative_subgrid(self):
-        # noinspection PyUnusedLocal
-        @profile.iterative_subgrid
-        def one_over_grid(s, coordinates, pixel_scale, grid_size):
-            return 1.0 / grid_size
-
-        assert one_over_grid(None, None, None, 0.5) == pytest.approx(0.333, 1e-2)
-        assert one_over_grid(None, None, None, 0.1) == pytest.approx(0.25)
-        assert one_over_grid(None, None, None, 0.06) == pytest.approx(0.2)
-
-    def test_mask(self):
-        mask = MockMask([(x, 0) for x in range(-5, 6)])
-        array = profile.array_for_function(lambda coordinates: 1, -5, -5, 5, 5, 1, mask=mask)
-
-        assert array[5][5] is None
-        assert array[5][6] is not None
-        assert array[6][5] is None
-        assert array[0][0] is not None
-        assert array[0][5] is None
