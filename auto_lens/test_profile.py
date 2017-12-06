@@ -741,6 +741,15 @@ class TestEllipticalPowerLaw(object):
         assert defls[0] == pytest.approx(-0.35096, 1e-3)
         assert defls[1] == pytest.approx(1.25995, 1e-3)
 
+    def test__compute_potential__compare_to_fortran_values__same_potential(self):
+
+        power_law = profile.EllipticalPowerLawMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                          einstein_radius=1.3, slope=1.9)
+
+        potential = power_law.compute_potential(coordinates=(0.1625, 0.1625))
+        print(potential)
+
+        assert potential == pytest.approx(2.205836, 1e-3)
 
 class TestEllipticalIsothermal(object):
     def test__setup_elliptical_power_law__correct_values(self):

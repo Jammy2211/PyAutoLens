@@ -557,6 +557,39 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         self.einstein_radius = einstein_radius
         self.slope = slope
 
+    def kappa(self, eta):
+        return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
+
+    def compute_potential(self, coordinates):
+        """
+        Calculate the gravitatioonal potential at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The gravitational potential (r-direction) at those coordinates
+        """
+
+        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+
+        def calculate_potential():
+            potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates))[0]
+            return self.potential_normalization * potential
+
+        return calculate_potential()
+
+    def potential_func(self, u, coordinates):
+        eta = (u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))) ** 0.5
+        return (eta/u)* (1.0/(self.slope-1)**2) * self.einstein_radius_rescaled * eta ** (self.slope-1) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+
+    @property
+    def potential_normalization(self):
+        return self.axis_ratio/2.0
+
     def compute_deflection_angle(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -568,7 +601,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
         Returns
         ----------
-        The deflection angle at those coordinates
+        The deflection angles (x and y components) at those coordinates
         """
 
         coordinates = self.coordinates_rotate_to_elliptical(coordinates)
@@ -589,9 +622,6 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
     @property
     def deflection_normalization(self):
         return self.axis_ratio
-
-    def kappa(self, eta):
-        return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
     @property
     def einstein_radius_rescaled(self):
