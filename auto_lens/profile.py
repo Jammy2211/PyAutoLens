@@ -15,10 +15,15 @@ def transform_coordinates(func):
     @wraps(func)
     def wrapper(profile, coordinates, *args, **kwargs):
         if not isinstance(coordinates, TransformedCoordinates):
-            coordinates = TransformedCoordinates(profile.coordinates_rotate_to_elliptical(coordinates))
+            coordinates = profile.coordinates_rotate_to_elliptical(coordinates)
         return func(profile, coordinates, *args, **kwargs)
 
     return wrapper
+
+
+class CoordinatesException(Exception):
+    def __init__(self, message):
+        super(CoordinatesException, self).__init__(message)
 
 
 class EllipticalProfile(object):
@@ -185,6 +190,9 @@ class EllipticalProfile(object):
         The coordinates after the elliptical translation
         """
 
+        if isinstance(coordinates, TransformedCoordinates):
+            raise CoordinatesException("Trying to transform already transformed coordinates")
+
         # Compute distance of coordinates to the lens profile centre
         radius = self.coordinates_to_radius(coordinates)
 
@@ -198,7 +206,7 @@ class EllipticalProfile(object):
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
 
         # Multiply by radius to get their x / y distance from the profile centre in this elliptical unit system
-        return radius * cos_theta, radius * sin_theta
+        return TransformedCoordinates((radius * cos_theta, radius * sin_theta))
 
 
 class SphericalProfile(EllipticalProfile):
