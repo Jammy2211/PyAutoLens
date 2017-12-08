@@ -629,11 +629,8 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
 
         # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
-        def calculate_potential():
-            potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
-            return self.potential_normalization * potential
-
-        return calculate_potential()
+        potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
+        return self.potential_normalization * potential
 
     @property
     def deflection_normalization(self):
