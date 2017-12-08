@@ -613,8 +613,6 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
 
-        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
-
         eta = math.sqrt((coordinates[0] ** 2) + (coordinates[1] ** 2) / (self.axis_ratio ** 2))
 
         return self.surface_density_func(eta)
@@ -643,8 +641,6 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The gravitational potential [phi(eta)] (r-direction) at those coordinates
         """
 
-        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
-
         potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
         return self.potential_normalization * potential
 
@@ -670,8 +666,6 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         ----------
         The deflection angles [alpha(eta)] (x and y components) at those coordinates
         """
-
-        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         def calculate_deflection_component(npow, index):
             deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
@@ -719,14 +713,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         The gravitational potential [phi(eta)] at these coordinates
         """
 
-        # TODO : The constant rotating of reference frames is messy, how can we clean this up?
-        # TODO : I guess we could consider having compute_deflection_angle take already rotated coordinates but then we
-        # TODO : lose coordinate consistency in the API
-
         deflections = self.compute_deflection_angle(coordinates)
-
-        # deflections = self.coordinates_rotate_to_elliptical(deflections)
-        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         return coordinates[0] * deflections[0] + coordinates[1] * deflections[1]
 
@@ -751,8 +738,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
         # TODO: throw an assertion error if the inputs causing the error are invalid?
-
-        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
         deflection_x = self.deflection_normalization * math.atan(
