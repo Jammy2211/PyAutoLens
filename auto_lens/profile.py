@@ -3,6 +3,22 @@ import numpy as np
 from matplotlib import pyplot
 import decorator
 from scipy.integrate import quad
+from functools import wraps
+
+
+class TransformedCoordinates(tuple):
+    def __init__(self, coordinates):
+        super(TransformedCoordinates, self).__init__(coordinates)
+
+
+def transform_coordinates(func):
+    @wraps(func)
+    def wrapper(profile, coordinates, *args, **kwargs):
+        if not isinstance(coordinates, TransformedCoordinates):
+            coordinates = TransformedCoordinates(profile.coordinates_rotate_to_elliptical(coordinates))
+        return func(profile, coordinates, *args, **kwargs)
+
+    return wrapper
 
 
 class EllipticalProfile(object):
@@ -566,6 +582,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
     def surface_density_func(self, eta):
         return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
+    @transform_coordinates
     def compute_surface_density(self, coordinates):
         """
         Calculate the projected surface density in dimensionless units at a given set of image plane coordinates
@@ -580,7 +597,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
 
-        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         eta = math.sqrt((coordinates[0] ** 2) + (coordinates[1] ** 2) / (self.axis_ratio ** 2))
 
@@ -595,6 +612,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope) / (
             (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
+    @transform_coordinates
     def compute_potential(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -609,7 +627,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The gravitational potential [phi(eta)] (r-direction) at those coordinates
         """
 
-        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         def calculate_potential():
             potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
@@ -625,6 +643,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         eta = self.eta_u(u, coordinates)
         return self.surface_density_func(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
+    @transform_coordinates
     def compute_deflection_angle(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -639,7 +658,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
         The deflection angles [alpha(eta)] (x and y components) at those coordinates
         """
 
-        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         def calculate_deflection_component(npow, index):
             deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
@@ -672,6 +691,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
 
+    @transform_coordinates
     def compute_potential(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -692,8 +712,8 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         deflections = self.compute_deflection_angle(coordinates)
 
-        deflections = self.coordinates_rotate_to_elliptical(deflections)
-        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        # deflections = self.coordinates_rotate_to_elliptical(deflections)
+        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         return coordinates[0] * deflections[0] + coordinates[1] * deflections[1]
 
@@ -701,6 +721,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     def deflection_normalization(self):
         return 2.0 * self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
 
+    @transform_coordinates
     def compute_deflection_angle(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -718,7 +739,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
         # TODO: throw an assertion error if the inputs causing the error are invalid?
 
-        coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        # coordinates = self.coordinates_rotate_to_elliptical(coordinates)
 
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
         deflection_x = self.deflection_normalization * math.atan(
