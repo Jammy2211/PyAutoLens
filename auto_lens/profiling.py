@@ -4,7 +4,7 @@ import profile
 
 
 def test_symmetric_profile():
-    for _ in range(10):
+    for _ in range(5):
         circular = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
                                               effective_radius=0.6, sersic_index=4.0)
 

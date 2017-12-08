@@ -413,7 +413,6 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
             46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
                    2194697. / (30690717750. * self.sersic_index ** 4))
 
-    @jit
     def flux_at_radius(self, radius):
         """
 
