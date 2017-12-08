@@ -221,7 +221,7 @@ class MockProfile(object):
 
     # noinspection PyMethodMayBeStatic
     def coordinates_rotate_to_elliptical(self, coordinates):
-        return coordinates[0] + 1, coordinates[1] + 1
+        return profile.TransformedCoordinates((coordinates[0] + 1, coordinates[1] + 1))
 
     @profile.transform_coordinates
     def return_coordinates(self, coordinates):
@@ -235,3 +235,7 @@ class TestTransform(object):
         assert mock_profile.return_coordinates((0, 0)) == profile.TransformedCoordinates((1, 1))
         assert mock_profile.return_coordinates(
             mock_profile.return_coordinates((0, 0))) == profile.TransformedCoordinates((1, 1))
+
+    def test_exceptions(self, elliptical):
+        with pytest.raises(profile.CoordinatesException):
+            elliptical.coordinates_rotate_to_elliptical(profile.TransformedCoordinates((0, 0)))
