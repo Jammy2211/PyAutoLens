@@ -166,13 +166,18 @@ class EllipticalProfile(object):
 
         Parameters
         ----------
-        coordinates_elliptical : (float, float)
+        coordinates_elliptical : TransformedCoordinates(float, float)
             The x and y coordinates of the image translated to the elliptical coordinate system
 
         Returns
         ----------
         The coordinates (typically deflection angles) on a regular Cartesian grid
         """
+
+        if not isinstance(coordinates_elliptical, TransformedCoordinates):
+            raise CoordinatesException("Can't return cartesian coordinates to cartesian coordinates. Did you remember"
+                                       "to explicitly make the elliptical coordinates TransformedCoordinates?")
+
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
