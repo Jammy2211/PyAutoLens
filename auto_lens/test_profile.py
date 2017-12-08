@@ -1154,7 +1154,15 @@ class TestSurfaceDensity2(object):
         assert surface_density == pytest.approx(1.4079, 1e-3)
 
 
-class TestPotential2:
+class TestPotential2(object):
+    def test__compare_to_fortran__same_values2(self):
+        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                             einstein_radius=1.0)
+
+        potential = isothermal.compute_potential(coordinates=(0.1625, 0.1625))
+
+        assert potential == pytest.approx(0.18525, 1e-3)
+
     def test__flip_coordinates_lens_center__same_value(self):
         power_law_core = profile.CoredEllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                                     einstein_radius=1.0, slope=2.0, core_radius=0.2)
@@ -1340,17 +1348,7 @@ class TestEllipticalIsothermal(object):
             elliptical.flux_at_coordinates((-1, -1)), 1e-10)
 
 
-class TestPotential3:
-    def test__compare_to_fortran__same_values2(self):
-        isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
-                                                             einstein_radius=1.0)
-
-        potential = isothermal.compute_potential(coordinates=(0.1625, 0.1625))
-
-        assert potential == pytest.approx(0.18525, 1e-3)
-
-
-class TestDeflections2(object):
+class TestEllipticalDeflections(object):
     def test_no_coordinate_rotation__correct_values(self):
         isothermal = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0)
@@ -1553,7 +1551,7 @@ class TestSurfaceDensity3(object):
         assert surface_density == pytest.approx(0.50990 * 1.33333, 1e-3)
 
 
-class TestPotential3(object):
+class TestCoredPotential(object):
     def test__flip_coordinates_lens_center__same_value(self):
         isothermal_core = profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                                        einstein_radius=1.0, core_radius=0.2)
