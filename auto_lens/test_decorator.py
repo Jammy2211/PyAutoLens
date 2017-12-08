@@ -243,3 +243,6 @@ class TestTransform(object):
     def test_exceptions(self, elliptical):
         with pytest.raises(profile.CoordinatesException):
             elliptical.coordinates_rotate_to_elliptical(profile.TransformedCoordinates((0, 0)))
+
+        with pytest.raises(profile.CoordinatesException):
+            elliptical.coordinates_back_to_cartesian((0, 0))

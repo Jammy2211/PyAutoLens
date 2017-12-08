@@ -233,7 +233,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_back_to_cartesian__phi_zero__no_rotation(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
-        coordinates_elliptical = (1.0, 1.0)
+        coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
         x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
 
@@ -243,7 +243,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_back_to_cartesian__phi_ninety__correct_calc(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=90.0)
 
-        coordinates_elliptical = (1.0, 1.0)
+        coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
         x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
 
@@ -253,7 +253,7 @@ class TestEllipticalProfile(object):
     def test__coordinates_back_to_cartesian__phi_forty_five__correct_calc(self):
         power_law = profile.EllipticalProfile(axis_ratio=1.0, phi=45.0)
 
-        coordinates_elliptical = (1.0, 1.0)
+        coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
         x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
 
@@ -549,7 +549,7 @@ class TestSphericalProfile(object):
 
         coordinates_elliptical = (1.0, 1.0)
 
-        x, y = power_law.coordinates_back_to_cartesian(coordinates_elliptical)
+        x, y = power_law.coordinates_back_to_cartesian(profile.TransformedCoordinates(coordinates_elliptical))
 
         assert x == 1.0
         assert y == 1.0
