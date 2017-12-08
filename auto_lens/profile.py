@@ -7,13 +7,45 @@ from functools import wraps
 
 
 class TransformedCoordinates(tuple):
+    """Coordinates that have been transformed to the coordinate system of the profile"""
+
     def __init__(self, coordinates):
         super(TransformedCoordinates, self).__init__(coordinates)
 
 
 def transform_coordinates(func):
+    """
+    Wrap the function in a function that checks whether the coordinates have been transformed. If they have not been
+    transformed then they are transformed. If coordinates are returned they are returned in the coordinate system in
+    which they were passed in.
+    Parameters
+    ----------
+    func : function
+        A function that requires transformed coordinates
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+
+    """
+
     @wraps(func)
     def wrapper(profile, coordinates, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : Profile
+            The profile that owns the function
+        coordinates : TransformedCoordinates or (float, float)
+            Coordinates in either cartesian or profile coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinates in the same coordinate system as those passed ins
+        """
         if not isinstance(coordinates, TransformedCoordinates):
             result = func(profile, profile.coordinates_rotate_to_elliptical(coordinates), *args, **kwargs)
             if isinstance(result, TransformedCoordinates):
@@ -25,6 +57,7 @@ def transform_coordinates(func):
 
 
 class CoordinatesException(Exception):
+    """Exception thrown when coordinates assertion fails"""
     def __init__(self, message):
         super(CoordinatesException, self).__init__(message)
 
