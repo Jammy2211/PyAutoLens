@@ -100,7 +100,6 @@ class EllipticalProfile(object):
         return math.sqrt(self.axis_ratio) * math.sqrt(
             shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
-    # TODO: This isn't using any variable from the class. Should it be?
     @staticmethod
     def coordinates_angle_from_x(coordinates):
         """
@@ -594,7 +593,7 @@ class EllipticalPowerLawMassProfile(EllipticalProfile, MassProfile):
     def potential_func(self, u, coordinates):
         eta = self.eta_u(u, coordinates)
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope) / (
-        (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+            (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
     def compute_potential(self, coordinates):
         """
@@ -756,7 +755,7 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
     @property
     def einstein_radius_rescaled(self):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * (self.einstein_radius + self.core_radius ** 2) ** (
-        self.slope - 1)
+            self.slope - 1)
 
     def surface_density_func(self, eta):
         return self.einstein_radius_rescaled * (self.core_radius ** 2 + eta ** 2) ** (-(self.slope - 1) / 2.0)
@@ -764,8 +763,8 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
     def potential_func(self, u, coordinates):
         eta = self.eta_u(u, coordinates)
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * \
-               ((self.core_radius ** 2 + eta ** 2) ** ((3.0 - self.slope) / 2.0) - self.core_radius ** (3 - self.slope)) \
-               / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+               ((self.core_radius ** 2 + eta ** 2) ** ((3.0 - self.slope) / 2.0) -
+                self.core_radius ** (3 - self.slope)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
 
 class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
