@@ -3,6 +3,64 @@ import numpy as np
 from matplotlib import pyplot
 import decorator
 from scipy.integrate import quad
+from functools import wraps
+from numba import jit
+
+
+class TransformedCoordinates(tuple):
+    """Coordinates that have been transformed to the coordinate system of the profile"""
+
+    def __init__(self, coordinates):
+        super(TransformedCoordinates, self).__init__(coordinates)
+
+
+def transform_coordinates(func):
+    """
+    Wrap the function in a function that checks whether the coordinates have been transformed. If they have not been
+    transformed then they are transformed. If coordinates are returned they are returned in the coordinate system in
+    which they were passed in.
+    Parameters
+    ----------
+    func : function
+        A function that requires transformed coordinates
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+
+    """
+
+    @wraps(func)
+    def wrapper(profile, coordinates, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : Profile
+            The profile that owns the function
+        coordinates : TransformedCoordinates or (float, float)
+            Coordinates in either cartesian or profile coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinates in the same coordinate system as those passed ins
+        """
+        if not isinstance(coordinates, TransformedCoordinates):
+            result = func(profile, profile.coordinates_rotate_to_elliptical(coordinates), *args, **kwargs)
+            if isinstance(result, TransformedCoordinates):
+                result = profile.coordinates_back_to_cartesian(result)
+            return result
+        return func(profile, coordinates, *args, **kwargs)
+
+    return wrapper
+
+
+class CoordinatesException(Exception):
+    """Exception thrown when coordinates assertion fails"""
+    def __init__(self, message):
+        super(CoordinatesException, self).__init__(message)
 
 
 class EllipticalProfile(object):
@@ -355,6 +413,7 @@ class SersicLightProfile(EllipticalProfile, LightProfile):
             46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
                    2194697. / (30690717750. * self.sersic_index ** 4))
 
+    @jit
     def flux_at_radius(self, radius):
         """
 
