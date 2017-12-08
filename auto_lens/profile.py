@@ -683,10 +683,12 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         Returns
         ----------
-        The gravitional potential [phi(eta)] at these coordinates
+        The gravitational potential [phi(eta)] at these coordinates
         """
 
         # TODO : The constant rotating of reference frames is messy, how can we clean this up?
+        # TODO : I guess we could consider having compute_deflection_angle take already rotated coordinates but then we
+        # TODO : lose coordinate consistency in the API
 
         deflections = self.compute_deflection_angle(coordinates)
 
