@@ -2,28 +2,18 @@ import itertools
 import math
 import numpy as np
 
-class SourcePlane(object):
-    """Represents the source-plane, including the traced image coordinates, the pixelization and regularization
-    matrix"""
+class SourcePlaneGeometry(object):
+    """Class which stores the source-plane geometry, to ensure different components of the source-plane share the
+    same geometry"""
 
-    def __init__(self, coordinates, sub_coordinates=None, centre=(0, 0)):
+    def __init__(self, centre=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates : list(float, float)
-            The x and y coordinates of each traced image pixel
-        sub_coordinates : list(float, float)
-            The x and y coordinates of each traced image sub-pixel
         centre : (float, float)
-            The centre of the source-plane. For a single mass profile, this will be (0,0), but may be more complicated
-            for multiple profiles.
+            The centre of the source-plane.
         """
-        self.coordinates = coordinates
-
-        if sub_coordinates != None:
-            self.sub_coordinates = sub_coordinates
-
         self.centre = centre
 
     @property
@@ -84,20 +74,106 @@ class SourcePlane(object):
             theta_from_x = 360. + theta_from_x
         return theta_from_x
 
+class SourcePlane(SourcePlaneGeometry):
+    """Represents the source-plane and its corresponding traced image (sub-)coordinates"""
 
-    def compute_boarder_function(self, edge_mask):
-        """ Fit a function, r(theta), to the source-plane coordinates which are defined to be at its boarder.
+    def __init__(self, coordinates, sub_coordinates=None, centre=(0, 0)):
+        """
 
         Parameters
         ----------
-        edge_mask : list(bool)
-            A list of length coordinates indicating whether each coordinate is at the edge of the source-plane.
-            *True* - This pixel is at the source-plane edge.
-            *False* - Thiss pixel is not at the source-plane edge
-
+        coordinates : list(float, float)
+            The x and y coordinates of each traced image pixel
+        sub_coordinates : list(float, float)
+            The x and y coordinates of each traced image sub-pixel
+        centre : (float, float)
+            The centre of the source-plane.
         """
 
-        coordinates_boarder = list(itertools.compress(self.coordinates, edge_mask))
-        radius_boarder = list(map(lambda r : self.coordinates_to_radius(r), coordinates_boarder))
+        super(SourcePlane, self).__init__(centre)
 
-        print(radius_boarder)
+        self.coordinates = coordinates
+
+        if sub_coordinates != None:
+            self.sub_coordinates = sub_coordinates
+
+    def setup_border(self, border_mask):
+        """ Setup the source-plane border using for this source-plane.
+
+        Parameters
+        ----------
+        border_mask : list(bool)
+            A list indicating for each source-plane coordinate whether it is part of the source-plane border.
+            *True* - This pixel is part of the source-plane border.
+            *False* - Thiss pixel is not part of the source-plane border
+
+        """
+        self.border = SourcePlaneBorder(list(itertools.compress(self.coordinates, border_mask)), centre=self.centre)
+
+class SourcePlaneBorder(SourcePlaneGeometry):
+    """Represents the source-plane coordinates on the source-plane border. Each coordinate is stored alongside its
+    distance from the source-plane centre (radius) and angle from the x-axis (theta)"""
+
+    def __init__(self, coordinates, centre=(0.0, 0.0)):
+        """
+
+        Parameters
+        ----------
+        coordinates : list(float, float)
+            The x and y coordinates of the source-plane border.
+        centre : (float, float)
+            The centre of the source-plane.
+        """
+
+        super(SourcePlaneBorder, self).__init__(centre)
+
+        self.coordinates = coordinates
+        self.thetas = list(map(lambda  r : self.coordinates_angle_from_x(r), coordinates))
+        self.radii = list(map(lambda r: self.coordinates_to_radius(r), coordinates))
+
+    def setup_polynomial(self, polynomial_degree=3):
+        """The source-plane border is fitted with a polynomial for r as a function of theta. This polynomial is used
+        for relocating source-plane coordinates outside the border to its edge
+
+        Parameters
+        ----------
+        polynomial_degree : int
+            The degree of the polynomial to be fitted to the source-plane border
+        """
+        self.polynomial = np.polyfit(self.thetas, self.radii, polynomial_degree)
+
+    def get_border_radius_at_theta(self, theta):
+        """For a an angle theta from the x-axis, return the border radius via the polynomial fit"""
+        return np.polyval(self.polynomial, theta)
+
+    def get_move_factor(self, coordinate):
+        """Get the move factor of a coordinate.
+         A move-factor defines how far a coordinate outside the source-plane border must be moved in order to lie on it.
+         Coordinates already within the border return a move-factor of 1.0, signifying they are already within the \
+         border.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y coordinates of the pixel to have its move-factor computed.
+        """
+        theta = self.coordinates_angle_from_x(coordinate)
+        radius = self.coordinates_to_radius(coordinate)
+
+        border_radius = self.get_border_radius_at_theta(theta)
+
+        if (radius > border_radius):
+            return border_radius/radius
+        else:
+            return 1.0
+
+    def get_relocated_coordinate(self, coordinate):
+        """Get a coordinate relocated to the source-plane border if initially outside of it.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y coordinates of the pixel to have its move-factor computed.
+        """
+        move_factor = self.get_move_factor(coordinate)
+        return coordinate[0]*move_factor, coordinate[1]*move_factor
