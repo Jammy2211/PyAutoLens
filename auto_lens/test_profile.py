@@ -86,23 +86,27 @@ class TestEllipticalProfile(object):
     def test__coordinates_to_radius__coordinates_overlap_mass_profile__r_is_zero(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(coordinates=(0, 0))
-
-        assert power_law.coordinates_to_radius(coordinates_shift) == 0.0
+        assert power_law.coordinates_to_radius(coordinates=(0, 0)) == 0.0
 
     def test__coordinates_to_radius__x_coordinates_is_one__r_is_one(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 0))
-
-        assert power_law.coordinates_to_radius(coordinates_shift) == 1.0
+        assert power_law.coordinates_to_radius(coordinates=(1.0, 0.0)) == 1.0
 
     def test__coordinates_to_radius__x_and_y_coordinates_are_one__r_is_root_two(self):
         power_law = profile.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-        coordinates_shift = power_law.coordinates_to_centre(coordinates=(1.0, 1.0))
+        assert power_law.coordinates_to_radius(coordinates=(1.0, 1.0)) == pytest.approx(np.sqrt(2), 1e-5)
 
-        assert power_law.coordinates_to_radius(coordinates_shift) == pytest.approx(np.sqrt(2), 1e-5)
+    def test__coordinates_to_radius__shift_x_coordinates_first__r_includes_shift(self):
+        power_law = profile.EllipticalProfile(centre=(-1.0, 0.0), axis_ratio=1.0, phi=0.0)
+
+        assert power_law.coordinates_to_radius(coordinates=(1.0, 0.0)) == pytest.approx(2.0, 1e-5)
+
+    def test__coordinates_to_radius__shift_x_and_y_coordinates_first__r_includes_shift(self):
+        power_law = profile.EllipticalProfile(centre=(2.0, 2.0), axis_ratio=1.0, phi=0.0)
+
+        assert power_law.coordinates_to_radius(coordinates=(3.0, 3.0)) == pytest.approx(np.sqrt(2.0), 1e-5)
 
     def test__angles_from_x_axis__phi_is_zero__angles_one_and_zero(self):
         power_law = profile.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=0.0)
