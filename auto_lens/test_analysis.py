@@ -3,6 +3,9 @@ import numpy as np
 import analysis
 import math
 
+# TODO : Work out some more test cases, particularly for the border / move factors / relocate routines
+# TODO : Need to add functionality for sub-coordinates.
+
 class TestSourcePlaneGeometry(object):
 
     class TestInit(object):
@@ -68,6 +71,7 @@ class TestSourcePlaneGeometry(object):
             assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
 
     class TestCoordinatesToRadius(object):
+
         def test__coordinates_overlap_source_plane_analysis__r_is_zero(self):
             coordinates = (0.0, 0.0)
 
@@ -104,6 +108,7 @@ class TestSourcePlaneGeometry(object):
             assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(math.sqrt(2.0), 1e-5)
 
     class TestCoordinatesAngleFromX(object):
+
         def test__angle_is_zero__angles_follow_trig(self):
             coordinates = (1.0, 0.0)
 
@@ -168,6 +173,7 @@ class TestSourcePlaneGeometry(object):
 
             assert theta_from_x == 45.0
 
+
 class TestSourcePlane(object):
     
     class TestSetupBorder(object):
@@ -208,20 +214,20 @@ class TestSourcePlane(object):
             assert source_plane.border.radii == [2.0, 2.0*math.sqrt(2), math.sqrt(2.0), 3.0]
             assert source_plane.border.thetas == [0.0, 45.0, 225.0, 270.0]
 
-    class TestBorderPolynomial(object):
-
         def test__source_plane_centre_offset__coordinates_same_r_and_theta_shifted(self):
-    
+
             coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
             border_mask = [True, True, True, True]
-    
+
             source_plane = analysis.SourcePlane(coordinates, centre=(1.0, 1.0))
             source_plane.setup_border(border_mask)
             source_plane.border.setup_polynomial(polynomial_degree=3)
-    
+
             assert source_plane.border.coordinates == [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
             assert source_plane.border.radii == [1.0, 1.0, 1.0, 1.0]
             assert source_plane.border.thetas == [0.0, 90.0, 180.0, 270.0]
+
+    class TestBorderPolynomial(object):
     
         def test__four_coordinates_in_circle__thetas_at_radius_are_each_coordinates_radius(self):
     
@@ -256,19 +262,101 @@ class TestSourcePlane(object):
             assert source_plane.border.get_border_radius_at_theta(theta=225.0) == pytest.approx(1.0, 1e-3)
             assert source_plane.border.get_border_radius_at_theta(theta=270.0) == pytest.approx(1.0, 1e-3)
             assert source_plane.border.get_border_radius_at_theta(theta=315.0) == pytest.approx(1.0, 1e-3)
-    
-        def test__eight_coordinates_in_circle__move_factors_correct(self):
-    
-            coordinates = [(1.0, 0.0), (0.5*math.sqrt(2), 0.5*math.sqrt(2)), (0.0, 1.0), (-0.5*math.sqrt(2), 0.5*math.sqrt(2)),
-                           (-1.0, 0.0),(-0.5*math.sqrt(2), -0.5*math.sqrt(2)), (0.0, -1.0), (0.5*math.sqrt(2), -0.5*math.sqrt(2))]
-    
-            border_mask = [True, True, True, True, True, True, True, True]
-    
+
+    class TestRelocateCoordinates(object):
+
+        def test__outside_border_simple_cases__relocates_to_correct_coordinates(self):
+
+            thetas = np.linspace(0.0, 2.0*np.pi, 16)
+            circle = list(map(lambda x : (np.cos(x), np.sin(x)), thetas))
+
+            coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
+                                    (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
+
+            border_mask = [True]*16 + [False]*8
+
             source_plane = analysis.SourcePlane(coordinates)
             source_plane.setup_border(border_mask)
             source_plane.border.setup_polynomial(polynomial_degree=3)
-    
-        #    assert source_plane.border.get_move_factor(theta=0.0, )
+            source_plane.relocate_coordinates_outside_border()
+
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+
+            assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
+            assert source_plane.coordinates[:][16] == (1.0, 0.0)
+            assert source_plane.coordinates[:][17] == (0.5*math.sqrt(2), 0.5*math.sqrt(2))
+            assert source_plane.coordinates[:][18] == (0.0, 1.0)
+            assert source_plane.coordinates[:][19] == (-0.5*math.sqrt(2), 0.5*math.sqrt(2))
+            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][21] == (-0.5*math.sqrt(2), -0.5*math.sqrt(2))
+            assert source_plane.coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.coordinates[:][23] == (0.5*math.sqrt(2), -0.5*math.sqrt(2))
+
+        def test__inside_border_simple_cases__no_coordinate_change(self):
+
+            thetas = np.linspace(0.0, 2.0*np.pi, 16)
+            circle = list(map(lambda x : (np.cos(x), np.sin(x)), thetas))
+
+            coordinates = circle + [(0.5, 0.0),   (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
+                                    (-0.5, 0.0), (-0.5, -0.5), (0.0, -0.5), (0.5, -0.5)]
+
+            border_mask = [True]*16 + [False]*8
+
+            source_plane = analysis.SourcePlane(coordinates)
+            source_plane.setup_border(border_mask)
+            source_plane.border.setup_polynomial(polynomial_degree=3)
+            source_plane.relocate_coordinates_outside_border()
+
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+
+            assert source_plane.coordinates[:][0:24] == coordinates[:][0:24]
+
+        def test__inside_and_outside_border_simple_cases__changes_where_appropriate(self):
+
+            thetas = np.linspace(0.0, 2.0*np.pi, 16)
+            circle = list(map(lambda x : (np.cos(x), np.sin(x)), thetas))
+
+            coordinates = circle + [(0.5, 0.0),   (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
+                                    (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
+
+            border_mask = [True]*16 + [False]*8
+
+            source_plane = analysis.SourcePlane(coordinates)
+            source_plane.setup_border(border_mask)
+            source_plane.border.setup_polynomial(polynomial_degree=3)
+            source_plane.relocate_coordinates_outside_border()
+
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+
+            assert source_plane.coordinates[:][0:20] == coordinates[:][0:20]
+            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][21] == (-0.5*math.sqrt(2), -0.5*math.sqrt(2))
+            assert source_plane.coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.coordinates[:][23] == (0.5*math.sqrt(2), -0.5*math.sqrt(2))
+
+        def test__change_border_mask__works_as_above(self):
+
+            thetas = np.linspace(0.0, 2.0*np.pi, 16)
+            circle = list(map(lambda x : (np.cos(x), np.sin(x)), thetas))
+
+            coordinates = [(-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)] + circle + \
+                          [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5)]
+
+            border_mask = [False]*4 + [True]*16 + [False]*4
+
+            source_plane = analysis.SourcePlane(coordinates)
+            source_plane.setup_border(border_mask)
+            source_plane.border.setup_polynomial(polynomial_degree=3)
+            source_plane.relocate_coordinates_outside_border()
+
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+
+            assert source_plane.coordinates[:][0] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][1] == (-0.5*math.sqrt(2), -0.5*math.sqrt(2))
+            assert source_plane.coordinates[:][2] == (0.0, -1.0)
+            assert source_plane.coordinates[:][3] == (0.5*math.sqrt(2), -0.5*math.sqrt(2))
+            assert source_plane.coordinates[:][4:24] == coordinates[:][4:24]
+
 
 class TestSourcePlaneBorder(object):
 
@@ -295,8 +383,6 @@ class TestSourcePlaneBorder(object):
             assert source_border.thetas == [0.0, 90.0, 180.0, 270.0]
 
     class TestMoveFactors(object):
-
-        # TODO : Work out some more test cases
 
         def test__inside_border__move_factor_is_1(self):
 
@@ -337,7 +423,7 @@ class TestSourcePlaneBorder(object):
 
         def test__outside_border_simple_cases__relocates_to_correct_coordinate(self):
 
-            thetas = np.linspace(0.0, 2.0*np.pi, 32)
+            thetas = np.linspace(0.0, 2.0*np.pi, 16)
             circle = list(map(lambda x : (np.cos(x), np.sin(x)), thetas))
 
             source_border = analysis.SourcePlaneBorder(circle, centre=(0.0, 0.0))

@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 class SourcePlaneGeometry(object):
-    """Class which stores the source-plane geometry, to ensure different components of the source-plane share the
+    """Stores the source-plane geometry, to ensure different components of the source-plane share the
     same geometry"""
 
     def __init__(self, centre=(0, 0)):
@@ -109,6 +109,10 @@ class SourcePlane(SourcePlaneGeometry):
 
         """
         self.border = SourcePlaneBorder(list(itertools.compress(self.coordinates, border_mask)), centre=self.centre)
+
+    def relocate_coordinates_outside_border(self):
+        """ Move all source-plane coordinates outside of its source-plane border to the edge of its border"""
+        self.coordinates = list(map(lambda r : self.border.get_relocated_coordinate(r), self.coordinates))
 
 class SourcePlaneBorder(SourcePlaneGeometry):
     """Represents the source-plane coordinates on the source-plane border. Each coordinate is stored alongside its
