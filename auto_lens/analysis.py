@@ -75,15 +75,13 @@ class SourcePlaneGeometry(object):
         return theta_from_x
 
 class SourcePlane(SourcePlaneGeometry):
-    """Represents the source-plane and its corresponding traced image (sub-)coordinates"""
+    """Represents the source-plane and its corresponding traced image sub-coordinates"""
 
-    def __init__(self, coordinates, sub_coordinates=None, centre=(0, 0)):
+    def __init__(self, sub_coordinates, centre=(0, 0)):
         """
 
         Parameters
         ----------
-        coordinates : list(float, float)
-            The x and y coordinates of each traced image pixel
         sub_coordinates : list(float, float)
             The x and y coordinates of each traced image sub-pixel
         centre : (float, float)
@@ -92,10 +90,7 @@ class SourcePlane(SourcePlaneGeometry):
 
         super(SourcePlane, self).__init__(centre)
 
-        self.coordinates = coordinates
-
-        if sub_coordinates != None:
-            self.sub_coordinates = sub_coordinates
+        self.sub_coordinates = sub_coordinates
 
     def setup_border(self, border_mask):
         """ Setup the source-plane border using for this source-plane.
@@ -108,11 +103,37 @@ class SourcePlane(SourcePlaneGeometry):
             *False* - Thiss pixel is not part of the source-plane border
 
         """
-        self.border = SourcePlaneBorder(list(itertools.compress(self.coordinates, border_mask)), centre=self.centre)
+        self.border = SourcePlaneBorder(list(itertools.compress(self.sub_coordinates, border_mask)), centre=self.centre)
 
     def relocate_coordinates_outside_border(self):
         """ Move all source-plane coordinates outside of its source-plane border to the edge of its border"""
-        self.coordinates = list(map(lambda r : self.border.get_relocated_coordinate(r), self.coordinates))
+        self.sub_coordinates = list(map(lambda r : self.border.get_relocated_coordinate(r), self.sub_coordinates))
+
+class SourcePlaneSparse(SourcePlane):
+    """Represents the source-plane, including a sparse coordinate list."""
+
+    # TODO : This is all untested - just experimenting with how best to handle the sparse grid and give you a sense
+    # TODO : of the problem. See the Coordinates file for a description.
+
+    def __init__(self, sub_coordinates, sparse_coordinates, sub_to_sparse, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        sub_coordinates : list(float, float)
+            The x and y coordinates of each traced image sub-pixel
+        sparse_coordinates : list(float, float)
+            The x and y coordinates of each traced image sparse-pixel
+        sub_to_sparse : list(int)
+            The integer entry in sparse_clusters (and sparse_coordinates) that each sub-pixel corresponds to.
+        centre : (float, float)
+            The centre of the source-plane.
+        """
+
+        super(SourcePlaneSparse, self).__init__(sub_coordinates, centre)
+
+        self.sparse_coordinates = sparse_coordinates
+        self.sub_to_sparse= sub_to_sparse
 
 class SourcePlaneBorder(SourcePlaneGeometry):
     """Represents the source-plane coordinates on the source-plane border. Each coordinate is stored alongside its

@@ -15,7 +15,7 @@ class TestSourcePlaneGeometry(object):
 
             source_plane = analysis.SourcePlane(coordinates)
 
-            assert source_plane.coordinates == [(1.0, 1.0), (0.0, 0.5)]
+            assert source_plane.sub_coordinates == [(1.0, 1.0), (0.0, 0.5)]
 
     class TestCoordinatesToCentre(object):
 
@@ -35,7 +35,7 @@ class TestSourcePlaneGeometry(object):
 
             source_plane = analysis.SourcePlane(coordinates, centre=(0.5, 0.0))
 
-            coordinates_shift = source_plane.coordinates_to_centre(source_plane.coordinates)
+            coordinates_shift = source_plane.coordinates_to_centre(source_plane.sub_coordinates)
 
             assert coordinates_shift[0] == -0.5
             assert coordinates_shift[1] == 0.0
@@ -280,17 +280,17 @@ class TestSourcePlane(object):
             source_plane.border.setup_polynomial(polynomial_degree=3)
             source_plane.relocate_coordinates_outside_border()
 
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
 
-            assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
-            assert source_plane.coordinates[:][16] == (1.0, 0.0)
-            assert source_plane.coordinates[:][17] == (0.5*math.sqrt(2), 0.5*math.sqrt(2))
-            assert source_plane.coordinates[:][18] == (0.0, 1.0)
-            assert source_plane.coordinates[:][19] == (-0.5*math.sqrt(2), 0.5*math.sqrt(2))
-            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][21] == (-0.5*math.sqrt(2), -0.5*math.sqrt(2))
-            assert source_plane.coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.coordinates[:][23] == (0.5*math.sqrt(2), -0.5*math.sqrt(2))
+            assert source_plane.sub_coordinates[:][0:16] == coordinates[:][0:16]
+            assert source_plane.sub_coordinates[:][16] == (1.0, 0.0)
+            assert source_plane.sub_coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+            assert source_plane.sub_coordinates[:][18] == (0.0, 1.0)
+            assert source_plane.sub_coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+            assert source_plane.sub_coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.sub_coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.sub_coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.sub_coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
 
         def test__inside_border_simple_cases__no_coordinate_change(self):
 
@@ -307,9 +307,9 @@ class TestSourcePlane(object):
             source_plane.border.setup_polynomial(polynomial_degree=3)
             source_plane.relocate_coordinates_outside_border()
 
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
 
-            assert source_plane.coordinates[:][0:24] == coordinates[:][0:24]
+            assert source_plane.sub_coordinates[:][0:24] == coordinates[:][0:24]
 
         def test__inside_and_outside_border_simple_cases__changes_where_appropriate(self):
 
@@ -326,13 +326,13 @@ class TestSourcePlane(object):
             source_plane.border.setup_polynomial(polynomial_degree=3)
             source_plane.relocate_coordinates_outside_border()
 
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
 
-            assert source_plane.coordinates[:][0:20] == coordinates[:][0:20]
-            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][21] == (-0.5*math.sqrt(2), -0.5*math.sqrt(2))
-            assert source_plane.coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.coordinates[:][23] == (0.5*math.sqrt(2), -0.5*math.sqrt(2))
+            assert source_plane.sub_coordinates[:][0:20] == coordinates[:][0:20]
+            assert source_plane.sub_coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.sub_coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.sub_coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.sub_coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
 
         def test__change_border_mask__works_as_above(self):
 
@@ -349,13 +349,13 @@ class TestSourcePlane(object):
             source_plane.border.setup_polynomial(polynomial_degree=3)
             source_plane.relocate_coordinates_outside_border()
 
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
 
-            assert source_plane.coordinates[:][0] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][1] == (-0.5*math.sqrt(2), -0.5*math.sqrt(2))
-            assert source_plane.coordinates[:][2] == (0.0, -1.0)
-            assert source_plane.coordinates[:][3] == (0.5*math.sqrt(2), -0.5*math.sqrt(2))
-            assert source_plane.coordinates[:][4:24] == coordinates[:][4:24]
+            assert source_plane.sub_coordinates[:][0] == (-1.0, 0.0)
+            assert source_plane.sub_coordinates[:][1] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.sub_coordinates[:][2] == (0.0, -1.0)
+            assert source_plane.sub_coordinates[:][3] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.sub_coordinates[:][4:24] == coordinates[:][4:24]
 
 
 class TestSourcePlaneBorder(object):
