@@ -1,5 +1,6 @@
 import itertools
 import math
+import numpy as np
 
 class SourcePlane(object):
     """Represents the source-plane, including the traced image coordinates, the pixelization and regularization
@@ -64,8 +65,28 @@ class SourcePlane(object):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
-    def compute_edge_function(self, edge_mask):
-        """ Fit a function, r(theta), to the source-plane coordinates which are defined to be at its edge.
+    def coordinates_angle_from_x(self, coordinates):
+        """
+        Compute the angle between the coordinates and source-plane positive x-axis, defined counter-clockwise.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the source-plane.
+
+        Returns
+        ----------
+        The angle between the coordinates and the x-axis.
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        if theta_from_x < 0.0:
+            theta_from_x = 360. + theta_from_x
+        return theta_from_x
+
+
+    def compute_boarder_function(self, edge_mask):
+        """ Fit a function, r(theta), to the source-plane coordinates which are defined to be at its boarder.
 
         Parameters
         ----------
@@ -76,6 +97,7 @@ class SourcePlane(object):
 
         """
 
-        coordinates_edge = list(itertools.compress(self.coordinates, edge_mask))
-   #     radius_edge = list(map(lambda x, y : math.sqrt self.coordinates
+        coordinates_boarder = list(itertools.compress(self.coordinates, edge_mask))
+        radius_boarder = list(map(lambda r : self.coordinates_to_radius(r), coordinates_boarder))
 
+        print(radius_boarder)
