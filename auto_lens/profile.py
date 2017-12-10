@@ -140,6 +140,25 @@ class EllipticalProfile(object):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
+    def coordinates_angle_from_x(self, coordinates):
+        """
+        Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
+        are symmetric after 180 degrees, so angles above 180 are converted to their equivalent value from 0.
+        (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image.
+
+        Returns
+        ----------
+        The angle between the coordinates and the x-axis and profile centre
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        return theta_from_x
+
     def coordinates_to_eccentric_radius(self, coordinates):
         """
         Convert the coordinates to a radius in elliptical space.
@@ -156,26 +175,6 @@ class EllipticalProfile(object):
         shifted_coordinates = self.coordinates_rotate_to_elliptical(coordinates)
         return math.sqrt(self.axis_ratio) * math.sqrt(
             shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
-
-    @staticmethod
-    def coordinates_angle_from_x(coordinates):
-        """
-        Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
-        are symmetric after 180 degrees, so angles above 180 are converted to their equivalent value from 0.
-        (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the image.
-
-        Returns
-        ----------
-        The angle between the coordinates and the x-axis and profile centre
-        """
-        theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
-
-        return theta_from_x
 
     def coordinates_angle_to_profile(self, theta):
         """
@@ -237,11 +236,8 @@ class EllipticalProfile(object):
         # Compute distance of coordinates to the lens profile centre
         radius = self.coordinates_to_radius(coordinates)
 
-        # Shift coordinates to lens profile centre (this is performed internally in the function above)
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-
         # Compute the angle between the coordinates and x-axis
-        theta_from_x = self.coordinates_angle_from_x(shifted_coordinates)
+        theta_from_x = self.coordinates_angle_from_x(coordinates)
 
         # Compute the angle between the coordinates and profile ellipse
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)

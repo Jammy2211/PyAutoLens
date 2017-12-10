@@ -1,0 +1,57 @@
+=========== Coordinates ===========
+
+Currently, we have an image which is defined in arcseconds (ie. -10.0 to 10.0 or 0.0 to 20.0).
+
+We compute a model at a profile centre, which shifts these image coordinates to its centre:
+
+e.g. if profile.centre = (2.0, 2.0), an image coordinate (5.0, 5.0) becomes (3.0, 3.0)
+
+We then compute the light profile and deflection angles using this shifted coordinate system. This subsequently includes
+transforms which rotate coordinates to and from the profile orientation.
+
+However, Our routine coordinates_back_to_cartesian DOES NOT shift coordinates back to their original locations. So, for example,
+if the original coordinates are (10.0, 10.0) and profile.centre is (8.0, 8.0) then the following routine:
+
+elliptical_profile = profile.EllipticalProfile(axis_ratio=1.0, phi=174.342, centre=(2.0, 2.0))
+coordinates_original = (10.0, 10.0)
+coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+
+returns that coordinates = (8.0, 8.0). Thus they stay in the reference frame of the lens profile and not their original
+image-plane coordinate.
+
+============= Consequences ==========
+
+The benefit of doing this is that it makes adding the light profiles and deflection angles together a lot easier. Because
+after this shifting each profile is centred at (0.0, 0.0), we can add deflection angles together simply as:
+
+deflections = deflections_of_profile_1 + deflectionos_of_profile_2 + etc.
+
+In contrast, if each set of deflection angles were shifted back to the image-plane coordinates (e.g. so the function above
+returned (10.0, 10.0)) we'd have to re-shift deflection angles when adding them together:
+
+profile_1.centre = (2.0, 2.0)
+profile_2.centre = (8.0, 8.0)
+
+deflections = (deflections_of_profile_1 - (2.0, 2.0)) + (deflections_of_profile_2 - (8.0, 8.0)) + etc.
+
+The downside of our currentl implementation however, is that the source-plane is now defined using the image-plane coordinates
+rather than being centred on the profile. For example, if an image pixel is at (8.5, 8.5) and the mass profile is centred at (8.0., 8.0),
+the deflection angle it computes there will be centred on (0.0, 0.0) and thus small relative to 8.0. So, our source-plane
+will take values spanning from around 7.0 to 8.0 - it'd be nicer if it were centred on (0.0, 0.0).
+
+For the source-plane, I've included its centre as an input parameter. We need to decide what we generally use to define its centre:
+
+- The image-plane centre. This is how the fortran code does it - a benefit is that the source-plane coordinates won't shift about
+ arbritraly - which can lead to nasty discreteness effects.
+
+- The image-plane mask centre. In hindsight, this is how I feel I should have done it all along, albeit its very clsoe to the
+image-plane centre generally. Again, it means that source coordinates won't 'jiggle' throughout an analysis.
+
+- The mass profile centre - coordinates will shift slightly for each profile, which can lead to annoying discreteness
+ effects. This, in my opinion, is also a lot less clear to the user than using the mask centre.
+
+ In general, we want source-plane coordinates to be centred on (0.0, 0.0), which all the optios above will achieve.
+We need to decide if this is something we just do whene we construct the source plane
+(i.e. source_plane.shifted_coordinates = source_plane.coordinates - source_plane.centre) or only in the coordinates_to_?
+routines, analogous to profile. I've taken the latter approach for now, but feel actually the former is cleaner.
