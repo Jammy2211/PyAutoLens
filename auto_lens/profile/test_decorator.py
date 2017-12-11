@@ -1,24 +1,25 @@
 import pytest
-import decorator
 import profile
+import light_profile
+import mass_profile
 
 
 @pytest.fixture(name='circular')
 def circular_sersic():
-    return profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                                      effective_radius=0.6, sersic_index=4.0)
+    return light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
 
 
 @pytest.fixture(name='elliptical')
 def elliptical_sersic():
-    return profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=1.0,
-                                      effective_radius=0.6, sersic_index=4.0)
+    return light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
 
 
 @pytest.fixture(name='vertical')
 def vertical_sersic():
-    return profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
-                                      effective_radius=0.6, sersic_index=4.0)
+    return light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
 
 
 class MockMask(object):
@@ -32,7 +33,7 @@ class MockMask(object):
 
 class TestDecorators(object):
     def test_subgrid_2x2(self):
-        @decorator.subgrid
+        @profile.subgrid
         def return_coords(coords):
             return coords[0], coords[1]
 
@@ -43,7 +44,7 @@ class TestDecorators(object):
         assert coordinates == [(1. / 3., 1. / 3.), (1. / 3., 2. / 3.), (2. / 3., 1. / 3.), (2. / 3., 2. / 3.)]
 
     def test_subgrid_3x3(self):
-        @decorator.subgrid
+        @profile.subgrid
         def return_coords(coords):
             return coords[0], coords[1]
 
@@ -56,7 +57,7 @@ class TestDecorators(object):
                                (0.75, 0.25), (0.75, 0.5), (0.75, 0.75)]
 
     def test_subgrid_3x3_triple_pixel_scale_and_coordinate(self):
-        @decorator.subgrid
+        @profile.subgrid
         def return_coords(coords):
             return coords[0], coords[1]
 
@@ -70,7 +71,7 @@ class TestDecorators(object):
                                (2.25, 0.75), (2.25, 1.5), (2.25, 2.25)]
 
     def test_subgrid_4x4_new_coordinates(self):
-        @decorator.subgrid
+        @profile.subgrid
         def return_coords(coords):
             return coords[0], coords[1]
 
@@ -87,7 +88,7 @@ class TestDecorators(object):
                                (-1.97, 2.97), (-1.97, 2.99), (-1.97, 3.01), (-1.97, 3.03)]
 
     def test_average(self):
-        @decorator.avg
+        @profile.avg
         def return_input(input_list):
             return input_list
 
@@ -96,7 +97,7 @@ class TestDecorators(object):
 
     def test_iterative_subgrid(self):
         # noinspection PyUnusedLocal
-        @decorator.iterative_subgrid
+        @profile.iterative_subgrid
         def one_over_grid(coordinates, pixel_scale, grid_size):
             return 1.0 / grid_size
 
@@ -105,7 +106,7 @@ class TestDecorators(object):
 
     def test_mask(self):
         mask = MockMask([(x, 0) for x in range(-5, 6)])
-        array = decorator.array_function(lambda coordinates: 1)(-5, -5, 5, 5, 1, mask=mask)
+        array = profile.array_function(lambda coordinates: 1)(-5, -5, 5, 5, 1, mask=mask)
 
         assert array[5][5] is None
         assert array[5][6] is not None
@@ -116,62 +117,62 @@ class TestDecorators(object):
 
 class TestAuxiliary(object):
     def test__side_length(self):
-        assert decorator.side_length(-5, 5, 0.1) == 100
+        assert profile.side_length(-5, 5, 0.1) == 100
 
     def test__pixel_to_coordinate(self):
-        assert decorator.pixel_to_coordinate(-5, 0.1, 0) == -5
-        assert decorator.pixel_to_coordinate(-5, 0.1, 100) == 5
-        assert decorator.pixel_to_coordinate(-5, 0.1, 50) == 0
+        assert profile.pixel_to_coordinate(-5, 0.1, 0) == -5
+        assert profile.pixel_to_coordinate(-5, 0.1, 100) == 5
+        assert profile.pixel_to_coordinate(-5, 0.1, 50) == 0
 
 
 class TestArray(object):
     def test__simple_assumptions(self, circular):
-        array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
-                                                                       pixel_scale=1)
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+                                                                     pixel_scale=1)
         assert array.shape == (101, 101)
         assert array[51][51] > array[51][52]
         assert array[51][51] > array[52][51]
         assert all(map(lambda i: i > 0, array[0]))
 
-        array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                       pixel_scale=0.5)
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=0.5)
         assert array.shape == (200, 200)
 
     def test__ellipticity(self, circular, elliptical, vertical):
-        array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
-                                                                       pixel_scale=1)
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+                                                                     pixel_scale=1)
         assert array[60][0] == array[0][60]
 
-        array = decorator.array_function(elliptical.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                         pixel_scale=1)
+        array = profile.array_function(elliptical.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                       pixel_scale=1)
 
         assert array[60][51] > array[51][60]
 
-        array = decorator.array_function(vertical.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                       pixel_scale=1)
+        array = profile.array_function(vertical.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=1)
         assert array[60][51] < array[51][60]
 
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
-        array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                       pixel_scale=1)
-        flat_array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                            pixel_scale=1).flatten()
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=1)
+        flat_array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                          pixel_scale=1).flatten()
 
         assert all(array[0] == flat_array[:100])
         assert all(array[1] == flat_array[100:200])
 
     def test_combined_array(self, circular):
-        combined = profile.CombinedLightProfile(circular, circular)
+        combined = light_profile.CombinedLightProfile(circular, circular)
 
         assert all(map(lambda i: i == 2,
-                       decorator.array_function(combined.flux_at_coordinates)().flatten() / decorator.array_function(
+                       profile.array_function(combined.flux_at_coordinates)().flatten() / profile.array_function(
                            circular.flux_at_coordinates)().flatten()))
 
     def test_symmetric_profile(self, circular):
         circular.centre = (50, 50)
-        array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                       pixel_scale=1.0)
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=1.0)
 
         assert array[50][50] > array[50][51]
         assert array[50][50] > array[49][50]
@@ -179,8 +180,8 @@ class TestArray(object):
         assert array[50][51] == array[50][49]
         assert array[50][49] == array[51][50]
 
-        array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                       pixel_scale=0.5)
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=0.5)
 
         assert array[100][100] > array[100][101]
         assert array[100][100] > array[99][100]
@@ -189,7 +190,7 @@ class TestArray(object):
         assert array[100][99] == array[101][100]
 
     def test_origin_symmetric_profile(self, circular):
-        array = decorator.array_function(circular.flux_at_coordinates)()
+        array = profile.array_function(circular.flux_at_coordinates)()
 
         assert circular.flux_at_coordinates((-5, 0)) < circular.flux_at_coordinates((0, 0))
         assert circular.flux_at_coordinates((5, 0)) < circular.flux_at_coordinates((0, 0))
@@ -207,11 +208,11 @@ class TestArray(object):
         assert array[50][49] == pytest.approx(array[51][50], 1e-10)
 
     def test__deflection_angle_array(self):
-        mass_profile = profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
-                                                               einstein_radius=2.0)
+        mp = mass_profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                          einstein_radius=2.0)
         # noinspection PyTypeChecker
-        assert all(decorator.array_function(mass_profile.compute_deflection_angle)(-1, -1, -0.5, -0.5, 0.1)[0][
-                       0] == mass_profile.compute_deflection_angle((-1, -1)))
+        assert all(profile.array_function(mp.compute_deflection_angle)(-1, -1, -0.5, -0.5, 0.1)[0][
+                       0] == mp.compute_deflection_angle((-1, -1)))
 
 
 class MockProfile(object):
