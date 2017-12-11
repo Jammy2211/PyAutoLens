@@ -2,6 +2,7 @@ import itertools
 import math
 import numpy as np
 
+
 class SourcePlaneGeometry(object):
     """Stores the source-plane geometry, to ensure different components of the source-plane share the
     same geometry"""
@@ -71,8 +72,9 @@ class SourcePlaneGeometry(object):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
         if theta_from_x < 0.0:
-            theta_from_x = 360. + theta_from_x
+            theta_from_x += 360.
         return theta_from_x
+
 
 class SourcePlane(SourcePlaneGeometry):
     """Represents the source-plane and its corresponding traced image sub-coordinates"""
@@ -107,7 +109,8 @@ class SourcePlane(SourcePlaneGeometry):
 
     def relocate_coordinates_outside_border(self):
         """ Move all source-plane coordinates outside of its source-plane border to the edge of its border"""
-        self.sub_coordinates = list(map(lambda r : self.border.get_relocated_coordinate(r), self.sub_coordinates))
+        self.sub_coordinates = list(map(lambda r: self.border.get_relocated_coordinate(r), self.sub_coordinates))
+
 
 class SourcePlaneSparse(SourcePlane):
     """Represents the source-plane, including a sparse coordinate list."""
@@ -133,7 +136,8 @@ class SourcePlaneSparse(SourcePlane):
         super(SourcePlaneSparse, self).__init__(sub_coordinates, centre)
 
         self.sparse_coordinates = sparse_coordinates
-        self.sub_to_sparse= sub_to_sparse
+        self.sub_to_sparse = sub_to_sparse
+
 
 class SourcePlaneBorder(SourcePlaneGeometry):
     """Represents the source-plane coordinates on the source-plane border. Each coordinate is stored alongside its
@@ -153,7 +157,7 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         super(SourcePlaneBorder, self).__init__(centre)
 
         self.coordinates = coordinates
-        self.thetas = list(map(lambda  r : self.coordinates_angle_from_x(r), coordinates))
+        self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), coordinates))
         self.radii = list(map(lambda r: self.coordinates_to_radius(r), coordinates))
 
     def setup_polynomial(self, polynomial_degree=3):
@@ -187,8 +191,8 @@ class SourcePlaneBorder(SourcePlaneGeometry):
 
         border_radius = self.get_border_radius_at_theta(theta)
 
-        if (radius > border_radius):
-            return border_radius/radius
+        if radius > border_radius:
+            return border_radius / radius
         else:
             return 1.0
 
@@ -201,4 +205,4 @@ class SourcePlaneBorder(SourcePlaneGeometry):
             The x and y coordinates of the pixel to have its move-factor computed.
         """
         move_factor = self.get_move_factor(coordinate)
-        return coordinate[0]*move_factor, coordinate[1]*move_factor
+        return coordinate[0] * move_factor, coordinate[1] * move_factor
