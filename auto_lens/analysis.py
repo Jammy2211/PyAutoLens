@@ -1,60 +1,18 @@
 import itertools
 import math
 import numpy as np
+from profile import profile
 
 
-class SourcePlaneGeometry(object):
+# TODO: This class seems to share some ideas with the generic profile. We should be careful not to over-integrate but
+# TODO: for now I think it makes sense to leverage the profile module in other areas as we may be able to reuse some of
+# TODO: its functionality.
+class SourcePlaneGeometry(profile.Profile):
     """Stores the source-plane geometry, to ensure different components of the source-plane share the
     same geometry"""
 
     def __init__(self, centre=(0, 0)):
-        """
-
-        Parameters
-        ----------
-        centre : (float, float)
-            The centre of the source-plane.
-        """
-        self.centre = centre
-
-    @property
-    def x_cen(self):
-        return self.centre[0]
-
-    @property
-    def y_cen(self):
-        return self.centre[1]
-
-    def coordinates_to_centre(self, coordinates):
-        """
-        Converts source-plane coordinates to centre of source-plane
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the source-plane coordinate
-
-        Returns
-        ----------
-        The coordinates at the source-plane center
-        """
-        return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
-
-    def coordinates_to_radius(self, coordinates):
-        """
-        Convert the coordinates to a radius
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The image coordinates (x, y)
-
-        Returns
-        -------
-        The radius at those coordinates
-        """
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-        return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
+        super(SourcePlaneGeometry, self).__init__(centre)
 
     def coordinates_angle_from_x(self, coordinates):
         """
@@ -163,7 +121,9 @@ class SourcePlaneBorder(SourcePlaneGeometry):
 
     # TODO: "get_" and "set_" are paradigms used for getting and setting a property of a class instance. They're common
     # TODO: in Java but not really used in Python. I prefer not to use generic verbs like that in the method name
-    # TODO: because they often don't describe much about what the method does
+    # TODO: because they often don't describe much about what the method does. (As an aside, the property decorated can
+    # TODO: be used to implement a getter and setter paradigm which is really useful for computed variables where you
+    # TODO: have to calculate a value from some other variable, such as an area from a radius)
     def border_radius_at_theta(self, theta):
         """For a an angle theta from the x-axis, return the border radius via the polynomial fit"""
         return np.polyval(self.polynomial, theta)
