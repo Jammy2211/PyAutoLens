@@ -84,7 +84,7 @@ class SourcePlane(SourcePlaneGeometry):
 
         Parameters
         ----------
-        sub_coordinates : list(float, float)
+        sub_coordinates : [(float, float)]
             The x and y coordinates of each traced image sub-pixel
         centre : (float, float)
             The centre of the source-plane.
@@ -94,22 +94,20 @@ class SourcePlane(SourcePlaneGeometry):
 
         self.sub_coordinates = sub_coordinates
 
-    def setup_border(self, border_mask):
-        """ Setup the source-plane border using for this source-plane.
+    # TODO: You shouldn't have to set up attributes of a class crucial to its function after calling the constructor.
+    # TODO: it seems like a mask here doesn't need to be an internal property but does depend on the attributes of the
+    # TODO: class, with free attributes of border_mask and polynomial degree. There might be a better route but for now
+    # TODO: I've written this method to create a border mask from an existing instance of source plane
+    def border_with_mask_and_polynomial_degree(self, border_mask, polynomial_degree):
+        return SourcePlaneBorder(list(itertools.compress(self.sub_coordinates, border_mask)), polynomial_degree,
+                                 centre=self.centre)
 
-        Parameters
-        ----------
-        border_mask : list(bool)
-            A list indicating for each source-plane coordinate whether it is part of the source-plane border.
-            *True* - This pixel is part of the source-plane border.
-            *False* - Thiss pixel is not part of the source-plane border
+    def relocate_coordinates_outside_border_with_mask_and_polynomial_degree(self, mask, polynomial_degree):
+        self.relocate_coordinates_outside_border(self.border_with_mask_and_polynomial_degree(mask, polynomial_degree))
 
-        """
-        self.border = SourcePlaneBorder(list(itertools.compress(self.sub_coordinates, border_mask)), centre=self.centre)
-
-    def relocate_coordinates_outside_border(self):
+    def relocate_coordinates_outside_border(self, border):
         """ Move all source-plane coordinates outside of its source-plane border to the edge of its border"""
-        self.sub_coordinates = list(map(lambda r: self.border.get_relocated_coordinate(r), self.sub_coordinates))
+        self.sub_coordinates = list(map(lambda r: border.relocated_coordinate(r), self.sub_coordinates))
 
 
 class SourcePlaneSparse(SourcePlane):
@@ -123,11 +121,11 @@ class SourcePlaneSparse(SourcePlane):
 
         Parameters
         ----------
-        sub_coordinates : list(float, float)
+        sub_coordinates : [(float, float)]
             The x and y coordinates of each traced image sub-pixel
         sparse_coordinates : list(float, float)
             The x and y coordinates of each traced image sparse-pixel
-        sub_to_sparse : list(int)
+        sub_to_sparse : [int]
             The integer entry in sparse_clusters (and sparse_coordinates) that each sub-pixel corresponds to.
         centre : (float, float)
             The centre of the source-plane.
@@ -143,12 +141,14 @@ class SourcePlaneBorder(SourcePlaneGeometry):
     """Represents the source-plane coordinates on the source-plane border. Each coordinate is stored alongside its
     distance from the source-plane centre (radius) and angle from the x-axis (theta)"""
 
-    def __init__(self, coordinates, centre=(0.0, 0.0)):
+    # TODO: You shouldn't have to set up attributes of a class crucial to its function after calling the constructor.
+    # TODO: Here I've passed polynomial degree into the constructor
+    def __init__(self, coordinates, polynomial_degree, centre=(0.0, 0.0)):
         """
 
         Parameters
         ----------
-        coordinates : list(float, float)
+        coordinates : [(float, float)]
             The x and y coordinates of the source-plane border.
         centre : (float, float)
             The centre of the source-plane.
@@ -159,23 +159,16 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         self.coordinates = coordinates
         self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), coordinates))
         self.radii = list(map(lambda r: self.coordinates_to_radius(r), coordinates))
-
-    def setup_polynomial(self, polynomial_degree=3):
-        """The source-plane border is fitted with a polynomial for r as a function of theta. This polynomial is used
-        for relocating source-plane coordinates outside the border to its edge
-
-        Parameters
-        ----------
-        polynomial_degree : int
-            The degree of the polynomial to be fitted to the source-plane border
-        """
         self.polynomial = np.polyfit(self.thetas, self.radii, polynomial_degree)
 
-    def get_border_radius_at_theta(self, theta):
+    # TODO: "get_" and "set_" are paradigms used for getting and setting a property of a class instance. They're common
+    # TODO: in Java but not really used in Python. I prefer not to use generic verbs like that in the method name
+    # TODO: because they often don't describe much about what the method does
+    def border_radius_at_theta(self, theta):
         """For a an angle theta from the x-axis, return the border radius via the polynomial fit"""
         return np.polyval(self.polynomial, theta)
 
-    def get_move_factor(self, coordinate):
+    def move_factor(self, coordinate):
         """Get the move factor of a coordinate.
          A move-factor defines how far a coordinate outside the source-plane border must be moved in order to lie on it.
          Coordinates already within the border return a move-factor of 1.0, signifying they are already within the \
@@ -189,14 +182,14 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         theta = self.coordinates_angle_from_x(coordinate)
         radius = self.coordinates_to_radius(coordinate)
 
-        border_radius = self.get_border_radius_at_theta(theta)
+        border_radius = self.border_radius_at_theta(theta)
 
         if radius > border_radius:
             return border_radius / radius
         else:
             return 1.0
 
-    def get_relocated_coordinate(self, coordinate):
+    def relocated_coordinate(self, coordinate):
         """Get a coordinate relocated to the source-plane border if initially outside of it.
 
         Parameters
@@ -204,5 +197,5 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         coordinate : (float, float)
             The x and y coordinates of the pixel to have its move-factor computed.
         """
-        move_factor = self.get_move_factor(coordinate)
+        move_factor = self.move_factor(coordinate)
         return coordinate[0] * move_factor, coordinate[1] * move_factor
