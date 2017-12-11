@@ -15,7 +15,7 @@ class Data(object):
 
         Parameters
         ----------
-        image : ndarray
+        data : ndarray
             Two-dimensional array of the data (e.g. the image, PSF, noise).
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds.
@@ -25,8 +25,8 @@ class Data(object):
         self.xy_dim = self.data.shape[:]  # x dimension (pixels)
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
-class Image(Data):
 
+class Image(Data):
     def __init__(self, image, pixel_scale, sky_background_level=None, sky_background_noise=None):
         """Setup an Image class, which holds the image of a strong lens to be modeled.
 
@@ -48,12 +48,13 @@ class Image(Data):
         self.sky_background_noise = sky_background_noise
 
     @classmethod
-    def via_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None, path=data_path):
+    def from_fits(cls, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
+                  path=data_path):
         """Load the image from a fits file.
 
         Parameters
         ----------
-        file_name : str
+        filename : str
             The file name of the fits file
         hdu : int
             The HDU number in the fits file containing the data
@@ -66,7 +67,7 @@ class Image(Data):
         path : str
             The directory path to the fits file
         """
-        hdu_list = fits.open(path + file_name)  # Open the fits file
+        hdu_list = fits.open(path + filename)  # Open the fits file
         data_2d = np.array(hdu_list[hdu].data)
         return Image(data_2d, pixel_scale, sky_background_level, sky_background_noise)
 
@@ -110,7 +111,7 @@ class Image(Data):
             The path to the PSF image file
 
         """
-        return PSF.via_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
+        return PSF.from_fits(filename=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
 
     def circle_mask(self, radius_arc):
         """
@@ -147,7 +148,6 @@ class Image(Data):
 
 
 class PSF(Data):
-
     def __init__(self, psf, pixel_scale):
         """Setup a PSF class, which holds the PSF of an image of a strong lens.
 
@@ -161,12 +161,12 @@ class PSF(Data):
         super(PSF, self).__init__(psf, pixel_scale)
 
     @classmethod
-    def via_fits(cls, file_name, hdu, pixel_scale, path=data_path):
+    def from_fits(cls, filename, hdu, pixel_scale, path=data_path):
         """Load the image from a fits file.
 
         Parameters
         ----------
-        file_name : str
+        filename : str
             The file name of the fits file
         hdu : int
             The HDU number in the fits file containing the data
@@ -175,7 +175,7 @@ class PSF(Data):
         path : str
             The directory path to the fits file
         """
-        hdu_list = fits.open(path + file_name)  # Open the fits file
+        hdu_list = fits.open(path + filename)  # Open the fits file
         data_2d = np.array(hdu_list[hdu].data)
         return PSF(data_2d, pixel_scale)
 
@@ -205,6 +205,7 @@ class Mask(object):
         self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
 
+
 class CircleMask(Mask):
     """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
 
@@ -233,6 +234,7 @@ class CircleMask(Mask):
 
                 if radius_arc <= radius:
                     self.array[i, j] = True
+
 
 class AnnulusMask(Mask):
     """Class for preparing and storing an annulus image mask used for the AutoLens analysis"""

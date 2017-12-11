@@ -9,12 +9,12 @@ test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(
 
 @pytest.fixture(scope='class')
 def test_image():
-    im = image.Image.via_fits(file_name='3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+    im = image.Image.from_fits(filename='3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
     return im
 
 @pytest.fixture(scope='class')
 def test_psf():
-    psf = image.PSF.via_fits(file_name='3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+    psf = image.PSF.from_fits(filename='3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
     return psf
 
 # noinspection PyClassHasNoInit,PyShadowingNames
@@ -305,26 +305,26 @@ class TestLoadFits:
     
     def test__input_fits_3x3_ones__loads_data_as_type_numpy_array(self):
 
-        assert type(image.Image.via_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data) == np.ndarray
+        assert type(image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data) == np.ndarray
 
     def test__input_fits_3x3_ones__loads_correct_data(self):
 
-        assert (image.Image.via_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data == np.ones((3, 3))).all()
+        assert (image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data == np.ones((3, 3))).all()
 
     def test__input_fits_4x3_ones__loads_correct_data(self):
 
-        assert (image.Image.via_fits('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data == np.ones((4, 3))).all()
+        assert (image.Image.from_fits('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data == np.ones((4, 3))).all()
 
     def test__input_files_3x3_ones__loads_correct_dimensions(self):
 
-        xy_dim = image.Image.via_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).xy_dim
+        xy_dim = image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).xy_dim
 
         assert xy_dim[0] == 3
         assert xy_dim[1] == 3
 
     def test__input_files_4x3_ones__loads_correct_dimensions(self):
 
-        xy_dim = image.Image.via_fits('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).xy_dim
+        xy_dim = image.Image.from_fits('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).xy_dim
 
         assert xy_dim[0] == 4
         assert xy_dim[1] == 3
