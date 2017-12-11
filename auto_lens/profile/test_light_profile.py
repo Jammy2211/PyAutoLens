@@ -246,7 +246,7 @@ class TestArray(object):
 class TestTransform(object):
     def test_exceptions(self, elliptical):
         with pytest.raises(profile.CoordinatesException):
-            elliptical.coordinates_rotate_to_elliptical(profile.TransformedCoordinates((0, 0)))
+            elliptical.transform_to_reference_frame(profile.TransformedCoordinates((0, 0)))
 
         with pytest.raises(profile.CoordinatesException):
-            elliptical.coordinates_back_to_cartesian((0, 0))
+            elliptical.transform_from_reference_frame((0, 0))
