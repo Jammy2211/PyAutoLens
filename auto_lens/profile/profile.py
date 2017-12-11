@@ -310,25 +310,6 @@ class Profile(object):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
 
-    def coordinates_angle_from_x(self, coordinates):
-        """
-        Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
-        are symmetric after 180 degrees, so angles above 180 are converted to their equivalent value from 0.
-        (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the image.
-
-        Returns
-        ----------
-        The angle between the coordinates and the x-axis and profile centre
-        """
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
-        return theta_from_x
-
 
 class EllipticalProfile(Profile):
     """Generic elliptical profile class to contain functions shared by light and mass profiles"""
@@ -400,6 +381,25 @@ class EllipticalProfile(Profile):
         """
         theta_coordinate_to_profile = math.radians(theta - self.phi)
         return math.cos(theta_coordinate_to_profile), math.sin(theta_coordinate_to_profile)
+
+    def coordinates_angle_from_x(self, coordinates):
+        """
+        Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
+        are symmetric after 180 degrees, so angles above 180 are converted to their equivalent value from 0.
+        (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image.
+
+        Returns
+        ----------
+        The angle between the coordinates and the x-axis and profile centre
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        return theta_from_x
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
