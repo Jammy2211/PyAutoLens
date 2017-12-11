@@ -9,8 +9,6 @@ def avg(func):
         """
         Parameters
         ----------
-        results : Sized
-            A collection of numerical values or tuples
         Returns
         -------
             The logical average of that collection
@@ -46,7 +44,6 @@ def subgrid(func):
 
         Parameters
         ----------
-        self
         coordinates : (float, float)
             A coordinate pair
         pixel_scale : float
@@ -90,8 +87,6 @@ def iterative_subgrid(subgrid_func):
 
         Parameters
         ----------
-        self : Profile
-            The instance that owns the function being wrapped
         coordinates : (float, float)
             x, y coordinates in image space
         pixel_scale : float
@@ -133,8 +128,6 @@ def array_function(func):
 
         Parameters
         ----------
-        self : object
-            Object that owns the function
         mask : Mask
             An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
             return a value)
@@ -224,9 +217,9 @@ def transform_coordinates(func):
             A value or coordinates in the same coordinate system as those passed ins
         """
         if not isinstance(coordinates, TransformedCoordinates):
-            result = func(profile, profile.coordinates_rotate_to_elliptical(coordinates), *args, **kwargs)
+            result = func(profile, profile.transform_to_reference_frame(coordinates), *args, **kwargs)
             if isinstance(result, TransformedCoordinates):
-                result = profile.coordinates_back_to_cartesian(result)
+                result = profile.transform_from_reference_frame(result)
             return result
         return func(profile, coordinates, *args, **kwargs)
 
@@ -240,24 +233,43 @@ class CoordinatesException(Exception):
         super(CoordinatesException, self).__init__(message)
 
 
-class EllipticalProfile(object):
-    """Generic elliptical profile class to contain functions shared by light and mass profiles"""
+class Profile(object):
+    """Abstract Profile, describing an object with x, y cartesian coordinates"""
 
-    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+    def __init__(self, centre):
+        self.centre = centre
+
+    # noinspection PyMethodMayBeStatic
+    def transform_to_reference_frame(self, coordinates):
         """
+        Translate Cartesian image coordinates to the lens profile's reference frame (for a circular profile this
+        returns the input coordinates)
+
         Parameters
         ----------
-        centre: (float, float)
-            The coordinates of the centre of the profile
-        axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
-        phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The coordinates after the elliptical translation
+        """
+        raise AssertionError("Transform to reference frame should be overridden")
+
+    # noinspection PyMethodMayBeStatic
+    def transform_from_reference_frame(self, coordinates):
         """
 
-        self.centre = centre
-        self.axis_ratio = axis_ratio
-        self.phi = phi
+        Parameters
+        ----------
+        coordinates: TransformedCoordinates
+            Coordinates that have been transformed to the reference frame of the profile
+        Returns
+        -------
+        coordinates: (float, float)
+            Coordinates that are back in the original reference frame
+        """
+        raise AssertionError("Transform from reference frame should be overridden")
 
     @property
     def x_cen(self):
@@ -266,26 +278,6 @@ class EllipticalProfile(object):
     @property
     def y_cen(self):
         return self.centre[1]
-
-    @property
-    def cos_phi(self):
-        return self.angles_from_x_axis()[0]
-
-    @property
-    def sin_phi(self):
-        return self.angles_from_x_axis()[1]
-
-    def angles_from_x_axis(self):
-        """
-        Determine the sin and cosine of the angle between the profile ellipse and positive x-axis, \
-        defined counter-clockwise from x.
-
-        Returns
-        -------
-        The sin and cosine of the angle
-        """
-        phi_radians = math.radians(self.phi)
-        return math.cos(phi_radians), math.sin(phi_radians)
 
     def coordinates_to_centre(self, coordinates):
         """
@@ -337,6 +329,46 @@ class EllipticalProfile(object):
         theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
         return theta_from_x
 
+
+class EllipticalProfile(Profile):
+    """Generic elliptical profile class to contain functions shared by light and mass profiles"""
+
+    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+        """
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        """
+        super(EllipticalProfile, self).__init__(centre)
+
+        self.axis_ratio = axis_ratio
+        self.phi = phi
+
+    @property
+    def cos_phi(self):
+        return self.angles_from_x_axis()[0]
+
+    @property
+    def sin_phi(self):
+        return self.angles_from_x_axis()[1]
+
+    def angles_from_x_axis(self):
+        """
+        Determine the sin and cosine of the angle between the profile ellipse and positive x-axis, \
+        defined counter-clockwise from x.
+
+        Returns
+        -------
+        The sin and cosine of the angle
+        """
+        phi_radians = math.radians(self.phi)
+        return math.cos(phi_radians), math.sin(phi_radians)
+
     def coordinates_to_eccentric_radius(self, coordinates):
         """
         Convert the coordinates to a radius in elliptical space.
@@ -350,7 +382,7 @@ class EllipticalProfile(object):
         The radius at those coordinates
         """
 
-        shifted_coordinates = self.coordinates_rotate_to_elliptical(coordinates)
+        shifted_coordinates = self.transform_to_reference_frame(coordinates)
         return math.sqrt(self.axis_ratio) * math.sqrt(
             shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
 
@@ -369,7 +401,7 @@ class EllipticalProfile(object):
         theta_coordinate_to_profile = math.radians(theta - self.phi)
         return math.cos(theta_coordinate_to_profile), math.sin(theta_coordinate_to_profile)
 
-    def coordinates_back_to_cartesian(self, coordinates_elliptical):
+    def transform_from_reference_frame(self, coordinates_elliptical):
         """
         Rotate elliptical coordinates back to the original Cartesian grid (for a circular profile this
         returns the input coordinates)
@@ -386,14 +418,14 @@ class EllipticalProfile(object):
 
         if not isinstance(coordinates_elliptical, TransformedCoordinates):
             raise CoordinatesException("Can't return cartesian coordinates to cartesian coordinates. Did you remember"
-                                       "to explicitly make the elliptical coordinates TransformedCoordinates?")
+                                       " to explicitly make the elliptical coordinates TransformedCoordinates?")
 
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
         return x, y
 
-    def coordinates_rotate_to_elliptical(self, coordinates):
+    def transform_to_reference_frame(self, coordinates):
         """
         Translate Cartesian image coordinates to the lens profile's reference frame (for a circular profile this
         returns the input coordinates)

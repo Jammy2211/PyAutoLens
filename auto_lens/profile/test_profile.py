@@ -215,7 +215,7 @@ class TestEllipticalProfile(object):
 
             coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
-            x, y = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            x, y = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert x == 1.0
             assert y == 1.0
@@ -225,7 +225,7 @@ class TestEllipticalProfile(object):
 
             coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
-            x, y = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            x, y = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert x == pytest.approx(-1.0, 1e-3)
             assert y == 1.0
@@ -235,7 +235,7 @@ class TestEllipticalProfile(object):
 
             coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
-            x, y = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            x, y = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert x == pytest.approx(0.0, 1e-3)
             assert y == pytest.approx(2 ** 0.5, 1e-3)
@@ -246,7 +246,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            x, y = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            x, y = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert x == pytest.approx(1.0, 1e-3)
             assert y == pytest.approx(1.0, 1e-3)
@@ -259,7 +259,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            coordinates = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            coordinates = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert coordinates[0] == pytest.approx(1.0, 1e-3)
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
@@ -272,7 +272,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            coordinates = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            coordinates = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert coordinates[0] == pytest.approx(-1.0, 1e-3)
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
@@ -285,7 +285,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            coordinates = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            coordinates = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert coordinates[0] == pytest.approx(-1.0, 1e-3)
             assert coordinates[1] == pytest.approx(1.0, 1e-3)
@@ -298,7 +298,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            coordinates = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            coordinates = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert coordinates[0] == pytest.approx(1.0, 1e-3)
             assert coordinates[1] == pytest.approx(1.0, 1e-3)
@@ -311,7 +311,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            coordinates = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            coordinates = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert coordinates[0] == pytest.approx(0.0, 1e-3)
             assert coordinates[1] == pytest.approx(2 ** 0.5, 1e-3)
@@ -324,7 +324,7 @@ class TestEllipticalProfile(object):
 
             coordinates = (2.0, 2.0)
 
-            coordinates = elliptical_profile.coordinates_rotate_to_elliptical(coordinates)
+            coordinates = elliptical_profile.transform_to_reference_frame(coordinates)
 
             assert coordinates[0] == pytest.approx(1.0, 1e-3)
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
@@ -333,11 +333,11 @@ class TestEllipticalProfile(object):
         def test__moving_lens_and_coordinates__same_answer(self):
             elliptical_profile1 = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(0, 0))
             coordinates1 = (1.0, 1.0)
-            coordinates1 = elliptical_profile1.coordinates_rotate_to_elliptical(coordinates1)
+            coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
 
             elliptical_profile2 = profile.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(-1, -1))
             coordinates2 = (0.0, 0.0)
-            coordinates2 = elliptical_profile2.coordinates_rotate_to_elliptical(coordinates2)
+            coordinates2 = elliptical_profile2.transform_to_reference_frame(coordinates2)
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
@@ -345,11 +345,11 @@ class TestEllipticalProfile(object):
         def test__moving_lens_and_coordinates_with_phi__same_answer(self):
             elliptical_profile1 = profile.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(0, 0))
             coordinates1 = (1.0, 1.0)
-            coordinates1 = elliptical_profile1.coordinates_rotate_to_elliptical(coordinates1)
+            coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
 
             elliptical_profile2 = profile.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(-1, -1))
             coordinates2 = (0.0, 0.0)
-            coordinates2 = elliptical_profile2.coordinates_rotate_to_elliptical(coordinates2)
+            coordinates2 = elliptical_profile2.transform_to_reference_frame(coordinates2)
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
@@ -357,11 +357,11 @@ class TestEllipticalProfile(object):
         def test__coordinates_both_on_centre___same_answer(self):
             elliptical_profile1 = profile.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(1, 1))
             coordinates1 = (1.0, 1.0)
-            coordinates1 = elliptical_profile1.coordinates_rotate_to_elliptical(coordinates1)
+            coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
 
             elliptical_profile2 = profile.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(-1, -1))
             coordinates2 = (-1.0, -1.0)
-            coordinates2 = elliptical_profile2.coordinates_rotate_to_elliptical(coordinates2)
+            coordinates2 = elliptical_profile2.transform_to_reference_frame(coordinates2)
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
@@ -372,9 +372,9 @@ class TestEllipticalProfile(object):
 
             coordinates_original = (5.2221, 2.6565)
 
-            coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_elliptical = elliptical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            coordinates = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-5)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
@@ -384,9 +384,9 @@ class TestEllipticalProfile(object):
 
             coordinates_original = (3.2, -76.6)
 
-            coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_elliptical = elliptical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            coordinates = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
@@ -396,9 +396,9 @@ class TestEllipticalProfile(object):
 
             coordinates_original = (-42.2, -93.6)
 
-            coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_elliptical = elliptical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            coordinates = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
@@ -409,9 +409,9 @@ class TestEllipticalProfile(object):
 
             coordinates_original = (-42.2, -93.6)
 
-            coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_elliptical = elliptical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+            coordinates = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0] - 1.0, 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1] - 1.0, 1e-2)
@@ -599,7 +599,7 @@ class TestSphericalProfile(object):
 
             coordinates_spherical = profile.TransformedCoordinates((1.0, 1.0))
 
-            x, y = spherical_profile.coordinates_back_to_cartesian(coordinates_spherical)
+            x, y = spherical_profile.transform_from_reference_frame(coordinates_spherical)
 
             assert x == 1.0
             assert y == 1.0
@@ -607,11 +607,11 @@ class TestSphericalProfile(object):
         def test__moving_lens_and_coordinates__same_answer(self):
             spherical_profile1 = profile.SphericalProfile(centre=(0, 0))
             coordinates1 = (1.0, 1.0)
-            coordinates1 = spherical_profile1.coordinates_rotate_to_elliptical(coordinates1)
+            coordinates1 = spherical_profile1.transform_to_reference_frame(coordinates1)
 
             spherical_profile2 = profile.SphericalProfile(centre=(-1, -1))
             coordinates2 = (0.0, 0.0)
-            coordinates2 = spherical_profile2.coordinates_rotate_to_elliptical(coordinates2)
+            coordinates2 = spherical_profile2.transform_to_reference_frame(coordinates2)
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
@@ -619,11 +619,11 @@ class TestSphericalProfile(object):
         def test__moving_lens_and_coordinates_with_phi__same_answer(self):
             spherical_profile1 = profile.SphericalProfile(centre=(0, 0))
             coordinates1 = (1.0, 1.0)
-            coordinates1 = spherical_profile1.coordinates_rotate_to_elliptical(coordinates1)
+            coordinates1 = spherical_profile1.transform_to_reference_frame(coordinates1)
 
             spherical_profile2 = profile.SphericalProfile(centre=(-1, -1))
             coordinates2 = (0.0, 0.0)
-            coordinates2 = spherical_profile2.coordinates_rotate_to_elliptical(coordinates2)
+            coordinates2 = spherical_profile2.transform_to_reference_frame(coordinates2)
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
@@ -631,11 +631,11 @@ class TestSphericalProfile(object):
         def test__coordinates_both_on_centre___same_answer(self):
             spherical_profile1 = profile.SphericalProfile(centre=(1, 1))
             coordinates1 = (1.0, 1.0)
-            coordinates1 = spherical_profile1.coordinates_rotate_to_elliptical(coordinates1)
+            coordinates1 = spherical_profile1.transform_to_reference_frame(coordinates1)
 
             spherical_profile2 = profile.SphericalProfile(centre=(-1, -1))
             coordinates2 = (-1.0, -1.0)
-            coordinates2 = spherical_profile2.coordinates_rotate_to_elliptical(coordinates2)
+            coordinates2 = spherical_profile2.transform_to_reference_frame(coordinates2)
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
@@ -646,7 +646,7 @@ class TestSphericalProfile(object):
 
             coordinates = (1.0, 1.0)
 
-            x, y = spherical_profile.coordinates_rotate_to_elliptical(coordinates)
+            x, y = spherical_profile.transform_to_reference_frame(coordinates)
 
             assert x == pytest.approx(1.0, 1e-3)
             assert y == pytest.approx(1.0, 1e-3)
@@ -656,9 +656,9 @@ class TestSphericalProfile(object):
 
             coordinates_original = (5.2221, 2.6565)
 
-            coordinates_spherical = spherical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_spherical = spherical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = spherical_profile.coordinates_back_to_cartesian(coordinates_spherical)
+            coordinates = spherical_profile.transform_from_reference_frame(coordinates_spherical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-5)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
@@ -668,9 +668,9 @@ class TestSphericalProfile(object):
 
             coordinates_original = (3.2, -76.6)
 
-            coordinates_spherical = spherical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_spherical = spherical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = spherical_profile.coordinates_back_to_cartesian(coordinates_spherical)
+            coordinates = spherical_profile.transform_from_reference_frame(coordinates_spherical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
@@ -680,9 +680,9 @@ class TestSphericalProfile(object):
 
             coordinates_original = (-42.2, -93.6)
 
-            coordinates_spherical = spherical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_spherical = spherical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = spherical_profile.coordinates_back_to_cartesian(coordinates_spherical)
+            coordinates = spherical_profile.transform_from_reference_frame(coordinates_spherical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
@@ -693,9 +693,9 @@ class TestSphericalProfile(object):
 
             coordinates_original = (-42.2, -93.6)
 
-            coordinates_spherical = spherical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+            coordinates_spherical = spherical_profile.transform_to_reference_frame(coordinates_original)
 
-            coordinates = spherical_profile.coordinates_back_to_cartesian(coordinates_spherical)
+            coordinates = spherical_profile.transform_from_reference_frame(coordinates_spherical)
 
             assert coordinates[0] == pytest.approx(coordinates_original[0] - 1.0, 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1] - 1.0, 1e-2)
@@ -810,11 +810,11 @@ class MockProfile(object):
         return isinstance(coordinates, profile.TransformedCoordinates)
 
     # noinspection PyMethodMayBeStatic
-    def coordinates_rotate_to_elliptical(self, coordinates):
+    def transform_to_reference_frame(self, coordinates):
         return profile.TransformedCoordinates((coordinates[0] + 1, coordinates[1] + 1))
 
     # noinspection PyMethodMayBeStatic
-    def coordinates_back_to_cartesian(self, coordinates):
+    def transform_from_reference_frame(self, coordinates):
         return coordinates[0], coordinates[1]
 
     @profile.transform_coordinates
