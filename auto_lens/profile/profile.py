@@ -398,8 +398,7 @@ class EllipticalProfile(Profile):
         The angle between the coordinates and the x-axis and profile centre
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
-        return theta_from_x
+        return math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
