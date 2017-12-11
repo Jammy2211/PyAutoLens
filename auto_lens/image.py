@@ -7,6 +7,11 @@ import numpy as np
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
+def numpy_array_from_fits(file_path, hdu):
+    hdu_list = fits.open(file_path)  # Open the fits file
+    return np.array(hdu_list[hdu].data)
+
+
 class Data(object):
     """Abstract Base Class for all classes which store a two-dimensional data array, e.g. the image, PSF, Nosie etc."""
 
@@ -22,8 +27,17 @@ class Data(object):
         """
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
-        self.xy_dim = self.data.shape[:]  # x dimension (pixels)
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+        self.dimensions = self.data.shape[:]  # x dimension (pixels)
+        self.dimensions_arc_seconds = list(
+            map(lambda l: l * pixel_scale, self.dimensions))  # Convert image dimensions to arcseconds
+
+    @property
+    def x_dimension(self):
+        return self.dimensions[0]
+
+    @property
+    def y_dimension(self):
+        return self.dimensions[1]
 
 
 class Image(Data):
@@ -67,9 +81,9 @@ class Image(Data):
         path : str
             The directory path to the fits file
         """
-        hdu_list = fits.open(path + filename)  # Open the fits file
-        data_2d = np.array(hdu_list[hdu].data)
-        return Image(data_2d, pixel_scale, sky_background_level, sky_background_noise)
+        array = numpy_array_from_fits(path + filename, hdu)
+        return Image(array, pixel_scale, sky_background_level,
+                     sky_background_noise)
 
     def set_sky_via_edges(self, no_edges):
         """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
@@ -83,16 +97,13 @@ class Image(Data):
 
         """
 
-        xdim = self.xy_dim[0]
-        ydim = self.xy_dim[1]
-
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.data[edge_no, edge_no:ydim - edge_no]
-            bottom_edge = self.data[xdim - 1 - edge_no, edge_no:ydim - edge_no]
-            left_edge = self.data[edge_no + 1:xdim - 1 - edge_no, edge_no]
-            right_edge = self.data[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
+            top_edge = self.data[edge_no, edge_no:self.y_dimension - edge_no]
+            bottom_edge = self.data[self.x_dimension - 1 - edge_no, edge_no:self.y_dimension - edge_no]
+            left_edge = self.data[edge_no + 1:self.x_dimension - 1 - edge_no, edge_no]
+            right_edge = self.data[edge_no + 1:self.x_dimension - 1 - edge_no, self.y_dimension - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
@@ -126,7 +137,7 @@ class Image(Data):
         -------
         A circular mask for this image
         """
-        return CircleMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return CircleMask(dimensions=self.dimensions, pixel_scale=self.pixel_scale, radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -143,7 +154,7 @@ class Image(Data):
         -------
         An annulus mask for this image
         """
-        return AnnulusMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
+        return AnnulusMask(dimensions=self.dimensions, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
                            inner_radius=inner_radius_arc)
 
 
@@ -175,9 +186,8 @@ class PSF(Data):
         path : str
             The directory path to the fits file
         """
-        hdu_list = fits.open(path + filename)  # Open the fits file
-        data_2d = np.array(hdu_list[hdu].data)
-        return PSF(data_2d, pixel_scale)
+        array = numpy_array_from_fits(path + filename, hdu)
+        return PSF(array, pixel_scale)
 
 
 # TODO : I've defined a mask so that True means we keep the pixel, False means we don't. This means we can use compress
