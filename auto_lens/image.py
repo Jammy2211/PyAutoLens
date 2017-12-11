@@ -8,15 +8,53 @@ data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(_
 
 
 class Image(object):
-    def __init__(self, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
-                 path=data_path):
-        hdu_list = fits.open(path + filename)  # Open the fits file
-        self.image2d = np.array(hdu_list[hdu].data)
-        self.xy_dim = self.image2d.shape[:]  # x dimension (pixels)
+
+    def __init__(self, image_2d, pixel_scale, sky_background_level=None, sky_background_noise=None):
+        """Setup an Image class, which holds the image of a strong lens to be modeled.
+
+        Parameters
+        ----------
+        image_2d : ndarray
+            Two-dimensional array of the imaging data (electrons per second).
+            This can be loaded from a fits file using the via_fits method.
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        sky_background_level : float
+            An estimate of the level of background sky in the image (electrons per second).
+        sky_background_noise : float
+            An estimate of the noise level in the background sky (electrons per second).
+        """
+
+        self.image_2d = image_2d
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
         self.sky_background_level = sky_background_level
         self.sky_background_noise = sky_background_noise
+
+        self.xy_dim = self.image_2d.shape[:]  # x dimension (pixels)
+        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+
+    @classmethod
+    def via_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None, path=data_path):
+        """Load the image from a fits file.
+
+        Parameters
+        ----------
+        file_name : str
+            The file name of the fits file
+        hdu : int
+            The HDU number in the fits file containing the data
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        sky_background_level : float
+            An estimate of the level of background sky in the image (electrons per second).
+        sky_background_noise : float
+            An estimate of the noise level in the background sky (electrons per second).
+        path : str
+            The directory path to the fits file
+        """
+        hdu_list = fits.open(path + file_name)  # Open the fits file
+        data_2d = np.array(hdu_list[hdu].data)
+        return Image(data_2d, pixel_scale, sky_background_level, sky_background_noise)
 
     def set_sky_via_edges(self, no_edges):
         """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
@@ -36,29 +74,29 @@ class Image(object):
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.image2d[edge_no, edge_no:ydim - edge_no]
-            bottom_edge = self.image2d[xdim - 1 - edge_no, edge_no:ydim - edge_no]
-            left_edge = self.image2d[edge_no + 1:xdim - 1 - edge_no, edge_no]
-            right_edge = self.image2d[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
+            top_edge = self.image_2d[edge_no, edge_no:ydim - edge_no]
+            bottom_edge = self.image_2d[xdim - 1 - edge_no, edge_no:ydim - edge_no]
+            left_edge = self.image_2d[edge_no + 1:xdim - 1 - edge_no, edge_no]
+            right_edge = self.image_2d[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
-    def load_psf(self, filename, hdu, path):
+    def load_psf(self, file_name, hdu, path):
         """Load the PSF for this image
 
         Parameters
         ----------
-        filename : str
-            The PSF filename to be loaded from
+        file_name : str
+            The PSF file_name to be loaded from
         hdu : int
             The PSF HDU in the fits file
         path : str
             The path to the PSF image file
 
         """
-        return PSF(filename=filename, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
+        return PSF.via_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
 
     def circle_mask(self, radius_arc):
         """
@@ -94,24 +132,53 @@ class Image(object):
                            inner_radius=inner_radius_arc)
 
 
-# TODO Unit tests for PSF
-
 class PSF(object):
-    def __init__(self, filename, hdu, pixel_scale, path=data_path):
-        hdu_list = fits.open(path + filename)  # Open the fits file
-        self.psf_2d = np.array(hdu_list[hdu].data)
-        self.xy_dim = self.psf_2d.shape[:]  # x dimension (pixels)
+
+    def __init__(self, psf_2d, pixel_scale):
+        """Setup a PSF class, which holds the PSF of an image of a strong lens.
+
+        Parameters
+        ----------
+        psf_2d : ndarray
+            Two-dimensional array of the PSF (Automatically normalized to unit normalization).
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        """
+        self.psf_2d = psf_2d
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
+
+        self.xy_dim = self.psf_2d.shape[:]  # x dimension (pixels)
         self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
+    @classmethod
+    def via_fits(cls, file_name, hdu, pixel_scale, path=data_path):
+        """Load the image from a fits file.
 
-# TODO: Should the mask be zeros and not-mask ones? That way an and operation between an image and mask would remove all
-# TODO: masked pixels.
+        Parameters
+        ----------
+        file_name : str
+            The file name of the fits file
+        hdu : int
+            The HDU number in the fits file containing the data
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        path : str
+            The directory path to the fits file
+        """
+        hdu_list = fits.open(path + file_name)  # Open the fits file
+        data_2d = np.array(hdu_list[hdu].data)
+        return PSF(data_2d, pixel_scale)
+
+# TODO : I've defined a mask so that True means we keep the pixel, False means we don't. This means we can use compress
+# TODO : To remove everything outside the mask. opiinon?
+# TODO : Just to confuse coordinates furhter, we need to decide how we choose the centre of an image and mask. Currently,
+# TODO : masks are automatically centred on the central pixel.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
     def __init__(self, dimensions, pixel_scale):
         """
+        Setup the boolean mask, where True means a pixel is included in the analysis and False means its excluded.
 
         Parameters
         ----------
@@ -120,12 +187,10 @@ class Mask(object):
         pixel_scale :
             The scale size of a pixel (x, y) in arc seconds
         """
-        # Calculate the central pixel of the mask. This is a half pixel value for an even sized array.
-        # Also minus one from value so that mask2d is shifted to python array (i.e. starts at 0)
+
         self.pixel_scale = pixel_scale
         self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
         self.array = np.zeros((dimensions[0], dimensions[1]))
-
 
 class CircleMask(Mask):
     """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
@@ -154,8 +219,7 @@ class CircleMask(Mask):
                 radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
 
                 if radius_arc <= radius:
-                    self.array[i, j] = int(1)
-
+                    self.array[i, j] = True
 
 class AnnulusMask(Mask):
     """Class for preparing and storing an annulus image mask used for the AutoLens analysis"""
@@ -187,6 +251,5 @@ class AnnulusMask(Mask):
 
                 radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
 
-                # TODO: Here's something cool. You can check a value is in a range in python without using an "and"
                 if outer_radius >= radius_arc >= inner_radius:
                     self.array[i, j] = int(1)
