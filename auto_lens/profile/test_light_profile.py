@@ -2,6 +2,7 @@ from __future__ import division, print_function
 
 import pytest
 import light_profile
+import profile
 
 
 @pytest.fixture(name='circular')
@@ -157,3 +158,95 @@ class TestEquivalentProfile(object):
         assert_shared_base(exponential, exponential.as_dev_vaucouleurs_profile())
         assert_shared_base(dev_vaucouleurs, dev_vaucouleurs.as_core_sersic_profile(1, 1, 1, 1))
         assert_shared_base(core, core.as_sersic_profile())
+
+
+class TestArray(object):
+    def test__simple_assumptions(self, circular):
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+                                                                     pixel_scale=1)
+        assert array.shape == (101, 101)
+        assert array[51][51] > array[51][52]
+        assert array[51][51] > array[52][51]
+        assert all(map(lambda i: i > 0, array[0]))
+
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=0.5)
+        assert array.shape == (200, 200)
+
+    def test__ellipticity(self, circular, elliptical, vertical):
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+                                                                     pixel_scale=1)
+        assert array[60][0] == array[0][60]
+
+        array = profile.array_function(elliptical.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                       pixel_scale=1)
+
+        assert array[60][51] > array[51][60]
+
+        array = profile.array_function(vertical.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=1)
+        assert array[60][51] < array[51][60]
+
+    # noinspection PyTypeChecker
+    def test__flat_array(self, circular):
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=1)
+        flat_array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                          pixel_scale=1).flatten()
+
+        assert all(array[0] == flat_array[:100])
+        assert all(array[1] == flat_array[100:200])
+
+    def test_combined_array(self, circular):
+        combined = light_profile.CombinedLightProfile(circular, circular)
+
+        assert all(map(lambda i: i == 2,
+                       profile.array_function(combined.flux_at_coordinates)().flatten() / profile.array_function(
+                           circular.flux_at_coordinates)().flatten()))
+
+    def test_symmetric_profile(self, circular):
+        circular.centre = (50, 50)
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=1.0)
+
+        assert array[50][50] > array[50][51]
+        assert array[50][50] > array[49][50]
+        assert array[49][50] == array[50][51]
+        assert array[50][51] == array[50][49]
+        assert array[50][49] == array[51][50]
+
+        array = profile.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                     pixel_scale=0.5)
+
+        assert array[100][100] > array[100][101]
+        assert array[100][100] > array[99][100]
+        assert array[99][100] == array[100][101]
+        assert array[100][101] == array[100][99]
+        assert array[100][99] == array[101][100]
+
+    def test_origin_symmetric_profile(self, circular):
+        array = profile.array_function(circular.flux_at_coordinates)()
+
+        assert circular.flux_at_coordinates((-5, 0)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((5, 0)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((0, -5)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((0, 5)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((5, 5)) < circular.flux_at_coordinates((0, 0))
+        assert circular.flux_at_coordinates((-5, -5)) < circular.flux_at_coordinates((0, 0))
+
+        assert array.shape == (100, 100)
+
+        assert array[50][50] > array[50][51]
+        assert array[50][50] > array[49][50]
+        assert array[49][50] == pytest.approx(array[50][51], 1e-10)
+        assert array[50][51] == pytest.approx(array[50][49], 1e-10)
+        assert array[50][49] == pytest.approx(array[51][50], 1e-10)
+
+
+class TestTransform(object):
+    def test_exceptions(self, elliptical):
+        with pytest.raises(profile.CoordinatesException):
+            elliptical.coordinates_rotate_to_elliptical(profile.TransformedCoordinates((0, 0)))
+
+        with pytest.raises(profile.CoordinatesException):
+            elliptical.coordinates_back_to_cartesian((0, 0))

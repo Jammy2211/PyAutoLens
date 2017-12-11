@@ -1,4 +1,5 @@
 import mass_profile
+import profile
 import pytest
 
 
@@ -1140,3 +1141,12 @@ class TestCombinedProfiles(object):
 
         assert combined_deflection_angle[0] == 2 * isothermal_deflection_angle[0]
         assert combined_deflection_angle[1] == 2 * isothermal_deflection_angle[1]
+
+
+def TestArray(object):
+    def test__deflection_angle_array(self):
+        mp = mass_profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+                                                          einstein_radius=2.0)
+        # noinspection PyTypeChecker
+        assert all(profile.array_function(mp.compute_deflection_angle)(-1, -1, -0.5, -0.5, 0.1)[0][
+                       0] == mp.compute_deflection_angle((-1, -1)))

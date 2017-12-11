@@ -699,3 +699,133 @@ class TestSphericalProfile(object):
 
             assert coordinates[0] == pytest.approx(coordinates_original[0] - 1.0, 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1] - 1.0, 1e-2)
+
+
+class MockMask(object):
+    def __init__(self, masked_coordinates):
+        self.masked_coordinates = masked_coordinates
+
+    def is_masked(self, coordinates):
+        # It's probably a good idea to use a numpy array in the real class for efficiency
+        return coordinates in self.masked_coordinates
+
+
+class TestDecorators(object):
+    def test_subgrid_2x2(self):
+        @profile.subgrid
+        def return_coords(coords):
+            return coords[0], coords[1]
+
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
+        assert coordinates == [(0, 0)]
+
+        coordinates = return_coords((0.5, 0.5), pixel_scale=1.0, grid_size=2)
+        assert coordinates == [(1. / 3., 1. / 3.), (1. / 3., 2. / 3.), (2. / 3., 1. / 3.), (2. / 3., 2. / 3.)]
+
+    def test_subgrid_3x3(self):
+        @profile.subgrid
+        def return_coords(coords):
+            return coords[0], coords[1]
+
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
+        assert coordinates == [(0, 0)]
+
+        coordinates = return_coords((0.5, 0.5), pixel_scale=1.0, grid_size=3)
+        assert coordinates == [(0.25, 0.25), (0.25, 0.5), (0.25, 0.75),
+                               (0.50, 0.25), (0.50, 0.5), (0.50, 0.75),
+                               (0.75, 0.25), (0.75, 0.5), (0.75, 0.75)]
+
+    def test_subgrid_3x3_triple_pixel_scale_and_coordinate(self):
+        @profile.subgrid
+        def return_coords(coords):
+            return coords[0], coords[1]
+
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
+        assert coordinates == [(0, 0)]
+
+        coordinates = return_coords((1.5, 1.5), pixel_scale=3.0, grid_size=3)
+
+        assert coordinates == [(0.75, 0.75), (0.75, 1.5), (0.75, 2.25),
+                               (1.50, 0.75), (1.50, 1.5), (1.50, 2.25),
+                               (2.25, 0.75), (2.25, 1.5), (2.25, 2.25)]
+
+    def test_subgrid_4x4_new_coordinates(self):
+        @profile.subgrid
+        def return_coords(coords):
+            return coords[0], coords[1]
+
+        coordinates = return_coords((0, 0), pixel_scale=1.0, grid_size=1)
+        assert coordinates == [(0, 0)]
+
+        coordinates = return_coords((-2.0, 3.0), pixel_scale=0.1, grid_size=4)
+
+        coordinates = map(lambda coords: (pytest.approx(coords[0], 1e-2), pytest.approx(coords[1], 1e-2)), coordinates)
+
+        assert coordinates == [(-2.03, 2.97), (-2.03, 2.99), (-2.03, 3.01), (-2.03, 3.03),
+                               (-2.01, 2.97), (-2.01, 2.99), (-2.01, 3.01), (-2.01, 3.03),
+                               (-1.99, 2.97), (-1.99, 2.99), (-1.99, 3.01), (-1.99, 3.03),
+                               (-1.97, 2.97), (-1.97, 2.99), (-1.97, 3.01), (-1.97, 3.03)]
+
+    def test_average(self):
+        @profile.avg
+        def return_input(input_list):
+            return input_list
+
+        assert return_input([1, 2, 3]) == 2
+        assert return_input([(1, 10), (2, 20), (3, 30)]) == (2, 20)
+
+    def test_iterative_subgrid(self):
+        # noinspection PyUnusedLocal
+        @profile.iterative_subgrid
+        def one_over_grid(coordinates, pixel_scale, grid_size):
+            return 1.0 / grid_size
+
+        assert one_over_grid(None, None, 0.51) == pytest.approx(0.5)
+        assert one_over_grid(None, None, 0.21) == pytest.approx(0.2)
+
+    def test_mask(self):
+        mask = MockMask([(x, 0) for x in range(-5, 6)])
+        array = profile.array_function(lambda coordinates: 1)(-5, -5, 5, 5, 1, mask=mask)
+
+        assert array[5][5] is None
+        assert array[5][6] is not None
+        assert array[6][5] is None
+        assert array[0][0] is not None
+        assert array[0][5] is None
+
+
+class TestAuxiliary(object):
+    def test__side_length(self):
+        assert profile.side_length(-5, 5, 0.1) == 100
+
+    def test__pixel_to_coordinate(self):
+        assert profile.pixel_to_coordinate(-5, 0.1, 0) == -5
+        assert profile.pixel_to_coordinate(-5, 0.1, 100) == 5
+        assert profile.pixel_to_coordinate(-5, 0.1, 50) == 0
+
+
+class MockProfile(object):
+    @profile.transform_coordinates
+    def is_transformed(self, coordinates):
+        return isinstance(coordinates, profile.TransformedCoordinates)
+
+    # noinspection PyMethodMayBeStatic
+    def coordinates_rotate_to_elliptical(self, coordinates):
+        return profile.TransformedCoordinates((coordinates[0] + 1, coordinates[1] + 1))
+
+    # noinspection PyMethodMayBeStatic
+    def coordinates_back_to_cartesian(self, coordinates):
+        return coordinates[0], coordinates[1]
+
+    @profile.transform_coordinates
+    def return_coordinates(self, coordinates):
+        return coordinates
+
+
+class TestTransform(object):
+    def test_transform(self):
+        mock_profile = MockProfile()
+        assert mock_profile.is_transformed((0, 0))
+        assert mock_profile.return_coordinates((0, 0)) == (1, 1)
+        assert mock_profile.return_coordinates(
+            profile.TransformedCoordinates((0, 0))) == profile.TransformedCoordinates((0, 0))
