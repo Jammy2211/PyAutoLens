@@ -7,14 +7,32 @@ import numpy as np
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
-class Image(object):
+class Data(object):
+    """Abstract Base Class for all classes which store a two-dimensional data array, e.g. the image, PSF, Nosie etc."""
 
-    def __init__(self, image_2d, pixel_scale, sky_background_level=None, sky_background_noise=None):
+    def __init__(self, data, pixel_scale):
         """Setup an Image class, which holds the image of a strong lens to be modeled.
 
         Parameters
         ----------
-        image_2d : ndarray
+        image : ndarray
+            Two-dimensional array of the data (e.g. the image, PSF, noise).
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        """
+        self.data = data
+        self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
+        self.xy_dim = self.data.shape[:]  # x dimension (pixels)
+        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+
+class Image(Data):
+
+    def __init__(self, image, pixel_scale, sky_background_level=None, sky_background_noise=None):
+        """Setup an Image class, which holds the image of a strong lens to be modeled.
+
+        Parameters
+        ----------
+        image : ndarray
             Two-dimensional array of the imaging data (electrons per second).
             This can be loaded from a fits file using the via_fits method.
         pixel_scale : float
@@ -24,14 +42,10 @@ class Image(object):
         sky_background_noise : float
             An estimate of the noise level in the background sky (electrons per second).
         """
+        super(Image, self).__init__(image, pixel_scale)
 
-        self.image_2d = image_2d
-        self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.sky_background_level = sky_background_level
         self.sky_background_noise = sky_background_noise
-
-        self.xy_dim = self.image_2d.shape[:]  # x dimension (pixels)
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
 
     @classmethod
     def via_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None, path=data_path):
@@ -74,10 +88,10 @@ class Image(object):
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.image_2d[edge_no, edge_no:ydim - edge_no]
-            bottom_edge = self.image_2d[xdim - 1 - edge_no, edge_no:ydim - edge_no]
-            left_edge = self.image_2d[edge_no + 1:xdim - 1 - edge_no, edge_no]
-            right_edge = self.image_2d[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
+            top_edge = self.data[edge_no, edge_no:ydim - edge_no]
+            bottom_edge = self.data[xdim - 1 - edge_no, edge_no:ydim - edge_no]
+            left_edge = self.data[edge_no + 1:xdim - 1 - edge_no, edge_no]
+            right_edge = self.data[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
@@ -132,23 +146,19 @@ class Image(object):
                            inner_radius=inner_radius_arc)
 
 
-class PSF(object):
+class PSF(Data):
 
-    def __init__(self, psf_2d, pixel_scale):
+    def __init__(self, psf, pixel_scale):
         """Setup a PSF class, which holds the PSF of an image of a strong lens.
 
         Parameters
         ----------
-        psf_2d : ndarray
+        psf : ndarray
             Two-dimensional array of the PSF (Automatically normalized to unit normalization).
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds.
         """
-        self.psf_2d = psf_2d
-        self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
-
-        self.xy_dim = self.psf_2d.shape[:]  # x dimension (pixels)
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+        super(PSF, self).__init__(psf, pixel_scale)
 
     @classmethod
     def via_fits(cls, file_name, hdu, pixel_scale, path=data_path):
@@ -168,6 +178,7 @@ class PSF(object):
         hdu_list = fits.open(path + file_name)  # Open the fits file
         data_2d = np.array(hdu_list[hdu].data)
         return PSF(data_2d, pixel_scale)
+
 
 # TODO : I've defined a mask so that True means we keep the pixel, False means we don't. This means we can use compress
 # TODO : To remove everything outside the mask. opiinon?
