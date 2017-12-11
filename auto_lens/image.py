@@ -184,6 +184,8 @@ class PSF(Data):
 # TODO : To remove everything outside the mask. opiinon?
 # TODO : Just to confuse coordinates furhter, we need to decide how we choose the centre of an image and mask. Currently,
 # TODO : masks are automatically centred on the central pixel.
+# TODO: I guess we could also use 0s and 1s? Possibly no benefit. Presumably we want central coordinates for the mask
+# TODO: just like with the other image objects
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
