@@ -28,13 +28,18 @@ class Data(object):
         """
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
-        self.update_dimensions()
 
-    def update_dimensions(self):
-        """Update the image dimensions and central pixel"""
-        self.dimensions = self.data.shape[:]  # x dimension (pixels)
-        self.central_pixels = self.central_pixel(self.dimensions)
-        self.dimensions_arc_seconds = self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
+    @property
+    def dimensions(self):
+        return self.data.shape[:]
+
+    @property
+    def central_pixels(self):
+        return self.central_pixel(self.dimensions)
+
+    @property
+    def dimensions_arc_seconds(self):
+        return self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
 
     @staticmethod
     def central_pixel(dimensions):
@@ -81,8 +86,6 @@ class Data(object):
 
         self.data = self.data[x_trim:self.x_dimension-x_trim, y_trim:self.y_dimension-y_trim]
 
-        self.update_dimensions()
-
         if self.x_dimension != new_dimensions[0]:
             print ('image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
             print('The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
@@ -110,8 +113,6 @@ class Data(object):
         y_pad = int((new_dimensions[1] - self.y_dimension + 1)/2)
 
         self.data = np.pad(self.data, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
-
-        self.update_dimensions()
 
     def output_for_fortran(self, directory, image_name):
         """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
