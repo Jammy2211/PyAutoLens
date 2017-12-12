@@ -26,8 +26,8 @@ class TestData:
                                          [1.0, 2.0, 1.0],
                                          [1.0, 1.0, 1.0]])
 
-            assert data.xy_dim[:] == 3
-            assert data.xy_arcsec[:] == 0.3
+            assert data.dimensions[:] == 3
+            assert data.dimensions_arc_seconds[:] == 0.3
 
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestImage:
@@ -40,9 +40,9 @@ class TestImage:
 
             assert (test_image.data == np.ones((3, 3))).all()
             assert test_image.pixel_scale == 0.1
-            assert test_image.xy_dim == (3, 3)
-            assert test_image.xy_cen_pixel == (1.0, 1.0)
-            assert test_image.xy_arcsec == pytest.approx((0.3, 0.3))
+            assert test_image.dimensions == (3, 3)
+            assert test_image.central_pixels == (1.0, 1.0)
+            assert test_image.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_image_4x3__all_attributes_correct(self):
 
@@ -50,29 +50,29 @@ class TestImage:
 
             assert (test_image.data == np.ones((4, 3))).all()
             assert test_image.pixel_scale == 0.1
-            assert test_image.xy_dim == (4, 3)
-            assert test_image.xy_cen_pixel == (1.5, 1.0)
-            assert test_image.xy_arcsec == pytest.approx((0.4, 0.3))
+            assert test_image.dimensions == (4, 3)
+            assert test_image.central_pixels == (1.5, 1.0)
+            assert test_image.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
-        def test__via_fits__input_image_3x3__all_attributes_correct(self):
+        def test__from_fits__input_image_3x3__all_attributes_correct(self):
 
-            test_image = image.Image.via_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+            test_image = image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
 
             assert (test_image.data == np.ones((3, 3))).all()
             assert test_image.pixel_scale == 0.1
-            assert test_image.xy_dim == (3, 3)
-            assert test_image.xy_cen_pixel == (1.0, 1.0)
-            assert test_image.xy_arcsec == pytest.approx((0.3, 0.3))
+            assert test_image.dimensions == (3, 3)
+            assert test_image.central_pixels == (1.0, 1.0)
+            assert test_image.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
-        def test__via_fits__input_image_4x3__all_attributes_correct(self):
+        def test__from_fits__input_image_4x3__all_attributes_correct(self):
 
-            test_image = image.Image.via_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+            test_image = image.Image.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
 
             assert (test_image.data == np.ones((4, 3))).all()
             assert test_image.pixel_scale == 0.1
-            assert test_image.xy_dim == (4, 3)
-            assert test_image.xy_cen_pixel == (1.5, 1.0)
-            assert test_image.xy_arcsec == pytest.approx((0.4, 0.3))
+            assert test_image.dimensions == (4, 3)
+            assert test_image.central_pixels == (1.5, 1.0)
+            assert test_image.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
     class TestSetSky:
 
@@ -96,13 +96,14 @@ class TestImage:
             assert test_image.sky_background_level == 1.0
             assert test_image.sky_background_noise == 0.0
 
-          def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self, test_image):
-            test_image.data = np.array([[1, 1, 1],
+        def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self):
+
+            image_data = np.array([[1, 1, 1],
                                         [1, 100, 1],
                                         [1, 100, 1],
                                         [1, 1, 1]])
-            test_image.dimensions = (4, 3)
 
+            test_image = image.Image(image=image_data, pixel_scale=0.1)
             test_image.set_sky_via_edges(no_edges=1)
 
             assert test_image.sky_background_level == 1.0
@@ -175,9 +176,9 @@ class TestPSF:
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
-            assert test_psf.xy_dim == (3, 3)
-            assert test_psf.xy_cen_pixel == (1.0, 1.0)
-            assert test_psf.xy_arcsec == pytest.approx((0.3, 0.3))
+            assert test_psf.dimensions == (3, 3)
+            assert test_psf.central_pixels == (1.0, 1.0)
+            assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_psf_4x3__all_attributes_correct(self):
 
@@ -185,29 +186,29 @@ class TestPSF:
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
-            assert test_psf.xy_dim == (4, 3)
-            assert test_psf.xy_cen_pixel == (1.5, 1.0)
-            assert test_psf.xy_arcsec == pytest.approx((0.4, 0.3))
+            assert test_psf.dimensions == (4, 3)
+            assert test_psf.central_pixels == (1.5, 1.0)
+            assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
-        def test__via_fits__input_psf_3x3__all_attributes_correct(self):
+        def test__from_fits__input_psf_3x3__all_attributes_correct(self):
 
-            test_psf = image.PSF.via_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+            test_psf = image.PSF.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
-            assert test_psf.xy_dim == (3, 3)
-            assert test_psf.xy_cen_pixel == (1.0, 1.0)
-            assert test_psf.xy_arcsec == pytest.approx((0.3, 0.3))
+            assert test_psf.dimensions == (3, 3)
+            assert test_psf.central_pixels == (1.0, 1.0)
+            assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
-        def test__via_fits__input_psf_4x3__all_attributes_correct(self):
+        def test__from_fits__input_psf_4x3__all_attributes_correct(self):
 
-            test_psf = image.PSF.via_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+            test_psf = image.PSF.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
-            assert test_psf.xy_dim == (4, 3)
-            assert test_psf.xy_cen_pixel == (1.5, 1.0)
-            assert test_psf.xy_arcsec == pytest.approx((0.4, 0.3))
+            assert test_psf.dimensions == (4, 3)
+            assert test_psf.central_pixels == (1.5, 1.0)
+            assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__input_image_3x3__setup_from_image(self):
 
@@ -217,8 +218,8 @@ class TestPSF:
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
-            assert test_psf.xy_dim == (3, 3)
-            assert test_psf.xy_arcsec == pytest.approx((0.3, 0.3))
+            assert test_psf.dimensions == (3, 3)
+            assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__input_image_4x3__setup_from_image(self):
 
@@ -228,8 +229,8 @@ class TestPSF:
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
-            assert test_psf.xy_dim == (4, 3)
-            assert test_psf.xy_arcsec == pytest.approx((0.4, 0.3))
+            assert test_psf.dimensions == (4, 3)
+            assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestMask:
@@ -303,13 +304,8 @@ class TestMask:
                                       [False, True, True, False]])).all()
 
         def test__even_x_even_mask_input_radius_large__correct_mask(self):
-            
-            mask = image.CircleMask(dimensions=(4, 4), pixel_scale=0.1, radius=0.3)
-    
-            assert (mask.array == np.array([[1, 1, 1, 1],
-                                            [1, 1, 1, 1],
-                                            [1, 1, 1, 1],
-                                            [1, 1, 1, 1]])).all()
+
+            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=0.1, radius=0.3)
 
             assert (mask == np.array([[True, True, True, True],
                                       [True, True, True, True],
@@ -331,10 +327,6 @@ class TestMask:
                                       [True, False, True],
                                       [True, True, True]])).all()
 
-            assert (mask.array == np.array([[1, 1, 1],
-                                            [1, 0, 1],
-                                            [1, 1, 1]])).all()
-    
         def test__even_x_odd_mask_inner_radius_small_outer_radius_medium__correct_mask(self):
             mask = image.Mask.annular(dimensions=(4, 3), pixel_scale=0.1, inner_radius=0.051, outer_radius=0.151)
 
@@ -366,31 +358,3 @@ class TestMask:
                                       [False, False, False, False],
                                       [False, False, False, False],
                                       [True, False, False, True]])).all()
-
-
-# noinspection PyClassHasNoInit
-class TestLoadFits:
-    def test__input_fits_3x3_ones__loads_data_as_type_numpy_array(self):
-        assert type(image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data) == np.ndarray
-
-    def test__input_fits_3x3_ones__loads_correct_data(self):
-        assert (
-            image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data == np.ones(
-                (3, 3))).all()
-
-    def test__input_fits_4x3_ones__loads_correct_data(self):
-        assert (
-            image.Image.from_fits('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).data == np.ones(
-                (4, 3))).all()
-
-    def test__input_files_3x3_ones__loads_correct_dimensions(self):
-        xy_dim = image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).dimensions
-
-        assert xy_dim[0] == 3
-        assert xy_dim[1] == 3
-
-    def test__input_files_4x3_ones__loads_correct_dimensions(self):
-        xy_dim = image.Image.from_fits('4x3_ones.fits', hdu=0, pixel_scale=1, path=test_data_dir).dimensions
-
-        assert xy_dim[0] == 4
-        assert xy_dim[1] == 3
