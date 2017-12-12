@@ -295,6 +295,9 @@ class Profile(object):
         """
         return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
 
+    def coordinates_from_centre(self, coordinates):
+        return coordinates[0] + self.x_cen, coordinates[1] + self.y_cen
+
     def coordinates_to_radius(self, coordinates):
         """
         Convert the coordinates to a radius
@@ -423,7 +426,7 @@ class EllipticalProfile(Profile):
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
-        return x, y
+        return self.coordinates_from_centre((x, y))
 
     def transform_to_reference_frame(self, coordinates):
         """
