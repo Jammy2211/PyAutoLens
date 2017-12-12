@@ -404,8 +404,9 @@ class EllipticalProfile(Profile):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
 
-    def coordinates_back_to_cartesian(self, coordinates_elliptical):
-        """Rotate elliptical coordinates back to the Cartsian grid without shifting back to the original frame"""
+    def rotate_coordinates_from_profile(self, coordinates_elliptical):
+        """Rotate elliptical coordinates from the reference frame of the profile back to the image-plane Cartsian grid
+         (coordinates are not shifted away from the lens profile centre)."""
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
@@ -430,7 +431,7 @@ class EllipticalProfile(Profile):
             raise CoordinatesException("Can't return cartesian coordinates to cartesian coordinates. Did you remember"
                                        " to explicitly make the elliptical coordinates TransformedCoordinates?")
 
-        x, y = self.coordinates_back_to_cartesian(coordinates_elliptical)
+        x, y = self.rotate_coordinates_from_profile(coordinates_elliptical)
         return self.coordinates_from_centre((x, y))
 
     def transform_to_reference_frame(self, coordinates):
