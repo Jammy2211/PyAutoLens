@@ -146,7 +146,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
 
-        return deflection_x, deflection_y
+        return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
 
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
@@ -169,25 +169,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         """
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
-
-    @profile.transform_coordinates
-    def compute_potential(self, coordinates):
-        """
-        Calculate the gravitational potential at a given set of image plane coordinates
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the image
-
-        Returns
-        ----------
-        The gravitational potential [phi(eta)] at these coordinates
-        """
-
-        deflections = self.compute_deflection_angle(coordinates)
-
-        return coordinates[0] * deflections[0] + coordinates[1] * deflections[1]
 
     @property
     def deflection_normalization(self):
@@ -217,7 +198,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         deflection_y = self.deflection_normalization * math.atanh(
             (math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
-        return deflection_x, deflection_y
+        return self.coordinates_back_to_cartesian((deflection_x, deflection_y))
 
 
 class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):

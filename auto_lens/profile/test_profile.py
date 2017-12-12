@@ -413,8 +413,8 @@ class TestEllipticalProfile(object):
 
             coordinates = elliptical_profile.transform_from_reference_frame(coordinates_elliptical)
 
-            assert coordinates[0] == pytest.approx(coordinates_original[0] - 1.0, 1e-2)
-            assert coordinates[1] == pytest.approx(coordinates_original[1] - 1.0, 1e-2)
+            assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
+            assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
 
 class TestSphericalProfile(object):
@@ -697,8 +697,8 @@ class TestSphericalProfile(object):
 
             coordinates = spherical_profile.transform_from_reference_frame(coordinates_spherical)
 
-            assert coordinates[0] == pytest.approx(coordinates_original[0] - 1.0, 1e-2)
-            assert coordinates[1] == pytest.approx(coordinates_original[1] - 1.0, 1e-2)
+            assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
+            assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
 
 class TestDecorators(object):
