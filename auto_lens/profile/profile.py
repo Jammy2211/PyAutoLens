@@ -157,7 +157,8 @@ def array_function(func):
             for j in range(y_size):
                 x = pixel_to_coordinate(x_min, pixel_scale, i)
                 y = pixel_to_coordinate(y_min, pixel_scale, j)
-                if mask is not None and mask.is_masked((x, y)):
+
+                if mask is not None and not mask[i][j]:
                     row.append(None)
                 else:
                     row.append(func((x, y)))
