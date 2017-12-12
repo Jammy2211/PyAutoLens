@@ -786,7 +786,7 @@ class TestPSF:
 
             psf_data = np.ones((3,3))/9.0
 
-            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1, renormalize=False)
             test_psf.renormalize()
 
             assert test_psf.data == pytest.approx(psf_data, 1e-3)
@@ -795,7 +795,7 @@ class TestPSF:
 
             psf_data = np.ones((3,3))
 
-            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1, renormalize=False)
             test_psf.renormalize()
 
             assert test_psf.data == pytest.approx(np.ones((3,3))/9.0, 1e-3)
@@ -816,11 +816,21 @@ class TestPSF:
 
             normalization_factor = 2.0*4.0 + 12
 
-            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1, renormalize=False)
             test_psf.renormalize()
 
             assert test_psf.data == pytest.approx(psf_data/normalization_factor, 1e-3)
 
+        def test__works_in_class_constructor(self):
+
+            psf_data = np.ones((4,4))
+            psf_data[1:3, 1:3] = 2.0
+
+            normalization_factor = 2.0*4.0 + 12
+
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+
+            assert test_psf.data == pytest.approx(psf_data/normalization_factor, 1e-3)
 
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestMask:
