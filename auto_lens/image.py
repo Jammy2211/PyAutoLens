@@ -29,7 +29,7 @@ class Data(object):
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.dimensions = self.data.shape[:]  # x dimension (pixels)
-        self.central_pixels = tuple(map(lambda l: (l / 2.0) - 0.5, self.xy_dim))
+        self.central_pixels = tuple(map(lambda l: (l / 2.0) - 0.5, self.dimensions))
         self.dimensions_arc_seconds = list(
             map(lambda l: l * pixel_scale, self.dimensions))  # Convert image dimensions to arcseconds
 
