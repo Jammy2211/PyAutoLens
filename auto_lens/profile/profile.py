@@ -409,7 +409,7 @@ class EllipticalProfile(Profile):
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
-        return (x, y)
+        return x, y
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
@@ -430,9 +430,7 @@ class EllipticalProfile(Profile):
             raise CoordinatesException("Can't return cartesian coordinates to cartesian coordinates. Did you remember"
                                        " to explicitly make the elliptical coordinates TransformedCoordinates?")
 
-        x_elliptical = coordinates_elliptical[0]
-        x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
-        y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
+        x, y = self.coordinates_back_to_cartesian(coordinates_elliptical)
         return self.coordinates_from_centre((x, y))
 
     def transform_to_reference_frame(self, coordinates):
