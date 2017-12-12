@@ -146,7 +146,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
 
-        return profile.TransformedCoordinates((deflection_x, deflection_y))
+        return deflection_x, deflection_y
 
 
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
@@ -217,7 +217,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         deflection_y = self.deflection_normalization * math.atanh(
             (math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
-        return profile.TransformedCoordinates((deflection_x, deflection_y))
+        return deflection_x, deflection_y
 
 
 class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
