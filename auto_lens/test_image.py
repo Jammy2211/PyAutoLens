@@ -833,6 +833,73 @@ class TestPSF:
             assert test_psf.data == pytest.approx(psf_data/normalization_factor, 1e-3)
 
 # noinspection PyClassHasNoInit,PyShadowingNames
+class TestNoise:
+    
+    class TestSetup:
+        
+        def test__init__input_noise_3x3__all_attributes_correct(self):
+            
+            test_noise = image.Noise(noise=np.ones((3, 3)), pixel_scale=0.1)
+
+            assert (test_noise.data == np.ones((3, 3))).all()
+            assert test_noise.pixel_scale == 0.1
+            assert test_noise.dimensions == (3, 3)
+            assert test_noise.central_pixels == (1.0, 1.0)
+            assert test_noise.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
+
+        def test__init__input_noise_4x3__all_attributes_correct(self):
+            test_noise = image.Noise(noise=np.ones((4, 3)), pixel_scale=0.1)
+
+            assert (test_noise.data == np.ones((4, 3))).all()
+            assert test_noise.pixel_scale == 0.1
+            assert test_noise.dimensions == (4, 3)
+            assert test_noise.central_pixels == (1.5, 1.0)
+            assert test_noise.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
+
+        def test__from_fits__input_noise_3x3__all_attributes_correct(self):
+            test_noise = image.Noise.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1,
+                                           path=test_data_dir)
+
+            assert (test_noise.data == np.ones((3, 3))).all()
+            assert test_noise.pixel_scale == 0.1
+            assert test_noise.dimensions == (3, 3)
+            assert test_noise.central_pixels == (1.0, 1.0)
+            assert test_noise.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
+
+        def test__from_fits__input_noise_4x3__all_attributes_correct(self):
+            test_noise = image.Noise.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1,
+                                           path=test_data_dir)
+
+            assert (test_noise.data == np.ones((4, 3))).all()
+            assert test_noise.pixel_scale == 0.1
+            assert test_noise.dimensions == (4, 3)
+            assert test_noise.central_pixels == (1.5, 1.0)
+            assert test_noise.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
+
+        def test__input_image_3x3__setup_from_image(self):
+            test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
+
+            test_noise = test_image.load_noise(file_name='3x3_ones.fits', hdu=0,
+                                           path=test_data_dir)
+
+            assert (test_noise.data == np.ones((3, 3))).all()
+            assert test_noise.pixel_scale == 0.1
+            assert test_noise.dimensions == (3, 3)
+            assert test_noise.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
+
+        def test__input_image_4x3__setup_from_image(self):
+            test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
+
+            test_noise = test_image.load_noise(file_name='4x3_ones.fits', hdu=0,
+                                           path=test_data_dir)
+
+            assert (test_noise.data == np.ones((4, 3))).all()
+            assert test_noise.pixel_scale == 0.1
+            assert test_noise.dimensions == (4, 3)
+            assert test_noise.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
+
+
+# noinspection PyClassHasNoInit,PyShadowingNames
 class TestMask:
     class TestCircular(object):
         def test__input_big_mask__correct_mask(self):
