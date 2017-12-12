@@ -147,125 +147,127 @@ class TestPSF(object):
 class TestMask:
     class TestCircular(object):
         def test__input_big_mask__correct_mask(self):
-            mask = image.CircleMask(dimensions=(3, 3), pixel_scale=0.1, radius=0.5)
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.1, radius=0.5)
 
-            assert (mask.array == np.ones((3, 3))).all()
+            assert (mask == np.array([[True, True, True],
+                                      [True, True, True],
+                                      [True, True, True]])).all()
 
         def test__odd_x_odd_mask_input_radius_small__correct_mask(self):
-            mask = image.CircleMask(dimensions=(3, 3), pixel_scale=0.1, radius=0.05)
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.1, radius=0.05)
 
-            assert (mask.array == np.array([[0, 0, 0],
-                                            [0, 1, 0],
-                                            [0, 0, 0]])).all()
+            assert (mask == np.array([[False, False, False],
+                                      [False, True, False],
+                                      [False, False, False]])).all()
 
         def test__odd_x_odd_mask_input_radius_medium__correct_mask(self):
-            mask = image.CircleMask(dimensions=(3, 3), pixel_scale=0.1, radius=0.1)
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.1, radius=0.1)
 
-            assert (mask.array == np.array([[0, 1, 0],
-                                            [1, 1, 1],
-                                            [0, 1, 0]])).all()
+            assert (mask == np.array([[False, True, False],
+                                      [True, True, True],
+                                      [False, True, False]])).all()
 
         def test__odd_x_odd_mask_input_radius_large__correct_mask(self):
-            mask = image.CircleMask(dimensions=(3, 3), pixel_scale=0.1, radius=0.3)
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.1, radius=0.3)
 
-            assert (mask.array == np.array([[1, 1, 1],
-                                            [1, 1, 1],
-                                            [1, 1, 1]])).all()
+            assert (mask == np.array([[True, True, True],
+                                      [True, True, True],
+                                      [True, True, True]])).all()
 
         def test__even_x_odd_mask_input_radius_small__correct_mask(self):
-            mask = image.CircleMask(dimensions=(4, 3), pixel_scale=0.1, radius=0.05)
+            mask = image.Mask.circular(dimensions=(4, 3), pixel_scale=0.1, radius=0.05)
 
-            assert (mask.array == np.array([[0, 0, 0],
-                                            [0, 1, 0],
-                                            [0, 1, 0],
-                                            [0, 0, 0]])).all()
+            assert (mask == np.array([[False, False, False],
+                                      [False, True, False],
+                                      [False, True, False],
+                                      [False, False, False]])).all()
 
         def test__even_x_odd_mask_input_radius_medium__correct_mask(self):
-            mask = image.CircleMask(dimensions=(4, 3), pixel_scale=0.1, radius=0.150001)
+            mask = image.Mask.circular(dimensions=(4, 3), pixel_scale=0.1, radius=0.150001)
 
-            assert (mask.array == np.array([[0, 1, 0],
-                                            [1, 1, 1],
-                                            [1, 1, 1],
-                                            [0, 1, 0]])).all()
+            assert (mask == np.array([[False, True, False],
+                                      [True, True, True],
+                                      [True, True, True],
+                                      [False, True, False]])).all()
 
         def test__even_x_odd_mask_input_radius_large__correct_mask(self):
-            mask = image.CircleMask(dimensions=(4, 3), pixel_scale=0.1, radius=0.3)
+            mask = image.Mask.circular(dimensions=(4, 3), pixel_scale=0.1, radius=0.3)
 
-            assert (mask.array == np.array([[1, 1, 1],
-                                            [1, 1, 1],
-                                            [1, 1, 1],
-                                            [1, 1, 1]])).all()
+            assert (mask == np.array([[True, True, True],
+                                      [True, True, True],
+                                      [True, True, True],
+                                      [True, True, True]])).all()
 
         def test__even_x_even_mask_input_radius_small__correct_mask(self):
-            mask = image.CircleMask(dimensions=(4, 4), pixel_scale=0.1, radius=0.072)
+            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=0.1, radius=0.072)
 
-            assert (mask.array == np.array([[0, 0, 0, 0],
-                                            [0, 1, 1, 0],
-                                            [0, 1, 1, 0],
-                                            [0, 0, 0, 0]])).all()
+            assert (mask == np.array([[False, False, False, False],
+                                      [False, True, True, False],
+                                      [False, True, True, False],
+                                      [False, False, False, False]])).all()
 
         def test__even_x_even_mask_input_radius_medium__correct_mask(self):
-            mask = image.CircleMask(dimensions=(4, 4), pixel_scale=0.1, radius=0.17)
+            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=0.1, radius=0.17)
 
-            assert (mask.array == np.array([[0, 1, 1, 0],
-                                            [1, 1, 1, 1],
-                                            [1, 1, 1, 1],
-                                            [0, 1, 1, 0]])).all()
+            assert (mask == np.array([[False, True, True, False],
+                                      [True, True, True, True],
+                                      [True, True, True, True],
+                                      [False, True, True, False]])).all()
 
         def test__even_x_even_mask_input_radius_large__correct_mask(self):
-            mask = image.CircleMask(dimensions=(4, 4), pixel_scale=0.1, radius=0.3)
+            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=0.1, radius=0.3)
 
-            assert (mask.array == np.array([[1, 1, 1, 1],
-                                            [1, 1, 1, 1],
-                                            [1, 1, 1, 1],
-                                            [1, 1, 1, 1]])).all()
+            assert (mask == np.array([[True, True, True, True],
+                                      [True, True, True, True],
+                                      [True, True, True, True],
+                                      [True, True, True, True]])).all()
 
     class TestAnnulus(object):
         def test__odd_x_odd_mask_inner_radius_zero_outer_radius_small__correct_mask(self):
-            mask = image.AnnulusMask(dimensions=(3, 3), pixel_scale=0.1, inner_radius=0.0, outer_radius=0.05)
+            mask = image.Mask.annular(dimensions=(3, 3), pixel_scale=0.1, inner_radius=0.0, outer_radius=0.05)
 
-            assert (mask.array == np.array([[0, 0, 0],
-                                            [0, 1, 0],
-                                            [0, 0, 0]])).all()
+            assert (mask == np.array([[False, False, False],
+                                      [False, True, False],
+                                      [False, False, False]])).all()
 
         def test__odd_x_odd_mask_inner_radius_small_outer_radius_large__correct_mask(self):
-            mask = image.AnnulusMask(dimensions=(3, 3), pixel_scale=0.1, inner_radius=0.05, outer_radius=0.3)
+            mask = image.Mask.annular(dimensions=(3, 3), pixel_scale=0.1, inner_radius=0.05, outer_radius=0.3)
 
-            assert (mask.array == np.array([[1, 1, 1],
-                                            [1, 0, 1],
-                                            [1, 1, 1]])).all()
+            assert (mask == np.array([[True, True, True],
+                                      [True, False, True],
+                                      [True, True, True]])).all()
 
         def test__even_x_odd_mask_inner_radius_small_outer_radius_medium__correct_mask(self):
-            mask = image.AnnulusMask(dimensions=(4, 3), pixel_scale=0.1, inner_radius=0.051, outer_radius=0.151)
+            mask = image.Mask.annular(dimensions=(4, 3), pixel_scale=0.1, inner_radius=0.051, outer_radius=0.151)
 
-            assert (mask.array == np.array([[0, 1, 0],
-                                            [1, 0, 1],
-                                            [1, 0, 1],
-                                            [0, 1, 0]])).all()
+            assert (mask == np.array([[False, True, False],
+                                      [True, False, True],
+                                      [True, False, True],
+                                      [False, True, False]])).all()
 
         def test__even_x_odd_mask_inner_radius_medium_outer_radius_large__correct_mask(self):
-            mask = image.AnnulusMask(dimensions=(4, 3), pixel_scale=0.1, inner_radius=0.151, outer_radius=0.3)
+            mask = image.Mask.annular(dimensions=(4, 3), pixel_scale=0.1, inner_radius=0.151, outer_radius=0.3)
 
-            assert (mask.array == np.array([[1, 0, 1],
-                                            [0, 0, 0],
-                                            [0, 0, 0],
-                                            [1, 0, 1]])).all()
+            assert (mask == np.array([[True, False, True],
+                                      [False, False, False],
+                                      [False, False, False],
+                                      [True, False, True]])).all()
 
         def test__even_x_even_mask_inner_radius_small_outer_radius_medium__correct_mask(self):
-            mask = image.AnnulusMask(dimensions=(4, 4), pixel_scale=0.1, inner_radius=0.081, outer_radius=0.2)
+            mask = image.Mask.annular(dimensions=(4, 4), pixel_scale=0.1, inner_radius=0.081, outer_radius=0.2)
 
-            assert (mask.array == np.array([[0, 1, 1, 0],
-                                            [1, 0, 0, 1],
-                                            [1, 0, 0, 1],
-                                            [0, 1, 1, 0]])).all()
+            assert (mask == np.array([[False, True, True, False],
+                                      [True, False, False, True],
+                                      [True, False, False, True],
+                                      [False, True, True, False]])).all()
 
         def test__even_x_even_mask_inner_radius_medium_outer_radius_large__correct_mask(self):
-            mask = image.AnnulusMask(dimensions=(4, 4), pixel_scale=0.1, inner_radius=0.171, outer_radius=0.3)
+            mask = image.Mask.annular(dimensions=(4, 4), pixel_scale=0.1, inner_radius=0.171, outer_radius=0.3)
 
-            assert (mask.array == np.array([[1, 0, 0, 1],
-                                            [0, 0, 0, 0],
-                                            [0, 0, 0, 0],
-                                            [1, 0, 0, 1]])).all()
+            assert (mask == np.array([[True, False, False, True],
+                                      [False, False, False, False],
+                                      [False, False, False, False],
+                                      [True, False, False, True]])).all()
 
 
 # noinspection PyClassHasNoInit
