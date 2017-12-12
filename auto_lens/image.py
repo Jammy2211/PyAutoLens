@@ -28,6 +28,10 @@ class Data(object):
         """
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
+        self.update_dimensions()
+
+    def update_dimensions(self):
+        """Update the image dimensions and central pixel"""
         self.dimensions = self.data.shape[:]  # x dimension (pixels)
         self.central_pixels = self.central_pixel(self.dimensions)
         self.dimensions_arc_seconds = self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
@@ -59,8 +63,8 @@ class Data(object):
     def trim_data(self, x_size, y_size):
         """ Trim the data array to a new size around its central pixel.
 
-        NOTE: The centre of the array currently cannot be shifted. Therefore, even arrays are trimmed to even arrays
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3). Centre offsets may be considered at a later date.
+        NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
+        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
 
         Parameters
         ----------
@@ -74,19 +78,12 @@ class Data(object):
         elif y_size >  self.y_dimension:
             raise ValueError ('image.Data.trim_data - You have specified a new y_size bigger than the data array')
 
-        x_trim = (self.x_dimension - x_size)/2
-        y_trim = (self.y_dimension - y_size)/2
+        x_trim = int((self.x_dimension - x_size)/2)
+        y_trim = int((self.y_dimension - y_size)/2)
 
-        x_min = int(round(x_trim))
-        x_max = int(round(self.x_dimension-x_trim))
-        y_min = int(round(y_trim))
-        y_max  = int(round(self.y_dimension-y_trim))
+        self.data = self.data[x_trim:self.x_dimension-x_trim, y_trim:self.y_dimension-y_trim]
 
-        self.data = self.data[x_min:x_max, y_min:y_max]
-
-        self.dimensions = self.data.shape[:]  # x dimension (pixels)
-        self.central_pixels = self.central_pixel(self.dimensions)
-        self.dimensions_arc_seconds = self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
+        self.update_dimensions()
 
         if self.x_dimension != x_size:
             print ('image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
@@ -94,6 +91,31 @@ class Data(object):
         elif self.y_dimension != y_size:
             print ('image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
             print('The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
+
+    def pad_data(self, x_size, y_size):
+        """ Pad the data array with zeros around its central pixel.
+
+        NOTE: The centre of the array cannot be shifted. Therefore, even arrays are padded to even arrays
+        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+
+        Parameters
+        ----------
+        x_size : int
+            The new x dimension of the data-array
+        y_size : int
+            The new y dimension of the data-array
+        """
+        if x_size <  self.x_dimension:
+            raise ValueError ('image.Data.pad_data - You have specified a new x_size smaller than the data array')
+        elif y_size <  self.y_dimension:
+            raise ValueError ('image.Data.pad_data - You have specified a new y_size smaller than the data array')
+
+        x_pad = int((x_size- self.x_dimension + 1)/2)
+        y_pad = int((y_size- self.y_dimension + 1)/2)
+
+        self.data = np.pad(self.data, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
+
+        self.update_dimensions()
 
 class Image(Data):
 
