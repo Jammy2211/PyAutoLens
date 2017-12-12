@@ -1,6 +1,7 @@
 from scipy.stats import norm
 from astropy.io import fits
 import os
+from functools import wraps
 
 import numpy as np
 
@@ -137,7 +138,7 @@ class Image(Data):
         -------
         A circular mask for this image
         """
-        return CircleMask(dimensions=self.dimensions, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return Mask.circular(dimensions=self.dimensions, pixel_scale=self.pixel_scale, radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -154,8 +155,9 @@ class Image(Data):
         -------
         An annulus mask for this image
         """
-        return AnnulusMask(dimensions=self.dimensions, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
-                           inner_radius=inner_radius_arc)
+        return Mask.annular(dimensions=self.dimensions, pixel_scale=self.pixel_scale,
+                            outer_radius=outer_radius_arc,
+                            inner_radius=inner_radius_arc)
 
 
 class PSF(Data):
@@ -190,40 +192,53 @@ class PSF(Data):
         return PSF(array, pixel_scale)
 
 
-# TODO : I've defined a mask so that True means we keep the pixel, False means we don't. This means we can use compress
-# TODO : To remove everything outside the mask. opiinon?
-# TODO : Just to confuse coordinates furhter, we need to decide how we choose the centre of an image and mask. Currently,
-# TODO : masks are automatically centred on the central pixel.
-# TODO: I guess we could also use 0s and 1s? Possibly no benefit. Presumably we want central coordinates for the mask
-# TODO: just like with the other image objects
+def as_mask(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return np.ma.make_mask(func(*args, **kwargs))
+
+    return wrapper
+
+
+# TODO : So here I've implemented the True/False paradigm. But I've made it so that Masks are really just numpy masks.
+# TODO : If there's no need to implement any internal class functionality then it makes sense to use a well established
+# TODO : data type. The same is probably true of PSF.
+
+# TODO: I haven't yet tested the central coordinates and if these objects are to match those in the profile package then
+# TODO: it may also make sense to implement the same pixel scale paradigm.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
-    def __init__(self, dimensions, pixel_scale):
-        """
-        Setup the boolean mask, where True means a pixel is included in the analysis and False means its excluded.
+    @staticmethod
+    def central_pixel(dimensions):
+        return list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
 
-        Parameters
-        ----------
-        dimensions : (int, int)
-            The dimensions of the image (x, y)
-        pixel_scale :
-            The scale size of a pixel (x, y) in arc seconds
-        """
-
-        self.pixel_scale = pixel_scale
-        self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
-        self.array = np.zeros((dimensions[0], dimensions[1]))
-
-
-class CircleMask(Mask):
-    """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
-
-    def __init__(self, dimensions, pixel_scale, radius):
+    @classmethod
+    def mask(cls, dimensions):
         """
 
         Parameters
         ----------
+        dimensions: (float, float)
+            The spatial dimensions of the mask
+
+        Returns
+        -------
+            An empty array
+        """
+        # TODO: this line (with other modifications) would bring the mask dimensions convention into line with the
+        # TODO: profile classes
+        # return np.zeros((int(dimensions[0] / pixel_scale), int(dimensions[1] / pixel_scale)))
+        return np.zeros((dimensions[0], dimensions[1]))
+
+    @classmethod
+    @as_mask
+    def circular(cls, dimensions, pixel_scale, radius, centre=(0., 0.)):
+        """
+
+        Parameters
+        ----------
+        centre
         dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
@@ -231,50 +246,47 @@ class CircleMask(Mask):
         radius : float
             The radius of the circle (arc seconds)
         """
-        super(CircleMask, self).__init__(dimensions, pixel_scale)
-        self.radius = radius
-
+        array = Mask.mask(dimensions)
+        central_pixel = Mask.central_pixel(dimensions)
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
+                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
+                radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
 
                 if radius_arc <= radius:
-                    self.array[i, j] = True
+                    array[i, j] = True
+        return array
 
-
-class AnnulusMask(Mask):
-    """Class for preparing and storing an annulus image mask used for the AutoLens analysis"""
-
-    def __init__(self, dimensions, pixel_scale, inner_radius, outer_radius):
+    @classmethod
+    @as_mask
+    def annular(cls, dimensions, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
         """
 
         Parameters
         ----------
+        centre
         dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius : float
-            The inner radius of the circular annulus (arc seconds)
-
+            The inner radius of the circular annulus (arc seconds
         outer_radius : float
             The outer radius of the circular annulus (arc seconds)
         """
-        super(AnnulusMask, self).__init__(dimensions, pixel_scale)
-        self.inner_radius = inner_radius
-        self.outer_radius = outer_radius
-
+        array = Mask.mask(dimensions)
+        central_pixel = Mask.central_pixel(dimensions)
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
+                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
+                radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
 
                 if outer_radius >= radius_arc >= inner_radius:
-                    self.array[i, j] = int(1)
+                    array[i, j] = True
+        return array
