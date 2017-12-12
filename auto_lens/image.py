@@ -23,7 +23,26 @@ class Data(object):
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.xy_dim = self.data.shape[:]  # x dimension (pixels)
-        self.xy_arcsec = list(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+        self.xy_cen_pixel = tuple(map(lambda l: (l / 2.0)-0.5, self.xy_dim))
+        self.xy_arcsec = tuple(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+
+    def trim_data(self, x_size, y_size):
+        """ Trim the data array to a new size around its central pixel.
+
+        NOTE: The centre of the array currently cannot be shifted. Therefore, even arrays are trimmed to even arrays
+        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3). Centre offsets may be considered at a later date.
+
+        Parameters
+        ----------
+        x_size : int
+            The new x dimension of the data-array
+        y_size : int
+            The new y dimension of the data-array
+        """
+        pass
+      #  xy_central_pixel = self.xy_dim[:] / 2
+
+     #   self.data = self.data[]
 
 class Image(Data):
 
