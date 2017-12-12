@@ -823,3 +823,7 @@ class TestTransform(object):
         assert mock_profile.return_coordinates((0, 0)) == (1, 1)
         assert mock_profile.return_coordinates(
             profile.TransformedCoordinates((0, 0))) == profile.TransformedCoordinates((0, 0))
+
+    def test_symmetry(self):
+        p = profile.EllipticalProfile(2, 2, (3, 5))
+        assert p.transform_from_reference_frame(p.transform_to_reference_frame((5, 7))) == (5, 7)
