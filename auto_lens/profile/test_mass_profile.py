@@ -194,7 +194,8 @@ class TestEllipticalPowerLaw(object):
             assert ratio == pytest.approx((1.53341 / 1.34381), 1e-3)
 
         def test__compare_to_isothermal__same_potential(self):
-            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0,
                                                                       einstein_radius=1.0)
 
             potential_isothermal = isothermal.compute_potential(coordinates=(0.1625, 0.1625))
@@ -518,13 +519,6 @@ class TestCoredEllipticalPowerLaw(object):
             assert surface_density == pytest.approx(1.4079, 1e-3)
 
     class TestPotential(object):
-        def test__compare_to_fortran__same_values2(self):
-            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
-                                                                      einstein_radius=1.0)
-
-            potential = isothermal.compute_potential(coordinates=(0.1625, 0.1625))
-
-            assert potential == pytest.approx(0.18525, 1e-3)
 
         def test__flip_coordinates_lens_center__same_value(self):
             power_law_core = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,

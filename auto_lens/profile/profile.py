@@ -404,6 +404,13 @@ class EllipticalProfile(Profile):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
 
+    def coordinates_back_to_cartesian(self, coordinates_elliptical):
+        """Rotate elliptical coordinates back to the Cartsian grid without shifting back to the original frame"""
+        x_elliptical = coordinates_elliptical[0]
+        x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
+        y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
+        return (x, y)
+
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
         Rotate elliptical coordinates back to the original Cartesian grid (for a circular profile this
