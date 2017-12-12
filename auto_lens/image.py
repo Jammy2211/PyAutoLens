@@ -117,6 +117,36 @@ class Data(object):
 
         self.update_dimensions()
 
+    def output_for_fortran(self, directory, image_name):
+        """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
+        and I've not bothered with unit-tests.
+
+        Parameters
+        ----------
+        directory : str
+            The directory the files are output too
+        image_name : str
+            The name of the image for this file
+        """
+
+        if isinstance(self, Image):
+            file_write = open(directory+image_name+".dat", 'w')
+        elif isinstance(self, PSF):
+            file_write = open(directory + image_name + "PSF.dat", 'w')
+        elif isinstance(self, Noise):
+            file_write = open(directory + image_name + "BaselineNoise.dat", 'w')
+
+        for ix, x in enumerate(range(self.x_dimension)):
+            for iy, y in enumerate(range(self.y_dimension)):
+
+                line = str(round(float(ix + 1), 2))
+                line += ' ' * (8 - len(line))
+                line += str(round(float(iy + 1), 2))
+                line += ' ' * (16 - len(line))
+                line += str(float(self.data[ix][iy])) + '\n'
+                file_write.write(line)
+
+        file_write.close()
 
 class Image(Data):
 
@@ -197,12 +227,29 @@ class Image(Data):
             The PSF file_name to be loaded from
         hdu : int
             The PSF HDU in the fits file
+        renormalize : bool
+            If *True* the loaded PSF wlll be renormalized so its summed element equal unity.
         path : str
             The path to the PSF image file
 
         """
         return PSF.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, renormalize=renormalize,
                              path=path)
+
+    def load_noise(self, file_name, hdu, path=data_path):
+        """Load the Noise for this image
+
+        Parameters
+        ----------
+        file_name : str
+            The PSF file_name to be loaded from
+        hdu : int
+            The PSF HDU in the fits file
+        path : str
+            The path to the PSF image file
+
+        """
+        return Noise.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
 
     def circle_mask(self, radius_arc):
         """
@@ -250,6 +297,8 @@ class PSF(Data):
             Two-dimensional array of the PSF (Automatically normalized to unit normalization).
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds.
+        renormalize : bool
+            If *True* the loaded PSF wlll be renormalized so its summed element equal unity.
         """
         super(PSF, self).__init__(psf, pixel_scale)
 
@@ -258,6 +307,50 @@ class PSF(Data):
 
     @classmethod
     def from_fits(cls, file_name, hdu, pixel_scale, renormalize=True, path=data_path):
+        """Load the PSF from a fits file.
+
+        Parameters
+        ----------
+        file_name : str
+            The file name of the fits file
+        hdu : int
+            The HDU number in the fits file containing the data
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        renormalize : bool
+            If *True* the loaded PSF wlll be renormalized so its summed element equal unity.
+        path : str
+            The directory path to the fits file
+        """
+        array = numpy_array_from_fits(path + file_name, hdu)
+        return PSF(array, pixel_scale, renormalize)
+
+    def renormalize(self):
+        """Renormalize the PSF so that its values sum to unity"""
+        normalization_factor = np.sum(self.data)
+        self.data = np.divide(self.data, normalization_factor)
+
+
+class Noise(Data):
+
+    # TODO : need to distinguish between Poisson / Background / Total noise.
+
+    def __init__(self, noise, pixel_scale):
+        """Setup a Noise class, which holds the noise of a strong-lens image.
+
+        Parameters
+        ----------
+        noise : ndarray
+            Two-dimensional array of the noise data (electrons per second).
+            This can be loaded from a fits file using the via_fits method.
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds.
+        """
+
+        super(Noise, self).__init__(noise, pixel_scale)
+
+    @classmethod
+    def from_fits(cls, file_name, hdu, pixel_scale, path=data_path):
         """Load the image from a fits file.
 
         Parameters
@@ -272,14 +365,7 @@ class PSF(Data):
             The directory path to the fits file
         """
         array = numpy_array_from_fits(path + file_name, hdu)
-        return PSF(array, pixel_scale, renormalize)
-
-    def renormalize(self):
-        """Renormalize the PSF so that its values sum to unity"""
-        normalization_factor = np.sum(self.data)
-        self.data = np.divide(self.data, normalization_factor)
-
-
+        return Noise(array, pixel_scale)
 
 def as_mask(func):
     @wraps(func)
