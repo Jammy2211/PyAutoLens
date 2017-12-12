@@ -109,12 +109,12 @@ class Image(Data):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
-    def load_psf(self, file_name, hdu, path):
+    def load_psf(self, filename, hdu, path=data_path):
         """Load the PSF for this image
 
         Parameters
         ----------
-        file_name : str
+        filename : str
             The PSF file_name to be loaded from
         hdu : int
             The PSF HDU in the fits file
@@ -122,7 +122,7 @@ class Image(Data):
             The path to the PSF image file
 
         """
-        return PSF.from_fits(filename=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
+        return PSF.from_fits(filename=filename, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
 
     def circle_mask(self, radius_arc):
         """
