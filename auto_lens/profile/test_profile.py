@@ -701,15 +701,6 @@ class TestSphericalProfile(object):
             assert coordinates[1] == pytest.approx(coordinates_original[1] - 1.0, 1e-2)
 
 
-class MockMask(object):
-    def __init__(self, masked_coordinates):
-        self.masked_coordinates = masked_coordinates
-
-    def is_masked(self, coordinates):
-        # It's probably a good idea to use a numpy array in the real class for efficiency
-        return coordinates in self.masked_coordinates
-
-
 class TestDecorators(object):
     def test_subgrid_2x2(self):
         @profile.subgrid
@@ -784,8 +775,11 @@ class TestDecorators(object):
         assert one_over_grid(None, None, 0.21) == pytest.approx(0.2)
 
     def test_mask(self):
-        mask = MockMask([(x, 0) for x in range(-5, 6)])
-        array = profile.array_function(lambda coordinates: 1)(-5, -5, 5, 5, 1, mask=mask)
+        mask_array = np.ones((10, 10))
+        mask_array[0][5] = 0
+        mask_array[5][5] = 0
+        mask_array[6][5] = 0
+        array = profile.array_function(lambda coordinates: 1)(-5, -5, 5, 5, 1, mask=np.ma.make_mask(mask_array))
 
         assert array[5][5] is None
         assert array[5][6] is not None

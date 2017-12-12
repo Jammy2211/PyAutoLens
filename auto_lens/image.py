@@ -1,10 +1,16 @@
 from scipy.stats import norm
 from astropy.io import fits
 import os
+from functools import wraps
 
 import numpy as np
 
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
+
+
+def numpy_array_from_fits(file_path, hdu):
+    hdu_list = fits.open(file_path)  # Open the fits file
+    return np.array(hdu_list[hdu].data)
 
 
 class Data(object):
@@ -15,16 +21,25 @@ class Data(object):
 
         Parameters
         ----------
-        image : ndarray
+        data : ndarray
             Two-dimensional array of the data (e.g. the image, PSF, noise).
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds.
         """
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
-        self.xy_dim = self.data.shape[:]  # x dimension (pixels)
-        self.xy_cen_pixel = tuple(map(lambda l: (l / 2.0)-0.5, self.xy_dim))
-        self.xy_arcsec = tuple(map(lambda l: l * pixel_scale, self.xy_dim))  # Convert image dimensions to arcseconds
+        self.dimensions = self.data.shape[:]  # x dimension (pixels)
+        self.central_pixels = tuple(map(lambda l: (l / 2.0) - 0.5, self.xy_dim))
+        self.dimensions_arc_seconds = list(
+            map(lambda l: l * pixel_scale, self.dimensions))  # Convert image dimensions to arcseconds
+
+    @property
+    def x_dimension(self):
+        return self.dimensions[0]
+
+    @property
+    def y_dimension(self):
+        return self.dimensions[1]
 
     def trim_data(self, x_size, y_size):
         """ Trim the data array to a new size around its central pixel.
@@ -67,7 +82,8 @@ class Image(Data):
         self.sky_background_noise = sky_background_noise
 
     @classmethod
-    def via_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None, path=data_path):
+    def from_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
+                  path=data_path):
         """Load the image from a fits file.
 
         Parameters
@@ -85,9 +101,9 @@ class Image(Data):
         path : str
             The directory path to the fits file
         """
-        hdu_list = fits.open(path + file_name)  # Open the fits file
-        data_2d = np.array(hdu_list[hdu].data)
-        return Image(data_2d, pixel_scale, sky_background_level, sky_background_noise)
+        array = numpy_array_from_fits(path + file_name, hdu)
+        return Image(array, pixel_scale, sky_background_level,
+                     sky_background_noise)
 
     def set_sky_via_edges(self, no_edges):
         """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
@@ -101,16 +117,13 @@ class Image(Data):
 
         """
 
-        xdim = self.xy_dim[0]
-        ydim = self.xy_dim[1]
-
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.data[edge_no, edge_no:ydim - edge_no]
-            bottom_edge = self.data[xdim - 1 - edge_no, edge_no:ydim - edge_no]
-            left_edge = self.data[edge_no + 1:xdim - 1 - edge_no, edge_no]
-            right_edge = self.data[edge_no + 1:xdim - 1 - edge_no, ydim - 1 - edge_no]
+            top_edge = self.data[edge_no, edge_no:self.y_dimension - edge_no]
+            bottom_edge = self.data[self.x_dimension - 1 - edge_no, edge_no:self.y_dimension - edge_no]
+            left_edge = self.data[edge_no + 1:self.x_dimension - 1 - edge_no, edge_no]
+            right_edge = self.data[edge_no + 1:self.x_dimension - 1 - edge_no, self.y_dimension - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
@@ -129,7 +142,7 @@ class Image(Data):
             The path to the PSF image file
 
         """
-        return PSF.via_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
+        return PSF.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
 
     def circle_mask(self, radius_arc):
         """
@@ -144,7 +157,7 @@ class Image(Data):
         -------
         A circular mask for this image
         """
-        return CircleMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return Mask.circular(dimensions=self.dimensions, pixel_scale=self.pixel_scale, radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -161,8 +174,9 @@ class Image(Data):
         -------
         An annulus mask for this image
         """
-        return AnnulusMask(dimensions=self.xy_dim, pixel_scale=self.pixel_scale, outer_radius=outer_radius_arc,
-                           inner_radius=inner_radius_arc)
+        return Mask.annular(dimensions=self.dimensions, pixel_scale=self.pixel_scale,
+                            outer_radius=outer_radius_arc,
+                            inner_radius=inner_radius_arc)
 
 
 class PSF(Data):
@@ -180,7 +194,7 @@ class PSF(Data):
         super(PSF, self).__init__(psf, pixel_scale)
 
     @classmethod
-    def via_fits(cls, file_name, hdu, pixel_scale, path=data_path):
+    def from_fits(cls, file_name, hdu, pixel_scale, path=data_path):
         """Load the image from a fits file.
 
         Parameters
@@ -194,42 +208,57 @@ class PSF(Data):
         path : str
             The directory path to the fits file
         """
-        hdu_list = fits.open(path + file_name)  # Open the fits file
-        data_2d = np.array(hdu_list[hdu].data)
-        return PSF(data_2d, pixel_scale)
+        array = numpy_array_from_fits(path + file_name, hdu)
+        return PSF(array, pixel_scale)
 
 
-# TODO : I've defined a mask so that True means we keep the pixel, False means we don't. This means we can use compress
-# TODO : To remove everything outside the mask. opiinon?
-# TODO : Just to confuse coordinates furhter, we need to decide how we choose the centre of an image and mask. Currently,
-# TODO : masks are automatically centred on the central pixel.
+def as_mask(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return np.ma.make_mask(func(*args, **kwargs))
+
+    return wrapper
+
+
+# TODO : So here I've implemented the True/False paradigm. But I've made it so that Masks are really just numpy masks.
+# TODO : If there's no need to implement any internal class functionality then it makes sense to use a well established
+# TODO : data type. The same is probably true of PSF.
+
+# TODO: I haven't yet tested the central coordinates and if these objects are to match those in the profile package then
+# TODO: it may also make sense to implement the same pixel scale paradigm.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
-    def __init__(self, dimensions, pixel_scale):
-        """
-        Setup the boolean mask, where True means a pixel is included in the analysis and False means its excluded.
+    @staticmethod
+    def central_pixel(dimensions):
+        return list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
 
-        Parameters
-        ----------
-        dimensions : (int, int)
-            The dimensions of the image (x, y)
-        pixel_scale :
-            The scale size of a pixel (x, y) in arc seconds
-        """
-
-        self.pixel_scale = pixel_scale
-        self.central_pixel = list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
-        self.array = np.zeros((dimensions[0], dimensions[1]))
-
-class CircleMask(Mask):
-    """Class for preparing and storing a circular image mask used for the AutoLens analysis"""
-
-    def __init__(self, dimensions, pixel_scale, radius):
+    @classmethod
+    def mask(cls, dimensions):
         """
 
         Parameters
         ----------
+        dimensions: (float, float)
+            The spatial dimensions of the mask
+
+        Returns
+        -------
+            An empty array
+        """
+        # TODO: this line (with other modifications) would bring the mask dimensions convention into line with the
+        # TODO: profile classes
+        # return np.zeros((int(dimensions[0] / pixel_scale), int(dimensions[1] / pixel_scale)))
+        return np.zeros((dimensions[0], dimensions[1]))
+
+    @classmethod
+    @as_mask
+    def circular(cls, dimensions, pixel_scale, radius, centre=(0., 0.)):
+        """
+
+        Parameters
+        ----------
+        centre
         dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
@@ -237,49 +266,47 @@ class CircleMask(Mask):
         radius : float
             The radius of the circle (arc seconds)
         """
-        super(CircleMask, self).__init__(dimensions, pixel_scale)
-        self.radius = radius
-
+        array = Mask.mask(dimensions)
+        central_pixel = Mask.central_pixel(dimensions)
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
+                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
+                radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
 
                 if radius_arc <= radius:
-                    self.array[i, j] = True
+                    array[i, j] = True
+        return array
 
-class AnnulusMask(Mask):
-    """Class for preparing and storing an annulus image mask used for the AutoLens analysis"""
-
-    def __init__(self, dimensions, pixel_scale, inner_radius, outer_radius):
+    @classmethod
+    @as_mask
+    def annular(cls, dimensions, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
         """
 
         Parameters
         ----------
+        centre
         dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius : float
-            The inner radius of the circular annulus (arc seconds)
-
+            The inner radius of the circular annulus (arc seconds
         outer_radius : float
             The outer radius of the circular annulus (arc seconds)
         """
-        super(AnnulusMask, self).__init__(dimensions, pixel_scale)
-        self.inner_radius = inner_radius
-        self.outer_radius = outer_radius
-
+        array = Mask.mask(dimensions)
+        central_pixel = Mask.central_pixel(dimensions)
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
-                x_pix = i - self.central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - self.central_pixel[1]  # Shift u coordinate using central y pixel
+                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
 
-                radius_arc = pixel_scale * np.sqrt(x_pix ** 2 + y_pix ** 2)
+                radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
 
                 if outer_radius >= radius_arc >= inner_radius:
-                    self.array[i, j] = int(1)
+                    array[i, j] = True
+        return array
