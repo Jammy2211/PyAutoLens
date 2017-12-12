@@ -60,7 +60,7 @@ class Data(object):
     def y_cen_pixel(self):
         return self.central_pixels[1]
 
-    def trim_data(self, x_size, y_size):
+    def trim_data(self, new_dimensions):
         """ Trim the data array to a new size around its central pixel.
 
         NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
@@ -68,31 +68,29 @@ class Data(object):
 
         Parameters
         ----------
-        x_size : int
-            The new x dimension of the data-array
-        y_size : int
-            The new y dimension of the data-array
+        new_dimensions : (int, int)
+            The new x and y dimensions of the trimmed data-array
         """
-        if x_size >  self.x_dimension:
+        if new_dimensions[0] >  self.x_dimension:
             raise ValueError ('image.Data.trim_data - You have specified a new x_size bigger than the data array')
-        elif y_size >  self.y_dimension:
+        elif new_dimensions[1] >  self.y_dimension:
             raise ValueError ('image.Data.trim_data - You have specified a new y_size bigger than the data array')
 
-        x_trim = int((self.x_dimension - x_size)/2)
-        y_trim = int((self.y_dimension - y_size)/2)
+        x_trim = int((self.x_dimension - new_dimensions[0]) / 2)
+        y_trim = int((self.y_dimension - new_dimensions[1])/2)
 
         self.data = self.data[x_trim:self.x_dimension-x_trim, y_trim:self.y_dimension-y_trim]
 
         self.update_dimensions()
 
-        if self.x_dimension != x_size:
+        if self.x_dimension != new_dimensions[0]:
             print ('image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
             print('The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
-        elif self.y_dimension != y_size:
+        elif self.y_dimension != new_dimensions[1]:
             print ('image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
             print('The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
 
-    def pad_data(self, x_size, y_size):
+    def pad_data(self, new_dimensions):
         """ Pad the data array with zeros around its central pixel.
 
         NOTE: The centre of the array cannot be shifted. Therefore, even arrays are padded to even arrays
@@ -100,18 +98,16 @@ class Data(object):
 
         Parameters
         ----------
-        x_size : int
+        new_dimensions : (int, int)
             The new x dimension of the data-array
-        y_size : int
-            The new y dimension of the data-array
         """
-        if x_size <  self.x_dimension:
+        if new_dimensions[0] <  self.x_dimension:
             raise ValueError ('image.Data.pad_data - You have specified a new x_size smaller than the data array')
-        elif y_size <  self.y_dimension:
+        elif new_dimensions[1] <  self.y_dimension:
             raise ValueError ('image.Data.pad_data - You have specified a new y_size smaller than the data array')
 
-        x_pad = int((x_size- self.x_dimension + 1)/2)
-        y_pad = int((y_size- self.y_dimension + 1)/2)
+        x_pad = int((new_dimensions[0] - self.x_dimension + 1) / 2)
+        y_pad = int((new_dimensions[1] - self.y_dimension + 1)/2)
 
         self.data = np.pad(self.data, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
 
