@@ -29,9 +29,16 @@ class Data(object):
         self.data = data
         self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
         self.dimensions = self.data.shape[:]  # x dimension (pixels)
-        self.central_pixels = tuple(map(lambda l: (l / 2.0) - 0.5, self.dimensions))
-        self.dimensions_arc_seconds = list(
-            map(lambda l: l * pixel_scale, self.dimensions))  # Convert image dimensions to arcseconds
+        self.central_pixels = self.central_pixel(self.dimensions)
+        self.dimensions_arc_seconds = self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
+
+    @staticmethod
+    def central_pixel(dimensions):
+        return tuple(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
+
+    @staticmethod
+    def dimensions_to_arc_seconds(dimensions, pixel_scale):
+        return tuple(map(lambda l: l * pixel_scale, dimensions))
 
     @property
     def x_dimension(self):
@@ -40,6 +47,14 @@ class Data(object):
     @property
     def y_dimension(self):
         return self.dimensions[1]
+
+    @property
+    def x_cen_pixel(self):
+        return self.central_pixels[0]
+
+    @property
+    def y_cen_pixel(self):
+        return self.central_pixels[1]
 
     def trim_data(self, x_size, y_size):
         """ Trim the data array to a new size around its central pixel.
@@ -54,10 +69,31 @@ class Data(object):
         y_size : int
             The new y dimension of the data-array
         """
-        pass
-      #  xy_central_pixel = self.xy_dim[:] / 2
+        if x_size >  self.x_dimension:
+            raise ValueError ('image.Data.trim_data - You have specified a new x_size bigger than the data array')
+        elif y_size >  self.y_dimension:
+            raise ValueError ('image.Data.trim_data - You have specified a new y_size bigger than the data array')
 
-     #   self.data = self.data[]
+        x_trim = (self.x_dimension - x_size)/2
+        y_trim = (self.y_dimension - y_size)/2
+
+        x_min = int(round(x_trim))
+        x_max = int(round(self.x_dimension-x_trim))
+        y_min = int(round(y_trim))
+        y_max  = int(round(self.y_dimension-y_trim))
+
+        self.data = self.data[x_min:x_max, y_min:y_max]
+
+        self.dimensions = self.data.shape[:]  # x dimension (pixels)
+        self.central_pixels = self.central_pixel(self.dimensions)
+        self.dimensions_arc_seconds = self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
+
+        if self.x_dimension != x_size:
+            print ('image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+            print('The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
+        elif self.y_dimension != y_size:
+            print ('image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+            print('The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
 
 class Image(Data):
 
@@ -219,10 +255,6 @@ def as_mask(func):
 
     return wrapper
 
-
-# TODO : So here I've implemented the True/False paradigm. But I've made it so that Masks are really just numpy masks.
-# TODO : If there's no need to implement any internal class functionality then it makes sense to use a well established
-# TODO : data type. The same is probably true of PSF.
 
 # TODO: I haven't yet tested the central coordinates and if these objects are to match those in the profile package then
 # TODO: it may also make sense to implement the same pixel scale paradigm.
