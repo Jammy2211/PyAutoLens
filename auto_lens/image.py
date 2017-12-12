@@ -117,6 +117,7 @@ class Data(object):
 
         self.update_dimensions()
 
+
 class Image(Data):
 
     def __init__(self, image, pixel_scale, sky_background_level=None, sky_background_noise=None):
@@ -187,7 +188,7 @@ class Image(Data):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
-    def load_psf(self, file_name, hdu, path):
+    def load_psf(self, file_name, hdu, renormalize=True, path=data_path):
         """Load the PSF for this image
 
         Parameters
@@ -200,7 +201,8 @@ class Image(Data):
             The path to the PSF image file
 
         """
-        return PSF.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
+        return PSF.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, renormalize=renormalize,
+                             path=path)
 
     def circle_mask(self, radius_arc):
         """
@@ -239,7 +241,7 @@ class Image(Data):
 
 class PSF(Data):
 
-    def __init__(self, psf, pixel_scale):
+    def __init__(self, psf, pixel_scale, renormalize=True):
         """Setup a PSF class, which holds the PSF of an image of a strong lens.
 
         Parameters
@@ -251,8 +253,11 @@ class PSF(Data):
         """
         super(PSF, self).__init__(psf, pixel_scale)
 
+        if renormalize is True:
+            self.renormalize()
+
     @classmethod
-    def from_fits(cls, file_name, hdu, pixel_scale, path=data_path):
+    def from_fits(cls, file_name, hdu, pixel_scale, renormalize=True, path=data_path):
         """Load the image from a fits file.
 
         Parameters
@@ -267,7 +272,13 @@ class PSF(Data):
             The directory path to the fits file
         """
         array = numpy_array_from_fits(path + file_name, hdu)
-        return PSF(array, pixel_scale)
+        return PSF(array, pixel_scale, renormalize)
+
+    def renormalize(self):
+        """Renormalize the PSF so that its values sum to unity"""
+        normalization_factor = np.sum(self.data)
+        self.data = np.divide(self.data, normalization_factor)
+
 
 
 def as_mask(func):

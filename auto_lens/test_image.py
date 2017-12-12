@@ -8,6 +8,28 @@ test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(
 
 # noinspection PyClassHasNoInit,PyShadowingNames
 class TestData:
+    
+    class TestSetup:
+
+        def test__init__input_data_3x3__all_attributes_correct(self):
+
+            test_data = image.Data(data=np.ones((3,3)), pixel_scale=0.1)
+
+            assert (test_data.data == np.ones((3, 3))).all()
+            assert test_data.pixel_scale == 0.1
+            assert test_data.dimensions == (3, 3)
+            assert test_data.central_pixels == (1.0, 1.0)
+            assert test_data.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
+
+        def test__init__input_data_4x3__all_attributes_correct(self):
+
+            test_data = image.Data(data=np.ones((4,3)), pixel_scale=0.1)
+
+            assert (test_data.data == np.ones((4, 3))).all()
+            assert test_data.pixel_scale == 0.1
+            assert test_data.dimensions == (4, 3)
+            assert test_data.central_pixels == (1.5, 1.0)
+            assert test_data.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
     class TestTrimData:
 
@@ -698,7 +720,7 @@ class TestPSF:
 
         def test__init__input_psf_3x3__all_attributes_correct(self):
 
-            test_psf = image.PSF(psf=np.ones((3,3)), pixel_scale=0.1)
+            test_psf = image.PSF(psf=np.ones((3,3)), pixel_scale=0.1, renormalize=False)
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -708,7 +730,7 @@ class TestPSF:
 
         def test__init__input_psf_4x3__all_attributes_correct(self):
 
-            test_psf = image.PSF(psf=np.ones((4,3)), pixel_scale=0.1)
+            test_psf = image.PSF(psf=np.ones((4,3)), pixel_scale=0.1, renormalize=False)
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -718,7 +740,7 @@ class TestPSF:
 
         def test__from_fits__input_psf_3x3__all_attributes_correct(self):
 
-            test_psf = image.PSF.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+            test_psf = image.PSF.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, renormalize=False, path=test_data_dir)
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -728,7 +750,7 @@ class TestPSF:
 
         def test__from_fits__input_psf_4x3__all_attributes_correct(self):
 
-            test_psf = image.PSF.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
+            test_psf = image.PSF.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, renormalize=False, path=test_data_dir)
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -740,7 +762,7 @@ class TestPSF:
 
             test_image = image.Image(image=np.ones((3,3)), pixel_scale=0.1)
 
-            test_psf = test_image.load_psf(file_name='3x3_ones.fits', hdu=0, path=test_data_dir)
+            test_psf = test_image.load_psf(file_name='3x3_ones.fits', hdu=0, renormalize=False, path=test_data_dir)
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -751,12 +773,53 @@ class TestPSF:
 
             test_image = image.Image(image=np.ones((3,3)), pixel_scale=0.1)
 
-            test_psf = test_image.load_psf(file_name='4x3_ones.fits', hdu=0, path=test_data_dir)
+            test_psf = test_image.load_psf(file_name='4x3_ones.fits', hdu=0, renormalize=False, path=test_data_dir)
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
             assert test_psf.dimensions == (4, 3)
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
+
+    class TestRenormalize:
+
+        def test__input_is_already_normalized__no_change(self):
+
+            psf_data = np.ones((3,3))/9.0
+
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf.renormalize()
+
+            assert test_psf.data == pytest.approx(psf_data, 1e-3)
+
+        def test__input_is_above_normalization__correctly_normalized(self):
+
+            psf_data = np.ones((3,3))
+
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf.renormalize()
+
+            assert test_psf.data == pytest.approx(np.ones((3,3))/9.0, 1e-3)
+
+        def test__input_is_below_normalization__correctly_normalized(self):
+
+            psf_data = np.ones((3,3))/90.0
+
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf.renormalize()
+
+            assert test_psf.data == pytest.approx(np.ones((3,3))/9.0, 1e-3)
+
+        def test__input_different_psf__correctly_normalized(self):
+
+            psf_data = np.ones((4,4))
+            psf_data[1:3, 1:3] = 2.0
+
+            normalization_factor = 2.0*4.0 + 12
+
+            test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
+            test_psf.renormalize()
+
+            assert test_psf.data == pytest.approx(psf_data/normalization_factor, 1e-3)
 
 
 # noinspection PyClassHasNoInit,PyShadowingNames
