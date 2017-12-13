@@ -6,14 +6,11 @@ import os
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
-# noinspection PyClassHasNoInit,PyShadowingNames
-class TestData:
-    
-    class TestSetup:
 
+class TestData(object):
+    class TestSetup(object):
         def test__init__input_data_3x3__all_attributes_correct(self):
-
-            test_data = image.Data(data=np.ones((3,3)), pixel_scale=0.1)
+            test_data = image.Data(data=np.ones((3, 3)), pixel_scale=0.1)
 
             assert (test_data.data == np.ones((3, 3))).all()
             assert test_data.pixel_scale == 0.1
@@ -22,8 +19,7 @@ class TestData:
             assert test_data.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_data_4x3__all_attributes_correct(self):
-
-            test_data = image.Data(data=np.ones((4,3)), pixel_scale=0.1)
+            test_data = image.Data(data=np.ones((4, 3)), pixel_scale=0.1)
 
             assert (test_data.data == np.ones((4, 3))).all()
             assert test_data.pixel_scale == 0.1
@@ -31,49 +27,44 @@ class TestData:
             assert test_data.central_pixels == (1.5, 1.0)
             assert test_data.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
-    class TestTrimData:
-
-        class TestOddToOdd:
-
+    class TestTrimData(object):
+        class TestOddToOdd(object):
             def test__trim_5x5_to_3x3(self):
-
                 data = np.ones((5, 5))
-                data[2,2] = 2.0
+                data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(3,3))
+                data.trim_data(new_dimensions=(3, 3))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0],
                                                [1.0, 2.0, 1.0],
                                                [1.0, 1.0, 1.0]])).all()
 
-                assert data.dimensions == (3,3)
+                assert data.dimensions == (3, 3)
                 assert data.central_pixels == (1.0, 1.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.3, 0.3), 1e-3)
 
             def test__trim_7x7_to_3x3(self):
-
                 data = np.ones((7, 7))
-                data[3,3] = 2.0
+                data[3, 3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(3,3))
+                data.trim_data(new_dimensions=(3, 3))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0],
                                                [1.0, 2.0, 1.0],
                                                [1.0, 1.0, 1.0]])).all()
 
-                assert data.dimensions == (3,3)
+                assert data.dimensions == (3, 3)
                 assert data.central_pixels == (1.0, 1.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.3, 0.3), 1e-3)
 
             def test__trim_11x11_to_5x5(self):
-
                 data = np.ones((11, 11))
-                data[5,5] = 2.0
+                data[5, 5] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(5,5))
+                data.trim_data(new_dimensions=(5, 5))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -81,19 +72,17 @@ class TestData:
                                                [1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
-                assert data.dimensions == (5,5)
+                assert data.dimensions == (5, 5)
                 assert data.central_pixels == (2.0, 2.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
-        class TestOddToEven:
-
+        class TestOddToEven(object):
             def test__trim_5x5_to_2x2__goes_to_3x3_to_keep_symmetry(self):
-
                 data = np.ones((5, 5))
-                data[2,2] = 2.0
+                data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(2,2))
+                data.trim_data(new_dimensions=(2, 2))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0],
                                                [1.0, 2.0, 1.0],
@@ -104,12 +93,11 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.3, 0.3), 1e-3)
 
             def test__trim_5x5_to_4x4__goes_to_5x5_to_keep_symmetry(self):
-
                 data = np.ones((5, 5))
-                data[2,2] = 2.0
+                data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(4,4))
+                data.trim_data(new_dimensions=(4, 4))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -117,17 +105,16 @@ class TestData:
                                                [1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
-                assert data.dimensions == (5,5)
+                assert data.dimensions == (5, 5)
                 assert data.central_pixels == (2.0, 2.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
             def test__trim_11x11_to_4x4__goes_to_5x5_to_keep_symmetry(self):
-
                 data = np.ones((11, 11))
-                data[5,5] = 2.0
+                data[5, 5] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(4,4))
+                data.trim_data(new_dimensions=(4, 4))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -135,19 +122,17 @@ class TestData:
                                                [1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
-                assert data.dimensions == (5,5)
+                assert data.dimensions == (5, 5)
                 assert data.central_pixels == (2.0, 2.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
-        class TestEvenToEven:
-
+        class TestEvenToEven(object):
             def test__trim_4x4_to_2x2(self):
-
                 data = np.ones((4, 4))
-                data[1:3,1:3] = 2.0
+                data[1:3, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(2,2))
+                data.trim_data(new_dimensions=(2, 2))
 
                 assert (data.data == np.array([[2.0, 2.0],
                                                [2.0, 2.0]])).all()
@@ -157,12 +142,11 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.2, 0.2), 1e-3)
 
             def test__trim_6x6_to_4x4(self):
-
                 data = np.ones((6, 6))
-                data[2:4,2:4] = 2.0
+                data[2:4, 2:4] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(4,4))
+                data.trim_data(new_dimensions=(4, 4))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                [1.0, 2.0, 2.0, 1.0],
@@ -174,13 +158,12 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.4, 0.4), 1e-3)
 
             def test__trim_12x12_to_6x6(self):
-
                 data = np.ones((12, 12))
-                data[5:7,5:7] = 2.0
-                data[4,4] = 9.0
+                data[5:7, 5:7] = 2.0
+                data[4, 4] = 9.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(6,6))
+                data.trim_data(new_dimensions=(6, 6))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 9.0, 1.0, 1.0, 1.0, 1.0],
@@ -193,15 +176,13 @@ class TestData:
                 assert data.central_pixels == (2.5, 2.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
-        class TestEvenToOdd:
-
+        class TestEvenToOdd(object):
             def test__trim_4x4_to_3x3__goes_to_4x4_to_keep_symmetry(self):
-
                 data = np.ones((4, 4))
-                data[1:3,1:3] = 2.0
+                data[1:3, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(3,3))
+                data.trim_data(new_dimensions=(3, 3))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                [1.0, 2.0, 2.0, 1.0],
@@ -213,12 +194,11 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.4, 0.4), 1e-3)
 
             def test__trim_6x6_to_3x3_goes_to_4x4_to_keep_symmetry(self):
-
                 data = np.ones((6, 6))
-                data[2:4,2:4] = 2.0
+                data[2:4, 2:4] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(3,3))
+                data.trim_data(new_dimensions=(3, 3))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                [1.0, 2.0, 2.0, 1.0],
@@ -230,13 +210,12 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.4, 0.4), 1e-3)
 
             def test__trim_12x12_to_5x5__goes_to_6x6_to_keep_symmetry(self):
-
                 data = np.ones((12, 12))
-                data[5:7,5:7] = 2.0
-                data[4,4] = 9.0
+                data[5:7, 5:7] = 2.0
+                data[4, 4] = 9.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(5,5))
+                data.trim_data(new_dimensions=(5, 5))
 
                 assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 9.0, 1.0, 1.0, 1.0, 1.0],
@@ -245,73 +224,67 @@ class TestData:
                                                [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
-                assert data.dimensions == (6,6)
+                assert data.dimensions == (6, 6)
                 assert data.central_pixels == (2.5, 2.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
-        class TestRectangle:
-
+        class TestRectangle(object):
             def test__trim_5x4_to_3x2(self):
-
                 data = np.ones((5, 4))
-                data[2,1:3] = 2.0
+                data[2, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(3,2))
+                data.trim_data(new_dimensions=(3, 2))
 
                 assert (data.data == np.array([[1.0, 1.0],
                                                [2.0, 2.0],
                                                [1.0, 1.0]])).all()
 
-                assert data.dimensions == (3,2)
+                assert data.dimensions == (3, 2)
                 assert data.central_pixels == (1, 0.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.3, 0.2), 1e-3)
 
             def test__trim_4x5_to_2x3(self):
-
                 data = np.ones((4, 5))
-                data[1:3,2] = 2.0
+                data[1:3, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(2,3))
+                data.trim_data(new_dimensions=(2, 3))
 
                 assert (data.data == np.array([[1.0, 2.0, 1.0],
                                                [1.0, 2.0, 1.0]])).all()
 
-                assert data.dimensions == (2,3)
+                assert data.dimensions == (2, 3)
                 assert data.central_pixels == (0.5, 1.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.2, 0.3), 1e-3)
 
             def test__trim_5x4_to_4x3__goes_to_5x4_to_keep_symmetry(self):
-
                 data = np.ones((5, 4))
-                data[2,1:3] = 2.0
-                data[4,3] = 9.0
+                data[2, 1:3] = 2.0
+                data[4, 3] = 9.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.trim_data(new_dimensions=(4,3))
+                data.trim_data(new_dimensions=(4, 3))
 
-                assert (data.data == np.array([[ 1.0, 1.0, 1.0, 1.0],
-                                               [ 1.0, 1.0, 1.0, 1.0],
-                                               [ 1.0, 2.0, 2.0, 1.0],
-                                               [ 1.0, 1.0, 1.0, 1.0],
-                                               [ 1.0, 1.0, 1.0, 9.0]])).all()
+                assert (data.data == np.array([[1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 2.0, 2.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 1.0, 9.0]])).all()
 
-                assert data.dimensions == (5,4)
+                assert data.dimensions == (5, 4)
                 assert data.central_pixels == (2, 1.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.5, 0.4), 1e-3)
 
-        class TestBadInput:
-
+        class TestBadInput(object):
             def test__x_size_bigger_than_data__raises_error(self):
-
                 data = np.ones((5, 5))
-                data[2,2] = 2.0
+                data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trim_data(new_dimensions=(8,3))
+                    assert data.trim_data(new_dimensions=(8, 3))
 
             def test__y_size_bigger_than_data__raises_error(self):
                 data = np.ones((5, 5))
@@ -320,19 +293,16 @@ class TestData:
                 data = image.Data(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trim_data(new_dimensions=(3,8))
+                    assert data.trim_data(new_dimensions=(3, 8))
 
-    class TestPadData:
-        
-        class TestOddToOdd:
-
+    class TestPadData(object):
+        class TestOddToOdd(object):
             def test__pad_3x3_to_5x5(self):
-
                 data = np.ones((3, 3))
-                data[1,1] = 2.0
+                data[1, 1] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(5,5))
+                data.pad_data(new_dimensions=(5, 5))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -340,17 +310,16 @@ class TestData:
                                                [0.0, 1.0, 1.0, 1.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (5,5)
+                assert data.dimensions == (5, 5)
                 assert data.central_pixels == (2.0, 2.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
             def test__pad_5x5_to_9x9(self):
-
                 data = np.ones((5, 5))
-                data[2,2] = 2.0
+                data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(9,9))
+                data.pad_data(new_dimensions=(9, 9))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -362,19 +331,17 @@ class TestData:
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (9,9)
+                assert data.dimensions == (9, 9)
                 assert data.central_pixels == (4.0, 4.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.9, 0.9), 1e-3)
 
-        class TestOddToEven:
-
+        class TestOddToEven(object):
             def test__pad_3x3_to_4x4__goes_to_5x5_to_keep_symmetry(self):
-
                 data = np.ones((3, 3))
-                data[1,1] = 2.0
+                data[1, 1] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(4,4))
+                data.pad_data(new_dimensions=(4, 4))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -382,17 +349,16 @@ class TestData:
                                                [0.0, 1.0, 1.0, 1.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (5,5)
+                assert data.dimensions == (5, 5)
                 assert data.central_pixels == (2.0, 2.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
             def test__pad_5x5_to_8x8__goes_to_9x9_to_keep_symmetry(self):
-
                 data = np.ones((5, 5))
-                data[2,2] = 2.0
+                data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(8,8))
+                data.pad_data(new_dimensions=(8, 8))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -404,19 +370,17 @@ class TestData:
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (9,9)
+                assert data.dimensions == (9, 9)
                 assert data.central_pixels == (4.0, 4.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.9, 0.9), 1e-3)
 
-        class TestEvenToEven:
-
+        class TestEvenToEven(object):
             def test__pad_4x4_to_6x6(self):
-
                 data = np.ones((4, 4))
-                data[1:3,1:3] = 2.0
+                data[1:3, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(6,6))
+                data.pad_data(new_dimensions=(6, 6))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -430,12 +394,11 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
             def test__pad_4x4_to_8x8(self):
-
                 data = np.ones((4, 4))
-                data[1:3,1:3] = 2.0
+                data[1:3, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(8,8))
+                data.pad_data(new_dimensions=(8, 8))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -450,15 +413,13 @@ class TestData:
                 assert data.central_pixels == (3.5, 3.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.8, 0.8), 1e-3)
 
-        class TestEvenToOdd:
-
+        class TestEvenToOdd(object):
             def test__pad_4x4_to_5x5__goes_to_6x6_to_keep_symmetry(self):
-
                 data = np.ones((4, 4))
-                data[1:3,1:3] = 2.0
+                data[1:3, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(5,5))
+                data.pad_data(new_dimensions=(5, 5))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -472,12 +433,11 @@ class TestData:
                 assert data.dimensions_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
             def test__pad_4x4_to_7x7__goes_to_8x8_to_keep_symmetry(self):
-
                 data = np.ones((4, 4))
-                data[1:3,1:3] = 2.0
+                data[1:3, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(7,7))
+                data.pad_data(new_dimensions=(7, 7))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -492,15 +452,13 @@ class TestData:
                 assert data.central_pixels == (3.5, 3.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.8, 0.8), 1e-3)
 
-        class TestRectangle:
-
+        class TestRectangle(object):
             def test__pad_5x4_to_7x6(self):
-
                 data = np.ones((5, 4))
-                data[2,1:3] = 2.0
+                data[2, 1:3] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(7,6))
+                data.pad_data(new_dimensions=(7, 6))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -510,18 +468,17 @@ class TestData:
                                                [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (7,6)
+                assert data.dimensions == (7, 6)
                 assert data.central_pixels == (3, 2.5)
                 assert data.dimensions_arc_seconds == pytest.approx((0.7, 0.6), 1e-3)
 
             def test__pad_2x3_to_6x7(self):
-
                 data = np.ones((2, 3))
-                data[0:2,1] = 2.0
-                data[1,2] = 9
+                data[0:2, 1] = 2.0
+                data[1, 2] = 9
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(6,7))
+                data.pad_data(new_dimensions=(6, 7))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -530,18 +487,17 @@ class TestData:
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (6,7)
+                assert data.dimensions == (6, 7)
                 assert data.central_pixels == (2.5, 3.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.6, 0.7), 1e-3)
 
             def test__pad_2x3_to_5x6__goes_to_6x7_to_keep_symmetry(self):
-
                 data = np.ones((2, 3))
-                data[0:2,1] = 2.0
-                data[1,2] = 9
+                data[0:2, 1] = 2.0
+                data[1, 2] = 9
 
                 data = image.Data(data, pixel_scale=0.1)
-                data.pad_data(new_dimensions=(5,6))
+                data.pad_data(new_dimensions=(5, 6))
 
                 assert (data.data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -550,41 +506,34 @@ class TestData:
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
-                assert data.dimensions == (6,7)
+                assert data.dimensions == (6, 7)
                 assert data.central_pixels == (2.5, 3.0)
                 assert data.dimensions_arc_seconds == pytest.approx((0.6, 0.7), 1e-3)
 
-        class TestBadInput:
-
+        class TestBadInput(object):
             def test__x_size_smaller_than_data__raises_error(self):
-
-                data = np.ones((5, 5))
-                data[2,2] = 2.0
-
-                data = image.Data(data, pixel_scale=0.1)
-
-                with pytest.raises(ValueError):
-                    assert data.trim_data(new_dimensions=(3,8))
-
-            def test__y_size_smaller_than_data__raises_error(self):
-
                 data = np.ones((5, 5))
                 data[2, 2] = 2.0
 
                 data = image.Data(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trim_data(new_dimensions=(8,3))
+                    assert data.trim_data(new_dimensions=(3, 8))
+
+            def test__y_size_smaller_than_data__raises_error(self):
+                data = np.ones((5, 5))
+                data[2, 2] = 2.0
+
+                data = image.Data(data, pixel_scale=0.1)
+
+                with pytest.raises(ValueError):
+                    assert data.trim_data(new_dimensions=(8, 3))
 
 
-# noinspection PyClassHasNoInit,PyShadowingNames
-class TestImage:
-
-    class TestSetup:
-
+class TestImage(object):
+    class TestSetup(object):
         def test__init__input_image_3x3__all_attributes_correct(self):
-
-            test_image = image.Image(image=np.ones((3,3)), pixel_scale=0.1)
+            test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
 
             assert (test_image.data == np.ones((3, 3))).all()
             assert test_image.pixel_scale == 0.1
@@ -593,8 +542,7 @@ class TestImage:
             assert test_image.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_image_4x3__all_attributes_correct(self):
-
-            test_image = image.Image(image=np.ones((4,3)), pixel_scale=0.1)
+            test_image = image.Image(image=np.ones((4, 3)), pixel_scale=0.1)
 
             assert (test_image.data == np.ones((4, 3))).all()
             assert test_image.pixel_scale == 0.1
@@ -603,7 +551,6 @@ class TestImage:
             assert test_image.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_image_3x3__all_attributes_correct(self):
-
             test_image = image.Image.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
 
             assert (test_image.data == np.ones((3, 3))).all()
@@ -613,7 +560,6 @@ class TestImage:
             assert test_image.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__from_fits__input_image_4x3__all_attributes_correct(self):
-
             test_image = image.Image.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, path=test_data_dir)
 
             assert (test_image.data == np.ones((4, 3))).all()
@@ -622,18 +568,15 @@ class TestImage:
             assert test_image.central_pixels == (1.5, 1.0)
             assert test_image.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
-    class TestSetSky:
-
+    class TestSetSky(object):
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
-
-            test_image = image.Image(image=np.ones((3,3)), pixel_scale=0.1)
+            test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
             test_image.set_sky_via_edges(no_edges=1)
 
             assert test_image.sky_background_level == 1.0
             assert test_image.sky_background_noise == 0.0
 
         def test__via_edges__3x3_image_simple_gaussian__answer_ignores_central_pixel(self):
-
             image_data = np.array([[1, 1, 1],
                                    [1, 100, 1],
                                    [1, 1, 1]])
@@ -645,11 +588,10 @@ class TestImage:
             assert test_image.sky_background_noise == 0.0
 
         def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self):
-
             image_data = np.array([[1, 1, 1],
-                                        [1, 100, 1],
-                                        [1, 100, 1],
-                                        [1, 1, 1]])
+                                   [1, 100, 1],
+                                   [1, 100, 1],
+                                   [1, 1, 1]])
 
             test_image = image.Image(image=image_data, pixel_scale=0.1)
             test_image.set_sky_via_edges(no_edges=1)
@@ -712,15 +654,10 @@ class TestImage:
             assert test_image.sky_background_noise == np.std(np.arange(48))
 
 
-
-# noinspection PyClassHasNoInit,PyShadowingNames
-class TestPSF:
-
-    class TestSetup:
-
+class TestPSF(object):
+    class TestSetup(object):
         def test__init__input_psf_3x3__all_attributes_correct(self):
-
-            test_psf = image.PSF(psf=np.ones((3,3)), pixel_scale=0.1, renormalize=False)
+            test_psf = image.PSF(psf=np.ones((3, 3)), pixel_scale=0.1, renormalize=False)
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -729,8 +666,7 @@ class TestPSF:
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_psf_4x3__all_attributes_correct(self):
-
-            test_psf = image.PSF(psf=np.ones((4,3)), pixel_scale=0.1, renormalize=False)
+            test_psf = image.PSF(psf=np.ones((4, 3)), pixel_scale=0.1, renormalize=False)
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -739,8 +675,8 @@ class TestPSF:
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_psf_3x3__all_attributes_correct(self):
-
-            test_psf = image.PSF.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, renormalize=False, path=test_data_dir)
+            test_psf = image.PSF.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1, renormalize=False,
+                                           path=test_data_dir)
 
             assert (test_psf.data == np.ones((3, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -749,8 +685,8 @@ class TestPSF:
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__from_fits__input_psf_4x3__all_attributes_correct(self):
-
-            test_psf = image.PSF.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, renormalize=False, path=test_data_dir)
+            test_psf = image.PSF.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1, renormalize=False,
+                                           path=test_data_dir)
 
             assert (test_psf.data == np.ones((4, 3))).all()
             assert test_psf.pixel_scale == 0.1
@@ -759,8 +695,7 @@ class TestPSF:
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__input_image_3x3__setup_from_image(self):
-
-            test_image = image.Image(image=np.ones((3,3)), pixel_scale=0.1)
+            test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
 
             test_psf = test_image.load_psf(file_name='3x3_ones.fits', hdu=0, renormalize=False, path=test_data_dir)
 
@@ -770,8 +705,7 @@ class TestPSF:
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__input_image_4x3__setup_from_image(self):
-
-            test_image = image.Image(image=np.ones((3,3)), pixel_scale=0.1)
+            test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
 
             test_psf = test_image.load_psf(file_name='4x3_ones.fits', hdu=0, renormalize=False, path=test_data_dir)
 
@@ -780,11 +714,9 @@ class TestPSF:
             assert test_psf.dimensions == (4, 3)
             assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
-    class TestRenormalize:
-
+    class TestRenormalize(object):
         def test__input_is_already_normalized__no_change(self):
-
-            psf_data = np.ones((3,3))/9.0
+            psf_data = np.ones((3, 3)) / 9.0
 
             test_psf = image.PSF(psf=psf_data, pixel_scale=0.1, renormalize=False)
             test_psf.renormalize()
@@ -792,53 +724,46 @@ class TestPSF:
             assert test_psf.data == pytest.approx(psf_data, 1e-3)
 
         def test__input_is_above_normalization__correctly_normalized(self):
-
-            psf_data = np.ones((3,3))
+            psf_data = np.ones((3, 3))
 
             test_psf = image.PSF(psf=psf_data, pixel_scale=0.1, renormalize=False)
             test_psf.renormalize()
 
-            assert test_psf.data == pytest.approx(np.ones((3,3))/9.0, 1e-3)
+            assert test_psf.data == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
         def test__input_is_below_normalization__correctly_normalized(self):
-
-            psf_data = np.ones((3,3))/90.0
+            psf_data = np.ones((3, 3)) / 90.0
 
             test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
             test_psf.renormalize()
 
-            assert test_psf.data == pytest.approx(np.ones((3,3))/9.0, 1e-3)
+            assert test_psf.data == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
         def test__input_different_psf__correctly_normalized(self):
-
-            psf_data = np.ones((4,4))
+            psf_data = np.ones((4, 4))
             psf_data[1:3, 1:3] = 2.0
 
-            normalization_factor = 2.0*4.0 + 12
+            normalization_factor = 2.0 * 4.0 + 12
 
             test_psf = image.PSF(psf=psf_data, pixel_scale=0.1, renormalize=False)
             test_psf.renormalize()
 
-            assert test_psf.data == pytest.approx(psf_data/normalization_factor, 1e-3)
+            assert test_psf.data == pytest.approx(psf_data / normalization_factor, 1e-3)
 
         def test__works_in_class_constructor(self):
-
-            psf_data = np.ones((4,4))
+            psf_data = np.ones((4, 4))
             psf_data[1:3, 1:3] = 2.0
 
-            normalization_factor = 2.0*4.0 + 12
+            normalization_factor = 2.0 * 4.0 + 12
 
             test_psf = image.PSF(psf=psf_data, pixel_scale=0.1)
 
-            assert test_psf.data == pytest.approx(psf_data/normalization_factor, 1e-3)
+            assert test_psf.data == pytest.approx(psf_data / normalization_factor, 1e-3)
 
-# noinspection PyClassHasNoInit,PyShadowingNames
-class TestNoise:
-    
-    class TestSetup:
-        
+
+class TestNoise(object):
+    class TestSetup(object):
         def test__init__input_noise_3x3__all_attributes_correct(self):
-            
             test_noise = image.Noise(noise=np.ones((3, 3)), pixel_scale=0.1)
 
             assert (test_noise.data == np.ones((3, 3))).all()
@@ -858,7 +783,7 @@ class TestNoise:
 
         def test__from_fits__input_noise_3x3__all_attributes_correct(self):
             test_noise = image.Noise.from_fits('3x3_ones.fits', hdu=0, pixel_scale=0.1,
-                                           path=test_data_dir)
+                                               path=test_data_dir)
 
             assert (test_noise.data == np.ones((3, 3))).all()
             assert test_noise.pixel_scale == 0.1
@@ -868,7 +793,7 @@ class TestNoise:
 
         def test__from_fits__input_noise_4x3__all_attributes_correct(self):
             test_noise = image.Noise.from_fits('4x3_ones.fits', hdu=0, pixel_scale=0.1,
-                                           path=test_data_dir)
+                                               path=test_data_dir)
 
             assert (test_noise.data == np.ones((4, 3))).all()
             assert test_noise.pixel_scale == 0.1
@@ -880,7 +805,7 @@ class TestNoise:
             test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
 
             test_noise = test_image.load_noise(file_name='3x3_ones.fits', hdu=0,
-                                           path=test_data_dir)
+                                               path=test_data_dir)
 
             assert (test_noise.data == np.ones((3, 3))).all()
             assert test_noise.pixel_scale == 0.1
@@ -891,7 +816,7 @@ class TestNoise:
             test_image = image.Image(image=np.ones((3, 3)), pixel_scale=0.1)
 
             test_noise = test_image.load_noise(file_name='4x3_ones.fits', hdu=0,
-                                           path=test_data_dir)
+                                               path=test_data_dir)
 
             assert (test_noise.data == np.ones((4, 3))).all()
             assert test_noise.pixel_scale == 0.1
@@ -899,8 +824,7 @@ class TestNoise:
             assert test_noise.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
 
-# noinspection PyClassHasNoInit,PyShadowingNames
-class TestMask:
+class TestMask(object):
     class TestCircular(object):
         def test__input_big_mask__correct_mask(self):
             mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.1, radius=0.5)
@@ -971,7 +895,6 @@ class TestMask:
                                       [False, True, True, False]])).all()
 
         def test__even_x_even_mask_input_radius_large__correct_mask(self):
-
             mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=0.1, radius=0.3)
 
             assert (mask == np.array([[True, True, True, True],
