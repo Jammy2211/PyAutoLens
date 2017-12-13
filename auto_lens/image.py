@@ -323,7 +323,8 @@ class Mask(object):
 
         Parameters
         ----------
-        centre
+        centre: (float, float)
+            The centre in image coordinates
         dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
@@ -344,7 +345,8 @@ class Mask(object):
 
         Parameters
         ----------
-        centre
+        centre: (float, float)
+            The centre in image coordinates
         dimensions : (int, int)
             The dimensions of the image (x, y)
         pixel_scale : float
