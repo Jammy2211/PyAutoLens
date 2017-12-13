@@ -250,7 +250,7 @@ class Image(np.ndarray):
         -------
         A circular mask for this image
         """
-        return Mask.circular(dimensions=self.shape, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return Mask.circular(dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale, radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -267,7 +267,7 @@ class Image(np.ndarray):
         -------
         An annulus mask for this image
         """
-        return Mask.annular(dimensions=self.shape, pixel_scale=self.pixel_scale,
+        return Mask.annular(dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
                             outer_radius=outer_radius_arc,
                             inner_radius=inner_radius_arc)
 
