@@ -826,7 +826,7 @@ class TestNoise(object):
 
 class TestMask(object):
     class TestPixelScale(object):
-        def test_central_pixel(self):
+        def test__central_pixel(self):
             assert image.Mask.central_pixel((3, 3), 0.5) == (2.5, 2.5)
 
         def test__shape(self):
@@ -836,13 +836,20 @@ class TestMask(object):
 
         def test__odd_x_odd_mask_input_radius_small__correct_mask(self):
             mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.5, radius=0.5)
-            print(mask)
             assert (mask == np.array([[False, False, False, False, False, False],
                                       [False, False, False, False, False, False],
                                       [False, False, True, True, False, False],
                                       [False, False, True, True, False, False],
                                       [False, False, False, False, False, False],
                                       [False, False, False, False, False, False]])).all()
+
+    class TestCentre(object):
+        def test__simple_shift(self):
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(-1, 0))
+            print(mask)
+            assert (mask == np.array([[False, False, False],
+                                      [True, False, False],
+                                      [False, False, False]])).all()
 
     class TestCircular(object):
         def test__input_big_mask__correct_mask(self):
