@@ -330,6 +330,7 @@ class PSF(Data):
 
 class Noise(Data):
     # TODO : need to distinguish between Poisson / Background / Total noise.
+    # TODO : This might help: https://docs.scipy.org/doc/numpy-1.13.0/user/basics.subclassing.html
 
     def __init__(self, noise, pixel_scale):
         """Setup a Noise class, which holds the noise of a strong-lens image.
@@ -364,13 +365,13 @@ class Noise(Data):
         return Noise(array, pixel_scale)
 
 
-# TODO: I haven't yet tested the central coordinates and if these objects are to match those in the profile package then
+# TODO: Shifting the centre causes the mask to shift along to wrong axis.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
     @staticmethod
     def central_pixel(dimensions, pixel_scale):
-        return tuple(map(lambda l: (float(l / pixel_scale + 1) / 2) - 1, dimensions))
+        return tuple(map(lambda d: (float(d / pixel_scale + 1) / 2) - 1, dimensions))
 
     @classmethod
     def mask(cls, dimensions, pixel_scale, function):
