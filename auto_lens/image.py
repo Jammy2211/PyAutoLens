@@ -372,21 +372,26 @@ def as_mask(func):
     return wrapper
 
 
+def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
+    return dim_min + pixel_coordinate * pixel_scale
+
+
 # TODO: I haven't yet tested the central coordinates and if these objects are to match those in the profile package then
 # TODO: it may also make sense to implement the same pixel scale paradigm.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
     @staticmethod
-    def central_pixel(dimensions):
-        return list(map(lambda l: (float(l + 1) / 2) - 1, dimensions))
+    def central_pixel(dimensions, pixel_scale):
+        return tuple(map(lambda l: (float(l / pixel_scale + 1) / 2) - 1, dimensions))
 
     @classmethod
-    def mask(cls, dimensions):
+    def mask(cls, dimensions, pixel_scale):
         """
 
         Parameters
         ----------
+        pixel_scale
         dimensions: (float, float)
             The spatial dimensions of the mask
 
@@ -394,10 +399,7 @@ class Mask(object):
         -------
             An empty array
         """
-        # TODO: this line (with other modifications) would bring the mask dimensions convention into line with the
-        # TODO: profile classes
-        # return np.zeros((int(dimensions[0] / pixel_scale), int(dimensions[1] / pixel_scale)))
-        return np.zeros((dimensions[0], dimensions[1]))
+        return np.zeros((int(dimensions[0] / pixel_scale), int(dimensions[1] / pixel_scale)))
 
     @classmethod
     @as_mask
@@ -414,10 +416,10 @@ class Mask(object):
         radius : float
             The radius of the circle (arc seconds)
         """
-        array = Mask.mask(dimensions)
-        central_pixel = Mask.central_pixel(dimensions)
-        for i in range(dimensions[0]):
-            for j in range(dimensions[1]):
+        array = Mask.mask(dimensions, pixel_scale)
+        central_pixel = Mask.central_pixel(dimensions, pixel_scale)
+        for i in range(int(dimensions[0] / pixel_scale)):
+            for j in range(int(dimensions[1] / pixel_scale)):
 
                 x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
                 y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
@@ -445,8 +447,8 @@ class Mask(object):
         outer_radius : float
             The outer radius of the circular annulus (arc seconds)
         """
-        array = Mask.mask(dimensions)
-        central_pixel = Mask.central_pixel(dimensions)
+        array = Mask.mask(dimensions, pixel_scale)
+        central_pixel = Mask.central_pixel(dimensions, pixel_scale)
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
 
