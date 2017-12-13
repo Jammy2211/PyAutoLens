@@ -88,11 +88,11 @@ class Data(object):
 
         if self.x_dimension != new_dimensions[0]:
             print (
-            'image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+                'image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
             print('The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
         elif self.y_dimension != new_dimensions[1]:
             print (
-            'image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+                'image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
             print('The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
 
     def pad_data(self, new_dimensions):
@@ -364,20 +364,7 @@ class Noise(Data):
         return Noise(array, pixel_scale)
 
 
-def as_mask(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        return np.ma.make_mask(func(*args, **kwargs))
-
-    return wrapper
-
-
-def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
-    return dim_min + pixel_coordinate * pixel_scale
-
-
 # TODO: I haven't yet tested the central coordinates and if these objects are to match those in the profile package then
-# TODO: it may also make sense to implement the same pixel scale paradigm.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
@@ -386,11 +373,12 @@ class Mask(object):
         return tuple(map(lambda l: (float(l / pixel_scale + 1) / 2) - 1, dimensions))
 
     @classmethod
-    def mask(cls, dimensions, pixel_scale):
+    def mask(cls, dimensions, pixel_scale, function):
         """
 
         Parameters
         ----------
+        function
         pixel_scale
         dimensions: (float, float)
             The spatial dimensions of the mask
@@ -399,10 +387,18 @@ class Mask(object):
         -------
             An empty array
         """
-        return np.zeros((int(dimensions[0] / pixel_scale), int(dimensions[1] / pixel_scale)))
+        array = np.zeros((int(dimensions[0] / pixel_scale), int(dimensions[1] / pixel_scale)))
+
+        central_pixel = Mask.central_pixel(dimensions, pixel_scale)
+        for i in range(int(dimensions[0] / pixel_scale)):
+            for j in range(int(dimensions[1] / pixel_scale)):
+                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
+                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
+
+                array[i, j] = function(x_pix, y_pix)
+        return np.ma.make_mask(array)
 
     @classmethod
-    @as_mask
     def circular(cls, dimensions, pixel_scale, radius, centre=(0., 0.)):
         """
 
@@ -416,22 +412,14 @@ class Mask(object):
         radius : float
             The radius of the circle (arc seconds)
         """
-        array = Mask.mask(dimensions, pixel_scale)
-        central_pixel = Mask.central_pixel(dimensions, pixel_scale)
-        for i in range(int(dimensions[0] / pixel_scale)):
-            for j in range(int(dimensions[1] / pixel_scale)):
 
-                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
+        def is_within_radius(x_pix, y_pix):
+            radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
+            return radius_arc <= radius
 
-                radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
-
-                if radius_arc <= radius:
-                    array[i, j] = True
-        return array
+        return Mask.mask(dimensions, pixel_scale, is_within_radius)
 
     @classmethod
-    @as_mask
     def annular(cls, dimensions, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
         """
 
@@ -447,16 +435,9 @@ class Mask(object):
         outer_radius : float
             The outer radius of the circular annulus (arc seconds)
         """
-        array = Mask.mask(dimensions, pixel_scale)
-        central_pixel = Mask.central_pixel(dimensions, pixel_scale)
-        for i in range(dimensions[0]):
-            for j in range(dimensions[1]):
 
-                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
+        def is_within_radii(x_pix, y_pix):
+            radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
+            return outer_radius >= radius_arc >= inner_radius
 
-                radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
-
-                if outer_radius >= radius_arc >= inner_radius:
-                    array[i, j] = True
-        return array
+        return Mask.mask(dimensions, pixel_scale, is_within_radii)
