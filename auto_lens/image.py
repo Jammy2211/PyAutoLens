@@ -278,7 +278,6 @@ class Noise(Array):
     pass
 
 
-# TODO: Shifting the centre causes the mask to shift along to wrong axis.
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
