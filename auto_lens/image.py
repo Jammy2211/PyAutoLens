@@ -17,6 +17,7 @@ def numpy_array_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
+# TODO: It seemed to meet that many of these functions are best made general. They really can apply to any array.
 def trim_array(array, new_dimensions):
     """ Trim the data array to a new size around its central pixel.
     NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
@@ -82,6 +83,7 @@ def output_for_fortran(array, image_name, path=data_path):
     image_name : str
         The name of the image for this file
     """
+    # TODO: Here a default option was necessary else the code would crash if a different type was passed in
     if isinstance(array, PSF):
         file_path = path + image_name + "PSF.dat"
     elif isinstance(array, Noise):
@@ -90,6 +92,7 @@ def output_for_fortran(array, image_name, path=data_path):
         file_path = path + image_name + ".dat"
     shape = array.shape
 
+    # TODO: This convention is nice. file f exists in the scope but if closed after execution is finished
     with open(file_path, "w+") as f:
         for ix, x in enumerate(range(shape[0])):
             for iy, y in enumerate(range(shape[1])):
@@ -102,6 +105,8 @@ def output_for_fortran(array, image_name, path=data_path):
 
 
 class Image(np.ndarray):
+    # TODO: this is a bit of magic. __new__ gets called before __init__. In this case we can use it to initialise an
+    # TODO: ndarray with some extra attributes
     def __new__(cls, array, pixel_scale, sky_background_level=None, sky_background_noise=None):
         """
         Creates a new image, accounting for the fact that Image is a ndarray
@@ -183,14 +188,15 @@ class Image(np.ndarray):
     def y_cen_pixel(self):
         return self.central_pixels[1]
 
+    # TODO: please can we use filename? It's pretty standard. file_name is very rare.
     @classmethod
-    def from_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
+    def from_fits(cls, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
                   path=data_path):
         """Load the image from a fits file.
 
         Parameters
         ----------
-        file_name : str
+        filename : str
             The file name of the fits file
         hdu : int
             The HDU number in the fits file containing the data
@@ -203,7 +209,7 @@ class Image(np.ndarray):
         path : str
             The directory path to the fits file
         """
-        array = numpy_array_from_fits(path + file_name, hdu)
+        array = numpy_array_from_fits(path + filename, hdu)
         return Image(array, pixel_scale, sky_background_level,
                      sky_background_noise)
 
@@ -272,8 +278,29 @@ def normalize(array):
 
 # noinspection PyClassHasNoInit
 class Array(np.ndarray):
+    """An abstract Array class used for instantiating simple array classes from file"""
+
+    # TODO: Using class methods like this allows us to make the methods create an instance of whichever class they were
+    # TODO: called using (e.g. PSF.from_fits -> instance of PSF)
     @classmethod
     def from_fits(cls, filename, hdu, renormalize=True, path=data_path):
+        """
+        Load an instance from a fits file
+        Parameters
+        ----------
+        filename: String
+            The file name
+        hdu: Int
+            The HDU
+        renormalize: Bool
+            If true the array will be normalized
+        path: String
+            The path to the data folder
+
+        Returns
+        -------
+            A child of the Array class
+        """
         array = numpy_array_from_fits(path + filename, hdu)
         return cls.from_array(array, renormalize=renormalize)
 
@@ -301,6 +328,8 @@ class Mask(object):
     def central_pixel(dimensions, pixel_scale):
         return tuple(map(lambda d: (float(d / pixel_scale + 1) / 2) - 1, dimensions))
 
+    # TODO: By having this function take a function that decides whether a pixel is part of the mask we can avoid
+    # TODO: repeating loops
     @classmethod
     def mask(cls, dimensions, pixel_scale, function, centre):
         """
