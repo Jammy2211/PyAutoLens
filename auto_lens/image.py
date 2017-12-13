@@ -1,7 +1,6 @@
 from scipy.stats import norm
 from astropy.io import fits
 import os
-from functools import wraps
 
 import numpy as np
 
@@ -216,39 +215,6 @@ class Image(Data):
 
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
-    def load_psf(self, file_name, hdu, renormalize=True, path=data_path):
-        """Load the PSF for this image
-
-        Parameters
-        ----------
-        file_name : str
-            The PSF file_name to be loaded from
-        hdu : int
-            The PSF HDU in the fits file
-        renormalize : bool
-            If *True* the loaded PSF wlll be renormalized so its summed element equal unity.
-        path : str
-            The path to the PSF image file
-
-        """
-        return PSF.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, renormalize=renormalize,
-                             path=path)
-
-    def load_noise(self, file_name, hdu, path=data_path):
-        """Load the Noise for this image
-
-        Parameters
-        ----------
-        file_name : str
-            The PSF file_name to be loaded from
-        hdu : int
-            The PSF HDU in the fits file
-        path : str
-            The path to the PSF image file
-
-        """
-        return Noise.from_fits(file_name=file_name, hdu=hdu, pixel_scale=self.pixel_scale, path=path)
-
     def circle_mask(self, radius_arc):
         """
         Create a new circular mask for this image
@@ -284,85 +250,32 @@ class Image(Data):
                             inner_radius=inner_radius_arc)
 
 
-class PSF(Data):
-    def __init__(self, psf, pixel_scale, renormalize=True):
-        """Setup a PSF class, which holds the PSF of an image of a strong lens.
+def normalize(array):
+    return np.divide(array, np.sum(array))
 
-        Parameters
-        ----------
-        psf : ndarray
-            Two-dimensional array of the PSF (Automatically normalized to unit normalization).
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds.
-        renormalize : bool
-            If *True* the loaded PSF wlll be renormalized so its summed element equal unity.
-        """
-        super(PSF, self).__init__(psf, pixel_scale)
 
-        if renormalize is True:
-            self.renormalize()
+# noinspection PyClassHasNoInit
+class Array(np.ndarray):
+    @classmethod
+    def from_fits(cls, filename, hdu, renormalize=True, path=data_path):
+        array = numpy_array_from_fits(path + filename, hdu)
+        return cls.from_array(array, renormalize=renormalize)
 
     @classmethod
-    def from_fits(cls, file_name, hdu, pixel_scale, renormalize=True, path=data_path):
-        """Load the PSF from a fits file.
-
-        Parameters
-        ----------
-        file_name : str
-            The file name of the fits file
-        hdu : int
-            The HDU number in the fits file containing the data
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds.
-        renormalize : bool
-            If *True* the loaded PSF wlll be renormalized so its summed element equal unity.
-        path : str
-            The directory path to the fits file
-        """
-        array = numpy_array_from_fits(path + file_name, hdu)
-        return PSF(array, pixel_scale, renormalize)
-
-    def renormalize(self):
-        """Renormalize the PSF so that its values sum to unity"""
-        normalization_factor = np.sum(self.data)
-        self.data = np.divide(self.data, normalization_factor)
+    def from_array(cls, array, renormalize=True):
+        if renormalize:
+            normalize(array)
+        return array.view(cls)
 
 
-class Noise(Data):
-    # TODO : need to distinguish between Poisson / Background / Total noise.
-    # TODO : This might help: https://docs.scipy.org/doc/numpy-1.13.0/user/basics.subclassing.html
+# noinspection PyClassHasNoInit
+class PSF(Array):
+    pass
 
-    def __init__(self, noise, pixel_scale):
-        """Setup a Noise class, which holds the noise of a strong-lens image.
 
-        Parameters
-        ----------
-        noise : ndarray
-            Two-dimensional array of the noise data (electrons per second).
-            This can be loaded from a fits file using the via_fits method.
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds.
-        """
-
-        super(Noise, self).__init__(noise, pixel_scale)
-
-    @classmethod
-    def from_fits(cls, file_name, hdu, pixel_scale, path=data_path):
-        """Load the image from a fits file.
-
-        Parameters
-        ----------
-        file_name : str
-            The file name of the fits file
-        hdu : int
-            The HDU number in the fits file containing the data
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds.
-        path : str
-            The directory path to the fits file
-        """
-        array = numpy_array_from_fits(path + file_name, hdu)
-        return Noise(array, pixel_scale)
+# noinspection PyClassHasNoInit
+class Noise(Array):
+    pass
 
 
 # TODO: Shifting the centre causes the mask to shift along to wrong axis.
