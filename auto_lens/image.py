@@ -101,41 +101,63 @@ def output_for_fortran(array, image_name, path=data_path):
                 f.write(line)
 
 
-class Image(object):
-    def __init__(self, array, pixel_scale, sky_background_level=None, sky_background_noise=None):
-        """Setup an Image class, which holds the image of a strong lens to be modeled.
-
+class Image(np.ndarray):
+    def __new__(cls, array, pixel_scale, sky_background_level=None, sky_background_noise=None):
+        """
+        Creates a new image, accounting for the fact that Image is a ndarray
         Parameters
         ----------
         array: ndarray
-            Two-dimensional array of the imaging data (electrons per second).
-            This can be loaded from a fits file using the via_fits method.
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds.
-        sky_background_level : float
-            An estimate of the level of background sky in the image (electrons per second).
-        sky_background_noise : float
-            An estimate of the noise level in the background sky (electrons per second).
+            The array of data
+        pixel_scale: float
+            The scale of an image pixel
+        sky_background_level
+        sky_background_noise
+
+        Returns
+        -------
+            A new Image object
         """
-        self.array = array
-        self.pixel_scale = pixel_scale
+        obj = np.asarray(array).view(cls)
+        obj.pixel_scale = pixel_scale
 
-        self.sky_background_level = sky_background_level
-        self.sky_background_noise = sky_background_noise
+        obj.sky_background_level = sky_background_level
+        obj.sky_background_noise = sky_background_noise
 
-    def pad(self, new_dimensions):
-        self.array = pad_array(self.array, new_dimensions)
+        return obj
 
-    def trim(self, new_dimensions):
-        self.array = trim_array(self.array, new_dimensions)
+    def __array_finalize__(self, obj):
+        """
+        Used to pass data around for some Numpy functions
+        Parameters
+        ----------
+        obj: Image
+            The original image
+
+        Returns
+        -------
+            The new image
+        """
+        if obj is not None:
+            self.pixel_scale = getattr(obj, 'pixel_scale', None)
+            self.sky_background_level = getattr(obj, 'sky_background_level', None)
+            self.sky_background_noise = getattr(obj, 'sky_background_noise', None)
+
+    def padded(self, new_dimensions):
+        return Image(pad_array(self, new_dimensions), self.pixel_scale, self.sky_background_level,
+                     self.sky_background_noise)
+
+    def trimmed(self, new_dimensions):
+        return Image(trim_array(self, new_dimensions), self.pixel_scale, self.sky_background_level,
+                     self.sky_background_noise)
 
     @property
     def central_pixels(self):
-        return self.central_pixel(self.array.shape)
+        return self.central_pixel(self.shape)
 
     @property
     def shape_arc_seconds(self):
-        return self.dimensions_to_arc_seconds(self.array.shape, self.pixel_scale)
+        return self.dimensions_to_arc_seconds(self.shape, self.pixel_scale)
 
     @staticmethod
     def central_pixel(dimensions):
@@ -147,11 +169,11 @@ class Image(object):
 
     @property
     def x_dimension(self):
-        return self.array.shape[0]
+        return self.shape[0]
 
     @property
     def y_dimension(self):
-        return self.array.shape[1]
+        return self.shape[1]
 
     @property
     def x_cen_pixel(self):
@@ -200,10 +222,10 @@ class Image(object):
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.array[edge_no, edge_no:self.y_dimension - edge_no]
-            bottom_edge = self.array[self.x_dimension - 1 - edge_no, edge_no:self.y_dimension - edge_no]
-            left_edge = self.array[edge_no + 1:self.x_dimension - 1 - edge_no, edge_no]
-            right_edge = self.array[edge_no + 1:self.x_dimension - 1 - edge_no, self.y_dimension - 1 - edge_no]
+            top_edge = self[edge_no, edge_no:self.y_dimension - edge_no]
+            bottom_edge = self[self.x_dimension - 1 - edge_no, edge_no:self.y_dimension - edge_no]
+            left_edge = self[edge_no + 1:self.x_dimension - 1 - edge_no, edge_no]
+            right_edge = self[edge_no + 1:self.x_dimension - 1 - edge_no, self.y_dimension - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
@@ -222,7 +244,7 @@ class Image(object):
         -------
         A circular mask for this image
         """
-        return Mask.circular(dimensions=self.array.shape, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return Mask.circular(dimensions=self.shape, pixel_scale=self.pixel_scale, radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -239,7 +261,7 @@ class Image(object):
         -------
         An annulus mask for this image
         """
-        return Mask.annular(dimensions=self.array.shape, pixel_scale=self.pixel_scale,
+        return Mask.annular(dimensions=self.shape, pixel_scale=self.pixel_scale,
                             outer_radius=outer_radius_arc,
                             inner_radius=inner_radius_arc)
 
