@@ -1,8 +1,13 @@
 from scipy.stats import norm
 from astropy.io import fits
 import os
+import logging
 
 import numpy as np
+
+# TODO: this gives us a logger that will print stuff with the name of the module
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -12,33 +17,125 @@ def numpy_array_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
-class Data(object):
-    """Abstract Base Class for all classes which store a two-dimensional data array, e.g. the image, PSF, Nosie etc."""
+def trim_array(array, new_dimensions):
+    """ Trim the data array to a new size around its central pixel.
+    NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
+    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+    Parameters
+    ----------
+    array: ndarray (or Noise or PSF)
+        The image array
+    new_dimensions : (int, int)
+        The new x and y dimensions of the trimmed data-array
+    """
+    shape = array.shape
+    if new_dimensions[0] > shape[0]:
+        raise ValueError('image.Data.trim_data - You have specified a new x_size bigger than the data array')
+    elif new_dimensions[1] > shape[1]:
+        raise ValueError('image.Data.trim_data - You have specified a new y_size bigger than the data array')
+    x_trim = int((shape[0] - new_dimensions[0]) / 2)
+    y_trim = int((shape[1] - new_dimensions[1]) / 2)
+    array = array[x_trim:shape[0] - x_trim, y_trim:shape[1] - y_trim]
+    if shape[0] != new_dimensions[0]:
+        logger.debug(
+            'image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+        logger.debug(
+            'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
+    elif shape[1] != new_dimensions[1]:
+        logger.debug(
+            'image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+        logger.debug(
+            'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
+    return array
 
-    def __init__(self, data, pixel_scale):
+
+def pad_array(array, new_dimensions):
+    """ Pad the data array with zeros around its central pixel.
+    NOTE: The centre of the array cannot be shifted. Therefore, even arrays are padded to even arrays
+    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+    Parameters
+    ----------
+    array: ndarray (or Noise or PSF)
+        The image array
+    new_dimensions : (int, int)
+        The new x dimension of the data-array
+    """
+    shape = array.shape
+    if new_dimensions[0] < shape[0]:
+        raise ValueError('image.Data.pad_data - You have specified a new x_size smaller than the data array')
+    elif new_dimensions[1] < shape[1]:
+        raise ValueError('image.Data.pad_data - You have specified a new y_size smaller than the data array')
+    x_pad = int((new_dimensions[0] - shape[0] + 1) / 2)
+    y_pad = int((new_dimensions[1] - shape[1] + 1) / 2)
+    return np.pad(array, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
+
+
+def output_for_fortran(array, image_name, path=data_path):
+    """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
+    and I've not bothered with unit-tests.
+    Parameters
+    ----------
+    array: ndarray (or Noise or PSF)
+        The image array
+    path : str
+        The directory the files are output too
+    image_name : str
+        The name of the image for this file
+    """
+    if isinstance(array, PSF):
+        file_path = path + image_name + "PSF.dat"
+    elif isinstance(array, Noise):
+        file_path = path + image_name + "BaselineNoise.dat"
+    else:
+        file_path = path + image_name + ".dat"
+    shape = array.shape
+
+    with open(file_path, "w+") as f:
+        for ix, x in enumerate(range(shape[0])):
+            for iy, y in enumerate(range(shape[1])):
+                line = str(round(float(ix + 1), 2))
+                line += ' ' * (8 - len(line))
+                line += str(round(float(iy + 1), 2))
+                line += ' ' * (16 - len(line))
+                line += str(float(array.data[ix][iy])) + '\n'
+                f.write(line)
+
+
+class Image(object):
+    def __init__(self, array, pixel_scale, sky_background_level=None, sky_background_noise=None):
         """Setup an Image class, which holds the image of a strong lens to be modeled.
 
         Parameters
         ----------
-        data : ndarray
-            Two-dimensional array of the data (e.g. the image, PSF, noise).
+        array: ndarray
+            Two-dimensional array of the imaging data (electrons per second).
+            This can be loaded from a fits file using the via_fits method.
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds.
+        sky_background_level : float
+            An estimate of the level of background sky in the image (electrons per second).
+        sky_background_noise : float
+            An estimate of the noise level in the background sky (electrons per second).
         """
-        self.data = data
-        self.pixel_scale = pixel_scale  # Set its pixel scale using the input value
+        self.array = array
+        self.pixel_scale = pixel_scale
 
-    @property
-    def dimensions(self):
-        return self.data.shape[:]
+        self.sky_background_level = sky_background_level
+        self.sky_background_noise = sky_background_noise
+
+    def pad(self, new_dimensions):
+        self.array = pad_array(self.array, new_dimensions)
+
+    def trim(self, new_dimensions):
+        self.array = trim_array(self.array, new_dimensions)
 
     @property
     def central_pixels(self):
-        return self.central_pixel(self.dimensions)
+        return self.central_pixel(self.array.shape)
 
     @property
-    def dimensions_arc_seconds(self):
-        return self.dimensions_to_arc_seconds(self.dimensions, self.pixel_scale)
+    def shape_arc_seconds(self):
+        return self.dimensions_to_arc_seconds(self.array.shape, self.pixel_scale)
 
     @staticmethod
     def central_pixel(dimensions):
@@ -50,11 +147,11 @@ class Data(object):
 
     @property
     def x_dimension(self):
-        return self.dimensions[0]
+        return self.array.shape[0]
 
     @property
     def y_dimension(self):
-        return self.dimensions[1]
+        return self.array.shape[1]
 
     @property
     def x_cen_pixel(self):
@@ -63,109 +160,6 @@ class Data(object):
     @property
     def y_cen_pixel(self):
         return self.central_pixels[1]
-
-    def trim_data(self, new_dimensions):
-        """ Trim the data array to a new size around its central pixel.
-
-        NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-        Parameters
-        ----------
-        new_dimensions : (int, int)
-            The new x and y dimensions of the trimmed data-array
-        """
-        if new_dimensions[0] > self.x_dimension:
-            raise ValueError('image.Data.trim_data - You have specified a new x_size bigger than the data array')
-        elif new_dimensions[1] > self.y_dimension:
-            raise ValueError('image.Data.trim_data - You have specified a new y_size bigger than the data array')
-
-        x_trim = int((self.x_dimension - new_dimensions[0]) / 2)
-        y_trim = int((self.y_dimension - new_dimensions[1]) / 2)
-
-        self.data = self.data[x_trim:self.x_dimension - x_trim, y_trim:self.y_dimension - y_trim]
-
-        if self.x_dimension != new_dimensions[0]:
-            print (
-                'image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
-            print('The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
-        elif self.y_dimension != new_dimensions[1]:
-            print (
-                'image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
-            print('The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
-
-    def pad_data(self, new_dimensions):
-        """ Pad the data array with zeros around its central pixel.
-
-        NOTE: The centre of the array cannot be shifted. Therefore, even arrays are padded to even arrays
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-        Parameters
-        ----------
-        new_dimensions : (int, int)
-            The new x dimension of the data-array
-        """
-        if new_dimensions[0] < self.x_dimension:
-            raise ValueError('image.Data.pad_data - You have specified a new x_size smaller than the data array')
-        elif new_dimensions[1] < self.y_dimension:
-            raise ValueError('image.Data.pad_data - You have specified a new y_size smaller than the data array')
-
-        x_pad = int((new_dimensions[0] - self.x_dimension + 1) / 2)
-        y_pad = int((new_dimensions[1] - self.y_dimension + 1) / 2)
-
-        self.data = np.pad(self.data, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
-
-    def output_for_fortran(self, directory, image_name):
-        """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
-        and I've not bothered with unit-tests.
-
-        Parameters
-        ----------
-        directory : str
-            The directory the files are output too
-        image_name : str
-            The name of the image for this file
-        """
-
-        if isinstance(self, Image):
-            file_write = open(directory + image_name + ".dat", 'w')
-        elif isinstance(self, PSF):
-            file_write = open(directory + image_name + "PSF.dat", 'w')
-        elif isinstance(self, Noise):
-            file_write = open(directory + image_name + "BaselineNoise.dat", 'w')
-
-        for ix, x in enumerate(range(self.x_dimension)):
-            for iy, y in enumerate(range(self.y_dimension)):
-                line = str(round(float(ix + 1), 2))
-                line += ' ' * (8 - len(line))
-                line += str(round(float(iy + 1), 2))
-                line += ' ' * (16 - len(line))
-                line += str(float(self.data[ix][iy])) + '\n'
-                file_write.write(line)
-
-        file_write.close()
-
-
-class Image(Data):
-    def __init__(self, image, pixel_scale, sky_background_level=None, sky_background_noise=None):
-        """Setup an Image class, which holds the image of a strong lens to be modeled.
-
-        Parameters
-        ----------
-        image : ndarray
-            Two-dimensional array of the imaging data (electrons per second).
-            This can be loaded from a fits file using the via_fits method.
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds.
-        sky_background_level : float
-            An estimate of the level of background sky in the image (electrons per second).
-        sky_background_noise : float
-            An estimate of the noise level in the background sky (electrons per second).
-        """
-        super(Image, self).__init__(image, pixel_scale)
-
-        self.sky_background_level = sky_background_level
-        self.sky_background_noise = sky_background_noise
 
     @classmethod
     def from_fits(cls, file_name, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
@@ -206,10 +200,10 @@ class Image(Data):
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.data[edge_no, edge_no:self.y_dimension - edge_no]
-            bottom_edge = self.data[self.x_dimension - 1 - edge_no, edge_no:self.y_dimension - edge_no]
-            left_edge = self.data[edge_no + 1:self.x_dimension - 1 - edge_no, edge_no]
-            right_edge = self.data[edge_no + 1:self.x_dimension - 1 - edge_no, self.y_dimension - 1 - edge_no]
+            top_edge = self.array[edge_no, edge_no:self.y_dimension - edge_no]
+            bottom_edge = self.array[self.x_dimension - 1 - edge_no, edge_no:self.y_dimension - edge_no]
+            left_edge = self.array[edge_no + 1:self.x_dimension - 1 - edge_no, edge_no]
+            right_edge = self.array[edge_no + 1:self.x_dimension - 1 - edge_no, self.y_dimension - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
@@ -228,7 +222,7 @@ class Image(Data):
         -------
         A circular mask for this image
         """
-        return Mask.circular(dimensions=self.dimensions, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return Mask.circular(dimensions=self.array.shape, pixel_scale=self.pixel_scale, radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -245,7 +239,7 @@ class Image(Data):
         -------
         An annulus mask for this image
         """
-        return Mask.annular(dimensions=self.dimensions, pixel_scale=self.pixel_scale,
+        return Mask.annular(dimensions=self.array.shape, pixel_scale=self.pixel_scale,
                             outer_radius=outer_radius_arc,
                             inner_radius=inner_radius_arc)
 
