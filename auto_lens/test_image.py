@@ -660,37 +660,21 @@ class TestPSF(object):
             test_psf = image.PSF.from_array(array=np.ones((3, 3)), renormalize=False)
 
             assert (test_psf == np.ones((3, 3))).all()
-            # assert test_psf.pixel_scale == 0.1
-            # assert test_psf.dimensions == (3, 3)
-            # assert test_psf.central_pixels == (1.0, 1.0)
-            # assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_psf_4x3__all_attributes_correct(self):
             test_psf = image.PSF.from_array(array=np.ones((4, 3)), renormalize=False)
 
             assert (test_psf == np.ones((4, 3))).all()
-            # assert test_psf.pixel_scale == 0.1
-            # assert test_psf.dimensions == (4, 3)
-            # assert test_psf.central_pixels == (1.5, 1.0)
-            # assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_psf_3x3__all_attributes_correct(self):
             test_psf = image.PSF.from_fits('3x3_ones.fits', hdu=0, renormalize=False, path=test_data_dir)
 
             assert (test_psf == np.ones((3, 3))).all()
-            # assert test_psf.pixel_scale == 0.1
-            # assert test_psf.dimensions == (3, 3)
-            # assert test_psf.central_pixels == (1.0, 1.0)
-            # assert test_psf.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__from_fits__input_psf_4x3__all_attributes_correct(self):
             test_psf = image.PSF.from_fits('4x3_ones.fits', hdu=0, renormalize=False, path=test_data_dir)
 
             assert (test_psf == np.ones((4, 3))).all()
-            # assert test_psf.pixel_scale == 0.1
-            # assert test_psf.dimensions == (4, 3)
-            # assert test_psf.central_pixels == (1.5, 1.0)
-            # assert test_psf.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
     class TestNormalize(object):
         def test__input_is_already_normalized__no_change(self):
@@ -723,37 +707,21 @@ class TestNoise(object):
             test_noise = image.Noise.from_array(array=np.ones((3, 3)))
 
             assert (test_noise == np.ones((3, 3))).all()
-            # assert test_noise.pixel_scale == 0.1
-            # assert test_noise.dimensions == (3, 3)
-            # assert test_noise.central_pixels == (1.0, 1.0)
-            # assert test_noise.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_noise_4x3__all_attributes_correct(self):
             test_noise = image.Noise.from_array(array=np.ones((4, 3)))
 
             assert (test_noise == np.ones((4, 3))).all()
-            # assert test_noise.pixel_scale == 0.1
-            # assert test_noise.dimensions == (4, 3)
-            # assert test_noise.central_pixels == (1.5, 1.0)
-            # assert test_noise.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_noise_3x3__all_attributes_correct(self):
             test_noise = image.Noise.from_fits('3x3_ones.fits', hdu=0, path=test_data_dir)
 
             assert (test_noise == np.ones((3, 3))).all()
-            # assert test_noise.pixel_scale == 0.1
-            # assert test_noise.dimensions == (3, 3)
-            # assert test_noise.central_pixels == (1.0, 1.0)
-            # assert test_noise.dimensions_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__from_fits__input_noise_4x3__all_attributes_correct(self):
             test_noise = image.Noise.from_fits('4x3_ones.fits', hdu=0, path=test_data_dir)
 
             assert (test_noise == np.ones((4, 3))).all()
-            # assert test_noise.pixel_scale == 0.1
-            # assert test_noise.dimensions == (4, 3)
-            # assert test_noise.central_pixels == (1.5, 1.0)
-            # assert test_noise.dimensions_arc_seconds == pytest.approx((0.4, 0.3))
 
 
 class TestMask(object):
