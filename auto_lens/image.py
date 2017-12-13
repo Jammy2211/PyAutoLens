@@ -337,13 +337,13 @@ class Mask(object):
         Parameters
         ----------
         centre: (float, float)
-            The centre in image coordinates
+            The centre in arc seconds
         function: function(x, y) -> Bool
             A function that determines what the value of a mask should be at particular coordinates
         pixel_scale: float
-            The size of a pixel
+            The size of a pixel in arc seconds
         dimensions: (float, float)
-            The spatial dimensions of the mask
+            The spatial dimensions of the mask in arc seconds
 
         Returns
         -------
@@ -368,9 +368,9 @@ class Mask(object):
         Parameters
         ----------
         centre: (float, float)
-            The centre in image coordinates
+            The centre in image coordinates in arc seconds
         dimensions : (int, int)
-            The dimensions of the image (x, y)
+            The dimensions of the image (x, y) in arc seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         radius : float
@@ -390,9 +390,9 @@ class Mask(object):
         Parameters
         ----------
         centre: (float, float)
-            The centre in image coordinates
+            The centre in arc seconds
         dimensions : (int, int)
-            The dimensions of the image (x, y)
+            The dimensions of the image in arcs seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius : float
