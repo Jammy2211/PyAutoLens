@@ -149,10 +149,32 @@ class Image(np.ndarray):
             self.sky_background_noise = getattr(obj, 'sky_background_noise', None)
 
     def padded(self, new_dimensions):
+        """
+
+        Parameters
+        ----------
+        new_dimensions: (int, int)
+            The new dimensions of this image in pixels
+
+        Returns
+        -------
+            A new Image that has been padded
+        """
         return Image(pad_array(self, new_dimensions), self.pixel_scale, self.sky_background_level,
                      self.sky_background_noise)
 
     def trimmed(self, new_dimensions):
+        """
+
+        Parameters
+        ----------
+        new_dimensions: (int, int)
+            The new dimensions of this image in pixel
+            
+        Returns
+        -------
+            A new Image that has been padded
+        """
         return Image(trim_array(self, new_dimensions), self.pixel_scale, self.sky_background_level,
                      self.sky_background_noise)
 
