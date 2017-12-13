@@ -76,21 +76,23 @@ class Data(object):
         new_dimensions : (int, int)
             The new x and y dimensions of the trimmed data-array
         """
-        if new_dimensions[0] >  self.x_dimension:
-            raise ValueError ('image.Data.trim_data - You have specified a new x_size bigger than the data array')
-        elif new_dimensions[1] >  self.y_dimension:
-            raise ValueError ('image.Data.trim_data - You have specified a new y_size bigger than the data array')
+        if new_dimensions[0] > self.x_dimension:
+            raise ValueError('image.Data.trim_data - You have specified a new x_size bigger than the data array')
+        elif new_dimensions[1] > self.y_dimension:
+            raise ValueError('image.Data.trim_data - You have specified a new y_size bigger than the data array')
 
         x_trim = int((self.x_dimension - new_dimensions[0]) / 2)
-        y_trim = int((self.y_dimension - new_dimensions[1])/2)
+        y_trim = int((self.y_dimension - new_dimensions[1]) / 2)
 
-        self.data = self.data[x_trim:self.x_dimension-x_trim, y_trim:self.y_dimension-y_trim]
+        self.data = self.data[x_trim:self.x_dimension - x_trim, y_trim:self.y_dimension - y_trim]
 
         if self.x_dimension != new_dimensions[0]:
-            print ('image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+            print (
+            'image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
             print('The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
         elif self.y_dimension != new_dimensions[1]:
-            print ('image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+            print (
+            'image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
             print('The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
 
     def pad_data(self, new_dimensions):
@@ -104,13 +106,13 @@ class Data(object):
         new_dimensions : (int, int)
             The new x dimension of the data-array
         """
-        if new_dimensions[0] <  self.x_dimension:
-            raise ValueError ('image.Data.pad_data - You have specified a new x_size smaller than the data array')
-        elif new_dimensions[1] <  self.y_dimension:
-            raise ValueError ('image.Data.pad_data - You have specified a new y_size smaller than the data array')
+        if new_dimensions[0] < self.x_dimension:
+            raise ValueError('image.Data.pad_data - You have specified a new x_size smaller than the data array')
+        elif new_dimensions[1] < self.y_dimension:
+            raise ValueError('image.Data.pad_data - You have specified a new y_size smaller than the data array')
 
         x_pad = int((new_dimensions[0] - self.x_dimension + 1) / 2)
-        y_pad = int((new_dimensions[1] - self.y_dimension + 1)/2)
+        y_pad = int((new_dimensions[1] - self.y_dimension + 1) / 2)
 
         self.data = np.pad(self.data, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
 
@@ -127,7 +129,7 @@ class Data(object):
         """
 
         if isinstance(self, Image):
-            file_write = open(directory+image_name+".dat", 'w')
+            file_write = open(directory + image_name + ".dat", 'w')
         elif isinstance(self, PSF):
             file_write = open(directory + image_name + "PSF.dat", 'w')
         elif isinstance(self, Noise):
@@ -135,7 +137,6 @@ class Data(object):
 
         for ix, x in enumerate(range(self.x_dimension)):
             for iy, y in enumerate(range(self.y_dimension)):
-
                 line = str(round(float(ix + 1), 2))
                 line += ' ' * (8 - len(line))
                 line += str(round(float(iy + 1), 2))
@@ -145,8 +146,8 @@ class Data(object):
 
         file_write.close()
 
-class Image(Data):
 
+class Image(Data):
     def __init__(self, image, pixel_scale, sky_background_level=None, sky_background_noise=None):
         """Setup an Image class, which holds the image of a strong lens to be modeled.
 
@@ -284,7 +285,6 @@ class Image(Data):
 
 
 class PSF(Data):
-
     def __init__(self, psf, pixel_scale, renormalize=True):
         """Setup a PSF class, which holds the PSF of an image of a strong lens.
 
@@ -329,7 +329,6 @@ class PSF(Data):
 
 
 class Noise(Data):
-
     # TODO : need to distinguish between Poisson / Background / Total noise.
 
     def __init__(self, noise, pixel_scale):
@@ -363,6 +362,7 @@ class Noise(Data):
         """
         array = numpy_array_from_fits(path + file_name, hdu)
         return Noise(array, pixel_scale)
+
 
 def as_mask(func):
     @wraps(func)
