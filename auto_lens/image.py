@@ -287,13 +287,17 @@ class Mask(object):
         return tuple(map(lambda d: (float(d / pixel_scale + 1) / 2) - 1, dimensions))
 
     @classmethod
-    def mask(cls, dimensions, pixel_scale, function):
+    def mask(cls, dimensions, pixel_scale, function, centre):
         """
 
         Parameters
         ----------
-        function
-        pixel_scale
+        centre: (float, float)
+            The centre in image coordinates
+        function: function(x, y) -> Bool
+            A function that determines what the value of a mask should be at particular coordinates
+        pixel_scale: float
+            The size of a pixel
         dimensions: (float, float)
             The spatial dimensions of the mask
 
@@ -306,8 +310,9 @@ class Mask(object):
         central_pixel = Mask.central_pixel(dimensions, pixel_scale)
         for i in range(int(dimensions[0] / pixel_scale)):
             for j in range(int(dimensions[1] / pixel_scale)):
-                x_pix = i - central_pixel[0]  # Shift x coordinate using central x pixel
-                y_pix = j - central_pixel[1]  # Shift u coordinate using central y pixel
+                # Convert from pixel coordinates to image coordinates
+                x_pix = pixel_scale * (i - central_pixel[0]) - centre[0]
+                y_pix = pixel_scale * (j - central_pixel[1]) - centre[1]
 
                 array[i, j] = function(x_pix, y_pix)
         return np.ma.make_mask(array)
@@ -328,10 +333,10 @@ class Mask(object):
         """
 
         def is_within_radius(x_pix, y_pix):
-            radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
+            radius_arc = np.sqrt(x_pix ** 2 + y_pix ** 2)
             return radius_arc <= radius
 
-        return Mask.mask(dimensions, pixel_scale, is_within_radius)
+        return Mask.mask(dimensions, pixel_scale, is_within_radius, centre)
 
     @classmethod
     def annular(cls, dimensions, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
@@ -351,7 +356,7 @@ class Mask(object):
         """
 
         def is_within_radii(x_pix, y_pix):
-            radius_arc = pixel_scale * np.sqrt((x_pix - centre[0]) ** 2 + (y_pix - centre[1]) ** 2)
+            radius_arc = np.sqrt(x_pix ** 2 + y_pix ** 2)
             return outer_radius >= radius_arc >= inner_radius
 
-        return Mask.mask(dimensions, pixel_scale, is_within_radii)
+        return Mask.mask(dimensions, pixel_scale, is_within_radii, centre)
