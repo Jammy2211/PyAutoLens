@@ -776,24 +776,36 @@ class TestMask(object):
                                       [False, False, False, False, False, False]])).all()
 
     class TestCentre(object):
-        def test__simple_shift(self):
+        def test__simple_shift_back(self):
             mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(-1, 0))
-            print(mask)
-            assert (mask == np.array([[False, False, False],
-                                      [True, False, False],
+            assert mask.shape == (3, 3)
+            assert (mask == np.array([[False, True, False],
+                                      [False, False, False],
                                       [False, False, False]])).all()
+
+        def test__simple_shift_forward(self):
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(0, 1))
+            assert mask.shape == (3, 3)
+            assert (mask == np.array([[False, False, False],
+                                      [False, False, True],
+                                      [False, False, False]])).all()
+
+        def test__diagonal_shift(self):
+            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(1, 1))
+            assert (mask == np.array([[False, False, False],
+                                      [False, False, False],
+                                      [False, False, True]])).all()
 
     class TestCircular(object):
         def test__input_big_mask__correct_mask(self):
             mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=5)
-
+            assert mask.shape == (3, 3)
             assert (mask == np.array([[True, True, True],
                                       [True, True, True],
                                       [True, True, True]])).all()
 
         def test__odd_x_odd_mask_input_radius_small__correct_mask(self):
             mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5)
-
             assert (mask == np.array([[False, False, False],
                                       [False, True, False],
                                       [False, False, False]])).all()
@@ -860,7 +872,7 @@ class TestMask(object):
                                       [True, True, True, True],
                                       [True, True, True, True]])).all()
 
-    class TestAnnulus(object):
+    class TestAnnular(object):
         def test__odd_x_odd_mask_inner_radius_zero_outer_radius_small__correct_mask(self):
             mask = image.Mask.annular(dimensions=(3, 3), pixel_scale=1, inner_radius=0, outer_radius=0.5)
 
