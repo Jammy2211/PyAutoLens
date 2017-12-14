@@ -29,17 +29,17 @@ def central_pixel(pixel_dimensions):
     return tuple(map(lambda d: (float(d + 1) / 2) - 1, pixel_dimensions))
 
 
-def keep_type(func):
+def keep_attributes(func):
     """
     
     Parameters
     ----------
-    func: function(T:ndarray) -> ndarray 
-        A function that takes a child of ndarray and returns an ndarray
+    func: function(T:ndarray) -> T
+        A function that takes a child of ndarray and returns an instance of that class
     Returns
     -------
     func: function(T:ndarray) -> ndarray 
-        A function that takes a child of ndarray and returns the same class
+        A function that takes a child of ndarray and returns the same class with associated instance attributes
     """
 
     @wraps(func)
@@ -56,14 +56,18 @@ def keep_type(func):
         -------
 
         """
-        new_array = func(array, *args, **kwargs)
-        return new_array.view(array.__class__)
+        new_array = func(array, *args, **kwargs).view(array.__class__)
+        if hasattr(array, "__dict__"):
+            for t in array.__dict__.items():
+                setattr(new_array, t[0], t[1])
+
+        return new_array
 
     return wrapper
 
 
 # TODO: It seemed to meet that many of these functions are best made general. They really can apply to any array.
-@keep_type
+@keep_attributes
 def trim_array(array, pixel_dimensions):
     """ Trim the data array to a new size around its central pixel.
     NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
@@ -96,7 +100,7 @@ def trim_array(array, pixel_dimensions):
     return array
 
 
-@keep_type
+@keep_attributes
 def pad_array(array, pixel_dimensions):
     """ Pad the data array with zeros around its central pixel.
     NOTE: The centre of the array cannot be shifted. Therefore, even arrays are padded to even arrays
@@ -207,8 +211,7 @@ class Image(np.ndarray):
         -------
             A new Image that has been padded
         """
-        return Image(pad_array(self, pixel_dimensions), self.pixel_scale, self.sky_background_level,
-                     self.sky_background_noise)
+        return pad_array(self, pixel_dimensions)
 
     def trimmed(self, pixel_dimensions):
         """
@@ -222,8 +225,7 @@ class Image(np.ndarray):
         -------
             A new Image that has been padded
         """
-        return Image(trim_array(self, pixel_dimensions), self.pixel_scale, self.sky_background_level,
-                     self.sky_background_noise)
+        return trim_array(self, pixel_dimensions)
 
     @property
     def central_pixels(self):
