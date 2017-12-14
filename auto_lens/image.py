@@ -49,6 +49,10 @@ def copy_attributes(old_obj, new_obj):
     return new_obj
 
 
+def normalize(array):
+    return np.divide(array, np.sum(array))
+
+
 def keep_attributes(func):
     """
     
@@ -220,20 +224,12 @@ class Image(np.ndarray):
             copy_attributes(obj, self)
 
     @property
-    def central_pixels(self):
+    def central_pixel_coordinates(self):
         return central_pixel(self.shape)
 
     @property
     def shape_arc_seconds(self):
         return pixel_dimensions_to_arc_seconds(self.shape, self.pixel_scale)
-
-    @property
-    def x_cen_pixel(self):
-        return self.central_pixels[0]
-
-    @property
-    def y_cen_pixel(self):
-        return self.central_pixels[1]
 
     # TODO: please can we use filename? It's pretty standard. file_name is very rare.
     @classmethod
@@ -319,10 +315,6 @@ class Image(np.ndarray):
         return Mask.annular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
                             outer_radius=outer_radius_arc,
                             inner_radius=inner_radius_arc)
-
-
-def normalize(array):
-    return np.divide(array, np.sum(array))
 
 
 # noinspection PyClassHasNoInit
