@@ -15,7 +15,7 @@ class TestData(object):
             assert (test_data == np.ones((3, 3))).all()
             assert test_data.pixel_scale == 0.1
             assert test_data.shape == (3, 3)
-            assert test_data.central_pixels == (1.0, 1.0)
+            assert test_data.central_pixel_coordinates == (1.0, 1.0)
             assert test_data.shape_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_data_4x3__all_attributes_correct(self):
@@ -24,7 +24,7 @@ class TestData(object):
             assert (test_data == np.ones((4, 3))).all()
             assert test_data.pixel_scale == 0.1
             assert test_data.shape == (4, 3)
-            assert test_data.central_pixels == (1.5, 1.0)
+            assert test_data.central_pixel_coordinates == (1.5, 1.0)
             assert test_data.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
     class TestTrimData(object):
@@ -41,7 +41,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (3, 3)
-                assert data.central_pixels == (1.0, 1.0)
+                assert data.central_pixel_coordinates == (1.0, 1.0)
                 assert data.shape_arc_seconds == pytest.approx((0.3, 0.3), 1e-3)
 
             def test__trimmed_7x7_to_3x3(self):
@@ -56,7 +56,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (3, 3)
-                assert data.central_pixels == (1.0, 1.0)
+                assert data.central_pixel_coordinates == (1.0, 1.0)
                 assert data.shape_arc_seconds == pytest.approx((0.3, 0.3), 1e-3)
 
             def test__trimmed_11x11_to_5x5(self):
@@ -73,7 +73,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (5, 5)
-                assert data.central_pixels == (2.0, 2.0)
+                assert data.central_pixel_coordinates == (2.0, 2.0)
                 assert data.shape_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
         class TestOddToEven(object):
@@ -89,7 +89,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (3, 3)
-                assert data.central_pixels == (1.0, 1.0)
+                assert data.central_pixel_coordinates == (1.0, 1.0)
                 assert data.shape_arc_seconds == pytest.approx((0.3, 0.3), 1e-3)
 
             def test__trimmed_5x5_to_4x4__goes_to_5x5_to_keep_symmetry(self):
@@ -106,7 +106,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (5, 5)
-                assert data.central_pixels == (2.0, 2.0)
+                assert data.central_pixel_coordinates == (2.0, 2.0)
                 assert data.shape_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
             def test__trimmed_11x11_to_4x4__goes_to_5x5_to_keep_symmetry(self):
@@ -123,7 +123,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (5, 5)
-                assert data.central_pixels == (2.0, 2.0)
+                assert data.central_pixel_coordinates == (2.0, 2.0)
                 assert data.shape_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
         class TestEvenToEven(object):
@@ -138,7 +138,7 @@ class TestData(object):
                                                 [2.0, 2.0]])).all()
 
                 assert data.shape == (2, 2)
-                assert data.central_pixels == (0.5, 0.5)
+                assert data.central_pixel_coordinates == (0.5, 0.5)
                 assert data.shape_arc_seconds == pytest.approx((0.2, 0.2), 1e-3)
 
             def test__trimmed_6x6_to_4x4(self):
@@ -154,7 +154,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (4, 4)
-                assert data.central_pixels == (1.5, 1.5)
+                assert data.central_pixel_coordinates == (1.5, 1.5)
                 assert data.shape_arc_seconds == pytest.approx((0.4, 0.4), 1e-3)
 
             def test__trimmed_12x12_to_6x6(self):
@@ -173,7 +173,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (6, 6)
-                assert data.central_pixels == (2.5, 2.5)
+                assert data.central_pixel_coordinates == (2.5, 2.5)
                 assert data.shape_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
         class TestEvenToOdd(object):
@@ -190,7 +190,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (4, 4)
-                assert data.central_pixels == (1.5, 1.5)
+                assert data.central_pixel_coordinates == (1.5, 1.5)
                 assert data.shape_arc_seconds == pytest.approx((0.4, 0.4), 1e-3)
 
             def test__trimmed_6x6_to_3x3_goes_to_4x4_to_keep_symmetry(self):
@@ -206,7 +206,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (4, 4)
-                assert data.central_pixels == (1.5, 1.5)
+                assert data.central_pixel_coordinates == (1.5, 1.5)
                 assert data.shape_arc_seconds == pytest.approx((0.4, 0.4), 1e-3)
 
             def test__trimmed_12x12_to_5x5__goes_to_6x6_to_keep_symmetry(self):
@@ -225,7 +225,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]])).all()
 
                 assert data.shape == (6, 6)
-                assert data.central_pixels == (2.5, 2.5)
+                assert data.central_pixel_coordinates == (2.5, 2.5)
                 assert data.shape_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
         class TestRectangle(object):
@@ -241,7 +241,7 @@ class TestData(object):
                                                 [1.0, 1.0]])).all()
 
                 assert data.shape == (3, 2)
-                assert data.central_pixels == (1, 0.5)
+                assert data.central_pixel_coordinates == (1, 0.5)
                 assert data.shape_arc_seconds == pytest.approx((0.3, 0.2), 1e-3)
 
             def test__trimmed_4x5_to_2x3(self):
@@ -255,7 +255,7 @@ class TestData(object):
                                                 [1.0, 2.0, 1.0]])).all()
 
                 assert data.shape == (2, 3)
-                assert data.central_pixels == (0.5, 1.0)
+                assert data.central_pixel_coordinates == (0.5, 1.0)
                 assert data.shape_arc_seconds == pytest.approx((0.2, 0.3), 1e-3)
 
             def test__trimmed_5x4_to_4x3__goes_to_5x4_to_keep_symmetry(self):
@@ -273,7 +273,7 @@ class TestData(object):
                                                 [1.0, 1.0, 1.0, 9.0]])).all()
 
                 assert data.shape == (5, 4)
-                assert data.central_pixels == (2, 1.5)
+                assert data.central_pixel_coordinates == (2, 1.5)
                 assert data.shape_arc_seconds == pytest.approx((0.5, 0.4), 1e-3)
 
         class TestBadInput(object):
@@ -328,7 +328,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (5, 5)
-                assert data.central_pixels == (2.0, 2.0)
+                assert data.central_pixel_coordinates == (2.0, 2.0)
                 assert data.shape_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
             def test__padded_5x5_to_9x9(self):
@@ -349,7 +349,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (9, 9)
-                assert data.central_pixels == (4.0, 4.0)
+                assert data.central_pixel_coordinates == (4.0, 4.0)
                 assert data.shape_arc_seconds == pytest.approx((0.9, 0.9), 1e-3)
 
         class TestOddToEven(object):
@@ -367,7 +367,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (5, 5)
-                assert data.central_pixels == (2.0, 2.0)
+                assert data.central_pixel_coordinates == (2.0, 2.0)
                 assert data.shape_arc_seconds == pytest.approx((0.5, 0.5), 1e-3)
 
             def test__padded_5x5_to_8x8__goes_to_9x9_to_keep_symmetry(self):
@@ -388,7 +388,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (9, 9)
-                assert data.central_pixels == (4.0, 4.0)
+                assert data.central_pixel_coordinates == (4.0, 4.0)
                 assert data.shape_arc_seconds == pytest.approx((0.9, 0.9), 1e-3)
 
         class TestEvenToEven(object):
@@ -407,7 +407,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (6, 6)
-                assert data.central_pixels == (2.5, 2.5)
+                assert data.central_pixel_coordinates == (2.5, 2.5)
                 assert data.shape_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
             def test__padded_4x4_to_8x8(self):
@@ -427,7 +427,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (8, 8)
-                assert data.central_pixels == (3.5, 3.5)
+                assert data.central_pixel_coordinates == (3.5, 3.5)
                 assert data.shape_arc_seconds == pytest.approx((0.8, 0.8), 1e-3)
 
         class TestEvenToOdd(object):
@@ -446,7 +446,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (6, 6)
-                assert data.central_pixels == (2.5, 2.5)
+                assert data.central_pixel_coordinates == (2.5, 2.5)
                 assert data.shape_arc_seconds == pytest.approx((0.6, 0.6), 1e-3)
 
             def test__padded_4x4_to_7x7__goes_to_8x8_to_keep_symmetry(self):
@@ -466,7 +466,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (8, 8)
-                assert data.central_pixels == (3.5, 3.5)
+                assert data.central_pixel_coordinates == (3.5, 3.5)
                 assert data.shape_arc_seconds == pytest.approx((0.8, 0.8), 1e-3)
 
         class TestRectangle(object):
@@ -486,7 +486,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (7, 6)
-                assert data.central_pixels == (3, 2.5)
+                assert data.central_pixel_coordinates == (3, 2.5)
                 assert data.shape_arc_seconds == pytest.approx((0.7, 0.6), 1e-3)
 
             def test__padded_2x3_to_6x7(self):
@@ -505,7 +505,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (6, 7)
-                assert data.central_pixels == (2.5, 3.0)
+                assert data.central_pixel_coordinates == (2.5, 3.0)
                 assert data.shape_arc_seconds == pytest.approx((0.6, 0.7), 1e-3)
 
             def test__padded_2x3_to_5x6__goes_to_6x7_to_keep_symmetry(self):
@@ -524,7 +524,7 @@ class TestData(object):
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])).all()
 
                 assert data.shape == (6, 7)
-                assert data.central_pixels == (2.5, 3.0)
+                assert data.central_pixel_coordinates == (2.5, 3.0)
                 assert data.shape_arc_seconds == pytest.approx((0.6, 0.7), 1e-3)
 
         class TestBadInput(object):
@@ -555,7 +555,7 @@ class TestImage(object):
             assert (test_image == np.ones((3, 3))).all()
             assert test_image.pixel_scale == 0.1
             assert test_image.shape == (3, 3)
-            assert test_image.central_pixels == (1.0, 1.0)
+            assert test_image.central_pixel_coordinates == (1.0, 1.0)
             assert test_image.shape_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__init__input_image_4x3__all_attributes_correct(self):
@@ -564,7 +564,7 @@ class TestImage(object):
             assert (test_image == np.ones((4, 3))).all()
             assert test_image.pixel_scale == 0.1
             assert test_image.shape == (4, 3)
-            assert test_image.central_pixels == (1.5, 1.0)
+            assert test_image.central_pixel_coordinates == (1.5, 1.0)
             assert test_image.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_image_3x3__all_attributes_correct(self):
@@ -573,7 +573,7 @@ class TestImage(object):
             assert (test_image == np.ones((3, 3))).all()
             assert test_image.pixel_scale == 0.1
             assert test_image.shape == (3, 3)
-            assert test_image.central_pixels == (1.0, 1.0)
+            assert test_image.central_pixel_coordinates == (1.0, 1.0)
             assert test_image.shape_arc_seconds == pytest.approx((0.3, 0.3))
 
         def test__from_fits__input_image_4x3__all_attributes_correct(self):
@@ -582,7 +582,7 @@ class TestImage(object):
             assert (test_image == np.ones((4, 3))).all()
             assert test_image.pixel_scale == 0.1
             assert test_image.shape == (4, 3)
-            assert test_image.central_pixels == (1.5, 1.0)
+            assert test_image.central_pixel_coordinates == (1.5, 1.0)
             assert test_image.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
     class TestSetSky(object):
