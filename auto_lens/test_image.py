@@ -296,6 +296,23 @@ class TestData(object):
                     assert data.trimmed(new_dimensions=(3, 8))
 
     class TestPadData(object):
+        class TestType(object):
+            def test__image(self):
+                data = image.Image(np.ones((3, 3)), pixel_scale=0.1)
+                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == image.Image
+
+            def test__psf(self):
+                data = image.PSF.from_array(np.ones((3, 3)))
+                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == image.PSF
+
+            def test__noise(self):
+                data = image.Noise.from_array(np.ones((3, 3)))
+                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == image.Noise
+
+            def test__array(self):
+                data = np.ones((3, 3))
+                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == np.ndarray
+
         class TestOddToOdd(object):
             def test__padded_3x3_to_5x5(self):
                 data = np.ones((3, 3))

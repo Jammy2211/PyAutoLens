@@ -2,7 +2,7 @@ from scipy.stats import norm
 from astropy.io import fits
 import os
 import logging
-
+from functools import wraps
 import numpy as np
 
 # TODO: this gives us a logger that will print stuff with the name of the module
@@ -17,7 +17,16 @@ def numpy_array_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
+def keep_type(func):
+    @wraps(func)
+    def wrapper(array, *args, **kwargs):
+        new_array = func(array, *args, **kwargs)
+        return new_array.view(array.__class__)
+    return func
+
+
 # TODO: It seemed to meet that many of these functions are best made general. They really can apply to any array.
+@keep_type
 def trim_array(array, new_dimensions):
     """ Trim the data array to a new size around its central pixel.
     NOTE: The centre of the array cannot be shifted. Therefore, even arrays are trimmed to even arrays
@@ -50,6 +59,7 @@ def trim_array(array, new_dimensions):
     return array
 
 
+@keep_type
 def pad_array(array, new_dimensions):
     """ Pad the data array with zeros around its central pixel.
     NOTE: The centre of the array cannot be shifted. Therefore, even arrays are padded to even arrays
