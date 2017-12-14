@@ -2,7 +2,8 @@ import itertools
 import math
 import numpy as np
 from profile import profile
-
+import sklearn.cluster
+import scipy.spatial
 
 # TODO: This class seems to share some ideas with the generic profile. We should be careful not to over-integrate but
 # TODO: for now I think it makes sense to leverage the profile module in other areas as we may be able to reuse some of
@@ -159,3 +160,19 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         """
         move_factor = self.move_factor(coordinate)
         return coordinate[0] * move_factor, coordinate[1] * move_factor
+
+
+
+class PixelizationAdaptive(sklearn.cluster.KMeans):
+    """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
+
+    def __init__(self, sparse_coordinates, n_clusters):
+
+        super(PixelizationAdaptive, self).__init__(n_clusters=n_clusters)
+
+        self.fit(sparse_coordinates)
+
+    def setup_voronoi_grid(self, points):
+
+        self.voronoi = scipy.spatial.Voronoi(points)
+
