@@ -30,6 +30,19 @@ def central_pixel(pixel_dimensions):
 
 
 def copy_attributes(old_obj, new_obj):
+    """
+    Copies attributes from one object to another
+    Parameters
+    ----------
+    old_obj: Object
+        The object from which to copy attributes
+    new_obj: Object
+        The object to which to copy attributes
+    Returns
+    -------
+    new_obj: Object
+        The same instance but with attributes set from old_obj
+    """
     if hasattr(old_obj, "__dict__"):
         for t in old_obj.__dict__.items():
             setattr(new_obj, t[0], t[1])
