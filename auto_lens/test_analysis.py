@@ -432,3 +432,32 @@ class TestSourcePlaneBorder(object):
 
             relocated_coordinate = source_border.relocated_coordinate(coordinate=(-2.5, -0.37))
             assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+
+
+class TestPixelizationAdaptive(object):
+    class TestKMeans:
+
+        def test__simple_points__sets_up_two_clusters(self):
+
+            sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+            adaptive_pixelization = analysis.PixelizationAdaptive(sparse_coordinates, n_clusters=2)
+
+            assert (adaptive_pixelization.cluster_centers_ == np.array([[2.0, 2.0],
+                                                                      [1.0, 1.0]])).any()
+
+        def test__simple_points__sets_up_three_clusters(self):
+
+            sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
+                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+            adaptive_pixelization = analysis.PixelizationAdaptive(sparse_coordinates, n_clusters=3)
+
+            assert (adaptive_pixelization.cluster_centers_ == np.array([[2.0, 2.0],
+                                                                        [1.0, 1.0],
+                                                                        [-1.0, -1.0]])).any()
+
+   # class TestVoronoi:
+
