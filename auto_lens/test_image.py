@@ -34,7 +34,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(3, 3))
+                data = data.trimmed(pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 1.0],
@@ -49,7 +49,7 @@ class TestData(object):
                 data[3, 3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(3, 3))
+                data = data.trimmed(pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 1.0],
@@ -64,7 +64,7 @@ class TestData(object):
                 data[5, 5] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(5, 5))
+                data = data.trimmed(pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -82,7 +82,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(2, 2))
+                data = data.trimmed(pixel_dimensions=(2, 2))
 
                 assert (data == np.array([[1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 1.0],
@@ -97,7 +97,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(4, 4))
+                data = data.trimmed(pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -114,7 +114,7 @@ class TestData(object):
                 data[5, 5] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(4, 4))
+                data = data.trimmed(pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -132,7 +132,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(2, 2))
+                data = data.trimmed(pixel_dimensions=(2, 2))
 
                 assert (data == np.array([[2.0, 2.0],
                                                 [2.0, 2.0]])).all()
@@ -146,7 +146,7 @@ class TestData(object):
                 data[2:4, 2:4] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(4, 4))
+                data = data.trimmed(pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 2.0, 1.0],
@@ -163,7 +163,7 @@ class TestData(object):
                 data[4, 4] = 9.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(6, 6))
+                data = data.trimmed(pixel_dimensions=(6, 6))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 9.0, 1.0, 1.0, 1.0, 1.0],
@@ -182,7 +182,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(3, 3))
+                data = data.trimmed(pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 2.0, 1.0],
@@ -198,7 +198,7 @@ class TestData(object):
                 data[2:4, 2:4] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(3, 3))
+                data = data.trimmed(pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 2.0, 1.0],
@@ -215,7 +215,7 @@ class TestData(object):
                 data[4, 4] = 9.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(5, 5))
+                data = data.trimmed(pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 9.0, 1.0, 1.0, 1.0, 1.0],
@@ -234,7 +234,7 @@ class TestData(object):
                 data[2, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(3, 2))
+                data = data.trimmed(pixel_dimensions=(3, 2))
 
                 assert (data == np.array([[1.0, 1.0],
                                                 [2.0, 2.0],
@@ -249,7 +249,7 @@ class TestData(object):
                 data[1:3, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(2, 3))
+                data = data.trimmed(pixel_dimensions=(2, 3))
 
                 assert (data == np.array([[1.0, 2.0, 1.0],
                                                 [1.0, 2.0, 1.0]])).all()
@@ -264,7 +264,7 @@ class TestData(object):
                 data[4, 3] = 9.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(new_dimensions=(4, 3))
+                data = data.trimmed(pixel_dimensions=(4, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0],
@@ -284,7 +284,7 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(new_dimensions=(8, 3))
+                    assert data.trimmed(pixel_dimensions=(8, 3))
 
             def test__y_size_bigger_than_data__raises_error(self):
                 data = np.ones((5, 5))
@@ -293,25 +293,25 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(new_dimensions=(3, 8))
+                    assert data.trimmed(pixel_dimensions=(3, 8))
 
     class TestPadData(object):
         class TestType(object):
             def test__image(self):
                 data = image.Image(np.ones((3, 3)), pixel_scale=0.1)
-                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == image.Image
+                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == image.Image
 
             def test__psf(self):
                 data = image.PSF.from_array(np.ones((3, 3)))
-                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == image.PSF
+                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == image.PSF
 
             def test__noise(self):
                 data = image.Noise.from_array(np.ones((3, 3)))
-                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == image.Noise
+                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == image.Noise
 
             def test__array(self):
                 data = np.ones((3, 3))
-                assert image.trim_array(data, new_dimensions=(1, 1)).__class__ == np.ndarray
+                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == np.ndarray
 
         class TestOddToOdd(object):
             def test__padded_3x3_to_5x5(self):
@@ -319,7 +319,7 @@ class TestData(object):
                 data[1, 1] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(5, 5))
+                data = data.padded(pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -336,7 +336,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(9, 9))
+                data = data.padded(pixel_dimensions=(9, 9))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -358,7 +358,7 @@ class TestData(object):
                 data[1, 1] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(4, 4))
+                data = data.padded(pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -375,7 +375,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(8, 8))
+                data = data.padded(pixel_dimensions=(8, 8))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -397,7 +397,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(6, 6))
+                data = data.padded(pixel_dimensions=(6, 6))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -415,7 +415,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(8, 8))
+                data = data.padded(pixel_dimensions=(8, 8))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -436,7 +436,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(5, 5))
+                data = data.padded(pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -454,7 +454,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(7, 7))
+                data = data.padded(pixel_dimensions=(7, 7))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -475,7 +475,7 @@ class TestData(object):
                 data[2, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(7, 6))
+                data = data.padded(pixel_dimensions=(7, 6))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -495,7 +495,7 @@ class TestData(object):
                 data[1, 2] = 9
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(6, 7))
+                data = data.padded(pixel_dimensions=(6, 7))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -514,7 +514,7 @@ class TestData(object):
                 data[1, 2] = 9
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(new_dimensions=(5, 6))
+                data = data.padded(pixel_dimensions=(5, 6))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -535,7 +535,7 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(new_dimensions=(3, 8))
+                    assert data.trimmed(pixel_dimensions=(3, 8))
 
             def test__y_size_smaller_than_data__raises_error(self):
                 data = np.ones((5, 5))
@@ -544,7 +544,7 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(new_dimensions=(8, 3))
+                    assert data.trimmed(pixel_dimensions=(8, 3))
 
 
 class TestImage(object):
@@ -744,15 +744,15 @@ class TestNoise(object):
 class TestMask(object):
     class TestPixelScale(object):
         def test__central_pixel(self):
-            assert image.Mask.central_pixel((3, 3), 0.5) == (2.5, 2.5)
+            assert image.central_pixel((3, 3)) == (1.0, 1.0)
 
         def test__shape(self):
-            assert image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=5).shape == (3, 3)
-            assert image.Mask.circular(dimensions=(3, 3), pixel_scale=0.5, radius=5).shape == (6, 6)
-            assert image.Mask.circular(dimensions=(3, 3), pixel_scale=0.2, radius=5).shape == (15, 15)
+            assert image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=5).shape == (3, 3)
+            assert image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=0.5, radius=5).shape == (6, 6)
+            assert image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=0.2, radius=5).shape == (15, 15)
 
         def test__odd_x_odd_mask_input_radius_small__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=0.5, radius=0.5)
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=0.5, radius=0.5)
             assert (mask == np.array([[False, False, False, False, False, False],
                                       [False, False, False, False, False, False],
                                       [False, False, True, True, False, False],
@@ -762,55 +762,55 @@ class TestMask(object):
 
     class TestCentre(object):
         def test__simple_shift_back(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(-1, 0))
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(-1, 0))
             assert mask.shape == (3, 3)
             assert (mask == np.array([[False, True, False],
                                       [False, False, False],
                                       [False, False, False]])).all()
 
         def test__simple_shift_forward(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(0, 1))
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(0, 1))
             assert mask.shape == (3, 3)
             assert (mask == np.array([[False, False, False],
                                       [False, False, True],
                                       [False, False, False]])).all()
 
         def test__diagonal_shift(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(1, 1))
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(1, 1))
             assert (mask == np.array([[False, False, False],
                                       [False, False, False],
                                       [False, False, True]])).all()
 
     class TestCircular(object):
         def test__input_big_mask__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=5)
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=5)
             assert mask.shape == (3, 3)
             assert (mask == np.array([[True, True, True],
                                       [True, True, True],
                                       [True, True, True]])).all()
 
         def test__odd_x_odd_mask_input_radius_small__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=0.5)
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5)
             assert (mask == np.array([[False, False, False],
                                       [False, True, False],
                                       [False, False, False]])).all()
 
         def test__odd_x_odd_mask_input_radius_medium__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=1)
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=1)
 
             assert (mask == np.array([[False, True, False],
                                       [True, True, True],
                                       [False, True, False]])).all()
 
         def test__odd_x_odd_mask_input_radius_large__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(3, 3), pixel_scale=1, radius=3)
+            mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=3)
 
             assert (mask == np.array([[True, True, True],
                                       [True, True, True],
                                       [True, True, True]])).all()
 
         def test__even_x_odd_mask_input_radius_small__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(4, 3), pixel_scale=1, radius=0.5)
+            mask = image.Mask.circular(arc_second_dimensions=(4, 3), pixel_scale=1, radius=0.5)
 
             assert (mask == np.array([[False, False, False],
                                       [False, True, False],
@@ -818,7 +818,7 @@ class TestMask(object):
                                       [False, False, False]])).all()
 
         def test__even_x_odd_mask_input_radius_medium__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(4, 3), pixel_scale=1, radius=1.50001)
+            mask = image.Mask.circular(arc_second_dimensions=(4, 3), pixel_scale=1, radius=1.50001)
 
             assert (mask == np.array([[False, True, False],
                                       [True, True, True],
@@ -826,7 +826,7 @@ class TestMask(object):
                                       [False, True, False]])).all()
 
         def test__even_x_odd_mask_input_radius_large__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(4, 3), pixel_scale=1, radius=3)
+            mask = image.Mask.circular(arc_second_dimensions=(4, 3), pixel_scale=1, radius=3)
 
             assert (mask == np.array([[True, True, True],
                                       [True, True, True],
@@ -834,7 +834,7 @@ class TestMask(object):
                                       [True, True, True]])).all()
 
         def test__even_x_even_mask_input_radius_small__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=1, radius=0.72)
+            mask = image.Mask.circular(arc_second_dimensions=(4, 4), pixel_scale=1, radius=0.72)
 
             assert (mask == np.array([[False, False, False, False],
                                       [False, True, True, False],
@@ -842,7 +842,7 @@ class TestMask(object):
                                       [False, False, False, False]])).all()
 
         def test__even_x_even_mask_input_radius_medium__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=1, radius=1.7)
+            mask = image.Mask.circular(arc_second_dimensions=(4, 4), pixel_scale=1, radius=1.7)
 
             assert (mask == np.array([[False, True, True, False],
                                       [True, True, True, True],
@@ -850,7 +850,7 @@ class TestMask(object):
                                       [False, True, True, False]])).all()
 
         def test__even_x_even_mask_input_radius_large__correct_mask(self):
-            mask = image.Mask.circular(dimensions=(4, 4), pixel_scale=1, radius=3)
+            mask = image.Mask.circular(arc_second_dimensions=(4, 4), pixel_scale=1, radius=3)
 
             assert (mask == np.array([[True, True, True, True],
                                       [True, True, True, True],
@@ -859,21 +859,21 @@ class TestMask(object):
 
     class TestAnnular(object):
         def test__odd_x_odd_mask_inner_radius_zero_outer_radius_small__correct_mask(self):
-            mask = image.Mask.annular(dimensions=(3, 3), pixel_scale=1, inner_radius=0, outer_radius=0.5)
+            mask = image.Mask.annular(arc_second_dimensions=(3, 3), pixel_scale=1, inner_radius=0, outer_radius=0.5)
 
             assert (mask == np.array([[False, False, False],
                                       [False, True, False],
                                       [False, False, False]])).all()
 
         def test__odd_x_odd_mask_inner_radius_small_outer_radius_large__correct_mask(self):
-            mask = image.Mask.annular(dimensions=(3, 3), pixel_scale=1, inner_radius=0.5, outer_radius=3)
+            mask = image.Mask.annular(arc_second_dimensions=(3, 3), pixel_scale=1, inner_radius=0.5, outer_radius=3)
 
             assert (mask == np.array([[True, True, True],
                                       [True, False, True],
                                       [True, True, True]])).all()
 
         def test__even_x_odd_mask_inner_radius_small_outer_radius_medium__correct_mask(self):
-            mask = image.Mask.annular(dimensions=(4, 3), pixel_scale=1, inner_radius=0.51, outer_radius=1.51)
+            mask = image.Mask.annular(arc_second_dimensions=(4, 3), pixel_scale=1, inner_radius=0.51, outer_radius=1.51)
 
             assert (mask == np.array([[False, True, False],
                                       [True, False, True],
@@ -881,7 +881,7 @@ class TestMask(object):
                                       [False, True, False]])).all()
 
         def test__even_x_odd_mask_inner_radius_medium_outer_radius_large__correct_mask(self):
-            mask = image.Mask.annular(dimensions=(4, 3), pixel_scale=1, inner_radius=1.51, outer_radius=3)
+            mask = image.Mask.annular(arc_second_dimensions=(4, 3), pixel_scale=1, inner_radius=1.51, outer_radius=3)
 
             assert (mask == np.array([[True, False, True],
                                       [False, False, False],
@@ -889,7 +889,7 @@ class TestMask(object):
                                       [True, False, True]])).all()
 
         def test__even_x_even_mask_inner_radius_small_outer_radius_medium__correct_mask(self):
-            mask = image.Mask.annular(dimensions=(4, 4), pixel_scale=1, inner_radius=0.81, outer_radius=2)
+            mask = image.Mask.annular(arc_second_dimensions=(4, 4), pixel_scale=1, inner_radius=0.81, outer_radius=2)
 
             assert (mask == np.array([[False, True, True, False],
                                       [True, False, False, True],
@@ -897,7 +897,7 @@ class TestMask(object):
                                       [False, True, True, False]])).all()
 
         def test__even_x_even_mask_inner_radius_medium_outer_radius_large__correct_mask(self):
-            mask = image.Mask.annular(dimensions=(4, 4), pixel_scale=1, inner_radius=1.71, outer_radius=3)
+            mask = image.Mask.annular(arc_second_dimensions=(4, 4), pixel_scale=1, inner_radius=1.71, outer_radius=3)
 
             assert (mask == np.array([[True, False, False, True],
                                       [False, False, False, False],
