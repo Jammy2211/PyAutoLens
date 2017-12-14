@@ -29,6 +29,13 @@ def central_pixel(pixel_dimensions):
     return tuple(map(lambda d: (float(d + 1) / 2) - 1, pixel_dimensions))
 
 
+def copy_attributes(old_obj, new_obj):
+    if hasattr(old_obj, "__dict__"):
+        for t in old_obj.__dict__.items():
+            setattr(new_obj, t[0], t[1])
+    return new_obj
+
+
 def keep_attributes(func):
     """
     
@@ -61,8 +68,7 @@ def keep_attributes(func):
         """
         new_array = func(array, *args, **kwargs).view(array.__class__)
         if hasattr(array, "__dict__"):
-            for t in array.__dict__.items():
-                setattr(new_array, t[0], t[1])
+            copy_attributes(array, new_array)
 
         return new_array
 
@@ -198,9 +204,7 @@ class Image(np.ndarray):
             The new image
         """
         if obj is not None:
-            self.pixel_scale = getattr(obj, 'pixel_scale', None)
-            self.sky_background_level = getattr(obj, 'sky_background_level', None)
-            self.sky_background_noise = getattr(obj, 'sky_background_noise', None)
+            copy_attributes(obj, self)
 
     @property
     def central_pixels(self):
@@ -281,7 +285,8 @@ class Image(np.ndarray):
         -------
         A circular mask for this image
         """
-        return Mask.circular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale, radius=radius_arc)
+        return Mask.circular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
+                             radius=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
