@@ -34,7 +34,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(3, 3))
+                data = image.trim(data, pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 1.0],
@@ -49,7 +49,7 @@ class TestData(object):
                 data[3, 3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(3, 3))
+                data = image.trim(data, pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 1.0],
@@ -64,7 +64,7 @@ class TestData(object):
                 data[5, 5] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(5, 5))
+                data = image.trim(data, pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -82,7 +82,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(2, 2))
+                data = image.trim(data, pixel_dimensions=(2, 2))
 
                 assert (data == np.array([[1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 1.0],
@@ -97,7 +97,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(4, 4))
+                data = image.trim(data, pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -114,7 +114,7 @@ class TestData(object):
                 data[5, 5] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(4, 4))
+                data = image.trim(data, pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0, 1.0],
@@ -132,7 +132,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(2, 2))
+                data = image.trim(data, pixel_dimensions=(2, 2))
 
                 assert (data == np.array([[2.0, 2.0],
                                                 [2.0, 2.0]])).all()
@@ -146,7 +146,7 @@ class TestData(object):
                 data[2:4, 2:4] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(4, 4))
+                data = image.trim(data, pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 2.0, 1.0],
@@ -163,7 +163,7 @@ class TestData(object):
                 data[4, 4] = 9.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(6, 6))
+                data = image.trim(data, pixel_dimensions=(6, 6))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 9.0, 1.0, 1.0, 1.0, 1.0],
@@ -182,7 +182,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(3, 3))
+                data = image.trim(data, pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 2.0, 1.0],
@@ -198,7 +198,7 @@ class TestData(object):
                 data[2:4, 2:4] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(3, 3))
+                data = image.trim(data, pixel_dimensions=(3, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 2.0, 2.0, 1.0],
@@ -215,7 +215,7 @@ class TestData(object):
                 data[4, 4] = 9.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(5, 5))
+                data = image.trim(data, pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 9.0, 1.0, 1.0, 1.0, 1.0],
@@ -234,7 +234,7 @@ class TestData(object):
                 data[2, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(3, 2))
+                data = image.trim(data, pixel_dimensions=(3, 2))
 
                 assert (data == np.array([[1.0, 1.0],
                                                 [2.0, 2.0],
@@ -249,7 +249,7 @@ class TestData(object):
                 data[1:3, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(2, 3))
+                data = image.trim(data, pixel_dimensions=(2, 3))
 
                 assert (data == np.array([[1.0, 2.0, 1.0],
                                                 [1.0, 2.0, 1.0]])).all()
@@ -264,7 +264,7 @@ class TestData(object):
                 data[4, 3] = 9.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.trimmed(pixel_dimensions=(4, 3))
+                data = image.trim(data, pixel_dimensions=(4, 3))
 
                 assert (data == np.array([[1.0, 1.0, 1.0, 1.0],
                                                 [1.0, 1.0, 1.0, 1.0],
@@ -284,7 +284,7 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(pixel_dimensions=(8, 3))
+                    assert image.trim(data, pixel_dimensions=(8, 3))
 
             def test__y_size_bigger_than_data__raises_error(self):
                 data = np.ones((5, 5))
@@ -293,25 +293,25 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(pixel_dimensions=(3, 8))
+                    assert image.trim(data, pixel_dimensions=(3, 8))
 
     class TestPadData(object):
         class TestType(object):
             def test__image(self):
                 data = image.Image(np.ones((3, 3)), pixel_scale=0.1)
-                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == image.Image
+                assert image.trim(data, pixel_dimensions=(1, 1)).__class__ == image.Image
 
             def test__psf(self):
                 data = image.PSF.from_array(np.ones((3, 3)))
-                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == image.PSF
+                assert image.trim(data, pixel_dimensions=(1, 1)).__class__ == image.PSF
 
             def test__noise(self):
                 data = image.Noise.from_array(np.ones((3, 3)))
-                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == image.Noise
+                assert image.trim(data, pixel_dimensions=(1, 1)).__class__ == image.Noise
 
             def test__array(self):
                 data = np.ones((3, 3))
-                assert image.trim_array(data, pixel_dimensions=(1, 1)).__class__ == np.ndarray
+                assert image.trim(data, pixel_dimensions=(1, 1)).__class__ == np.ndarray
 
         class TestOddToOdd(object):
             def test__padded_3x3_to_5x5(self):
@@ -319,7 +319,7 @@ class TestData(object):
                 data[1, 1] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(5, 5))
+                data = image.pad(data, pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -336,7 +336,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(9, 9))
+                data = image.pad(data, pixel_dimensions=(9, 9))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -358,7 +358,7 @@ class TestData(object):
                 data[1, 1] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(4, 4))
+                data = image.pad(data, pixel_dimensions=(4, 4))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -375,7 +375,7 @@ class TestData(object):
                 data[2, 2] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(8, 8))
+                data = image.pad(data, pixel_dimensions=(8, 8))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -397,7 +397,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(6, 6))
+                data = image.pad(data, pixel_dimensions=(6, 6))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -415,7 +415,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(8, 8))
+                data = image.pad(data, pixel_dimensions=(8, 8))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -436,7 +436,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(5, 5))
+                data = image.pad(data, pixel_dimensions=(5, 5))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -454,7 +454,7 @@ class TestData(object):
                 data[1:3, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(7, 7))
+                data = image.pad(data, pixel_dimensions=(7, 7))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -475,7 +475,7 @@ class TestData(object):
                 data[2, 1:3] = 2.0
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(7, 6))
+                data = image.pad(data, pixel_dimensions=(7, 6))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -495,7 +495,7 @@ class TestData(object):
                 data[1, 2] = 9
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(6, 7))
+                data = image.pad(data, pixel_dimensions=(6, 7))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -514,7 +514,7 @@ class TestData(object):
                 data[1, 2] = 9
 
                 data = image.Image(data, pixel_scale=0.1)
-                data = data.padded(pixel_dimensions=(5, 6))
+                data = image.pad(data, pixel_dimensions=(5, 6))
 
                 assert (data == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -535,7 +535,7 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(pixel_dimensions=(3, 8))
+                    assert image.trim(data, pixel_dimensions=(3, 8))
 
             def test__y_size_smaller_than_data__raises_error(self):
                 data = np.ones((5, 5))
@@ -544,7 +544,7 @@ class TestData(object):
                 data = image.Image(data, pixel_scale=0.1)
 
                 with pytest.raises(ValueError):
-                    assert data.trimmed(pixel_dimensions=(8, 3))
+                    assert image.trim(data, pixel_dimensions=(8, 3))
 
 
 class TestImage(object):
