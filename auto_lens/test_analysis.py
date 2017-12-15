@@ -434,30 +434,212 @@ class TestSourcePlaneBorder(object):
             assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
 
 
-class TestPixelizationAdaptive(object):
-    class TestKMeans:
+#class TestPixelizationAdaptive(object):
 
-        def test__simple_points__sets_up_two_clusters(self):
+class TestRegularizationMatrix(object):
 
-            sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+    # The regularization matrix, H, is calculated by defining a set of B matrices which describe how source-plane
+    # pixels map to one another. For example, if we had a 3x3 square grid:
 
-            adaptive_pixelization = analysis.PixelizationAdaptive(sparse_coordinates, n_clusters=2)
+    #______
+    #|0|1|2|
+    #|3|4|5|
+    #|6|7|8|
+    #^^^^^^^ ( I cant find a horizontal 'high' line)
 
-            assert (adaptive_pixelization.cluster_centers_ == np.array([[2.0, 2.0],
-                                                                      [1.0, 1.0]])).any()
+    #Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right and below it.
 
-        def test__simple_points__sets_up_three_clusters(self):
+    # So, 0 is regularized with pixels 1 and 3, pixel 1 with 2 and 4, but pixel 2 with only pixel 5, etc. So,
+    #
+    # We make two 9 x 9 B matrices, which describe regularization in each direction. So for regularization to the right of each pixel:
 
-            sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
-                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+    # B_x = [-1,  1,  0,  0,  0,  0,  0,  0,  0] - This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 1 is saying we want to regularize pixel 0 with pixel 1.
+    #       [ 0, -1,  1,  0,  0,  0,  0,  0,  0] - Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixels 2.
+    #       [ 0,  0, -1,  0,  0,  0,  0,  0,  0] - NOTE - pixel 2 is NOT regularized with pixel 3 (check the square grid)!
+    #       [ 0,  0,  0, -1,  1,  0,  0,  0,  0]
+    #       [ 0,  0,  0,  0, -1,  1,  0,  0,  0]
+    #       [ 0,  0,  0,  0,  0, -1,  0,  0,  0] - NOTE - pixel 5 not regularized with pixel 6!
+    #       [ 0,  0,  0,  0,  0,  0, -1,  1,  0]
+    #       [ 0,  0,  0,  0,  0,  0,  0, -1,  1]
+    #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] - NOTE - Not regularized with anything
 
-            adaptive_pixelization = analysis.PixelizationAdaptive(sparse_coordinates, n_clusters=3)
+    # We now make another B matrix for the regularization beneath each pixel:
 
-            assert (adaptive_pixelization.cluster_centers_ == np.array([[2.0, 2.0],
-                                                                        [1.0, 1.0],
-                                                                        [-1.0, -1.0]])).any()
+    # B_y = [-1,  0,  0,  1,  0,  0,  0,  0,  0] - This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 3 is saying we want to regularize pixel 0 with pixel 3.
+    #       [ 0, -1,  0,  0,  1,  0,  0,  0,  0] - Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixel 4
+    #       [ 0,  0, -1,  0,  0,  1,  0,  0,  0]
+    #       [ 0,  0,  0, -1,  0,  0,  1,  0,  0]
+    #       [ 0,  0,  0,  0, -1,  0,  0,  1,  0]
+    #       [ 0,  0,  0,  0,  0, -1,  0,  0,  1]
+    #       [ 0,  0,  0,  0,  0,  0, -1,  0,  0] - No regularized performed in these last 3 rows / pixels
+    #       [ 0,  0,  0,  0,  0,  0,  0, -1,  0]
+    #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1]
 
-   # class TestVoronoi:
+    # So, we basically just make B matrices representing regularization in each direction. For each, we can then compute
+    # Their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
 
+    # So, H_x = B_x.T, * B_x H_y = B_y.T * B_y
+    # And our overall regularization matrix, H = H_x + H_y
+
+    # For an adaptive Voronoi grid, we do the exact same thing, however we make a B matrix for every shared Voronoi vertex
+    # of each soure-pixel cluster. This means that:
+
+    # The number of B matrices we compute is equation to the the number of Voronoi vertices in the source-pixel with
+    # the most Voronoi verticess.
+
+    #### NOTE ####
+
+    # You will notice, however, that the routine make_via_pairs doesn't use these B matrices above to compute H. This is
+    # because for a Voronoi grid the B matrices have a very specific form, which means you can build H directly using just the
+    # pairs between each soruce pixel Voronoi vertex, which is given by Python's Voronoi routine :).
+
+    # This basically exploits the symmetry that if a B matrix has an entry -1, 1 corresponding to a given Voronoi cell,
+    # It will have the oppossite entry somewhere in another B matrix.
+
+    # This also maximizes efficiency in terms of sparseness - as we don't even look at all the zeros in B when making H!
+
+    # We should get numba of this asap!
+
+    def test__one_B_size_3x3_makes_correct_regularization_matrix(self):
+
+        # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
+
+        # This means our B matrix is:
+
+        # [-1, 1, 0]
+        # [0, -1, 1]
+        # [0, 0, -1]
+
+        # Regularization Matrix, H = B * B.T.
+
+        test_b_matrix = np.matrix( ((-1, 1, 0),
+                                    (1, -1, 0),
+                                    (0, 0, 0)) )
+
+        test_regularization_matrix = test_b_matrix.T * test_b_matrix
+
+        no_verticies = np.array([1, 1, 0])
+        pairs = np.array([[0,1]])
+
+        regularization_matrix = analysis.RegularizationMatrix(dimension=3,
+                                                              coefficient=1.0,
+                                                              no_verticies=no_verticies,
+                                                              pixel_pairs=pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+    def test__one_B_size_4x4__makes_correct_regularization_matrix(self):
+
+        test_b_matrix = np.matrix( ((-1, 0, 1, 0),
+                                    (0, -1, 0, 1),
+                                    (1, 0, -1, 0),
+                                    (0, 1, 0, -1)) )
+
+        test_regularization_matrix = test_b_matrix.T * test_b_matrix
+
+        no_verticies = np.array([1, 1, 1, 1])
+        pairs = np.array([[0,2],[1,3]])
+
+        regularization_matrix = analysis.RegularizationMatrix(dimension=4,
+                                                              coefficient=1.0,
+                                                              no_verticies=no_verticies,
+                                                              pixel_pairs=pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+    def test__two_B_size_4x4__makes_correct_regularization_matrix(self):
+
+
+        test_b_matrix_1 = np.matrix(((-1, 1, 0, 0),
+                                     (0, -1, 1, 0),
+                                     (0, 0, -1, 1),
+                                     (1, 0, 0, -1)))
+
+        test_regularization_matrix_1 = test_b_matrix_1.T * test_b_matrix_1
+
+        test_b_matrix_2 = np.matrix(((-1, 0, 0, 1),
+                                     (1, -1, 0, 0),
+                                     (0, 1, -1, 0),
+                                     (0, 0, 1, -1)))
+
+        test_regularization_matrix_2 = test_b_matrix_2.T * test_b_matrix_2
+
+        test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+
+        no_verticies = np.array([2, 2, 2, 2])
+        pairs = np.array([[0, 1], [1, 2], [2,3], [3, 0]])
+
+
+        regularization_matrix = analysis.RegularizationMatrix(dimension=4,
+                                                              coefficient=1.0,
+                                                              no_verticies=no_verticies,
+                                                              pixel_pairs=pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+    def test__two_B_size_4x4__makes_correct_regularization_matrix2(self):
+
+        test_b_matrix_1 = np.matrix(((-1, 0, 1, 0),
+                                     (0, -1, 1, 0),
+                                     (1, 0, -1, 0),
+                                     (1, 0, 0, -1)) )
+
+        test_regularization_matrix_1 = test_b_matrix_1.T * test_b_matrix_1
+
+        test_b_matrix_2 = np.matrix(((-1, 0, 0, 1),
+                                     (0, 0, 0, 0),
+                                     (0, 1, -1, 0),
+                                     (0, 0, 0, 0)) )
+
+        test_regularization_matrix_2 = test_b_matrix_2.T * test_b_matrix_2
+
+        test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+
+        no_verticies = np.array([2, 1, 2, 1])
+        pairs = np.array([[0,2], [1,2], [0,3]])
+
+
+        regularization_matrix = analysis.RegularizationMatrix(dimension=4,
+                                                              coefficient=1.0,
+                                                              no_verticies=no_verticies,
+                                                              pixel_pairs=pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+
+class TestKMeans:
+
+    def test__simple_points__sets_up_two_clusters(self):
+
+        sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                       [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+        kmeans = analysis.KMeans(sparse_coordinates, n_clusters=2)
+
+        assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
+        assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
+
+    def test__simple_points__sets_up_three_clusters(self):
+
+        sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
+                                       [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                       [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+        kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
+
+        assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
+        assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
+        assert (kmeans.cluster_centers_ == np.array([[-1.0, -1.0]])).any()
+
+class TestVoronoi:
+
+    def test__simple_points__sets_up_voronoi_grid(self):
+
+        points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        assert (voronoi.vertices[0] == np.array([0., 1.])).all()
+        assert (voronoi.vertices[1] == np.array([-1., 0.])).all()
+        assert (voronoi.vertices[2] == np.array([1., 0.])).all()
+        assert (voronoi.vertices[3] == np.array([0., -1.])).all()
