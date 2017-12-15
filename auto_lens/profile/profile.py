@@ -237,7 +237,7 @@ class CoordinatesException(Exception):
 class Profile(object):
     """Abstract Profile, describing an object with x, y cartesian coordinates"""
 
-    def __init__(self, centre):
+    def __init__(self, centre=(0, 0)):
         self.centre = centre
 
     # noinspection PyMethodMayBeStatic
@@ -256,6 +256,10 @@ class Profile(object):
         The coordinates after the elliptical translation
         """
         raise AssertionError("Transform to reference frame should be overridden")
+
+    @classmethod
+    def from_profile(cls, profile):
+        return Profile(**profile.__dict__)
 
     # noinspection PyMethodMayBeStatic
     def transform_from_reference_frame(self, coordinates):
