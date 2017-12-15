@@ -71,12 +71,12 @@ At the start of an analysis, parameters fall into two categories:
 ######## RESULTS OF AN ANALYSIS ##########
 
 At the end of the analysis in one phase of AutoLens, MultiNest has fully sampled non-linear parameter space. This means that,
-for each of these lens model parameters we can marginalize it in 1D to compute its posterior probably density function (PDF).
+for each of these lens model parameters we can marginalise it in 1D to compute its posterior probably density function (PDF).
 
 A PDF basically tells us which values of that parameter corresponded to the highest likelihood regions of parameter space.
 Thus, we ought to use those values as priors for the next phases MultiNest non-linear search!
 
-Strictly speaking, a PDF is doesn't confirm to any ordinary shape and can have multiple peaks, skewness etc. However,
+Strictly speaking, a PDF is doesn't conform to any ordinary shape and can have multiple peaks, skewness etc. However,
 due to the central limit theorem, in most cases they resample something vaguely Gaussian. So we can just summarise each
 parameters PDF as a Gaussian, with a centre 'mean' and width 'sigma'. We'll often buffer sigma to be larger than the inferred
 errors too, as we don't want our next non-linear search to miss solutions due to overly restrictive priors.
@@ -87,10 +87,10 @@ We can just take these results and set them up as Gaussian Priors for the corres
 ####### LINKING PARAMETERS / PRIORS ########
 
 The idea behind AutoLens is that each new phase introduces a small chunk of additional complexity to the lens model.
-So, the majority of parameters were estimate in the last phase (and thus have well initialized Gaussian priors), and we
+So, the majority of parameters were estimate in the last phase (and thus have well initialised Gaussian priors), and we
 throw in a few extra new parameters with Uniform priors.
 
-At the end of AutoLens, we 'fix' our lens model and every single parameter will be initialized using a prior inferred from
+At the end of AutoLens, we 'fix' our lens model and every single parameter will be initialised using a prior inferred from
 the previous phase.
 
 I think our class inheritance should automatically take care of a lot of linking. So, if we go from an EllipticalIsothermalMassProfile
