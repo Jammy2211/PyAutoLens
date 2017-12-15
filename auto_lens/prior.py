@@ -1,3 +1,7 @@
+import math
+from scipy.special import erfinv
+
+
 class Prior(object):
     """Defines a prior that converts unit hypercube values into argument values"""
 
@@ -70,6 +74,28 @@ class UniformPrior(Prior):
             A value for the attribute between the upper and lower limits
         """
         return self.lower_limit + unit * (self.upper_limit - self.lower_limit)
+
+
+class GaussianPrior(Prior):
+    """A prior with a gaussian distribution"""
+    def __init__(self, name, mean, sigma):
+        super(GaussianPrior, self).__init__(name)
+        self.mean = mean
+        self.sigma = sigma
+
+    def value_for(self, unit):
+        """
+
+        Parameters
+        ----------
+        unit: Float
+            A unit hypercube value between 0 and 1
+        Returns
+        -------
+        value: Float
+            A value for the attribute biased to the gaussian distribution
+        """
+        return self.mean + (self.sigma * math.sqrt(2) * erfinv((unit * 2.0) - 1.0))
 
 
 class PriorCollection(list):
