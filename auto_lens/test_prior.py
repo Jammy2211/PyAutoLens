@@ -43,8 +43,15 @@ class TestArguments(object):
         assert uniform_simple == prior.Prior("one")
 
     def test__override(self, collection):
-        collection.append(prior.UniformPrior("one", lower_limit=1., upper_limit=2.))
+        collection.add(prior.UniformPrior("one", lower_limit=1., upper_limit=2.))
 
         assert len(collection) == 2
         collection[0].lower_limit = 1.
         collection[0].name = "one"
+
+    def test__exceptions(self, collection, uniform_simple):
+        with pytest.raises(AssertionError):
+            collection.arguments_for_vector([0])
+
+        with pytest.raises(AssertionError):
+            collection.append(uniform_simple)
