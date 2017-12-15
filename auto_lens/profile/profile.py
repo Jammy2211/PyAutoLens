@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from functools import wraps
+import inspect
 
 
 def avg(func):
@@ -258,8 +259,10 @@ class Profile(object):
         raise AssertionError("Transform to reference frame should be overridden")
 
     @classmethod
-    def from_profile(cls, profile):
-        return Profile(**profile.__dict__)
+    def from_profile(cls, profile, **kwargs):
+        arguments = vars(profile)
+        arguments.update(kwargs)
+        return cls(**arguments)
 
     # noinspection PyMethodMayBeStatic
     def transform_from_reference_frame(self, coordinates):
