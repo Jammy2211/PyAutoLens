@@ -162,17 +162,55 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         return coordinate[0] * move_factor, coordinate[1] * move_factor
 
 
-
-class PixelizationAdaptive(sklearn.cluster.KMeans):
+class PixelizationAdaptive(object):
     """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
 
     def __init__(self, sparse_coordinates, n_clusters):
 
-        super(PixelizationAdaptive, self).__init__(n_clusters=n_clusters)
+        self.clusters = KMeans(sparse_coordinates, n_clusters)
+        self.voronoi = Voronoi(points=self.clusters.cluster_centers_)
 
-        self.fit(sparse_coordinates)
+# TODO : Should we do away with these classes are just directly put them in the PixelizationAdaptive constructor?
+# TODO : I did this so I could mess around with unit tests, happy to just get rid of them but left them for now.
 
-    def setup_voronoi_grid(self, points):
+class RegularizationMatrix(np.ndarray):
 
-        self.voronoi = scipy.spatial.Voronoi(points)
+    def __new__(cls, dimension, coefficient, no_verticies, pixel_pairs):
 
+        obj = np.zeros(shape=(dimension, dimension)).view(cls)
+        obj = obj.make_via_pairs(dimension, coefficient, no_verticies, pixel_pairs)
+
+        return obj
+
+    @staticmethod
+    def make_via_pairs(dimension, coefficient, no_verticies, pairs):
+
+        # TODO Currently, reg_weight is just coefficient**2. For non-constant regularization we need to make this
+        # a vector of regularization weights coomputed from another routine
+
+        matrix = np.zeros(shape=(dimension, dimension))
+
+        reg_weight = coefficient**2
+
+        for i in range(dimension):
+            matrix[i,i] += no_verticies[i]*reg_weight
+
+        for j in range(len(pairs)):
+            matrix[pairs[j,0], pairs[j,1]] -= reg_weight
+            matrix[pairs[j,1], pairs[j,0]] -= reg_weight
+
+        return 2.0*matrix
+
+class KMeans(sklearn.cluster.KMeans):
+    """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
+
+    def __init__(self, points, n_clusters):
+
+        super(KMeans, self).__init__(n_clusters=n_clusters)
+        self.fit(points)
+
+class Voronoi(scipy.spatial.Voronoi):
+
+    def __init__(self, points):
+
+        super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx')
