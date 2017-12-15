@@ -262,6 +262,8 @@ class Profile(object):
     def from_profile(cls, profile, **kwargs):
         arguments = vars(profile)
         arguments.update(kwargs)
+        init_args = inspect.getargspec(cls.__init__).args
+        arguments = {argument[0]: argument[1] for argument in arguments.items() if argument[0] in init_args}
         return cls(**arguments)
 
     # noinspection PyMethodMayBeStatic
