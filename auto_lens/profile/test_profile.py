@@ -834,7 +834,13 @@ class TestFromProfile(object):
         p = profile.Profile(centre=(1, 1))
         assert profile.Profile.from_profile(p).centre == (1, 1)
 
-    def test_elliptical_profile_from_profile(self):
-        p = profile.Profile()
+    def test__elliptical_profile_from_profile(self):
+        p = profile.Profile(centre=(1, 1))
         elliptical_profile = profile.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
         assert elliptical_profile.__class__ == profile.EllipticalProfile
+        assert elliptical_profile.centre == (1, 1)
+        assert elliptical_profile.phi == 2
+
+    def test__profile_from_elliptical_profile(self):
+        elliptical_profile = profile.EllipticalProfile(1, 2)
+        assert profile.Profile.from_profile(elliptical_profile).__class__ == profile.Profile
