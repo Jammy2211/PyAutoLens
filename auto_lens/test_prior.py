@@ -22,3 +22,4 @@ class TestArguments(object):
         uniform_prior = prior.UniformPrior("test", lower_limit=0., upper_limit=1.)
 
         assert uniform_prior.argument_for(0.) == ("test", 0)
+        assert uniform_prior.argument_for(0.5) == ("test", 0.5)
