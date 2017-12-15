@@ -6,9 +6,6 @@ import sklearn.cluster
 import scipy.spatial
 
 
-# TODO: This class seems to share some ideas with the generic profile. We should be careful not to over-integrate but
-# TODO: for now I think it makes sense to leverage the profile module in other areas as we may be able to reuse some of
-# TODO: its functionality.
 class SourcePlaneGeometry(profile.Profile):
     """Stores the source-plane geometry, to ensure different components of the source-plane share the
     same geometry"""
@@ -54,10 +51,6 @@ class SourcePlane(SourcePlaneGeometry):
 
         self.sub_coordinates = sub_coordinates
 
-    # TODO: You shouldn't have to set up attributes of a class crucial to its function after calling the constructor.
-    # TODO: it seems like a mask here doesn't need to be an internal property but does depend on the attributes of the
-    # TODO: class, with free attributes of border_mask and polynomial degree. There might be a better route but for now
-    # TODO: I've written this method to create a border mask from an existing instance of source plane
     def border_with_mask_and_polynomial_degree(self, border_mask, polynomial_degree):
         return SourcePlaneBorder(list(itertools.compress(self.sub_coordinates, border_mask)), polynomial_degree,
                                  centre=self.centre)
@@ -101,8 +94,6 @@ class SourcePlaneBorder(SourcePlaneGeometry):
     """Represents the source-plane coordinates on the source-plane border. Each coordinate is stored alongside its
     distance from the source-plane centre (radius) and angle from the x-axis (theta)"""
 
-    # TODO: You shouldn't have to set up attributes of a class crucial to its function after calling the constructor.
-    # TODO: Here I've passed polynomial degree into the constructor
     def __init__(self, coordinates, polynomial_degree, centre=(0.0, 0.0)):
         """
 
@@ -121,11 +112,6 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         self.radii = list(map(lambda r: self.coordinates_to_radius(r), coordinates))
         self.polynomial = np.polyfit(self.thetas, self.radii, polynomial_degree)
 
-    # TODO: "get_" and "set_" are paradigms used for getting and setting a property of a class instance. They're common
-    # TODO: in Java but not really used in Python. I prefer not to use generic verbs like that in the method name
-    # TODO: because they often don't describe much about what the method does. (As an aside, the property decorated can
-    # TODO: be used to implement a getter and setter paradigm which is really useful for computed variables where you
-    # TODO: have to calculate a value from some other variable, such as an area from a radius)
     def border_radius_at_theta(self, theta):
         """For a an angle theta from the x-axis, return the border radius via the polynomial fit"""
         return np.polyval(self.polynomial, theta)
@@ -193,7 +179,7 @@ class RegularizationMatrix(np.ndarray):
     # TODO: All test cases assume one, constant, regularization coefficient (i.e. all regularization_weights = 1.0).
     # TODO : Need to add test cases for different regularization_weights
 
-    def __new__(cls, dimension, regularization_weights, no_verticies, pixel_pairs):
+    def __new__(cls, dimension, regularization_weights, no_vertices, pixel_pairs):
         """
         Setup a new regularization matrix
 
@@ -203,21 +189,21 @@ class RegularizationMatrix(np.ndarray):
             The dimensions of the square regularization matrix
         regularization_weights : list(float)
             A vector of regularization weights of each source-pixel
-        no_verticies : list(int)
+        no_vertices : list(int)
             The number of Voronoi vertices each source-plane pixel shares with other pixels
         pixel_pairs : list(float, float)
-            A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
+            A list of all pixel-pairs in the source-plane, as computed by the Voronoi griding routine.
         """
 
         obj = np.zeros(shape=(dimension, dimension)).view(cls)
-        obj = obj.make_via_pairs(dimension, regularization_weights, no_verticies, pixel_pairs)
+        obj = obj.make_via_pairs(dimension, regularization_weights, no_vertices, pixel_pairs)
 
         return obj
 
     @staticmethod
-    def make_via_pairs(dimension, regularization_weights, no_verticies, pixel_pairs):
+    def make_via_pairs(dimension, regularization_weights, no_vertices, pixel_pairs):
         """
-        Setup a new Voronoi adptive gridding regularization matrix, bypassing matrix mulitplication by exploiting the
+        Setup a new Voronoi adaptive griding regularization matrix, bypassing matrix multiplication by exploiting the
         symmetry in pixel-neighbourings.
 
         Parameters
@@ -226,7 +212,7 @@ class RegularizationMatrix(np.ndarray):
             The dimensions of the square regularization matrix
         regularization_weights : list(float)
             A vector of regularization weights of each source-pixel
-        no_verticies : list(int)
+        no_vertices : list(int)
             The number of Voronoi vertices each source-plane pixel shares with other pixels
         pixel_pairs : list(float, float)
             A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
@@ -237,7 +223,7 @@ class RegularizationMatrix(np.ndarray):
         reg_weight = regularization_weights ** 2
 
         for i in range(dimension):
-            matrix[i, i] += no_verticies[i] * reg_weight[i]
+            matrix[i, i] += no_vertices[i] * reg_weight[i]
 
         for j in range(len(pixel_pairs)):
             matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[i]
