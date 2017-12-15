@@ -94,7 +94,7 @@ class PriorCollection(list):
         # This constructs a new profile from a collection of priors. Note the prior collection must contain a prior for
         # each argument of the function the arguments are passed into.
         
-        p = profile.Profile(*collection.arguments_for_vector(vector))
+        p = profile.Profile(**collection.arguments_for_vector(vector))
 
         Parameters
         ----------

@@ -28,12 +28,18 @@ class TestUniformPrior(object):
         assert uniform_half.value_for(1.) == 1.
         assert uniform_half.value_for(0.5) == 0.75
 
-
-class TestArguments(object):
     def test__argument(self, uniform_simple):
         assert uniform_simple.argument_for(0.) == ("one", 0)
         assert uniform_simple.argument_for(0.5) == ("one", 0.5)
 
+
+class MockClass(object):
+    def __init__(self, one, two):
+        self.one = one
+        self.two = two
+
+
+class TestCollection(object):
     def test__arguments(self, collection):
         assert collection.arguments_for_vector([0., 0.]) == {"one": 0., "two": 0.5}
         assert collection.arguments_for_vector([1., 0.]) == {"one": 1., "two": 0.5}
@@ -55,3 +61,8 @@ class TestArguments(object):
 
         with pytest.raises(AssertionError):
             collection.append(uniform_simple)
+
+    def test__construct(self, collection):
+        mock_object = MockClass(**collection.arguments_for_vector([1, 1]))
+        assert mock_object.one == 1.
+        assert mock_object.two == 1.
