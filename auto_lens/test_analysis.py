@@ -453,27 +453,27 @@ class TestRegularizationMatrix(object):
     #
     # We make two 9 x 9 B matrices, which describe regularization in each direction. So for regularization to the right of each pixel:
 
-    # B_x = [-1,  1,  0,  0,  0,  0,  0,  0,  0] - This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 1 is saying we want to regularize pixel 0 with pixel 1.
-    #       [ 0, -1,  1,  0,  0,  0,  0,  0,  0] - Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixels 2.
-    #       [ 0,  0, -1,  0,  0,  0,  0,  0,  0] - NOTE - pixel 2 is NOT regularized with pixel 3 (check the square grid)!
-    #       [ 0,  0,  0, -1,  1,  0,  0,  0,  0]
-    #       [ 0,  0,  0,  0, -1,  1,  0,  0,  0]
-    #       [ 0,  0,  0,  0,  0, -1,  0,  0,  0] - NOTE - pixel 5 not regularized with pixel 6!
-    #       [ 0,  0,  0,  0,  0,  0, -1,  1,  0]
-    #       [ 0,  0,  0,  0,  0,  0,  0, -1,  1]
-    #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] - NOTE - Not regularized with anything
+    # B_x = [-1,  1,  0,  0,  0,  0,  0,  0,  0] # [0->1] This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 1 is saying we want to regularize pixel 0 with pixel 1.
+    #       [ 0, -1,  1,  0,  0,  0,  0,  0,  0] # [1->2] Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixels 2.
+    #       [ 0,  0, -1,  0,  0,  0,  0,  0,  0] # [] NOTE - pixel 2 is NOT regularized with pixel 3 (check the square grid)!
+    #       [ 0,  0,  0, -1,  1,  0,  0,  0,  0] # [3->4]
+    #       [ 0,  0,  0,  0, -1,  1,  0,  0,  0] # [4->5]
+    #       [ 0,  0,  0,  0,  0, -1,  0,  0,  0] # [] NOTE - pixel 5 not regularized with pixel 6!
+    #       [ 0,  0,  0,  0,  0,  0, -1,  1,  0] # [6->7]
+    #       [ 0,  0,  0,  0,  0,  0,  0, -1,  1] # [7->8]
+    #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] # [] NOTE - Not regularized with anything
 
     # We now make another B matrix for the regularization beneath each pixel:
 
-    # B_y = [-1,  0,  0,  1,  0,  0,  0,  0,  0] - This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 3 is saying we want to regularize pixel 0 with pixel 3.
-    #       [ 0, -1,  0,  0,  1,  0,  0,  0,  0] - Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixel 4
-    #       [ 0,  0, -1,  0,  0,  1,  0,  0,  0]
-    #       [ 0,  0,  0, -1,  0,  0,  1,  0,  0]
-    #       [ 0,  0,  0,  0, -1,  0,  0,  1,  0]
-    #       [ 0,  0,  0,  0,  0, -1,  0,  0,  1]
-    #       [ 0,  0,  0,  0,  0,  0, -1,  0,  0] - No regularized performed in these last 3 rows / pixels
-    #       [ 0,  0,  0,  0,  0,  0,  0, -1,  0]
-    #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1]
+    # B_y = [-1,  0,  0,  1,  0,  0,  0,  0,  0] # [0->3] This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 3 is saying we want to regularize pixel 0 with pixel 3.
+    #       [ 0, -1,  0,  0,  1,  0,  0,  0,  0] # [1->4] Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixel 4
+    #       [ 0,  0, -1,  0,  0,  1,  0,  0,  0] # [2->5]
+    #       [ 0,  0,  0, -1,  0,  0,  1,  0,  0] # [3->6]
+    #       [ 0,  0,  0,  0, -1,  0,  0,  1,  0] # [4->7]
+    #       [ 0,  0,  0,  0,  0, -1,  0,  0,  1] # [5->8]
+    #       [ 0,  0,  0,  0,  0,  0, -1,  0,  0] # [] No regularized performed in these last 3 rows / pixels
+    #       [ 0,  0,  0,  0,  0,  0,  0, -1,  0] # []
+    #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] # []
 
     # So, we basically just make B matrices representing regularization in each direction. For each, we can then compute
     # Their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
@@ -489,16 +489,34 @@ class TestRegularizationMatrix(object):
 
     #### NOTE ####
 
-    # You will notice, however, that the routine make_via_pairs doesn't use these B matrices above to compute H. This is
+    # You will notice, however, that the routine make_via_pixel_pairs doesn't use these B matrices above to compute H. This is
     # because for a Voronoi grid the B matrices have a very specific form, which means you can build H directly using just the
-    # pairs between each soruce pixel Voronoi vertex, which is given by Python's Voronoi routine :).
+    # pixel_pairs between each soruce pixel Voronoi vertex, which is given by Python's Voronoi routine :).
 
-    # This basically exploits the symmetry that if a B matrix has an entry -1, 1 corresponding to a given Voronoi cell,
-    # It will have the oppossite entry somewhere in another B matrix.
+    # Basically, this form arises between in a Voronoi grid, every pixel which it regularizes with is regularized back
+    # by that pixel. I.e. every Voronoi vertex's neighbour is a neighbour of itself. This means our B matrices alwways look
+    # something like:
 
-    # This also maximizes efficiency in terms of sparseness - as we don't even look at all the zeros in B when making H!
+    # B_1 = [-1,  0,  1,  0,  0] # [0->2] Note the symmetry here, pixel 0 -> 2 and pixel 2 -> 0.
+    #       [ 0, -1,  0,  1,  0] # [1->3] Same for 1 -> 3 and 3 -> 1.
+    #       [ 1,  0, -1,  0,  0] # [2->0]
+    #       [ 0,  1,  0, -1,  0] # [3->1]
+    #       [ 0,  0,  0,  1, -1] # [4->3] Problem - we dont have a corresponding entry of [3->4]
+
+
+    # B_2 = [ 0,  0,  0,  0,  0] # Note how we now just have zeros wherever there is no more neighbouring pixels
+    #       [ 0,  0,  0,  0,  0]
+    #       [ 0,  0,  0,  0,  0]
+    #       [ 0,  0,  0,  -1, 1] # [3->4] - The entry ends up in our next matrix.
+    #       [ 0,  0,  0,  0, 0]
+
+    # Thus, we can bypass matrix multiplication by exploiting this symmetry (and maximize  our use of its sparseness)
+    # which is what theh routine I've wirrten does. We don't even use a B matrix when making H!
 
     # We should get numba of this asap!
+
+    # TODO: All test cases assume one, constant, regularization coefficient (i.e. all regularization_weights = 1.0).
+    # TODO : Need to add test cases for different regularization_weights
 
     def test__one_B_size_3x3_makes_correct_regularization_matrix(self):
 
@@ -519,12 +537,10 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_b_matrix.T * test_b_matrix
 
         no_verticies = np.array([1, 1, 0])
-        pairs = np.array([[0,1]])
+        pixel_pairs = np.array([[0,1]])
+        regularization_weights = np.ones((3))
 
-        regularization_matrix = analysis.RegularizationMatrix(dimension=3,
-                                                              coefficient=1.0,
-                                                              no_verticies=no_verticies,
-                                                              pixel_pairs=pairs)
+        regularization_matrix = analysis.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -538,12 +554,10 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_b_matrix.T * test_b_matrix
 
         no_verticies = np.array([1, 1, 1, 1])
-        pairs = np.array([[0,2],[1,3]])
+        pixel_pairs = np.array([[0,2],[1,3]])
+        regularization_weights = np.ones((4))
 
-        regularization_matrix = analysis.RegularizationMatrix(dimension=4,
-                                                              coefficient=1.0,
-                                                              no_verticies=no_verticies,
-                                                              pixel_pairs=pairs)
+        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -567,13 +581,10 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
         no_verticies = np.array([2, 2, 2, 2])
-        pairs = np.array([[0, 1], [1, 2], [2,3], [3, 0]])
+        pixel_pairs = np.array([[0, 1], [1, 2], [2,3], [3, 0]])
+        regularization_weights = np.ones((4))
 
-
-        regularization_matrix = analysis.RegularizationMatrix(dimension=4,
-                                                              coefficient=1.0,
-                                                              no_verticies=no_verticies,
-                                                              pixel_pairs=pairs)
+        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -596,13 +607,10 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
         no_verticies = np.array([2, 1, 2, 1])
-        pairs = np.array([[0,2], [1,2], [0,3]])
+        pixel_pairs = np.array([[0,2], [1,2], [0,3]])
+        regularization_weights = np.ones((4))
 
-
-        regularization_matrix = analysis.RegularizationMatrix(dimension=4,
-                                                              coefficient=1.0,
-                                                              no_verticies=no_verticies,
-                                                              pixel_pairs=pairs)
+        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
