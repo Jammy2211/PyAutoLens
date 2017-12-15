@@ -5,6 +5,7 @@ from profile import profile
 import sklearn.cluster
 import scipy.spatial
 
+
 # TODO: This class seems to share some ideas with the generic profile. We should be careful not to over-integrate but
 # TODO: for now I think it makes sense to leverage the profile module in other areas as we may be able to reuse some of
 # TODO: its functionality.
@@ -179,6 +180,7 @@ class PixelizationAdaptive(object):
         self.clusters = KMeans(sparse_coordinates, n_clusters)
         self.voronoi = Voronoi(points=self.clusters.cluster_centers_)
 
+
 # TODO : Should we do away with these classes are just directly put them in the PixelizationAdaptive constructor?
 # TODO : I did this so I could mess around with unit tests, happy to just get rid of them but left them for now.
 
@@ -235,24 +237,23 @@ class RegularizationMatrix(np.ndarray):
         reg_weight = regularization_weights ** 2
 
         for i in range(dimension):
-            matrix[i,i] += no_verticies[i]*reg_weight[i]
+            matrix[i, i] += no_verticies[i] * reg_weight[i]
 
         for j in range(len(pixel_pairs)):
             matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[i]
             matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[i]
 
-        return 2.0*matrix
+        return 2.0 * matrix
+
 
 class KMeans(sklearn.cluster.KMeans):
     """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
 
     def __init__(self, points, n_clusters):
-
         super(KMeans, self).__init__(n_clusters=n_clusters)
         self.fit(points)
 
+
 class Voronoi(scipy.spatial.Voronoi):
-
     def __init__(self, points):
-
         super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx')
