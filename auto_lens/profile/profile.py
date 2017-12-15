@@ -260,6 +260,30 @@ class Profile(object):
 
     @classmethod
     def from_profile(cls, profile, **kwargs):
+        """
+        Creates any profile from any other profile, keeping all attributes from the original profile that can be passed
+        into the constructor of the new profile. Any none optional attributes required by the new profile's constructor
+        and not available as attributes of the original profile must be passed in as key word arguments. Arguments
+        matching attributes in the original profile may be passed in to override those attributes.
+
+        Examples
+        ----------
+        p = profile.Profile(centre=(1, 1))
+        elliptical_profile = profile.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
+
+        elliptical_profile = profile.EllipticalProfile(1, 2)
+        profile.Profile.from_profile(elliptical_profile).__class__ == profile.Profile
+
+        Parameters
+        ----------
+        profile: Profile
+            A child of the profile class
+        kwargs
+            Key word constructor arguments for the new profile
+        Returns
+        -------
+
+        """
         arguments = vars(profile)
         arguments.update(kwargs)
         init_args = inspect.getargspec(cls.__init__).args
