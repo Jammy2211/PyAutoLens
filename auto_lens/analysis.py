@@ -162,17 +162,97 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         return coordinate[0] * move_factor, coordinate[1] * move_factor
 
 
-
-class PixelizationAdaptive(sklearn.cluster.KMeans):
-    """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
+class PixelizationAdaptive(object):
+    """An adaptive source-plane pixelization generated using a k-means clusteriing algorithm"""
 
     def __init__(self, sparse_coordinates, n_clusters):
+        """
 
-        super(PixelizationAdaptive, self).__init__(n_clusters=n_clusters)
+        Parameters
+        ----------
+        sparse_coordinates : list(float, float)
+            The x and y coordinates of each traced image sparse-pixel
+        n_clusters : int
+            The source-plane resolution or number of k-means clusters to be used.
+        """
 
-        self.fit(sparse_coordinates)
+        self.clusters = KMeans(sparse_coordinates, n_clusters)
+        self.voronoi = Voronoi(points=self.clusters.cluster_centers_)
 
-    def setup_voronoi_grid(self, points):
+# TODO : Should we do away with these classes are just directly put them in the PixelizationAdaptive constructor?
+# TODO : I did this so I could mess around with unit tests, happy to just get rid of them but left them for now.
 
-        self.voronoi = scipy.spatial.Voronoi(points)
+class RegularizationMatrix(np.ndarray):
+    """Class used for generating the regularization matrix H, which describes how each source-plane pixel is
+    regularized by other source-plane pixels during the source-reconstruction.
 
+    (Python linear algrebra uses ndarray, not matrix, so this inherites from the former."""
+
+    # TODO: All test cases assume one, constant, regularization coefficient (i.e. all regularization_weights = 1.0).
+    # TODO : Need to add test cases for different regularization_weights
+
+    def __new__(cls, dimension, regularization_weights, no_verticies, pixel_pairs):
+        """
+        Setup a new regularization matrix
+
+        Parameters
+        ----------
+        dimension : int
+            The dimensions of the square regularization matrix
+        regularization_weights : list(float)
+            A vector of regularization weights of each source-pixel
+        no_verticies : list(int)
+            The number of Voronoi vertices each source-plane pixel shares with other pixels
+        pixel_pairs : list(float, float)
+            A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
+        """
+
+        obj = np.zeros(shape=(dimension, dimension)).view(cls)
+        obj = obj.make_via_pairs(dimension, regularization_weights, no_verticies, pixel_pairs)
+
+        return obj
+
+    @staticmethod
+    def make_via_pairs(dimension, regularization_weights, no_verticies, pixel_pairs):
+        """
+        Setup a new Voronoi adptive gridding regularization matrix, bypassing matrix mulitplication by exploiting the
+        symmetry in pixel-neighbourings.
+
+        Parameters
+        ----------
+        dimension : int
+            The dimensions of the square regularization matrix
+        regularization_weights : list(float)
+            A vector of regularization weights of each source-pixel
+        no_verticies : list(int)
+            The number of Voronoi vertices each source-plane pixel shares with other pixels
+        pixel_pairs : list(float, float)
+            A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
+        """
+
+        matrix = np.zeros(shape=(dimension, dimension))
+
+        reg_weight = regularization_weights ** 2
+
+        for i in range(dimension):
+            matrix[i,i] += no_verticies[i]*reg_weight[i]
+
+        for j in range(len(pixel_pairs)):
+            matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[i]
+            matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[i]
+
+        return 2.0*matrix
+
+class KMeans(sklearn.cluster.KMeans):
+    """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
+
+    def __init__(self, points, n_clusters):
+
+        super(KMeans, self).__init__(n_clusters=n_clusters)
+        self.fit(points)
+
+class Voronoi(scipy.spatial.Voronoi):
+
+    def __init__(self, points):
+
+        super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx')

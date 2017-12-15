@@ -1,0 +1,105 @@
+##### HOW DO PRIORS WORK WITH MULTINEST? #####
+
+MultiNest samples a non-linear parameter, which is of dimnesion N, the number of parameters in our lens model that we are
+treating as 'free' and therefore trying to estimate the values of.
+
+To do this, MultiNest generates a unit-hypercube of values between 0.0 and 1.0, which is essentially a 1D array of
+dimension N. E.g. if we had just two non-linear parameters, so N = 2, we'd have something like:
+
+cube[0] = 0.5
+cube[1] = 0.68
+
+Our priors define how we take these unit-hypercube values and translate them to the physical values in our lens model.
+So, lets say our two parameters above had the following priors:
+
+parameter_a.prior.type = 'Uniform'
+parameter_a.prior.minimum = 0.0
+parameter_a.prior.maximum = 3.0
+
+parameter_b.prior.type = 'Gassian'
+parameter_b.prior.mean = 1.0
+parameter_b_prior.sigma = 8.0
+
+We would simply go over each value of the unit-hypercube and use its corresponding prior to get physical values...
+
+parameter_a.compute_physical_value = 1.5
+# Known solution - the inverse error of 0.68 ~= 0.3307, so 1 + (sigma*sqrt(2)*0.3307) ~= 4.74159
+parameter_b.compute_physical_value = ~4.74159
+
+So, for each parameter, we basically just define a prior which maps values from 0.0-1.0 to physical values.
+
+The prior modules I use for my CTI code are attatched in PriorCode.
+
+##### SO HOW DO WE SETUP PRIORS FOR PARAMETERS #####
+
+Basically, for each parameter in our lens model that we want to sample with MultiNest (note, we may have some that we
+keep fixed whilst sampling others) we want to simply assign it a prior before the analysis. For my CTI code, this went
+something like:
+
+parameters = Parameters(trap_density=[0.1, 0.3], trap_lifetime=[1.0, 10.0],
+                        well_notch_depth=0.01, well_fill_power=0.8)
+
+parameters.setup_priors(trap_density_prior=[UniPrior(minimum=0.0, maximum=30.0),
+                                            UniPrior(minimum=1.0, maximum=10.0)],
+                       trap_lifetime_prior=[UniPrior(minimum=0.0, maximum=30.0),
+                                            UniPrior(minimum=1.0, maximum=10.0)],
+                     well_notch_depth_prior=GaussPrior(mean=1.0, sigma=2.0),
+                      well_fill_power_prior=GaussPrior(mean=3.0, sigma=5.0))
+
+So that, for example, parameters.well_file_power.value = 0.8 ( this is setup in the initial call)
+                      parameters.well_fill_power.prior.type = 'UNIFORM'
+                      parameters.well_fill_power.prior.minimum = 0.0
+                      parameters.well_fill_power.set_via_prior(unit_value=0.5, cube_no)
+                      parameters.well_file_power.value = 5.0 ( this is updated using the prior above)
+
+I'm sure you can think of a more elegent way to do this....
+
+#### INITIAL PRIORS #################
+
+At the start of an analysis, parameters fall into two categories:
+
+- Those we place uniform priors on based on some basic understanding of a reasonable range of values for that paramater:
+
+    so, we know an axis_ratio can only go between 0.0 and 1.0 (and really low values are unphysical), so we would say
+    axis_ratio.prior = UniPrior(minimum=0.2, maximum=1.0)
+
+ - This we have some estimate of from another observation (this will be ML in the future!):
+
+   So, say we measure the brightest pixel in the centre of the lens to be 3.0 electrons per second. We would say
+   flux.prior = GaussPrior(mean=3.0, sigma=3.0) (Or use a uniform prior, like I said on facebook).
+
+######## RESULTS OF AN ANALYSIS ##########
+
+At the end of the analysis in one phase of AutoLens, MultiNest has fully sampled non-linear parameter space. This means that,
+for each of these lens model parameters we can marginalize it in 1D to compute its posterior probably density function (PDF).
+
+A PDF basically tells us which values of that parameter corresponded to the highest likelihood regions of parameter space.
+Thus, we ought to use those values as priors for the next phases MultiNest non-linear search!
+
+Strictly speaking, a PDF is doesn't confirm to any ordinary shape and can have multiple peaks, skewness etc. However,
+due to the central limit theorem, in most cases they resemple something vaguely Gausssian. So we can just summarize each
+parameters PDF as a Gaussian, with a centre 'mean' and width 'sigma'. We'll often buffer sigma to be larger than the inferred
+errors too, as we don't want our next non-linear search to miss solutions due to overly restrictive priors.
+
+So, at the end of an analysis, we have a PDF of every parameter and therefore an estimate of its resulting mean and sigma.
+We can just take these results and set them up as Gaussian Priors for the corresponding parameters in the next phase!
+
+####### LINKING PARAMETERS / PRIORS ########
+
+The idea behind AutoLens is that each new phase introduces a small chunk of additional complexity to the lens model.
+So, the majority of parameters were estimate in the last phase (and thus have well initialized Gaussian priors), and we
+throw in a few extra new parameters with Uniform priors.
+
+At the end of AutoLens, we 'fix' our lens model and every single parameter will be initialized using a prior inferred from
+the previous phase.
+
+I think our class inheritance should automatically take care of a lot of linking. So, if we go from an EllipticalIsothermalMassProfile
+(5 parameters - x, y, ein_rad, phi, axis_ratio) to an EllipticalPowerLawMassProfile (6 parameters - x, y, ein_rad, phi, axis_ratio, slope),
+it should be obvious that the first 5 parameters can inherite from the IsothermalMassProfile and only slope needs special treatment.
+
+A similiar thing is true if we go from the EllipticalIsothermalMassProfile to a NFWDarkMatterMassProfile (6 - parameters,
+x,, y, kappa, phi, axis_ratio, scale_radious). The Profile class will tell the new dark matter model that it can use
+the x and y of EllipticalIsothermal. Athough phi and axis_ratio are shared between these two profiles, its generally
+not wise to assume the Isothermal's axis-ratio or phi (which represent ALL the mass in the lens) correlate with the
+axis-ratio and phi oof the dark matter.
+
