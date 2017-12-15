@@ -96,53 +96,6 @@ class SersicLightProfile(profile.EllipticalProfile, LightProfile):
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
 
-    def as_sersic_profile(self):
-        """
-
-        Returns
-        -------
-        profile : SersicLightProfile
-            A new sersic profile with parameters taken from this profile
-        """
-        return SersicLightProfile(axis_ratio=self.axis_ratio, phi=self.phi, flux=self.flux,
-                                  effective_radius=self.effective_radius, sersic_index=self.sersic_index,
-                                  centre=self.centre)
-
-    def as_core_sersic_profile(self, radius_break, flux_break, gamma, alpha):
-        """
-
-        Returns
-        -------
-        profile : CoreSersicLightProfile
-            A new core sersic profile with parameters taken from this profile
-        """
-        return CoreSersicLightProfile(axis_ratio=self.axis_ratio, phi=self.phi, flux=self.flux,
-                                      effective_radius=self.effective_radius, sersic_index=self.sersic_index,
-                                      radius_break=radius_break, flux_break=flux_break, gamma=gamma, alpha=alpha,
-                                      centre=self.centre)
-
-    def as_exponential_profile(self):
-        """
-
-        Returns
-        -------
-        profile : ExponentialLightProfile
-            A new exponential profile with parameters taken from this profile
-        """
-        return ExponentialLightProfile(axis_ratio=self.axis_ratio, phi=self.phi, flux=self.flux,
-                                       effective_radius=self.effective_radius, centre=self.centre)
-
-    def as_dev_vaucouleurs_profile(self):
-        """
-
-        Returns
-        -------
-        profile : DevVaucouleursLightProfile
-            A new dev vaucouleurs profile with parameters taken from this profile
-        """
-        return DevVaucouleursLightProfile(axis_ratio=self.axis_ratio, phi=self.phi, flux=self.flux,
-                                          effective_radius=self.effective_radius, centre=self.centre)
-
     @property
     def elliptical_effective_radius(self):
         # Extra physical parameter not used by the model, but has value scientifically TODO: better doc

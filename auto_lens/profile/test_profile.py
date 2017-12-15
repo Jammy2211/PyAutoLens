@@ -827,3 +827,29 @@ class TestTransform(object):
     def test_symmetry(self):
         p = profile.EllipticalProfile(2, 2, (3, 5))
         assert p.transform_from_reference_frame(p.transform_to_reference_frame((5, 7))) == (5, 7)
+
+
+class TestFromProfile(object):
+    def test__profile_from_profile(self):
+        p = profile.Profile(centre=(1, 1))
+        assert profile.Profile.from_profile(p).centre == (1, 1)
+
+    def test__elliptical_profile_from_profile(self):
+        p = profile.Profile(centre=(1, 1))
+        elliptical_profile = profile.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
+        assert elliptical_profile.__class__ == profile.EllipticalProfile
+        assert elliptical_profile.centre == (1, 1)
+        assert elliptical_profile.axis_ratio == 1
+        assert elliptical_profile.phi == 2
+
+    def test__profile_from_elliptical_profile(self):
+        elliptical_profile = profile.EllipticalProfile(1, 2, centre=(1, 1))
+        p = profile.Profile.from_profile(elliptical_profile)
+        assert p.__class__ == profile.Profile
+        assert p.centre == (1, 1)
+
+    def test__optional_override(self):
+        elliptical_profile = profile.EllipticalProfile(axis_ratio=1, phi=2)
+        new_profile = profile.EllipticalProfile.from_profile(elliptical_profile, axis_ratio=3)
+        assert new_profile.phi == 2
+        assert new_profile.axis_ratio == 3
