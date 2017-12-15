@@ -827,3 +827,9 @@ class TestTransform(object):
     def test_symmetry(self):
         p = profile.EllipticalProfile(2, 2, (3, 5))
         assert p.transform_from_reference_frame(p.transform_to_reference_frame((5, 7))) == (5, 7)
+
+
+class TestFromProfile(object):
+    def test__profile_from_profile(self):
+        p = profile.Profile(centre=(1, 1))
+        assert profile.Profile.from_profile(p).centre == (1, 1)
