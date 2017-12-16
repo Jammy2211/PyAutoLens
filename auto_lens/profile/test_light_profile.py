@@ -4,7 +4,6 @@ import pytest
 import light_profile
 import profile
 
-
 @pytest.fixture(name='circular')
 def circular_sersic():
     return light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
@@ -85,6 +84,17 @@ class TestFluxValues(object):
         flux_at_radius = sersic.flux_at_radius(
             radius=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
         assert flux_at_radius == pytest.approx(4.90657319276, 1e-3)
+
+    def test__flux_at_radius__different_axis_ratio(self):
+        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=3.0,
+                                                  effective_radius=2.0, sersic_index=2.0)
+
+        #eta = sqrt(0.5) * sqrt (0 + (1/0.5)) ** 2 = sqrt(0.5) * 2 = sqrt(2)
+        #flux = 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (sqrt(2) / 2.0)) - 1) = 5.38066670129
+
+        flux_at_radius =  sersic.flux_at_coordinates(coordinates=(0, 1))
+
+        assert flux_at_radius == pytest.approx(5.38066670129, 1e-3)
 
     def test__core_sersic_light_profile(self, core):
         assert core.flux_at_radius(0.01) == 0.1
@@ -227,3 +237,6 @@ class TestTransform(object):
 
         with pytest.raises(profile.CoordinatesException):
             elliptical.transform_from_reference_frame((0, 0))
+        
+    
+    

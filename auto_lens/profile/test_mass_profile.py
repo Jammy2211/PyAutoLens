@@ -1123,6 +1123,89 @@ class TestCoredEllipticalIsothermal(object):
             assert deflections[1] == pytest.approx(0.03144, 1e-3)
 
 
+class TestSersicMassAndLightProfile(object):
+
+    class TestSurfaceDensity(object):
+        def test__flip_coordinates_lens_center__same_value(self):            
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density_1 = sersic.compute_surface_density(coordinates=(1.0, 1.0))
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density_2 = sersic.compute_surface_density(coordinates=(0.0, 0.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density_1 = sersic.compute_surface_density(coordinates=(1.0, 0.0))
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density_2 = sersic.compute_surface_density(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density_1 = sersic.compute_surface_density(coordinates=(1.0, 0.0))
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density_2 = sersic.compute_surface_density(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__simple_case__correct_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=0.6, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            surface_density = sersic.compute_surface_density(coordinates=(1.0, 0.0))
+
+            assert surface_density == pytest.approx(0.351797, 1e-3)
+
+        def test__simple_case_2__correct_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(axis_ratio=1.0, phi=0.0, flux=3.0,
+                                                      effective_radius=2.0, sersic_index=2.0, mass_to_light_ratio=1.0)
+
+            surface_density = sersic.compute_surface_density(coordinates=(0.0, 1.5))
+
+            assert surface_density == pytest.approx(4.90657319276, 1e-3)
+
+        def test__double_flux__doubles_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(axis_ratio=1.0, phi=0.0, flux=6.0,
+                                                      effective_radius=2.0, sersic_index=2.0, mass_to_light_ratio=1.0)
+
+            surface_density = sersic.compute_surface_density(coordinates=(0.0, 1.5))
+
+            assert surface_density == pytest.approx(2.0 * 4.90657319276, 1e-3)
+
+        def test__double_mass_to_light_ratio__doubles_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(axis_ratio=1.0, phi=0.0, flux=3.0,
+                                                      effective_radius=2.0, sersic_index=2.0, mass_to_light_ratio=2.0)
+
+            surface_density = sersic.compute_surface_density(coordinates=(0.0, 1.5))
+
+            assert surface_density == pytest.approx(2.0 * 4.90657319276, 1e-3)
+
+        # def test__different_axis_ratio__new_value(self):
+        #     sersic = mass_profile.SersicMassAndLightProfile(axis_ratio=0.5, phi=0.0, flux=3.0,
+        #                                               effective_radius=2.0, sersic_index=2.0, mass_to_light_ratio=1.0)
+        #
+        #     surface_density = sersic.compute_surface_density(coordinates=(1.0, 0.0))
+        #
+        #     assert surface_density == pytest.approx(5.38066670129, 1e-3)
+
+
 class TestCombinedProfiles(object):
     def test_combined_mass_profile(self):
         isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.5, phi=45.0,

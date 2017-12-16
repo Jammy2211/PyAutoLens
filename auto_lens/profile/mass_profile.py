@@ -1,7 +1,6 @@
-import profile
+import profile, light_profile
 import math
 from scipy.integrate import quad
-
 
 class MassProfile(object):
     # noinspection PyMethodMayBeStatic
@@ -73,7 +72,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
     @profile.transform_coordinates
     def compute_surface_density(self, coordinates):
         """
-        Calculate the projected surface density in dimensionless units at a given set of image plane coordinates
+        Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
 
         Parameters
         ----------
@@ -264,3 +263,44 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
 
         super(CoredEllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, core_radius,
                                                                    centre)
+
+class SersicMassAndLightProfile(light_profile.SersicLightProfile):
+    """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
+
+    def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        flux : float
+            Overall flux intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        mass_to_light_ratio : float
+            The mass-to-light ratio of the light profile
+        """
+        super(SersicMassAndLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, sersic_index, centre)
+        self.mass_to_light_ratio = mass_to_light_ratio
+
+#    @profile.transform_coordinates
+    def compute_surface_density(self, coordinates):
+        """Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those coordinates
+        """
+        return self.mass_to_light_ratio * self.flux_at_coordinates(coordinates)
