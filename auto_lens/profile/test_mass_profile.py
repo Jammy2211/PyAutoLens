@@ -1239,17 +1239,69 @@ class TestEllipticalNFWMassProfile(object):
 
             assert surface_density_1 == surface_density_2
 
+    class TestPotential(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            potential_1 = nfw.potential_at_coordinates(coordinates=(1.00001, 1.00001))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            potential_2 = nfw.potential_at_coordinates(coordinates=(0.00001, 0.00001))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            potential_1 = nfw.potential_at_coordinates(coordinates=(1.1, 0.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            potential_2 = nfw.potential_at_coordinates(coordinates=(0.0, 1.1))
+
+            # Foro deflection angles, a 90 degree rtation flips the x / y coordinates
+
+            assert potential_1 == pytest.approx(potential_2, 1e-5)
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            potential_1 = nfw.potential_at_coordinates(coordinates=(1.1, 0.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            potential_2 = nfw.potential_at_coordinates(coordinates=(0.0, 1.1))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-5)
+
+        def test__compare_to_fortran__same_potential(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.2, 0.3), axis_ratio=0.7, phi=6.0,
+                                                        kappa_s=2.5, scale_radius= 4.0)
+            potential = nfw.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert potential == pytest.approx(0.15373, 1e-3)
+
+
     class TestDeflections(object):
         def test__flip_coordinates_lens_center__same_value(self):
             nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                         kappa_s=1.0, scale_radius= 1.0)
 
-            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(1.1, 1.1))
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(1.00001, 1.00001))
 
             nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
                                                         kappa_s=1.0, scale_radius= 1.0)
 
-            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(0.1, 0.1))
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(0.00001, 0.00001))
 
             # Foro deflection angles, a flip of coordinates also reverses the deflection angles
             deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
@@ -1312,7 +1364,6 @@ class TestEllipticalNFWMassProfile(object):
 
 
 class TestSersicMassAndLightProfile(object):
-
     class TestSurfaceDensity(object):
         def test__flip_coordinates_lens_center__same_value(self):            
             sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
@@ -1407,7 +1458,7 @@ class TestSersicMassAndLightProfile(object):
             surface_density_2 = sersic.surface_density_at_coordinates(coordinates=(1.0, 0.0))
 
             assert surface_density_1 == surface_density_2
-
+        
     class TestDeflections(object):
         def test__flip_coordinates_lens_center__same_value(self):
             sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
