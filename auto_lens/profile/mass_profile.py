@@ -4,8 +4,16 @@ from scipy.integrate import quad
 
 class MassProfile(object):
     # noinspection PyMethodMayBeStatic
-    def compute_deflection_angle(self, coordinates):
-        raise AssertionError("Compute deflection angles should be overridden")
+    def surface_density_at_coordinates(self, coordinates):
+        raise AssertionError("Surface density at coordinates should be overridden")
+    
+    # noinspection PyMethodMayBeStatic
+    def potential_at_coordinates(self, coordinates):
+        raise AssertionError("Potential at coordinates should be overridden")
+
+    # noinspection PyMethodMayBeStatic
+    def deflection_angles_at_coordinates(self, coordinates):
+        raise AssertionError("Deflection angles at coordinaates should be overridden")
 
 
 class CombinedMassProfile(list, MassProfile):
@@ -14,7 +22,43 @@ class CombinedMassProfile(list, MassProfile):
     def __init__(self, *mass_profiles):
         super(CombinedMassProfile, self).__init__(mass_profiles)
 
-    def compute_deflection_angle(self, coordinates):
+    def surface_density_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angle at those coordinates
+        """
+        sum = 0.0
+        for t in map(lambda p: p.surface_density_at_coordinates(coordinates), self):
+            sum += t
+        return sum
+    
+    def potential_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angle at those coordinates
+        """
+        sum = 0.0
+        for t in map(lambda p: p.potential_at_coordinates(coordinates), self):
+            sum += t
+        return sum
+
+    def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
 
@@ -28,7 +72,7 @@ class CombinedMassProfile(list, MassProfile):
         The deflection angle at those coordinates
         """
         sum_tuple = (0, 0)
-        for t in map(lambda p: p.compute_deflection_angle(coordinates), self):
+        for t in map(lambda p: p.deflection_angles_at_coordinates(coordinates), self):
             sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
         return sum_tuple
 
@@ -70,7 +114,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
     @profile.transform_coordinates
-    def compute_surface_density(self, coordinates):
+    def surface_density_at_coordinates(self, coordinates):
         """
         Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
 
@@ -98,7 +142,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
             (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
     @profile.transform_coordinates
-    def compute_potential(self, coordinates):
+    def potential_at_coordinates(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
 
@@ -124,7 +168,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         return self.surface_density_func(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @profile.transform_coordinates
-    def compute_deflection_angle(self, coordinates):
+    def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
 
@@ -174,7 +218,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         return 2.0 * self.einstein_radius_rescaled * self.axis_ratio / (math.sqrt(1 - self.axis_ratio ** 2))
 
     @profile.transform_coordinates
-    def compute_deflection_angle(self, coordinates):
+    def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
 
@@ -290,8 +334,8 @@ class SersicMassAndLightProfile(light_profile.SersicLightProfile):
         super(SersicMassAndLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, sersic_index, centre)
         self.mass_to_light_ratio = mass_to_light_ratio
 
-#    @profile.transform_coordinates
-    def compute_surface_density(self, coordinates):
+    @profile.transform_coordinates
+    def surface_density_at_coordinates(self, coordinates):
         """Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
 
         Parameters

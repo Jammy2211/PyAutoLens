@@ -89,12 +89,22 @@ class TestFluxValues(object):
         sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=3.0,
                                                   effective_radius=2.0, sersic_index=2.0)
 
-        #eta = sqrt(0.5) * sqrt (0 + (1/0.5)) ** 2 = sqrt(0.5) * 2 = sqrt(2)
-        #flux = 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (sqrt(2) / 2.0)) - 1) = 5.38066670129
-
         flux_at_radius =  sersic.flux_at_coordinates(coordinates=(0, 1))
 
         assert flux_at_radius == pytest.approx(5.38066670129, 1e-3)
+
+    def test__flux_at_radius__different_rotate_phi_90_same_result(self):
+        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=3.0,
+                                                  effective_radius=2.0, sersic_index=2.0)
+
+        flux_at_radius_1 =  sersic.flux_at_coordinates(coordinates=(0, 1))
+
+        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=3.0,
+                                                  effective_radius=2.0, sersic_index=2.0)
+
+        flux_at_radius_2 =  sersic.flux_at_coordinates(coordinates=(1, 0))
+
+        assert flux_at_radius_1 == flux_at_radius_2
 
     def test__core_sersic_light_profile(self, core):
         assert core.flux_at_radius(0.01) == 0.1

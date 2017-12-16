@@ -119,29 +119,30 @@ class SersicLightProfile(profile.EllipticalProfile, LightProfile):
         Parameters
         ----------
         radius : float
-            The distance from the centre of the profile
+            The elliptical distance from the centre of the profile
         Returns
         -------
         flux: float
-            The flux at that radius
+            The flux at that elliptical radius
         """
         return self.flux * math.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
+    @profile.transform_coordinates
     def flux_at_coordinates(self, coordinates):
         """
         Method for obtaining flux at given coordinates
         Parameters
         ----------
-        coordinates : (int, int)
+        coordinates : (float, float)
             The coordinates in image space
         Returns
         -------
         flux : float
             The value of flux at the given coordinates
         """
-        radius = self.coordinates_to_eccentric_radius(coordinates)
-        return self.flux_at_radius(radius)
+        eta = self.transformed_coordinates_to_eccentric_radius(coordinates)
+        return self.flux_at_radius(eta)
 
 
 class ExponentialLightProfile(SersicLightProfile):
