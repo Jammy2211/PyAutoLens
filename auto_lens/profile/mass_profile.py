@@ -125,7 +125,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
 
-        eta = math.sqrt((coordinates[0] ** 2) + (coordinates[1] ** 2) / (self.axis_ratio ** 2))
+        eta = self.transformed_coordinates_to_elliptical_radius(coordinates)
 
         return self.surface_density_func(eta)
 
@@ -305,11 +305,101 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
         super(CoredEllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, core_radius,
                                                                    centre)
 
+class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
+    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+
+    def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0,0)):
+        """ Setup a NFW dark matter profile.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        kappa_s : float
+            The overall normalization of the dark matter halo
+        scale_radius : float
+            The radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        mass_to_light_ratio : float
+            The mass-to-light ratio of the light profile
+        """
+
+        super(EllipticalNFWMassProfile, self).__init__(axis_ratio, phi, centre)
+        super(MassProfile, self).__init__()
+        self.kappa_s = kappa_s
+        self.scale_radius = scale_radius
+
+    @staticmethod
+    def coord_func(r):
+        if r > 1: return (1.0/math.sqrt(r**2-1)) * math.atan(math.sqrt(r**2-1))
+        elif r < 1: return (1.0/math.sqrt(1-r**2)) * math.atanh(math.sqrt(1-r**2))
+        elif r == 1 : return 1
+
+    def surface_density_func(self, eta):
+        return 2.0 * self.kappa_s * (1 - self.coord_func(eta) ) /(eta**2 - 1)
+
+    @profile.transform_coordinates
+    def surface_density_at_coordinates(self, coordinates):
+        """
+        Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those coordinates
+        """
+
+        eta = (1.0 / self.scale_radius) * self.transformed_coordinates_to_elliptical_radius(coordinates)
+
+        return self.surface_density_func(eta)
+
+    @property
+    def deflection_normalization(self):
+        return self.axis_ratio
+
+    def deflection_func(self, u, coordinates, npow):
+        eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
+        return self.surface_density_func(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+
+        def calculate_deflection_component(npow, index):
+            deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+            return self.deflection_normalization * deflection * coordinates[index]
+
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
+
+        return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+
 class SersicMassAndLightProfile(light_profile.SersicLightProfile, MassProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
 
     def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
         """
+        Setup a Sersic mass and light profile.
 
         Parameters
         ----------
@@ -352,8 +442,8 @@ class SersicMassAndLightProfile(light_profile.SersicLightProfile, MassProfile):
         return self.mass_to_light_ratio * self.axis_ratio
 
     def deflection_func(self, u, coordinates, npow):
-        eta = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
-        return self.flux_at_radius(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
+        return self.flux_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):

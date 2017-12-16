@@ -445,9 +445,9 @@ class EllipticalProfile(Profile):
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
         return x, y
 
-    def transformed_coordinates_to_eccentric_radius(self, coordinates):
+    def transformed_coordinates_to_elliptical_radius(self, coordinates):
         """
-        Convert coordinates which are already transformed to a radius in elliptical space.
+        Convert coordinates which are already transformed to an elliptical radius.
 
         Parameters
         ----------
@@ -457,7 +457,7 @@ class EllipticalProfile(Profile):
         -------
         The radius at those coordinates
         """
-        return math.sqrt(self.axis_ratio) * math.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
+        return math.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """

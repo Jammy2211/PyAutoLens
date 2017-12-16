@@ -1123,6 +1123,194 @@ class TestCoredEllipticalIsothermal(object):
             assert deflections[1] == pytest.approx(0.03144, 1e-3)
 
 
+class TestEllipticalNFWMassProfile(object):
+
+    class TestCoordFuncc(object):
+
+        def test__coord_func_x_above_1(self):
+
+            assert mass_profile.EllipticalNFWMassProfile.coord_func(2.0) == pytest.approx(0.60459, 1e-3)
+
+        def test__coord_func_x_below_1(self):
+
+            assert mass_profile.EllipticalNFWMassProfile.coord_func(0.5) == pytest.approx(1.5206919, 1e-3)
+
+        def test__coord_1(self):
+
+            assert mass_profile.EllipticalNFWMassProfile.coord_func(1.0) == 1.0
+
+    class TestSurfaceDensity(object):
+        def test__flip_coordinates_lens_center__same_value(self):            
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 10.0)
+
+            surface_density_1 = nfw.surface_density_at_coordinates(coordinates=(1.0, 1.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 10.0)
+
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 10.0)
+
+            surface_density_1 = nfw.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 10.0)
+
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 10.0)
+
+            surface_density_1 = nfw.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 10.0)
+
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__simple_case__correct_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            # r = 2.0 (> 1.0)
+            # F(r) = (1/(sqrt(3))*atan(sqrt(3)) = 0.60459978807
+            # kappa(r) = 2 * kappa_s * (1 - 0.60459978807) / (4-1) = 0.263600141
+
+            surface_density = nfw.surface_density_at_coordinates(coordinates=(2.0, 0.0))
+
+            assert surface_density == pytest.approx(0.263600141, 1e-3)
+
+        def test__simple_case_2__correct_value(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            surface_density = nfw.surface_density_at_coordinates(coordinates=(0.5, 0.0))
+
+            assert surface_density == pytest.approx(1.388511, 1e-3)
+
+        def test__double_kappa__doubles_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=2.0, scale_radius= 1.0)
+
+            surface_density = nfw.surface_density_at_coordinates(coordinates=(0.5, 0.0))
+
+            assert surface_density == pytest.approx(2.0 * 1.388511, 1e-3)
+
+        def test__double_scale_radius_and_coordinate__same_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 2.0)
+
+            surface_density = nfw.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            assert surface_density == pytest.approx(1.388511, 1e-3)
+
+        def test__different_axis_ratio_and_coordinate_change__new_value(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            surface_density = nfw.surface_density_at_coordinates(coordinates=(0.0, 0.25))
+
+            assert surface_density == pytest.approx(1.388511, 1e-3)
+
+        def test__different_rotate_phi_90_same_result(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            surface_density_1 = nfw.surface_density_at_coordinates(coordinates=(0.0, 2.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(2.0, 0.0))
+
+            assert surface_density_1 == surface_density_2
+
+    class TestDeflections(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(1.1, 1.1))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(0.1, 0.1))
+
+            # Foro deflection angles, a flip of coordinates also reverses the deflection angles
+            deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(1.1, 0.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(0.0, 1.1))
+
+            # Foro deflection angles, a 90 degree rtation flips the x / y coordinates
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(1.1, 0.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(0.0, 1.1))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+
+        # TODO : Write Fortran comparison tests
+
+        def test__compare_to_fortran_1__same_defls(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=1.0, scale_radius= 1.0)
+
+            defls = nfw.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert defls[0] == pytest.approx(0.56194, 1e-3)
+            assert defls[1] == pytest.approx(0.56194, 1e-3)
+
+        def test__compare_to_fortran_2__same_defls(self):
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.2, 0.3), axis_ratio=0.7, phi=6.0,
+                                                        kappa_s=2.5, scale_radius= 4.0)
+            defls = nfw.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert defls[0] == pytest.approx(-0.44204, 1e-3)
+            assert defls[1] == pytest.approx(-2.59480, 1e-3)
+
+
 class TestSersicMassAndLightProfile(object):
 
     class TestSurfaceDensity(object):
@@ -1274,32 +1462,33 @@ class TestSersicMassAndLightProfile(object):
         # TODO : Write Fortran comparison tests
 
         def test__compare_to_fortran_sersic_index_4__same_defls(self):
-            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.75, phi=0.0, flux=1.0,
-                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0, flux=2.0,
+                                                      effective_radius=0.8, sersic_index=4.0, mass_to_light_ratio=3.0)
 
             defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-       #     assert defls[0] == pytest.approx(0.50734, 1e-3)
-       #     assert defls[1] == pytest.approx(0.79421, 1e-3)
+            assert defls[0] / defls[1] == pytest.approx(0.1376, 1e-3)
+            assert defls[0] == pytest.approx(-3.37605, 1e-3)
+            assert defls[1] == pytest.approx(-24.528, 1e-3)
 
         def test__compare_to_fortran_sersic_index_1__same_defls(self):
-            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.75, phi=0.0, flux=1.0,
-                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, flux=5.0,
+                                                      effective_radius=0.2, sersic_index=1.0, mass_to_light_ratio=1.0)
 
             defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-       #     assert defls[0] == pytest.approx(0.50734, 1e-3)
-       #     assert defls[1] == pytest.approx(0.79421, 1e-3)
+            assert defls[0] == pytest.approx(0.62569, 1e-3)
+            assert defls[1] == pytest.approx(0.90493, 1e-3)
 
 
         def test__compare_to_fortran_sersic_index_2__same_defls(self):
-            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.75, phi=0.0, flux=1.0,
-                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, flux=5.0,
+                                                      effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
 
             defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-      #      assert defls[0] == pytest.approx(0.50734, 1e-3)
-      #      assert defls[1] == pytest.approx(0.79421, 1e-3)
+            assert defls[0] == pytest.approx(0.79374, 1e-3)
+            assert defls[1] == pytest.approx(1.1446, 1e-3)
 
         
         
