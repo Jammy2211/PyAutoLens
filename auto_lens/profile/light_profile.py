@@ -70,8 +70,7 @@ class CombinedLightProfile(list, LightProfile):
 
 
 class SersicLightProfile(profile.EllipticalProfile, LightProfile):
-    """Used to fit the light of a galaxy. It can produce both highly concentrated light profiles (for high Sersic Index)
-     or extended flatter profiles (for low Sersic Index)."""
+    """The Sersic light profile, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, centre=(0, 0)):
         """
