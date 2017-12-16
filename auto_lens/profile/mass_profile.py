@@ -340,8 +340,12 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         elif r < 1: return (1.0/math.sqrt(1-r**2)) * math.atanh(math.sqrt(1-r**2))
         elif r == 1 : return 1
 
+    @property
+    def surface_density_normalization(self):
+        return 2.0 * self.kappa_s
+
     def surface_density_func(self, eta):
-        return 2.0 * self.kappa_s * (1 - self.coord_func(eta) ) /(eta**2 - 1)
+        return self.surface_density_normalization * (1 - self.coord_func(eta) ) /(eta**2 - 1)
 
     @profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
@@ -361,6 +365,33 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         eta = (1.0 / self.scale_radius) * self.transformed_coordinates_to_elliptical_radius(coordinates)
 
         return self.surface_density_func(eta)
+
+    @property
+    def potential_normalization(self):
+        return 4.0 * self.kappa_s * self.scale_radius
+
+    def potential_func(self, u, coordinates):
+        eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
+        return (eta/u) *  ( ( math.log(eta/2.0) + self.coord_func(eta) ) / eta ) / (
+            (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+
+    @profile.transform_coordinates
+    def potential_at_coordinates(self, coordinates):
+        """
+        Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those coordinates
+        """
+        potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
+        return self.potential_normalization * potential
+
 
     @property
     def deflection_normalization(self):
