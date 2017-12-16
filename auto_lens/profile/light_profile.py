@@ -141,7 +141,7 @@ class SersicLightProfile(profile.EllipticalProfile, LightProfile):
         flux : float
             The value of flux at the given coordinates
         """
-        eta = self.transformed_coordinates_to_eccentric_radius(coordinates)
+        eta = math.sqrt(self.axis_ratio) * self.transformed_coordinates_to_elliptical_radius(coordinates)
         return self.flux_at_radius(eta)
 
 
