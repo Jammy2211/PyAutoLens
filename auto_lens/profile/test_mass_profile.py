@@ -1220,6 +1220,89 @@ class TestSersicMassAndLightProfile(object):
 
             assert surface_density_1 == surface_density_2
 
+    class TestDeflections(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            deflection_angle_1 = sersic.deflection_angles_at_coordinates(coordinates=(1.0, 1.0))
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=(0.0, 0.0))
+
+            # Foro deflection angles, a flip of coordinates also reverses the deflection angles
+            deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            deflection_angle_1 = sersic.deflection_angles_at_coordinates(coordinates=(1.0, 0.0))
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=(0.0, 1.0))
+
+            # Foro deflection angles, a 90 degree rtation flips the x / y coordinates
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            deflection_angle_1 = sersic.deflection_angles_at_coordinates(coordinates=(1.0, 0.0))
+
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+
+        # TODO : Write Fortran comparison tests
+
+        def test__compare_to_fortran_sersic_index_4__same_defls(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.75, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+       #     assert defls[0] == pytest.approx(0.50734, 1e-3)
+       #     assert defls[1] == pytest.approx(0.79421, 1e-3)
+
+        def test__compare_to_fortran_sersic_index_1__same_defls(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.75, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+       #     assert defls[0] == pytest.approx(0.50734, 1e-3)
+       #     assert defls[1] == pytest.approx(0.79421, 1e-3)
+
+
+        def test__compare_to_fortran_sersic_index_2__same_defls(self):
+            sersic = mass_profile.SersicMassAndLightProfile(centre=(0.0, 0.0), axis_ratio=0.75, phi=0.0, flux=1.0,
+                                                      effective_radius=1.0, sersic_index=4.0, mass_to_light_ratio=1.0)
+
+            defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+      #      assert defls[0] == pytest.approx(0.50734, 1e-3)
+      #      assert defls[1] == pytest.approx(0.79421, 1e-3)
+
+        
+        
 
 class TestCombinedProfiles(object):
     

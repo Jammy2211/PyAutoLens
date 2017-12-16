@@ -511,6 +511,8 @@ class EllipticalProfile(Profile):
         # Multiply by radius to get their x / y distance from the profile centre in this elliptical unit system
         return TransformedCoordinates((radius * cos_theta, radius * sin_theta))
 
+    def eta_u(self, u, coordinates):
+        return math.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
 class SphericalProfile(EllipticalProfile):
     """Generic circular profile class to contain functions shared by light and mass profiles"""

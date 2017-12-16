@@ -107,9 +107,6 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
     def einstein_radius_rescaled(self):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
-    def eta_u(self, u, coordinates):
-        return math.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
-
     def surface_density_func(self, eta):
         return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
 
@@ -308,7 +305,7 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
         super(CoredEllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, core_radius,
                                                                    centre)
 
-class SersicMassAndLightProfile(light_profile.SersicLightProfile):
+class SersicMassAndLightProfile(light_profile.SersicLightProfile, MassProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
 
     def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
@@ -332,6 +329,7 @@ class SersicMassAndLightProfile(light_profile.SersicLightProfile):
             The mass-to-light ratio of the light profile
         """
         super(SersicMassAndLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, sersic_index, centre)
+        super(MassProfile, self).__init__()
         self.mass_to_light_ratio = mass_to_light_ratio
 
     @profile.transform_coordinates
@@ -348,3 +346,35 @@ class SersicMassAndLightProfile(light_profile.SersicLightProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
         return self.mass_to_light_ratio * self.flux_at_coordinates(coordinates)
+
+    @property
+    def deflection_normalization(self):
+        return self.mass_to_light_ratio * self.axis_ratio
+
+    def deflection_func(self, u, coordinates, npow):
+        eta = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
+        return self.flux_at_radius(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+
+        def calculate_deflection_component(npow, index):
+            deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
+            return self.deflection_normalization * deflection * coordinates[index]
+
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
+
+        return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
