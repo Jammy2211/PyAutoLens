@@ -1,0 +1,64 @@
+
+class UniPrior(Prior):
+    """An instance of the UniPrior class can be asigned to each cti model parameters for calibration, \
+    using the CTI_Params.ParamValue class.
+
+    This prior draws points randomly from a uniform distribution defined between a minimum value "MIN" and maximum
+    value "MAX".
+    """
+
+    def __init__(self, minimum, maximum):
+        """Set up uniform prior with minimum and maximum values, used to draw points randomly from a uniform
+        distribution"""
+
+        super(UniPrior, self).__init__(type='UNIFORM')
+
+        self.minimum = minimum
+        self.maximum = maximum
+
+    def get_phys_value(self, unit_value):
+        """For an input value between 0 and 1, returns the physical value specified by the priors minimum / maximum"""
+
+        phys_value = self.minimum + unit_value * (self.maximum - self.minimum)
+
+        return phys_value
+
+    def set_phys_value(self, unit_value, cube_no):
+        """For an input value between 0 and 1, changes the parameter value to the physical value specified by the priors
+         minimum / maximum and updates the MultiNest unit-hypercube and index"""
+
+        self.value = self.minimum + unit_value * (self.maximum - self.minimum)
+
+        cube_no += 1
+        return self.value, cube_no
+
+class GaussPrior(Prior):
+    """An instance of the GaussPrior class can be asigned to each cti model parameters for calibration, \
+    using the CTI_Params.ParamValue class.
+
+    This prior draws points randomly from a normal distribution defined with mean "MEAN" and full-width half maximum
+    "SIGMA".
+    """
+
+    def __init__(self, mean, sigma):
+        """Set up Gaussian prior with mean and FWHM, used to draw points randomly from a normal distribution"""
+        super(GaussPrior, self).__init__(type='GAUSSIAN')
+
+        self.mean = mean
+        self.sigma = sigma
+
+    def get_phys_value(self, unit_value):
+        """For an input value between 0 and 1, returns the physical value specified by the priors mean and sigma"""
+
+        phys_value = self.mean + (self.sigma * math.sqrt(2) * erfinv((unit_value*2.0)-1.0))
+
+        return phys_value
+
+    def set_phys_value(self, unit_value, cube_no):
+        """For an input value between 0 and 1, changes the parameter value to the physical value specified by the priors
+         mean / sigma and updates the MultiNest unit-hypercube and index"""
+
+        self.value = self.mean + (self.sigma * math.sqrt(2) * erfinv((unit_value*2.0)-1.0))
+
+        cube_no += 1
+        return self.value, cube_no
