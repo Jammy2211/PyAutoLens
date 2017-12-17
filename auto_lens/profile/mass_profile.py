@@ -325,10 +325,6 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
             The overall normalization of the dark matter halo
         scale_radius : float
             The radius containing half the light of this model
-        sersic_index : Int
-            The concentration of the light profile
-        mass_to_light_ratio : float
-            The mass-to-light ratio of the light profile
         """
 
         super(EllipticalNFWMassProfile, self).__init__(axis_ratio, phi, centre)
@@ -430,7 +426,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
-class SersicMassAndLightProfile(light_profile.SersicLightProfile, MassProfile):
+class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
 
     def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
@@ -454,9 +450,13 @@ class SersicMassAndLightProfile(light_profile.SersicLightProfile, MassProfile):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profile
         """
-        super(SersicMassAndLightProfile, self).__init__(axis_ratio, phi, flux, effective_radius, sersic_index, centre)
+        super(SersicMassProfile, self).__init__(axis_ratio, phi, flux, effective_radius, sersic_index, centre)
         super(MassProfile, self).__init__()
         self.mass_to_light_ratio = mass_to_light_ratio
+
+    @classmethod
+    def from_sersic_light_profile(cls, sersic_light_profile, mass_to_light_ratio):
+        return SersicMassProfile.from_profile(sersic_light_profile, mass_to_light_ratio=mass_to_light_ratio)
 
     @profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
