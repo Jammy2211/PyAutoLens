@@ -387,6 +387,7 @@ class EllipticalProfile(Profile):
         phi_radians = math.radians(self.phi)
         return math.cos(phi_radians), math.sin(phi_radians)
 
+    @transform_coordinates
     def coordinates_to_eccentric_radius(self, coordinates):
         """
         Convert the coordinates to a radius in elliptical space.
@@ -400,9 +401,8 @@ class EllipticalProfile(Profile):
         The radius at those coordinates
         """
 
-        shifted_coordinates = self.transform_to_reference_frame(coordinates)
         return math.sqrt(self.axis_ratio) * math.sqrt(
-            shifted_coordinates[0] ** 2 + (shifted_coordinates[1] / self.axis_ratio) ** 2)
+            coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
     def coordinates_angle_to_profile(self, theta):
         """
@@ -445,7 +445,8 @@ class EllipticalProfile(Profile):
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
         return x, y
 
-    def transformed_coordinates_to_elliptical_radius(self, coordinates):
+    @transform_coordinates
+    def coordinates_to_elliptical_radius(self, coordinates):
         """
         Convert coordinates which are already transformed to an elliptical radius.
 
@@ -513,6 +514,7 @@ class EllipticalProfile(Profile):
 
     def eta_u(self, u, coordinates):
         return math.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
+
 
 class SphericalProfile(EllipticalProfile):
     """Generic circular profile class to contain functions shared by light and mass profiles"""
