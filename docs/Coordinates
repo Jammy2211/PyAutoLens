@@ -1,0 +1,116 @@
+=========== Coordinates ===========
+
+Currently, we have an image which is defined in arcseconds (ie. -10.0 to 10.0 or 0.0 to 20.0).
+
+We compute a model at a profile centre, which shifts these image coordinates to its centre:
+
+e.g. if profile.centre = (2.0, 2.0), an image coordinate (5.0, 5.0) becomes (3.0, 3.0)
+
+We then compute the light profile and deflection angles using this shifted coordinate system. This subsequently includes
+transforms which rotate coordinates to and from the profile orientation.
+
+However, Our routine coordinates_back_to_cartesian DOES NOT shift coordinates back to their original locations. So, for example,
+if the original coordinates are (10.0, 10.0) and profile.centre is (8.0, 8.0) then the following routine:
+
+elliptical_profile = profile.EllipticalProfile(axis_ratio=1.0, phi=174.342, centre=(2.0, 2.0))
+coordinates_original = (10.0, 10.0)
+coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
+coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)
+
+returns that coordinates = (8.0, 8.0). Thus they stay in the reference frame of the lens profile and not their original
+image-plane coordinate.
+
+============= Consequences ==========
+
+The benefit of doing this is that it makes adding the light profiles and deflection angles together a lot easier. Because
+after this shifting each profile is centred at (0.0, 0.0), we can add deflection angles together simply as:
+
+deflections = deflections_of_profile_1 + deflectionos_of_profile_2 + etc.
+
+In contrast, if each set of deflection angles were shifted back to the image-plane coordinates (e.g. so the function above
+returned (10.0, 10.0)) we'd have to re-shift deflection angles when adding them together:
+
+profile_1.centre = (2.0, 2.0)
+profile_2.centre = (8.0, 8.0)
+
+deflections = (deflections_of_profile_1 - (2.0, 2.0)) + (deflections_of_profile_2 - (8.0, 8.0)) + etc.
+
+The downside of our currentl implementation however, is that the source-plane is now defined using the image-plane coordinates
+rather than being centred on the profile. For example, if an image pixel is at (8.5, 8.5) and the mass profile is centred at (8.0., 8.0),
+the deflection angle it computes there will be centred on (0.0, 0.0) and thus small relative to 8.0. So, our source-plane
+will take values spanning from around 7.0 to 8.0 - it'd be nicer if it were centred on (0.0, 0.0).
+
+For the source-plane, I've included its centre as an input parameter. We need to decide what we generally use to define its centre:
+
+- The image-plane centre. This is how the fortran code does it - a benefit is that the source-plane coordinates won't shift about
+ arbritraly - which can lead to nasty discreteness effects.
+
+- The image-plane mask centre. In hindsight, this is how I feel I should have done it all along, albeit its very clsoe to the
+image-plane centre generally. Again, it means that source coordinates won't 'jiggle' throughout an analysis.
+
+- The mass profile centre - coordinates will shift slightly for each profile, which can lead to annoying discreteness
+ effects. This, in my opinion, is also a lot less clear to the user than using the mask centre.
+
+ In general, we want source-plane coordinates to be centred on (0.0, 0.0), which all the optios above will achieve.
+We need to decide if this is something we just do whene we construct the source plane
+(i.e. source_plane.shifted_coordinates = source_plane.coordinates - source_plane.centre) or only in the coordinates_to_?
+routines, analogous to profile. I've taken the latter approach for now, but feel actually the former is cleaner.
+
+
+=========== Coordinates as used by the Pixelization =============
+
+It is useful to define the source-plane with two sets of coordinates:
+
+- sub_coordinates - this is the location of every traced image sub-pixel in the source-plane. The sub-pixels are used
+by the linear matrix inversion to reconstruct the source, thus they are the core of the source-reconstruction.
+
+- sparse_coordinates - this is the location of a sparse sub-set of traced image pixels in the source-plane. These are not
+used by the source reconstruction per-se, but can offer significantly speed up the k-means clustering, as if we feed
+every sub_coordinate into a k-means algoirthm for high resolution imaging or a high grid_size it'll take ages!
+
+Therefore, the sparse_coordinates are only required for a Pixelization which uses the k-means clustering alogirthm. A rectangular
+grid only need use the sub_coordinates.
+
+
+There is a snag in using sparse_coordinate's to speed up the k-means clustering algorithm.
+This will only give us the mappings between each sparse_coordinate and its nearest k-means cluster. Thus, we still need to
+map each sub_coordinate to its closest k-means cluster. Naively, this would involve a nearest neighbour search between
+every sub-pixel and set of k-means clusters, which is very expensive for large k-means clusters / sub_coordinates.
+
+However, it is wasteful to to compare each sub-pixel with every k-means cluster, because we know which sparse_coordinate
+that k-means cluster maps to, and we can known that sparse_coordinate's nearest sub_coordinate. Thus, we have an additional
+array, sub_to_nearest_sparse, which is over size len(sub_coordinates) and for each entry has an integer value corresponding to
+that the entry in sparse_coordinate which corresponds to the nearest coordinate to that sub-coordinate.
+
+Example:
+
+If our 0th sub_coordinate is = (1.6, 1.6)
+
+and four sparse coordinates = [(-1.5, -1.5), (1.5, 1.5), (2.5, 2.5), (3.5, 3.5)]
+
+Then sub_to_sparse[0] = 1, as its nearest sparse_coordinate corresponds to entry 1 in sparse_coordinate
+
+Now, to map a sub-pixel to a k-means cluster, we can use sub_to_sparse to instantly find its nearest sparse pixel and
+therefore find out what k-means cluster that sparse_pixel maps to. Then, instead of compairing each sub_coordinate with every
+k-means cluster, we can compare it to a small sub-set starting at its nearest sparse_coordinates k-means cluster.
+
+In practise, for the fortran code, the way I did this was I would allocate a sub_coordinate to the k_means cluster its
+nearest sparse_coordinate mapped to. Then, I would do a nearest neighbour search between that sub_coordinate, its
+current k-means cluster and all k-means clusters that cluster shared a Voronoi vertex with (the Voronoi grid is already
+computed at this point). One of two things happen:
+
+1) The sub-coordinate's nearest k-means cluster is the one its already mapped to. In this case, we've mapped it successfully to
+its nearest k-means cluster!
+
+2) The sub-coordinate's nearest k-means cluster was a Voronoi vertex of the k-means cluster it was initially mapped to.
+We therefore map this sub-coordinate to this new k-means cluster. However, we cannot be sure this new k-means cluster is
+definitely the sub-coordinates closest k-means cluster, so we repeat the process above until criteria 1) is reached.
+
+Your thoughts on this are welcome, there may be a better way to implement this then how I have. In terms of testing, we
+can compare a method which maps sub-pixels using the nearest neighbour to every k-means cluster to one which uses the
+method above.
+
+========= NOTE ==========
+
+Therefore, nothing we're using thus far actually uses the centers of image_pixels (uness the sub_grid_size = 1). We might
+want these coordinates for visualization or something, but really they arn't that important I think.
