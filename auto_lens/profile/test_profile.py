@@ -424,7 +424,7 @@ class TestEllipticalProfile(object):
 
             coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
-            elliptical_radius = elliptical_profile.transformed_coordinates_to_eccentric_radius(coordinates_elliptical)
+            elliptical_radius = elliptical_profile.coordinates_to_eccentric_radius(coordinates_elliptical)
 
             assert elliptical_radius == pytest.approx(2.0**0.5, 1e-3)
 
@@ -434,7 +434,7 @@ class TestEllipticalProfile(object):
 
             coordinates_elliptical = profile.TransformedCoordinates((1.0, 1.0))
 
-            elliptical_radius = elliptical_profile.transformed_coordinates_to_eccentric_radius(coordinates_elliptical)
+            elliptical_radius = elliptical_profile.coordinates_to_eccentric_radius(coordinates_elliptical)
 
             # sqrt(0.5) * sqrt(1.0**2 + (1.0 / 0.5)**2 ) = sqrt(0.5) * sqrt( 5 )
 
