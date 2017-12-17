@@ -125,7 +125,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
 
-        eta = self.transformed_coordinates_to_elliptical_radius(coordinates)
+        eta = self.coordinates_to_elliptical_radius(coordinates)
 
         return self.surface_density_func(eta)
 
@@ -362,7 +362,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
 
-        eta = (1.0 / self.scale_radius) * self.transformed_coordinates_to_elliptical_radius(coordinates)
+        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
 
         return self.surface_density_func(eta)
 
