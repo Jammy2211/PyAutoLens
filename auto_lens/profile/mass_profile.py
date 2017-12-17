@@ -2,11 +2,12 @@ import profile, light_profile
 import math
 from scipy.integrate import quad
 
+
 class MassProfile(object):
     # noinspection PyMethodMayBeStatic
     def surface_density_at_coordinates(self, coordinates):
         raise AssertionError("Surface density at coordinates should be overridden")
-    
+
     # noinspection PyMethodMayBeStatic
     def potential_at_coordinates(self, coordinates):
         raise AssertionError("Potential at coordinates should be overridden")
@@ -39,7 +40,7 @@ class CombinedMassProfile(list, MassProfile):
         for t in map(lambda p: p.surface_density_at_coordinates(coordinates), self):
             sum += t
         return sum
-    
+
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -305,10 +306,11 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
         super(CoredEllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, core_radius,
                                                                    centre)
 
+
 class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
     """The spherical NFW profile, used to fit the dark matter halo of the lens."""
 
-    def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0,0)):
+    def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0, 0)):
         """ Setup a NFW dark matter profile.
 
         Parameters
@@ -336,16 +338,19 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
 
     @staticmethod
     def coord_func(r):
-        if r > 1: return (1.0/math.sqrt(r**2-1)) * math.atan(math.sqrt(r**2-1))
-        elif r < 1: return (1.0/math.sqrt(1-r**2)) * math.atanh(math.sqrt(1-r**2))
-        elif r == 1 : return 1
+        if r > 1:
+            return (1.0 / math.sqrt(r ** 2 - 1)) * math.atan(math.sqrt(r ** 2 - 1))
+        elif r < 1:
+            return (1.0 / math.sqrt(1 - r ** 2)) * math.atanh(math.sqrt(1 - r ** 2))
+        elif r == 1:
+            return 1
 
     @property
     def surface_density_normalization(self):
         return 2.0 * self.kappa_s
 
     def surface_density_func(self, eta):
-        return self.surface_density_normalization * (1 - self.coord_func(eta) ) /(eta**2 - 1)
+        return self.surface_density_normalization * (1 - self.coord_func(eta)) / (eta ** 2 - 1)
 
     @profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
@@ -372,7 +377,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
 
     def potential_func(self, u, coordinates):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
-        return (eta/u) *  ( ( math.log(eta/2.0) + self.coord_func(eta) ) / eta ) / (
+        return (eta / u) * ((math.log(eta / 2.0) + self.coord_func(eta)) / eta) / (
             (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
     @profile.transform_coordinates
@@ -391,7 +396,6 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         """
         potential = quad(self.potential_func, a=0.0, b=1.0, args=(coordinates,))[0]
         return self.potential_normalization * potential
-
 
     @property
     def deflection_normalization(self):
@@ -424,6 +428,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+
 
 class SersicMassAndLightProfile(light_profile.SersicLightProfile, MassProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
