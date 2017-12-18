@@ -1346,6 +1346,108 @@ class TestEllipticalNFWMassProfile(object):
             assert defls[1] == pytest.approx(-2.59480, 1e-3)
 
 
+class TestSphericalNFWMassProfile(object):
+
+    class TestSurfaceDensity(object):
+        
+        def test__simple_case__correct_value(self):
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+            surface_density = nfw.surface_density_at_coordinates(coordinates=(2.0, 0.0))
+
+            assert surface_density == pytest.approx(0.263600141, 1e-3)
+
+    class TestPotential(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+            potential_1 = nfw.potential_at_coordinates(coordinates=(1.00001, 1.00001))
+
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.0, 1.0), kappa_s=1.0, scale_radius=1.0)
+
+            potential_2 = nfw.potential_at_coordinates(coordinates=(0.00001, 0.00001))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+        def test__compare_to_elliptical_model__same_value(self):
+
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.0, 1.0), kappa_s=5.0, scale_radius=10.0)
+
+            potential_1 = nfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                        kappa_s=5.0, scale_radius=10.0)
+
+            potential_2 = nfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+        # def test__compare_to_fortran__same_potential(self):
+        #     nfw = mass_profile.SphericalNFWMassProfile(centre=(0.2, 0.3), kappa_s=2.5, scale_radius=4.0)
+        #     potential = nfw.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+        #
+        #     assert potential == pytest.approx(0.15373, 1e-3)
+
+    class TestDeflections(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.0, 0.0),  kappa_s=1.0, scale_radius=1.0)
+
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(1.00001, 1.00001))
+
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.0, 1.0), kappa_s=1.0, scale_radius=1.0)
+
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(0.00001, 0.00001))
+
+            # Foro deflection angles, a flip of coordinates also reverses the deflection angles
+            deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        # TODO : Write Fortran comparison tests
+
+        def test__compare_to_fortran_1__same_defls(self):
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+            defls = nfw.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert defls[0] == pytest.approx(0.56194, 1e-3)
+            assert defls[1] == pytest.approx(0.56194, 1e-3)
+
+        # def test__compare_to_fortran_2__same_defls(self):
+        #     nfw = mass_profile.SphericalNFWMassProfile(centre=(0.2, 0.3), kappa_s=2.5, scale_radius=4.0)
+        #     defls = nfw.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+        #
+        #     assert defls[0] == pytest.approx(-0.44204, 1e-3)
+        #     assert defls[1] == pytest.approx(-2.59480, 1e-3)
+
+        def test__compare_to_elliptical__same_value(self):
+
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.0, 1.0),  kappa_s=10.0, scale_radius=0.1)
+
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(3.0, 3.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=45.0,
+                                                        kappa_s=10.0, scale_radius=0.1)
+
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(3.0, 3.0))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__compare_to_elliptical_2__same_value(self):
+
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.5, 1.5),  kappa_s=7.0, scale_radius=0.15)
+
+            deflection_angle_1 = nfw.deflection_angles_at_coordinates(coordinates=(-3.2, 1.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.5, 1.5), axis_ratio=1.0, phi=60.0,
+                                                        kappa_s=7.0, scale_radius=0.15)
+
+            deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=(-3.2, 1.0))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
 class TestSersicMassProfile(object):
     class TestSurfaceDensity(object):
         def test__flip_coordinates_lens_center__same_value(self):
