@@ -308,7 +308,7 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
 
 
 class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
-    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+    """The elliptical NFW profile, used to fit the dark matter halo of the lens."""
 
     def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0, 0)):
         """ Setup a NFW dark matter profile.
@@ -424,6 +424,81 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+
+
+class SphericalNFWMassProfile(EllipticalNFWMassProfile):
+    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+
+    def __init__(self, kappa_s, scale_radius, centre=(0, 0)):
+        """ Setup a NFW dark matter profile.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        kappa_s : float
+            The overall normalization of the dark matter halo
+        scale_radius : float
+            The radius containing half the light of this model
+        """
+
+        super(SphericalNFWMassProfile, self).__init__(1.0, 0.0, kappa_s, scale_radius, centre)
+
+    # TODO : There is a factor of kappa_s difference between the Elliptical and Spherical NFW profiles, even though
+    # TODO : I've checked the equations are copied correct. Figure out why...
+
+    @property
+    def potential_normalization(self):
+        return 2.0 * (self.scale_radius ** 2) # *self.kappa_s
+
+    def potential_func_sph(self, eta):
+        return ((math.log(eta/2.0)**2) - math.atanh(math.sqrt(1 - eta**2))**2)
+
+    # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be over-ridden.
+    # TODO : Should be able to refactor code to deal with this nicely, but will wait until wwe're clear on numba.
+
+    @profile.transform_coordinates
+    def potential_at_coordinates(self, coordinates):
+        """
+        Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those coordinates
+        """
+        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
+        return self.potential_normalization * self.potential_func_sph(eta)
+
+    @property
+    def deflection_normalization(self):
+        return 4.0 * self.kappa_s * self.scale_radius
+
+    def deflection_func_sph(self, eta):
+        return (math.log(eta/2.0) + self.coord_func(eta)) / eta
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
+        deflection_r = self.deflection_normalization * self.deflection_func_sph(eta)
+
+        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
 class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):

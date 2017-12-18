@@ -460,6 +460,23 @@ class EllipticalProfile(Profile):
         """
         return math.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
+    def coordinates_radius_to_x_and_y(self, coordinates, radius):
+        """Decomposed a coordinate at a given radius r into its x and y vectors
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The image coordinates (x, y)
+        radius : float
+            The radius r from the centre of the coordinate reference frame.
+
+        Returns
+        ----------
+        The coordinates after the decomposed into x and y components"""
+        theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
+        cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
+        return radius*cos_theta, radius*sin_theta
+
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
         Rotate elliptical coordinates back to the original Cartesian grid (for a circular profile this
