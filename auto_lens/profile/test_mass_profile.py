@@ -699,6 +699,7 @@ class TestCoredEllipticalPowerLaw(object):
 
 
 class TestEllipticalIsothermal(object):
+    
     class TestSetup(object):
         def test__setup_elliptical_power_law__correct_values(self):
             power_law = mass_profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
@@ -712,7 +713,155 @@ class TestEllipticalIsothermal(object):
             assert power_law.slope == 2.0
             assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
-    # TODO: Add surface density / more potential tests
+    class TestSurfaceDensity(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density_1 = isothermal.surface_density_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density_2 = isothermal.surface_density_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density_1 = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density_2 = isothermal.surface_density_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density_1 = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density_2 = isothermal.surface_density_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__simple_case__correct_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(0.5, 1e-3)
+
+        def test__double_einr__doubles_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=2.0)
+
+            surface_density = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(0.5 * 2.0, 1e-3)
+
+        def test__different_axis_ratio__new_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            surface_density = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(0.66666, 1e-3)
+
+    class TestPotential(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert potential_1 == potential_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0,
+                                                                   einstein_radius=1.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert potential_1 == potential_2
+
+        def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0,
+                                                                   einstein_radius=1.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                                   einstein_radius=1.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert potential_1 == potential_2
+
+        def test__compare_to_isothermal_ratio_of_two_potentials__same_ratio(self):
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0,
+                                                                   einstein_radius=1.0)
+
+            potential_isothermal_1 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
+                                                                   einstein_radius=1.6)
+
+            potential_isothermal_2 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            isothermal_ratio = potential_isothermal_1 / potential_isothermal_2
+
+            assert isothermal_ratio == pytest.approx(isothermal_ratio, 1e-3)
+
+        def test__compare_to_fortran_values__same_potential(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
+                                                                   einstein_radius=1.3)
+
+            potential = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert potential == pytest.approx(1.19268, 1e-3)
+
+        def test__compare_to_power_law__same_values(self):
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.8, -0.4), axis_ratio=0.5, phi=170.0,
+                                                                   einstein_radius=3.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            isothermal = mass_profile.EllipticalPowerLawMassProfile(centre=(0.8, -0.4), axis_ratio=0.5, phi=170.0,
+                                                                   einstein_radius=3.0, slope=2.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert potential_1 == potential_2
 
     class TestDeflections(object):
         def test_no_coordinate_rotation__correct_values(self):
@@ -807,6 +956,134 @@ class TestEllipticalIsothermal(object):
             assert defls[0] == pytest.approx(0.57002, 1e-3)
             assert defls[1] == pytest.approx(0.57002, 1e-3)
 
+
+class TestSphericalIstohermal(object):
+    
+    class TestSetup(object):
+        def test__setup_elliptical_power_law__correct_values(self):
+            power_law = mass_profile.SphericalIsothermalMassProfile(centre=(1, 1),  einstein_radius=1.0)
+
+            assert power_law.x_cen == 1.0
+            assert power_law.y_cen == 1.0
+            assert power_law.axis_ratio == 1.0
+            assert power_law.phi == 0.0
+            assert power_law.einstein_radius == 1.0
+            assert power_law.slope == 2.0
+            assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+
+    class TestSurfaceDensity(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            surface_density_1 = isothermal.surface_density_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(1.0, 1.0), einstein_radius=1.0)
+
+            surface_density_2 = isothermal.surface_density_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            surface_density_1 = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            surface_density_2 = isothermal.surface_density_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__simple_case__correct_value(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            surface_density = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(0.5, 1e-3)
+
+        def test__double_einr__doubles_value(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0),  einstein_radius=2.0)
+
+            surface_density = isothermal.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(0.5 * 2.0, 1e-3)
+
+    class TestPotential(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(1.0, 1.0), einstein_radius=1.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert potential_1 == potential_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.0, 0.0), einstein_radius=1.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert potential_1 == potential_2
+
+        # def test__compare_to_fortran_values__same_potential(self):
+        #     isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.5, -0.7), einstein_radius=1.3)
+        #
+        #     potential = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+        #
+        #     assert potential == pytest.approx(1.19268, 1e-3)
+
+        def test__compare_to_elliptical_isothermal__same_values(self):
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.8, -0.4), einstein_radius=3.0)
+
+            potential_1 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.8, -0.4), axis_ratio=1.0, phi=0.0,
+                                                                   einstein_radius=3.0)
+
+            potential_2 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+        # def test__compare_to_elliptical_isothermal__same_values(self):
+        #     isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.8, -0.4), einstein_radius=3.0)
+        #
+        #     potential_1 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+        #
+        #     isothermal = mass_profile.SphericalPowerLawMassProfile(centre=(0.8, -0.4), axis_ratio=0.5, phi=170.0,
+        #                                                            einstein_radius=3.0, slope=2.0)
+        #
+        #     potential_2 = isothermal.potential_at_coordinates(coordinates=(0.1625, 0.1625))
+        #
+        #     assert potential_1 == potential_2
+
+    class TestDeflections(object):
+        def test__compare_to_elliptical_isothermal__same_value(self):
+
+            isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(0.9, 0.5), axis_ratio=0.99999, phi=0.0,
+                                                                      einstein_radius=4.0)
+
+            defls_1 = isothermal.deflection_angles_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(0.9, 0.5), einstein_radius=4.0)
+
+            defls_2 = isothermal.deflection_angles_at_coordinates(coordinates=(1.0, 1.0))
+
+            assert defls_1[0] == pytest.approx(defls_2[0], 1e-4)
+            assert defls_1[1] == pytest.approx(defls_2[1], 1e-4)
+
+        # TODO : Add fortran comparison
 
 class TestCoredEllipticalIsothermal(object):
     class TestSetup(object):
@@ -1358,13 +1635,15 @@ class TestSphericalNFWMassProfile(object):
 
     class TestPotential(object):
         def test__flip_coordinates_lens_center__same_value(self):
-            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=10.0)
 
-            potential_1 = nfw.potential_at_coordinates(coordinates=(1.00001, 1.00001))
+            potential_1 = nfw.potential_at_coordinates(coordinates=(1.0, 1.0))
 
-            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.0, 1.0), kappa_s=1.0, scale_radius=1.0)
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(1.0, 1.0), kappa_s=1.0, scale_radius=10.0)
 
-            potential_2 = nfw.potential_at_coordinates(coordinates=(0.00001, 0.00001))
+            potential_2 = nfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+
+            print(potential_1, potential_2)
 
             assert potential_1 == pytest.approx(potential_2, 1e-4)
 
@@ -1447,6 +1726,7 @@ class TestSphericalNFWMassProfile(object):
 
             assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
             assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
 
 class TestSersicMassProfile(object):
     class TestSurfaceDensity(object):
