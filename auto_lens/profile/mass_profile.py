@@ -242,6 +242,59 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
+class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
+    """Represents a spherical isothermal density distribution, which is equivalent to the spherical power-law
+    density distribution for the value slope=2.0"""
+    def __init__(self, einstein_radius, centre=(0.0, 0.0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        """
+
+        super(SphericalIsothermalMassProfile, self).__init__(1.0, 0.0, einstein_radius, centre)
+
+    @profile.transform_coordinates
+    def potential_at_coordinates(self, coordinates):
+        """
+        Calculate the gravitational potential at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The gravitational potential [phi(eta)] (r-direction) at those coordinates
+        """
+        eta = self.coordinates_to_elliptical_radius(coordinates)
+        return self.deflection_normalization * eta
+
+    @property
+    def deflection_normalization(self):
+        return 2.0 * self.einstein_radius_rescaled
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+        return self.coordinates_radius_to_x_and_y(coordinates, self.deflection_normalization)
+
 class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
     """Represents a cored elliptical power-law density distribution"""
 
