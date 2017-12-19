@@ -235,6 +235,7 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
         deflection_r = self.deflection_normalization * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope)
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
+
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
@@ -380,6 +381,57 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
                ((self.core_radius ** 2 + eta ** 2) ** ((3.0 - self.slope) / 2.0) -
                 self.core_radius ** (3 - self.slope)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
 
+
+class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
+    """Represents a cored spherical power-law density distribution"""
+
+    def __init__(self, einstein_radius, slope, core_radius, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        slope : float
+            power-law density slope of mass profile
+        core_radius : float
+            The radius of the inner core
+        """
+        super(CoredSphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, core_radius, centre)
+
+    @property
+    def einstein_radius_rescaled(self):
+        return ((3 - self.slope) / (1 + self.axis_ratio)) * (self.einstein_radius + self.core_radius ** 2) ** (
+            self.slope - 1)
+
+    @property
+    def deflection_normalization(self):
+        return 2.0 * self.einstein_radius_rescaled
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+        eta = self.coordinates_to_elliptical_radius(coordinates)
+        deflection_r = self.deflection_normalization * ((3.0 - self.slope) * eta) ** -1.0 *  \
+                       ( (self.core_radius ** 2 + eta) ** (3.0 - self.slope) - self.core_radius**(3-self.slope) )
+        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
     """Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
