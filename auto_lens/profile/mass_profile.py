@@ -449,10 +449,11 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
     @property
     def potential_normalization(self):
-        return 2.0 * (self.scale_radius ** 2) # *self.kappa_s
+        return 2.0 * (self.scale_radius ** 2)  # *self.kappa_s
 
+    @staticmethod
     def potential_func_sph(self, eta):
-        return ((math.log(eta/2.0)**2) - math.atanh(math.sqrt(1 - eta**2))**2)
+        return (math.log(eta / 2.0) ** 2) - math.atanh(math.sqrt(1 - eta ** 2)) ** 2
 
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be over-ridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until wwe're clear on numba.
@@ -479,7 +480,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
         return 4.0 * self.kappa_s * self.scale_radius
 
     def deflection_func_sph(self, eta):
-        return (math.log(eta/2.0) + self.coord_func(eta)) / eta
+        return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
