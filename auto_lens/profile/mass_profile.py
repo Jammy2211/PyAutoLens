@@ -78,6 +78,7 @@ class CombinedMassProfile(list, MassProfile):
         return sum_tuple
 
 
+
 class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
     """Represents an elliptical power-law density distribution"""
 
@@ -190,6 +191,50 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
+class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
+    """Represents a spherical power-law density distribution"""
+
+    def __init__(self, einstein_radius, slope, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of mass profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        slope : float
+            power-law density slope of mass profile
+        """
+
+        super(SphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, centre)
+
+    @property
+    def deflection_normalization(self):
+        return 2.0 * self.einstein_radius_rescaled
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+        eta = self.coordinates_to_elliptical_radius(coordinates)
+        deflection_r = self.deflection_normalization * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope)
+        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
+
 class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
@@ -294,6 +339,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
         The deflection angles [alpha(eta)] (x and y components) at those coordinates
         """
         return self.coordinates_radius_to_x_and_y(coordinates, self.deflection_normalization)
+
 
 class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
     """Represents a cored elliptical power-law density distribution"""
