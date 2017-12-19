@@ -1754,6 +1754,198 @@ class TestCoredEllipticalIsothermal(object):
             assert deflections[1] == pytest.approx(0.03144, 1e-3)
 
 
+class TestCoredSphericalIsothermal(object):
+    class TestSetup(object):
+        def test__setup_elliptical_isothermal_core__correct_values(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1, 1),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            assert isothermal_core.x_cen == 1.0
+            assert isothermal_core.y_cen == 1.0
+            assert isothermal_core.axis_ratio == 1.0
+            assert isothermal_core.phi == 0.0
+            assert isothermal_core.einstein_radius == 1.0
+            assert isothermal_core.slope == 2.0
+            assert isothermal_core.core_radius == 0.2
+            # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
+            assert isothermal_core.einstein_radius_rescaled == 0.52
+
+    class TestSurfaceDensity(object):
+        def test__function__gives_correct_values(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1, 1),
+                                                                                einstein_radius=1.0, core_radius=0.1)
+
+            kappa = isothermal_core.surface_density_func(eta=1.0)
+
+            assert kappa == pytest.approx(0.50249, 1e-4)
+
+        def test__function__same_as_isothermal_core_no_core(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1, 1),
+                                                                                einstein_radius=1.0, core_radius=0.0)
+
+            kappa_core = isothermal_core.surface_density_func(eta=3.0)
+
+            isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(1, 1), einstein_radius=1.0)
+
+            kappa = isothermal.surface_density_func(eta=3.0)
+
+            assert kappa == kappa_core
+
+        def test__flip_coordinates_lens_center__same_value(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            surface_density_1 = isothermal_core.surface_density_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1.0, 1.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            surface_density_2 = isothermal_core.surface_density_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            surface_density_1 = isothermal_core.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            surface_density_2 = isothermal_core.surface_density_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert surface_density_1 == surface_density_2
+
+        def test__simple_case__correct_value(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            surface_density = isothermal_core.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(0.50990, 1e-3)
+
+        def test__double_einr__new_value_now_isnt_quite_double(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=2.0, core_radius=0.2)
+
+            surface_density = isothermal_core.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            # eta = 1.0
+            # kappa = 0.5 * 1.0 ** 1.0
+
+            assert surface_density == pytest.approx(1.0002, 1e-3)
+
+    class TestPotential(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            potential_1 = isothermal_core.potential_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1.0, 1.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            potential_2 = isothermal_core.potential_at_coordinates(coordinates=(0.0, 0.0))
+
+            assert potential_1 == potential_2
+
+        def test__rotation_coordinates_90_circular__same_value(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            potential_1 = isothermal_core.potential_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.2)
+
+            potential_2 = isothermal_core.potential_at_coordinates(coordinates=(0.0, 1.0))
+
+            assert potential_1 == potential_2
+
+        # def test__same_as_sie_for_no_core(self):
+        #
+        #     isothermal_core = profile.CoredSphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
+        #                                                       einstein_radius=1.0, core_radius=0.)
+        #
+        #     potential_core = isothermal_core.compute_potential(coordinates=(0.1, 0.1))
+        #
+        #     isothermal = profile.SphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
+        #                                                       einstein_radius=1.0)
+        #
+        #     potential = isothermal.compute_potential(coordinates=(0.1, 0.1))
+        #
+        #     assert potential_core == potential
+    #TODO : Compare to Fortran
+
+    class TestDeflections(object):
+        def test__flip_coordinates_lens_center__flips_deflection_angles(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.3)
+
+            deflection_angle_1 = isothermal_core.deflection_angles_at_coordinates(coordinates=(1.0, 1.0))
+
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1.0, 1.0),
+                                                                                einstein_radius=1.0, core_radius=0.3)
+
+            deflection_angle_2 = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.0, 0.0))
+
+            # Foro deflection angles, a flip of coordinates also reverses the deflection angles
+            deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__rotation_coordinates_90_circular__flips_x_and_y_deflection_angles(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.3)
+
+            deflection_angle_1 = isothermal_core.deflection_angles_at_coordinates(coordinates=(1.0, 0.0))
+
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
+                                                                                einstein_radius=1.0, core_radius=0.3)
+
+            deflection_angle_2 = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.0, 1.0))
+
+            # Foro deflection angles, a 90 degree rtation flips the x / y coordinates
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+        def test__same_as_isothermal_core_for_spherical(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.3, -0.1),
+                                                                                einstein_radius=1.1, core_radius=0.5)
+
+            deflections_core = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            isothermal_core = mass_profile.CoredSphericalPowerLawMassProfile(centre=(0.3, -0.1), einstein_radius=1.1,
+                                                                             slope=2.0, core_radius=0.5)
+
+            deflections_isothermal_core = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert deflections_core[0] == pytest.approx(deflections_isothermal_core[0], 1e-6)
+            assert deflections_core[1] == pytest.approx(deflections_isothermal_core[1], 1e-6)
+
+        def test__same_as_isothermal_core_for_spherical_2(self):
+            isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(-0.3, 0.7),
+                                                                               einstein_radius=10.1, core_radius=1.5)
+
+            deflections_core = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            isothermal_core = mass_profile.CoredSphericalPowerLawMassProfile(centre=(-0.3, 0.7), einstein_radius=10.1,
+                                                                          slope=2.0, core_radius=1.5)
+
+            deflections_isothermal_core = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
+
+            assert deflections_core[0] == pytest.approx(deflections_isothermal_core[0], 1e-6)
+            assert deflections_core[1] == pytest.approx(deflections_isothermal_core[1], 1e-6)
+
+    # TODO : Add Fortran
+
+
 class TestEllipticalNFWMassProfile(object):
     class TestCoordFuncc(object):
         def test__coord_func_x_above_1(self):

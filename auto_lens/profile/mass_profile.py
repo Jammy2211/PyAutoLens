@@ -78,7 +78,6 @@ class CombinedMassProfile(list, MassProfile):
         return sum_tuple
 
 
-
 class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
     """Represents an elliptical power-law density distribution"""
 
@@ -433,6 +432,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
                        ( (self.core_radius ** 2 + eta) ** (3.0 - self.slope) - self.core_radius**(3-self.slope) )
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
+
 class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
     """Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
@@ -456,6 +456,26 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
 
         super(CoredEllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, core_radius,
                                                                    centre)
+
+
+class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
+    """Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
+    density distribution for the value slope=2.0"""
+
+    def __init__(self, einstein_radius, core_radius, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        einstein_radius : float
+            Einstein radius of power-law mass profile
+        core_radius : float
+            The radius of the inner core
+        """
+
+        super(CoredSphericalIsothermalMassProfile, self).__init__(einstein_radius, 2.0, core_radius, centre)
 
 
 class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
