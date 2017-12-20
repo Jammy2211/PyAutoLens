@@ -130,10 +130,6 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
 
         return self.surface_density_func(eta)
 
-    @property
-    def potential_normalization(self):
-        return
-
     def potential_func(self, u, coordinates):
         eta = self.eta_u(u, coordinates)
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope) / \
@@ -247,10 +243,6 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         """
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
-
-    @property
-    def deflection_normalization(self):
-        return
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
@@ -604,10 +596,10 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
         eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
-        return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
+        return self.potential_normalization * self.potential_func_sph(eta)
 
     def deflection_func_sph(self, eta):
-        return (math.log(eta/2.0) + self.coord_func(eta)) / eta
+        return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
@@ -809,6 +801,10 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
         return self.mass_to_light_ratio * self.flux_at_coordinates(coordinates)
+
+    @property
+    def deflection_normalization(self):
+        return self.mass_to_light_ratio * self.axis_ratio
 
     def deflection_func(self, u, coordinates, npow):
         eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
