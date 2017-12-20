@@ -2440,6 +2440,194 @@ class TestSphericalNFWMassProfile(object):
             assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
 
+class TestEllipticalGeneralizedNFWMassProfile(object):
+
+    class TestSetup(object):
+
+        def test__setup_nfw_init(self):
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.7, 1.0), axis_ratio=0.7, phi=45.0,
+                                                        kappa_s=2.0, inner_slope=1.5, scale_radius=10.0)
+
+            assert gnfw.centre == (0.7, 1.0)
+            assert gnfw.axis_ratio == 0.7
+            assert gnfw.phi == 45.0
+            assert gnfw.kappa_s == 2.0
+            assert gnfw.inner_slope == 1.5
+            assert gnfw.scale_radius == 10.0
+
+    class TestSurfaceDensity(object):
+
+        def test__simple_case__correct_value(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
+                                                                    phi=90.0, inner_slope=1.5, scale_radius=1.0)
+            surface_density = gnfw.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            assert surface_density == pytest.approx(0.30840, 1e-3)
+    #
+            #         def test__double_kappa__double_value(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.0, 0.0), kappa_s=2.0, axis_ratio=0.5,
+                                                                    phi=90.0, inner_slope=1.5, scale_radius=1.0)
+            surface_density = gnfw.surface_density_at_coordinates(coordinates=(1.0, 0.0))
+
+            assert surface_density == pytest.approx(0.30840 * 2, 1e-3)
+
+        def test__compare_to_spherical_nfw__same_value(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.8, 0.2), kappa_s=1.0, axis_ratio=1.0,
+                                                                    phi=00.0, inner_slope=1.0, scale_radius=2.0)
+            surface_density_1 = gnfw.surface_density_at_coordinates(coordinates=(2.0, 0.0))
+
+            nfw = mass_profile.SphericalNFWMassProfile(centre=(0.8, 0.2), kappa_s=1.0, scale_radius=2.0)
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(2.0, 0.0))
+
+            assert surface_density_1 == pytest.approx(surface_density_2, 1e-3)
+
+        def test__compare_to_elliptical_nfw__same_value(self):
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.8, 0.2), kappa_s=1.0, axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.0, scale_radius=2.0)
+            surface_density_1 = gnfw.surface_density_at_coordinates(coordinates=(12.0, 10.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(0.8, 0.2), kappa_s=1.0, axis_ratio=0.5,
+                                                        phi=100.0, scale_radius=2.0)
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(12.0, 10.0))
+
+            assert surface_density_1 == pytest.approx(surface_density_2, 1e-3)
+
+        def test__compare_to_spherical_gnfw__same_value(self):
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.8, 0.2), kappa_s=1.0, axis_ratio=1.0,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=2.0)
+            surface_density_1 = gnfw.surface_density_at_coordinates(coordinates=(12.0, 10.0))
+
+            nfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(0.8, 0.2), kappa_s=1.0, inner_slope=1.5,
+                                                         scale_radius=2.0)
+            surface_density_2 = nfw.surface_density_at_coordinates(coordinates=(12.0, 10.0))
+
+            assert surface_density_1 == pytest.approx(surface_density_2, 1e-3)
+
+    class TestPotential(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=10.0)
+
+            potential_1 = gnfw.potential_at_coordinates(coordinates=(1.0, 1.0))
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=1.0, axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=10.0)
+
+            potential_2 = gnfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+        def test__compare_to_elliptical_nfw__same_value(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
+                                                                phi=100.0, inner_slope=1.0, scale_radius=10.0)
+
+            potential_1 = gnfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+
+            nfw = mass_profile.EllipticalNFWMassProfile(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
+                                                                phi=100.0, scale_radius=10.0)
+
+            potential_2 = nfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+
+            assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+        # def test__compare_to_elliptical_model__same_value(self):
+        #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=5.0, inner_slope=1.5, scale_radius=10.0)
+        #
+        #     potential_1 = gnfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+        #
+        #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, inner_slope=1.5,
+        #                                                 kappa_s=5.0, scale_radius=10.0)
+        #
+        #     potential_2 = gnfw.potential_at_coordinates(coordinates=(2.0, 2.0))
+        #
+        #     assert potential_1 == pytest.approx(potential_2, 1e-4)
+
+
+    class TestDeflections(object):
+        def test__flip_coordinates_lens_center__same_value(self):
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=1.0)
+
+            deflection_angle_1 = gnfw.deflection_angles_at_coordinates(coordinates=(1.00001, 1.00001))
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=1.0, axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=1.0)
+
+            deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=(0.00001, 0.00001))
+
+            # Foro deflection angles, a flip of coordinates also reverses the deflection angles
+            deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__compare_to_fortran_1__same_defls(self):
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0,  axis_ratio=0.3,
+                                                                    phi=100.0, inner_slope=0.5, scale_radius=8.0)
+
+            defls = gnfw.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1875))
+
+            assert defls[0] == pytest.approx(0.58988, 1e-3)
+            assert defls[1] == pytest.approx(0.26604, 1e-3)
+
+        def test__compare_to_fortran_2__same_defls(self):
+             gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(0.2, 0.3), kappa_s=2.5,  axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=4.0)
+             defls = gnfw.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1875))
+
+             assert defls[0] == pytest.approx(-4.02541, 1e-3)
+             assert defls[1] == pytest.approx(-5.99032, 1e-3)
+
+        def test__compare_to_spherical_gnfw__same_values(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=10.0,  axis_ratio=1.0,
+                                                                    phi=100.0, inner_slope=1.5, scale_radius=8.0)
+
+            deflection_angle_1 = gnfw.deflection_angles_at_coordinates(coordinates=(3.0, 3.0))
+
+            gnfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=10.0, inner_slope=1.5,
+                                                                   scale_radius=8.0)
+
+            deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=(3.0, 3.0))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__compare_to_spherical_gnfw_2__same_values(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(-1.0, -2.0), kappa_s=1.0,  axis_ratio=1.0,
+                                                                    phi=100.0, inner_slope=0.5, scale_radius=3.0)
+
+            deflection_angle_1 = gnfw.deflection_angles_at_coordinates(coordinates=(1.0, -3.0))
+
+            gnfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(-1.0, -2.0), kappa_s=1.0, inner_slope=0.5,
+                                                                   scale_radius=3.0)
+
+            deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=(1.0, -3.0))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+        def test__compare_to_elliptical_nfw__same_values(self):
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(-5.0, -10.0), kappa_s=0.1, axis_ratio=0.5,
+                                                                    phi=100.0, inner_slope=1.0,  scale_radius=20.0)
+
+            deflection_angle_1 = gnfw.deflection_angles_at_coordinates(coordinates=(-7.0, 0.2))
+
+            gnfw = mass_profile.EllipticalNFWMassProfile(centre=(-5.0, -10.0), kappa_s=0.1,  axis_ratio=0.5,
+                                                                    phi=100.0, scale_radius=20.0)
+
+            deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=(-7.0, 0.2))
+
+            assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+            assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+
 class TestSphericalGeneralizedNFWMassProfile(object):
 
     class TestSetup(object):
@@ -2504,18 +2692,6 @@ class TestSphericalGeneralizedNFWMassProfile(object):
                 potential_2 = nfw.potential_at_coordinates(coordinates=(2.0, 2.0))
 
                 assert potential_1 == pytest.approx(potential_2, 1e-4)
-
-        # def test__compare_to_elliptical_model__same_value(self):
-        #     gnfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=5.0, inner_slope=1.5, scale_radius=10.0)
-        #
-        #     potential_1 = gnfw.potential_at_coordinates(coordinates=(2.0, 2.0))
-        #
-        #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, inner_slope=1.5,
-        #                                                 kappa_s=5.0, scale_radius=10.0)
-        #
-        #     potential_2 = gnfw.potential_at_coordinates(coordinates=(2.0, 2.0))
-        #
-        #     assert potential_1 == pytest.approx(potential_2, 1e-4)
 
         def test__compare_to_fortran__same_potential(self):
             gnfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(0.0, 0.0), kappa_s=1.0,
@@ -2595,34 +2771,6 @@ class TestSphericalGeneralizedNFWMassProfile(object):
 
             assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
             assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
-
-        # def test__compare_to_elliptical__same_value(self):
-        #     gnfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=10.0, inner_slope=1.5,
-        #                                                           scale_radius=0.1)
-        #
-        #     deflection_angle_1 = gnfw.deflection_angles_at_coordinates(coordinates=(3.0, 3.0))
-        #
-        #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=45.0,
-        #                                                            inner_slope=1.5, kappa_s=10.0, scale_radius=0.1)
-        #
-        #     deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=(3.0, 3.0))
-        #
-        #     assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
-        #     assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
-
-        # def test__compare_to_elliptical_2__same_value(self):
-        #     gnfw = mass_profile.SphericalGeneralizedNFWMassProfile(centre=(1.5, 1.5), kappa_s=7.0,
-        #                                                           inner_slope=1.5, scale_radius=0.15)
-        #
-        #     deflection_angle_1 = gnfw.deflection_angles_at_coordinates(coordinates=(-3.2, 1.0))
-        #
-        #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.5, 1.5), axis_ratio=1.0, phi=60.0,
-        #                                                            inner_slope=1.5, kappa_s=7.0, scale_radius=0.15)
-        #
-        #     deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=(-3.2, 1.0))
-        #
-        #     assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
-        #     assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
 
 class TestSersicMassProfile(object):
