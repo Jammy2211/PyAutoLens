@@ -9,8 +9,8 @@ import colorsys
 
 def plot(function, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
     """
-    Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
-    deviation
+    Draws a plot from a function that accepts coordinates . Upper normalisation limit determined by taking mean plus one
+    standard deviation. Creates colour plot if the input function returns a tuple.
 
     Parameters
     ----------
@@ -51,6 +51,16 @@ def plot(function, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
             result.append(map(vector_to_color, row))
         pyplot.imshow(np.array(result))
     pyplot.show()
+
+
+def nan_tuple(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except ZeroDivisionError:
+            return np.nan, np.nan
+    return wrapper
 
 
 def avg(func):
