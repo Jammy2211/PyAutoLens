@@ -1,7 +1,7 @@
 import profile, light_profile
 import math
 from scipy.integrate import quad
-
+from scipy import special
 
 class MassProfile(object):
     # noinspection PyMethodMayBeStatic
@@ -405,11 +405,6 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         super(CoredSphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, core_radius, centre)
 
     @property
-    def einstein_radius_rescaled(self):
-        return ((3 - self.slope) / (1 + self.axis_ratio)) * (self.einstein_radius + self.core_radius ** 2) ** (
-            self.slope - 1)
-
-    @property
     def deflection_normalization(self):
         return 2.0 * self.einstein_radius_rescaled
 
@@ -429,7 +424,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         """
         eta = self.coordinates_to_elliptical_radius(coordinates)
         deflection_r = self.deflection_normalization * ((3.0 - self.slope) * eta) ** -1.0 *  \
-                       ( (self.core_radius ** 2 + eta) ** (3.0 - self.slope) - self.core_radius**(3-self.slope) )
+                       ( (self.core_radius ** 2 + eta ** 2) ** ((3.0 - self.slope)/2.0) - self.core_radius**(3-self.slope) )
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
@@ -544,7 +539,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
 
     def potential_func(self, u, coordinates):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
-        return (eta / u) * ((math.log(eta / 2.0) + self.coord_func(eta)) / eta) / (
+        return (self.axis_ratio/2.0) * (eta / u) * ((math.log(eta / 2.0) + self.coord_func(eta)) / eta) / (
             (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
     @profile.transform_coordinates
@@ -615,15 +610,12 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
         super(SphericalNFWMassProfile, self).__init__(1.0, 0.0, kappa_s, scale_radius, centre)
 
-    # TODO : There is a factor of kappa_s difference between the Elliptical and Spherical NFW profiles, even though
-    # TODO : I've checked the equations are copied correct. Figure out why...
-
     @property
     def potential_normalization(self):
-        return 2.0 * (self.scale_radius ** 2) # *self.kappa_s
+        return 2.0 * self.scale_radius * self.kappa_s
 
     def potential_func_sph(self, eta):
-        return ((math.log(eta/2.0)**2) - math.atanh(math.sqrt(1 - eta**2))**2)
+        return (((math.log(eta/2.0))**2) - (math.atanh(math.sqrt(1 - eta**2)))**2)
 
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be over-ridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until wwe're clear on numba.
@@ -668,6 +660,99 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
         """
         eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
         deflection_r = self.deflection_normalization * self.deflection_func_sph(eta)
+
+        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
+
+
+class SphericalGeneralizedNFWMassProfile(SphericalNFWMassProfile):
+    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+
+    def __init__(self, kappa_s, inner_slope, scale_radius, centre=(0, 0)):
+        """ Setup a NFW dark matter profile.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        kappa_s : float
+            The overall normalization of the dark matter halo
+        inner_slope : float
+            The inner slope of the dark matter halo
+        scale_radius : float
+            The radius containing half the light of this model
+        """
+
+        super(SphericalNFWMassProfile, self).__init__(1.0, 0.0, kappa_s, scale_radius, centre)
+        self.inner_slope = inner_slope
+
+    @property
+    def surface_density_normalization(self):
+        return 2.0 * self.kappa_s
+
+    def integral_y(self, y, eta):
+        return (y + eta) ** (self.inner_slope-4) * (1 - math.sqrt(1 - y**2))
+
+    def integral_y_2(self, y, eta):
+        return (y + eta) ** (self.inner_slope-3) * ( (1 - math.sqrt(1 - y**2)) / y )
+
+    def surface_density_func(self, eta):
+
+        integral_y = quad(self.integral_y, a=0.0, b=1.0, args=(eta))[0]
+
+        return self.surface_density_normalization * (eta ** (1 - self.inner_slope)) * \
+               ( (1 + eta) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y) )
+
+    @property
+    def potential_normalization(self):
+        return self.axis_ratio / 2.0
+
+    def potential_func_sph_2(self, u, coordinates):
+        eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
+        return (eta / u) * (self.deflection_func_sph(eta)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+
+    @profile.transform_coordinates
+    def potential_at_coordinates(self, coordinates):
+        """
+        Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those coordinates
+        """
+        potential = quad(self.potential_func_sph_2, a=0.0, b=1.0, args=(coordinates,))[0]
+        return self.potential_normalization * potential
+
+    @property
+    def deflection_normalization(self):
+        return 4.0 * self.kappa_s * self.scale_radius
+
+    def deflection_func_sph(self, eta):
+        integral_y_2 = quad(self.integral_y_2, a=0.0, b=1.0, args=(eta))[0]
+        return self.deflection_normalization * eta ** (2 - self.inner_slope) * (
+               (1.0/(3-self.inner_slope)) *
+               special.hyp2f1(3-self.inner_slope, 3-self.inner_slope, 4 - self.inner_slope, -eta) + integral_y_2 )
+
+    @profile.transform_coordinates
+    def deflection_angles_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image plane coordinates
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the image
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those coordinates
+        """
+        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
+        deflection_r = self.deflection_func_sph(eta)
 
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
