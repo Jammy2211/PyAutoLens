@@ -1,7 +1,60 @@
 import math
+import cmath
 import numpy as np
 from functools import wraps
 import inspect
+from matplotlib import pyplot
+import colorsys
+
+
+def plot(function, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
+    """
+    Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
+    deviation
+
+    Parameters
+    ----------
+    function: (float, float) -> float OR (float, float)
+    pixel_scale : float
+        The arcsecond (") size of each pixel
+    x_min : int
+        The minimum x bound
+    y_min : int
+        The minimum y bound
+    x_max : int
+        The maximum x bound
+    y_max : int
+        The maximum y bound
+
+    """
+
+    def absolute(vector):
+        return math.sqrt(vector[0] ** 2 + vector[1] ** 2)
+
+    array = array_function(function)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale)
+
+    if isinstance(array[0][0], float):
+        print("float")
+        pyplot.imshow(array)
+        pyplot.clim(vmax=np.mean(array) + np.std(array))
+    else:
+        print("else")
+        absolute_values = sum([absolute(t) for line in array for t in line])
+        max_value = np.mean(absolute_values) + np.std(absolute_values)
+
+        def vector_to_color(vector):
+            hue = cmath.phase(complex(vector[0], vector[1])) / 2 * math.pi
+            saturation = absolute(vector) / max_value
+            brightness = saturation
+            return colorsys.hsv_to_rgb(hue, saturation, brightness)
+
+        result = []
+        for row in array:
+            result.append(map(vector_to_color, row))
+
+        print(result)
+        pyplot.imshow(np.array(result))
+    pyplot.show()
 
 
 def avg(func):
@@ -475,7 +528,7 @@ class EllipticalProfile(Profile):
         The coordinates after the decomposed into x and y components"""
         theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
-        return radius*cos_theta, radius*sin_theta
+        return radius * cos_theta, radius * sin_theta
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
