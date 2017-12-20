@@ -41,11 +41,12 @@ class LightProfile(object):
             The maximum y bound
 
         """
-        array = profile.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
-                                                                 pixel_scale=pixel_scale)
-        pyplot.imshow(array)
-        pyplot.clim(vmax=np.mean(array) + np.std(array))
-        pyplot.show()
+        # array = profile.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
+        #                                                          pixel_scale=pixel_scale)
+        # pyplot.imshow(array)
+        # pyplot.clim(vmax=np.mean(array) + np.std(array))
+        # pyplot.show()
+        profile.plot(self.flux_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
 
 class CombinedLightProfile(list, LightProfile):
