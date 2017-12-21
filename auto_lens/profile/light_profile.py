@@ -2,10 +2,25 @@ import profile
 from matplotlib import pyplot
 import numpy as np
 import math
-
+from scipy.integrate import quad
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
+
+    # noinspection PyMethodMayBeStatic
+    def flux_at_radius(self, radius):
+        """
+        Abstract method for obtaining flux at given radius
+        Parameters
+        ----------
+        radius : float
+            The elliptical distance from the centre of the profile
+        Returns
+        -------
+        flux : float
+            The value of flux at the given coordinates
+        """
+        raise AssertionError("Flux at radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
     def flux_at_coordinates(self, coordinates):
@@ -21,6 +36,7 @@ class LightProfile(object):
             The value of flux at the given coordinates
         """
         raise AssertionError("Flux at coordinates should be overridden")
+
 
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
@@ -70,7 +86,54 @@ class CombinedLightProfile(list, LightProfile):
         return sum(map(lambda p: p.flux_at_coordinates(coordinates), self))
 
 
-class SersicLightProfile(profile.EllipticalProfile, LightProfile):
+class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
+    """Generic class for an elliptical light profile"""
+
+    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        flux : float
+            Overall flux intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        """
+        super(EllipticalLightProfile, self).__init__(axis_ratio, phi, centre)
+        self.axis_ratio = axis_ratio
+        self.phi = phi
+
+    # TODO : This integral should be using an ellipsie,b ut the function below doesnt work for a circle atm...
+
+    def flux_integral(self, r, major_axis, minor_axis):
+        return 2 * math.pi * r * self.flux_at_radius(r)
+#        return 4 * (minor_axis / major_axis) * math.sqrt(major_axis ** 2 - r ** 2)* self.flux_at_radius(eta)
+
+    def flux_within_radius(self, radius):
+        """
+        Compute the total flux within a given radius of the light profile, via integration.
+        Parameters
+        ----------
+        radius : float
+            The elliptical distance from the centre of the profile
+        Returns
+        -------
+        flux : float
+            The value of flux at the given coordinates
+        """
+        major_axis = radius
+        minor_axis = radius * self.axis_ratio
+        return quad(self.flux_integral, a=0.0, b=radius, args=(major_axis, minor_axis))[0]
+
+class SersicLightProfile(EllipticalLightProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, centre=(0, 0)):

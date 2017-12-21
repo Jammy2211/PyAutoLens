@@ -596,7 +596,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
         eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
-        return self.potential_normalization * self.potential_func_sph(eta)
+        return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
 
     def deflection_func_sph(self, eta):
         return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
