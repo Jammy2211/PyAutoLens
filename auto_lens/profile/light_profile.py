@@ -111,11 +111,14 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    # TODO : This integral should be using an ellipsie,b ut the function below doesnt work for a circle atm...
+    # TODO : So, because we have defined eta = sqrt(axis_ratio) * sqrt(x**2 + (y/axis_ratio)**2), our light profile
+    # TODO : Is defined in circular appertures. So, our integral should also be in circles, even if the profile is
+    # TODO : Elliptical. Need to decide if we move fully to ellipses, or both.
 
-    def flux_integral(self, r, major_axis, minor_axis):
-        return 2 * math.pi * r * self.flux_at_radius(r)
-#        return 4 * (minor_axis / major_axis) * math.sqrt(major_axis ** 2 - r ** 2)* self.flux_at_radius(eta)
+    def flux_integral(self, x):
+     #   r = x * self.axis_ratio # ' Include this line if using elliptical annuli
+        r = x
+        return 2 * math.pi * r * self.flux_at_radius(x)
 
     def flux_within_radius(self, radius):
         """
@@ -129,9 +132,7 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
         flux : float
             The value of flux at the given coordinates
         """
-        major_axis = radius
-        minor_axis = radius * self.axis_ratio
-        return quad(self.flux_integral, a=0.0, b=radius, args=(major_axis, minor_axis))[0]
+        return quad(self.flux_integral, a=0.0, b=radius)[0]
 
 class SersicLightProfile(EllipticalLightProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light."""
