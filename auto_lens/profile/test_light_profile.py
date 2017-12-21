@@ -3,6 +3,8 @@ from __future__ import division, print_function
 import pytest
 import light_profile
 import profile
+import math
+import numpy as np
 
 @pytest.fixture(name='circular')
 def circular_sersic():
@@ -75,7 +77,7 @@ class TestSetupProfiles(object):
 
 class TestFluxIntegral(object):
 
-    def test__flux_within_radius__spherical_exponential_compare_to_analytic(self):
+    def test__flux_within_circle__spherical_exponential_compare_to_analytic(self):
 
         import math
         import scipy.special
@@ -93,11 +95,11 @@ class TestFluxIntegral(object):
                      (math.e**sersic.sersic_constant/(sersic.sersic_constant**(2*sersic.sersic_index))) * \
                      scipy.special.gamma(2*sersic.sersic_index) * scipy.special.gammainc(2*sersic.sersic_index, x)
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_circle(radius=integral_radius)
 
         assert flux_total_analytic == pytest.approx(flux_total_integral, 1e-3)
 
-    def test__flux_within_radius__spherical_sersic_index_2_compare_to_analytic(self):
+    def test__flux_within_circle__spherical_sersic_index_2_compare_to_analytic(self):
 
         import math
         import scipy.special
@@ -115,11 +117,11 @@ class TestFluxIntegral(object):
                      ((math.e**sersic.sersic_constant)/(sersic.sersic_constant**(2*sersic.sersic_index))) * \
                      scipy.special.gamma(2*sersic.sersic_index) * scipy.special.gammainc(2*sersic.sersic_index, x)
 
-        flux_total_integral = sersic.flux_within_radius(radius=0.5)
+        flux_total_integral = sersic.flux_within_circle(radius=0.5)
 
         assert flux_total_analytic == pytest.approx(flux_total_integral, 1e-3)
 
-    def test__flux_within_radius__spherical_dev_vaucouleurs_compare_to_analytic(self):
+    def test__flux_within_circle__spherical_dev_vaucouleurs_compare_to_analytic(self):
 
         import math
         import scipy.special
@@ -137,11 +139,11 @@ class TestFluxIntegral(object):
                      ((math.e**sersic.sersic_constant)/(sersic.sersic_constant**(2*sersic.sersic_index))) * \
                      scipy.special.gamma(2*sersic.sersic_index) * scipy.special.gammainc(2*sersic.sersic_index, x)
 
-        flux_total_integral = sersic.flux_within_radius(radius=0.5)
+        flux_total_integral = sersic.flux_within_circle(radius=0.5)
 
         assert flux_total_analytic == pytest.approx(flux_total_integral, 1e-3)
 
-    def test__flux_within_radius__spherical_exponential_compare_to_grid(self):
+    def test__flux_within_circle__spherical_exponential_compare_to_grid(self):
 
         sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=3.0,
                                                   effective_radius=2.0, sersic_index=1.0)
@@ -160,16 +162,16 @@ class TestFluxIntegral(object):
         for x in xs:
             for y in ys:
 
-                eta = (sersic.axis_ratio**0.5)*(x**2 + (y/sersic.axis_ratio)**2)**0.5
+                eta = math.sqrt(x**2 + y**2)
 
                 if eta < integral_radius:
-                    flux_grid_tot += sersic.flux_at_coordinates((x, y))*area
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_circle(radius=integral_radius)
 
         assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
 
-    def test__flux_within_radius__spherical_sersic_2_compare_to_grid(self):
+    def test__flux_within_circle__spherical_sersic_2_compare_to_grid(self):
 
         sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=3.0,
                                                   effective_radius=2.0, sersic_index=2.0)
@@ -188,16 +190,15 @@ class TestFluxIntegral(object):
         for x in xs:
             for y in ys:
 
-                eta = (sersic.axis_ratio**0.5)*(x**2 + (y/sersic.axis_ratio)**2)**0.5
-
+                eta = math.sqrt(x**2 + y**2)
                 if eta < integral_radius:
-                    flux_grid_tot += sersic.flux_at_coordinates((x, y))*area
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_circle(radius=integral_radius)
 
         assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
 
-    def test__flux_within_radius__spherical_dev_vaucauleurs_compare_to_grid(self):
+    def test__flux_within_circle__spherical_dev_vaucauleurs_compare_to_grid(self):
 
         sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=3.0,
                                                   effective_radius=2.0, sersic_index=4.0)
@@ -215,22 +216,19 @@ class TestFluxIntegral(object):
 
         for x in xs:
             for y in ys:
-                eta = (sersic.axis_ratio**0.5)*(x**2 + (y/sersic.axis_ratio)**2)**0.5
 
+                eta = math.sqrt(x**2 + y**2)
                 if eta < integral_radius:
-                    flux_grid_tot += sersic.flux_at_coordinates((x, y))*area
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_circle(radius=integral_radius)
 
         assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
 
-    def test__flux_within_radius__elliptical_exponential_compare_to_grid(self):
+    def test__flux_within_circle__elliptical_exponential_compare_to_grid(self):
 
         sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=3.0,
                                                   effective_radius=2.0, sersic_index=1.0)
-
-        import numpy as np
-        import math
 
         integral_radius = 0.5
         flux_grid_tot = 0.0
@@ -244,54 +242,49 @@ class TestFluxIntegral(object):
         for x in xs:
             for y in ys:
 
-                eta = math.sqrt(sersic.axis_ratio) * sersic.coordinates_to_elliptical_radius((x,y))
-
+                eta = math.sqrt(x**2 + y**2)
                 if eta < integral_radius:
-                    flux_grid_tot += sersic.flux_at_coordinates((x, y))*area
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_circle(radius=integral_radius)
 
         assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
 
-    def test__flux_within_radius__elliptical_sersic_2_compare_to_grid(self):
+    def test__flux_within_circle__elliptical_sersic_2_compare_to_grid(self):
 
         sersic = light_profile.SersicLightProfile(axis_ratio=0.3, phi=0.0, flux=3.0,
                                                   effective_radius=2.0, sersic_index=2.0)
 
-        import numpy as np
-
         integral_radius = 0.5
         flux_grid_tot = 0.0
 
-        xs = np.linspace(-1.5, 1.5, 40)
-        ys = np.linspace(-1.5, 1.5, 40)
+        xs = np.linspace(-1.8, 1.8, 50)
+        ys = np.linspace(-1.8, 1.8, 50)
 
         edge = xs[1] - xs[0]
         area = edge**2
 
         for x in xs:
             for y in ys:
-                eta = (sersic.axis_ratio**0.5)*(x**2 + (y/sersic.axis_ratio)**2)**0.5
 
+                eta = math.sqrt(x**2 + y**2)
                 if eta < integral_radius:
-                    flux_grid_tot += sersic.flux_at_coordinates((x, y))*area
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_circle(radius=integral_radius)
 
         assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
 
-    def test__flux_within_radius__elliptical_dev_vaucauleurs_compare_to_grid(self):
+    def test__flux_within_ellipse__elliptical_exponential_compare_to_grid(self):
 
-        sersic = light_profile.SersicLightProfile(axis_ratio=0.3, phi=0.0, flux=3.0,
-                                                  effective_radius=2.0, sersic_index=4.0)
-
-        import numpy as np
+        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, flux=3.0,
+                                                  effective_radius=2.0, sersic_index=1.0)
 
         integral_radius = 0.5
         flux_grid_tot = 0.0
 
-        xs = np.linspace(-1.5, 1.5, 40)
-        ys = np.linspace(-1.5, 1.5, 40)
+        xs = np.linspace(-1.0, 1.0, 40)
+        ys = np.linspace(-1.0, 1.0, 40)
 
         edge = xs[1] - xs[0]
         area = edge**2
@@ -299,14 +292,66 @@ class TestFluxIntegral(object):
         for x in xs:
             for y in ys:
 
-                eta = (sersic.axis_ratio**0.5)*(x**2 + (y/sersic.axis_ratio)**2)**0.5
+                eta = sersic.coordinates_to_elliptical_radius((x,y))
 
                 if eta < integral_radius:
-                    flux_grid_tot += sersic.flux_at_coordinates((x, y))*area
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
 
-        flux_total_integral = sersic.flux_within_radius(radius=integral_radius)
+        flux_total_integral = sersic.flux_within_ellipse(major_axis=integral_radius)
 
-        assert flux_grid_tot == pytest.approx(flux_total_integral, 0.05)
+        assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
+
+    def test__flux_within_ellipse__elliptical_sersic_2_compare_to_grid(self):
+
+        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, flux=3.0,
+                                                  effective_radius=2.0, sersic_index=2.0)
+
+        integral_radius = 0.5
+        flux_grid_tot = 0.0
+
+        xs = np.linspace(-1.8, 1.8, 80)
+        ys = np.linspace(-1.8, 1.8, 80)
+
+        edge = xs[1] - xs[0]
+        area = edge**2
+
+        for x in xs:
+            for y in ys:
+
+                eta = sersic.coordinates_to_elliptical_radius((x,y))
+
+                if eta < integral_radius:
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
+
+        flux_total_integral = sersic.flux_within_ellipse(major_axis=integral_radius)
+
+        assert flux_grid_tot == pytest.approx(flux_total_integral, 0.02)
+
+    def test__flux_within_ellipse__elliptical_dev_vaucauleurs_compare_to_grid(self):
+
+        sersic = light_profile.SersicLightProfile(axis_ratio=0.7, phi=30.0, flux=3.0,
+                                                  effective_radius=2.0, sersic_index=4.0)
+
+        integral_radius = 0.5
+        flux_grid_tot = 0.0
+
+        xs = np.linspace(-1.5, 1.5, 50)
+        ys = np.linspace(-1.5, 1.5, 50)
+
+        edge = xs[1] - xs[0]
+        area = edge**2
+
+        for x in xs:
+            for y in ys:
+
+                eta = sersic.coordinates_to_elliptical_radius((x,y))
+
+                if eta < integral_radius:
+                    flux_grid_tot += sersic.flux_at_radius(eta)*area
+
+        flux_total_integral = sersic.flux_within_ellipse(major_axis=integral_radius)
+
+        assert flux_grid_tot == pytest.approx(flux_total_integral, 0.01)
 
 
 class TestFluxValues(object):
