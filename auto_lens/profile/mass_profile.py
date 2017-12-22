@@ -18,14 +18,14 @@ class MassProfile(object):
 
 
 class CombinedMassProfile(list, MassProfile):
-    """A mass profile comprising one or more mass profiles"""
+    """A combined mass profile comprising of one or more mass profiles"""
 
     def __init__(self, *mass_profiles):
         super(CombinedMassProfile, self).__init__(mass_profiles)
 
     def surface_density_at_coordinates(self, coordinates):
         """
-        Calculate the deflection angle at a given set of image plane coordinates
+        Method for obtaining the summed mass profiles' surface densities at a given set of coordinates.
 
         Parameters
         ----------
@@ -34,7 +34,7 @@ class CombinedMassProfile(list, MassProfile):
 
         Returns
         ----------
-        The deflection angle at those coordinates
+        The summed values of surface density at the given coordinates.
         """
         sum = 0.0
         for t in map(lambda p: p.surface_density_at_coordinates(coordinates), self):
@@ -43,7 +43,7 @@ class CombinedMassProfile(list, MassProfile):
 
     def potential_at_coordinates(self, coordinates):
         """
-        Calculate the deflection angle at a given set of image plane coordinates
+        Method for obtaining the summed mass profiles' gravitational potential at a given set of coordinates.
 
         Parameters
         ----------
@@ -52,7 +52,7 @@ class CombinedMassProfile(list, MassProfile):
 
         Returns
         ----------
-        The deflection angle at those coordinates
+        The summed values of gravitational potential at the given coordinates.
         """
         sum = 0.0
         for t in map(lambda p: p.potential_at_coordinates(coordinates), self):
@@ -61,7 +61,7 @@ class CombinedMassProfile(list, MassProfile):
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
-        Calculate the deflection angle at a given set of image plane coordinates
+        Method for obtaining the summed mass profiles' deflection angles at a given set of coordinates.
 
         Parameters
         ----------
@@ -70,7 +70,7 @@ class CombinedMassProfile(list, MassProfile):
 
         Returns
         ----------
-        The deflection angle at those coordinates
+        The summed values of deflection angles at the given coordinates.
         """
         sum_tuple = (0, 0)
         for t in map(lambda p: p.deflection_angles_at_coordinates(coordinates), self):
@@ -106,6 +106,8 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
 
     @property
     def einstein_radius_rescaled(self):
+        """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profile \
+        parameters"""
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
     def surface_density_func(self, eta):
@@ -127,7 +129,6 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         """
 
         eta = self.coordinates_to_elliptical_radius(coordinates)
-
         return self.surface_density_func(eta)
 
     def potential_func(self, u, coordinates):
@@ -758,7 +759,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
 class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
 
-    def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, centre=(0, 0)):
+    def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
         """
         Setup a Sersic mass and light profile.
 
