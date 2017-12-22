@@ -66,14 +66,14 @@ class LightProfile(object):
 
 
 class CombinedLightProfile(list, LightProfile):
-    """A combined light profile of one or more light profiles"""
+    """A combined light profile comprising of one or more light profiles"""
 
     def __init__(self, *light_profiles):
         super(CombinedLightProfile, self).__init__(light_profiles)
 
     def intensity_at_coordinates(self, coordinates):
         """
-        Method for obtaining the summed light profiles' intensities at given coordinates
+        Method for obtaining the summed light profiles' intensities at a given set of coordinates
         Parameters
         ----------
         coordinates : (float, float)
@@ -97,7 +97,7 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
         centre: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of light profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
         intensity : float
@@ -161,7 +161,7 @@ class SersicLightProfile(EllipticalLightProfile):
         centre: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of light profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
         intensity : float
@@ -247,7 +247,7 @@ class ExponentialLightProfile(SersicLightProfile):
         centre: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of light profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
         intensity : float
@@ -272,7 +272,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         centre: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of light profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
         intensity : float
@@ -297,7 +297,7 @@ class CoreSersicLightProfile(SersicLightProfile):
         centre: (float, float)
             The coordinates of the centre of the profile
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of light profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
         intensity : float
