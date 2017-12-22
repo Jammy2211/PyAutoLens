@@ -8,8 +8,8 @@ def test_symmetric_profile():
                                effective_radius=0.6, sersic_index=4.0)
 
     circular.centre = (50, 50)
-    array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                   pixel_scale=1.0)
+    array = decorator.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                        pixel_scale=1.0)
 
     assert array[50][50] > array[50][51]
     assert array[50][50] > array[49][50]
@@ -17,8 +17,8 @@ def test_symmetric_profile():
     assert array[50][51] == array[50][49]
     assert array[50][49] == array[51][50]
 
-    array = decorator.array_function(circular.flux_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                   pixel_scale=0.5)
+    array = decorator.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                        pixel_scale=0.5)
 
     assert array[100][100] > array[100][101]
     assert array[100][100] > array[99][100]

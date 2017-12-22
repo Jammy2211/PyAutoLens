@@ -758,7 +758,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
 class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
     """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
 
-    def __init__(self, axis_ratio, phi, flux, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
+    def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, centre=(0, 0)):
         """
         Setup a Sersic mass and light profile.
 
@@ -770,7 +770,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
             Ratio of profile ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profile ellipse counter-clockwise from positive x-axis
-        flux : float
+        intensity : float
             Overall flux intensity normalisation in the light profile (electrons per second)
         effective_radius : float
             The radius containing half the light of this model
@@ -779,7 +779,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profile
         """
-        super(SersicMassProfile, self).__init__(axis_ratio, phi, flux, effective_radius, sersic_index, centre)
+        super(SersicMassProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, sersic_index, centre)
         super(MassProfile, self).__init__()
         self.mass_to_light_ratio = mass_to_light_ratio
 
@@ -800,7 +800,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
         ----------
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
-        return self.mass_to_light_ratio * self.flux_at_coordinates(coordinates)
+        return self.mass_to_light_ratio * self.intensity_at_coordinates(coordinates)
 
     @property
     def deflection_normalization(self):
@@ -808,7 +808,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
 
     def deflection_func(self, u, coordinates, npow):
         eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
-        return self.flux_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        return self.intensity_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
