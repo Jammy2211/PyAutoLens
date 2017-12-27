@@ -572,8 +572,9 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
         super(SphericalNFWMassProfile, self).__init__(1.0, 0.0, kappa_s, scale_radius, centre)
 
-    def potential_func_sph(self, eta):
-        return (((math.log(eta / 2.0)) ** 2) - (math.atanh(math.sqrt(1 - eta ** 2))) ** 2)
+    @staticmethod
+    def potential_func_sph(eta):
+        return ((math.log(eta / 2.0)) ** 2) - (math.atanh(math.sqrt(1 - eta ** 2))) ** 2
 
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
