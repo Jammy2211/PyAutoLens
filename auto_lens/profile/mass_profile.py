@@ -53,10 +53,8 @@ class CombinedMassProfile(list, MassProfile):
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        sum = 0.0
-        for t in map(lambda p: p.potential_at_coordinates(coordinates), self):
-            sum += t
-        return sum
+
+        return sum(map(lambda p: p.potential_at_coordinates(coordinates), self))
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
