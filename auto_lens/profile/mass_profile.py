@@ -706,7 +706,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
 
         def calculate_deflection_component(npow, index):
             deflection = quad(self.deflection_func_ell, a=0.0, b=1.0, args=(coordinates, npow))[0]
-            return (self.axis_ratio) * deflection * coordinates[index]
+            return self.axis_ratio * deflection * coordinates[index]
 
         deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
