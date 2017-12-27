@@ -621,7 +621,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
 
 class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
-    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+    """The elliptical NFW profile, used to fit the dark matter halo of the lens."""
 
     def __init__(self, axis_ratio, phi, kappa_s, inner_slope, scale_radius, centre=(0, 0)):
         """ Setup a NFW dark matter profile.
