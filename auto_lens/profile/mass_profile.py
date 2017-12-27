@@ -371,10 +371,6 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         ----------
         centre: (float, float)
             The coordinates of the centre of the profile
-        axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
-        phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
         einstein_radius : float
             Einstein radius of power-law mass profile
         slope : float
@@ -579,8 +575,8 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
     def potential_func_sph(self, eta):
         return (((math.log(eta / 2.0)) ** 2) - (math.atanh(math.sqrt(1 - eta ** 2))) ** 2)
 
-    # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be over-ridden.
-    # TODO : Should be able to refactor code to deal with this nicely, but will wait until wwe're clear on numba.
+    # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
+    # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
 
     @profile.transform_coordinates
     def potential_at_coordinates(self, coordinates):
