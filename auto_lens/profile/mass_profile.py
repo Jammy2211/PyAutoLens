@@ -1,4 +1,5 @@
-import profile, light_profile
+import profile
+import light_profile
 import math
 from scipy.integrate import quad
 from scipy import special
@@ -15,7 +16,7 @@ class MassProfile(object):
 
     # noinspection PyMethodMayBeStatic
     def deflection_angles_at_coordinates(self, coordinates):
-        raise AssertionError("Deflection angles at coordinaates should be overridden")
+        raise AssertionError("Deflection angles at coordinates should be overridden")
 
 
 class CombinedMassProfile(list, MassProfile):
