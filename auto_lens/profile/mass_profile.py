@@ -218,7 +218,7 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
         """
         eta = self.coordinates_to_elliptical_radius(coordinates)
         deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (
-        3.0 - self.slope)
+            3.0 - self.slope)
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
@@ -401,7 +401,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         eta = self.coordinates_to_elliptical_radius(coordinates)
         deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta) ** -1.0 * \
                        ((self.core_radius ** 2 + eta ** 2) ** ((3.0 - self.slope) / 2.0) - self.core_radius ** (
-                       3 - self.slope))
+                           3 - self.slope))
 
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
