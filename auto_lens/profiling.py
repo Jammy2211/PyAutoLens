@@ -1,29 +1,59 @@
 import cProfile
-import decorator
-import profile
+from profile import mass_profile
+import pytest
+from numba import cfunc, carray, jit
+from numba.types import intc, intp, float64, voidptr
+from numba.types import CPointer
+import numpy as np
+from scipy import ndimage as ndi
+from scipy import LowLevelCallable
+from scipy import integrate
+
+invexp = lambda x: np.exp(-x)
+integrate.quad(invexp, 0, np.inf)
+
+image = np.random.random((2048, 2048))
+
+footprint = np.array([[0, 1, 0],
+                      [1, 1, 1],
+                      [0, 1, 0]], dtype=bool)
 
 
-def test_symmetric_profile():
-    circular = profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, flux=1.0,
-                               effective_radius=0.6, sersic_index=4.0)
+def test_deflection_angles():
+    sersic = mass_profile.SersicMassProfile(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, flux=5.0,
+                                            effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
 
-    circular.centre = (50, 50)
-    array = decorator.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                        pixel_scale=1.0)
+    defls = sersic.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-    assert array[50][50] > array[50][51]
-    assert array[50][50] > array[49][50]
-    assert array[49][50] == array[50][51]
-    assert array[50][51] == array[50][49]
-    assert array[50][49] == array[51][50]
+    assert defls[0] == pytest.approx(0.79374, 1e-3)
+    assert defls[1] == pytest.approx(1.1446, 1e-3)
 
-    array = decorator.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                        pixel_scale=0.5)
+    for i in range(20):
+        for j in range(20):
+            sersic.deflection_angles_at_coordinates(coordinates=(i * 0.01625, j * 0.01625))
 
-    assert array[100][100] > array[100][101]
-    assert array[100][100] > array[99][100]
-    assert array[99][100] == array[100][101]
-    assert array[100][101] == array[100][99]
-    assert array[100][99] == array[101][100]
 
-cProfile.run('test_symmetric_profile()')
+# cProfile.run('test_deflection_angles()')
+
+
+@jit
+def other_func():
+    return 1
+
+
+@cfunc(intc(CPointer(float64), intp, CPointer(float64), voidptr))
+def nbmin(values_ptr, len_values, result, data):
+    values = carray(values_ptr, (len_values,), dtype=float64)
+    result[0] = np.inf
+    for v in values:
+
+        if v < result[0]:
+            result[0] = v
+            other_func()
+
+    return 1
+
+
+# LowLevelCallable(nbmin.ctypes)()
+
+print(ndi.generic_filter(image, LowLevelCallable(nbmin.ctypes), footprint=footprint))
