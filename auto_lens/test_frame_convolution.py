@@ -67,3 +67,5 @@ class TestFrameExtraction(object):
         frame_array = frame_convolution.make_frame_array(cross_number_array, kernel_shape=(3, 3))
 
         assert 5 == len(frame_array)
+
+        assert (np.array([[1, 2, 3], [-1, 4, -1], [-1, -1, -1]]) == frame_array[4]).all()
