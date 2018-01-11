@@ -149,26 +149,54 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         return coordinate[0] * move_factor, coordinate[1] * move_factor
 
 
-class PixelizationAdaptive(object):
-    """An adaptive source-plane pixelization generated using a k-means clusteriing algorithm"""
+# class PixelizationAdaptive(object):
+#     """An adaptive source-plane pixelization generated using a k-means clusteriing algorithm"""
+#
+#     def __init__(self, sparse_coordinates, n_clusters):
+#         """
+#
+#         Parameters
+#         ----------
+#         sparse_coordinates : list(float, float)
+#             The x and y coordinates of each traced image sparse-pixel
+#         n_clusters : int
+#             The source-plane resolution or number of k-means clusters to be used.
+#         """
+#
+#         self.clusters = KMeans(sparse_coordinates, n_clusters)
+#         self.voronoi = Voronoi(points=self.clusters.cluster_centers_)
+#         self.regularization_matrix = RegularizationMatrix(self.clusters.n_clusters, regularization_weights=np.ones((3)),
+#                                                           no_vertices=self.clusters.)
 
-    def __init__(self, sparse_coordinates, n_clusters):
-        """
 
-        Parameters
-        ----------
-        sparse_coordinates : list(float, float)
-            The x and y coordinates of each traced image sparse-pixel
-        n_clusters : int
-            The source-plane resolution or number of k-means clusters to be used.
-        """
+class KMeans(sklearn.cluster.KMeans):
+    """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
 
-        self.clusters = KMeans(sparse_coordinates, n_clusters)
-        self.voronoi = Voronoi(points=self.clusters.cluster_centers_)
+    def __init__(self, points, n_clusters):
+        super(KMeans, self).__init__(n_clusters=n_clusters)
+        self.fit(points)
 
 
-# TODO : Should we do away with these classes are just directly put them in the PixelizationAdaptive constructor?
-# TODO : I did this so I could mess around with unit tests, happy to just get rid of them but left them for now.
+class Voronoi(scipy.spatial.Voronoi):
+
+    def __init__(self, points):
+        super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx Qm')
+
+    def indexes_of_neighbouring_points(self, point_index):
+        """ Retrieve the index(es) of the points an input point (specified by its index in *points*) shares Voronoi
+            vertexes with. \
+
+            Parameters
+            ----------
+            point_index : int
+                The point in the input list *points* we are retrieving the neighbouring indexes of.
+
+            Returns
+            ----------
+            neighbours_index: [int]
+                Each entry corresponds to an index in *points* that the input point shares a Voronoi vertex with.
+         """
+        return self.point_region[self.regions[self.point_region[point_index]]]
 
 class RegularizationMatrix(np.ndarray):
     """Class used for generating the regularization matrix H, which describes how each source-plane pixel is
@@ -231,15 +259,88 @@ class RegularizationMatrix(np.ndarray):
 
         return 2.0 * matrix
 
+def match_coordintes_to_clusters_via_nearest_neighbour(match_coordinates, cluster_centers):
+    """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
 
-class KMeans(sklearn.cluster.KMeans):
-    """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
+        This method uses a nearest neighbour search between every coordinate and set of cluster centers, thus it is \
+        slow when the number of coordinates or clusters is large.
 
-    def __init__(self, points, n_clusters):
-        super(KMeans, self).__init__(n_clusters=n_clusters)
-        self.fit(points)
+        Parameters
+        ----------
+        match_coordinates : [(float, float)]
+            The x and y coordinates to be matched to the cluster centers.
+        cluster_centers: [(float, float)
+            The cluster centers the coordinates are matched with.
+
+        Returns
+        ----------
+        coordinates_to_cluster_index : [int]
+            The index in cluster_centers each match coordinate is matched with. (e.g. if the fifth match coordinate \
+            is closest to the 3rd cluster in cluster_centers, coordinates_to_cluster_index[4] = 2).
+
+     """
+
+    coordinates_to_cluster_index = []
+
+    for coordinate in match_coordinates:
+        distances = map(lambda centers :
+                    ( (coordinate[0] - centers[0]) ** 2 + (coordinate[1] - centers[1]) ** 2 ) , cluster_centers )
+
+        coordinates_to_cluster_index.append(np.argmin(distances))
+
+    return coordinates_to_cluster_index
+
+def match_coordinates_to_clusters_via_sparse_pairs(match_coordinates, cluster_centers, sparse_coordinates,
+                                                   match_coordinate_to_sparse_coordinates_index,
+                                                   sparse_coordinates_to_cluster_index):
+    """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
+
+        This method uses a sparsely sampled grid of coordinates with known cluster pairings and Voronoi vertices to \
+        speed up the function for cases where the number of coordinates or clusters is large. Thus, the sparse grid of \
+        coordinates must have had a clustering alogirthm and Voronoi gridding performed prior to this function.
+
+        In a realistic lens analysis, the sparse coordinates will correspond to something like the center of each \
+        image pixel (traced to the source-plane), whereas the coordinates to be matched will be the subgridded \
+        image-pixels (again, already traced to the source-plane). An important benefit of this is therefore that the \
+        clusteiring alogirthm is also sped up by being run on fewer coordinates.
 
 
-class Voronoi(scipy.spatial.Voronoi):
-    def __init__(self, points):
-        super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx')
+        Parameters
+        ----------
+        match_coordinates : [(float, float)]
+            The x and y coordinates to be matched to the cluster centers.
+        cluster_centers: [(float, float)
+            The cluster centers the coordinates are matched with.
+        sparse_coordinates : [(float, float)]
+            A sparse subset of x and y coordinates.
+        sparse_coordinate_to_match_coordinates_index : [int]
+            The index in match_coordinates each sparse coordinate is matched with (e.g. if the fifth sparse coordinate \
+            is closest to the 3rd coordinate in match_coordinates, sparse_coordinate_to_match_coordinates_index[4] = 2).
+        sparse_coordinates_to_cluster_index : [int]
+            The index in cluster_centers each sparse coordinate is matched with (e.g. if the fifth sparse coordinate \
+            is closest to the 3rd cluster in cluster_centers, sparse_coordinates_to_cluster_index[4] = 2).
+
+        Returns
+        ----------
+        coordinates_to_cluster_index : [int]
+            The index in cluster_centers each match coordinate is matched with. (e.g. if the fifth match coordinate \
+            is closest to the 3rd cluster in cluster_centers, coordinates_to_cluster_index[4] = 2).
+
+     """
+
+    # TODO : Use Delaunay (stackoverflow guide) to find pairs of cluster centers. We should be able to get this from the
+    # TODO : Voronoi alogirthm, but pythoon doesn't let us :(. Hopefully its super fast so it doesn't matter for large
+    # TODO : Cluster numbers anyway
+
+    clusters_voronoi = Voronoi(cluster_centers)
+
+    for index, match_coordinate in enumerate(match_coordinates):
+
+        sparse_coordinate_nearest_index = match_coordinate_to_sparse_coordinates_index[index]
+        sparse_nearest_cluster_center = cluster_centers[sparse_coordinates_to_cluster_index[sparse_coordinate_nearest_index]]
+
+        # Calculate the distance between the match_coordinate and its nearest sparse cluster
+        distance_match_to_sparse = (match_coordinate[0] - sparse_nearest_cluster_center[0]) ** 2 + \
+                                   (match_coordinate[1] - sparse_nearest_cluster_center[1]) ** 2
+
+        # Now compute the distance between the match_coordinate and all pixels neighbouring the nearest sparse cluster
