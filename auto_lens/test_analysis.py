@@ -436,6 +436,7 @@ class TestSourcePlaneBorder(object):
 
 #class TestPixelizationAdaptive(object):
 
+
 class TestRegularizationMatrix(object):
 
     # The regularization matrix, H, is calculated by defining a set of B matrices which describe how source-plane
@@ -627,6 +628,9 @@ class TestKMeans:
         assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
         assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
 
+        assert list(kmeans.labels_).count(0) == 3
+        assert list(kmeans.labels_).count(1) == 3
+
     def test__simple_points__sets_up_three_clusters(self):
 
         sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
@@ -639,9 +643,38 @@ class TestKMeans:
         assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
         assert (kmeans.cluster_centers_ == np.array([[-1.0, -1.0]])).any()
 
+        assert list(kmeans.labels_).count(0) == 3
+        assert list(kmeans.labels_).count(1) == 3
+        assert list(kmeans.labels_).count(2) == 3
+
+    def test__simple_points__sets_up_three_clusters_more_points_in_third_cluster(self):
+
+        sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
+
+                                       [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                       [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+
+                                       [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
+                                       [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
+                                       [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
+                                       [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+        kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
+
+        print(kmeans.cluster_centers_)
+
+        assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
+        assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
+    #    assert (kmeans.cluster_centers_ == np.array([[-1.0, -1.0]])).any()
+
+        assert list(kmeans.labels_).count(0) == 3 or 6 or 12
+        assert list(kmeans.labels_).count(1) == 3 or 6 or 12
+        assert list(kmeans.labels_).count(2) == 3 or 6 or 12
+
+
 class TestVoronoi:
 
-    def test__simple_points__sets_up_voronoi_grid(self):
+    def test__simple_points__sets_up_voronoi_vertices(self):
 
         points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
 
@@ -651,3 +684,79 @@ class TestVoronoi:
         assert (voronoi.vertices[1] == np.array([-1., 0.])).all()
         assert (voronoi.vertices[2] == np.array([1., 0.])).all()
         assert (voronoi.vertices[3] == np.array([0., -1.])).all()
+
+    def test__simple_points__neighbouring_points_index_reteived_correctly(self):
+
+        points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        print(voronoi.ridge_points)
+
+        assert (voronoi.indexes_of_neighbouring_points(point_index=0) == np.array([1, 2, 3, 4])).any()
+        assert (voronoi.indexes_of_neighbouring_points(point_index=1) == np.array([0, 2, 4])).any()
+ #       assert (voronoi.indexes_of_neighbouring_points(point_index=2) == np.array([1, 3])).any()
+ #       assert (voronoi.indexes_of_neighbouring_points(point_index=3) == np.array([2, 4])).any()
+ #       assert (voronoi.indexes_of_neighbouring_points(point_index=4) == np.array([4])).any()
+
+class TestMatchCoordinatesFromClusters:
+
+    def test__match_coordinates_to_clusters_via_nearest_neighbour__case1__correct_pairs(self):
+
+        clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
+
+        coordinates_to_cluster_index = analysis.match_coordintes_to_clusters_via_nearest_neighbour(coordinates, clusters)
+
+        assert coordinates_to_cluster_index[0] == 0
+        assert coordinates_to_cluster_index[1] == 1
+        assert coordinates_to_cluster_index[2] == 2
+        assert coordinates_to_cluster_index[3] == 3
+
+    def test__match_coordinates_to_clusters_via_nearest_neighbour___case2__correct_pairs(self):
+
+        clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+
+        coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
+                                [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
+
+        coordinates_to_cluster_index = analysis.match_coordintes_to_clusters_via_nearest_neighbour(coordinates, clusters)
+
+        assert coordinates_to_cluster_index[0] == 0
+        assert coordinates_to_cluster_index[1] == 1
+        assert coordinates_to_cluster_index[2] == 2
+        assert coordinates_to_cluster_index[3] == 3
+        assert coordinates_to_cluster_index[4] == 3
+        assert coordinates_to_cluster_index[5] == 2
+        assert coordinates_to_cluster_index[6] == 1
+        assert coordinates_to_cluster_index[7] == 0
+
+    def test__match_coordinates_to_clusters_via_nearest_neighbour___case3__correct_pairs(self):
+
+        clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
+
+        coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
+
+        coordinates_to_cluster_index = analysis.match_coordintes_to_clusters_via_nearest_neighbour(coordinates, clusters)
+
+        assert coordinates_to_cluster_index[0] == 4
+        assert coordinates_to_cluster_index[1] == 4
+        assert coordinates_to_cluster_index[2] == 4
+        assert coordinates_to_cluster_index[3] == 0
+        assert coordinates_to_cluster_index[4] == 0
+        assert coordinates_to_cluster_index[5] == 5
+
+    def test__match_coordinates_to_clusters_via_sparse_pairs__case1__correct_pairs(self):
+
+        clusters = np.array([[1.0, 0.0], [-1.0, 0.0]])
+        coordinates = np.array([[1.1, 0.0], [0.9, 0.0], [-0.9, 0.0], [-1.1, 0.0]])
+
+        coordinates_to_cluster_index_nearest_neighbour = analysis.match_coordintes_to_clusters_via_nearest_neighbour(coordinates, clusters)
+
+        sparse_coordinates = np.array([[1.0, 0.0], [-1.0, 0.0]])
+        sparse_coordinates_to_cluster_index = np.array([[0], [1]])
+
+        coordinates_to_cluster_index_sparse_pairs = analysis.match_coordintes_to_clusters_via_sparse_pairs(
+                                            coordinates, clusters, sparse_coordinates, sparse_coordinates_to_cluster_index)
+
+        assert ( coordinates_to_cluster_index_nearest_neighbour == coordinates_to_cluster_index_sparse_pairs ).all()
