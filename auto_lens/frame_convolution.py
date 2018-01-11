@@ -75,3 +75,35 @@ def frame_at_coords(number_array, coords, kernel_shape):
                 frame[i, j] = number_array[x, y]
 
     return frame
+
+
+class Convolver(object):
+    def __init__(self, pixel_vector, frame_array, kernel):
+        if frame_array[0].shape != kernel.shape:
+            raise AssertionError(
+                "Frame {} and kernel {} shapes do not match".format(frame_array[0].shape, kernel.shape))
+        self.pixel_vector = pixel_vector
+        self.frame_array = frame_array
+        self.kernel = kernel
+
+    @property
+    def convolution(self):
+        # noinspection PyUnresolvedReferences
+        result = np.zeros(len(self.pixel_vector))
+        for index in range(len(self.pixel_vector)):
+            # noinspection PyUnresolvedReferences
+            result = np.add(result, self.convolution_for_pixel(index))
+        return result
+
+    def convolution_for_pixel(self, index):
+        # noinspection PyUnresolvedReferences
+        new_vector = np.zeros(len(self.pixel_vector))
+        value = self.pixel_vector[index]
+        frame = self.frame_array[index]
+        result = value * self.kernel
+        for x in range(frame.shape[0]):
+            for y in range(frame.shape[1]):
+                vector_index = frame[x, y]
+                if vector_index > -1:
+                    new_vector[int(vector_index)] = result[x, y]
+        return new_vector

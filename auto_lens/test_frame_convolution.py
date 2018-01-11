@@ -25,6 +25,16 @@ def make_cross_number_array():
     return np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])
 
 
+@pytest.fixture(name="simple_frame_array")
+def make_simple_frame_array(simple_number_array):
+    return frame_convolution.make_frame_array(simple_number_array, kernel_shape=(3, 3))
+
+
+@pytest.fixture(name="simple_kernel")
+def make_simple_kernel():
+    return np.array([[0, 0.1, 0], [0.1, 0.6, 0.1], [0, 0.1, 0]])
+
+
 class TestNumbering(object):
     def test_simple_numbering(self, simple_number_array):
         shape = (3, 3)
@@ -69,3 +79,26 @@ class TestFrameExtraction(object):
         assert 5 == len(frame_array)
 
         assert (np.array([[1, 2, 3], [-1, 4, -1], [-1, -1, -1]]) == frame_array[4]).all()
+
+
+class TestConvolution(object):
+    def test_simple_convolution(self, simple_frame_array, simple_kernel):
+        pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
+
+        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, simple_kernel)
+
+        result = convolver.convolution_for_pixel(4)
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
+
+    def test_full_convolution(self, simple_frame_array):
+        pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
+        kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
+
+        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, kernel)
+
+        result = convolver.convolution
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
