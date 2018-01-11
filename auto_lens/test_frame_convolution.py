@@ -30,6 +30,11 @@ def make_simple_frame_array(simple_number_array):
     return frame_convolution.make_frame_array(simple_number_array, kernel_shape=(3, 3))
 
 
+@pytest.fixture(name="cross_frame_array")
+def make_cross_frame_array(cross_number_array):
+    return frame_convolution.make_frame_array(cross_number_array, kernel_shape=(3, 3))
+
+
 @pytest.fixture(name="simple_kernel")
 def make_simple_kernel():
     return np.array([[0, 0.1, 0], [0.1, 0.6, 0.1], [0, 0.1, 0]])
@@ -82,23 +87,38 @@ class TestFrameExtraction(object):
 
 
 class TestConvolution(object):
-    def test_simple_convolution(self, simple_frame_array, simple_kernel):
+    def test_simple_convolution(self, simple_frame_array, simple_number_array, simple_kernel):
         pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
 
-        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, simple_kernel)
+        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, simple_number_array, simple_kernel)
 
         result = convolver.convolution_for_pixel(4)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
 
-    def test_full_convolution(self, simple_frame_array):
+    def test_full_convolution(self, simple_frame_array, simple_number_array):
         pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, kernel)
+        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, simple_number_array, kernel)
 
         result = convolver.convolution
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
+
+    def test_cross_mask_convolution(self, cross_frame_array, cross_number_array):
+        pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
+        kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
+
+        print(cross_frame_array)
+
+        convolver = frame_convolution.Convolver(pixel_vector, cross_frame_array, cross_number_array, kernel)
+
+        result = convolver.convolution
+
+        print(result)
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0]).all()
