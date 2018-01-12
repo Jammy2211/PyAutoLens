@@ -103,9 +103,9 @@ class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_number_array, simple_kernel):
         pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
 
-        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, simple_number_array, simple_kernel)
+        convolver = frame_convolution.Convolver(simple_frame_array, simple_number_array)
 
-        result = convolver.convolution_for_pixel(4)
+        result = convolver.convolution_for_pixel_index_vector_and_kernel(4, pixel_vector, simple_kernel)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
@@ -114,9 +114,9 @@ class TestConvolution(object):
         pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(pixel_vector, simple_frame_array, simple_number_array, kernel)
+        convolver = frame_convolution.Convolver(simple_frame_array, simple_number_array)
 
-        result = convolver.convolution
+        result = convolver.convolve_vector_with_kernel(pixel_vector, kernel)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
