@@ -96,7 +96,24 @@ class TestFrameExtraction(object):
 
         assert 5 == len(frame_array)
 
-        assert (np.array([[1, 2, 3], [-1, 4, -1], [-1, -1, -1]]) == frame_array[4]).all()
+        assert (np.array([[-1, -1, -1],
+                          [-1, 0, -1],
+                          [1, 2, 3]]) == frame_array[0]).all()
+
+        assert (np.array([[-1, -1, 0],
+                          [-1, 1, 2],
+                          [-1, -1, 4]]) == frame_array[1]).all()
+
+        # noinspection PyUnresolvedReferences
+        assert (cross_frame_maker.number_array == frame_array[2]).all()
+
+        assert (np.array([[0, -1, -1],
+                          [2, 3, -1],
+                          [4, -1, -1]]) == frame_array[3]).all()
+
+        assert (np.array([[1, 2, 3],
+                          [-1, 4, -1],
+                          [-1, -1, -1]]) == frame_array[4]).all()
 
 
 class TestConvolution(object):
