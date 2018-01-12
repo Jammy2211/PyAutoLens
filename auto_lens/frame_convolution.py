@@ -84,9 +84,8 @@ class FrameMaker(object):
 
 
 class Convolver(object):
-    def __init__(self, frame_array, number_array):
+    def __init__(self, frame_array):
         self.frame_array = frame_array
-        self.number_array = number_array.flatten()
 
     def convolve_vector_with_kernel(self, vector, kernel):
         if self.frame_array[0].shape != kernel.shape:
@@ -99,23 +98,16 @@ class Convolver(object):
             result = np.add(result, self.convolution_for_pixel_index_vector_and_kernel(index, vector, kernel))
         return result
 
-    def is_frame_for_index(self, pixel_index):
-        return self.number_array[pixel_index] > -1
-
-    def frame_for_index(self, pixel_index):
-        return self.frame_array[self.number_array[pixel_index]]
-
     def convolution_for_pixel_index_vector_and_kernel(self, pixel_index, vector, kernel):
         # noinspection PyUnresolvedReferences
         new_vector = np.zeros(len(vector))
 
-        if self.is_frame_for_index(pixel_index):
-            value = vector[pixel_index]
-            frame = self.frame_for_index(pixel_index)
-            result = value * kernel
-            for x in range(frame.shape[0]):
-                for y in range(frame.shape[1]):
-                    vector_index = frame[x, y]
-                    if vector_index > -1:
-                        new_vector[int(vector_index)] = result[x, y]
+        value = vector[pixel_index]
+        frame = self.frame_array[pixel_index]
+        result = value * kernel
+        for x in range(frame.shape[0]):
+            for y in range(frame.shape[1]):
+                vector_index = frame[x, y]
+                if vector_index > -1:
+                    new_vector[int(vector_index)] = result[x, y]
         return new_vector
