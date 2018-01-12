@@ -142,13 +142,9 @@ class TestConvolution(object):
         pixel_vector = [0, 0, 1, 0, 0]
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        print(cross_frame_array)
-
         convolver = frame_convolution.Convolver(cross_frame_array)
 
         result = convolver.convolve_vector_with_kernel(pixel_vector, kernel)
-
-        print(result)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.0, 0.5, 0.5, 0.0]).all()
