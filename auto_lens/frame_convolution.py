@@ -86,7 +86,7 @@ class FrameMaker(object):
 class Convolver(object):
     def __init__(self, frame_array, number_array):
         self.frame_array = frame_array
-        self.number_vector = number_array.flatten()
+        self.number_array = number_array.flatten()
 
     def convolve_vector_with_kernel(self, vector, kernel):
         if self.frame_array[0].shape != kernel.shape:
@@ -99,13 +99,19 @@ class Convolver(object):
             result = np.add(result, self.convolution_for_pixel_index_vector_and_kernel(index, vector, kernel))
         return result
 
+    def is_frame_for_index(self, pixel_index):
+        return self.number_array[pixel_index] > -1
+
+    def frame_for_index(self, pixel_index):
+        return self.frame_array[self.number_array[pixel_index]]
+
     def convolution_for_pixel_index_vector_and_kernel(self, pixel_index, vector, kernel):
         # noinspection PyUnresolvedReferences
         new_vector = np.zeros(len(vector))
-        frame_number = self.number_vector[pixel_index]  # TODO: this logic seems to be wrong
-        if frame_number > -1:
+
+        if self.is_frame_for_index(pixel_index):
             value = vector[pixel_index]
-            frame = self.frame_array[frame_number]
+            frame = self.frame_for_index(pixel_index)
             result = value * kernel
             for x in range(frame.shape[0]):
                 for y in range(frame.shape[1]):
