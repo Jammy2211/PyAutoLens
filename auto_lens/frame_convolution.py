@@ -189,6 +189,10 @@ class Convolver(object):
         new_vector = np.zeros(len(vector))
 
         value = vector[pixel_index]
+
+        if value == 0:
+            return new_vector
+
         frame = self.frame_array[pixel_index]
         result = value * kernel
         for x in range(frame.shape[0]):
