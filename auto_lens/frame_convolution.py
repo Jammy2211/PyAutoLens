@@ -1,6 +1,41 @@
 import numpy as np
 
 
+"""
+This module is for the application of convolution to sparse vectors.
+
+Take a simple mask:
+
+[[0, 1, 0],
+ [1, 1, 1],
+ [0, 1, 0]]
+
+A set of values in a corresponding image might be represented in a 1D array:
+
+[2, 8, 2, 5, 7, 5, 3, 1, 4]
+
+However, values that are masked out need not be considered. Dropping masked values from this array gives:
+
+[8, 5, 7, 5, 1]
+
+This module allows us to find the relationships between pixels in a mask for a kernel of a given size so that
+convolutions can be efficiently applied to reduced arrays such as the one above.
+
+A FrameMaker can be created for a given mask:
+
+frame_maker = FrameMaker(mask)
+
+This can then produce a convolver for any given kernel shape:
+
+convolver = frame_maker.convolver_for_kernel_shape((3, 3))
+
+Which is then applied to a reduced array and kernel to find the convolution efficiently:
+
+convolved_vector = convolver.convolve_vector_with_kernel(vector, kernel)
+
+"""
+
+
 class FrameMaker(object):
     def __init__(self, mask):
         """
@@ -82,12 +117,46 @@ class FrameMaker(object):
 
         return frame
 
+    def convolver_for_kernel_shape(self, kernel_shape):
+        """
+        Create a convolver that can be used to apply a kernel of any shape to a 1D vector of non-masked values
+        Parameters
+        ----------
+        kernel_shape: (int, int)
+            The shape of the kernel
+        Returns
+        -------
+            convolver: Convolver
+        """
+        return Convolver(self.make_frame_array(kernel_shape))
+
 
 class Convolver(object):
     def __init__(self, frame_array):
+        """
+        Class to convolve a kernel with a 1D vector of non-masked values
+        Parameters
+        ----------
+        frame_array: [ndarray]
+            An array of frames created by the frame maker. A frame maps positions in the kernel to values in the 1D
+            vector.
+        """
         self.frame_array = frame_array
 
     def convolve_vector_with_kernel(self, vector, kernel):
+        """
+        Convolves a kernel with a 1D vector of non-masked values
+        Parameters
+        ----------
+        vector: [float]
+            A vector of numbers excluding those that are masked
+        kernel: ndarray
+            A kernel used for convolution with the same shape as the frames in the frame array
+        Returns
+        -------
+        convolved_vector: [float]
+            A vector convolved with the kernel
+        """
         if self.frame_array[0].shape != kernel.shape:
             raise AssertionError(
                 "Frame {} and kernel {} shapes do not match".format(self.frame_array[0].shape, kernel.shape))
@@ -99,6 +168,23 @@ class Convolver(object):
         return result
 
     def convolution_for_pixel_index_vector_and_kernel(self, pixel_index, vector, kernel):
+        """
+        Creates a vector of values describing the convolution of the kernel with a value in the vector
+        Parameters
+        ----------
+        pixel_index: int
+            The index in the vector to be convolved
+        vector: [float]
+            A vector of numbers excluding those that are masked
+        kernel: ndarray
+            A kernel to be convolved with the vector
+        Returns
+        -------
+        convolution_array: [float]
+            An array with the same length of the vector with values populated according to the convolution of the kernel
+            with one particular value
+        """
+
         # noinspection PyUnresolvedReferences
         new_vector = np.zeros(len(vector))
 
