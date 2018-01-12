@@ -1,27 +1,32 @@
 import numpy as np
 
 
-def number_array_for_mask(mask):
-    """
-    Creates an array where points inside the mask are numbered
-    Parameters
-    ----------
-    mask: ndarray
-        A mask where 0 eliminates data
+class FrameMaker(object):
+    def __init__(self, mask):
+        self.mask = mask
 
-    Returns
-    -------
-    number_array: ndarray
-        An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
-    """
-    array = -1 * np.ones(mask.shape)
-    n = 0
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if mask[x, y] == 1:
-                array[x, y] = n
-                n += 1
-    return array
+    @property
+    def number_array(self):
+        """
+            Creates an array where points inside the mask are numbered
+            Parameters
+            ----------
+            mask: ndarray
+                A mask where 0 eliminates data
+
+            Returns
+            -------
+            number_array: ndarray
+                An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
+            """
+        array = -1 * np.ones(self.mask.shape)
+        n = 0
+        for x in range(self.mask.shape[0]):
+            for y in range(self.mask.shape[1]):
+                if self.mask[x, y] == 1:
+                    array[x, y] = n
+                    n += 1
+        return array
 
 
 def make_frame_array(number_array, kernel_shape):
