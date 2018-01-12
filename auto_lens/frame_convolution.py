@@ -11,6 +11,7 @@ class FrameMaker(object):
                 A mask where 0 eliminates data
         """
         self.mask = mask
+        self.__number_array = None
 
     @property
     def number_array(self):
@@ -23,14 +24,15 @@ class FrameMaker(object):
         number_array: ndarray
             An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
         """
-        array = -1 * np.ones(self.mask.shape)
-        n = 0
-        for x in range(self.mask.shape[0]):
-            for y in range(self.mask.shape[1]):
-                if self.mask[x, y] == 1:
-                    array[x, y] = n
-                    n += 1
-        return array
+        if self.__number_array is None:
+            self.__number_array = -1 * np.ones(self.mask.shape)
+            n = 0
+            for x in range(self.mask.shape[0]):
+                for y in range(self.mask.shape[1]):
+                    if self.mask[x, y] == 1:
+                        self.__number_array[x, y] = n
+                        n += 1
+        return self.__number_array
 
     def make_frame_array(self, kernel_shape):
         """
@@ -82,33 +84,29 @@ class FrameMaker(object):
 
 
 class Convolver(object):
-    def __init__(self, pixel_vector, frame_array, number_array, kernel):
-        if frame_array[0].shape != kernel.shape:
-            raise AssertionError(
-                "Frame {} and kernel {} shapes do not match".format(frame_array[0].shape, kernel.shape))
-        self.pixel_vector = pixel_vector
+    def __init__(self, frame_array, number_array):
         self.frame_array = frame_array
         self.number_vector = number_array.flatten()
-        self.kernel = kernel
 
-    @property
-    def convolution(self):
+    def convolve_vector_with_kernel(self, vector, kernel):
+        if self.frame_array[0].shape != kernel.shape:
+            raise AssertionError(
+                "Frame {} and kernel {} shapes do not match".format(self.frame_array[0].shape, kernel.shape))
         # noinspection PyUnresolvedReferences
-        result = np.zeros(len(self.pixel_vector))
-        for index in range(len(self.pixel_vector)):
+        result = np.zeros(len(vector))
+        for index in range(len(vector)):
             # noinspection PyUnresolvedReferences
-            result = np.add(result, self.convolution_for_pixel(index))
+            result = np.add(result, self.convolution_for_pixel_index_vector_and_kernel(index, vector, kernel))
         return result
 
-    def convolution_for_pixel(self, index):
+    def convolution_for_pixel_index_vector_and_kernel(self, pixel_index, vector, kernel):
         # noinspection PyUnresolvedReferences
-        new_vector = np.zeros(len(self.pixel_vector))
-        frame_number = self.number_vector[index]
+        new_vector = np.zeros(len(vector))
+        frame_number = self.number_vector[pixel_index]  # TODO: this logic seems to be wrong
         if frame_number > -1:
-            value = self.pixel_vector[index]
+            value = vector[pixel_index]
             frame = self.frame_array[frame_number]
-            result = value * self.kernel
-            print(result)
+            result = value * kernel
             for x in range(frame.shape[0]):
                 for y in range(frame.shape[1]):
                     vector_index = frame[x, y]
