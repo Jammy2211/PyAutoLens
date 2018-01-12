@@ -117,67 +117,38 @@ class TestFrameExtraction(object):
 
 
 class TestConvolution(object):
-    def test_simple_convolution(self, simple_frame_array, simple_number_array, simple_kernel):
+    def test_simple_convolution(self, simple_frame_array, simple_kernel):
         pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
 
-        convolver = frame_convolution.Convolver(simple_frame_array, simple_number_array)
+        convolver = frame_convolution.Convolver(simple_frame_array)
 
         result = convolver.convolution_for_pixel_index_vector_and_kernel(4, pixel_vector, simple_kernel)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
 
-    def test_full_convolution(self, simple_frame_array, simple_number_array):
+    def test_full_convolution(self, simple_frame_array):
         pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(simple_frame_array, simple_number_array)
+        convolver = frame_convolution.Convolver(simple_frame_array)
 
         result = convolver.convolve_vector_with_kernel(pixel_vector, kernel)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
 
-    def test_is_frame_for_index(self, cross_frame_array, cross_number_array):
-        convolver = frame_convolution.Convolver(cross_frame_array, cross_number_array)
-
-        # noinspection PyTypeChecker
-        assert [False, True, False, True, True, True, False, True, False] == map(convolver.is_frame_for_index,
-                                                                                 range(9))
-
-    def test_frame_for_index(self, cross_frame_array, cross_number_array, cross_frame_maker):
-        convolver = frame_convolution.Convolver(cross_frame_array, cross_number_array)
-
-        assert (np.array([[-1, -1, -1],
-                          [-1, 0, -1],
-                          [1, 2, 3]]) == convolver.frame_for_index(1)).all()
-
-        assert (np.array([[-1, -1, 0],
-                          [-1, 1, 2],
-                          [-1, -1, 4]]) == convolver.frame_for_index(3)).all()
-
-        # noinspection PyUnresolvedReferences
-        assert (cross_frame_maker.number_array == convolver.frame_for_index(4)).all()
-
-        assert (np.array([[0, -1, -1],
-                          [2, 3, -1],
-                          [4, -1, -1]]) == convolver.frame_for_index(5)).all()
-
-        assert (np.array([[1, 2, 3],
-                          [-1, 4, -1],
-                          [-1, -1, -1]]) == convolver.frame_for_index(7)).all()
-
-    def test_cross_mask_convolution(self, cross_frame_array, cross_number_array):
-        pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
+    def test_cross_mask_convolution(self, cross_frame_array):
+        pixel_vector = [0, 0, 1, 0, 0]
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
         print(cross_frame_array)
 
-        convolver = frame_convolution.Convolver(cross_frame_array, cross_number_array)
+        convolver = frame_convolution.Convolver(cross_frame_array)
 
         result = convolver.convolve_vector_with_kernel(pixel_vector, kernel)
 
         print(result)
 
         # noinspection PyUnresolvedReferences
-        assert (result == [0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0]).all()
+        assert (result == [0.0, 0.0, 0.5, 0.5, 0.0]).all()
