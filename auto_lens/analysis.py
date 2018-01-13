@@ -178,7 +178,6 @@ class KMeans(sklearn.cluster.KMeans):
 
 
 class Voronoi(scipy.spatial.Voronoi):
-
     def __init__(self, points):
         super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx Qm')
 
@@ -197,6 +196,7 @@ class Voronoi(scipy.spatial.Voronoi):
                 Each entry corresponds to an index in *points* that the input point shares a Voronoi vertex with.
          """
         return self.point_region[self.regions[self.point_region[point_index]]]
+
 
 class RegularizationMatrix(np.ndarray):
     """Class used for generating the regularization matrix H, which describes how each source-plane pixel is
@@ -259,6 +259,7 @@ class RegularizationMatrix(np.ndarray):
 
         return 2.0 * matrix
 
+
 def match_coordintes_to_clusters_via_nearest_neighbour(match_coordinates, cluster_centers):
     """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
 
@@ -283,12 +284,13 @@ def match_coordintes_to_clusters_via_nearest_neighbour(match_coordinates, cluste
     coordinates_to_cluster_index = []
 
     for coordinate in match_coordinates:
-        distances = map(lambda centers :
-                    ( (coordinate[0] - centers[0]) ** 2 + (coordinate[1] - centers[1]) ** 2 ) , cluster_centers )
+        distances = map(lambda centers:
+                        ((coordinate[0] - centers[0]) ** 2 + (coordinate[1] - centers[1]) ** 2), cluster_centers)
 
         coordinates_to_cluster_index.append(np.argmin(distances))
 
     return coordinates_to_cluster_index
+
 
 def match_coordinates_to_clusters_via_sparse_pairs(match_coordinates, cluster_centers, sparse_coordinates,
                                                    match_coordinate_to_sparse_coordinates_index,
@@ -335,9 +337,9 @@ def match_coordinates_to_clusters_via_sparse_pairs(match_coordinates, cluster_ce
     clusters_voronoi = Voronoi(cluster_centers)
 
     for index, match_coordinate in enumerate(match_coordinates):
-
         sparse_coordinate_nearest_index = match_coordinate_to_sparse_coordinates_index[index]
-        sparse_nearest_cluster_center = cluster_centers[sparse_coordinates_to_cluster_index[sparse_coordinate_nearest_index]]
+        sparse_nearest_cluster_center = cluster_centers[
+            sparse_coordinates_to_cluster_index[sparse_coordinate_nearest_index]]
 
         # Calculate the distance between the match_coordinate and its nearest sparse cluster
         distance_match_to_sparse = (match_coordinate[0] - sparse_nearest_cluster_center[0]) ** 2 + \
