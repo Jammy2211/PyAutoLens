@@ -122,7 +122,7 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(simple_frame_array)
 
-        result = convolver.convolution_for_pixel_index_vector_and_kernel(4, pixel_vector, simple_kernel)
+        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_vector)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
@@ -133,7 +133,7 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(simple_frame_array)
 
-        result = convolver.convolve_vector_with_kernel(pixel_vector, kernel)
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_vector)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
@@ -144,7 +144,7 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(cross_frame_array)
 
-        result = convolver.convolve_vector_with_kernel(pixel_vector, kernel)
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_vector)
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.0, 0.5, 0.5, 0.0]).all()

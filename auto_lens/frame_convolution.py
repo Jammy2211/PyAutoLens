@@ -1,6 +1,5 @@
 import numpy as np
 
-
 """
 This module is for the application of convolution to sparse vectors.
 
@@ -131,6 +130,9 @@ class FrameMaker(object):
         return Convolver(self.make_frame_array(kernel_shape))
 
 
+# TODO: KernelConvolver with value to convolution result map
+
+
 class Convolver(object):
     def __init__(self, frame_array):
         """
@@ -143,31 +145,39 @@ class Convolver(object):
         """
         self.frame_array = frame_array
 
-    def convolve_vector_with_kernel(self, vector, kernel):
+    def convolver_for_kernel(self, kernel):
+        return KernelConvolver(self.frame_array, kernel)
+
+
+class KernelConvolver(object):
+    def __init__(self, frame_array, kernel):
+        if frame_array[0].shape != kernel.shape:
+            raise AssertionError(
+                "Frame {} and kernel {} shapes do not match".format(frame_array[0].shape, kernel.shape))
+        self.frame_array = frame_array
+        self.kernel = kernel
+
+    def convolve_vector(self, vector):
         """
         Convolves a kernel with a 1D vector of non-masked values
         Parameters
         ----------
         vector: [float]
             A vector of numbers excluding those that are masked
-        kernel: ndarray
-            A kernel used for convolution with the same shape as the frames in the frame array
         Returns
         -------
         convolved_vector: [float]
             A vector convolved with the kernel
         """
-        if self.frame_array[0].shape != kernel.shape:
-            raise AssertionError(
-                "Frame {} and kernel {} shapes do not match".format(self.frame_array[0].shape, kernel.shape))
+
         # noinspection PyUnresolvedReferences
         result = np.zeros(len(vector))
         for index in range(len(vector)):
             # noinspection PyUnresolvedReferences
-            result = np.add(result, self.convolution_for_pixel_index_vector_and_kernel(index, vector, kernel))
+            result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
         return result
 
-    def convolution_for_pixel_index_vector_and_kernel(self, pixel_index, vector, kernel):
+    def convolution_for_pixel_index_vector(self, pixel_index, vector):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
         Parameters
@@ -176,8 +186,6 @@ class Convolver(object):
             The index in the vector to be convolved
         vector: [float]
             A vector of numbers excluding those that are masked
-        kernel: ndarray
-            A kernel to be convolved with the vector
         Returns
         -------
         convolution_array: [float]
@@ -194,7 +202,7 @@ class Convolver(object):
             return new_vector
 
         frame = self.frame_array[pixel_index]
-        result = value * kernel
+        result = value * self.kernel
         for x in range(frame.shape[0]):
             for y in range(frame.shape[1]):
                 vector_index = frame[x, y]
