@@ -156,6 +156,7 @@ class KernelConvolver(object):
                 "Frame {} and kernel {} shapes do not match".format(frame_array[0].shape, kernel.shape))
         self.frame_array = frame_array
         self.kernel = kernel
+        self.__result_dict = {}
 
     def convolve_vector(self, vector):
         """
@@ -176,6 +177,11 @@ class KernelConvolver(object):
             # noinspection PyUnresolvedReferences
             result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
         return result
+
+    def result_for_value(self, value):
+        if value not in self.__result_dict:
+            self.__result_dict[value] = value * self.kernel
+        return self.__result_dict[value]
 
     def convolution_for_pixel_index_vector(self, pixel_index, vector):
         """
@@ -201,8 +207,8 @@ class KernelConvolver(object):
         if value == 0:
             return new_vector
 
+        result = self.result_for_value(value)
         frame = self.frame_array[pixel_index]
-        result = value * self.kernel
         for x in range(frame.shape[0]):
             for y in range(frame.shape[1]):
                 vector_index = frame[x, y]
