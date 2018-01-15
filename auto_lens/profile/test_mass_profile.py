@@ -548,6 +548,7 @@ class TestSphericalPowerLaw(object):
 
 
 class TestCoredEllipticalPowerLaw(object):
+
     class TestSetup(object):
         def test__setup_cored_elliptical_power_law__correct_values(self):
             power_law = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
@@ -560,8 +561,8 @@ class TestCoredEllipticalPowerLaw(object):
             assert power_law.einstein_radius == 1.0
             assert power_law.slope == 2.2
             assert power_law.core_radius == 0.1
-            # (3 - slope) / (1 + axis_ratio) * (1.0+0.1**2)**1.2 = (3 - 2) / (1 + 1) * (1.1)**1.2 = 0.5
-            assert power_law.einstein_radius_rescaled == pytest.approx(0.40480, 1e-3)
+            # (3 - slope) / (1 + axis_ratio) * (1.0) = (3 - 2) / (1 + 1) * (1.1)**1.2 = 0.5
+            assert power_law.einstein_radius_rescaled == pytest.approx(0.4, 1e-3)
 
     class TestSurfaceDensity(object):
         def test__function__gives_correct_values(self):
@@ -570,7 +571,7 @@ class TestCoredEllipticalPowerLaw(object):
 
             kappa = power_law.surface_density_func(eta=1.0)
 
-            assert kappa == pytest.approx(0.40239, 1e-4)
+            assert kappa == pytest.approx(0.39762, 1e-4)
 
         def test__function__same_as_power_law_no_core(self):
             power_law_core = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
@@ -643,19 +644,16 @@ class TestCoredEllipticalPowerLaw(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(0.50990, 1e-3)
+            assert surface_density == pytest.approx(0.49029, 1e-3)
 
-        def test__double_einr__new_value_now_isnt_quite_double(self):
+        def test__double_einr__double_value(self):
             power_law_core = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                                              einstein_radius=2.0, slope=2.0,
                                                                              core_radius=0.2)
 
             surface_density = power_law_core.surface_density_at_coordinates(coordinates=(1.0, 0.0))
 
-            # eta = 1.0
-            # kappa = 0.5 * 1.0 ** 1.0
-
-            assert surface_density == pytest.approx(1.0002, 1e-3)
+            assert surface_density == pytest.approx(2.0 * 0.49029, 1e-3)
 
         def test__different_axis_ratio__new_value(self):
             power_law_core = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
@@ -664,9 +662,13 @@ class TestCoredEllipticalPowerLaw(object):
 
             surface_density = power_law_core.surface_density_at_coordinates(coordinates=(1.0, 0.0))
 
+            # for axis_ratio = 1.0, the factor is 1/2
+            # for axis_ratio = 0.5, the factor is 1/(1.5)
+            # So the change in the value is 0.5 / (1/1.5) = 1.0 / 0.75
+
             # axis ratio changes only einstein_rescaled, so wwe can use the above value and times by 1.0/1.5.
 
-            assert surface_density == pytest.approx(0.50990 * 1.33333, 1e-3)
+            assert surface_density == pytest.approx((1.0/0.75) * 0.49029, 1e-3)
 
         def test__slope_increase__new_value(self):
             power_law_core = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
@@ -678,7 +680,7 @@ class TestCoredEllipticalPowerLaw(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(0.4787, 1e-3)
+            assert surface_density == pytest.approx(0.45492, 1e-3)
 
         def test__slope_decrease__new_value(self):
             power_law_core = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
@@ -690,7 +692,7 @@ class TestCoredEllipticalPowerLaw(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(1.4079, 1e-3)
+            assert surface_density == pytest.approx(1.3887, 1e-3)
 
     class TestPotential(object):
         def test__flip_coordinates_lens_center__same_value(self):
@@ -760,7 +762,7 @@ class TestCoredEllipticalPowerLaw(object):
 
             potential = power_law.potential_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert potential == pytest.approx(0.72932, 1e-3)
+            assert potential == pytest.approx(0.71185, 1e-3)
 
         def test__value_via_fortran_2__same_value(self):
             power_law = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
@@ -768,7 +770,7 @@ class TestCoredEllipticalPowerLaw(object):
 
             potential = power_law.potential_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert potential == pytest.approx(0.040915, 1e-3)
+            assert potential == pytest.approx(0.02319, 1e-3)
 
     class TestDeflections(object):
         def test__flip_coordinates_lens_center__flips_deflection_angles(self):
@@ -860,8 +862,8 @@ class TestCoredEllipticalPowerLaw(object):
 
             deflections = power_law.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert deflections[0] == pytest.approx(-0.56229, 1e-3)
-            assert deflections[1] == pytest.approx(1.0112, 1e-3)
+            assert deflections[0] == pytest.approx(-0.54883, 1e-3)
+            assert deflections[1] == pytest.approx(0.98697, 1e-3)
 
         def test__compute_deflection__value_via_fortran_2__same_value(self):
             power_law = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
@@ -869,8 +871,8 @@ class TestCoredEllipticalPowerLaw(object):
 
             deflections = power_law.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert deflections[0] == pytest.approx(0.20117, 1e-3)
-            assert deflections[1] == pytest.approx(0.01960, 1e-3)
+            assert deflections[0] == pytest.approx(0.11403, 1e-3)
+            assert deflections[1] == pytest.approx(0.01111, 1e-3)
 
 
 class TestCoredSphericalPowerLaw(object):
@@ -886,8 +888,7 @@ class TestCoredSphericalPowerLaw(object):
             assert power_law.einstein_radius == 1.0
             assert power_law.slope == 2.2
             assert power_law.core_radius == 0.1
-            # (3 - slope) / (1 + axis_ratio) * (1.0+0.1**2)**1.2 = (3 - 2) / (1 + 1) * (1.1)**1.2 = 0.5
-            assert power_law.einstein_radius_rescaled == pytest.approx(0.40480, 1e-3)
+            assert power_law.einstein_radius_rescaled == pytest.approx(0.4, 1e-3)
 
     class TestSurfaceDensity(object):
         def test__function__gives_correct_values(self):
@@ -896,7 +897,7 @@ class TestCoredSphericalPowerLaw(object):
 
             kappa = power_law.surface_density_func(eta=1.0)
 
-            assert kappa == pytest.approx(0.40239, 1e-4)
+            assert kappa == pytest.approx(0.39761, 1e-4)
 
         def test__function__same_as_power_law_no_core(self):
             power_law_core = mass_profile.CoredSphericalPowerLawMassProfile(centre=(1, 1), einstein_radius=1.0,
@@ -951,9 +952,9 @@ class TestCoredSphericalPowerLaw(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(0.50990, 1e-3)
+            assert surface_density == pytest.approx(0.49029, 1e-3)
 
-        def test__double_einr__new_value_now_isnt_quite_double(self):
+        def test__double_einr__double_value(self):
             power_law_core = mass_profile.CoredSphericalPowerLawMassProfile(centre=(0.0, 0.0),
                                                                             einstein_radius=2.0, slope=2.0,
                                                                             core_radius=0.2)
@@ -963,7 +964,7 @@ class TestCoredSphericalPowerLaw(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(1.0002, 1e-3)
+            assert surface_density == pytest.approx(2.0 * 0.49029, 1e-3)
 
     class TestPotential(object):
         def test__flip_coordinates_lens_center__same_value(self):
@@ -1027,7 +1028,7 @@ class TestCoredSphericalPowerLaw(object):
 
             potential = power_law.potential_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert potential == pytest.approx(0.56663, 1e-3)
+            assert potential == pytest.approx(0.54913, 1e-3)
 
         def test__value_via_fortran_2__same_value(self):
             power_law = mass_profile.CoredSphericalPowerLawMassProfile(centre=(-0.2, 0.2), einstein_radius=0.5,
@@ -1035,7 +1036,7 @@ class TestCoredSphericalPowerLaw(object):
 
             potential = power_law.potential_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert potential == pytest.approx(0.03211, 1e-3)
+            assert potential == pytest.approx(0.01820, 1e-3)
 
     class TestDeflections(object):
         def test__flip_coordinates_lens_center__flips_deflection_angles(self):
@@ -1112,8 +1113,8 @@ class TestCoredSphericalPowerLaw(object):
 
             deflections = power_law.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert deflections[0] == pytest.approx(-0.31658, 1e-3)
-            assert deflections[1] == pytest.approx(0.83249, 1e-3)
+            assert deflections[0] == pytest.approx(-0.30680, 1e-3)
+            assert deflections[1] == pytest.approx(0.80677, 1e-3)
 
         def test__compute_deflection__value_via_fortran_2__same_value(self):
             power_law = mass_profile.CoredSphericalPowerLawMassProfile(centre=(-0.2, 0.2), einstein_radius=0.5,
@@ -1121,8 +1122,8 @@ class TestCoredSphericalPowerLaw(object):
 
             deflections = power_law.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert deflections[0] == pytest.approx(0.16434, 1e-3)
-            assert deflections[1] == pytest.approx(-0.0056697, 1e-3)
+            assert deflections[0] == pytest.approx(0.09316, 1e-3)
+            assert deflections[1] == pytest.approx(-0.00321, 1e-3)
 
 
 class TestEllipticalIsothermal(object):
@@ -1541,7 +1542,7 @@ class TestCoredEllipticalIsothermal(object):
             assert isothermal_core.slope == 2.0
             assert isothermal_core.core_radius == 0.2
             # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
-            assert isothermal_core.einstein_radius_rescaled == 0.52
+            assert isothermal_core.einstein_radius_rescaled == 0.5
 
     class TestSurfaceDensity(object):
         def test__function__gives_correct_values(self):
@@ -1550,7 +1551,7 @@ class TestCoredEllipticalIsothermal(object):
 
             kappa = isothermal_core.surface_density_func(eta=1.0)
 
-            assert kappa == pytest.approx(0.50249, 1e-4)
+            assert kappa == pytest.approx(0.49752, 1e-4)
 
         def test__function__same_as_isothermal_core_no_core(self):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
@@ -1620,9 +1621,9 @@ class TestCoredEllipticalIsothermal(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(0.50990, 1e-3)
+            assert surface_density == pytest.approx(0.49029, 1e-3)
 
-        def test__double_einr__new_value_now_isnt_quite_double(self):
+        def test__double_einr__double_value(self):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=1.0,
                                                                                 phi=0.0,
                                                                                 einstein_radius=2.0, core_radius=0.2)
@@ -1632,7 +1633,7 @@ class TestCoredEllipticalIsothermal(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(1.0002, 1e-3)
+            assert surface_density == pytest.approx(2.0 * 0.49029, 1e-3)
 
         def test__different_axis_ratio__new_value(self):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(0.0, 0.0), axis_ratio=0.5,
@@ -1718,7 +1719,7 @@ class TestCoredEllipticalIsothermal(object):
 
             ratio = potential_1 / potential_2
 
-            assert ratio == pytest.approx(0.76642 / 0.06036, 1e-3)
+            assert ratio == pytest.approx(18.47647, 1e-3)
 
         def test__compute_potential__value_via_fortran__same_value(self):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(0.5, -0.7), axis_ratio=0.7,
@@ -1727,7 +1728,7 @@ class TestCoredEllipticalIsothermal(object):
 
             potential = isothermal_core.potential_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert potential == pytest.approx(0.76642, 1e-3)
+            assert potential == pytest.approx(0.74354, 1e-3)
 
         def test__compute_potential__value_via_fortran_2__same_value(self):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6,
@@ -1736,7 +1737,7 @@ class TestCoredEllipticalIsothermal(object):
 
             potential = isothermal_core.potential_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert potential == pytest.approx(0.06036, 1e-3)
+            assert potential == pytest.approx(0.04024, 1e-3)
 
     class TestDeflections(object):
         def test__flip_coordinates_lens_center__flips_deflection_angles(self):
@@ -1825,8 +1826,8 @@ class TestCoredEllipticalIsothermal(object):
 
             deflections = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert deflections[0] == pytest.approx(-0.53649, 1e-3)
-            assert deflections[1] == pytest.approx(0.98365, 1e-3)
+            assert deflections[0] == pytest.approx(-0.52047, 1e-3)
+            assert deflections[1] == pytest.approx(0.95429, 1e-3)
 
         def test__value_via_fortran_2__same_value(self):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(-0.2, 0.2), axis_ratio=0.6,
@@ -1835,8 +1836,8 @@ class TestCoredEllipticalIsothermal(object):
 
             deflections = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1625))
 
-            assert deflections[0] == pytest.approx(0.30750, 1e-3)
-            assert deflections[1] == pytest.approx(0.03144, 1e-3)
+            assert deflections[0] == pytest.approx(0.20500, 1e-3)
+            assert deflections[1] == pytest.approx(0.02097, 1e-3)
 
 
 class TestCoredSphericalIsothermal(object):
@@ -1853,7 +1854,7 @@ class TestCoredSphericalIsothermal(object):
             assert isothermal_core.slope == 2.0
             assert isothermal_core.core_radius == 0.2
             # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
-            assert isothermal_core.einstein_radius_rescaled == 0.52
+            assert isothermal_core.einstein_radius_rescaled == 0.5
 
     class TestSurfaceDensity(object):
         def test__function__gives_correct_values(self):
@@ -1911,9 +1912,9 @@ class TestCoredSphericalIsothermal(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(0.50990, 1e-3)
+            assert surface_density == pytest.approx(0.49029, 1e-3)
 
-        def test__double_einr__new_value_now_isnt_quite_double(self):
+        def test__double_einr__double_value(self):
             isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(0.0, 0.0),
                                                                                einstein_radius=2.0, core_radius=0.2)
 
@@ -1922,7 +1923,7 @@ class TestCoredSphericalIsothermal(object):
             # eta = 1.0
             # kappa = 0.5 * 1.0 ** 1.0
 
-            assert surface_density == pytest.approx(1.0002, 1e-3)
+            assert surface_density == pytest.approx(2.0 * 0.49029, 1e-3)
 
     class TestPotential(object):
         def test__flip_coordinates_lens_center__same_value(self):
@@ -2002,7 +2003,7 @@ class TestCoredSphericalIsothermal(object):
 
             potential = isothermal_core.potential_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert potential == pytest.approx(0.74453, 1e-3)
+            assert potential == pytest.approx(0.72231, 1e-3)
 
         def test__compute_potential__value_via_fortran_2__same_value(self):
             isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(-0.2, 0.2),
@@ -2010,7 +2011,7 @@ class TestCoredSphericalIsothermal(object):
 
             potential = isothermal_core.potential_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert potential == pytest.approx(0.04655, 1e-3)
+            assert potential == pytest.approx(0.03103, 1e-3)
 
     class TestDeflections(object):
         def test__flip_coordinates_lens_center__flips_deflection_angles(self):
@@ -2082,8 +2083,8 @@ class TestCoredSphericalIsothermal(object):
 
             deflections = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert deflections[0] == pytest.approx(-0.38642, 1e-3)
-            assert deflections[1] == pytest.approx(1.01651, 1e-3)
+            assert deflections[0] == pytest.approx(-0.37489, 1e-3)
+            assert deflections[1] == pytest.approx(0.98582, 1e-3)
 
         def test__compute_deflection_angles_via_fortran_2__same_value(self):
             isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(-0.2, 0.2),
@@ -2091,8 +2092,8 @@ class TestCoredSphericalIsothermal(object):
 
             deflections = isothermal_core.deflection_angles_at_coordinates(coordinates=(0.1625, 0.1875))
 
-            assert deflections[0] == pytest.approx(0.24324, 1e-3)
-            assert deflections[1] == pytest.approx(-0.00838, 1e-3)
+            assert deflections[0] == pytest.approx(0.16216, 1e-3)
+            assert deflections[1] == pytest.approx(-0.00559, 1e-3)
 
 
 class TestEllipticalNFWMassProfile(object):
