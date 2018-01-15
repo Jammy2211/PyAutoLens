@@ -347,11 +347,6 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
 
         self.core_radius = core_radius
 
-    @property
-    def einstein_radius_rescaled(self):
-        return ((3 - self.slope) / (1 + self.axis_ratio)) * (self.einstein_radius + self.core_radius ** 2) ** (
-            self.slope - 1)
-
     def surface_density_func(self, eta):
         return self.einstein_radius_rescaled * (self.core_radius ** 2 + eta ** 2) ** (-(self.slope - 1) / 2.0)
 
