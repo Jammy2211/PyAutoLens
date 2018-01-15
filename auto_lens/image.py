@@ -365,8 +365,6 @@ class Noise(Array):
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
-    # TODO: By having this function take a function that decides whether a pixel is part of the mask we can avoid
-    # TODO: repeating loops
     @classmethod
     def mask(cls, arc_second_dimensions, pixel_scale, function, centre):
         """
