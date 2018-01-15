@@ -28,9 +28,13 @@ This can then produce a convolver for any given kernel shape:
 
 convolver = frame_maker.convolver_for_kernel_shape((3, 3))
 
-Which is then applied to a reduced array and kernel to find the convolution efficiently:
+A convolver can then be made for any given kernel:
 
-convolved_vector = convolver.convolve_vector_with_kernel(vector, kernel)
+kernel_convolver = convolver.convolver_for_kernel(kernel)
+
+Which is applied to a reduced vector:
+
+convolved_vector = convolver.convolve_vector(vector)
 
 """
 
@@ -128,9 +132,6 @@ class FrameMaker(object):
             convolver: Convolver
         """
         return Convolver(self.make_frame_array(kernel_shape))
-
-
-# TODO: KernelConvolver with value to convolution result map
 
 
 class Convolver(object):
