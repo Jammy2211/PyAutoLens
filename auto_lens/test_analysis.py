@@ -7,14 +7,30 @@ import math
 # TODO : Work out some more test cases, particularly for the border / move factors / relocate routines
 # TODO : Need to add functionality for sub-coordinates.
 
-class TestSourcePlaneGeometry(object):
+class TestSourcePlane(object):
     class TestInit(object):
         def test__sets_correct_values(self):
             coordinates = [(1.0, 1.0), (0.0, 0.5)]
 
             source_plane = analysis.SourcePlane(coordinates)
 
-            assert source_plane.sub_coordinates == [(1.0, 1.0), (0.0, 0.5)]
+            assert source_plane.coordinates == [(1.0, 1.0), (0.0, 0.5)]
+
+        def test__four_coordinates__correct_source_plane(self):
+            coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+
+            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+
+            assert source_plane.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+
+        def test__four_coordinates_and_offset_centre__doesnt_change_coordinate_values(self):
+
+            # The centre is used by SourcePlaneGeomtry, but doesn't change the input coordinate values
+            coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+
+            source_plane = analysis.SourcePlane(coordinates, centre=(0.5, 0.5))
+
+            assert source_plane.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
     class TestCoordinatesToCentre(object):
         def test__source_plane_centre_zeros_by_default__no_shift(self):
@@ -32,7 +48,7 @@ class TestSourcePlaneGeometry(object):
 
             source_plane = analysis.SourcePlane(coordinates, centre=(0.5, 0.0))
 
-            coordinates_shift = source_plane.coordinates_to_centre(source_plane.sub_coordinates)
+            coordinates_shift = source_plane.coordinates_to_centre(source_plane.coordinates)
 
             assert coordinates_shift[0] == -0.5
             assert coordinates_shift[1] == 0.0
@@ -168,8 +184,48 @@ class TestSourcePlaneGeometry(object):
             assert theta_from_x == 45.0
 
 
-class TestSourcePlane(object):
+class TestSorucePlaneBorder(object):
+
     class TestSetupBorder(object):
+
+        def test__four_coordinates_in_circle__correct_border(self):
+            coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+
+            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+
+            assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+            assert border.radii == [1.0, 1.0, 1.0, 1.0]
+            assert border.thetas == [0.0, 90.0, 180.0, 270.0]
+
+        def test__six_coordinates_two_masked__correct_border(self):
+            coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+
+            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+
+            assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
+            assert border.radii == [1.0, 1.0, 1.0, 1.0]
+            assert border.thetas == [0.0, 90.0, 180.0, 270.0]
+
+        def test__test_other_thetas_radii(self):
+            coordinates = [(2.0, 0.0),  (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
+
+            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+
+            assert border.coordinates == [(2.0, 0.0), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
+            assert border.radii == [2.0, 2.0 * math.sqrt(2), math.sqrt(2.0), 3.0]
+            assert border.thetas == [0.0, 45.0, 225.0, 270.0]
+
+        def test__source_plane_centre_offset__coordinates_same_r_and_theta_shifted(self):
+            coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
+
+            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(1.0, 1.0))
+
+            assert border.coordinates == [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
+            assert border.radii == [1.0, 1.0, 1.0, 1.0]
+            assert border.thetas == [0.0, 90.0, 180.0, 270.0]
+
+    class TestSetupBorderViaSourcePlaneAndMask(object):
+
         def test__four_coordinates_in_circle__correct_border(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
             border_mask = [True, True, True, True]
@@ -248,7 +304,56 @@ class TestSourcePlane(object):
             assert border.border_radius_at_theta(theta=315.0) == pytest.approx(1.0, 1e-3)
 
     class TestRelocateCoordinates(object):
-        def test__outside_border_simple_cases__relocates_to_correct_coordinates(self):
+
+        def test__outside_border_simple_cases__relocates_to_source_border(self):
+            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
+            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+
+            source_border = analysis.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(2.5, 0.37))
+            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(25.3, -9.2))
+            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(13.5, 0.0))
+            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-2.5, -0.37))
+            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+
+        def test__outside_border_simple_cases_2__relocates_to_source_border(self):
+            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+
+            source_border = analysis.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(2.0, 0.0))
+            assert relocated_coordinate == pytest.approx((1.0, 0.0), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, 1.0))
+            assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), 0.5 * math.sqrt(2)), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(0.0, 2.0))
+            assert relocated_coordinate == pytest.approx((0.0, 1.0), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-1.0, 1.0))
+            assert relocated_coordinate == pytest.approx((-0.5 * math.sqrt(2), 0.5 * math.sqrt(2)), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-2.0, 0.0))
+            assert relocated_coordinate == pytest.approx((-1.0, 0.0), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-1.0, -1.0))
+            assert relocated_coordinate == pytest.approx((-0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(0.0, -1.0))
+            assert relocated_coordinate == pytest.approx((0.0, -1.0), 1e-3)
+
+            relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, -1.0))
+            assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
+
+        def test__outside_border_simple_cases_setup__via_source_plane_border_mask_routine__relocates_to_source_border(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
@@ -260,19 +365,60 @@ class TestSourcePlane(object):
             source_plane = analysis.SourcePlane(coordinates)
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
-            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
-            assert source_plane.sub_coordinates[:][0:16] == coordinates[:][0:16]
-            assert source_plane.sub_coordinates[:][16] == (1.0, 0.0)
-            assert source_plane.sub_coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
-            assert source_plane.sub_coordinates[:][18] == (0.0, 1.0)
-            assert source_plane.sub_coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
-            assert source_plane.sub_coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.sub_coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.sub_coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.sub_coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
+            assert source_plane.coordinates[:][16] == (1.0, 0.0)
+            assert source_plane.coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][18] == (0.0, 1.0)
+            assert source_plane.coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
 
-        def test__inside_border_simple_cases__no_coordinate_change(self):
+        def test__outside_border_same_as_above_but_setup_via_border_mask__relocates_to_source_border(self):
+            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+
+            coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
+                                    (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
+
+            border_mask = [True] * 16 + [False] * 8
+
+            source_plane = analysis.SourcePlane(coordinates)
+            source_border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_plane.relocate_coordinates_outside_border(source_border)
+
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+
+            assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
+            assert source_plane.coordinates[:][16] == (1.0, 0.0)
+            assert source_plane.coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][18] == (0.0, 1.0)
+            assert source_plane.coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+
+        def test__all_inside_border_simple_cases__no_relocations(self):
+            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+
+            coordinates_original = circle + [(0.2, 0.0), (0.1, 0.1), (0.0, 0.2), (-0.1, 0.1),
+                                    (-0.2, 0.0), (-0.1, -0.1), (0.0, -0.2), (0.1, -0.1)]
+
+            border_mask = [True] * 16 + [False] * 8
+
+            source_plane = analysis.SourcePlane(coordinates_original)
+            source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
+
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+
+            assert source_plane.coordinates == coordinates_original
+
+        def test__inside_border_simple_cases_setup_via_border_mask__no_relocations(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
@@ -284,9 +430,9 @@ class TestSourcePlane(object):
             source_plane = analysis.SourcePlane(coordinates)
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
-            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
-            assert source_plane.sub_coordinates[:][0:24] == coordinates[:][0:24]
+            assert source_plane.coordinates[:][0:24] == coordinates[:][0:24]
 
         def test__inside_and_outside_border_simple_cases__changes_where_appropriate(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -301,13 +447,13 @@ class TestSourcePlane(object):
 
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
-            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
-            assert source_plane.sub_coordinates[:][0:20] == coordinates[:][0:20]
-            assert source_plane.sub_coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.sub_coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.sub_coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.sub_coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][0:20] == coordinates[:][0:20]
+            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][22] == (0.0, -1.0)
+            assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
 
         def test__change_border_mask__works_as_above(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -322,34 +468,13 @@ class TestSourcePlane(object):
 
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
-            source_plane.sub_coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.sub_coordinates)
+            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
-            assert source_plane.sub_coordinates[:][0] == (-1.0, 0.0)
-            assert source_plane.sub_coordinates[:][1] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.sub_coordinates[:][2] == (0.0, -1.0)
-            assert source_plane.sub_coordinates[:][3] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.sub_coordinates[:][4:24] == coordinates[:][4:24]
-
-
-class TestSourcePlaneBorder(object):
-    class TestInit(object):
-        def test__sets_correct_values(self):
-            coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
-
-            source_border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
-
-            assert source_border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
-            assert source_border.radii == [1.0, 1.0, 1.0, 1.0]
-            assert source_border.thetas == [0.0, 90.0, 180.0, 270.0]
-
-        def test__including_shift_sets_correct_values(self):
-            coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
-
-            source_border = analysis.SourcePlaneBorder(coordinates, 3, centre=(1.0, 1.0))
-
-            assert source_border.coordinates == [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
-            assert source_border.radii == [1.0, 1.0, 1.0, 1.0]
-            assert source_border.thetas == [0.0, 90.0, 180.0, 270.0]
+            assert source_plane.coordinates[:][0] == (-1.0, 0.0)
+            assert source_plane.coordinates[:][1] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][2] == (0.0, -1.0)
+            assert source_plane.coordinates[:][3] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+            assert source_plane.coordinates[:][4:24] == coordinates[:][4:24]
 
     class TestMoveFactors(object):
         def test__inside_border__move_factor_is_1(self):
@@ -382,60 +507,6 @@ class TestSourcePlaneBorder(object):
             assert source_border.move_factor(coordinate=(1.0, 3.0)) == pytest.approx(0.5, 1e-3)
             assert source_border.move_factor(coordinate=(3.0, 1.0)) == pytest.approx(0.5, 1e-3)
 
-    class TestRelocate(object):
-        # TODO : Work out some more test cases
-
-        def test__outside_border_simple_cases__relocates_to_correct_coordinate(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            source_border = analysis.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(2.0, 0.0))
-            assert relocated_coordinate == pytest.approx((1.0, 0.0), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, 1.0))
-            assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), 0.5 * math.sqrt(2)), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(0.0, 2.0))
-            assert relocated_coordinate == pytest.approx((0.0, 1.0), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-1.0, 1.0))
-            assert relocated_coordinate == pytest.approx((-0.5 * math.sqrt(2), 0.5 * math.sqrt(2)), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-2.0, 0.0))
-            assert relocated_coordinate == pytest.approx((-1.0, 0.0), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-1.0, -1.0))
-            assert relocated_coordinate == pytest.approx((-0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(0.0, -1.0))
-            assert relocated_coordinate == pytest.approx((0.0, -1.0), 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, -1.0))
-            assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
-
-        def test__outside_border__relocates_to_source_border(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            source_border = analysis.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(2.5, 0.37))
-            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(25.3, -9.2))
-            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(13.5, 0.0))
-            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
-
-            relocated_coordinate = source_border.relocated_coordinate(coordinate=(-2.5, -0.37))
-            assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
-
-
-#class TestPixelizationAdaptive(object):
-
 
 class TestRegularizationMatrix(object):
 
@@ -448,11 +519,13 @@ class TestRegularizationMatrix(object):
     #|6|7|8|
     #^^^^^^^ ( I cant find a horizontal 'high' line)
 
-    #Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right and below it.
+    # Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right and
+    # below it.
 
     # So, 0 is regularized with pixels 1 and 3, pixel 1 with 2 and 4, but pixel 2 with only pixel 5, etc. So,
     #
-    # We make two 9 x 9 B matrices, which describe regularization in each direction. So for regularization to the right of each pixel:
+    # We make two 9 x 9 B matrices, which describe regularization in each direction. So for regularization to the
+    # right of each pixel:
 
     # B_x = [-1,  1,  0,  0,  0,  0,  0,  0,  0] # [0->1] This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 1 is saying we want to regularize pixel 0 with pixel 1.
     #       [ 0, -1,  1,  0,  0,  0,  0,  0,  0] # [1->2] Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixels 2.
@@ -477,7 +550,7 @@ class TestRegularizationMatrix(object):
     #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] # []
 
     # So, we basically just make B matrices representing regularization in each direction. For each, we can then compute
-    # Their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
+    # their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
 
     # So, H_x = B_x.T, * B_x H_y = B_y.T * B_y
     # And our overall regularization matrix, H = H_x + H_y
@@ -519,7 +592,7 @@ class TestRegularizationMatrix(object):
     # TODO: All test cases assume one, constant, regularization coefficient (i.e. all regularization_weights = 1.0).
     # TODO : Need to add test cases for different regularization_weights
 
-    def test__one_B_size_3x3_makes_correct_regularization_matrix(self):
+    def test__one_B_matrix_size_3x3_makes_correct_regularization_matrix(self):
 
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
@@ -545,7 +618,7 @@ class TestRegularizationMatrix(object):
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
-    def test__one_B_size_4x4__makes_correct_regularization_matrix(self):
+    def test__one_B_matrix_size_4x4__makes_correct_regularization_matrix(self):
 
         test_b_matrix = np.matrix( ((-1, 0, 1, 0),
                                     (0, -1, 0, 1),
@@ -562,7 +635,7 @@ class TestRegularizationMatrix(object):
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
-    def test__two_B_size_4x4__makes_correct_regularization_matrix(self):
+    def test__two_B_matrices_size_4x4__makes_correct_regularization_matrix(self):
 
 
         test_b_matrix_1 = np.matrix(((-1, 1, 0, 0),
@@ -589,7 +662,7 @@ class TestRegularizationMatrix(object):
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
-    def test__two_B_size_4x4__makes_correct_regularization_matrix2(self):
+    def test__two_B_matrices_size_4x4__makes_correct_regularization_matrix2(self):
 
         test_b_matrix_1 = np.matrix(((-1, 0, 1, 0),
                                      (0, -1, 1, 0),
@@ -612,6 +685,91 @@ class TestRegularizationMatrix(object):
         regularization_weights = np.ones((4))
 
         regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+    def test__two_pairs_two_B_matrices_size_3x3__makes_correct_regularization_matrix(self):
+
+        # Here, we define the pixel_pairs first here and make the B matrices based on them.
+
+        # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
+        # have to have as many B matrices as we do the source pixel with the most Voronoi vertices. We can combine the
+        # rows of each B matrix wherever we like ;0.
+
+        pixel_pairs = np.array([[0,1], [0,2]])
+        no_verticies = np.array([2, 1, 1])
+
+        test_b_matrix_1 = np.matrix(((-1, 1, 0), # Pair 1
+                                     (-1, 0, 1), # Pair 2
+                                     (1, -1, 0 )) ) # Pair 1 flip
+
+        test_regularization_matrix_1 = test_b_matrix_1.T * test_b_matrix_1
+
+        test_b_matrix_2 = np.matrix(((1, 0, -1), # Pair 2 flip
+                                     (0, 0, 0),
+                                     (0, 0, 0 )) )
+
+        test_regularization_matrix_2 = test_b_matrix_2.T * test_b_matrix_2
+
+        test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+
+        regularization_weights = np.ones((3))
+
+        regularization_matrix = analysis.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+    def test__eight_pairs_four_B_matrices_size_6x6__makes_correct_regularization_matrix(self):
+
+        # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a lot less
+        # Stressful.
+
+        pixel_pairs = np.array([[0,2], [1,2], [0,3], [4,5], [1,5], [0,4], [2,3], [2,5]])
+
+        no_verticies = np.array([3, 2, 4, 2, 2, 3])
+
+        test_b_matrix_1 = np.matrix(((-1, 0, 1, 0, 0, 0), # Pair 1
+                                     (0, -1, 1, 0, 0, 0), # Pair 2
+                                     (-1, 0, 0, 1, 0, 0), # Pair 3
+                                     (0, 0, 0, 0, -1, 1), # Pair 4
+                                     (0, -1, 0, 0, 0, 1), # Pair 5
+                                     (-1, 0, 0, 0, 1, 0)) ) # Pair 6
+
+        test_regularization_matrix_1 = test_b_matrix_1.T * test_b_matrix_1
+
+        test_b_matrix_2 = np.matrix(((0, 0, -1, 1, 0, 0), # Pair 7
+                                     (0, 0, -1, 0, 0, 1), # Pair 8
+                                     (0, 0, 0, 0, 0, 0),
+                                     (0, 0, 0, 0, 0, 0),
+                                     (0, 0, 0, 0, 0, 0),
+                                     (0, 0, 0, 0, 0, 0)) )
+
+        test_regularization_matrix_2 = test_b_matrix_2.T * test_b_matrix_2
+
+        test_b_matrix_3 = np.matrix(((1, 0, -1, 0, 0, 0), # Pair 1 flip
+                                     (0, 1, -1, 0, 0, 0), # Pair 2 flip
+                                     (1, 0, 0, -1, 0, 0), # Pair 3 flip
+                                     (0, 0, 0, 0, 1, -1), # Pair 4 flip
+                                     (0, 1, 0, 0, 0, -1), # Pair 5 flip
+                                     (1, 0, 0, 0, -1, 0)) ) # Pair 6 flip
+
+        test_regularization_matrix_3 = test_b_matrix_3.T * test_b_matrix_3
+
+        test_b_matrix_4 = np.matrix(((0, 0, 1, -1, 0, 0), # Pair 7 flip
+                                     (0, 0, 1, 0, 0, -1), # Pair 8 flip
+                                     (0, 0, 0, 0, 0, 0),
+                                     (0, 0, 0, 0, 0, 0),
+                                     (0, 0, 0, 0, 0, 0),
+                                     (0, 0, 0, 0, 0, 0)) )
+
+        test_regularization_matrix_4 = test_b_matrix_4.T * test_b_matrix_4
+
+        test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
+        test_regularization_matrix_3 + + test_regularization_matrix_4
+
+        regularization_weights = np.ones((6))
+
+        regularization_matrix = analysis.RegularizationMatrix(6, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -661,8 +819,6 @@ class TestKMeans:
 
         kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
 
-        print(kmeans.cluster_centers_)
-
         assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
         assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
     #    assert (kmeans.cluster_centers_ == np.array([[-1.0, -1.0]])).any()
@@ -685,16 +841,16 @@ class TestVoronoi:
         assert (voronoi.vertices[2] == np.array([1., 0.])).all()
         assert (voronoi.vertices[3] == np.array([0., -1.])).all()
 
-    def test__simple_points__neighbouring_points_index_reteived_correctly(self):
-
-        points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-
-        voronoi = analysis.Voronoi(points)
-
-        print(voronoi.ridge_points)
-
-        assert (voronoi.indexes_of_neighbouring_points(point_index=0) == np.array([1, 2, 3, 4])).any()
-        assert (voronoi.indexes_of_neighbouring_points(point_index=1) == np.array([0, 2, 4])).any()
+    # def test__simple_points__neighbouring_points_index_reteived_correctly(self):
+    #
+    #     points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+    #
+    #     voronoi = analysis.Voronoi(points)
+    #
+    #     print(voronoi.ridge_points)
+    #
+    #     assert (voronoi.indexes_of_neighbouring_points(point_index=0) == np.array([1, 2, 3, 4])).any()
+    #     assert (voronoi.indexes_of_neighbouring_points(point_index=1) == np.array([0, 2, 4])).any()
  #       assert (voronoi.indexes_of_neighbouring_points(point_index=2) == np.array([1, 3])).any()
  #       assert (voronoi.indexes_of_neighbouring_points(point_index=3) == np.array([2, 4])).any()
  #       assert (voronoi.indexes_of_neighbouring_points(point_index=4) == np.array([4])).any()
@@ -746,17 +902,17 @@ class TestMatchCoordinatesFromClusters:
         assert coordinates_to_cluster_index[4] == 0
         assert coordinates_to_cluster_index[5] == 5
 
-    def test__match_coordinates_to_clusters_via_sparse_pairs__case1__correct_pairs(self):
-
-        clusters = np.array([[1.0, 0.0], [-1.0, 0.0]])
-        coordinates = np.array([[1.1, 0.0], [0.9, 0.0], [-0.9, 0.0], [-1.1, 0.0]])
-
-        coordinates_to_cluster_index_nearest_neighbour = analysis.match_coordintes_to_clusters_via_nearest_neighbour(coordinates, clusters)
-
-        sparse_coordinates = np.array([[1.0, 0.0], [-1.0, 0.0]])
-        sparse_coordinates_to_cluster_index = np.array([[0], [1]])
-
-        coordinates_to_cluster_index_sparse_pairs = analysis.match_coordintes_to_clusters_via_sparse_pairs(
-                                            coordinates, clusters, sparse_coordinates, sparse_coordinates_to_cluster_index)
-
-        assert ( coordinates_to_cluster_index_nearest_neighbour == coordinates_to_cluster_index_sparse_pairs ).all()
+    # def test__match_coordinates_to_clusters_via_sparse_pairs__case1__correct_pairs(self):
+    #
+    #     clusters = np.array([[1.0, 0.0], [-1.0, 0.0]])
+    #     coordinates = np.array([[1.1, 0.0], [0.9, 0.0], [-0.9, 0.0], [-1.1, 0.0]])
+    #
+    #     coordinates_to_cluster_index_nearest_neighbour = analysis.match_coordintes_to_clusters_via_nearest_neighbour(coordinates, clusters)
+    #
+    #     sparse_coordinates = np.array([[1.0, 0.0], [-1.0, 0.0]])
+    #     sparse_coordinates_to_cluster_index = np.array([[0], [1]])
+    #
+    #     coordinates_to_cluster_index_sparse_pairs = analysis.match_coordintes_to_clusters_via_sparse_pairs(
+    #                                         coordinates, clusters, sparse_coordinates, sparse_coordinates_to_cluster_index)
+    #
+    #     assert ( coordinates_to_cluster_index_nearest_neighbour == coordinates_to_cluster_index_sparse_pairs ).all()
