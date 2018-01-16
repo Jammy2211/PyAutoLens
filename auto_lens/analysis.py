@@ -36,12 +36,12 @@ class SourcePlaneGeometry(profile.Profile):
 class SourcePlane(SourcePlaneGeometry):
     """Represents the source-plane and its corresponding traced image sub-coordinates"""
 
-    def __init__(self, sub_coordinates, centre=(0, 0)):
+    def __init__(self, coordinates, centre=(0, 0)):
         """
 
         Parameters
         ----------
-        sub_coordinates : [(float, float)]
+        coordinates : [(float, float)]
             The x and y coordinates of each traced image sub-pixel
         centre : (float, float)
             The centre of the source-plane.
@@ -49,10 +49,10 @@ class SourcePlane(SourcePlaneGeometry):
 
         super(SourcePlane, self).__init__(centre)
 
-        self.sub_coordinates = sub_coordinates
+        self.coordinates = coordinates
 
     def border_with_mask_and_polynomial_degree(self, border_mask, polynomial_degree):
-        return SourcePlaneBorder(list(itertools.compress(self.sub_coordinates, border_mask)), polynomial_degree,
+        return SourcePlaneBorder(list(itertools.compress(self.coordinates, border_mask)), polynomial_degree,
                                  centre=self.centre)
 
     def relocate_coordinates_outside_border_with_mask_and_polynomial_degree(self, mask, polynomial_degree):
@@ -60,7 +60,7 @@ class SourcePlane(SourcePlaneGeometry):
 
     def relocate_coordinates_outside_border(self, border):
         """ Move all source-plane coordinates outside of its source-plane border to the edge of its border"""
-        self.sub_coordinates = list(map(lambda r: border.relocated_coordinate(r), self.sub_coordinates))
+        self.coordinates = list(map(lambda r: border.relocated_coordinate(r), self.coordinates))
 
 
 class SourcePlaneSparse(SourcePlane):
@@ -69,12 +69,12 @@ class SourcePlaneSparse(SourcePlane):
     # TODO : This is all untested - just experimenting with how best to handle the sparse grid and give you a sense
     # TODO : of the problem. See the Coordinates file for a description.
 
-    def __init__(self, sub_coordinates, sparse_coordinates, sub_to_sparse, centre=(0, 0)):
+    def __init__(self, coordinates, sparse_coordinates, sub_to_sparse, centre=(0, 0)):
         """
 
         Parameters
         ----------
-        sub_coordinates : [(float, float)]
+        coordinates : [(float, float)]
             The x and y coordinates of each traced image sub-pixel
         sparse_coordinates : list(float, float)
             The x and y coordinates of each traced image sparse-pixel
@@ -84,7 +84,7 @@ class SourcePlaneSparse(SourcePlane):
             The centre of the source-plane.
         """
 
-        super(SourcePlaneSparse, self).__init__(sub_coordinates, centre)
+        super(SourcePlaneSparse, self).__init__(coordinates, centre)
 
         self.sparse_coordinates = sparse_coordinates
         self.sub_to_sparse = sub_to_sparse
@@ -147,26 +147,6 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         """
         move_factor = self.move_factor(coordinate)
         return coordinate[0] * move_factor, coordinate[1] * move_factor
-
-
-# class PixelizationAdaptive(object):
-#     """An adaptive source-plane pixelization generated using a k-means clusteriing algorithm"""
-#
-#     def __init__(self, sparse_coordinates, n_clusters):
-#         """
-#
-#         Parameters
-#         ----------
-#         sparse_coordinates : list(float, float)
-#             The x and y coordinates of each traced image sparse-pixel
-#         n_clusters : int
-#             The source-plane resolution or number of k-means clusters to be used.
-#         """
-#
-#         self.clusters = KMeans(sparse_coordinates, n_clusters)
-#         self.voronoi = Voronoi(points=self.clusters.cluster_centers_)
-#         self.regularization_matrix = RegularizationMatrix(self.clusters.n_clusters, regularization_weights=np.ones((3)),
-#                                                           no_vertices=self.clusters.)
 
 
 class KMeans(sklearn.cluster.KMeans):
