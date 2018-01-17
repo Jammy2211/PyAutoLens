@@ -159,6 +159,19 @@ def make_convolver_4_simple():
     return frame_maker.convolver_for_kernel_shape((3, 3))
 
 
+@pytest.fixture(name="convolver_4_edges")
+def make_convolver_4_edges():
+    mask = np.array(
+        [[0, 0, 0, 0],
+         [0, 1, 1, 0],
+         [0, 1, 1, 0],
+         [0, 0, 0, 0]]
+    )
+
+    frame_maker = frame_convolution.FrameMaker(mask)
+    return frame_maker.convolver_for_kernel_shape((3, 3))
+
+
 class TestNonTrivialExamples(object):
     def test_larger_mask(self, convolver_4_simple):
         kernel = np.array([[0, 0.2, 0],
@@ -213,10 +226,28 @@ class TestNonTrivialExamples(object):
 
         result = kernel_convolver.convolve_vector(pixel_vector)
 
-        print(result)
-
         # noinspection PyUnresolvedReferences
         assert (result == [0, 0, 0.2, 0,
                            0, 0.4, 0.4, 0.2,
                            0.2, 0.4, 0.4, 0,
                            0, 0.2, 0, 0]).all()
+
+    def test_two_pixel_sum_masked(self, convolver_4_edges):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        pixel_vector = [
+            0, 1,
+            1, 0
+        ]
+
+        kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_vector)
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [
+            0.4, 0.4,
+            0.4, 0.4
+        ]).all()
