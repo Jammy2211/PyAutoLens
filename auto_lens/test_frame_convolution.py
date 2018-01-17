@@ -161,11 +161,17 @@ class TestNonTrivialExamples(object):
         convolver = frame_maker.convolver_for_kernel_shape((3, 3))
         kernel_convolver = convolver.convolver_for_kernel(kernel)
 
-        pixel_vector = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+        pixel_vector = [0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 0, 0]
 
         result = kernel_convolver.convolve_vector(pixel_vector)
 
         print(result)
 
         # noinspection PyUnresolvedReferences
-        assert (result == [0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.6, 0.2, 0, 0, 0.2, 0, 0, 0]).all()
+        assert (result == [0, 0, 0, 0,
+                           0, 0.2, 0, 0,
+                           0.2, 0.6, 0.2, 0,
+                           0, 0.2, 0, 0]).all()
