@@ -39,6 +39,10 @@ convolved_vector = convolver.convolve_vector(vector)
 """
 
 
+class KernelException(Exception):
+    pass
+
+
 class FrameMaker(object):
     def __init__(self, mask):
         """
@@ -84,6 +88,8 @@ class FrameMaker(object):
         frame_array: [ndarray]
             A list of frames where the position of a frame corresponds to the number at the centre of that frame
         """
+        if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
+            raise KernelException("Kernel must be odd")
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
@@ -153,7 +159,7 @@ class Convolver(object):
 class KernelConvolver(object):
     def __init__(self, frame_array, kernel):
         if frame_array[0].shape != kernel.shape:
-            raise AssertionError(
+            raise KernelException(
                 "Frame {} and kernel {} shapes do not match".format(frame_array[0].shape, kernel.shape))
         self.frame_array = frame_array
         self.kernel = kernel
