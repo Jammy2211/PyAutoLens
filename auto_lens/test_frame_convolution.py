@@ -148,3 +148,24 @@ class TestConvolution(object):
 
         # noinspection PyUnresolvedReferences
         assert (result == [0.0, 0.0, 0.5, 0.5, 0.0]).all()
+
+
+class TestNonTrivialExamples(object):
+    def test_larger_mask(self):
+        shape = (4, 4)
+        mask = np.ones(shape)
+
+        kernel = np.array([[0, 0.2, 0], [0.2, 0.6, 0.2], [0, 0.2, 0]])
+
+        frame_maker = frame_convolution.FrameMaker(mask)
+        convolver = frame_maker.convolver_for_kernel_shape((3, 3))
+        kernel_convolver = convolver.convolver_for_kernel(kernel)
+
+        pixel_vector = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+
+        result = kernel_convolver.convolve_vector(pixel_vector)
+
+        print(result)
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.6, 0.2, 0, 0, 0.2, 0, 0, 0]).all()
