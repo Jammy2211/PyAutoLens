@@ -231,13 +231,17 @@ class RegularizationMatrix(np.ndarray):
         reg_weight = regularization_weights ** 2
 
         for i in range(dimension):
-            matrix[i, i] += no_vertices[i] * reg_weight[i]
+            matrix[i][i] += no_vertices[i] * reg_weight[i]
 
         for j in range(len(pixel_pairs)):
-            matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[i]
-            matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[i]
+            matrix[pixel_pairs[j, 0], pixel_pairs[j, 0]] += reg_weight[pixel_pairs[j, 1]]
+            matrix[pixel_pairs[j, 1], pixel_pairs[j, 1]] += reg_weight[pixel_pairs[j, 0]]
+            matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[pixel_pairs[j, 0]]
+            matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 0]]
+            matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[pixel_pairs[j, 1]]
+            matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 1]]
 
-        return 2.0 * matrix
+        return matrix
 
 
 def match_coordintes_to_clusters_via_nearest_neighbour(match_coordinates, cluster_centers):
