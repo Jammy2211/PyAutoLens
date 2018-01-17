@@ -67,6 +67,10 @@ class TestNumbering(object):
 
         assert (number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
 
+    def test_even_failure(self):
+        with pytest.raises(frame_convolution.KernelException):
+            frame_convolution.FrameMaker(np.ones((3, 3))).convolver_for_kernel_shape((2, 2))
+
 
 class TestFrameExtraction(object):
     def test_frame_at_coords(self, simple_frame_maker):
