@@ -155,7 +155,9 @@ class TestNonTrivialExamples(object):
         shape = (4, 4)
         mask = np.ones(shape)
 
-        kernel = np.array([[0, 0.2, 0], [0.2, 0.6, 0.2], [0, 0.2, 0]])
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
 
         frame_maker = frame_convolution.FrameMaker(mask)
         convolver = frame_maker.convolver_for_kernel_shape((3, 3))
@@ -168,10 +170,21 @@ class TestNonTrivialExamples(object):
 
         result = kernel_convolver.convolve_vector(pixel_vector)
 
-        print(result)
-
         # noinspection PyUnresolvedReferences
         assert (result == [0, 0, 0, 0,
                            0, 0.2, 0, 0,
-                           0.2, 0.6, 0.2, 0,
+                           0.2, 0.4, 0.2, 0,
                            0, 0.2, 0, 0]).all()
+
+        asymmetric_kernel = np.array([[0, 0.0, 0],
+                                      [0.4, 0.2, 0.3],
+                                      [0, 0.1, 0]])
+
+        kernel_convolver = convolver.convolver_for_kernel(asymmetric_kernel)
+        result = kernel_convolver.convolve_vector(pixel_vector)
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [0, 0, 0, 0,
+                           0, 0.0, 0, 0,
+                           0.4, 0.2, 0.3, 0,
+                           0, 0.1, 0, 0]).all()
