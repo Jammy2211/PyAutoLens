@@ -111,12 +111,6 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def luminosity_integral(self, x, axis_ratio):
-        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
-        circle"""
-        r = x * (axis_ratio)
-        return 2 * math.pi * r * self.intensity_at_radius(x)
-
     def luminosity_within_circle(self, radius):
         """
         Compute the light profile's total luminosity within a circle of specified radius. This is performed via \
@@ -148,6 +142,12 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
             The total luminosity within the specified ellipse.
         """
         return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+
+    def luminosity_integral(self, x, axis_ratio):
+        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
+        circle"""
+        r = x * axis_ratio
+        return 2 * math.pi * r * self.intensity_at_radius(x)
 
 
 class SersicLightProfile(EllipticalLightProfile):
@@ -184,7 +184,7 @@ class SersicLightProfile(EllipticalLightProfile):
 
          The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
          half the light, and may be more appropriate for analysis of highly flattened systems like disk galaxies."""
-        return self.effective_radius / self.axis_ratio
+        return self.effective_radius / math.sqrt(self.axis_ratio)
 
     @property
     def sersic_constant(self):

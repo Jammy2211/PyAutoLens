@@ -39,7 +39,7 @@ def exponential_profile():
 
 @pytest.fixture(name="core")
 def core_profile():
-    return light_profile.CoreSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+    return light_profile.CoreSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=1.0,
                                                 effective_radius=5.0, sersic_index=4.0, radius_break=0.01,
                                                 intensity_break=0.1, gamma=1.0, alpha=1.0)
 
@@ -54,6 +54,7 @@ class TestSetupProfiles(object):
         assert circular.effective_radius == 0.6
         assert circular.sersic_index == 4.0
         assert circular.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert circular.elliptical_effective_radius == 0.6
 
     def test__setup_exponential(self, exponential):
         assert exponential.x_cen == 1.0
@@ -64,6 +65,7 @@ class TestSetupProfiles(object):
         assert exponential.effective_radius == 0.2
         assert exponential.sersic_index == 1.0
         assert exponential.sersic_constant == pytest.approx(1.678378, 1e-3)
+        assert exponential.elliptical_effective_radius == 0.2 / math.sqrt(exponential.axis_ratio)
 
     def test__setup_dev_vaucouleurs(self, dev_vaucouleurs):
         assert dev_vaucouleurs.x_cen == 0.0
