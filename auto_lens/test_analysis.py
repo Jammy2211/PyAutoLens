@@ -805,7 +805,7 @@ class TestRegularizationMatrix(object):
         # [0, -1, 1]
         # [0, 0, -1]
 
-        # Regularization Matrix, H = B * B.T.
+        # Regularization Matrix, H = B * B.T.I can
 
         regularization_weights = np.array([2.0, 4.0, 1.0])
 

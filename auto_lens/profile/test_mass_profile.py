@@ -1644,7 +1644,7 @@ class TestCoredEllipticalIsothermal(object):
 
             # axis ratio changes only einstein_rescaled, so wwe can use the above value and times by 1.0/1.5.
 
-            assert surface_density == pytest.approx(0.50990 * 1.33333, 1e-3)
+            assert surface_density == pytest.approx(0.49029 * 1.33333, 1e-3)
 
     class TestPotential(object):
         def test__flip_coordinates_lens_center__same_value(self):
@@ -1863,7 +1863,7 @@ class TestCoredSphericalIsothermal(object):
 
             kappa = isothermal_core.surface_density_func(eta=1.0)
 
-            assert kappa == pytest.approx(0.50249, 1e-4)
+            assert kappa == pytest.approx(0.49751, 1e-4)
 
         def test__function__same_as_isothermal_core_no_core(self):
             isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1, 1),
