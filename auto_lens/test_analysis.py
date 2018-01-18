@@ -809,17 +809,13 @@ class TestRegularizationMatrix(object):
 
         regularization_weights = np.array([2.0, 4.0, 1.0])
 
-        test_b_matrix = np.array([[-1, 1, 0],
-                                  [1, -1, 0],
-                                  [0, 0,  0]])
+        test_b_matrix = np.array([[-1, 1, 0],    #[[-2, 2, 0], (Matrix)
+                                  [1, -1, 0],    # [4, -4, 0], (after)
+                                  [0, 0,  0]])   # [0, 0,  0]]) (weights)
 
         test_b_matrix = (test_b_matrix.T * regularization_weights).T
 
-        # You multiply the regularization weights by the regularization pattern. So, this makes a matrix:
 
-        # test_b_matrix = np.array([[-2, 2, 0],
-        #                           [4, -4, 0],
-        #                           [0, 0,  0]])
 
         test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
@@ -831,10 +827,47 @@ class TestRegularizationMatrix(object):
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
-    def test__one_B_matrix_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
+    def test__two_B_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
+
+        # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
+
+        # This means our B matrix is:
+
+        # [-1, 1, 0]
+        # [0, -1, 1]
+        # [0, 0, -1]
+
+        # Regularization Matrix, H = B * B.T.I can
+
+        regularization_weights = np.array([2.0, 4.0, 1.0, 8.0])
+
+        test_b_matrix_1 = np.array([[-2, 2, 0, 0],
+                                    [-2, 0, 2, 0],
+                                    [0, -4, 4, 0],
+                                    [0, -4, 0, 4]])
+
+        test_b_matrix_2 = np.array([[4, -4, 0, 0],
+                                    [1, 0, -1, 0],
+                                    [0, 1, -1, 0],
+                                    [0, 8, 0, -8]])
+
+        test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+        test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+
+        test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+
+        no_verticies = np.array([2, 3, 2, 1])
+        pixel_pairs = np.array([[0,1],[0,2],[1,2],[1,3]])
+
+        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
+
+        assert (regularization_matrix == test_regularization_matrix).all()
+
+
+    def test__four_B_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
 
         pixel_pairs = np.array([[0,1],[0,4],[1,2],[1,4],[2,3],[2,4],[2,5],[3,5],[4,5]])
-        no_verticies = np.array([ 2, 3, 4, 2, 4, 3])
+        no_verticies = np.array([2, 3, 4, 2, 4, 3])
         regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
         # I'm inputting the regularizationo weights directly thiss time, as it'd be a pain to multiply with a loop.
@@ -883,6 +916,7 @@ class TestRegularizationMatrix(object):
 
 
     #TODO : More weighted reg unit tests
+
 
 class TestKMeans:
 
