@@ -183,8 +183,9 @@ class KernelConvolver(object):
         # noinspection PyUnresolvedReferences
         result = np.zeros(len(vector))
         for index in range(len(vector)):
-            # noinspection PyUnresolvedReferences
-            result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
+            if vector[index] > 0:
+                # noinspection PyUnresolvedReferences
+                result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
         return result
 
     def result_for_value(self, value):
@@ -212,9 +213,6 @@ class KernelConvolver(object):
         new_vector = np.zeros(len(vector))
 
         value = vector[pixel_index]
-
-        if value == 0:
-            return new_vector
 
         result = self.result_for_value(value)
         frame = self.frame_array[pixel_index]
