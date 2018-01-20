@@ -158,11 +158,11 @@ class KMeans(sklearn.cluster.KMeans):
 
 
 class Voronoi(scipy.spatial.Voronoi):
-    def __init__(self, points):
+    def __init__(self, cluster_centers):
 
-        super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx Qm')
+        super(Voronoi, self).__init__(cluster_centers, qhull_options='Qbb Qc Qx Qm')
 
-        self.neighbors = [[] for _ in range(len(points))]
+        self.neighbors = [[] for _ in range(len(cluster_centers))]
 
         for pair in reversed(self.ridge_points):
             self.neighbors[pair[0]].append(pair[1])
@@ -327,8 +327,8 @@ def coordinates_to_clusters_via_sparse_pairs(coordinates, cluster_centers, clust
                                                           coordinate, nearest_sparse_cluster_index)
 
             neighboring_cluster_index, separation_of_coordinate_and_neighboring_cluster = \
-            find_separation_and_index_of_nearest_neighboring_cluster(cluster_centers, coordinate,
-                                                                     cluster_neighbors[nearest_sparse_cluster_index])
+                find_separation_and_index_of_nearest_neighboring_cluster(coordinate, cluster_centers, cluster_neighbors[
+                    nearest_sparse_cluster_index])
 
             if separation_of_coordinate_and_sparse_cluster < separation_of_coordinate_and_neighboring_cluster:
                 break
@@ -350,16 +350,34 @@ def find_separation_of_coordinate_and_nearest_sparse_cluster(cluster_centers, co
     nearest_sparse_cluster_center = cluster_centers[cluster_index]
     return compute_squared_separation(coordinate, nearest_sparse_cluster_center)
 
-def find_separation_and_index_of_nearest_neighboring_cluster(cluster_centers, coordinate, cluster_neighbors):
+def find_separation_and_index_of_nearest_neighboring_cluster(coordinate, cluster_centers, cluster_neighbors):
+    """For a given cluster, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
+    our input coordinaates.
+    
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y coordinate to be matched with the neighboring set of clusters.
+        cluster_centers: [(float, float)
+            The cluster centers the coordinates are matched with.
+        cluster_neighbors : list
+            The neighboring clusters of the sparse cluster the coordinate is currently matched with
 
-    distance_to_neighbor = []
+        Returns
+        ----------
+        cluster_neighbor_index : int
+            The index in cluster_centers of the closest cluster neighbor.
+        cluster_neighbor_separation : float
+            The separation between the input coordinate and closest cluster neighbor
+    
+    """
 
-    for neighbor_index in cluster_neighbors:
-        distance_to_neighbor.append(compute_squared_separation(coordinate, cluster_centers[neighbor_index]))
+    separation_from_neighbor = list(map(lambda neighbors :
+                               compute_squared_separation(coordinate, cluster_centers[neighbors]), cluster_neighbors))
 
-    closest_distance_index = min(xrange(len(distance_to_neighbor)), key=distance_to_neighbor.__getitem__)
+    closest_separation_index = min(xrange(len(separation_from_neighbor)), key=separation_from_neighbor.__getitem__)
 
-    return cluster_neighbors[closest_distance_index], distance_to_neighbor[closest_distance_index]
+    return cluster_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
 
 def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two coordinates (no square root for efficiency)"""

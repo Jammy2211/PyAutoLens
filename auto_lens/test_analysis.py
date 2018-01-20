@@ -1032,14 +1032,14 @@ class TestVoronoi:
 
         assert len(voronoi.ridge_points) == 8
 
-        assert [0,1] in voronoi.ridge_points or [1,0] in voronoi.ridge_points
-        assert [0,2] in voronoi.ridge_points or [2,0] in voronoi.ridge_points
-        assert [0,3] in voronoi.ridge_points or [3,0] in voronoi.ridge_points
-        assert [0,4] in voronoi.ridge_points or [4,0] in voronoi.ridge_points
-        assert [1,2] in voronoi.ridge_points or [2,1] in voronoi.ridge_points
+        assert [2,0] in voronoi.ridge_points or [0,2] in voronoi.ridge_points
+        assert [2,1] in voronoi.ridge_points or [1,2] in voronoi.ridge_points
         assert [2,3] in voronoi.ridge_points or [3,2] in voronoi.ridge_points
+        assert [2,4] in voronoi.ridge_points or [4,2] in voronoi.ridge_points
+        assert [0,1] in voronoi.ridge_points or [1,0] in voronoi.ridge_points
+        assert [0.3] in voronoi.ridge_points or [3,0] in voronoi.ridge_points
         assert [3,4] in voronoi.ridge_points or [4,3] in voronoi.ridge_points
-        assert [4,0] in voronoi.ridge_points or [0,4] in voronoi.ridge_points
+        assert [4,1] in voronoi.ridge_points or [1,4] in voronoi.ridge_points
 
     def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
 
@@ -1082,17 +1082,17 @@ class TestVoronoi:
 
         voronoi = analysis.Voronoi(points)
 
-        assert voronoi.neighbors_total[0] == 4
+        assert voronoi.neighbors_total[0] == 3
         assert voronoi.neighbors_total[1] == 3
-        assert voronoi.neighbors_total[2] == 3
+        assert voronoi.neighbors_total[2] == 4
         assert voronoi.neighbors_total[3] == 3
         assert voronoi.neighbors_total[4] == 3
 
-        assert set(voronoi.neighbors[0]) == set([1, 2, 3, 4])
-        assert set(voronoi.neighbors[1]) == set([0, 4, 2])
-        assert set(voronoi.neighbors[2]) == set([0, 1, 3])
-        assert set(voronoi.neighbors[3]) == set([0, 2, 4])
-        assert set(voronoi.neighbors[4]) == set([0, 1, 3])
+        assert set(voronoi.neighbors[0]) == set([2, 1, 3])
+        assert set(voronoi.neighbors[1]) == set([2, 0, 4])
+        assert set(voronoi.neighbors[2]) == set([0, 1, 3, 4])
+        assert set(voronoi.neighbors[3]) == set([2, 0, 4])
+        assert set(voronoi.neighbors[4]) == set([2, 1, 3])
 
     def test__9_points_in_square___neighbors_of_each_source_pixel_correct(self):
 
@@ -1172,27 +1172,27 @@ class TestMatchCoordinatesFromClusters:
         assert coordinates_to_cluster_index[4] == 0
         assert coordinates_to_cluster_index[5] == 5
         
-    def test__find_nearest_sparse_coordinate_index__simple_values(self):
+    def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
         
         coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
         
-        assert analysis.find_nearest_sparse_coordinate_index(0, coordinate_to_sparse_coordinate_index) == 0
-        assert analysis.find_nearest_sparse_coordinate_index(1, coordinate_to_sparse_coordinate_index) == 3
-        assert analysis.find_nearest_sparse_coordinate_index(2, coordinate_to_sparse_coordinate_index) == 2
-        assert analysis.find_nearest_sparse_coordinate_index(3, coordinate_to_sparse_coordinate_index) == 5
-        assert analysis.find_nearest_sparse_coordinate_index(4, coordinate_to_sparse_coordinate_index) == 1
-        assert analysis.find_nearest_sparse_coordinate_index(5, coordinate_to_sparse_coordinate_index) == 4
+        assert analysis.find_index_of_nearest_sparse_coordinate(0, coordinate_to_sparse_coordinate_index) == 0
+        assert analysis.find_index_of_nearest_sparse_coordinate(1, coordinate_to_sparse_coordinate_index) == 3
+        assert analysis.find_index_of_nearest_sparse_coordinate(2, coordinate_to_sparse_coordinate_index) == 2
+        assert analysis.find_index_of_nearest_sparse_coordinate(3, coordinate_to_sparse_coordinate_index) == 5
+        assert analysis.find_index_of_nearest_sparse_coordinate(4, coordinate_to_sparse_coordinate_index) == 1
+        assert analysis.find_index_of_nearest_sparse_coordinate(5, coordinate_to_sparse_coordinate_index) == 4
 
-    def test__find_nearest_sparse_cluster_index__simple_values(self):
+    def test__find_index_of_nearest_sparse_cluster__simple_values(self):
         
         cluster_to_sparse_cluster_index = [0, 3, 2, 5, 1, 4]
 
-        assert analysis.find_nearest_sparse_cluster_index(0, cluster_to_sparse_cluster_index) == 0
-        assert analysis.find_nearest_sparse_cluster_index(1, cluster_to_sparse_cluster_index) == 3
-        assert analysis.find_nearest_sparse_cluster_index(2, cluster_to_sparse_cluster_index) == 2
-        assert analysis.find_nearest_sparse_cluster_index(3, cluster_to_sparse_cluster_index) == 5
-        assert analysis.find_nearest_sparse_cluster_index(4, cluster_to_sparse_cluster_index) == 1
-        assert analysis.find_nearest_sparse_cluster_index(5, cluster_to_sparse_cluster_index) == 4
+        assert analysis.find_index_of_nearest_sparse_cluster(0, cluster_to_sparse_cluster_index) == 0
+        assert analysis.find_index_of_nearest_sparse_cluster(1, cluster_to_sparse_cluster_index) == 3
+        assert analysis.find_index_of_nearest_sparse_cluster(2, cluster_to_sparse_cluster_index) == 2
+        assert analysis.find_index_of_nearest_sparse_cluster(3, cluster_to_sparse_cluster_index) == 5
+        assert analysis.find_index_of_nearest_sparse_cluster(4, cluster_to_sparse_cluster_index) == 1
+        assert analysis.find_index_of_nearest_sparse_cluster(5, cluster_to_sparse_cluster_index) == 4
 
     def test__find_separation_of_coordinate_and_nearest_sparse_cluster__simple_values(self):
 
@@ -1218,6 +1218,37 @@ class TestMatchCoordinatesFromClusters:
         assert separation0 == 1.5 ** 2
         assert separation1 == 0.5 ** 2
         assert separation2 == 0.5 ** 2
+
+    def test__find_separation_and_index_of_nearest_neighboring_cluster__simple_case(self):
+
+        coordinate = np.array([0.0, 0.0])
+        cluster_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
+
+        #Lets assume we're currently on cluster 0 and all other clusters are neighbors
+
+        cluster_neighbors = [1,2,3,4]
+
+        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(
+                                                                        coordinate, cluster_centers, cluster_neighbors)
+
+        assert separation == (-0.5) ** 2
+        assert index == 4
+
+    def test__find_separation_and_index_of_nearest_neighboring_cluster__skips_if_not_a_neighbor(self):
+
+        coordinate = np.array([0.0, 0.0])
+        cluster_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
+
+        #Lets assume we're currently on cluster 0 and the new cluster added above is not a neighbor (this doesn't make
+        # sense geometrically, but tests the code functionality).
+
+        cluster_neighbors = [1,2,3,4]
+
+        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(
+                                                                        coordinate, cluster_centers, cluster_neighbors)
+
+        assert separation == (-0.5) ** 2
+        assert index == 4
 
     def test__coordinates_to_clusters_via_sparse_pairs__clusters_in_x_shape__correct_pairs(self):
 
