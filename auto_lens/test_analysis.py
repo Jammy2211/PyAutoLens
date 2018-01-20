@@ -863,7 +863,6 @@ class TestRegularizationMatrix(object):
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
-
     def test__four_B_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
 
         pixel_pairs = np.array([[0,1],[0,4],[1,2],[1,4],[2,3],[2,4],[2,5],[3,5],[4,5]])
@@ -915,9 +914,6 @@ class TestRegularizationMatrix(object):
         assert (regularization_matrix == test_regularization_matrix).all()
 
 
-    #TODO : More weighted reg unit tests
-
-
 class TestKMeans:
 
     def test__simple_points__sets_up_two_clusters(self):
@@ -927,8 +923,10 @@ class TestKMeans:
 
         kmeans = analysis.KMeans(sparse_coordinates, n_clusters=2)
 
-        assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
-        assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
+        kmeans.cluster_centers_ = list(map(lambda x : list(x) , kmeans.cluster_centers_))
+
+        assert [2.0, 2.0] in kmeans.cluster_centers_
+        assert [1.0, 1.0] in kmeans.cluster_centers_
 
         assert list(kmeans.labels_).count(0) == 3
         assert list(kmeans.labels_).count(1) == 3
@@ -941,9 +939,11 @@ class TestKMeans:
 
         kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
 
-        assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
-        assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
-        assert (kmeans.cluster_centers_ == np.array([[-1.0, -1.0]])).any()
+        kmeans.cluster_centers_ = list(map(lambda x : list(x) , kmeans.cluster_centers_))
+
+        assert [2.0, 2.0] in kmeans.cluster_centers_
+        assert [1.0, 1.0] in kmeans.cluster_centers_
+        assert [-1.0, -1.0] in kmeans.cluster_centers_
 
         assert list(kmeans.labels_).count(0) == 3
         assert list(kmeans.labels_).count(1) == 3
@@ -963,41 +963,161 @@ class TestKMeans:
 
         kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
 
-        assert (kmeans.cluster_centers_ == np.array([[2.0, 2.0]])).any()
-        assert (kmeans.cluster_centers_ == np.array([[1.0, 1.0]])).any()
-    #    assert (kmeans.cluster_centers_ == np.array([[-1.0, -1.0]])).any()
+        kmeans.cluster_centers_ = list(map(lambda x : pytest.approx(list(x),1e-3) , kmeans.cluster_centers_))
+
+        assert [2.0, 2.0] in kmeans.cluster_centers_
+        assert [1.0, 1.0] in kmeans.cluster_centers_
+        assert [-1.0, -1.0] in kmeans.cluster_centers_
 
         assert list(kmeans.labels_).count(0) == 3 or 6 or 12
         assert list(kmeans.labels_).count(1) == 3 or 6 or 12
         assert list(kmeans.labels_).count(2) == 3 or 6 or 12
 
+        assert list(kmeans.labels_).count(0) != list(kmeans.labels_).count(1) != list(kmeans.labels_).count(2)
+
 
 class TestVoronoi:
 
-    def test__simple_points__sets_up_voronoi_vertices(self):
+    def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
+
+        # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
 
         points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
 
         voronoi = analysis.Voronoi(points)
 
-        assert (voronoi.vertices[0] == np.array([0., 1.])).all()
-        assert (voronoi.vertices[1] == np.array([-1., 0.])).all()
-        assert (voronoi.vertices[2] == np.array([1., 0.])).all()
-        assert (voronoi.vertices[3] == np.array([0., -1.])).all()
+        voronoi.vertices = list(map(lambda x : list(x) , voronoi.vertices))
 
-    # def test__simple_points__neighbouring_points_index_reteived_correctly(self):
-    #
-    #     points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-    #
-    #     voronoi = analysis.Voronoi(points)
-    #
-    #     print(voronoi.ridge_points)
-    #
-    #     assert (voronoi.indexes_of_neighbouring_points(point_index=0) == np.array([1, 2, 3, 4])).any()
-    #     assert (voronoi.indexes_of_neighbouring_points(point_index=1) == np.array([0, 2, 4])).any()
- #       assert (voronoi.indexes_of_neighbouring_points(point_index=2) == np.array([1, 3])).any()
- #       assert (voronoi.indexes_of_neighbouring_points(point_index=3) == np.array([2, 4])).any()
- #       assert (voronoi.indexes_of_neighbouring_points(point_index=4) == np.array([4])).any()
+        assert [0, 1.] in voronoi.vertices
+        assert [-1., 0.] in voronoi.vertices
+        assert [1., 0.] in voronoi.vertices
+        assert [0., -1.] in voronoi.vertices
+
+    def test__9_points_in_square___sets_up_square_of_voronoi_vertices(self):
+
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+        points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+                           [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+                           [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+        # to look for each list
+
+        voronoi.vertices = list(map(lambda x : list(x) , voronoi.vertices))
+
+        assert [0.5, 1.5] in voronoi.vertices
+        assert [1.5, 0.5] in voronoi.vertices
+        assert [0.5, 0.5] in voronoi.vertices
+        assert [1.5, 1.5] in voronoi.vertices
+
+    def test__points_in_x_cross_shape__sets_up_pairs_of_voronoi_cells(self):
+
+        # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
+
+        points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+        # to look for each list
+
+        voronoi.ridge_points = list(map(lambda x : list(x) , voronoi.ridge_points))
+
+        assert len(voronoi.ridge_points) == 8
+
+        assert [0,1] in voronoi.ridge_points or [1,0] in voronoi.ridge_points
+        assert [0,2] in voronoi.ridge_points or [2,0] in voronoi.ridge_points
+        assert [0,3] in voronoi.ridge_points or [3,0] in voronoi.ridge_points
+        assert [0,4] in voronoi.ridge_points or [4,0] in voronoi.ridge_points
+        assert [1,2] in voronoi.ridge_points or [2,1] in voronoi.ridge_points
+        assert [2,3] in voronoi.ridge_points or [3,2] in voronoi.ridge_points
+        assert [3,4] in voronoi.ridge_points or [4,3] in voronoi.ridge_points
+        assert [4,0] in voronoi.ridge_points or [0,4] in voronoi.ridge_points
+
+    def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
+
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+        points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+                           [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+                           [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+        # to look for each list
+
+        voronoi.ridge_points = list(map(lambda x : list(x) , voronoi.ridge_points))
+
+        assert len(voronoi.ridge_points) == 12
+
+        assert [0,1] in voronoi.ridge_points or [1,0] in voronoi.ridge_points
+        assert [1,2] in voronoi.ridge_points or [2,1] in voronoi.ridge_points
+        assert [3,4] in voronoi.ridge_points or [4,3] in voronoi.ridge_points
+        assert [4,5] in voronoi.ridge_points or [5,4] in voronoi.ridge_points
+        assert [6,7] in voronoi.ridge_points or [7,6] in voronoi.ridge_points
+        assert [7,8] in voronoi.ridge_points or [8,7] in voronoi.ridge_points
+
+        assert [0,3] in voronoi.ridge_points or [3,0] in voronoi.ridge_points
+        assert [1,4] in voronoi.ridge_points or [4,1] in voronoi.ridge_points
+        assert [4,7] in voronoi.ridge_points or [7,4] in voronoi.ridge_points
+        assert [2,5] in voronoi.ridge_points or [5,2] in voronoi.ridge_points
+        assert [5,8] in voronoi.ridge_points or [8,5] in voronoi.ridge_points
+        assert [3,6] in voronoi.ridge_points or [6,3] in voronoi.ridge_points
+
+    def test__points_in_x_cross_shape__neighbors_of_each_source_pixel_correct(self):
+
+        # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
+
+        points = np.array([[0.0, 0.0], [1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        assert voronoi.neighbors_total[0] == 4
+        assert voronoi.neighbors_total[1] == 3
+        assert voronoi.neighbors_total[2] == 3
+        assert voronoi.neighbors_total[3] == 3
+        assert voronoi.neighbors_total[4] == 3
+
+        assert set(voronoi.neighbors[0]) == set([1, 2, 3, 4])
+        assert set(voronoi.neighbors[1]) == set([0, 4, 2])
+        assert set(voronoi.neighbors[2]) == set([0, 1, 3])
+        assert set(voronoi.neighbors[3]) == set([0, 2, 4])
+        assert set(voronoi.neighbors[4]) == set([0, 1, 3])
+
+    def test__9_points_in_square___neighbors_of_each_source_pixel_correct(self):
+
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+        points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+                           [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+                           [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+
+        voronoi = analysis.Voronoi(points)
+
+        assert voronoi.neighbors_total[0] == 2
+        assert voronoi.neighbors_total[1] == 3
+        assert voronoi.neighbors_total[2] == 2
+        assert voronoi.neighbors_total[3] == 3
+        assert voronoi.neighbors_total[4] == 4
+        assert voronoi.neighbors_total[5] == 3
+        assert voronoi.neighbors_total[6] == 2
+        assert voronoi.neighbors_total[7] == 3
+        assert voronoi.neighbors_total[8] == 2
+
+        assert set(voronoi.neighbors[0]) == set([1, 3])
+        assert set(voronoi.neighbors[1]) == set([0, 2, 4])
+        assert set(voronoi.neighbors[2]) == set([1, 5])
+        assert set(voronoi.neighbors[3]) == set([0, 4, 6])
+        assert set(voronoi.neighbors[4]) == set([1, 3, 5, 7])
+        assert set(voronoi.neighbors[5]) == set([2, 4, 8])
+        assert set(voronoi.neighbors[6]) == set([3, 7])
+        assert set(voronoi.neighbors[7]) == set([4, 6, 8])
+        assert set(voronoi.neighbors[8]) == set([5, 7])
+
 
 class TestMatchCoordinatesFromClusters:
 

@@ -159,24 +159,16 @@ class KMeans(sklearn.cluster.KMeans):
 
 class Voronoi(scipy.spatial.Voronoi):
     def __init__(self, points):
+
         super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx Qm')
 
-    def indexes_of_neighbouring_points(self, point_index):
-        """ Retrieve the index(es) of the points an input point (specified by its index in *points*) shares Voronoi
-            vertexes with. \
+        self.neighbors = [[] for _ in range(len(points))]
 
-            Parameters
-            ----------
-            point_index : int
-                The point in the input list *points* we are retrieving the neighbouring indexes of.
+        for pair in reversed(self.ridge_points):
+            self.neighbors[pair[0]].append(pair[1])
+            self.neighbors[pair[1]].append(pair[0])
 
-            Returns
-            ----------
-            neighbours_index: [int]
-                Each entry corresponds to an index in *points* that the input point shares a Voronoi vertex with.
-         """
-        return self.point_region[self.regions[self.point_region[point_index]]]
-
+        self.neighbors_total = list(map(lambda x : len(x) , self.neighbors))
 
 class RegularizationMatrix(np.ndarray):
     """Class used for generating the regularization matrix H, which describes how each source-plane pixel is
