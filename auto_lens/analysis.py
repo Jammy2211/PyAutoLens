@@ -236,109 +236,109 @@ class RegularizationMatrix(np.ndarray):
         return matrix
 
 
-def coordinates_to_clusters_via_nearest_neighbour(coordinates, cluster_centers):
+def sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates, cluster_centers):
     """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
 
-        This method uses a nearest neighbour search between every coordinate and set of cluster centers, thus it is \
+        This method uses a nearest neighbour search between every sub_coordinate and set of cluster centers, thus it is \
         slow when the number of coordinates or clusters is large. However, it is probably the fastest routine for low \
         numbers of coordinates.
 
         Parameters
         ----------
-        coordinates : [(float, float)]
+        sub_coordinates : [(float, float)]
             The x and y coordinates to be matched to the cluster centers.
         cluster_centers: [(float, float)
             The cluster centers the coordinates are matched with.
 
         Returns
         ----------
-        coordinates_to_cluster_index : [int]
-            The index in cluster_centers each match coordinate is matched with. (e.g. if the fifth match coordinate \
-            is closest to the 3rd cluster in cluster_centers, coordinates_to_cluster_index[4] = 2).
+        sub_image_pixel_to_cluster_index : [int]
+            The index in cluster_centers each match sub_coordinate is matched with. (e.g. if the fifth match sub_coordinate \
+            is closest to the 3rd cluster in cluster_centers, sub_image_pixel_to_cluster_index[4] = 2).
 
      """
 
-    coordinates_to_cluster_index = []
+    sub_image_pixel_to_cluster_index = []
 
-    for coordinate in coordinates:
-        distances = map(lambda centers: compute_squared_separation(coordinate, centers), cluster_centers)
+    for sub_coordinate in sub_coordinates:
+        distances = map(lambda centers: compute_squared_separation(sub_coordinate, centers), cluster_centers)
 
-        coordinates_to_cluster_index.append(np.argmin(distances))
+        sub_image_pixel_to_cluster_index.append(np.argmin(distances))
 
-    return coordinates_to_cluster_index
+    return sub_image_pixel_to_cluster_index
 
+def sub_coordinates_to_clusters_via_sparse_pairs(sub_coordinates, cluster_centers, cluster_neighbors,
+                                                 sub_coordinate_to_sparse_coordinate_index,
+                                                 sparse_coordinate_to_cluster_index):
+    """ Match a set of sub_coordinates to their closest clusters, using the cluster centers (x,y).
 
-def coordinates_to_clusters_via_sparse_pairs(coordinates, cluster_centers, cluster_neighbors,
-                                             coordinate_to_sparse_coordinate_index,
-                                             sparse_coordinate_to_cluster_index):
-    """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
+        This method uses a sparsely sampled grid of sub_coordinates with known cluster pairings and Voronoi vertices to \
+        speed up the function for cases where the number of sub_coordinates or clusters is large. Thus, the sparse grid of \
+        sub_coordinates must have had a clustering alogirthm and Voronoi gridding performed prior to this function.
 
-        This method uses a sparsely sampled grid of coordinates with known cluster pairings and Voronoi vertices to \
-        speed up the function for cases where the number of coordinates or clusters is large. Thus, the sparse grid of \
-        coordinates must have had a clustering alogirthm and Voronoi gridding performed prior to this function.
-
-        In a realistic lens analysis, the sparse coordinates will correspond to something like the center of each \
-        image pixel (traced to the source-plane), whereas the coordinates to be matched will be the subgridded \
+        In a realistic lens analysis, the sparse sub_coordinates will correspond to something like the center of each \
+        image pixel (traced to the source-plane), whereas the sub_coordinates to be matched will be the subgridded \
         image-pixels (again, already traced to the source-plane). An important benefit of this is therefore that the \
-        clusteiring alogirthm is also sped up by being run on fewer coordinates.
+        clusteiring alogirthm is also sped up by being run on fewer sub_coordinates.
         
         In the routine below, some variables and function names refer to a 'sparse cluster'. This term describes a \
-        cluster that we have paired to a coordinate to using the sparse grid of image pixels. Thus, it may not \
-        actually be that coordinate's closest cluster. \
+        cluster that we have paired to a sub_coordinate to using the sparse grid of image pixels. Thus, it may not \
+        actually be that sub_coordinate's closest cluster. \
         Therefore, a 'sparse cluster' does not refer to a sparse set of clusters.
 
         Parameters
         ----------
-        coordinates : [(float, float)]
-            The x and y coordinates to be matched to the cluster centers.
+        sub_coordinates : [(float, float)]
+            The x and y sub_coordinates to be matched to the cluster centers.
         cluster_centers: [(float, float)
-            The cluster centers the coordinates are matched with.
+            The cluster centers the sub_coordinates are matched with.
         cluster_neighbors : [[]]
             The neighboring clusters of each cluster, computed via the Voronoi grid (e.g. if the fifth cluster \
             neighbors clusters 7, 9 and 44, cluster_neighbors[4] = [6, 8, 43])
         sparse_coordinate_to_coordinates_index : [int]
-            The index in coordinates each sparse coordinate is closest too (e.g. if the fifth sparse coordinate \
-            is closest to the 3rd coordinate in coordinates, sparse_coordinate_to_coordinates_index[4] = 2).
+            The index in sub_coordinates each sparse sub_coordinate is closest too (e.g. if the fifth sparse sub_coordinate \
+            is closest to the 3rd sub_coordinate in sub_coordinates, sparse_coordinate_to_coordinates_index[4] = 2).
         sparse_coordinate_to_cluster_index : [int]
-            The index in cluster_centers each sparse coordinate closest too (e.g. if the fifth sparse coordinate \
+            The index in cluster_centers each sparse sub_coordinate closest too (e.g. if the fifth sparse sub_coordinate \
             is closest to the 3rd cluster in cluster_centers, sparse_coordinates_to_cluster_index[4] = 2).
 
         Returns
         ----------
-        coordinates_to_cluster_index : [int]
-            The index in cluster_centers each match coordinate is matched with. (e.g. if the fifth match coordinate \
-            is closest to the 3rd cluster in cluster_centers, coordinates_to_cluster_index[4] = 2).
+        sub_image_pixel_to_cluster_index : [int]
+            The index in cluster_centers each match sub_coordinate is matched with. (e.g. if the fifth match sub_coordinate \
+            is closest to the 3rd cluster in cluster_centers, sub_image_pixel_to_cluster_index[4] = 2).
 
      """
 
-    coordinates_to_cluster_index = []
+    sub_image_pixel_to_cluster_index = []
 
-    for coordinate_index, coordinate in enumerate(coordinates):
+    for sub_coordinate_index, sub_coordinate in enumerate(sub_coordinates):
         
-        nearest_sparse_coordinate_index = find_index_of_nearest_sparse_coordinate(coordinate_index, 
-                                                                               coordinate_to_sparse_coordinate_index)
+        nearest_sparse_coordinate_index = find_index_of_nearest_sparse_coordinate(sub_coordinate_index,
+                                                                                  sub_coordinate_to_sparse_coordinate_index)
 
         nearest_sparse_cluster_index = find_index_of_nearest_sparse_cluster(nearest_sparse_coordinate_index,
                                                                          sparse_coordinate_to_cluster_index)
 
         while True:
 
-            separation_of_coordinate_and_sparse_cluster = find_separation_of_coordinate_and_nearest_sparse_cluster(cluster_centers,
-                                                          coordinate, nearest_sparse_cluster_index)
+            separation_of_sub_coordinate_and_sparse_cluster = \
+            find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers,
+                                                                         sub_coordinate, nearest_sparse_cluster_index)
 
-            neighboring_cluster_index, separation_of_coordinate_and_neighboring_cluster = \
-                find_separation_and_index_of_nearest_neighboring_cluster(coordinate, cluster_centers, cluster_neighbors[
+            neighboring_cluster_index, separation_of_sub_coordinate_and_neighboring_cluster = \
+                find_separation_and_index_of_nearest_neighboring_cluster(sub_coordinate, cluster_centers, cluster_neighbors[
                     nearest_sparse_cluster_index])
 
-            if separation_of_coordinate_and_sparse_cluster < separation_of_coordinate_and_neighboring_cluster:
+            if separation_of_sub_coordinate_and_sparse_cluster < separation_of_sub_coordinate_and_neighboring_cluster:
                 break
             else:
                 nearest_sparse_cluster_index = neighboring_cluster_index
 
         # If this pixel is closest to the original pixel, it has been paired successfully with its nearest neighbor.
-        coordinates_to_cluster_index.append(nearest_sparse_cluster_index)
+        sub_image_pixel_to_cluster_index.append(nearest_sparse_cluster_index)
 
-    return coordinates_to_cluster_index
+    return sub_image_pixel_to_cluster_index
 
 def find_index_of_nearest_sparse_coordinate(index, coordinate_to_sparse_coordinates_index):
     return coordinate_to_sparse_coordinates_index[index]
@@ -346,17 +346,17 @@ def find_index_of_nearest_sparse_coordinate(index, coordinate_to_sparse_coordina
 def find_index_of_nearest_sparse_cluster(nearest_sparse_coordinate_index, sparse_coordinates_to_cluster_index):
     return sparse_coordinates_to_cluster_index[nearest_sparse_coordinate_index]
 
-def find_separation_of_coordinate_and_nearest_sparse_cluster(cluster_centers, coordinate, cluster_index):
+def find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate, cluster_index):
     nearest_sparse_cluster_center = cluster_centers[cluster_index]
-    return compute_squared_separation(coordinate, nearest_sparse_cluster_center)
+    return compute_squared_separation(sub_coordinate, nearest_sparse_cluster_center)
 
-def find_separation_and_index_of_nearest_neighboring_cluster(coordinate, cluster_centers, cluster_neighbors):
+def find_separation_and_index_of_nearest_neighboring_cluster(sub_coordinate, cluster_centers, cluster_neighbors):
     """For a given cluster, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
     our input coordinaates.
     
         Parameters
         ----------
-        coordinate : (float, float)
+        sub_coordinate : (float, float)
             The x and y coordinate to be matched with the neighboring set of clusters.
         cluster_centers: [(float, float)
             The cluster centers the coordinates are matched with.
@@ -373,7 +373,7 @@ def find_separation_and_index_of_nearest_neighboring_cluster(coordinate, cluster
     """
 
     separation_from_neighbor = list(map(lambda neighbors :
-                               compute_squared_separation(coordinate, cluster_centers[neighbors]), cluster_neighbors))
+                               compute_squared_separation(sub_coordinate, cluster_centers[neighbors]), cluster_neighbors))
 
     closest_separation_index = min(xrange(len(separation_from_neighbor)), key=separation_from_neighbor.__getitem__)
 
@@ -382,3 +382,6 @@ def find_separation_and_index_of_nearest_neighboring_cluster(coordinate, cluster
 def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two coordinates (no square root for efficiency)"""
     return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+
+# def MappingMatrix(np.ndarray):
+

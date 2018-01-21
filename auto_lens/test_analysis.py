@@ -1127,61 +1127,64 @@ class TestVoronoi:
 
 class TestMatchCoordinatesFromClusters:
 
-    def test__coordinates_to_clusters_via_nearest_neighbour__case1__correct_pairs(self):
+    def test__sub_coordinates_to_clusters_via_nearest_neighbour__case1__correct_pairs(self):
 
         clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-        coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
+        sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
-        coordinates_to_cluster_index = analysis.coordinates_to_clusters_via_nearest_neighbour(coordinates, clusters)
+        sub_image_pixel_to_cluster_index = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
+                                                                                                      clusters)
 
-        assert coordinates_to_cluster_index[0] == 0
-        assert coordinates_to_cluster_index[1] == 1
-        assert coordinates_to_cluster_index[2] == 2
-        assert coordinates_to_cluster_index[3] == 3
+        assert sub_image_pixel_to_cluster_index[0] == 0
+        assert sub_image_pixel_to_cluster_index[1] == 1
+        assert sub_image_pixel_to_cluster_index[2] == 2
+        assert sub_image_pixel_to_cluster_index[3] == 3
 
-    def test__coordinates_to_clusters_via_nearest_neighbour___case2__correct_pairs(self):
+    def test__sub_coordinates_to_clusters_via_nearest_neighbour___case2__correct_pairs(self):
 
         clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
 
-        coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
+        sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
                                 [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
 
-        coordinates_to_cluster_index = analysis.coordinates_to_clusters_via_nearest_neighbour(coordinates, clusters)
+        sub_image_pixel_to_cluster_index = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
+                                                                                                      clusters)
 
-        assert coordinates_to_cluster_index[0] == 0
-        assert coordinates_to_cluster_index[1] == 1
-        assert coordinates_to_cluster_index[2] == 2
-        assert coordinates_to_cluster_index[3] == 3
-        assert coordinates_to_cluster_index[4] == 3
-        assert coordinates_to_cluster_index[5] == 2
-        assert coordinates_to_cluster_index[6] == 1
-        assert coordinates_to_cluster_index[7] == 0
+        assert sub_image_pixel_to_cluster_index[0] == 0
+        assert sub_image_pixel_to_cluster_index[1] == 1
+        assert sub_image_pixel_to_cluster_index[2] == 2
+        assert sub_image_pixel_to_cluster_index[3] == 3
+        assert sub_image_pixel_to_cluster_index[4] == 3
+        assert sub_image_pixel_to_cluster_index[5] == 2
+        assert sub_image_pixel_to_cluster_index[6] == 1
+        assert sub_image_pixel_to_cluster_index[7] == 0
 
-    def test__coordinates_to_clusters_via_nearest_neighbour___case3__correct_pairs(self):
+    def test__sub_coordinates_to_clusters_via_nearest_neighbour___case3__correct_pairs(self):
 
         clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
 
-        coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
+        sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
 
-        coordinates_to_cluster_index = analysis.coordinates_to_clusters_via_nearest_neighbour(coordinates, clusters)
+        sub_image_pixel_to_cluster_index = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
+                                                                                                      clusters)
 
-        assert coordinates_to_cluster_index[0] == 4
-        assert coordinates_to_cluster_index[1] == 4
-        assert coordinates_to_cluster_index[2] == 4
-        assert coordinates_to_cluster_index[3] == 0
-        assert coordinates_to_cluster_index[4] == 0
-        assert coordinates_to_cluster_index[5] == 5
+        assert sub_image_pixel_to_cluster_index[0] == 4
+        assert sub_image_pixel_to_cluster_index[1] == 4
+        assert sub_image_pixel_to_cluster_index[2] == 4
+        assert sub_image_pixel_to_cluster_index[3] == 0
+        assert sub_image_pixel_to_cluster_index[4] == 0
+        assert sub_image_pixel_to_cluster_index[5] == 5
         
     def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
+
+        sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
         
-        coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
-        
-        assert analysis.find_index_of_nearest_sparse_coordinate(0, coordinate_to_sparse_coordinate_index) == 0
-        assert analysis.find_index_of_nearest_sparse_coordinate(1, coordinate_to_sparse_coordinate_index) == 3
-        assert analysis.find_index_of_nearest_sparse_coordinate(2, coordinate_to_sparse_coordinate_index) == 2
-        assert analysis.find_index_of_nearest_sparse_coordinate(3, coordinate_to_sparse_coordinate_index) == 5
-        assert analysis.find_index_of_nearest_sparse_coordinate(4, coordinate_to_sparse_coordinate_index) == 1
-        assert analysis.find_index_of_nearest_sparse_coordinate(5, coordinate_to_sparse_coordinate_index) == 4
+        assert analysis.find_index_of_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
+        assert analysis.find_index_of_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
+        assert analysis.find_index_of_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
+        assert analysis.find_index_of_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
+        assert analysis.find_index_of_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
+        assert analysis.find_index_of_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
 
     def test__find_index_of_nearest_sparse_cluster__simple_values(self):
         
@@ -1198,22 +1201,22 @@ class TestMatchCoordinatesFromClusters:
 
         cluster_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
 
-        coordinate = [1.5, 0.0]
+        sub_coordinate = [1.5, 0.0]
 
         nearest_sparse_cluster_index = 0
 
-        separation0 = analysis.find_separation_of_coordinate_and_nearest_sparse_cluster(cluster_centers, coordinate,
-                                                                 nearest_sparse_cluster_index)
+        separation0 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate,
+                                                                                            nearest_sparse_cluster_index)
 
         nearest_sparse_cluster_index = 1
 
-        separation1 = analysis.find_separation_of_coordinate_and_nearest_sparse_cluster(cluster_centers, coordinate,
-                                                                 nearest_sparse_cluster_index)
+        separation1 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate,
+                                                                                            nearest_sparse_cluster_index)
 
         nearest_sparse_cluster_index = 2
 
-        separation2 = analysis.find_separation_of_coordinate_and_nearest_sparse_cluster(cluster_centers, coordinate,
-                                                                 nearest_sparse_cluster_index)
+        separation2 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate,
+                                                                                            nearest_sparse_cluster_index)
 
         assert separation0 == 1.5 ** 2
         assert separation1 == 0.5 ** 2
@@ -1221,22 +1224,23 @@ class TestMatchCoordinatesFromClusters:
 
     def test__find_separation_and_index_of_nearest_neighboring_cluster__simple_case(self):
 
-        coordinate = np.array([0.0, 0.0])
+        sub_coordinate = np.array([0.0, 0.0])
         cluster_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
 
         #Lets assume we're currently on cluster 0 and all other clusters are neighbors
 
         cluster_neighbors = [1,2,3,4]
 
-        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(
-                                                                        coordinate, cluster_centers, cluster_neighbors)
+        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(sub_coordinate,
+                                                                                              cluster_centers,
+                                                                                              cluster_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
 
     def test__find_separation_and_index_of_nearest_neighboring_cluster__skips_if_not_a_neighbor(self):
 
-        coordinate = np.array([0.0, 0.0])
+        sub_coordinate = np.array([0.0, 0.0])
         cluster_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
 
         #Lets assume we're currently on cluster 0 and the new cluster added above is not a neighbor (this doesn't make
@@ -1244,13 +1248,14 @@ class TestMatchCoordinatesFromClusters:
 
         cluster_neighbors = [1,2,3,4]
 
-        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(
-                                                                        coordinate, cluster_centers, cluster_neighbors)
+        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(sub_coordinate,
+                                                                                              cluster_centers,
+                                                                                              cluster_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
 
-    def test__coordinates_to_clusters_via_sparse_pairs__clusters_in_x_shape__correct_pairs(self):
+    def test__sub_coordinates_to_clusters_via_sparse_pairs__clusters_in_x_shape__correct_pairs(self):
 
         clusters = np.array([[-1.0, 1.0],  [1.0, 1.0],
                                   [0.0, 0.0],
@@ -1258,13 +1263,14 @@ class TestMatchCoordinatesFromClusters:
 
         # Make it so the central top, left, right and bottom coordinate all pair with the central cluster (index=2)
 
-        coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
+        sub_coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
                                 [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
                                 [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
 
         voronoi = analysis.Voronoi(clusters)
 
-        coordinates_to_cluster_index_nearest_neighbour = analysis.coordinates_to_clusters_via_nearest_neighbour(coordinates, clusters)
+        sub_image_pixel_to_cluster_index_nearest_neighbour = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
+                                                                                                                        clusters)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
@@ -1272,36 +1278,51 @@ class TestMatchCoordinatesFromClusters:
         coordinate_to_sparse_coordinate_index = np.array([0,1,0,1,1,1,2,1,2])
         sparse_coordinate_to_cluster_index = np.array([1,2,4])
 
-        coordinates_to_cluster_index_sparse_pairs = analysis.coordinates_to_clusters_via_sparse_pairs(coordinates,
+        sub_image_pixel_to_cluster_index_sparse_pairs = analysis.sub_coordinates_to_clusters_via_sparse_pairs(sub_coordinates,
                                                              clusters, voronoi.neighbors,
                                                              coordinate_to_sparse_coordinate_index,
                                                              sparse_coordinate_to_cluster_index)
 
-        assert coordinates_to_cluster_index_nearest_neighbour == coordinates_to_cluster_index_sparse_pairs
+        assert sub_image_pixel_to_cluster_index_nearest_neighbour == sub_image_pixel_to_cluster_index_sparse_pairs
 
-    def test__coordinates_to_clusters_via_sparse_pairs__grid_of_clusters__correct_pairs(self):
+    def test__sub_coordinates_to_clusters_via_sparse_pairs__grid_of_clusters__correct_pairs(self):
 
         clusters = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
                              [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                              [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        coordinates = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+        sub_coordinates = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
                                 [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                                 [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
         voronoi = analysis.Voronoi(clusters)
 
-        coordinates_to_cluster_index_nearest_neighbour = analysis.coordinates_to_clusters_via_nearest_neighbour(coordinates, clusters)
+        sub_image_pixel_to_cluster_index_nearest_neighbour = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
+                                                                                                                        clusters)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
 
-        coordinate_to_sparse_coordinate_index = np.array([0,1,2,0,1,2,0,1,2])
+        sub_coordinate_to_sparse_coordinate_index = np.array([0,1,2,0,1,2,0,1,2])
         sparse_coordinate_to_cluster_index = np.array([3,4,5])
 
-        coordinates_to_cluster_index_sparse_pairs = analysis.coordinates_to_clusters_via_sparse_pairs(coordinates,
+        sub_image_pixel_to_cluster_index_sparse_pairs = analysis.sub_coordinates_to_clusters_via_sparse_pairs(sub_coordinates,
                                                              clusters, voronoi.neighbors,
-                                                             coordinate_to_sparse_coordinate_index,
+                                                             sub_coordinate_to_sparse_coordinate_index,
                                                              sparse_coordinate_to_cluster_index)
 
-        assert coordinates_to_cluster_index_nearest_neighbour == coordinates_to_cluster_index_sparse_pairs
+        assert sub_image_pixel_to_cluster_index_nearest_neighbour == sub_image_pixel_to_cluster_index_sparse_pairs
+
+
+# class TestMappingMatrix:
+#
+#     def test__coordinates_to_cluster_index_simple__grid_size_1(self):
+#
+#         sub_image_pixel_to_cluster_index = [0, 1, 2, 0, 1, 2]
+#
+#         mapping_matrix = analysis.MappingMatrix(source_pixel_total=3, image_pixel_total=6, grid_size=1,
+#                                                 sub_image_pixel_to_cluster_index)
+#
+#         assert (mapping_matrix == np.array([[0, 0, 0, 0, 0, 0],
+#                                             [0, 0, 0, 0, 0, 0],
+#                                             [0, 0, 0, 0, 0, 0]]))
