@@ -1127,53 +1127,53 @@ class TestVoronoi:
 
 class TestMatchCoordinatesFromClusters:
 
-    def test__sub_coordinates_to_clusters_via_nearest_neighbour__case1__correct_pairs(self):
+    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
 
-        clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
-        sub_image_pixel_to_cluster_index = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
-                                                                                                      clusters)
+        sub_image_pixel_to_source_pixel_index = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                           source_pixels)
 
-        assert sub_image_pixel_to_cluster_index[0] == 0
-        assert sub_image_pixel_to_cluster_index[1] == 1
-        assert sub_image_pixel_to_cluster_index[2] == 2
-        assert sub_image_pixel_to_cluster_index[3] == 3
+        assert sub_image_pixel_to_source_pixel_index[0] == 0
+        assert sub_image_pixel_to_source_pixel_index[1] == 1
+        assert sub_image_pixel_to_source_pixel_index[2] == 2
+        assert sub_image_pixel_to_source_pixel_index[3] == 3
 
-    def test__sub_coordinates_to_clusters_via_nearest_neighbour___case2__correct_pairs(self):
+    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
 
-        clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
 
         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
                                 [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
 
-        sub_image_pixel_to_cluster_index = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
-                                                                                                      clusters)
+        sub_image_pixel_to_source_pixel_index = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                           source_pixels)
 
-        assert sub_image_pixel_to_cluster_index[0] == 0
-        assert sub_image_pixel_to_cluster_index[1] == 1
-        assert sub_image_pixel_to_cluster_index[2] == 2
-        assert sub_image_pixel_to_cluster_index[3] == 3
-        assert sub_image_pixel_to_cluster_index[4] == 3
-        assert sub_image_pixel_to_cluster_index[5] == 2
-        assert sub_image_pixel_to_cluster_index[6] == 1
-        assert sub_image_pixel_to_cluster_index[7] == 0
+        assert sub_image_pixel_to_source_pixel_index[0] == 0
+        assert sub_image_pixel_to_source_pixel_index[1] == 1
+        assert sub_image_pixel_to_source_pixel_index[2] == 2
+        assert sub_image_pixel_to_source_pixel_index[3] == 3
+        assert sub_image_pixel_to_source_pixel_index[4] == 3
+        assert sub_image_pixel_to_source_pixel_index[5] == 2
+        assert sub_image_pixel_to_source_pixel_index[6] == 1
+        assert sub_image_pixel_to_source_pixel_index[7] == 0
 
-    def test__sub_coordinates_to_clusters_via_nearest_neighbour___case3__correct_pairs(self):
+    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
 
-        clusters = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
+        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
 
         sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
 
-        sub_image_pixel_to_cluster_index = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
-                                                                                                      clusters)
+        sub_image_pixel_to_source_pixel_index = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                           source_pixels)
 
-        assert sub_image_pixel_to_cluster_index[0] == 4
-        assert sub_image_pixel_to_cluster_index[1] == 4
-        assert sub_image_pixel_to_cluster_index[2] == 4
-        assert sub_image_pixel_to_cluster_index[3] == 0
-        assert sub_image_pixel_to_cluster_index[4] == 0
-        assert sub_image_pixel_to_cluster_index[5] == 5
+        assert sub_image_pixel_to_source_pixel_index[0] == 4
+        assert sub_image_pixel_to_source_pixel_index[1] == 4
+        assert sub_image_pixel_to_source_pixel_index[2] == 4
+        assert sub_image_pixel_to_source_pixel_index[3] == 0
+        assert sub_image_pixel_to_source_pixel_index[4] == 0
+        assert sub_image_pixel_to_source_pixel_index[5] == 5
         
     def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
 
@@ -1186,108 +1186,108 @@ class TestMatchCoordinatesFromClusters:
         assert analysis.find_index_of_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
         assert analysis.find_index_of_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
 
-    def test__find_index_of_nearest_sparse_cluster__simple_values(self):
+    def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
         
-        cluster_to_sparse_cluster_index = [0, 3, 2, 5, 1, 4]
+        source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
 
-        assert analysis.find_index_of_nearest_sparse_cluster(0, cluster_to_sparse_cluster_index) == 0
-        assert analysis.find_index_of_nearest_sparse_cluster(1, cluster_to_sparse_cluster_index) == 3
-        assert analysis.find_index_of_nearest_sparse_cluster(2, cluster_to_sparse_cluster_index) == 2
-        assert analysis.find_index_of_nearest_sparse_cluster(3, cluster_to_sparse_cluster_index) == 5
-        assert analysis.find_index_of_nearest_sparse_cluster(4, cluster_to_sparse_cluster_index) == 1
-        assert analysis.find_index_of_nearest_sparse_cluster(5, cluster_to_sparse_cluster_index) == 4
+        assert analysis.find_index_of_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
+        assert analysis.find_index_of_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
+        assert analysis.find_index_of_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
+        assert analysis.find_index_of_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
+        assert analysis.find_index_of_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
+        assert analysis.find_index_of_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
 
-    def test__find_separation_of_coordinate_and_nearest_sparse_cluster__simple_values(self):
+    def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
 
-        cluster_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
+        source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
 
         sub_coordinate = [1.5, 0.0]
 
-        nearest_sparse_cluster_index = 0
+        nearest_sparse_source_pixel_index = 0
 
-        separation0 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate,
-                                                                                            nearest_sparse_cluster_index)
+        separation0 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                                                 nearest_sparse_source_pixel_index)
 
-        nearest_sparse_cluster_index = 1
+        nearest_sparse_source_pixel_index = 1
 
-        separation1 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate,
-                                                                                            nearest_sparse_cluster_index)
+        separation1 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                                                 nearest_sparse_source_pixel_index)
 
-        nearest_sparse_cluster_index = 2
+        nearest_sparse_source_pixel_index = 2
 
-        separation2 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_cluster(cluster_centers, sub_coordinate,
-                                                                                            nearest_sparse_cluster_index)
+        separation2 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                                                 nearest_sparse_source_pixel_index)
 
         assert separation0 == 1.5 ** 2
         assert separation1 == 0.5 ** 2
         assert separation2 == 0.5 ** 2
 
-    def test__find_separation_and_index_of_nearest_neighboring_cluster__simple_case(self):
+    def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
 
         sub_coordinate = np.array([0.0, 0.0])
-        cluster_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
+        source_pixel_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
 
-        #Lets assume we're currently on cluster 0 and all other clusters are neighbors
+        #Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
 
-        cluster_neighbors = [1,2,3,4]
+        source_pixel_neighbors = [1,2,3,4]
 
-        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(sub_coordinate,
-                                                                                              cluster_centers,
-                                                                                              cluster_neighbors)
+        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
+                                                                                                   source_pixel_centers,
+                                                                                                   source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
 
-    def test__find_separation_and_index_of_nearest_neighboring_cluster__skips_if_not_a_neighbor(self):
+    def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
 
         sub_coordinate = np.array([0.0, 0.0])
-        cluster_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
+        source_pixel_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
 
-        #Lets assume we're currently on cluster 0 and the new cluster added above is not a neighbor (this doesn't make
+        #Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
         # sense geometrically, but tests the code functionality).
 
-        cluster_neighbors = [1,2,3,4]
+        source_pixel_neighbors = [1,2,3,4]
 
-        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_cluster(sub_coordinate,
-                                                                                              cluster_centers,
-                                                                                              cluster_neighbors)
+        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
+                                                                                                   source_pixel_centers,
+                                                                                                   source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
 
-    def test__sub_coordinates_to_clusters_via_sparse_pairs__clusters_in_x_shape__correct_pairs(self):
+    def test__sub_coordinates_to_source_pixels_via_sparse_pairs__source_pixels_in_x_shape__correct_pairs(self):
 
-        clusters = np.array([[-1.0, 1.0],  [1.0, 1.0],
+        source_pixels = np.array([[-1.0, 1.0],  [1.0, 1.0],
                                   [0.0, 0.0],
                            [-1.0, -1.0], [1.0,-1.0]])
 
-        # Make it so the central top, left, right and bottom coordinate all pair with the central cluster (index=2)
+        # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
 
         sub_coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
                                 [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
                                 [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
 
-        voronoi = analysis.Voronoi(clusters)
+        voronoi = analysis.Voronoi(source_pixels)
 
-        sub_image_pixel_to_cluster_index_nearest_neighbour = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
-                                                                                                                        clusters)
+        sub_image_pixel_to_source_pixel_index_nearest_neighbour = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                             source_pixels)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
 
         coordinate_to_sparse_coordinate_index = np.array([0,1,0,1,1,1,2,1,2])
-        sparse_coordinate_to_cluster_index = np.array([1,2,4])
+        sparse_coordinate_to_source_pixel_index = np.array([1,2,4])
 
-        sub_image_pixel_to_cluster_index_sparse_pairs = analysis.sub_coordinates_to_clusters_via_sparse_pairs(sub_coordinates,
-                                                             clusters, voronoi.neighbors,
-                                                             coordinate_to_sparse_coordinate_index,
-                                                             sparse_coordinate_to_cluster_index)
+        sub_image_pixel_to_source_pixel_index_sparse_pairs = analysis.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
+                                                                                                                   source_pixels, voronoi.neighbors,
+                                                                                                                   coordinate_to_sparse_coordinate_index,
+                                                                                                                   sparse_coordinate_to_source_pixel_index)
 
-        assert sub_image_pixel_to_cluster_index_nearest_neighbour == sub_image_pixel_to_cluster_index_sparse_pairs
+        assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
 
-    def test__sub_coordinates_to_clusters_via_sparse_pairs__grid_of_clusters__correct_pairs(self):
+    def test__sub_coordinates_to_source_pixels_via_sparse_pairs__grid_of_source_pixels__correct_pairs(self):
 
-        clusters = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+        source_pixels = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
                              [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                              [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
@@ -1295,28 +1295,28 @@ class TestMatchCoordinatesFromClusters:
                                 [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                                 [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = analysis.Voronoi(clusters)
+        voronoi = analysis.Voronoi(source_pixels)
 
-        sub_image_pixel_to_cluster_index_nearest_neighbour = analysis.sub_coordinates_to_clusters_via_nearest_neighbour(sub_coordinates,
-                                                                                                                        clusters)
+        sub_image_pixel_to_source_pixel_index_nearest_neighbour = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                             source_pixels)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
 
         sub_coordinate_to_sparse_coordinate_index = np.array([0,1,2,0,1,2,0,1,2])
-        sparse_coordinate_to_cluster_index = np.array([3,4,5])
+        sparse_coordinate_to_source_pixel_index = np.array([3,4,5])
 
-        sub_image_pixel_to_cluster_index_sparse_pairs = analysis.sub_coordinates_to_clusters_via_sparse_pairs(sub_coordinates,
-                                                             clusters, voronoi.neighbors,
-                                                             sub_coordinate_to_sparse_coordinate_index,
-                                                             sparse_coordinate_to_cluster_index)
+        sub_image_pixel_to_source_pixel_index_sparse_pairs = analysis.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
+                                                                                                                   source_pixels, voronoi.neighbors,
+                                                                                                                   sub_coordinate_to_sparse_coordinate_index,
+                                                                                                                   sparse_coordinate_to_source_pixel_index)
 
-        assert sub_image_pixel_to_cluster_index_nearest_neighbour == sub_image_pixel_to_cluster_index_sparse_pairs
+        assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
 
 
 class TestMappingMatrix:
 
-    def test__coordinates_to_cluster_index__3x6_sub_grid_size_1(self):
+    def test__coordinates_to_source_pixel_index__3x6_sub_grid_size_1(self):
 
         source_pixel_total = 3
         image_pixel_total = 6
@@ -1324,17 +1324,17 @@ class TestMappingMatrix:
 
 
         sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5] # For no sub grid, image pixels map to sub-pixels.
-        sub_image_pixel_to_cluster_index = [0, 1, 2, 0, 1, 2]
+        sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
                                             [0, 0, 1, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
 
-    def test__coordinates_to_cluster_index__5x11_grid_size_1(self):
+    def test__coordinates_to_source_pixel_index__5x11_grid_size_1(self):
 
         source_pixel_total = 5
         image_pixel_total = 11
@@ -1342,10 +1342,10 @@ class TestMappingMatrix:
 
 
         sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # For no sub grid, image pixels map to sub-pixels.
-        sub_image_pixel_to_cluster_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
+        sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
@@ -1354,48 +1354,48 @@ class TestMappingMatrix:
                                             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
                                             [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all() # Image pixels 2 and 5 map to source pixel 2
 
-    def test__coordinates_to_cluster_index__3x6_grid_size_2_but_fully_overlaps_image_pixels(self):
+    def test__coordinates_to_source_pixel_index__3x6_grid_size_2_but_fully_overlaps_image_pixels(self):
 
         source_pixel_total = 3
         image_pixel_total = 6
         sub_grid_size = 2
 
-        # all sub-pixels to pixel / cluster mappings below have been set up such that all sub-pixels in an image pixel
+        # all sub-pixels to pixel / source_pixel mappings below have been set up such that all sub-pixels in an image pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
         sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                                 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
 
-        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
                                             [0, 0, 1, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
 
-    def test__coordinates_to_cluster_index__5x11_grid_size_2_but_fully_overlaps_image_pixels(self):
+    def test__coordinates_to_source_pixel_index__5x11_grid_size_2_but_fully_overlaps_image_pixels(self):
 
         source_pixel_total = 5
         image_pixel_total = 11
         sub_grid_size = 2
 
-        # all sub-pixels to pixel / cluster mappings below have been set up such that all sub-pixels in an image pixel
+        # all sub-pixels to pixel / source_pixel mappings below have been set up such that all sub-pixels in an image pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
         sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5,
                                                 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10]
 
-        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
@@ -1404,31 +1404,31 @@ class TestMappingMatrix:
                                             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
                                             [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all() # Image pixels 2 and 5 map to source pixel 2
 
-    def test__coordinates_to_cluster_index__3x6_grid_size_2_not_fully_overlapping(self):
+    def test__coordinates_to_source_pixel_index__3x6_grid_size_2_not_fully_overlapping(self):
 
         source_pixel_total = 3
         image_pixel_total = 6
         sub_grid_size = 2
 
-        # all sub-pixels to pixel / cluster mappings below have been set up such that all sub-pixels in an image pixel
+        # all sub-pixels to pixel / source_pixel mappings below have been set up such that all sub-pixels in an image pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
         sub_image_pixel_to_image_pixel_index = [0, 1, 1, 0, 1, 4, 4, 1, 2, 2, 2, 0,
                                                 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
 
-        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 0.5, 0, 0, 1.5, 0], # Image pixels 1 and 4 map to source pixel 1.
                                             [0.25, 0, 0.75, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
 
-    def test__coordinates_to_cluster_index__5x11_grid_size_2_not_fully_overlapping(self):
+    def test__coordinates_to_source_pixel_index__5x11_grid_size_2_not_fully_overlapping(self):
 
         source_pixel_total = 5
         image_pixel_total = 11
@@ -1444,11 +1444,11 @@ class TestMappingMatrix:
 
         print(len(sub_image_pixel_to_image_pixel_index))
 
-        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         print(mapping_matrix)
@@ -1459,7 +1459,7 @@ class TestMappingMatrix:
                                             [0,    0,    0,    0,    0,    0,    0,    0.75, 0.25, 0,    1],
                                             [0,    0,    0,    0,    0,    0,    0.75, 0.25, 0,    0.75, 0.25]])).all() # Image pixels 2 and 5 map to source pixel 2
         
-    def test__coordinates_to_cluster_index__2x3_grid_size_4(self):
+    def test__coordinates_to_source_pixel_index__2x3_grid_size_4(self):
 
         source_pixel_total = 2
         image_pixel_total = 3
@@ -1479,12 +1479,12 @@ class TestMappingMatrix:
                                                 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
 
-        sub_image_pixel_to_cluster_index = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        sub_image_pixel_to_source_pixel_index = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_source_pixel_index,
                                                 sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[0,    0.9375, 0.0625],
