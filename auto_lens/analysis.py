@@ -170,6 +170,7 @@ class Voronoi(scipy.spatial.Voronoi):
 
         self.neighbors_total = list(map(lambda x : len(x) , self.neighbors))
 
+
 class RegularizationMatrix(np.ndarray):
     """Class used for generating the regularization matrix H, which describes how each source-plane pixel is
     regularized by other source-plane pixels during the source-reconstruction.
@@ -383,5 +384,57 @@ def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two coordinates (no square root for efficiency)"""
     return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
 
-# def MappingMatrix(np.ndarray):
+
+class MappingMatrix(np.ndarray):
+
+    def __new__(cls, source_pixel_total, image_pixel_total, sub_grid_size, sub_image_pixel_to_cluster_index,
+                sub_image_pixel_to_image_pixel_index):
+        """
+        Set up a new mapping matrix, which describes the fractional unit surface brightness counts between each
+        image-pixel and source pixel pair.
+
+        The mapping matrix is the matrix denoted 'f_ij' in Warren & Dye 2003, Nightingale & Dye 2015 and Nightingale, \
+        Dye & Massey 2018.
+
+        It is a matrix of dimensions [source_pixels x image_pixels], wherein a non-zero entry represents an \
+        image-pixel to source-pixel mapping. For example, if image-pixel 4 maps to source-pixel 2, then element (2,4) \
+        of the mapping matrix will = 1.
+
+        The mapping matrix supports sub-gridding.  Here, each image-pixel in the observed image is divided into a \
+        finer sub-grid. For example, if sub_grid_size = 4, each image-pixel is split into a 4 x 4 sub-grid, giving a \
+        total of 16 sub image-pixels. All 16 sub image-pixels are individually mapped to the source-plane and each is
+        paired with a source-pixel.
+
+        The entries in the mapping matrix now become fractional values representing the number of sub image-pixels \
+        which map to each source-pixel. For example if 3 sub image-pixels within image-pixel 4 map to source-pixel 2, \
+        and the sub_grid_size=2, then element (2,4) of the mapping matrix \
+        will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
+
+        Parameters
+        ----------
+        source_pixel_total : int
+            The number of source-pixels in the source-plane (and first dimension of the mapping matrix)
+        image_pixel_total : int
+            The number of image-pixels in the masked observed image (and second dimension of the mapping matrix)
+        sub_grid_size : int
+            The size of sub-gridding used on the observed image.
+        sub_image_pixel_to_cluster_index : [int]
+            The index of the cluster each image sub-pixel is mapped too (e.g. if the fifth sub image pixel \
+            is mapped to the 3rd cluster in the source plane, sub_image_pixel_to_cluster_index[4] = 2).
+        sub_image_pixel_to_image_pixel_index : [int]
+            The index of the image-pixel each image sub-pixel belongs too (e.g. if the fifth sub image pixel \
+            is within the 3rd image-pixel in the observed image, sub_image_pixel_to_image_pixel_index[4] = 2).
+        """
+
+        total_sub_pixels = image_pixel_total * sub_grid_size ** 2
+
+        sub_grid_fraction = (1.0/sub_grid_size) ** 2
+
+        obj = np.zeros(shape=(source_pixel_total, image_pixel_total)).view(cls)
+
+        for i in range(total_sub_pixels):
+
+            obj[sub_image_pixel_to_cluster_index[i], sub_image_pixel_to_image_pixel_index[i]] += sub_grid_fraction
+
+        return obj
 

@@ -1314,15 +1314,178 @@ class TestMatchCoordinatesFromClusters:
         assert sub_image_pixel_to_cluster_index_nearest_neighbour == sub_image_pixel_to_cluster_index_sparse_pairs
 
 
-# class TestMappingMatrix:
-#
-#     def test__coordinates_to_cluster_index_simple__grid_size_1(self):
-#
-#         sub_image_pixel_to_cluster_index = [0, 1, 2, 0, 1, 2]
-#
-#         mapping_matrix = analysis.MappingMatrix(source_pixel_total=3, image_pixel_total=6, grid_size=1,
-#                                                 sub_image_pixel_to_cluster_index)
-#
-#         assert (mapping_matrix == np.array([[0, 0, 0, 0, 0, 0],
-#                                             [0, 0, 0, 0, 0, 0],
-#                                             [0, 0, 0, 0, 0, 0]]))
+class TestMappingMatrix:
+
+    def test__coordinates_to_cluster_index__3x6_sub_grid_size_1(self):
+
+        source_pixel_total = 3
+        image_pixel_total = 6
+        sub_grid_size = 1
+
+
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5] # For no sub grid, image pixels map to sub-pixels.
+        sub_image_pixel_to_cluster_index = [0, 1, 2, 0, 1, 2]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
+                                            [0, 0, 1, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
+
+    def test__coordinates_to_cluster_index__5x11_grid_size_1(self):
+
+        source_pixel_total = 5
+        image_pixel_total = 11
+        sub_grid_size = 1
+
+
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # For no sub grid, image pixels map to sub-pixels.
+        sub_image_pixel_to_cluster_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], # Image pixels 1 and 4 map to source pixel 1.
+                                            [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+                                            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+                                            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all() # Image pixels 2 and 5 map to source pixel 2
+
+    def test__coordinates_to_cluster_index__3x6_grid_size_2_but_fully_overlaps_image_pixels(self):
+
+        source_pixel_total = 3
+        image_pixel_total = 6
+        sub_grid_size = 2
+
+        # all sub-pixels to pixel / cluster mappings below have been set up such that all sub-pixels in an image pixel
+        # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
+        # values in the final matrix.
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                                3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
+
+        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                            0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
+                                            [0, 0, 1, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
+
+    def test__coordinates_to_cluster_index__5x11_grid_size_2_but_fully_overlaps_image_pixels(self):
+
+        source_pixel_total = 5
+        image_pixel_total = 11
+        sub_grid_size = 2
+
+        # all sub-pixels to pixel / cluster mappings below have been set up such that all sub-pixels in an image pixel
+        # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
+        # values in the final matrix.
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5,
+                                                6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10]
+
+        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                            4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], # Image pixels 1 and 4 map to source pixel 1.
+                                            [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+                                            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+                                            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all() # Image pixels 2 and 5 map to source pixel 2
+
+    def test__coordinates_to_cluster_index__3x6_grid_size_2_not_fully_overlapping(self):
+
+        source_pixel_total = 3
+        image_pixel_total = 6
+        sub_grid_size = 2
+
+        # all sub-pixels to pixel / cluster mappings below have been set up such that all sub-pixels in an image pixel
+        # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
+        # values in the final matrix.
+
+        sub_image_pixel_to_image_pixel_index = [0, 1, 1, 0, 1, 4, 4, 1, 2, 2, 2, 0,
+                                                3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
+
+        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                            0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 0.5, 0, 0, 1.5, 0], # Image pixels 1 and 4 map to source pixel 1.
+                                            [0.25, 0, 0.75, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
+
+    def test__coordinates_to_cluster_index__5x11_grid_size_2_not_fully_overlapping(self):
+
+        source_pixel_total = 5
+        image_pixel_total = 11
+        sub_grid_size = 2
+
+        # Moving one of every 4 sub-pixels to the right compared to the example above. This should turn each 1 in the
+        # mapping matrix to a 0.75, and add a 0.25 to the element to its right
+        
+        # Note the last value retains all 4 of it's '10's, so keeps a 1 in the mapping matrix
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6,
+                                                6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10]
+
+        print(len(sub_image_pixel_to_image_pixel_index))
+
+        sub_image_pixel_to_cluster_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                            4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        print(mapping_matrix)
+
+        assert (mapping_matrix == np.array([[0.75, 0.25, 0,    0.75, 0.25, 0,    0,    0,    0,    0,    0], # Image pixels 0 and 3 map to source pixel 0.
+                                            [0,    0.75, 0.25, 0,    0.75, 0.25, 0,    0,    0,    0,    0], # Image pixels 1 and 4 map to source pixel 1.
+                                            [0,    0,    0.75, 0.25, 0,    0.75, 0.25, 0,    0.75, 0.25, 0],
+                                            [0,    0,    0,    0,    0,    0,    0,    0.75, 0.25, 0,    1],
+                                            [0,    0,    0,    0,    0,    0,    0.75, 0.25, 0,    0.75, 0.25]])).all() # Image pixels 2 and 5 map to source pixel 2
+        
+    def test__coordinates_to_cluster_index__2x3_grid_size_4(self):
+
+        source_pixel_total = 2
+        image_pixel_total = 3
+        sub_grid_size = 4
+
+        # 4x4 sub pixel, so 16 sub-pixels per pixel, so 48 sub-image pixels,
+
+        # No sub-pixels labelled 0 map to source_pixel 0, so f(0,0) remains 0
+        # 15 sub-pixels labelled 1 map to source_pixel_index 0, so add 4 * (1/16) = 0.9375 to f(1,1)
+        # 1 sub-pixel labelled 2 map to source_pixel_index 0, so add (1/16) = 0.0625 to f(2,1)
+        # 4 sub-pixels labelled 0 map to source_pixel_index 1, so add 4 * (1/16) = 0.25 to f(0,2)
+        # 12 sub-pixels labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
+        # 16 sub-pixels labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
+
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, # 50:50 ratio so 1 in each entry of the mapping matrix
+                                                2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+
+        sub_image_pixel_to_cluster_index = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                sub_image_pixel_to_cluster_index,
+                                                sub_image_pixel_to_image_pixel_index)
+
+        assert (mapping_matrix == np.array([[0,    0.9375, 0.0625],
+                                            [0.25, 0.75,   1.0]])).all()
