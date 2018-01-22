@@ -106,16 +106,18 @@ class TestFrameExtraction(object):
 
         assert {0: 1, 1: 2, 2: 3, 4: 4} == frame_array[4]
 
-# class TestConvolution(object):
-#     def test_simple_convolution(self, simple_frame_array, simple_kernel):
-#         pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
-#
-#         convolver = frame_convolution.Convolver(simple_frame_array)
-#
-#         result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
+
+class TestConvolution(object):
+    def test_simple_convolution(self, simple_frame_array, simple_kernel):
+        pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
+
+        convolver = frame_convolution.Convolver(simple_frame_array)
+
+        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_vector)
+
+        # noinspection PyUnresolvedReferences
+        assert (result == [0.0, 0.1, 0.0, 0.1, 0.6, 0.1, 0.0, 0.1, 0.0]).all()
+
 #
 #     def test_full_convolution(self, simple_frame_array):
 #         pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
