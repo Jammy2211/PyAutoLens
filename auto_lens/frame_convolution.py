@@ -164,9 +164,6 @@ class Convolver(object):
 class KernelConvolver(object):
     def __init__(self, frame_array, kernel):
         self.kernel = kernel.flatten()
-        if len(frame_array) != len(self.kernel):
-            raise KernelException(
-                "Frame {} and kernel {} lengths do not match".format(len(frame_array), len(self.kernel)))
         self.frame_array = frame_array
         self.__result_dict = {}
 
@@ -219,7 +216,7 @@ class KernelConvolver(object):
 
         result = self.result_for_value(value)
         frame = self.frame_array[pixel_index]
-        for kernel_index in frame.values():
+        for kernel_index in frame.keys():
             vector_index = frame[kernel_index]
             new_vector[int(vector_index)] = result[int(kernel_index)]
 
