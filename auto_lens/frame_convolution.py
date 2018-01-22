@@ -70,7 +70,7 @@ class FrameMaker(object):
             An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
         """
         if self.__number_array is None:
-            self.__number_array = -1 * np.ones(self.mask.shape)
+            self.__number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
             n = 0
             for x in range(self.mask.shape[0]):
                 for y in range(self.mask.shape[1]):
@@ -218,6 +218,6 @@ class KernelConvolver(object):
         frame = self.frame_array[pixel_index]
         for kernel_index in frame.keys():
             vector_index = frame[kernel_index]
-            new_vector[int(vector_index)] = result[int(kernel_index)]
+            new_vector[vector_index] = result[kernel_index]
 
         return new_vector
