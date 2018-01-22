@@ -73,51 +73,38 @@ class TestNumbering(object):
 
 
 class TestFrameExtraction(object):
-    def test_frame_at_coords(self, simple_frame_maker):
-        kernel_shape = (3, 3)
-
+    def test_trivial_frame_at_coords(self, simple_frame_maker):
         # noinspection PyUnresolvedReferences
-        assert (simple_frame_maker.number_array == simple_frame_maker.frame_at_coords(coords=(1, 1),
-                                                                                      kernel_shape=kernel_shape)).all()
+        assert ({i: i for i in range(9)} == simple_frame_maker.frame_at_coords(coords=(1, 1),
+                                                                               kernel_shape=(3, 3)))
 
-        corner_array = np.array([[-1, -1, -1], [-1, 0, 1], [-1, 3, 4]])
+    def test_corner_frame(self, simple_frame_maker):
+        corner_dict = {4: 0, 5: 1, 7: 3, 8: 4}
 
-        corner_frame = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=kernel_shape)
+        corner_frame = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=(3, 3))
 
-        assert (corner_array == corner_frame).all()
+        assert corner_dict == corner_frame
 
     def test_simple_square(self, simple_frame_maker):
         frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
 
         assert 9 == len(frame_array)
 
-        assert frame_array[4].shape == simple_frame_maker.number_array.shape
         # noinspection PyUnresolvedReferences
-        assert (frame_array[4] == simple_frame_maker.number_array).all()
+        assert {i: i for i in range(9)} == frame_array[4]
 
     def test_masked_square(self, cross_frame_maker):
         frame_array = cross_frame_maker.make_frame_array(kernel_shape=(3, 3))
 
         assert 5 == len(frame_array)
 
-        assert (np.array([[-1, -1, -1],
-                          [-1, 0, -1],
-                          [1, 2, 3]]) == frame_array[0]).all()
+        assert {4: 0, 6: 1, 7: 2, 8: 3} == frame_array[0]
 
-        assert (np.array([[-1, -1, 0],
-                          [-1, 1, 2],
-                          [-1, -1, 4]]) == frame_array[1]).all()
+        assert {2: 0, 4: 1, 5: 2, 8: 4} == frame_array[1]
 
-        # noinspection PyUnresolvedReferences
-        assert (cross_frame_maker.number_array == frame_array[2]).all()
+        assert {0: 0, 3: 2, 4: 3, 6: 4} == frame_array[3]
 
-        assert (np.array([[0, -1, -1],
-                          [2, 3, -1],
-                          [4, -1, -1]]) == frame_array[3]).all()
-
-        assert (np.array([[1, 2, 3],
-                          [-1, 4, -1],
-                          [-1, -1, -1]]) == frame_array[4]).all()
+        assert {0: 1, 1: 2, 2: 3, 4: 4} == frame_array[4]
 
 
 class TestConvolution(object):

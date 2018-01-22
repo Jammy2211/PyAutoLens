@@ -38,8 +38,6 @@ convolved_vector = convolver.convolve_vector(vector)
 
 """
 
-# TODO: consider using dictionary representation of frame to avoid unnecessary calculations at edges of mask
-
 
 class KernelException(Exception):
     pass
@@ -69,7 +67,7 @@ class FrameMaker(object):
             An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
         """
         if self.__number_array is None:
-            self.__number_array = -1 * np.ones(self.mask.shape)
+            self.__number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
             n = 0
             for x in range(self.mask.shape[0]):
                 for y in range(self.mask.shape[1]):
@@ -117,14 +115,16 @@ class FrameMaker(object):
         half_x = int(kernel_shape[0] / 2)
         half_y = int(kernel_shape[1] / 2)
 
-        frame = -1 * np.ones(kernel_shape)
+        frame = {}
 
         for i in range(kernel_shape[0]):
             for j in range(kernel_shape[1]):
                 x = coords[0] - half_x + i
                 y = coords[1] - half_y + j
                 if 0 <= x < self.number_array.shape[0] and 0 <= y < self.number_array.shape[1]:
-                    frame[i, j] = self.number_array[x, y]
+                    value = self.number_array[x, y]
+                    if value >= 0:
+                        frame[j + kernel_shape[1] * i] = value
 
         return frame
 
@@ -160,11 +160,8 @@ class Convolver(object):
 
 class KernelConvolver(object):
     def __init__(self, frame_array, kernel):
-        if frame_array[0].shape != kernel.shape:
-            raise KernelException(
-                "Frame {} and kernel {} shapes do not match".format(frame_array[0].shape, kernel.shape))
+        self.kernel = kernel.flatten()
         self.frame_array = frame_array
-        self.kernel = kernel
         self.__result_dict = {}
 
     def convolve_vector(self, vector):
@@ -188,10 +185,12 @@ class KernelConvolver(object):
                 result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
         return result
 
-    def result_for_value(self, value):
+    def result_for_value_and_index(self, value, index):
         if value not in self.__result_dict:
-            self.__result_dict[value] = value * self.kernel
-        return self.__result_dict[value]
+            self.__result_dict[value] = {}
+        if index not in self.__result_dict[value]:
+            self.__result_dict[value][index] = value * self.kernel[index]
+        return self.__result_dict[value][index]
 
     def convolution_for_pixel_index_vector(self, pixel_index, vector):
         """
@@ -214,11 +213,9 @@ class KernelConvolver(object):
 
         value = vector[pixel_index]
 
-        result = self.result_for_value(value)
         frame = self.frame_array[pixel_index]
-        for x in range(frame.shape[0]):
-            for y in range(frame.shape[1]):
-                vector_index = frame[x, y]
-                if vector_index > -1:
-                    new_vector[int(vector_index)] = result[x, y]
+        for kernel_index in frame.keys():
+            vector_index = frame[kernel_index]
+            new_vector[vector_index] = self.result_for_value_and_index(value, kernel_index)
+
         return new_vector
