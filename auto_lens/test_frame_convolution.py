@@ -74,19 +74,16 @@ class TestNumbering(object):
 
 class TestFrameExtraction(object):
     def test_trivial_frame_at_coords(self, simple_frame_maker):
-        kernel_shape = (3, 3)
-
         # noinspection PyUnresolvedReferences
         assert ({i: i for i in range(9)} == simple_frame_maker.frame_at_coords(coords=(1, 1),
-                                                                               kernel_shape=kernel_shape))
+                                                                               kernel_shape=(3, 3)))
 
-        # def test_corner_frame(self, simple_frame_maker):
+    def test_corner_frame(self, simple_frame_maker):
+        corner_dict = {4: 0, 5: 1, 7: 3, 8: 4}
 
-        # corner_array = np.array([[-1, -1, -1], [-1, 0, 1], [-1, 3, 4]])
-        #
-        # corner_frame = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=kernel_shape)
-        #
-        # assert (corner_array == corner_frame).all()
+        corner_frame = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=(3, 3))
+
+        assert corner_dict == corner_frame
 
 # def test_simple_square(self, simple_frame_maker):
 #         frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
