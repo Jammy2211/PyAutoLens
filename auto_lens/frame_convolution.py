@@ -38,6 +38,7 @@ convolved_vector = convolver.convolve_vector(vector)
 
 """
 
+
 # TODO: consider using dictionary representation of frame to avoid unnecessary calculations at edges of mask
 
 
@@ -117,14 +118,14 @@ class FrameMaker(object):
         half_x = int(kernel_shape[0] / 2)
         half_y = int(kernel_shape[1] / 2)
 
-        frame = -1 * np.ones(kernel_shape)
+        frame = {}
 
         for i in range(kernel_shape[0]):
             for j in range(kernel_shape[1]):
                 x = coords[0] - half_x + i
                 y = coords[1] - half_y + j
                 if 0 <= x < self.number_array.shape[0] and 0 <= y < self.number_array.shape[1]:
-                    frame[i, j] = self.number_array[x, y]
+                    frame[j + kernel_shape[1] * i] = self.number_array[x, y]
 
         return frame
 
