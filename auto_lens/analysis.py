@@ -158,24 +158,17 @@ class KMeans(sklearn.cluster.KMeans):
 
 
 class Voronoi(scipy.spatial.Voronoi):
-    def __init__(self, points):
-        super(Voronoi, self).__init__(points, qhull_options='Qbb Qc Qx Qm')
+    def __init__(self, source_pixel_centers):
 
-    def indexes_of_neighbouring_points(self, point_index):
-        """ Retrieve the index(es) of the points an input point (specified by its index in *points*) shares Voronoi
-            vertexes with. \
+        super(Voronoi, self).__init__(source_pixel_centers, qhull_options='Qbb Qc Qx Qm')
 
-            Parameters
-            ----------
-            point_index : int
-                The point in the input list *points* we are retrieving the neighbouring indexes of.
+        self.neighbors = [[] for _ in range(len(source_pixel_centers))]
 
-            Returns
-            ----------
-            neighbours_index: [int]
-                Each entry corresponds to an index in *points* that the input point shares a Voronoi vertex with.
-         """
-        return self.point_region[self.regions[self.point_region[point_index]]]
+        for pair in reversed(self.ridge_points):
+            self.neighbors[pair[0]].append(pair[1])
+            self.neighbors[pair[1]].append(pair[0])
+
+        self.neighbors_total = list(map(lambda x : len(x) , self.neighbors))
 
 
 class RegularizationMatrix(np.ndarray):
@@ -244,89 +237,206 @@ class RegularizationMatrix(np.ndarray):
         return matrix
 
 
-def match_coordintes_to_clusters_via_nearest_neighbour(match_coordinates, cluster_centers):
-    """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
+def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, source_pixel_centers):
+    """ Match a set of sub image-pixel coordinates to their closest source-pixels, using the source-pixel centers (x,y).
 
-        This method uses a nearest neighbour search between every coordinate and set of cluster centers, thus it is \
-        slow when the number of coordinates or clusters is large.
-
-        Parameters
-        ----------
-        match_coordinates : [(float, float)]
-            The x and y coordinates to be matched to the cluster centers.
-        cluster_centers: [(float, float)
-            The cluster centers the coordinates are matched with.
-
-        Returns
-        ----------
-        coordinates_to_cluster_index : [int]
-            The index in cluster_centers each match coordinate is matched with. (e.g. if the fifth match coordinate \
-            is closest to the 3rd cluster in cluster_centers, coordinates_to_cluster_index[4] = 2).
-
-     """
-
-    coordinates_to_cluster_index = []
-
-    for coordinate in match_coordinates:
-        distances = map(lambda centers:
-                        ((coordinate[0] - centers[0]) ** 2 + (coordinate[1] - centers[1]) ** 2), cluster_centers)
-
-        coordinates_to_cluster_index.append(np.argmin(distances))
-
-    return coordinates_to_cluster_index
-
-
-def match_coordinates_to_clusters_via_sparse_pairs(match_coordinates, cluster_centers, sparse_coordinates,
-                                                   match_coordinate_to_sparse_coordinates_index,
-                                                   sparse_coordinates_to_cluster_index):
-    """ Match a set of coordinates to their closest clusters, using the cluster centers (x,y).
-
-        This method uses a sparsely sampled grid of coordinates with known cluster pairings and Voronoi vertices to \
-        speed up the function for cases where the number of coordinates or clusters is large. Thus, the sparse grid of \
-        coordinates must have had a clustering alogirthm and Voronoi gridding performed prior to this function.
-
-        In a realistic lens analysis, the sparse coordinates will correspond to something like the center of each \
-        image pixel (traced to the source-plane), whereas the coordinates to be matched will be the subgridded \
-        image-pixels (again, already traced to the source-plane). An important benefit of this is therefore that the \
-        clusteiring alogirthm is also sped up by being run on fewer coordinates.
-
+        This method uses a nearest neighbour search between every sub_image-pixel coordinate and set of source-pixel \
+        centers, thus it is slow when the number of sub image-pixel coordinates or source-pixels is large. However, it
+        is probably the fastest routine for low numbers of sub image-pixels and source-pixels.
 
         Parameters
         ----------
-        match_coordinates : [(float, float)]
-            The x and y coordinates to be matched to the cluster centers.
-        cluster_centers: [(float, float)
-            The cluster centers the coordinates are matched with.
-        sparse_coordinates : [(float, float)]
-            A sparse subset of x and y coordinates.
-        sparse_coordinate_to_match_coordinates_index : [int]
-            The index in match_coordinates each sparse coordinate is matched with (e.g. if the fifth sparse coordinate \
-            is closest to the 3rd coordinate in match_coordinates, sparse_coordinate_to_match_coordinates_index[4] = 2).
-        sparse_coordinates_to_cluster_index : [int]
-            The index in cluster_centers each sparse coordinate is matched with (e.g. if the fifth sparse coordinate \
-            is closest to the 3rd cluster in cluster_centers, sparse_coordinates_to_cluster_index[4] = 2).
+        sub_coordinates : [(float, float)]
+            The x and y sub image-pixel coordinates to be matched to the source-pixel centers.
+        source_pixel_centers: [(float, float)
+            The source-pixels centers the sub image-pixel coordinates are matched with.
 
         Returns
         ----------
-        coordinates_to_cluster_index : [int]
-            The index in cluster_centers each match coordinate is matched with. (e.g. if the fifth match coordinate \
-            is closest to the 3rd cluster in cluster_centers, coordinates_to_cluster_index[4] = 2).
+        sub_image_pixel_to_source_pixel_index : [int]
+            The index in source_pixel_centers each sub_coordinate is matched with. (e.g. if the fifth sub_coordinate \
+            is closest to the 3rd source-pixel in source_pixel_centers, sub_image_pixel_to_source_pixel_index[4] = 2).
 
      """
 
-    # TODO : Use Delaunay (stackoverflow guide) to find pairs of cluster centers. We should be able to get this from the
-    # TODO : Voronoi alogirthm, but pythoon doesn't let us :(. Hopefully its super fast so it doesn't matter for large
-    # TODO : Cluster numbers anyway
+    sub_image_pixel_to_source_pixel_index = []
 
-    clusters_voronoi = Voronoi(cluster_centers)
+    for sub_coordinate in sub_coordinates:
+        distances = map(lambda centers: compute_squared_separation(sub_coordinate, centers), source_pixel_centers)
 
-    for index, match_coordinate in enumerate(match_coordinates):
-        sparse_coordinate_nearest_index = match_coordinate_to_sparse_coordinates_index[index]
-        sparse_nearest_cluster_center = cluster_centers[
-            sparse_coordinates_to_cluster_index[sparse_coordinate_nearest_index]]
+        sub_image_pixel_to_source_pixel_index.append(np.argmin(distances))
 
-        # Calculate the distance between the match_coordinate and its nearest sparse cluster
-        distance_match_to_sparse = (match_coordinate[0] - sparse_nearest_cluster_center[0]) ** 2 + \
-                                   (match_coordinate[1] - sparse_nearest_cluster_center[1]) ** 2
+    return sub_image_pixel_to_source_pixel_index
 
-        # Now compute the distance between the match_coordinate and all pixels neighbouring the nearest sparse cluster
+def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, source_pixel_centers, source_pixel_neighbors,
+                                                      sub_coordinate_to_sparse_coordinate_index,
+                                                      sparse_coordinate_to_source_pixel_index):
+    """ Match a set of sub image-pixel coordinates to their closest source-pixel, using the source-pixel centers (x,y).
+
+        This method uses a sparsely sampled grid of sub image-pixel coordinates with known source-pixel pairings and \
+        the source-pixels neighbors to speed up the function. This is optimal when the number of sub image-pixels or \
+        source-pixels is large. Thus, the sparse grid of sub_coordinates must have had a source pixelization \
+        derived (e.g. using the KMeans class) and the neighbors of each source-pixel must be known \
+        (e.g. using the Voronoi class). Both must have been performed prior to this function call.
+
+        In a realistic lens analysis, the sparse sub_coordinates will correspond to the center of each image pixel \
+        (traced to the source-plane) or an even sparser grid of image-pixels. The sub_coordinates will be the sub \
+        image-pixels (again, traced to the source-plane). A benefit of this is the source-pixelization (e.g. using \
+        KMeans) will be dervied using significantly fewer sub_coordinates, offering run-time speedup.
+        
+        In the routine below, some variables and function names refer to a 'sparse_source_pixel'. This term describes a \
+        source-pixel that we have paired to a sub_coordinate using the sparse grid of image pixels. Thus, it may not \
+        actually be that sub_coordinate's closest source-pixel (the routine will eventually determine this). \
+        Therefore, a 'sparse source-pixel' does not refer to a sparse set of source-pixels.
+
+        Parameters
+        ----------
+        sub_coordinates : [(float, float)]
+            The x and y sub_coordinates to be matched to the source_pixel centers.
+        source_pixel_centers: [(float, float)
+            The source_pixel centers the sub_coordinates are matched with.
+        source_pixel_neighbors : [[]]
+            The neighboring source_pixels of each source_pixel, computed via the Voronoi grid (e.g. if the fifth source_pixel \
+            neighbors source_pixels 7, 9 and 44, source_pixel_neighbors[4] = [6, 8, 43])
+        sparse_coordinate_to_coordinates_index : [int]
+            The index in sub_coordinates each sparse sub_coordinate is closest too (e.g. if the fifth sparse sub_coordinate \
+            is closest to the 3rd sub_coordinate in sub_coordinates, sparse_coordinate_to_coordinates_index[4] = 2).
+        sparse_coordinate_to_source_pixel_index : [int]
+            The index in source_pixel_centers each sparse sub_coordinate closest too (e.g. if the fifth sparse sub_coordinate \
+            is closest to the 3rd source_pixel in source_pixel_centers, sparse_coordinates_to_source_pixel_index[4] = 2).
+
+        Returns
+        ----------
+        sub_image_pixel_to_source_pixel_index : [int]
+            The index in source_pixel_centers each match sub_coordinate is matched with. (e.g. if the fifth match sub_coordinate \
+            is closest to the 3rd source_pixel in source_pixel_centers, sub_image_pixel_to_source_pixel_index[4] = 2).
+
+     """
+
+    sub_image_pixel_to_source_pixel_index = []
+
+    for sub_coordinate_index, sub_coordinate in enumerate(sub_coordinates):
+        
+        nearest_sparse_coordinate_index = find_index_of_nearest_sparse_coordinate(sub_coordinate_index,
+                                                                                  sub_coordinate_to_sparse_coordinate_index)
+
+        nearest_sparse_source_pixel_index = find_index_of_nearest_sparse_source_pixel(nearest_sparse_coordinate_index,
+                                                                                      sparse_coordinate_to_source_pixel_index)
+
+        while True:
+
+            separation_of_sub_coordinate_and_sparse_source_pixel = \
+            find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+                                                                              sub_coordinate, nearest_sparse_source_pixel_index)
+
+            neighboring_source_pixel_index, separation_of_sub_coordinate_and_neighboring_source_pixel = \
+                find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate, source_pixel_centers, source_pixel_neighbors[
+                    nearest_sparse_source_pixel_index])
+
+            if separation_of_sub_coordinate_and_sparse_source_pixel < separation_of_sub_coordinate_and_neighboring_source_pixel:
+                break
+            else:
+                nearest_sparse_source_pixel_index = neighboring_source_pixel_index
+
+        # If this pixel is closest to the original pixel, it has been paired successfully with its nearest neighbor.
+        sub_image_pixel_to_source_pixel_index.append(nearest_sparse_source_pixel_index)
+
+    return sub_image_pixel_to_source_pixel_index
+
+def find_index_of_nearest_sparse_coordinate(index, coordinate_to_sparse_coordinates_index):
+    return coordinate_to_sparse_coordinates_index[index]
+
+def find_index_of_nearest_sparse_source_pixel(nearest_sparse_coordinate_index, sparse_coordinates_to_source_pixel_index):
+    return sparse_coordinates_to_source_pixel_index[nearest_sparse_coordinate_index]
+
+def find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate, source_pixel_index):
+    nearest_sparse_source_pixel_center = source_pixel_centers[source_pixel_index]
+    return compute_squared_separation(sub_coordinate, nearest_sparse_source_pixel_center)
+
+def find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate, source_pixel_centers, source_pixel_neighbors):
+    """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
+    our input coordinaates.
+    
+        Parameters
+        ----------
+        sub_coordinate : (float, float)
+            The x and y coordinate to be matched with the neighboring set of source_pixels.
+        source_pixel_centers: [(float, float)
+            The source_pixel centers the coordinates are matched with.
+        source_pixel_neighbors : list
+            The neighboring source_pixels of the sparse source_pixel the coordinate is currently matched with
+
+        Returns
+        ----------
+        source_pixel_neighbor_index : int
+            The index in source_pixel_centers of the closest source_pixel neighbor.
+        source_pixel_neighbor_separation : float
+            The separation between the input coordinate and closest source_pixel neighbor
+    
+    """
+
+    separation_from_neighbor = list(map(lambda neighbors :
+                               compute_squared_separation(sub_coordinate, source_pixel_centers[neighbors]), source_pixel_neighbors))
+
+    closest_separation_index = min(xrange(len(separation_from_neighbor)), key=separation_from_neighbor.__getitem__)
+
+    return source_pixel_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
+
+def compute_squared_separation(coordinate1, coordinate2):
+    """Computes the squared separation of two coordinates (no square root for efficiency)"""
+    return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+
+
+class MappingMatrix(np.ndarray):
+
+    def __new__(cls, source_pixel_total, image_pixel_total, sub_grid_size, sub_image_pixel_to_source_pixel_index,
+                sub_image_pixel_to_image_pixel_index):
+        """
+        Set up a new mapping matrix, which describes the fractional unit surface brightness counts between each
+        image-pixel and source pixel pair.
+
+        The mapping matrix is the matrix denoted 'f_ij' in Warren & Dye 2003, Nightingale & Dye 2015 and Nightingale, \
+        Dye & Massey 2018.
+
+        It is a matrix of dimensions [source_pixels x image_pixels], wherein a non-zero entry represents an \
+        image-pixel to source-pixel mapping. For example, if image-pixel 4 maps to source-pixel 2, then element (2,4) \
+        of the mapping matrix will = 1.
+
+        The mapping matrix supports sub-gridding.  Here, each image-pixel in the observed image is divided into a \
+        finer sub-grid. For example, if sub_grid_size = 4, each image-pixel is split into a 4 x 4 sub-grid, giving a \
+        total of 16 sub image-pixels. All 16 sub image-pixels are individually mapped to the source-plane and each is
+        paired with a source-pixel.
+
+        The entries in the mapping matrix now become fractional values representing the number of sub image-pixels \
+        which map to each source-pixel. For example if 3 sub image-pixels within image-pixel 4 map to source-pixel 2, \
+        and the sub_grid_size=2, then element (2,4) of the mapping matrix \
+        will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
+
+        Parameters
+        ----------
+        source_pixel_total : int
+            The number of source-pixels in the source-plane (and first dimension of the mapping matrix)
+        image_pixel_total : int
+            The number of image-pixels in the masked observed image (and second dimension of the mapping matrix)
+        sub_grid_size : int
+            The size of sub-gridding used on the observed image.
+        sub_image_pixel_to_source_pixel_index : [int]
+            The index of the source_pixel each image sub-pixel is mapped too (e.g. if the fifth sub image pixel \
+            is mapped to the 3rd source_pixel in the source plane, sub_image_pixel_to_source_pixel_index[4] = 2).
+        sub_image_pixel_to_image_pixel_index : [int]
+            The index of the image-pixel each image sub-pixel belongs too (e.g. if the fifth sub image pixel \
+            is within the 3rd image-pixel in the observed image, sub_image_pixel_to_image_pixel_index[4] = 2).
+        """
+
+        total_sub_pixels = image_pixel_total * sub_grid_size ** 2
+
+        sub_grid_fraction = (1.0/sub_grid_size) ** 2
+
+        obj = np.zeros(shape=(source_pixel_total, image_pixel_total)).view(cls)
+
+        for i in range(total_sub_pixels):
+
+            obj[sub_image_pixel_to_source_pixel_index[i], sub_image_pixel_to_image_pixel_index[i]] += sub_grid_fraction
+
+        return obj
+
