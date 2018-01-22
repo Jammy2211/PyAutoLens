@@ -188,10 +188,12 @@ class KernelConvolver(object):
                 result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
         return result
 
-    def result_for_value(self, value):
+    def result_for_value_and_index(self, value, index):
         if value not in self.__result_dict:
-            self.__result_dict[value] = value * self.kernel
-        return self.__result_dict[value]
+            self.__result_dict[value] = {}
+        if index not in self.__result_dict[value]:
+            self.__result_dict[value][index] = value * self.kernel[index]
+        return self.__result_dict[value][index]
 
     def convolution_for_pixel_index_vector(self, pixel_index, vector):
         """
@@ -214,10 +216,9 @@ class KernelConvolver(object):
 
         value = vector[pixel_index]
 
-        result = self.result_for_value(value)
         frame = self.frame_array[pixel_index]
         for kernel_index in frame.keys():
             vector_index = frame[kernel_index]
-            new_vector[vector_index] = result[kernel_index]
+            new_vector[vector_index] = self.result_for_value_and_index(value, kernel_index)
 
         return new_vector
