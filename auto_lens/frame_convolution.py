@@ -125,7 +125,9 @@ class FrameMaker(object):
                 x = coords[0] - half_x + i
                 y = coords[1] - half_y + j
                 if 0 <= x < self.number_array.shape[0] and 0 <= y < self.number_array.shape[1]:
-                    frame[j + kernel_shape[1] * i] = self.number_array[x, y]
+                    value = self.number_array[x, y]
+                    if value >= 0:
+                        frame[j + kernel_shape[1] * i] = value
 
         return frame
 

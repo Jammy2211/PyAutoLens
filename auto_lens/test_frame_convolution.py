@@ -93,32 +93,19 @@ class TestFrameExtraction(object):
         # noinspection PyUnresolvedReferences
         assert {i: i for i in range(9)} == frame_array[4]
 
-#
-#     def test_masked_square(self, cross_frame_maker):
-#         frame_array = cross_frame_maker.make_frame_array(kernel_shape=(3, 3))
-#
-#         assert 5 == len(frame_array)
-#
-#         assert (np.array([[-1, -1, -1],
-#                           [-1, 0, -1],
-#                           [1, 2, 3]]) == frame_array[0]).all()
-#
-#         assert (np.array([[-1, -1, 0],
-#                           [-1, 1, 2],
-#                           [-1, -1, 4]]) == frame_array[1]).all()
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (cross_frame_maker.number_array == frame_array[2]).all()
-#
-#         assert (np.array([[0, -1, -1],
-#                           [2, 3, -1],
-#                           [4, -1, -1]]) == frame_array[3]).all()
-#
-#         assert (np.array([[1, 2, 3],
-#                           [-1, 4, -1],
-#                           [-1, -1, -1]]) == frame_array[4]).all()
-#
-#
+    def test_masked_square(self, cross_frame_maker):
+        frame_array = cross_frame_maker.make_frame_array(kernel_shape=(3, 3))
+
+        assert 5 == len(frame_array)
+
+        assert {4: 0, 6: 1, 7: 2, 8: 3} == frame_array[0]
+
+        assert {2: 0, 4: 1, 5: 2, 8: 4} == frame_array[1]
+
+        assert {0: 0, 3: 2, 4: 3, 6: 4} == frame_array[3]
+
+        assert {0: 1, 1: 2, 2: 3, 4: 4} == frame_array[4]
+
 # class TestConvolution(object):
 #     def test_simple_convolution(self, simple_frame_array, simple_kernel):
 #         pixel_vector = [0, 0, 0, 0, 1, 0, 0, 0, 0]
