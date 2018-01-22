@@ -242,3 +242,21 @@ class TestNonTrivialExamples(object):
             0.4, 0.4,
             0.4, 0.4
         ]).all()
+
+
+class TestSubConvolution(object):
+    def test_simple_convolution(self):
+        convolver = frame_convolution.FrameMaker(mask=np.ones(5, 5)).convolver_for_kernel_shape(
+            (5, 5)).convolver_for_kernel(np.ones(5, 5))
+
+        pixel_vector = [0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0,
+                        0, 0, 1, 0, 0,
+                        0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0]
+
+        assert [0, 0, 0, 0, 0,
+                0, 1, 1, 1, 0,
+                0, 1, 1, 1, 0,
+                0, 1, 1, 1, 0,
+                0, 0, 0, 0, 0] == convolver.convolve_vector(pixel_vector)

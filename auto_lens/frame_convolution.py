@@ -164,11 +164,13 @@ class KernelConvolver(object):
         self.frame_array = frame_array
         self.__result_dict = {}
 
-    def convolve_vector(self, vector):
+    def convolve_vector(self, vector, sub_shape=None):
         """
         Convolves a kernel with a 1D vector of non-masked values
         Parameters
         ----------
+        sub_shape: (float, float)
+            Defines a subregion of the kernel for which the result should be calculated
         vector: [float]
             A vector of numbers excluding those that are masked
         Returns
@@ -182,7 +184,7 @@ class KernelConvolver(object):
         for index in range(len(vector)):
             if vector[index] > 0:
                 # noinspection PyUnresolvedReferences
-                result = np.add(result, self.convolution_for_pixel_index_vector(index, vector))
+                result = np.add(result, self.convolution_for_pixel_index_vector(index, vector, sub_shape))
         return result
 
     def result_for_value_and_index(self, value, index):
@@ -192,11 +194,13 @@ class KernelConvolver(object):
             self.__result_dict[value][index] = value * self.kernel[index]
         return self.__result_dict[value][index]
 
-    def convolution_for_pixel_index_vector(self, pixel_index, vector):
+    def convolution_for_pixel_index_vector(self, pixel_index, vector, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
         Parameters
         ----------
+        sub_shape: (float, float)
+            Defines a subregion of the kernel for which the result should be calculated
         pixel_index: int
             The index in the vector to be convolved
         vector: [float]
