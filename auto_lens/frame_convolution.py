@@ -39,9 +39,6 @@ convolved_vector = convolver.convolve_vector(vector)
 """
 
 
-# TODO: consider using dictionary representation of frame to avoid unnecessary calculations at edges of mask
-
-
 class KernelException(Exception):
     pass
 
