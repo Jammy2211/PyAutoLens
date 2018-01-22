@@ -85,14 +85,14 @@ class TestFrameExtraction(object):
 
         assert corner_dict == corner_frame
 
-# def test_simple_square(self, simple_frame_maker):
-#         frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
-#
-#         assert 9 == len(frame_array)
-#
-#         assert frame_array[4].shape == simple_frame_maker.number_array.shape
-#         # noinspection PyUnresolvedReferences
-#         assert (frame_array[4] == simple_frame_maker.number_array).all()
+    def test_simple_square(self, simple_frame_maker):
+        frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
+
+        assert 9 == len(frame_array)
+
+        # noinspection PyUnresolvedReferences
+        assert {i: i for i in range(9)} == frame_array[4]
+
 #
 #     def test_masked_square(self, cross_frame_maker):
 #         frame_array = cross_frame_maker.make_frame_array(kernel_shape=(3, 3))
