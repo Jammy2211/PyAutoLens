@@ -170,7 +170,7 @@ class KernelConvolver(object):
         Convolves a kernel with a 1D vector of non-masked values
         Parameters
         ----------
-        sub_shape: (float, float)
+        sub_shape: (int, int)
             Defines a subregion of the kernel for which the result should be calculated
         vector: [float]
             A vector of numbers excluding those that are masked
@@ -200,7 +200,7 @@ class KernelConvolver(object):
         Creates a vector of values describing the convolution of the kernel with a value in the vector
         Parameters
         ----------
-        sub_shape: (float, float)
+        sub_shape: (int, int)
             Defines a subregion of the kernel for which the result should be calculated
         pixel_index: int
             The index in the vector to be convolved
@@ -239,6 +239,19 @@ class KernelConvolver(object):
 
 
 def calculate_limits(shape, sub_shape):
+    """
+    Finds limits from a shape and subshape for calculation of subsize kernel convolutions
+    Parameters
+    ----------
+    shape: (int, int)
+        The shape of the kernel
+    sub_shape: (int, int)
+        The shape of the subkernel to be considered
+
+    Returns
+    -------
+
+    """
     lower_x = (shape[0] - sub_shape[0]) / 2
     lower_y = (shape[1] - sub_shape[1]) / 2
     upper_x = shape[0] - lower_x
@@ -247,5 +260,20 @@ def calculate_limits(shape, sub_shape):
 
 
 def is_in_sub_shape(kernel_index_1d, limits, shape):
+    """
+    Determines if a particular index is within given limits inside of a given shape
+    Parameters
+    ----------
+    kernel_index_1d: int
+        The index in a flattened kernel
+    limits: Tuple[int, int, int, int)
+        x_min, y_min, x_max, y_max limits
+    shape: (int, int)
+        The shape of the kernel
+
+    Returns
+    -------
+
+    """
     return limits[1] <= kernel_index_1d / shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - \
                                                                                                              limits[1]
