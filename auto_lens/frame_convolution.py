@@ -160,6 +160,7 @@ class Convolver(object):
 
 class KernelConvolver(object):
     def __init__(self, frame_array, kernel):
+        self.shape = kernel.shape
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
         self.__result_dict = {}
@@ -218,8 +219,33 @@ class KernelConvolver(object):
         value = vector[pixel_index]
 
         frame = self.frame_array[pixel_index]
+
+        if sub_shape is not None:
+            limits = calculate_limits(self.shape, sub_shape)
+
+            def is_in(index):
+                return is_in_sub_shape(index, limits, self.shape)
+        else:
+            # noinspection PyUnusedLocal
+            def is_in(index):
+                return True
+
         for kernel_index in frame.keys():
-            vector_index = frame[kernel_index]
-            new_vector[vector_index] = self.result_for_value_and_index(value, kernel_index)
+            if is_in(kernel_index):
+                vector_index = frame[kernel_index]
+                new_vector[vector_index] = self.result_for_value_and_index(value, kernel_index)
 
         return new_vector
+
+
+def calculate_limits(shape, sub_shape):
+    lower_x = (shape[0] - sub_shape[0]) / 2
+    lower_y = (shape[1] - sub_shape[1]) / 2
+    upper_x = shape[0] - lower_x
+    upper_y = shape[1] - lower_y
+    return lower_x, lower_y, upper_x, upper_y
+
+
+def is_in_sub_shape(kernel_index_1d, limits, shape):
+    return limits[1] <= kernel_index_1d / shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - \
+                                                                                                             limits[1]
