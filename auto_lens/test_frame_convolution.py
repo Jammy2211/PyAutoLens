@@ -245,9 +245,25 @@ class TestNonTrivialExamples(object):
 
 
 class TestSubConvolution(object):
+    def test_calculate_limits(self):
+        limits = frame_convolution.calculate_limits((5, 5), (3, 3))
+        assert limits == (1, 1, 4, 4)
+
+    def test_is_in_sub_shape(self):
+        assert not frame_convolution.is_in_sub_shape(0, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(4, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(5, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(9, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(6, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(8, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(16, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(18, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(21, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(24, (1, 1, 4, 4), (5, 5))
+
     def test_simple_convolution(self):
-        convolver = frame_convolution.FrameMaker(mask=np.ones(5, 5)).convolver_for_kernel_shape(
-            (5, 5)).convolver_for_kernel(np.ones(5, 5))
+        convolver = frame_convolution.FrameMaker(mask=np.ones((5, 5))).convolver_for_kernel_shape(
+            (5, 5)).convolver_for_kernel(np.ones((5, 5)))
 
         pixel_vector = [0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0,
@@ -255,8 +271,12 @@ class TestSubConvolution(object):
                         0, 0, 0, 0, 0,
                         0, 0, 0, 0, 0]
 
-        assert [0, 0, 0, 0, 0,
-                0, 1, 1, 1, 0,
-                0, 1, 1, 1, 0,
-                0, 1, 1, 1, 0,
-                0, 0, 0, 0, 0] == convolver.convolve_vector(pixel_vector)
+        convolved_vector = convolver.convolve_vector(pixel_vector, sub_shape=(3, 3))
+
+        print(convolved_vector)
+
+        assert (np.array([0, 0, 0, 0, 0,
+                          0, 1, 1, 1, 0,
+                          0, 1, 1, 1, 0,
+                          0, 1, 1, 1, 0,
+                          0, 0, 0, 0, 0]) == convolved_vector).all()
