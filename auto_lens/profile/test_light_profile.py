@@ -65,7 +65,7 @@ class TestSetupProfiles(object):
         assert exponential.effective_radius == 0.2
         assert exponential.sersic_index == 1.0
         assert exponential.sersic_constant == pytest.approx(1.678378, 1e-3)
-        assert exponential.elliptical_effective_radius == 0.2 / math.sqrt(exponential.axis_ratio)
+        assert exponential.elliptical_effective_radius == 0.2 / math.sqrt(0.5)
 
     def test__setup_dev_vaucouleurs(self, dev_vaucouleurs):
         assert dev_vaucouleurs.x_cen == 0.0
@@ -76,11 +76,12 @@ class TestSetupProfiles(object):
         assert dev_vaucouleurs.effective_radius == 0.9
         assert dev_vaucouleurs.sersic_index == 4.0
         assert dev_vaucouleurs.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert dev_vaucouleurs.elliptical_effective_radius == 0.9 / math.sqrt(0.6)
 
     def test__setup_core_sersic(self, core):
         assert core.x_cen == 0.0
         assert core.y_cen == 0.0
-        assert core.axis_ratio == 1.0
+        assert core.axis_ratio == 0.5
         assert core.phi == 0.0
         assert core.intensity == 1.0
         assert core.effective_radius == 5.0
@@ -90,6 +91,7 @@ class TestSetupProfiles(object):
         assert core.intensity_break == 0.1
         assert core.gamma == 1.0
         assert core.alpha == 1.0
+        assert core.elliptical_effective_radius == 5.0 / math.sqrt(0.5)
 
 
 class TestLuminosityIntegral(object):
