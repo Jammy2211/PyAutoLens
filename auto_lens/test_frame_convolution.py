@@ -239,7 +239,7 @@ class TestSubConvolution(object):
         #                 0, 0, 0, 0, 0,
         #                 0, 0, 0, 0, 0]
 
-        pixel_dict = {16: 1}
+        pixel_dict = {12: 1}
 
         convolved_vector = convolver.convolve_vector(pixel_dict, sub_shape=(3, 3))
 
