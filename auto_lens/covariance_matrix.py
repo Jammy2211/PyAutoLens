@@ -48,16 +48,39 @@ class CovarianceMatrixGenerator(object):
 
 
 class BreadthFirstSearch(object):
+    """Performs a breadth first graph search on the condition that neighbours are added"""
+
     def __init__(self, graph):
+        """
+        Parameters
+        ----------
+        graph: [[int]]
+            A list of lists description of a graph such as neighbours in the source plane.
+        """
         self.graph = graph
         self.queue = queue.Queue()
         self.visited = set()
 
     def neighbours(self):
+        """
+        Returns
+        -------
+            A generator that yields indices of previously unvisited neighbours
+        """
         while not self.queue.empty():
             yield self.queue.get()
 
     def add_neighbours_of(self, index):
+        """
+        Enqueue neighbours of a particular node that have not been visited. Note that once a node has been added in this
+        way it will never be yielded as a neighbour.
+
+        Parameters
+        ----------
+        index: int
+            The index of the node
+
+        """
         self.visited.add(index)
         for neighbour in self.graph[index]:
             if neighbour not in self.visited:
