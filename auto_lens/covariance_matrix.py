@@ -58,6 +58,7 @@ class BreadthFirstSearch(object):
             yield self.queue.get()
 
     def add_neighbours_of(self, index):
+        self.visited.add(index)
         for neighbour in self.graph[index]:
             if neighbour not in self.visited:
                 self.visited.add(neighbour)
@@ -76,6 +77,21 @@ class TestBreadthFirstSearch(object):
 
     def test_neighbours_in_loop(self):
         graph = [[1, 2], [3], [], []]
+
+        bfs = BreadthFirstSearch(graph)
+
+        bfs.add_neighbours_of(0)
+
+        count = 0
+
+        for neighbour in bfs.neighbours():
+            bfs.add_neighbours_of(neighbour)
+            count += 1
+
+        assert count == 3
+
+    def test_ignore_visited(self):
+        graph = [[1, 2], [3, 0], [1], []]
 
         bfs = BreadthFirstSearch(graph)
 
