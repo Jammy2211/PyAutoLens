@@ -268,7 +268,7 @@ def is_in_sub_shape(kernel_index_1d, limits, shape):
     ----------
     kernel_index_1d: int
         The index in a flattened kernel
-    limits: Tuple[int, int, int, int)
+    limits: Tuple[int, int, int, int]
         x_min, y_min, x_max, y_max limits
     shape: (int, int)
         The shape of the kernel
