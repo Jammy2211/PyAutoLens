@@ -90,6 +90,7 @@ class BreadthFirstSearch(object):
 
 class TestBreadthFirstSearch(object):
     def test_simple_search(self):
+        """Does the search yield neighbours?"""
         graph = [[1, 2]]
 
         bfs = BreadthFirstSearch(graph)
@@ -99,6 +100,7 @@ class TestBreadthFirstSearch(object):
         assert 2 == len(list(bfs.neighbours()))
 
     def test_neighbours_in_loop(self):
+        """Does the search recursively yield neighbours?"""
         graph = [[1, 2], [3], [], []]
 
         bfs = BreadthFirstSearch(graph)
@@ -114,6 +116,7 @@ class TestBreadthFirstSearch(object):
         assert count == 3
 
     def test_ignore_visited(self):
+        """Does the search ignore previously visited nodes?"""
         graph = [[1, 2], [3, 0], [1], []]
 
         bfs = BreadthFirstSearch(graph)
@@ -131,16 +134,19 @@ class TestBreadthFirstSearch(object):
 
 class TestCalculateCovariance(object):
     def test_calculate_covariance(self):
+        """Is covariance correct in a simple case?"""
         generator = CovarianceMatrixGenerator([{0: 2, 1: 3}, {0: 1}], [1, 1])
 
         assert generator.calculate_covariance(0, 1) == 2
 
     def test_no_covariance(self):
+        """Is covariance zero when two source pixels share no image pixels?"""
         generator = CovarianceMatrixGenerator([{1: 3}, {0: 1}], [1, 1])
 
         assert generator.calculate_covariance(0, 1) == 0
 
     def test_variable_noise(self):
+        """Is the result correct when noise is taken into account?"""
         generator = CovarianceMatrixGenerator([{0: 2, 1: 3}, {0: 1, 1: 1}], [2, 3])
 
         assert generator.calculate_covariance(0, 1) == 2
