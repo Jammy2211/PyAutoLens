@@ -28,6 +28,11 @@ class CovarianceMatrixGenerator(object):
         # dictionary mapping coordinate tuples to values {(a, b): covariance}
         self.calculated_covariances = {}
 
+    def find_all_contiguous_covariances(self):
+        # noinspection PyTypeChecker
+        for index in len(self.pixel_maps):
+            self.find_contiguous_covariances(index)
+
     def find_contiguous_covariances(self, source_index):
         self.add_covariance_for_indices(source_index, source_index)
         bfs = BreadthFirstSearch(self.graph)
