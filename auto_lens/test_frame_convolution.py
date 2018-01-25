@@ -117,27 +117,32 @@ class TestConvolution(object):
 
         assert result == {1: 0.1, 3: 0.1, 4: 0.6, 5: 0.1, 7: 0.1}
 
-# def test_full_convolution(self, simple_frame_array):
-#         pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
-#         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
-#
-#         convolver = frame_convolution.Convolver(simple_frame_array)
-#
-#         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
-#
-#     def test_cross_mask_convolution(self, cross_frame_array):
-#         pixel_vector = [0, 0, 1, 0, 0]
-#         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
-#
-#         convolver = frame_convolution.Convolver(cross_frame_array)
-#
-#         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [0.0, 0.0, 0.5, 0.5, 0.0]).all()
+    def test_full_convolution(self, simple_frame_array):
+        # pixel_vector = [1, 0, 0, 0, 1, 0, 0, 0, 1]
+        pixel_dict = {0: 1, 4: 1, 8: 1}
+
+        kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
+
+        convolver = frame_convolution.Convolver(simple_frame_array)
+
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_dict)
+
+        # noinspection PyUnresolvedReferences
+        # assert (result == [0.5, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.5]).all()
+        assert result == {0: 0.5, 1: 0.5, 4: 0.5, 5: 0.5, 8: 0.5}
+
+    def test_cross_mask_convolution(self, cross_frame_array):
+        pixel_vector = [0, 0, 1, 0, 0]
+        pixel_dict = {2: 1}
+        kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
+
+        convolver = frame_convolution.Convolver(cross_frame_array)
+
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_dict)
+
+        # noinspection PyUnresolvedReferences
+        assert result == {2: 0.5, 3: 0.5}
+
 #
 #
 # @pytest.fixture(name="convolver_4_simple")
