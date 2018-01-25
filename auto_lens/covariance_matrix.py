@@ -1,9 +1,34 @@
 class CovarianceMatrixGenerator(object):
+    """Class for efficient calculation of big F from little f"""
+
     def __init__(self, pixel_maps, noise_vector):
+        """
+        Parameters
+        ----------
+        pixel_maps: [{int: float}]
+            List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
+        noise_vector: [float]
+            A list of noise values of length image pixels
+        """
         self.pixel_maps = pixel_maps
         self.noise_vector = noise_vector
 
     def calculate_covariance(self, source_index_a, source_index_b):
+        """
+        Calculates Fab
+
+        Parameters
+        ----------
+        source_index_a: int
+            The source pixel index a
+        source_index_b: int
+            The source pixel index b
+
+        Returns
+        -------
+            covariance: Float
+                The covariance between a and b
+        """
         mapping_dict_1 = self.pixel_maps[source_index_a]
         mapping_dict_2 = self.pixel_maps[source_index_b]
         return sum([mapping_dict_1[i] * mapping_dict_2[i] / self.noise_vector[i] for i in mapping_dict_1.keys() if
