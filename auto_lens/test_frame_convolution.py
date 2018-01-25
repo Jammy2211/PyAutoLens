@@ -251,4 +251,6 @@ class TestSubConvolution(object):
         #                   0, 1, 1, 1, 0,
         #                   0, 0, 0, 0, 0]) == convolved_vector).all()
 
+        print(convolved_vector)
+
         assert {6: 1, 7: 1, 8: 1, 11: 1, 12: 1, 13: 1, 16: 1, 17: 1, 18: 1} == convolved_vector
