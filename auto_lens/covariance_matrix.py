@@ -130,6 +130,13 @@ class TestReflexiveCovariances(object):
 
         assert generator.calculate_covariance(0, 1) == generator.calculate_covariance(1, 0)
 
+    def test_reflexive_recall(self):
+        generator = CovarianceMatrixGenerator([{0: 2, 1: 3}, {0: 1}], [1, 1])
+        generator.calculated_covariances[(0, 1)] = 7
+
+        assert generator.add_covariance_for_indices(0, 1) == 7
+        assert generator.add_covariance_for_indices(1, 0) == 7
+
 
 class TestBreadthFirstSearch(object):
     def test_simple_search(self):
