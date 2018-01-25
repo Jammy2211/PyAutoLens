@@ -165,15 +165,15 @@ class KernelConvolver(object):
         self.frame_array = frame_array
         self.__result_dict = {}
 
-    def convolve_vector(self, vector, sub_shape=None):
+    def convolve_vector(self, pixel_dict, sub_shape=None):
         """
         Convolves a kernel with a 1D vector of non-masked values
         Parameters
         ----------
         sub_shape: (int, int)
             Defines a subregion of the kernel for which the result should be calculated
-        vector: [float]
-            A vector of numbers excluding those that are masked
+        pixel_dict: [int: float]
+            A dictionary that maps image pixel indices to values
         Returns
         -------
         convolved_vector: [float]
@@ -181,11 +181,15 @@ class KernelConvolver(object):
         """
 
         # noinspection PyUnresolvedReferences
-        result = np.zeros(len(vector))
-        for index in range(len(vector)):
-            if vector[index] > 0:
-                # noinspection PyUnresolvedReferences
-                result = np.add(result, self.convolution_for_pixel_index_vector(index, vector, sub_shape))
+        result = {}
+        for key in pixel_dict.keys():
+            new_dict = self.convolution_for_pixel_index_vector(key, pixel_dict, sub_shape)
+            for new_key in new_dict.keys():
+                if new_key in result:
+                    result[new_key] += new_dict[new_key]
+                else:
+                    result[new_key] = new_dict[new_key]
+
         return result
 
     def result_for_value_and_index(self, value, index):
@@ -228,7 +232,6 @@ class KernelConvolver(object):
             keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
 
         for kernel_index in keys:
-            # if is_in(kernel_index):
             vector_index = frame[kernel_index]
             result = self.result_for_value_and_index(value, kernel_index)
             if result > 0:
