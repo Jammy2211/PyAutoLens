@@ -53,7 +53,8 @@ class CovarianceMatrixGenerator(object):
         bfs.add_neighbours_of(source_index)
 
         for index in bfs.neighbours():
-            if self.add_covariance_for_indices(source_index, index) > 0:
+            if self.add_covariance_for_indices(source_index, index) > 0:  # TODO: this limit could be some low value
+                # TODO: eliminating the need to search all the way to zero covariance pixels
                 bfs.add_neighbours_of(index)
 
     def add_covariance_for_indices(self, source_index_a, source_index_b):
@@ -85,7 +86,7 @@ class CovarianceMatrixGenerator(object):
             value = self.calculated_covariances[(source_index_b, source_index_a)]
         else:
             value = self.calculate_covariance(source_index_a, source_index_b)
-        self.calculated_covariances[tup] = value  # Warning: this is a side effect. 
+        self.calculated_covariances[tup] = value  # Warning: this is a side effect.
         return value
 
     def calculate_covariance(self, source_index_a, source_index_b):
