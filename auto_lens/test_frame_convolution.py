@@ -136,109 +136,119 @@ class TestConvolution(object):
 
         assert result == {2: 0.5, 3: 0.5}
 
-#
-#
-# @pytest.fixture(name="convolver_4_simple")
-# def make_convolver_4_simple():
-#     shape = (4, 4)
-#     mask = np.ones(shape)
-#
-#     frame_maker = frame_convolution.FrameMaker(mask)
-#     return frame_maker.convolver_for_kernel_shape((3, 3))
-#
-#
-# @pytest.fixture(name="convolver_4_edges")
-# def make_convolver_4_edges():
-#     mask = np.array(
-#         [[0, 0, 0, 0],
-#          [0, 1, 1, 0],
-#          [0, 1, 1, 0],
-#          [0, 0, 0, 0]]
-#     )
-#
-#     frame_maker = frame_convolution.FrameMaker(mask)
-#     return frame_maker.convolver_for_kernel_shape((3, 3))
-#
-#
-# class TestNonTrivialExamples(object):
-#     def test_larger_mask(self, convolver_4_simple):
-#         kernel = np.array([[0, 0.2, 0],
-#                            [0.2, 0.4, 0.2],
-#                            [0, 0.2, 0]])
-#
-#         pixel_vector = [0, 0, 0, 0,
-#                         0, 0, 0, 0,
-#                         0, 1, 0, 0,
-#                         0, 0, 0, 0]
-#
-#         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [0, 0, 0, 0,
-#                            0, 0.2, 0, 0,
-#                            0.2, 0.4, 0.2, 0,
-#                            0, 0.2, 0, 0]).all()
-#
-#     def test_asymmetric_kernel(self, convolver_4_simple):
-#         asymmetric_kernel = np.array([[0, 0.0, 0],
-#                                       [0.4, 0.2, 0.3],
-#                                       [0, 0.1, 0]])
-#
-#         pixel_vector = [0, 0, 0, 0,
-#                         0, 0, 0, 0,
-#                         0, 1, 0, 0,
-#                         0, 0, 0, 0]
-#
-#         kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
-#         result = kernel_convolver.convolve_vector(pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [0, 0, 0, 0,
-#                            0, 0.0, 0, 0,
-#                            0.4, 0.2, 0.3, 0,
-#                            0, 0.1, 0, 0]).all()
-#
-#     def test_two_pixel_sum(self, convolver_4_simple):
-#         kernel = np.array([[0, 0.2, 0],
-#                            [0.2, 0.4, 0.2],
-#                            [0, 0.2, 0]])
-#
-#         pixel_vector = [0, 0, 0, 0,
-#                         0, 0, 1, 0,
-#                         0, 1, 0, 0,
-#                         0, 0, 0, 0]
-#
-#         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [0, 0, 0.2, 0,
-#                            0, 0.4, 0.4, 0.2,
-#                            0.2, 0.4, 0.4, 0,
-#                            0, 0.2, 0, 0]).all()
-#
-#     def test_two_pixel_sum_masked(self, convolver_4_edges):
-#         kernel = np.array([[0, 0.2, 0],
-#                            [0.2, 0.4, 0.2],
-#                            [0, 0.2, 0]])
-#
-#         pixel_vector = [
-#             0, 1,
-#             1, 0
-#         ]
-#
-#         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_vector)
-#
-#         # noinspection PyUnresolvedReferences
-#         assert (result == [
-#             0.4, 0.4,
-#             0.4, 0.4
-#         ]).all()
+
+@pytest.fixture(name="convolver_4_simple")
+def make_convolver_4_simple():
+    shape = (4, 4)
+    mask = np.ones(shape)
+
+    frame_maker = frame_convolution.FrameMaker(mask)
+    return frame_maker.convolver_for_kernel_shape((3, 3))
+
+
+@pytest.fixture(name="convolver_4_edges")
+def make_convolver_4_edges():
+    mask = np.array(
+        [[0, 0, 0, 0],
+         [0, 1, 1, 0],
+         [0, 1, 1, 0],
+         [0, 0, 0, 0]]
+    )
+
+    frame_maker = frame_convolution.FrameMaker(mask)
+    return frame_maker.convolver_for_kernel_shape((3, 3))
+
+
+class TestNonTrivialExamples(object):
+    def test_larger_mask(self, convolver_4_simple):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        # pixel_vector = [0, 0, 0, 0,
+        #                 0, 0, 0, 0,
+        #                 0, 1, 0, 0,
+        #                 0, 0, 0, 0]
+
+        pixel_dict = {9: 1}
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_dict)
+
+        # noinspection PyUnresolvedReferences
+        # assert (result == [0, 0, 0, 0,
+        #                    0, 0.2, 0, 0,
+        #                    0.2, 0.4, 0.2, 0,
+        #                    0, 0.2, 0, 0]).all()
+
+        assert result == {5: 0.2, 8: 0.2, 9: 0.4, 10: 0.2, 13: 0.2}
+
+    def test_asymmetric_kernel(self, convolver_4_simple):
+        asymmetric_kernel = np.array([[0, 0.0, 0],
+                                      [0.4, 0.2, 0.3],
+                                      [0, 0.1, 0]])
+
+        # pixel_vector = [0, 0, 0, 0,
+        #                 0, 0, 0, 0,
+        #                 0, 1, 0, 0,
+        #                 0, 0, 0, 0]
+
+        pixel_dict = {9: 1}
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
+        result = kernel_convolver.convolve_vector(pixel_dict)
+
+        # noinspection PyUnresolvedReferences
+        # assert (result == [0, 0, 0, 0,
+        #                    0, 0.0, 0, 0,
+        #                    0.4, 0.2, 0.3, 0,
+        #                    0, 0.1, 0, 0]).all()
+
+        assert result == {8: 0.4, 9: 0.2, 10: 0.3, 13: 0.1}
+
+    def test_two_pixel_sum(self, convolver_4_simple):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        # pixel_vector = [0, 0, 0, 0,
+        #                 0, 0, 1, 0,
+        #                 0, 1, 0, 0,
+        #                 0, 0, 0, 0]
+
+        pixel_dict = {6: 1, 9: 1}
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_dict)
+
+        # noinspection PyUnresolvedReferences
+        # assert (result == [0, 0, 0.2, 0,
+        #                    0, 0.4, 0.4, 0.2,
+        #                    0.2, 0.4, 0.4, 0,
+        #                    0, 0.2, 0, 0]).all()
+        assert result == {2: 0.2, 5: 0.4, 6: 0.4, 7: 0.2, 8: 0.2, 9: 0.4, 10: 0.4, 13: 0.2}
+
+    def test_two_pixel_sum_masked(self, convolver_4_edges):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        # pixel_vector = [
+        #     0, 1,
+        #     1, 0
+        # ]
+
+        pixel_dict = {1: 1, 2: 1}
+
+        kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_dict)
+
+        # noinspection PyUnresolvedReferences
+        assert result == {0: 0.4, 1: 0.4, 2: 0.4, 3: 0.4}
+
 #
 #
 # class TestSubConvolution(object):
