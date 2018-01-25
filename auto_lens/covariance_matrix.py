@@ -139,7 +139,7 @@ class TestContiguousCovariances(object):
 
         generator.find_contiguous_covariances(0)
 
-        assert {(0, 1): 1, (0, 2): 1, (0, 3): 0} == generator.calculated_covariances
+        assert {(0, 0): 1, (0, 1): 1, (0, 2): 1, (0, 3): 0} == generator.calculated_covariances
 
 
 class TestReflexiveCovariances(object):
