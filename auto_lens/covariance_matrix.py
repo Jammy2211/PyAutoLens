@@ -74,6 +74,21 @@ class TestBreadthFirstSearch(object):
 
         assert 2 == len(list(bfs.neighbours()))
 
+    def test_neighbours_in_loop(self):
+        graph = [[1, 2], [3], [], []]
+
+        bfs = BreadthFirstSearch(graph)
+
+        bfs.add_neighbours_of(0)
+
+        count = 0
+
+        for neighbour in bfs.neighbours():
+            bfs.add_neighbours_of(neighbour)
+            count += 1
+
+        assert count == 3
+
 
 class TestCalculateCovariance(object):
     def test_calculate_covariance(self):
