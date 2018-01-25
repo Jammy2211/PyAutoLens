@@ -1,7 +1,3 @@
-def calculate_covariance(mapping_dict_1, mapping_dict_2):
-    return sum([mapping_dict_1[i] * mapping_dict_2[i] for i in mapping_dict_1.keys() if i in mapping_dict_2])
-
-
 class CovarianceMatrixGenerator(object):
     def __init__(self, pixel_maps):
         self.pixel_maps = pixel_maps
@@ -22,4 +18,3 @@ class TestCase(object):
         generator = CovarianceMatrixGenerator([{2: 3}, {1: 1}])
 
         assert generator.calculate_covariance(0, 1) == 0
-    
