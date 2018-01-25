@@ -226,10 +226,14 @@ class KernelConvolver(object):
 
         keys = frame.keys()
 
+        print(keys)
+
         if sub_shape is not None:
             limits = calculate_limits(self.shape, sub_shape)
 
             keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
+
+        print(keys)
 
         for kernel_index in keys:
             vector_index = frame[kernel_index]
@@ -262,20 +266,20 @@ def calculate_limits(shape, sub_shape):
 
 
 def is_in_sub_shape(kernel_index_1d, limits, shape):
-    """
-    Determines if a particular index is within given limits inside of a given shape
-    Parameters
-    ----------
-    kernel_index_1d: int
-        The index in a flattened kernel
-    limits: Tuple[int, int, int, int]
-        x_min, y_min, x_max, y_max limits
-    shape: (int, int)
-        The shape of the kernel
-
-    Returns
-    -------
-
-    """
-    return limits[1] <= kernel_index_1d / shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - \
-                                                                                                             limits[1]
+    # """
+    # Determines if a particular index is within given limits inside of a given shape
+    # Parameters
+    # ----------
+    # kernel_index_1d: int
+    #     The index in a flattened kernel
+    # limits: Tuple[int, int, int, int]
+    #     x_min, y_min, x_max, y_max limits
+    # shape: (int, int)
+    #     The shape of the kernel
+    #
+    # Returns
+    # -------
+    #
+    # """
+    return limits[1] <= kernel_index_1d / \
+                        shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - limits[1]
