@@ -85,7 +85,7 @@ class CovarianceMatrixGenerator(object):
             value = self.calculated_covariances[(source_index_b, source_index_a)]
         else:
             value = self.calculate_covariance(source_index_a, source_index_b)
-        self.calculated_covariances[tup] = value
+        self.calculated_covariances[tup] = value  # Warning: this is a side effect. 
         return value
 
     def calculate_covariance(self, source_index_a, source_index_b):
