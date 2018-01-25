@@ -24,6 +24,40 @@ class CovarianceMatrixGenerator(object):
         """
         self.pixel_maps = pixel_maps
         self.noise_vector = noise_vector
+        # dictionary mapping coordinate tuples to values {(a, b): covariance}
+        self.calculated_covariances = {}
+
+    def add_covariance_for_indices(self, source_index_a, source_index_b):
+        """
+        Checks if a covariance value has been found for a pair of indices.
+
+        If a value has been found, returns that value.
+
+        If a value can be determined by symmetry, the value is added for this index pair and returned.
+
+        Otherwise, the value is calculated, added and returned.
+
+        Parameters
+        ----------
+        source_index_a: int
+            The source pixel index a
+        source_index_b: int
+            The source pixel index b
+
+        Returns
+        -------
+            covariance: Float
+                The covariance between a and b
+        """
+        tup = (source_index_a, source_index_b)
+        if tup in self.calculated_covariances:
+            return self.calculated_covariances[tup]
+        if (source_index_b, source_index_a) in self.calculated_covariances:
+            value = self.calculated_covariances[(source_index_b, source_index_a)]
+        else:
+            value = self.calculate_covariance(source_index_a, source_index_b)
+        self.calculated_covariances[tup] = value
+        return value
 
     def calculate_covariance(self, source_index_a, source_index_b):
         """
@@ -86,6 +120,15 @@ class BreadthFirstSearch(object):
             if neighbour not in self.visited:
                 self.visited.add(neighbour)
                 self.queue.put(neighbour)
+
+
+class TestReflexiveCovariances(object):
+    def test_reflexive_calculation(self):
+        """Does Fab == Fba?"""
+
+        generator = CovarianceMatrixGenerator([{0: 2, 1: 3}, {0: 1}], [1, 1])
+
+        assert generator.calculate_covariance(0, 1) == generator.calculate_covariance(1, 0)
 
 
 class TestBreadthFirstSearch(object):
