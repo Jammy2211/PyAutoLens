@@ -195,7 +195,7 @@ class KernelConvolver(object):
             self.__result_dict[value][index] = value * self.kernel[index]
         return self.__result_dict[value][index]
 
-    def convolution_for_pixel_index_vector(self, pixel_index, vector, sub_shape=None):
+    def convolution_for_pixel_index_vector(self, pixel_index, pixel_dict, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
         Parameters
@@ -204,19 +204,19 @@ class KernelConvolver(object):
             Defines a subregion of the kernel for which the result should be calculated
         pixel_index: int
             The index in the vector to be convolved
-        vector: [float]
-            A vector of numbers excluding those that are masked
+        pixel_dict: [int: float]
+            A dictionary that maps image pixel indices to values
         Returns
         -------
-        convolution_array: [float]
-            An array with the same length of the vector with values populated according to the convolution of the kernel
+        convolution_dict: [int: float]
+            A dictionary with values populated according to the convolution of the kernel
             with one particular value
         """
 
         # noinspection PyUnresolvedReferences
-        new_vector = np.zeros(len(vector))
+        new_dict = {}
 
-        value = vector[pixel_index]
+        value = pixel_dict[pixel_index]
 
         frame = self.frame_array[pixel_index]
 
@@ -233,9 +233,11 @@ class KernelConvolver(object):
         for kernel_index in frame.keys():
             if is_in(kernel_index):
                 vector_index = frame[kernel_index]
-                new_vector[vector_index] = self.result_for_value_and_index(value, kernel_index)
+                result = self.result_for_value_and_index(value, kernel_index)
+                if result > 0:
+                    new_dict[vector_index] = result
 
-        return new_vector
+        return new_dict
 
 
 def calculate_limits(shape, sub_shape):
