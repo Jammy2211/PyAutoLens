@@ -235,6 +235,8 @@ class KernelConvolver(object):
 
         print(keys)
 
+        print(frame)
+
         for kernel_index in keys:
             vector_index = frame[kernel_index]
             result = self.result_for_value_and_index(value, kernel_index)
