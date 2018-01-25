@@ -1,3 +1,15 @@
+import sys
+
+# TODO: fix environment so we don't need this! *vomits*
+
+if sys.version[0] == '2':
+    # noinspection PyPep8Naming
+    import Queue as queue
+else:
+    # noinspection PyUnresolvedReferences
+    import queue as queue
+
+
 class CovarianceMatrixGenerator(object):
     """Class for efficient calculation of big F from little f"""
 
@@ -33,6 +45,34 @@ class CovarianceMatrixGenerator(object):
         mapping_dict_2 = self.pixel_maps[source_index_b]
         return sum([mapping_dict_1[i] * mapping_dict_2[i] / self.noise_vector[i] for i in mapping_dict_1.keys() if
                     i in mapping_dict_2])
+
+
+class BreadthFirstSearch(object):
+    def __init__(self, graph):
+        self.graph = graph
+        self.queue = queue.Queue()
+        self.visited = set()
+
+    def neighbours(self):
+        while not self.queue.empty():
+            yield self.queue.get()
+
+    def add_neighbours_of(self, index):
+        for neighbour in self.graph[index]:
+            if neighbour not in self.visited:
+                self.visited.add(neighbour)
+                self.queue.put(neighbour)
+
+
+class TestBreadthFirstSearch(object):
+    def test_simple_search(self):
+        graph = [[1, 2]]
+
+        bfs = BreadthFirstSearch(graph)
+
+        bfs.add_neighbours_of(0)
+
+        assert 2 == len(list(bfs.neighbours()))
 
 
 class TestCalculateCovariance(object):
