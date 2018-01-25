@@ -165,22 +165,11 @@ class TestNonTrivialExamples(object):
                            [0.2, 0.4, 0.2],
                            [0, 0.2, 0]])
 
-        # pixel_vector = [0, 0, 0, 0,
-        #                 0, 0, 0, 0,
-        #                 0, 1, 0, 0,
-        #                 0, 0, 0, 0]
-
         pixel_dict = {9: 1}
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
 
         result = kernel_convolver.convolve_vector(pixel_dict)
-
-        # noinspection PyUnresolvedReferences
-        # assert (result == [0, 0, 0, 0,
-        #                    0, 0.2, 0, 0,
-        #                    0.2, 0.4, 0.2, 0,
-        #                    0, 0.2, 0, 0]).all()
 
         assert result == {5: 0.2, 8: 0.2, 9: 0.4, 10: 0.2, 13: 0.2}
 
@@ -189,21 +178,10 @@ class TestNonTrivialExamples(object):
                                       [0.4, 0.2, 0.3],
                                       [0, 0.1, 0]])
 
-        # pixel_vector = [0, 0, 0, 0,
-        #                 0, 0, 0, 0,
-        #                 0, 1, 0, 0,
-        #                 0, 0, 0, 0]
-
         pixel_dict = {9: 1}
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
         result = kernel_convolver.convolve_vector(pixel_dict)
-
-        # noinspection PyUnresolvedReferences
-        # assert (result == [0, 0, 0, 0,
-        #                    0, 0.0, 0, 0,
-        #                    0.4, 0.2, 0.3, 0,
-        #                    0, 0.1, 0, 0]).all()
 
         assert result == {8: 0.4, 9: 0.2, 10: 0.3, 13: 0.1}
 
@@ -212,22 +190,12 @@ class TestNonTrivialExamples(object):
                            [0.2, 0.4, 0.2],
                            [0, 0.2, 0]])
 
-        # pixel_vector = [0, 0, 0, 0,
-        #                 0, 0, 1, 0,
-        #                 0, 1, 0, 0,
-        #                 0, 0, 0, 0]
-
         pixel_dict = {6: 1, 9: 1}
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
 
         result = kernel_convolver.convolve_vector(pixel_dict)
 
-        # noinspection PyUnresolvedReferences
-        # assert (result == [0, 0, 0.2, 0,
-        #                    0, 0.4, 0.4, 0.2,
-        #                    0.2, 0.4, 0.4, 0,
-        #                    0, 0.2, 0, 0]).all()
         assert result == {2: 0.2, 5: 0.4, 6: 0.4, 7: 0.2, 8: 0.2, 9: 0.4, 10: 0.4, 13: 0.2}
 
     def test_two_pixel_sum_masked(self, convolver_4_edges):
@@ -235,18 +203,12 @@ class TestNonTrivialExamples(object):
                            [0.2, 0.4, 0.2],
                            [0, 0.2, 0]])
 
-        # pixel_vector = [
-        #     0, 1,
-        #     1, 0
-        # ]
-
         pixel_dict = {1: 1, 2: 1}
 
         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
 
         result = kernel_convolver.convolve_vector(pixel_dict)
 
-        # noinspection PyUnresolvedReferences
         assert result == {0: 0.4, 1: 0.4, 2: 0.4, 3: 0.4}
 
 #
