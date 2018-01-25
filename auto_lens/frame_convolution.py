@@ -220,22 +220,19 @@ class KernelConvolver(object):
 
         frame = self.frame_array[pixel_index]
 
+        keys = frame.keys()
+
         if sub_shape is not None:
             limits = calculate_limits(self.shape, sub_shape)
 
-            def is_in(index):
-                return is_in_sub_shape(index, limits, self.shape)
-        else:
-            # noinspection PyUnusedLocal
-            def is_in(index):
-                return True
+            keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
 
-        for kernel_index in frame.keys():
-            if is_in(kernel_index):
-                vector_index = frame[kernel_index]
-                result = self.result_for_value_and_index(value, kernel_index)
-                if result > 0:
-                    new_dict[vector_index] = result
+        for kernel_index in keys:
+            # if is_in(kernel_index):
+            vector_index = frame[kernel_index]
+            result = self.result_for_value_and_index(value, kernel_index)
+            if result > 0:
+                new_dict[vector_index] = result
 
         return new_dict
 
