@@ -10,7 +10,7 @@ class CovarianceMatrixGenerator(object):
                     i in mapping_dict_2])
 
 
-class TestCase(object):
+class TestCalculateCovariance(object):
     def test_calculate_covariance(self):
         generator = CovarianceMatrixGenerator([{0: 2, 1: 3}, {0: 1}], [1, 1])
 
