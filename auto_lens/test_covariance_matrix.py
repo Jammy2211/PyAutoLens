@@ -6,7 +6,7 @@ import pytest
 def make_line_generator():
     graph = [[1], [2], [3], [4], []]
     pixel_maps = [{0: 1}, {0: 1}, {0: 1}, {1: 1}, {0: 1}]
-    noise = [1 for _ in range(len(pixel_maps))]
+    noise = [1 for _ in range(2)]
     return covariance_matrix.CovarianceMatrixGenerator(pixel_maps, noise, graph)
 
 
@@ -14,9 +14,9 @@ def make_line_generator():
 def make_generator():
     graph = [[1, 2], [0, 3, 4], [0, 4, 5], [1, 4], [1, 2, 3, 6], [2, 6], [2, 4, 5, 7], [6]]
     pixel_maps = []
-    for l in [[0, 1, 2], [0, 1, 2, 3], [1, 2, 4], [3, 5], [0, 1, 2, 3, 5, 6], [4, 7], [6, 7], [6]]:
+    for l in [[0, 1, 2, 8], [0, 1, 2, 3], [1, 2, 4], [3, 5], [0, 1, 2, 3, 5, 6], [4, 7], [6, 7], [6, 8]]:
         pixel_maps.append({i: 1 for i in l})
-    noise = [1 for _ in range(len(pixel_maps))]
+    noise = [1 for _ in range(9)]
     return covariance_matrix.CovarianceMatrixGenerator(pixel_maps, noise, graph)
 
 
