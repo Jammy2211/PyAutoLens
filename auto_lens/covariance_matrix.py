@@ -13,7 +13,7 @@ else:
 class CovarianceMatrixGenerator(object):
     """Class for efficient calculation of big F from little f"""
 
-    def __init__(self, pixel_maps, noise_vector, graph):
+    def __init__(self, pixel_maps, noise_vector, graph, neighbour_search_limit=0.):
         """
         Parameters
         ----------
@@ -21,6 +21,10 @@ class CovarianceMatrixGenerator(object):
             List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
         noise_vector: [float]
             A list of noise values of length image pixels
+        graph: [[int]]
+            A graph representing source pixel neighbouring
+        neighbour_search_limit: float
+            The limit of covariance below which neighbours of a pixel will not be added to the neighbour search queue
         """
         self.pixel_maps = pixel_maps
         self.noise_vector = noise_vector
@@ -28,13 +32,19 @@ class CovarianceMatrixGenerator(object):
         # dictionary mapping coordinate tuples to values {(a, b): covariance}
         self.calculated_covariances = {}
 
+        self.neighbour_search_limit = neighbour_search_limit
+
+        self.no_source_pixels = len(pixel_maps)
+
+        self.neighbour_lists = {i: [] for i in range(self.no_source_pixels)}
+
     def find_all_contiguous_covariances(self):
         """
         Finds the local contiguous patch in the source plane of non-zero covariances for each source pixel.
         """
 
         # noinspection PyTypeChecker
-        for index in len(self.pixel_maps):
+        for index in self.no_source_pixels:
             self.find_contiguous_covariances(index)
 
     def find_contiguous_covariances(self, source_index):
@@ -53,8 +63,7 @@ class CovarianceMatrixGenerator(object):
         bfs.add_neighbours_of(source_index)
 
         for index in bfs.neighbours():
-            if self.add_covariance_for_indices(source_index, index) > 0:  # TODO: this limit could be some low value
-                # TODO: eliminating the need to search all the way to zero covariance pixels
+            if self.add_covariance_for_indices(source_index, index) > self.neighbour_search_limit:
                 bfs.add_neighbours_of(index)
 
     def add_covariance_for_indices(self, source_index_a, source_index_b):
