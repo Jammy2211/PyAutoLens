@@ -32,6 +32,20 @@ class TestMissingCovariances(object):
         assert generator.neighbour_lists[0] == [1, 2, 4]
         assert generator.neighbour_lists[7] == [6, 4]
 
+    def test_include_missing_covariances(self, generator):
+        generator.find_all_contiguous_covariances()
+
+        non_zero_covariances = generator.non_zero_covariances.copy()
+
+        generator.find_all_non_contiguous_covariances()
+
+        assert len(non_zero_covariances) + 2 == len(generator.non_zero_covariances)
+
+        # TODO: should be iter()
+        # noinspection PyCompatibility
+        assert {(0, 7), (7, 0)} == {t for t, v in generator.non_zero_covariances.iteritems() if
+                                    t not in non_zero_covariances}
+
 
 class TestContiguousCovariances(object):
     def test_calculated_covariances(self, line_generator):
