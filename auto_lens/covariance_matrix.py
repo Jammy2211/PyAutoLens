@@ -1,5 +1,15 @@
 import sys
 
+"""
+Find an F matrix from an f matrix efficiently.
+
+It is assumed that the f matrix is sparse. It is also assumed that covariance of source pixels will principally be found
+between a pixel and pixels in a contiguous patch about that pixel in the source plane, except for the case that overlap
+occurs between convolution kernels. See https://github.com/Jammy2211/AutoLens/issues/6 for a thorough discussion.
+
+
+"""
+
 # TODO: fix environment so we don't need this! *vomits*
 
 if sys.version[0] == '2':
