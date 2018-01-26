@@ -27,7 +27,7 @@ class TestMissingCovariances(object):
         assert line_generator.neighbour_lists == [[1, 2], [], [], [], []]
 
     def test_group_neighbour_lists(self, generator):
-        generator.find_contiguous_covariances(0)
+        generator.find_all_contiguous_covariances()
 
         assert generator.neighbour_lists[0] == [1, 2, 4]
 
