@@ -7,6 +7,17 @@ It is assumed that the f matrix is sparse. It is also assumed that covariance of
 between a pixel and pixels in a contiguous patch about that pixel in the source plane, except for the case that overlap
 occurs between convolution kernels. See https://github.com/Jammy2211/AutoLens/issues/6 for a thorough discussion.
 
+Given a convolved list of pixel maps pixel_maps of type [{int: float}], a noise vector noise_vector of type [float] and
+a graph describing neighbours on the source plane [[int]] this module will return a covariance matrix matrix of type
+{(int, int): float} where the tuple is a pair of indices of the matrix and only non-zero entries are included.
+
+matrix = covariance_matrix.create_covariance_matrix(pixel_maps, noise_vector, graph)
+
+The optional key word argument neighbour_search_limit can be specified to change the sensitivity of the model to smaller
+covariance values. The initial step of the process is to find a contiguous neighbour in the source plane of non-zero
+covariance with some pixel. If a zero covariance is found for some pixel then the search does not include further
+neighbours of that pixel. Setting neighbour_search_limit causes the adding of neighbours to stop at the set covariance
+limit.
 
 """
 
@@ -18,6 +29,34 @@ if sys.version[0] == '2':
 else:
     # noinspection PyUnresolvedReferences
     import queue as queue
+
+
+def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_limit=0.):
+    """
+    Creates the F matrix from an f matrix
+
+    Parameters
+    ----------
+    pixel_maps: [{int: float}]
+        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
+    noise_vector: [float]
+        A list of noise values of length image pixels
+    graph: [[int]]
+        A graph representing source pixel neighbouring
+    neighbour_search_limit: float
+        The limit of covariance below which neighbours of a pixel will not be added to the neighbour search queue
+
+    Returns
+    -------
+    covariance_matrix: {(int, int): float}
+        A dictionary mapping indices of non-zero F matrix elements to their values.
+    """
+    generator = CovarianceMatrixGenerator(pixel_maps, noise_vector, graph, neighbour_search_limit)
+
+    generator.find_all_contiguous_covariances()
+    generator.find_all_non_contiguous_covariances()
+
+    return generator.non_zero_covariances
 
 
 class CovarianceMatrixGenerator(object):
