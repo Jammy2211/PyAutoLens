@@ -40,6 +40,15 @@ class CovarianceMatrixGenerator(object):
 
         self.neighbour_lists = [[] for _ in range(self.no_source_pixels)]
 
+    def find_all_non_contiguous_covariances(self):
+        for l in self.neighbour_lists:
+            for a in l:
+                for b in l:
+                    if a != b:
+                        result = self.add_covariance_for_indices(a, b)
+                        if result > 0:
+                            self.non_zero_covariances[(a, b)] = result
+
     def find_all_contiguous_covariances(self):
         """
         Finds the local contiguous patch in the source plane of non-zero covariances for each source pixel.
