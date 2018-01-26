@@ -36,7 +36,7 @@ class CovarianceMatrixGenerator(object):
 
         self.no_source_pixels = len(pixel_maps)
 
-        self.neighbour_lists = {i: [] for i in range(self.no_source_pixels)}
+        self.neighbour_lists = [[] for _ in range(self.no_source_pixels)]
 
     def find_all_contiguous_covariances(self):
         """
@@ -64,6 +64,7 @@ class CovarianceMatrixGenerator(object):
 
         for index in bfs.neighbours():
             if self.add_covariance_for_indices(source_index, index) > self.neighbour_search_limit:
+                self.neighbour_lists[source_index].append(index)
                 bfs.add_neighbours_of(index)
 
     def add_covariance_for_indices(self, source_index_a, source_index_b):
