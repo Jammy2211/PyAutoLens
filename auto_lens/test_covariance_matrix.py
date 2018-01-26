@@ -34,10 +34,15 @@ class TestMissingCovariances(object):
 
 
 class TestContiguousCovariances(object):
-    def test_simple_example(self, line_generator):
+    def test_calculated_covariances(self, line_generator):
         line_generator.find_contiguous_covariances(0)
 
         assert {(0, 0): 1, (0, 1): 1, (0, 2): 1, (0, 3): 0} == line_generator.calculated_covariances
+
+    def test_non_zero_covariances(self, generator):
+        generator.find_contiguous_covariances(0)
+
+        assert {(0, 0): 4, (0, 1): 3, (0, 2): 2, (0, 4): 3} == generator.non_zero_covariances
 
 
 class TestReflexiveCovariances(object):

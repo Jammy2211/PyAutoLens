@@ -32,6 +32,8 @@ class CovarianceMatrixGenerator(object):
         # dictionary mapping coordinate tuples to values {(a, b): covariance}
         self.calculated_covariances = {}
 
+        self.non_zero_covariances = {}
+
         self.neighbour_search_limit = neighbour_search_limit
 
         self.no_source_pixels = len(pixel_maps)
@@ -58,13 +60,16 @@ class CovarianceMatrixGenerator(object):
             The index of the pixel for which covariances should be found
 
         """
-        self.add_covariance_for_indices(source_index, source_index)
+        self.non_zero_covariances[(source_index, source_index)] = self.add_covariance_for_indices(source_index,
+                                                                                                  source_index)
         bfs = BreadthFirstSearch(self.graph)
         bfs.add_neighbours_of(source_index)
 
         for index in bfs.neighbours():
-            if self.add_covariance_for_indices(source_index, index) > self.neighbour_search_limit:
+            result = self.add_covariance_for_indices(source_index, index)
+            if result > self.neighbour_search_limit:
                 self.neighbour_lists[source_index].append(index)
+                self.non_zero_covariances[(source_index, index)] = result
                 bfs.add_neighbours_of(index)
 
     def add_covariance_for_indices(self, source_index_a, source_index_b):
