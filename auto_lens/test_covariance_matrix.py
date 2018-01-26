@@ -1,15 +1,27 @@
 import covariance_matrix
+import pytest
+
+
+@pytest.fixture(name="line_generator")
+def make_line_generator():
+    graph = [[1], [2], [3], [4], []]
+    generator = covariance_matrix.CovarianceMatrixGenerator([{0: 1}, {0: 1}, {0: 1}, {1: 1}, {0: 1}],
+                                                            [1, 1, 1, 1, 1], graph)
+    return generator
+
+
+class TestMissingCovariances(object):
+    def test_neighbour_lists(self, line_generator):
+        line_generator.find_contiguous_covariances(0)
+
+        assert line_generator.neighbour_lists == [[1, 2], [], [], [], []]
 
 
 class TestContiguousCovariances(object):
-    def test_simple_example(self):
-        graph = [[1], [2], [3], [4], []]
-        generator = covariance_matrix.CovarianceMatrixGenerator([{0: 1}, {0: 1}, {0: 1}, {1: 1}, {0: 1}],
-                                                                [1, 1, 1, 1, 1], graph)
+    def test_simple_example(self, line_generator):
+        line_generator.find_contiguous_covariances(0)
 
-        generator.find_contiguous_covariances(0)
-
-        assert {(0, 0): 1, (0, 1): 1, (0, 2): 1, (0, 3): 0} == generator.calculated_covariances
+        assert {(0, 0): 1, (0, 1): 1, (0, 2): 1, (0, 3): 0} == line_generator.calculated_covariances
 
 
 class TestReflexiveCovariances(object):
