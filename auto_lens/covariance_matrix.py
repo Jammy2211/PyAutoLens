@@ -44,7 +44,7 @@ class CovarianceMatrixGenerator(object):
         """
 
         # noinspection PyTypeChecker
-        for index in self.no_source_pixels:
+        for index in range(self.no_source_pixels):
             self.find_contiguous_covariances(index)
 
     def find_contiguous_covariances(self, source_index):
