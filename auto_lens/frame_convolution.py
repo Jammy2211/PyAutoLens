@@ -13,9 +13,10 @@ A set of values in a corresponding image might be represented in a 1D array:
 
 [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
-However, values that are masked out need not be considered. Dropping masked values from this array gives:
+However, values that are masked out need not be considered. Furthermore, much of the array for our case is zeroes. As
+such a more efficient representation is a dictionary:
 
-[8, 5, 7, 5, 1]
+{1: 8, 3: 5, 4: 7, 5: 5, 7: 1}
 
 This module allows us to find the relationships between pixels in a mask for a kernel of a given size so that
 convolutions can be efficiently applied to reduced arrays such as the one above.
@@ -35,6 +36,18 @@ kernel_convolver = convolver.convolver_for_kernel(kernel)
 Which is applied to a reduced vector:
 
 convolved_vector = convolver.convolve_vector(vector)
+
+The returned convolved vector is also in the dictionary format.
+
+The convolver can also be applied for some sub-shape of the kernel:
+
+convolved_vector = convolver.convolve_vector(vector, sub_shape=(3, 3))
+
+Or applied to a whole mapping matrix:
+
+convolved_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix)
+
+Where the mapping matrix is an array of dictionaries with each index of the array corresponding to a source pixel.
 
 """
 
@@ -165,6 +178,22 @@ class KernelConvolver(object):
         self.frame_array = frame_array
         self.__result_dict = {}
 
+    def convolve_mapping_matrix(self, mapping_matrix):
+        """
+        Simple version of function that applies this convolver to a whole mapping matrix.
+
+        Parameters
+        ----------
+        mapping_matrix: [{int: float}]
+            A matrix representing the mapping of source pixels to image pixels
+
+        Returns
+        -------
+        convolved_mapping_matrix: [{int: float}]
+            A matrix representing the mapping of source pixels to image pixels accounting for convolution
+        """
+        return map(self.convolve_vector, mapping_matrix)
+
     def convolve_vector(self, pixel_dict, sub_shape=None):
         """
         Convolves a kernel with a 1D vector of non-masked values
@@ -193,6 +222,7 @@ class KernelConvolver(object):
         return result
 
     def result_for_value_and_index(self, value, index):
+        # TODO: does it make sense to keep results in a dict? Is multiplying two values actually less efficient?
         if value not in self.__result_dict:
             self.__result_dict[value] = {}
         if index not in self.__result_dict[value]:
@@ -226,16 +256,10 @@ class KernelConvolver(object):
 
         keys = frame.keys()
 
-        print(keys)
-
         if sub_shape is not None:
             limits = calculate_limits(self.shape, sub_shape)
 
             keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
-
-        print(keys)
-
-        print(frame)
 
         for kernel_index in keys:
             vector_index = frame[kernel_index]
