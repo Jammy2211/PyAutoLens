@@ -30,6 +30,7 @@ class TestMissingCovariances(object):
         generator.find_all_contiguous_covariances()
 
         assert generator.neighbour_lists[0] == [1, 2, 4]
+        assert generator.neighbour_lists[7] == [6, 4]
 
 
 class TestContiguousCovariances(object):
