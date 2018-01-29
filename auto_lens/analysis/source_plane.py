@@ -1,7 +1,7 @@
 import itertools
 import math
 import numpy as np
-from profile import profile
+from ..profile import profile
 import sklearn.cluster
 import scipy.spatial
 
