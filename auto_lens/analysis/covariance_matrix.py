@@ -32,6 +32,24 @@ else:
 
 
 def create_d_matrix(pixel_maps, noise_vector, image_vector):
+    """
+    Creates a D column matrix
+
+    Parameters
+    ----------
+    pixel_maps: [{int: float}]
+        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
+    noise_vector: [float]
+        A list of noise values of length image pixels
+    image_vector: [float]
+        A vector describing the image
+
+    Returns
+    -------
+    d_matrix: [float]
+        A column matrix
+    """
+
     def value_for_pixel_map(pixel_map):
         value = 0
         for index in pixel_map.keys():
