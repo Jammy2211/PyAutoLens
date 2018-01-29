@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-import analysis
+import source_plane
 import math
 
 
@@ -12,14 +12,14 @@ class TestSourcePlane(object):
         def test__sets_correct_values(self):
             coordinates = [(1.0, 1.0), (0.0, 0.5)]
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
 
             assert source_plane.coordinates == [(1.0, 1.0), (0.0, 0.5)]
 
         def test__four_coordinates__correct_source_plane(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             assert source_plane.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
@@ -28,7 +28,7 @@ class TestSourcePlane(object):
             # The centre is used by SourcePlaneGeomtry, but doesn't change the input coordinate values
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.5, 0.5))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.5, 0.5))
 
             assert source_plane.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
@@ -36,7 +36,7 @@ class TestSourcePlane(object):
         def test__source_plane_centre_zeros_by_default__no_shift(self):
             coordinates = (0.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
 
             coordinates_shift = source_plane.coordinates_to_centre(coordinates)
 
@@ -46,7 +46,7 @@ class TestSourcePlane(object):
         def test__source_plane_centre_x_shift__x_shifts(self):
             coordinates = (0.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.5, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.5, 0.0))
 
             coordinates_shift = source_plane.coordinates_to_centre(source_plane.coordinates)
 
@@ -56,7 +56,7 @@ class TestSourcePlane(object):
         def test__source_plane_centre_y_shift__y_shifts(self):
             coordinates = (0.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.5))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.5))
 
             coordinates_shift = source_plane.coordinates_to_centre(coordinates)
 
@@ -66,7 +66,7 @@ class TestSourcePlane(object):
         def test__source_plane_centre_x_and_y_shift__x_and_y_both_shift(self):
             coordinates = (0.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.5, 0.5))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.5, 0.5))
 
             coordinates_shift = source_plane.coordinates_to_centre(coordinates)
 
@@ -76,7 +76,7 @@ class TestSourcePlane(object):
         def test__source_plane_centre_and_coordinates__correct_shifts(self):
             coordinates = (0.2, 0.4)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(1.0, 0.5))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(1.0, 0.5))
 
             coordinates_shift = source_plane.coordinates_to_centre(coordinates)
 
@@ -87,35 +87,35 @@ class TestSourcePlane(object):
         def test__coordinates_overlap_source_plane_analysis__r_is_zero(self):
             coordinates = (0.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             assert source_plane.coordinates_to_radius(coordinates) == 0.0
 
         def test__x_coordinates_is_one__r_is_one(self):
             coordinates = (1.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             assert source_plane.coordinates_to_radius(coordinates) == 1.0
 
         def test__x_and_y_coordinates_are_one__r_is_root_two(self):
             coordinates = (1.0, 1.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(np.sqrt(2), 1e-5)
 
         def test__shift_x_coordinate_first__r_includes_shift(self):
             coordinates = (1.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(-1.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(-1.0, 0.0))
 
             assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(2.0, 1e-5)
 
         def test__shift_x_and_y_coordinates_first__r_includes_shift(self):
             coordinates = (3.0, 3.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(2.0, 2.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(2.0, 2.0))
 
             assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(math.sqrt(2.0), 1e-5)
 
@@ -123,7 +123,7 @@ class TestSourcePlane(object):
         def test__angle_is_zero__angles_follow_trig(self):
             coordinates = (1.0, 0.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -132,7 +132,7 @@ class TestSourcePlane(object):
         def test__angle_is_forty_five__angles_follow_trig(self):
             coordinates = (1.0, 1.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -141,7 +141,7 @@ class TestSourcePlane(object):
         def test__angle_is_sixty__angles_follow_trig(self):
             coordinates = (1.0, 1.7320)
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -150,7 +150,7 @@ class TestSourcePlane(object):
         def test__top_left_quandrant__angle_goes_above_90(self):
             coordinates = (-1.0, 1.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -159,7 +159,7 @@ class TestSourcePlane(object):
         def test__bottom_left_quandrant__angle_continues_above_180(self):
             coordinates = (-1.0, -1.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -168,7 +168,7 @@ class TestSourcePlane(object):
         def test__bottom_right_quandrant__angle_flips_back_to_above_90(self):
             coordinates = (1.0, -1.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -177,7 +177,7 @@ class TestSourcePlane(object):
         def test__include_source_plane_centre__angle_takes_into_accounts(self):
             coordinates = (2.0, 2.0)
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(1.0, 1.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(1.0, 1.0))
 
             theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
 
@@ -191,7 +191,7 @@ class TestSorucePlaneBorder(object):
         def test__four_coordinates_in_circle__correct_border(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
-            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+            border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
 
             assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
             assert border.radii == [1.0, 1.0, 1.0, 1.0]
@@ -200,7 +200,7 @@ class TestSorucePlaneBorder(object):
         def test__six_coordinates_two_masked__correct_border(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
-            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+            border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
 
             assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
             assert border.radii == [1.0, 1.0, 1.0, 1.0]
@@ -209,7 +209,7 @@ class TestSorucePlaneBorder(object):
         def test__test_other_thetas_radii(self):
             coordinates = [(2.0, 0.0),  (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
 
-            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+            border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
 
             assert border.coordinates == [(2.0, 0.0), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
             assert border.radii == [2.0, 2.0 * math.sqrt(2), math.sqrt(2.0), 3.0]
@@ -218,7 +218,7 @@ class TestSorucePlaneBorder(object):
         def test__source_plane_centre_offset__coordinates_same_r_and_theta_shifted(self):
             coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
 
-            border = analysis.SourcePlaneBorder(coordinates, 3, centre=(1.0, 1.0))
+            border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(1.0, 1.0))
 
             assert border.coordinates == [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
             assert border.radii == [1.0, 1.0, 1.0, 1.0]
@@ -230,7 +230,7 @@ class TestSorucePlaneBorder(object):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
             border_mask = [True, True, True, True]
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
             border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
 
             assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
@@ -241,7 +241,7 @@ class TestSorucePlaneBorder(object):
             coordinates = [(1.0, 0.0), (20., 20.), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0), (1.0, 1.0)]
             border_mask = [True, False, True, True, True, False]
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
             border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
 
             assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
@@ -252,7 +252,7 @@ class TestSorucePlaneBorder(object):
             coordinates = [(2.0, 0.0), (20., 20.), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0), (1.0, 1.0)]
             border_mask = [True, False, True, True, True, False]
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(0.0, 0.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(0.0, 0.0))
             border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
 
             assert border.coordinates == [(2.0, 0.0), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
@@ -263,7 +263,7 @@ class TestSorucePlaneBorder(object):
             coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
             border_mask = [True, True, True, True]
 
-            source_plane = analysis.SourcePlane(coordinates, centre=(1.0, 1.0))
+            source_plane = source_plane.SourcePlane(coordinates, centre=(1.0, 1.0))
             border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
 
             assert border.coordinates == [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
@@ -275,7 +275,7 @@ class TestSorucePlaneBorder(object):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0), (0.0, 0.0)]
             border_mask = [True, True, True, True, False]
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
             border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
 
             assert border.border_radius_at_theta(theta=0.0) == pytest.approx(1.0, 1e-3)
@@ -291,7 +291,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [True, True, True, True, True, True, True, True]
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
             border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
 
             assert border.border_radius_at_theta(theta=0.0) == pytest.approx(1.0, 1e-3)
@@ -309,7 +309,7 @@ class TestSorucePlaneBorder(object):
             thetas = np.linspace(0.0, 2.0 * np.pi, 32)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
-            source_border = analysis.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
+            source_border = source_plane.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
 
             relocated_coordinate = source_border.relocated_coordinate(coordinate=(2.5, 0.37))
             assert source_border.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
@@ -327,7 +327,7 @@ class TestSorucePlaneBorder(object):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
-            source_border = analysis.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
+            source_border = source_plane.SourcePlaneBorder(circle, 3, centre=(0.0, 0.0))
 
             relocated_coordinate = source_border.relocated_coordinate(coordinate=(2.0, 0.0))
             assert relocated_coordinate == pytest.approx((1.0, 0.0), 1e-3)
@@ -362,7 +362,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [True] * 16 + [False] * 8
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
@@ -386,7 +386,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [True] * 16 + [False] * 8
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
             source_border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
             source_plane.relocate_coordinates_outside_border(source_border)
 
@@ -411,7 +411,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [True] * 16 + [False] * 8
 
-            source_plane = analysis.SourcePlane(coordinates_original)
+            source_plane = source_plane.SourcePlane(coordinates_original)
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
@@ -427,7 +427,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [True] * 16 + [False] * 8
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
@@ -443,7 +443,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [True] * 16 + [False] * 8
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
 
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
@@ -464,7 +464,7 @@ class TestSorucePlaneBorder(object):
 
             border_mask = [False] * 4 + [True] * 16 + [False] * 4
 
-            source_plane = analysis.SourcePlane(coordinates)
+            source_plane = source_plane.SourcePlane(coordinates)
 
             source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
 
@@ -480,7 +480,7 @@ class TestSorucePlaneBorder(object):
         def test__inside_border__move_factor_is_1(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
-            source_border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+            source_border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
 
             assert source_border.move_factor(coordinate=(0.5, 0.0)) == 1.0
             assert source_border.move_factor(coordinate=(-0.5, 0.0)) == 1.0
@@ -490,7 +490,7 @@ class TestSorucePlaneBorder(object):
         def test__outside_border_double_its_radius__move_factor_is_05(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
-            source_border = analysis.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
+            source_border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
 
             assert source_border.move_factor(coordinate=(2.0, 0.0)) == pytest.approx(0.5, 1e-3)
             assert source_border.move_factor(coordinate=(0.0, 2.0)) == pytest.approx(0.5, 1e-3)
@@ -500,7 +500,7 @@ class TestSorucePlaneBorder(object):
         def test__outside_border_double_its_radius_and_offset__move_factor_is_05(self):
             coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
 
-            source_border = analysis.SourcePlaneBorder(coordinates, 3, centre=(1.0, 1.0))
+            source_border = source_plane.SourcePlaneBorder(coordinates, 3, centre=(1.0, 1.0))
 
             assert source_border.move_factor(coordinate=(3.0, 1.0)) == pytest.approx(0.5, 1e-3)
             assert source_border.move_factor(coordinate=(1.0, 3.0)) == pytest.approx(0.5, 1e-3)
@@ -636,7 +636,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0,1]])
         regularization_weights = np.ones((3))
 
-        regularization_matrix = analysis.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__one_B_matrix_size_4x4__makes_correct_regularization_matrix(self):
@@ -652,7 +652,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0,2],[1,3]])
         regularization_weights = np.ones((4))
 
-        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -679,7 +679,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0, 1], [1, 2], [2,3], [3, 0]])
         regularization_weights = np.ones((4))
 
-        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -705,7 +705,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0,2], [1,2], [0,3]])
         regularization_weights = np.ones((4))
 
-        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -737,7 +737,7 @@ class TestRegularizationMatrix(object):
 
         regularization_weights = np.ones((3))
 
-        regularization_matrix = analysis.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -791,7 +791,7 @@ class TestRegularizationMatrix(object):
 
         regularization_weights = np.ones((6))
 
-        regularization_matrix = analysis.RegularizationMatrix(6, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(6, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -823,7 +823,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0,1]])
 
 
-        regularization_matrix = analysis.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -859,7 +859,7 @@ class TestRegularizationMatrix(object):
         no_verticies = np.array([2, 3, 2, 1])
         pixel_pairs = np.array([[0,1],[0,2],[1,2],[1,3]])
 
-        regularization_matrix = analysis.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -909,7 +909,7 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
                                      test_regularization_matrix_3 + test_regularization_matrix_4
 
-        regularization_matrix = analysis.RegularizationMatrix(6, regularization_weights, no_verticies, pixel_pairs)
+        regularization_matrix = source_plane.RegularizationMatrix(6, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -921,7 +921,7 @@ class TestKMeans:
         sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = analysis.KMeans(sparse_coordinates, n_clusters=2)
+        kmeans = source_plane.KMeans(sparse_coordinates, n_clusters=2)
 
         kmeans.cluster_centers_ = list(map(lambda x : list(x) , kmeans.cluster_centers_))
 
@@ -937,7 +937,7 @@ class TestKMeans:
                                        [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
+        kmeans = source_plane.KMeans(sparse_coordinates, n_clusters=3)
 
         kmeans.cluster_centers_ = list(map(lambda x : list(x) , kmeans.cluster_centers_))
 
@@ -961,7 +961,7 @@ class TestKMeans:
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = analysis.KMeans(sparse_coordinates, n_clusters=3)
+        kmeans = source_plane.KMeans(sparse_coordinates, n_clusters=3)
 
         kmeans.cluster_centers_ = list(map(lambda x : pytest.approx(list(x),1e-3) , kmeans.cluster_centers_))
 
@@ -986,7 +986,7 @@ class TestVoronoi:
                                   [0.0, 0.0],
                            [-1.0, -1.0], [1.0,-1.0]])
 
-        voronoi = analysis.Voronoi(points)
+        voronoi = source_plane.Voronoi(points)
 
         voronoi.vertices = list(map(lambda x : list(x) , voronoi.vertices))
 
@@ -1003,7 +1003,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = analysis.Voronoi(points)
+        voronoi = source_plane.Voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -1023,7 +1023,7 @@ class TestVoronoi:
                                   [0.0, 0.0],
                            [-1.0, -1.0], [1.0,-1.0]])
 
-        voronoi = analysis.Voronoi(points)
+        voronoi = source_plane.Voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -1049,7 +1049,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = analysis.Voronoi(points)
+        voronoi = source_plane.Voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -1080,7 +1080,7 @@ class TestVoronoi:
                                   [0.0, 0.0],
                            [-1.0, -1.0], [1.0,-1.0]])
 
-        voronoi = analysis.Voronoi(points)
+        voronoi = source_plane.Voronoi(points)
 
         assert voronoi.neighbors_total[0] == 3
         assert voronoi.neighbors_total[1] == 3
@@ -1102,7 +1102,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = analysis.Voronoi(points)
+        voronoi = source_plane.Voronoi(points)
 
         assert voronoi.neighbors_total[0] == 2
         assert voronoi.neighbors_total[1] == 3
@@ -1132,8 +1132,8 @@ class TestMatchCoordinatesFromClusters:
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
-        sub_image_pixel_to_source_pixel_index = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                           source_pixels)
+        sub_image_pixel_to_source_pixel_index = source_plane.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                    source_pixels)
 
         assert sub_image_pixel_to_source_pixel_index[0] == 0
         assert sub_image_pixel_to_source_pixel_index[1] == 1
@@ -1147,8 +1147,8 @@ class TestMatchCoordinatesFromClusters:
         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
                                 [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
 
-        sub_image_pixel_to_source_pixel_index = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                           source_pixels)
+        sub_image_pixel_to_source_pixel_index = source_plane.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                    source_pixels)
 
         assert sub_image_pixel_to_source_pixel_index[0] == 0
         assert sub_image_pixel_to_source_pixel_index[1] == 1
@@ -1165,8 +1165,8 @@ class TestMatchCoordinatesFromClusters:
 
         sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
 
-        sub_image_pixel_to_source_pixel_index = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                           source_pixels)
+        sub_image_pixel_to_source_pixel_index = source_plane.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                    source_pixels)
 
         assert sub_image_pixel_to_source_pixel_index[0] == 4
         assert sub_image_pixel_to_source_pixel_index[1] == 4
@@ -1179,23 +1179,23 @@ class TestMatchCoordinatesFromClusters:
 
         sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
         
-        assert analysis.find_index_of_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
-        assert analysis.find_index_of_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
-        assert analysis.find_index_of_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
-        assert analysis.find_index_of_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
-        assert analysis.find_index_of_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
-        assert analysis.find_index_of_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
+        assert source_plane.find_index_of_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
+        assert source_plane.find_index_of_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
+        assert source_plane.find_index_of_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
+        assert source_plane.find_index_of_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
+        assert source_plane.find_index_of_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
+        assert source_plane.find_index_of_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
 
     def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
         
         source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
 
-        assert analysis.find_index_of_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
-        assert analysis.find_index_of_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
-        assert analysis.find_index_of_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
-        assert analysis.find_index_of_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
-        assert analysis.find_index_of_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
-        assert analysis.find_index_of_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
+        assert source_plane.find_index_of_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
+        assert source_plane.find_index_of_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
+        assert source_plane.find_index_of_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
+        assert source_plane.find_index_of_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
+        assert source_plane.find_index_of_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
+        assert source_plane.find_index_of_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
 
     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
 
@@ -1205,18 +1205,18 @@ class TestMatchCoordinatesFromClusters:
 
         nearest_sparse_source_pixel_index = 0
 
-        separation0 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
-                                                                                                 nearest_sparse_source_pixel_index)
+        separation0 = source_plane.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                                                     nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 1
 
-        separation1 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
-                                                                                                 nearest_sparse_source_pixel_index)
+        separation1 = source_plane.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                                                     nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 2
 
-        separation2 = analysis.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
-                                                                                                 nearest_sparse_source_pixel_index)
+        separation2 = source_plane.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                                                     nearest_sparse_source_pixel_index)
 
         assert separation0 == 1.5 ** 2
         assert separation1 == 0.5 ** 2
@@ -1231,9 +1231,9 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1,2,3,4]
 
-        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                                   source_pixel_centers,
-                                                                                                   source_pixel_neighbors)
+        index, separation = source_plane.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
+                                                                                                       source_pixel_centers,
+                                                                                                       source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
@@ -1248,9 +1248,9 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1,2,3,4]
 
-        index, separation = analysis.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                                   source_pixel_centers,
-                                                                                                   source_pixel_neighbors)
+        index, separation = source_plane.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
+                                                                                                       source_pixel_centers,
+                                                                                                       source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
@@ -1267,10 +1267,10 @@ class TestMatchCoordinatesFromClusters:
                                 [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
                                 [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
 
-        voronoi = analysis.Voronoi(source_pixels)
+        voronoi = source_plane.Voronoi(source_pixels)
 
-        sub_image_pixel_to_source_pixel_index_nearest_neighbour = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                             source_pixels)
+        sub_image_pixel_to_source_pixel_index_nearest_neighbour = source_plane.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                                      source_pixels)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
@@ -1278,10 +1278,10 @@ class TestMatchCoordinatesFromClusters:
         coordinate_to_sparse_coordinate_index = np.array([0,1,0,1,1,1,2,1,2])
         sparse_coordinate_to_source_pixel_index = np.array([1,2,4])
 
-        sub_image_pixel_to_source_pixel_index_sparse_pairs = analysis.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
-                                                                                                                   source_pixels, voronoi.neighbors,
-                                                                                                                   coordinate_to_sparse_coordinate_index,
-                                                                                                                   sparse_coordinate_to_source_pixel_index)
+        sub_image_pixel_to_source_pixel_index_sparse_pairs = source_plane.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
+                                                                                                                            source_pixels, voronoi.neighbors,
+                                                                                                                            coordinate_to_sparse_coordinate_index,
+                                                                                                                            sparse_coordinate_to_source_pixel_index)
 
         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
 
@@ -1295,10 +1295,10 @@ class TestMatchCoordinatesFromClusters:
                                 [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                                 [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = analysis.Voronoi(source_pixels)
+        voronoi = source_plane.Voronoi(source_pixels)
 
-        sub_image_pixel_to_source_pixel_index_nearest_neighbour = analysis.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                             source_pixels)
+        sub_image_pixel_to_source_pixel_index_nearest_neighbour = source_plane.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
+                                                                                                                                      source_pixels)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
@@ -1306,10 +1306,10 @@ class TestMatchCoordinatesFromClusters:
         sub_coordinate_to_sparse_coordinate_index = np.array([0,1,2,0,1,2,0,1,2])
         sparse_coordinate_to_source_pixel_index = np.array([3,4,5])
 
-        sub_image_pixel_to_source_pixel_index_sparse_pairs = analysis.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
-                                                                                                                   source_pixels, voronoi.neighbors,
-                                                                                                                   sub_coordinate_to_sparse_coordinate_index,
-                                                                                                                   sparse_coordinate_to_source_pixel_index)
+        sub_image_pixel_to_source_pixel_index_sparse_pairs = source_plane.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
+                                                                                                                            source_pixels, voronoi.neighbors,
+                                                                                                                            sub_coordinate_to_sparse_coordinate_index,
+                                                                                                                            sparse_coordinate_to_source_pixel_index)
 
         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
 
@@ -1326,9 +1326,9 @@ class TestMappingMatrix:
         sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5] # For no sub grid, image pixels map to sub-pixels.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
@@ -1344,9 +1344,9 @@ class TestMappingMatrix:
         sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # For no sub grid, image pixels map to sub-pixels.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], # Image pixels 1 and 4 map to source pixel 1.
@@ -1370,9 +1370,9 @@ class TestMappingMatrix:
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
@@ -1394,9 +1394,9 @@ class TestMappingMatrix:
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], # Image pixels 1 and 4 map to source pixel 1.
@@ -1420,9 +1420,9 @@ class TestMappingMatrix:
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
                                             [0, 0.5, 0, 0, 1.5, 0], # Image pixels 1 and 4 map to source pixel 1.
@@ -1447,9 +1447,9 @@ class TestMappingMatrix:
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
                                             4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         print(mapping_matrix)
 
@@ -1483,9 +1483,9 @@ class TestMappingMatrix:
                                             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-        mapping_matrix = analysis.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                sub_image_pixel_to_source_pixel_index,
-                                                sub_image_pixel_to_image_pixel_index)
+        mapping_matrix = source_plane.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                                    sub_image_pixel_to_source_pixel_index,
+                                                    sub_image_pixel_to_image_pixel_index)
 
         assert (mapping_matrix == np.array([[0,    0.9375, 0.0625],
                                             [0.25, 0.75,   1.0]])).all()
