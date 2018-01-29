@@ -31,6 +31,16 @@ else:
     import queue as queue
 
 
+def create_d_matrix(pixel_maps, noise_vector, image_vector):
+    def value_for_pixel_map(pixel_map):
+        value = 0
+        for index in pixel_map.keys():
+            value += image_vector[index] * pixel_map[index] / noise_vector[index]
+        return value
+
+    return map(value_for_pixel_map, pixel_maps)
+
+
 def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_limit=0.):
     """
     Creates the F matrix from an f matrix

@@ -2,12 +2,31 @@ import covariance_matrix
 import pytest
 
 
+@pytest.fixture(name="trivial_pixel_maps")
+def make_trivial_pixel_maps():
+    return [{0: 1}, {0: 1}, {0: 1}, {1: 1}, {0: 1}]
+
+
+class TestDMatrix(object):
+    def test_simple_example(self, trivial_pixel_maps):
+        noise_vector = [1, 1]
+        image_vector = [1, 2]
+
+        assert [1, 1, 1, 2, 1] == covariance_matrix.create_d_matrix(trivial_pixel_maps, noise_vector, image_vector)
+
+    def test_variable_no_pixels_mapped(self):
+        pixel_map = [{0: 1}, {0: 1, 1: 1}, {0: 1, 1: 1, 2: 1}]
+        noise_vector = [1, 1, 1]
+        image_vector = [1, 1, 1]
+
+        assert [1, 2, 3] == covariance_matrix.create_d_matrix(pixel_map, noise_vector, image_vector)
+
+
 @pytest.fixture(name="line_generator")
-def make_line_generator():
+def make_line_generator(trivial_pixel_maps):
     graph = [[1], [2], [3], [4], []]
-    pixel_maps = [{0: 1}, {0: 1}, {0: 1}, {1: 1}, {0: 1}]
-    noise = [1 for _ in range(2)]
-    return covariance_matrix.CovarianceMatrixGenerator(pixel_maps, noise, graph)
+    noise_vector = [1 for _ in range(2)]
+    return covariance_matrix.CovarianceMatrixGenerator(trivial_pixel_maps, noise_vector, graph)
 
 
 @pytest.fixture(name="generator")
@@ -16,8 +35,8 @@ def make_generator():
     pixel_maps = []
     for l in [[0, 1, 2, 8], [0, 1, 2, 3], [1, 2, 4], [3, 5], [0, 1, 2, 3, 5, 6], [4, 7], [6, 7], [6, 8]]:
         pixel_maps.append({i: 1 for i in l})
-    noise = [1 for _ in range(9)]
-    return covariance_matrix.CovarianceMatrixGenerator(pixel_maps, noise, graph)
+    noise_vector = [1 for _ in range(9)]
+    return covariance_matrix.CovarianceMatrixGenerator(pixel_maps, noise_vector, graph)
 
 
 class TestMissingCovariances(object):
