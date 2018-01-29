@@ -24,7 +24,6 @@ class TestSourcePlane(object):
             assert source_plane.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
         def test__four_coordinates_and_offset_centre__doesnt_change_coordinate_values(self):
-
             # The centre is used by SourcePlaneGeomtry, but doesn't change the input coordinate values
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
 
@@ -185,7 +184,6 @@ class TestSourcePlane(object):
 
 
 class TestSorucePlaneBorder(object):
-
     class TestSetupBorder(object):
 
         def test__four_coordinates_in_circle__correct_border(self):
@@ -207,7 +205,7 @@ class TestSorucePlaneBorder(object):
             assert border.thetas == [0.0, 90.0, 180.0, 270.0]
 
         def test__test_other_thetas_radii(self):
-            coordinates = [(2.0, 0.0),  (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
+            coordinates = [(2.0, 0.0), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
 
             border = sp.SourcePlaneBorder(coordinates, 3, centre=(0.0, 0.0))
 
@@ -353,7 +351,8 @@ class TestSorucePlaneBorder(object):
             relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, -1.0))
             assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
 
-        def test__outside_border_simple_cases_setup__via_source_plane_border_mask_routine__relocates_to_source_border(self):
+        def test__outside_border_simple_cases_setup__via_source_plane_border_mask_routine__relocates_to_source_border(
+                self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
@@ -407,7 +406,7 @@ class TestSorucePlaneBorder(object):
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
             coordinates_original = circle + [(0.2, 0.0), (0.1, 0.1), (0.0, 0.2), (-0.1, 0.1),
-                                    (-0.2, 0.0), (-0.1, -0.1), (0.0, -0.2), (0.1, -0.1)]
+                                             (-0.2, 0.0), (-0.1, -0.1), (0.0, -0.2), (0.1, -0.1)]
 
             border_mask = [True] * 16 + [False] * 8
 
@@ -513,11 +512,11 @@ class TestRegularizationMatrix(object):
     # The regularization matrix, H, is calculated by defining a set of B matrices which describe how source-plane
     # pixels map to one another. For example, if we had a 3x3 square grid:
 
-    #______
-    #|0|1|2|
-    #|3|4|5|
-    #|6|7|8|
-    #^^^^^^^
+    # ______
+    # |0|1|2|
+    # |3|4|5|
+    # |6|7|8|
+    # ^^^^^^^
 
     # Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right and
     # below it.
@@ -615,7 +614,6 @@ class TestRegularizationMatrix(object):
     # which computes H takes care of all of this :)
 
     def test__one_B_matrix_size_3x3__makes_correct_regularization_matrix(self):
-
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
         # This means our B matrix is:
@@ -633,23 +631,22 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
         no_verticies = np.array([1, 1, 0])
-        pixel_pairs = np.array([[0,1]])
+        pixel_pairs = np.array([[0, 1]])
         regularization_weights = np.ones((3))
 
         regularization_matrix = sp.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__one_B_matrix_size_4x4__makes_correct_regularization_matrix(self):
-
-        test_b_matrix = np.array( [[-1, 0, 1, 0],
-                                    [0, -1, 0, 1],
-                                    [1, 0, -1, 0],
-                                    [0, 1, 0, -1]] )
+        test_b_matrix = np.array([[-1, 0, 1, 0],
+                                  [0, -1, 0, 1],
+                                  [1, 0, -1, 0],
+                                  [0, 1, 0, -1]])
 
         test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
         no_verticies = np.array([1, 1, 1, 1])
-        pixel_pairs = np.array([[0,2],[1,3]])
+        pixel_pairs = np.array([[0, 2], [1, 3]])
         regularization_weights = np.ones((4))
 
         regularization_matrix = sp.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
@@ -657,26 +654,24 @@ class TestRegularizationMatrix(object):
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__two_B_matrices_size_4x4__makes_correct_regularization_matrix(self):
-
-
         test_b_matrix_1 = np.array([[-1, 1, 0, 0],
-                                     [0, -1, 1, 0],
-                                     [0, 0, -1, 1],
-                                     [1, 0, 0, -1]])
+                                    [0, -1, 1, 0],
+                                    [0, 0, -1, 1],
+                                    [1, 0, 0, -1]])
 
         test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
         test_b_matrix_2 = np.array([[-1, 0, 0, 1],
-                                     [1, -1, 0, 0],
-                                     [0, 1, -1, 0],
-                                     [0, 0, 1, -1]])
+                                    [1, -1, 0, 0],
+                                    [0, 1, -1, 0],
+                                    [0, 0, 1, -1]])
 
         test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
 
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
         no_verticies = np.array([2, 2, 2, 2])
-        pixel_pairs = np.array([[0, 1], [1, 2], [2,3], [3, 0]])
+        pixel_pairs = np.array([[0, 1], [1, 2], [2, 3], [3, 0]])
         regularization_weights = np.ones((4))
 
         regularization_matrix = sp.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
@@ -684,25 +679,24 @@ class TestRegularizationMatrix(object):
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__two_B_matrices_size_4x4__makes_correct_regularization_matrix2(self):
-
         test_b_matrix_1 = np.matrix([[-1, 0, 1, 0],
                                      [0, -1, 1, 0],
                                      [1, 0, -1, 0],
-                                     [1, 0, 0, -1]] )
+                                     [1, 0, 0, -1]])
 
         test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
         test_b_matrix_2 = np.matrix([[-1, 0, 0, 1],
                                      [0, 0, 0, 0],
                                      [0, 1, -1, 0],
-                                     [0, 0, 0, 0]] )
+                                     [0, 0, 0, 0]])
 
         test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
 
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
         no_verticies = np.array([2, 1, 2, 1])
-        pixel_pairs = np.array([[0,2], [1,2], [0,3]])
+        pixel_pairs = np.array([[0, 2], [1, 2], [0, 3]])
         regularization_weights = np.ones((4))
 
         regularization_matrix = sp.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
@@ -710,28 +704,26 @@ class TestRegularizationMatrix(object):
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__two_pairs_two_B_matrices_size_3x3__makes_correct_regularization_matrix(self):
-
         # Here, we define the pixel_pairs first here and make the B matrices based on them.
 
         # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
         # have to have as many B matrices as we do the source pixel with the most Voronoi vertices. We can combine the
         # rows of each B matrix wherever we like ;0.
 
-        pixel_pairs = np.array([[0,1], [0,2]])
+        pixel_pairs = np.array([[0, 1], [0, 2]])
         no_verticies = np.array([2, 1, 1])
 
-        test_b_matrix_1 = np.array([[-1, 1, 0], # Pair 1
-                                     [-1, 0, 1], # Pair 2
-                                     [1, -1, 0]] ) # Pair 1 flip
+        test_b_matrix_1 = np.array([[-1, 1, 0],  # Pair 1
+                                    [-1, 0, 1],  # Pair 2
+                                    [1, -1, 0]])  # Pair 1 flip
 
         test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
-        test_b_matrix_2 = np.array([[1, 0, -1], # Pair 2 flip
-                                     [0, 0, 0],
-                                     [0, 0, 0]] )
+        test_b_matrix_2 = np.array([[1, 0, -1],  # Pair 2 flip
+                                    [0, 0, 0],
+                                    [0, 0, 0]])
 
         test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
-
 
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
@@ -742,52 +734,51 @@ class TestRegularizationMatrix(object):
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__eight_pairs_four_B_matrices_size_6x6__makes_correct_regularization_matrix(self):
-
         # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a lot less
         # Stressful.
 
-        pixel_pairs = np.array([[0,2], [1,2], [0,3], [4,5], [1,5], [0,4], [2,3], [2,5]])
+        pixel_pairs = np.array([[0, 2], [1, 2], [0, 3], [4, 5], [1, 5], [0, 4], [2, 3], [2, 5]])
 
         no_verticies = np.array([3, 2, 4, 2, 2, 3])
 
-        test_b_matrix_1 = np.array([[-1, 0, 1, 0, 0, 0], # Pair 1
-                                     [0, -1, 1, 0, 0, 0], # Pair 2
-                                     [-1, 0, 0, 1, 0, 0], # Pair 3
-                                     [0, 0, 0, 0, -1, 1], # Pair 4
-                                     [0, -1, 0, 0, 0, 1], # Pair 5
-                                     [-1, 0, 0, 0, 1, 0]]) # Pair 6
+        test_b_matrix_1 = np.array([[-1, 0, 1, 0, 0, 0],  # Pair 1
+                                    [0, -1, 1, 0, 0, 0],  # Pair 2
+                                    [-1, 0, 0, 1, 0, 0],  # Pair 3
+                                    [0, 0, 0, 0, -1, 1],  # Pair 4
+                                    [0, -1, 0, 0, 0, 1],  # Pair 5
+                                    [-1, 0, 0, 0, 1, 0]])  # Pair 6
 
         test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
-        test_b_matrix_2 = np.array([[0, 0, -1, 1, 0, 0], # Pair 7
-                                     [0, 0, -1, 0, 0, 1], # Pair 8
-                                     [0, 0, 0, 0, 0, 0],
-                                     [0, 0, 0, 0, 0, 0],
-                                     [0, 0, 0, 0, 0, 0],
-                                     [0, 0, 0, 0, 0, 0]])
+        test_b_matrix_2 = np.array([[0, 0, -1, 1, 0, 0],  # Pair 7
+                                    [0, 0, -1, 0, 0, 1],  # Pair 8
+                                    [0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0]])
 
         test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
 
-        test_b_matrix_3 = np.array([[1, 0, -1, 0, 0, 0], # Pair 1 flip
-                                     [0, 1, -1, 0, 0, 0], # Pair 2 flip
-                                     [1, 0, 0, -1, 0, 0], # Pair 3 flip
-                                     [0, 0, 0, 0, 1, -1], # Pair 4 flip
-                                     [0, 1, 0, 0, 0, -1], # Pair 5 flip
-                                     [1, 0, 0, 0, -1, 0]]) # Pair 6 flip
+        test_b_matrix_3 = np.array([[1, 0, -1, 0, 0, 0],  # Pair 1 flip
+                                    [0, 1, -1, 0, 0, 0],  # Pair 2 flip
+                                    [1, 0, 0, -1, 0, 0],  # Pair 3 flip
+                                    [0, 0, 0, 0, 1, -1],  # Pair 4 flip
+                                    [0, 1, 0, 0, 0, -1],  # Pair 5 flip
+                                    [1, 0, 0, 0, -1, 0]])  # Pair 6 flip
 
         test_regularization_matrix_3 = np.matmul(test_b_matrix_3.T, test_b_matrix_3)
 
-        test_b_matrix_4 = np.array([[0, 0, 1, -1, 0, 0], # Pair 7 flip
-                                     [0, 0, 1, 0, 0, -1], # Pair 8 flip
-                                     [0, 0, 0, 0, 0, 0],
-                                     [0, 0, 0, 0, 0, 0],
-                                     [0, 0, 0, 0, 0, 0],
-                                     [0, 0, 0, 0, 0, 0]])
+        test_b_matrix_4 = np.array([[0, 0, 1, -1, 0, 0],  # Pair 7 flip
+                                    [0, 0, 1, 0, 0, -1],  # Pair 8 flip
+                                    [0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0],
+                                    [0, 0, 0, 0, 0, 0]])
 
         test_regularization_matrix_4 = np.matmul(test_b_matrix_4.T, test_b_matrix_4)
 
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
-        test_regularization_matrix_3 + + test_regularization_matrix_4
+                                     test_regularization_matrix_3 + + test_regularization_matrix_4
 
         regularization_weights = np.ones((6))
 
@@ -796,7 +787,6 @@ class TestRegularizationMatrix(object):
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__one_B_matrix_size_3x3_variables_regularization_weights__makes_correct_regularization_matrix(self):
-
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
         # This means our B matrix is:
@@ -809,26 +799,22 @@ class TestRegularizationMatrix(object):
 
         regularization_weights = np.array([2.0, 4.0, 1.0])
 
-        test_b_matrix = np.array([[-1, 1, 0],    #[[-2, 2, 0], (Matrix)
-                                  [1, -1, 0],    # [4, -4, 0], (after)
-                                  [0, 0,  0]])   # [0, 0,  0]]) (weights)
+        test_b_matrix = np.array([[-1, 1, 0],  # [[-2, 2, 0], (Matrix)
+                                  [1, -1, 0],  # [4, -4, 0], (after)
+                                  [0, 0, 0]])  # [0, 0,  0]]) (weights)
 
         test_b_matrix = (test_b_matrix.T * regularization_weights).T
-
-
 
         test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
         no_verticies = np.array([1, 1, 0])
-        pixel_pairs = np.array([[0,1]])
-
+        pixel_pairs = np.array([[0, 1]])
 
         regularization_matrix = sp.RegularizationMatrix(3, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__two_B_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
-
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
         # This means our B matrix is:
@@ -857,30 +843,29 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
         no_verticies = np.array([2, 3, 2, 1])
-        pixel_pairs = np.array([[0,1],[0,2],[1,2],[1,3]])
+        pixel_pairs = np.array([[0, 1], [0, 2], [1, 2], [1, 3]])
 
         regularization_matrix = sp.RegularizationMatrix(4, regularization_weights, no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
 
     def test__four_B_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
-
-        pixel_pairs = np.array([[0,1],[0,4],[1,2],[1,4],[2,3],[2,4],[2,5],[3,5],[4,5]])
+        pixel_pairs = np.array([[0, 1], [0, 4], [1, 2], [1, 4], [2, 3], [2, 4], [2, 5], [3, 5], [4, 5]])
         no_verticies = np.array([2, 3, 4, 2, 4, 3])
         regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
         # I'm inputting the regularizationo weights directly thiss time, as it'd be a pain to multiply with a loop.
 
-        test_b_matrix_1 = np.array([[-1, 1, 0, 0, 0, 0], # Pair 1
-                                    [-1, 0, 0, 0, 1, 0], # Pair 2
-                                    [0, -2, 2, 0, 0, 0], # Pair 3
-                                    [0, -2, 0, 0, 2, 0], # Pair 4
-                                    [0,  0, -3, 3, 0, 0], # Pair 5
-                                    [0, 0, -3, 0, 3, 0]]) # Pair 6
+        test_b_matrix_1 = np.array([[-1, 1, 0, 0, 0, 0],  # Pair 1
+                                    [-1, 0, 0, 0, 1, 0],  # Pair 2
+                                    [0, -2, 2, 0, 0, 0],  # Pair 3
+                                    [0, -2, 0, 0, 2, 0],  # Pair 4
+                                    [0, 0, -3, 3, 0, 0],  # Pair 5
+                                    [0, 0, -3, 0, 3, 0]])  # Pair 6
 
-        test_b_matrix_2 = np.array([[0, 0, -3, 0, 0, 3], # Pair 7
-                                    [0, 0, 0, -4, 0, 4], # Pair 8
-                                    [0, 0, 0,  0, -5, 5], # Pair 9
+        test_b_matrix_2 = np.array([[0, 0, -3, 0, 0, 3],  # Pair 7
+                                    [0, 0, 0, -4, 0, 4],  # Pair 8
+                                    [0, 0, 0, 0, -5, 5],  # Pair 9
                                     [0, 0, 0, 0, 0, 0],
                                     [0, 0, 0, 0, 0, 0],
                                     [0, 0, 0, 0, 0, 0]])
@@ -917,13 +902,12 @@ class TestRegularizationMatrix(object):
 class TestKMeans:
 
     def test__simple_points__sets_up_two_clusters(self):
-
         sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
         kmeans = sp.KMeans(sparse_coordinates, n_clusters=2)
 
-        kmeans.cluster_centers_ = list(map(lambda x : list(x) , kmeans.cluster_centers_))
+        kmeans.cluster_centers_ = list(map(lambda x: list(x), kmeans.cluster_centers_))
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -932,14 +916,13 @@ class TestKMeans:
         assert list(kmeans.labels_).count(1) == 3
 
     def test__simple_points__sets_up_three_clusters(self):
-
         sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
                                        [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
         kmeans = sp.KMeans(sparse_coordinates, n_clusters=3)
 
-        kmeans.cluster_centers_ = list(map(lambda x : list(x) , kmeans.cluster_centers_))
+        kmeans.cluster_centers_ = list(map(lambda x: list(x), kmeans.cluster_centers_))
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -950,7 +933,6 @@ class TestKMeans:
         assert list(kmeans.labels_).count(2) == 3
 
     def test__simple_points__sets_up_three_clusters_more_points_in_third_cluster(self):
-
         sparse_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
 
                                        [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
@@ -963,7 +945,7 @@ class TestKMeans:
 
         kmeans = sp.KMeans(sparse_coordinates, n_clusters=3)
 
-        kmeans.cluster_centers_ = list(map(lambda x : pytest.approx(list(x),1e-3) , kmeans.cluster_centers_))
+        kmeans.cluster_centers_ = list(map(lambda x: pytest.approx(list(x), 1e-3), kmeans.cluster_centers_))
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -979,16 +961,15 @@ class TestKMeans:
 class TestVoronoi:
 
     def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
-
         # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
 
-        points = np.array([[-1.0, 1.0],  [1.0, 1.0],
-                                  [0.0, 0.0],
-                           [-1.0, -1.0], [1.0,-1.0]])
+        points = np.array([[-1.0, 1.0], [1.0, 1.0],
+                           [0.0, 0.0],
+                           [-1.0, -1.0], [1.0, -1.0]])
 
         voronoi = sp.Voronoi(points)
 
-        voronoi.vertices = list(map(lambda x : list(x) , voronoi.vertices))
+        voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
 
         assert [0, 1.] in voronoi.vertices
         assert [-1., 0.] in voronoi.vertices
@@ -996,7 +977,6 @@ class TestVoronoi:
         assert [0., -1.] in voronoi.vertices
 
     def test__9_points_in_square___sets_up_square_of_voronoi_vertices(self):
-
         # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
         points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
@@ -1008,7 +988,7 @@ class TestVoronoi:
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
 
-        voronoi.vertices = list(map(lambda x : list(x) , voronoi.vertices))
+        voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
 
         assert [0.5, 1.5] in voronoi.vertices
         assert [1.5, 0.5] in voronoi.vertices
@@ -1016,33 +996,31 @@ class TestVoronoi:
         assert [1.5, 1.5] in voronoi.vertices
 
     def test__points_in_x_cross_shape__sets_up_pairs_of_voronoi_cells(self):
-
         # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
 
-        points = np.array([[-1.0, 1.0],  [1.0, 1.0],
-                                  [0.0, 0.0],
-                           [-1.0, -1.0], [1.0,-1.0]])
+        points = np.array([[-1.0, 1.0], [1.0, 1.0],
+                           [0.0, 0.0],
+                           [-1.0, -1.0], [1.0, -1.0]])
 
         voronoi = sp.Voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
 
-        voronoi.ridge_points = list(map(lambda x : list(x) , voronoi.ridge_points))
+        voronoi.ridge_points = list(map(lambda x: list(x), voronoi.ridge_points))
 
         assert len(voronoi.ridge_points) == 8
 
-        assert [2,0] in voronoi.ridge_points or [0,2] in voronoi.ridge_points
-        assert [2,1] in voronoi.ridge_points or [1,2] in voronoi.ridge_points
-        assert [2,3] in voronoi.ridge_points or [3,2] in voronoi.ridge_points
-        assert [2,4] in voronoi.ridge_points or [4,2] in voronoi.ridge_points
-        assert [0,1] in voronoi.ridge_points or [1,0] in voronoi.ridge_points
-        assert [0.3] in voronoi.ridge_points or [3,0] in voronoi.ridge_points
-        assert [3,4] in voronoi.ridge_points or [4,3] in voronoi.ridge_points
-        assert [4,1] in voronoi.ridge_points or [1,4] in voronoi.ridge_points
+        assert [2, 0] in voronoi.ridge_points or [0, 2] in voronoi.ridge_points
+        assert [2, 1] in voronoi.ridge_points or [1, 2] in voronoi.ridge_points
+        assert [2, 3] in voronoi.ridge_points or [3, 2] in voronoi.ridge_points
+        assert [2, 4] in voronoi.ridge_points or [4, 2] in voronoi.ridge_points
+        assert [0, 1] in voronoi.ridge_points or [1, 0] in voronoi.ridge_points
+        assert [0.3] in voronoi.ridge_points or [3, 0] in voronoi.ridge_points
+        assert [3, 4] in voronoi.ridge_points or [4, 3] in voronoi.ridge_points
+        assert [4, 1] in voronoi.ridge_points or [1, 4] in voronoi.ridge_points
 
     def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
-
         # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
         points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
@@ -1054,31 +1032,30 @@ class TestVoronoi:
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
 
-        voronoi.ridge_points = list(map(lambda x : list(x) , voronoi.ridge_points))
+        voronoi.ridge_points = list(map(lambda x: list(x), voronoi.ridge_points))
 
         assert len(voronoi.ridge_points) == 12
 
-        assert [0,1] in voronoi.ridge_points or [1,0] in voronoi.ridge_points
-        assert [1,2] in voronoi.ridge_points or [2,1] in voronoi.ridge_points
-        assert [3,4] in voronoi.ridge_points or [4,3] in voronoi.ridge_points
-        assert [4,5] in voronoi.ridge_points or [5,4] in voronoi.ridge_points
-        assert [6,7] in voronoi.ridge_points or [7,6] in voronoi.ridge_points
-        assert [7,8] in voronoi.ridge_points or [8,7] in voronoi.ridge_points
+        assert [0, 1] in voronoi.ridge_points or [1, 0] in voronoi.ridge_points
+        assert [1, 2] in voronoi.ridge_points or [2, 1] in voronoi.ridge_points
+        assert [3, 4] in voronoi.ridge_points or [4, 3] in voronoi.ridge_points
+        assert [4, 5] in voronoi.ridge_points or [5, 4] in voronoi.ridge_points
+        assert [6, 7] in voronoi.ridge_points or [7, 6] in voronoi.ridge_points
+        assert [7, 8] in voronoi.ridge_points or [8, 7] in voronoi.ridge_points
 
-        assert [0,3] in voronoi.ridge_points or [3,0] in voronoi.ridge_points
-        assert [1,4] in voronoi.ridge_points or [4,1] in voronoi.ridge_points
-        assert [4,7] in voronoi.ridge_points or [7,4] in voronoi.ridge_points
-        assert [2,5] in voronoi.ridge_points or [5,2] in voronoi.ridge_points
-        assert [5,8] in voronoi.ridge_points or [8,5] in voronoi.ridge_points
-        assert [3,6] in voronoi.ridge_points or [6,3] in voronoi.ridge_points
+        assert [0, 3] in voronoi.ridge_points or [3, 0] in voronoi.ridge_points
+        assert [1, 4] in voronoi.ridge_points or [4, 1] in voronoi.ridge_points
+        assert [4, 7] in voronoi.ridge_points or [7, 4] in voronoi.ridge_points
+        assert [2, 5] in voronoi.ridge_points or [5, 2] in voronoi.ridge_points
+        assert [5, 8] in voronoi.ridge_points or [8, 5] in voronoi.ridge_points
+        assert [3, 6] in voronoi.ridge_points or [6, 3] in voronoi.ridge_points
 
     def test__points_in_x_cross_shape__neighbors_of_each_source_pixel_correct(self):
-
         # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
 
-        points = np.array([[-1.0, 1.0],  [1.0, 1.0],
-                                  [0.0, 0.0],
-                           [-1.0, -1.0], [1.0,-1.0]])
+        points = np.array([[-1.0, 1.0], [1.0, 1.0],
+                           [0.0, 0.0],
+                           [-1.0, -1.0], [1.0, -1.0]])
 
         voronoi = sp.Voronoi(points)
 
@@ -1095,7 +1072,6 @@ class TestVoronoi:
         assert set(voronoi.neighbors[4]) == set([2, 1, 3])
 
     def test__9_points_in_square___neighbors_of_each_source_pixel_correct(self):
-
         # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
         points = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
@@ -1128,12 +1104,12 @@ class TestVoronoi:
 class TestMatchCoordinatesFromClusters:
 
     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
-
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
-        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                    source_pixels)
+        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates,
+            source_pixels)
 
         assert sub_image_pixel_to_source_pixel_index[0] == 0
         assert sub_image_pixel_to_source_pixel_index[1] == 1
@@ -1141,14 +1117,14 @@ class TestMatchCoordinatesFromClusters:
         assert sub_image_pixel_to_source_pixel_index[3] == 3
 
     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
-
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
 
         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
-                                [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
+                                    [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
 
-        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                    source_pixels)
+        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates,
+            source_pixels)
 
         assert sub_image_pixel_to_source_pixel_index[0] == 0
         assert sub_image_pixel_to_source_pixel_index[1] == 1
@@ -1160,13 +1136,13 @@ class TestMatchCoordinatesFromClusters:
         assert sub_image_pixel_to_source_pixel_index[7] == 0
 
     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
-
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
 
         sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
 
-        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                    source_pixels)
+        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates,
+            source_pixels)
 
         assert sub_image_pixel_to_source_pixel_index[0] == 4
         assert sub_image_pixel_to_source_pixel_index[1] == 4
@@ -1174,11 +1150,10 @@ class TestMatchCoordinatesFromClusters:
         assert sub_image_pixel_to_source_pixel_index[3] == 0
         assert sub_image_pixel_to_source_pixel_index[4] == 0
         assert sub_image_pixel_to_source_pixel_index[5] == 5
-        
-    def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
 
+    def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
         sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
-        
+
         assert sp.find_index_of_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
         assert sp.find_index_of_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
         assert sp.find_index_of_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
@@ -1187,7 +1162,6 @@ class TestMatchCoordinatesFromClusters:
         assert sp.find_index_of_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
 
     def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
-        
         source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
 
         assert sp.find_index_of_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
@@ -1198,118 +1172,120 @@ class TestMatchCoordinatesFromClusters:
         assert sp.find_index_of_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
 
     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
-
         source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
 
         sub_coordinate = [1.5, 0.0]
 
         nearest_sparse_source_pixel_index = 0
 
-        separation0 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
-                                                                                                     nearest_sparse_source_pixel_index)
+        separation0 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+                                                                                           sub_coordinate,
+                                                                                           nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 1
 
-        separation1 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
-                                                                                                     nearest_sparse_source_pixel_index)
+        separation1 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+                                                                                           sub_coordinate,
+                                                                                           nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 2
 
-        separation2 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
-                                                                                                     nearest_sparse_source_pixel_index)
+        separation2 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+                                                                                           sub_coordinate,
+                                                                                           nearest_sparse_source_pixel_index)
 
         assert separation0 == 1.5 ** 2
         assert separation1 == 0.5 ** 2
         assert separation2 == 0.5 ** 2
 
     def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
-
         sub_coordinate = np.array([0.0, 0.0])
-        source_pixel_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
+        source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
 
-        #Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
+        # Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
 
-        source_pixel_neighbors = [1,2,3,4]
+        source_pixel_neighbors = [1, 2, 3, 4]
 
         index, separation = sp.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                                       source_pixel_centers,
-                                                                                                       source_pixel_neighbors)
+                                                                                             source_pixel_centers,
+                                                                                             source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
 
     def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
-
         sub_coordinate = np.array([0.0, 0.0])
-        source_pixel_centers = np.array([[0.0, 0.0],[-1.0, 0.0],[1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
+        source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
 
-        #Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
+        # Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
         # sense geometrically, but tests the code functionality).
 
-        source_pixel_neighbors = [1,2,3,4]
+        source_pixel_neighbors = [1, 2, 3, 4]
 
         index, separation = sp.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                                       source_pixel_centers,
-                                                                                                       source_pixel_neighbors)
+                                                                                             source_pixel_centers,
+                                                                                             source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
 
     def test__sub_coordinates_to_source_pixels_via_sparse_pairs__source_pixels_in_x_shape__correct_pairs(self):
-
-        source_pixels = np.array([[-1.0, 1.0],  [1.0, 1.0],
+        source_pixels = np.array([[-1.0, 1.0], [1.0, 1.0],
                                   [0.0, 0.0],
-                           [-1.0, -1.0], [1.0,-1.0]])
+                                  [-1.0, -1.0], [1.0, -1.0]])
 
         # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
 
         sub_coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
-                                [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
-                                [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
+                                    [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
+                                    [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
 
         voronoi = sp.Voronoi(source_pixels)
 
-        sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                                      source_pixels)
+        sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates,
+            source_pixels)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
 
-        coordinate_to_sparse_coordinate_index = np.array([0,1,0,1,1,1,2,1,2])
-        sparse_coordinate_to_source_pixel_index = np.array([1,2,4])
+        coordinate_to_sparse_coordinate_index = np.array([0, 1, 0, 1, 1, 1, 2, 1, 2])
+        sparse_coordinate_to_source_pixel_index = np.array([1, 2, 4])
 
-        sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
-                                                                                                                            source_pixels, voronoi.neighbors,
-                                                                                                                            coordinate_to_sparse_coordinate_index,
-                                                                                                                            sparse_coordinate_to_source_pixel_index)
+        sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+            sub_coordinates,
+            source_pixels, voronoi.neighbors,
+            coordinate_to_sparse_coordinate_index,
+            sparse_coordinate_to_source_pixel_index)
 
         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
 
     def test__sub_coordinates_to_source_pixels_via_sparse_pairs__grid_of_source_pixels__correct_pairs(self):
-
         source_pixels = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-                             [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
-                             [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+                                  [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+                                  [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
         sub_coordinates = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-                                [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
-                                [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+                                    [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+                                    [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
         voronoi = sp.Voronoi(source_pixels)
 
-        sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates,
-                                                                                                                                      source_pixels)
+        sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates,
+            source_pixels)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
 
-        sub_coordinate_to_sparse_coordinate_index = np.array([0,1,2,0,1,2,0,1,2])
-        sparse_coordinate_to_source_pixel_index = np.array([3,4,5])
+        sub_coordinate_to_sparse_coordinate_index = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
+        sparse_coordinate_to_source_pixel_index = np.array([3, 4, 5])
 
-        sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates,
-                                                                                                                            source_pixels, voronoi.neighbors,
-                                                                                                                            sub_coordinate_to_sparse_coordinate_index,
-                                                                                                                            sparse_coordinate_to_source_pixel_index)
+        sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+            sub_coordinates,
+            source_pixels, voronoi.neighbors,
+            sub_coordinate_to_sparse_coordinate_index,
+            sparse_coordinate_to_source_pixel_index)
 
         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
 
@@ -1317,45 +1293,42 @@ class TestMatchCoordinatesFromClusters:
 class TestMappingMatrix:
 
     def test__coordinates_to_source_pixel_index__3x6_sub_grid_size_1(self):
-
         source_pixel_total = 3
         image_pixel_total = 6
         sub_grid_size = 1
 
-
-        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5] # For no sub grid, image pixels map to sub-pixels.
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5]  # For no sub grid, image pixels map to sub-pixels.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
-        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
-                                            [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
-                                            [0, 0, 1, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
+        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 1, 0, 0, 1, 0],  # Image pixels 1 and 4 map to source pixel 1.
+                                            [0, 0, 1, 0, 0, 1]])).all()  # Image pixels 2 and 5 map to source pixel 2
 
     def test__coordinates_to_source_pixel_index__5x11_grid_size_1(self):
-
         source_pixel_total = 5
         image_pixel_total = 11
         sub_grid_size = 1
 
-
-        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # For no sub grid, image pixels map to sub-pixels.
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                                10]  # For no sub grid, image pixels map to sub-pixels.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
-        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
-                                            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], # Image pixels 1 and 4 map to source pixel 1.
-                                            [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-                                            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-                                            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all() # Image pixels 2 and 5 map to source pixel 2
+        assert (mapping_matrix == np.array(
+            [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image pixels 0 and 3 map to source pixel 0.
+             [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image pixels 1 and 4 map to source pixel 1.
+             [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+             [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image pixels 2 and 5 map to source pixel 2
 
     def test__coordinates_to_source_pixel_index__3x6_grid_size_2_but_fully_overlaps_image_pixels(self):
-
         source_pixel_total = 3
         image_pixel_total = 6
         sub_grid_size = 2
@@ -1368,18 +1341,17 @@ class TestMappingMatrix:
                                                 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
 
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-                                            0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+                                                 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
-        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
-                                            [0, 1, 0, 0, 1, 0], # Image pixels 1 and 4 map to source pixel 1.
-                                            [0, 0, 1, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
+        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 1, 0, 0, 1, 0],  # Image pixels 1 and 4 map to source pixel 1.
+                                            [0, 0, 1, 0, 0, 1]])).all()  # Image pixels 2 and 5 map to source pixel 2
 
     def test__coordinates_to_source_pixel_index__5x11_grid_size_2_but_fully_overlaps_image_pixels(self):
-
         source_pixel_total = 5
         image_pixel_total = 11
         sub_grid_size = 2
@@ -1392,20 +1364,20 @@ class TestMappingMatrix:
                                                 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10]
 
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-                                            4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
+                                                 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
-        assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
-                                            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], # Image pixels 1 and 4 map to source pixel 1.
-                                            [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-                                            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-                                            [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all() # Image pixels 2 and 5 map to source pixel 2
+        assert (mapping_matrix == np.array(
+            [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image pixels 0 and 3 map to source pixel 0.
+             [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image pixels 1 and 4 map to source pixel 1.
+             [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+             [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image pixels 2 and 5 map to source pixel 2
 
     def test__coordinates_to_source_pixel_index__3x6_grid_size_2_not_fully_overlapping(self):
-
         source_pixel_total = 3
         image_pixel_total = 6
         sub_grid_size = 2
@@ -1418,25 +1390,25 @@ class TestMappingMatrix:
                                                 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
 
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-                                            0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+                                                 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
-        assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0], # Image pixels 0 and 3 map to source pixel 0.
-                                            [0, 0.5, 0, 0, 1.5, 0], # Image pixels 1 and 4 map to source pixel 1.
-                                            [0.25, 0, 0.75, 0, 0, 1]])).all() # Image pixels 2 and 5 map to source pixel 2
+        assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0],  # Image pixels 0 and 3 map to source pixel 0.
+                                            [0, 0.5, 0, 0, 1.5, 0],  # Image pixels 1 and 4 map to source pixel 1.
+                                            [0.25, 0, 0.75, 0, 0,
+                                             1]])).all()  # Image pixels 2 and 5 map to source pixel 2
 
     def test__coordinates_to_source_pixel_index__5x11_grid_size_2_not_fully_overlapping(self):
-
         source_pixel_total = 5
         image_pixel_total = 11
         sub_grid_size = 2
 
         # Moving one of every 4 sub-pixels to the right compared to the example above. This should turn each 1 in the
         # mapping matrix to a 0.75, and add a 0.25 to the element to its right
-        
+
         # Note the last value retains all 4 of it's '10's, so keeps a 1 in the mapping matrix
 
         sub_image_pixel_to_image_pixel_index = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6,
@@ -1445,22 +1417,22 @@ class TestMappingMatrix:
         print(len(sub_image_pixel_to_image_pixel_index))
 
         sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-                                            4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
+                                                 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
         print(mapping_matrix)
 
-        assert (mapping_matrix == np.array([[0.75, 0.25, 0,    0.75, 0.25, 0,    0,    0,    0,    0,    0], # Image pixels 0 and 3 map to source pixel 0.
-                                            [0,    0.75, 0.25, 0,    0.75, 0.25, 0,    0,    0,    0,    0], # Image pixels 1 and 4 map to source pixel 1.
-                                            [0,    0,    0.75, 0.25, 0,    0.75, 0.25, 0,    0.75, 0.25, 0],
-                                            [0,    0,    0,    0,    0,    0,    0,    0.75, 0.25, 0,    1],
-                                            [0,    0,    0,    0,    0,    0,    0.75, 0.25, 0,    0.75, 0.25]])).all() # Image pixels 2 and 5 map to source pixel 2
-        
-    def test__coordinates_to_source_pixel_index__2x3_grid_size_4(self):
+        assert (mapping_matrix == np.array(
+            [[0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0, 0],  # Image pixels 0 and 3 map to source pixel 0.
+             [0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0],  # Image pixels 1 and 4 map to source pixel 1.
+             [0, 0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0.75, 0.25, 0],
+             [0, 0, 0, 0, 0, 0, 0, 0.75, 0.25, 0, 1],
+             [0, 0, 0, 0, 0, 0, 0.75, 0.25, 0, 0.75, 0.25]])).all()  # Image pixels 2 and 5 map to source pixel 2
 
+    def test__coordinates_to_source_pixel_index__2x3_grid_size_4(self):
         source_pixel_total = 2
         image_pixel_total = 3
         sub_grid_size = 4
@@ -1474,18 +1446,18 @@ class TestMappingMatrix:
         # 12 sub-pixels labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
         # 16 sub-pixels labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
 
-
-        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, # 50:50 ratio so 1 in each entry of the mapping matrix
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                # 50:50 ratio so 1 in each entry of the mapping matrix
                                                 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
                                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
 
         sub_image_pixel_to_source_pixel_index = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         mapping_matrix = sp.MappingMatrix(source_pixel_total, image_pixel_total, sub_grid_size,
-                                                    sub_image_pixel_to_source_pixel_index,
-                                                    sub_image_pixel_to_image_pixel_index)
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
 
-        assert (mapping_matrix == np.array([[0,    0.9375, 0.0625],
-                                            [0.25, 0.75,   1.0]])).all()
+        assert (mapping_matrix == np.array([[0, 0.9375, 0.0625],
+                                            [0.25, 0.75, 1.0]])).all()
