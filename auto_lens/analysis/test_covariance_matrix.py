@@ -1,4 +1,4 @@
-from analysis import covariance_matrix
+import covariance_matrix
 import pytest
 
 
