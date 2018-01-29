@@ -11,3 +11,4 @@ lib/
 .ipynb_checkpoints
 .cache
 .idea
+.env
