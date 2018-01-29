@@ -159,7 +159,6 @@ class KMeans(sklearn.cluster.KMeans):
 
 class Voronoi(scipy.spatial.Voronoi):
     def __init__(self, source_pixel_centers):
-
         super(Voronoi, self).__init__(source_pixel_centers, qhull_options='Qbb Qc Qx Qm')
 
         self.neighbors = [[] for _ in range(len(source_pixel_centers))]
@@ -168,7 +167,7 @@ class Voronoi(scipy.spatial.Voronoi):
             self.neighbors[pair[0]].append(pair[1])
             self.neighbors[pair[1]].append(pair[0])
 
-        self.neighbors_total = list(map(lambda x : len(x) , self.neighbors))
+        self.neighbors_total = list(map(lambda x: len(x), self.neighbors))
 
 
 class RegularizationMatrix(np.ndarray):
@@ -268,6 +267,7 @@ def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, sour
 
     return sub_image_pixel_to_source_pixel_index
 
+
 def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, source_pixel_centers, source_pixel_neighbors,
                                                       sub_coordinate_to_sparse_coordinate_index,
                                                       sparse_coordinate_to_source_pixel_index):
@@ -316,7 +316,7 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, source_pi
     sub_image_pixel_to_source_pixel_index = []
 
     for sub_coordinate_index, sub_coordinate in enumerate(sub_coordinates):
-        
+
         nearest_sparse_coordinate_index = find_index_of_nearest_sparse_coordinate(sub_coordinate_index,
                                                                                   sub_coordinate_to_sparse_coordinate_index)
 
@@ -326,12 +326,14 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, source_pi
         while True:
 
             separation_of_sub_coordinate_and_sparse_source_pixel = \
-            find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-                                                                              sub_coordinate, nearest_sparse_source_pixel_index)
+                find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+                                                                                  sub_coordinate,
+                                                                                  nearest_sparse_source_pixel_index)
 
             neighboring_source_pixel_index, separation_of_sub_coordinate_and_neighboring_source_pixel = \
-                find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate, source_pixel_centers, source_pixel_neighbors[
-                    nearest_sparse_source_pixel_index])
+                find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate, source_pixel_centers,
+                                                                              source_pixel_neighbors[
+                                                                                  nearest_sparse_source_pixel_index])
 
             if separation_of_sub_coordinate_and_sparse_source_pixel < separation_of_sub_coordinate_and_neighboring_source_pixel:
                 break
@@ -343,17 +345,24 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, source_pi
 
     return sub_image_pixel_to_source_pixel_index
 
+
 def find_index_of_nearest_sparse_coordinate(index, coordinate_to_sparse_coordinates_index):
     return coordinate_to_sparse_coordinates_index[index]
 
-def find_index_of_nearest_sparse_source_pixel(nearest_sparse_coordinate_index, sparse_coordinates_to_source_pixel_index):
+
+def find_index_of_nearest_sparse_source_pixel(nearest_sparse_coordinate_index,
+                                              sparse_coordinates_to_source_pixel_index):
     return sparse_coordinates_to_source_pixel_index[nearest_sparse_coordinate_index]
 
-def find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate, source_pixel_index):
+
+def find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers, sub_coordinate,
+                                                                      source_pixel_index):
     nearest_sparse_source_pixel_center = source_pixel_centers[source_pixel_index]
     return compute_squared_separation(sub_coordinate, nearest_sparse_source_pixel_center)
 
-def find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate, source_pixel_centers, source_pixel_neighbors):
+
+def find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate, source_pixel_centers,
+                                                                  source_pixel_neighbors):
     """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
     our input coordinaates.
     
@@ -375,12 +384,14 @@ def find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate
     
     """
 
-    separation_from_neighbor = list(map(lambda neighbors :
-                               compute_squared_separation(sub_coordinate, source_pixel_centers[neighbors]), source_pixel_neighbors))
+    separation_from_neighbor = list(map(lambda neighbors:
+                                        compute_squared_separation(sub_coordinate, source_pixel_centers[neighbors]),
+                                        source_pixel_neighbors))
 
     closest_separation_index = min(xrange(len(separation_from_neighbor)), key=separation_from_neighbor.__getitem__)
 
     return source_pixel_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
+
 
 def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two coordinates (no square root for efficiency)"""
@@ -430,13 +441,11 @@ class MappingMatrix(np.ndarray):
 
         total_sub_pixels = image_pixel_total * sub_grid_size ** 2
 
-        sub_grid_fraction = (1.0/sub_grid_size) ** 2
+        sub_grid_fraction = (1.0 / sub_grid_size) ** 2
 
         obj = np.zeros(shape=(source_pixel_total, image_pixel_total)).view(cls)
 
         for i in range(total_sub_pixels):
-
             obj[sub_image_pixel_to_source_pixel_index[i], sub_image_pixel_to_image_pixel_index[i]] += sub_grid_fraction
 
         return obj
-
