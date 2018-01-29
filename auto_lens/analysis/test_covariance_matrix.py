@@ -7,6 +7,11 @@ def make_trivial_pixel_maps():
     return [{0: 1}, {0: 1}, {0: 1}, {1: 1}, {0: 1}]
 
 
+@pytest.fixture(name="counting_pixel_maps")
+def make_counting_pixel_maps():
+    return [{0: 1}, {0: 1, 1: 1}, {0: 1, 1: 1, 2: 1}]
+
+
 class TestDMatrix(object):
     def test_simple_example(self, trivial_pixel_maps):
         noise_vector = [1, 1]
@@ -14,12 +19,25 @@ class TestDMatrix(object):
 
         assert [1, 1, 1, 2, 1] == covariance_matrix.create_d_matrix(trivial_pixel_maps, noise_vector, image_vector)
 
-    def test_variable_no_pixels_mapped(self):
-        pixel_map = [{0: 1}, {0: 1, 1: 1}, {0: 1, 1: 1, 2: 1}]
+    def test_variable_no_pixels_mapped(self, counting_pixel_maps):
         noise_vector = [1, 1, 1]
         image_vector = [1, 1, 1]
 
-        assert [1, 2, 3] == covariance_matrix.create_d_matrix(pixel_map, noise_vector, image_vector)
+        assert [1, 2, 3] == covariance_matrix.create_d_matrix(counting_pixel_maps, noise_vector, image_vector)
+
+    def test_variable_noise(self, counting_pixel_maps):
+        noise_vector = [1, 2, 3]
+        image_vector = [1, 1, 1]
+
+        assert [1, 1, 1] == covariance_matrix.create_d_matrix(counting_pixel_maps, noise_vector, image_vector)
+
+    def test_variable_image(self):
+        noise_vector = [1, 1, 1]
+        image_vector = [3, 2, 1]
+
+        pixel_maps = [{0: 1}, {1: 1}, {2: 1}]
+
+        assert [3, 2, 1] == covariance_matrix.create_d_matrix(pixel_maps, noise_vector, image_vector)
 
 
 @pytest.fixture(name="line_generator")
