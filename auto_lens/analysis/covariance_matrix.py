@@ -30,6 +30,7 @@ else:
     # noinspection PyUnresolvedReferences
     import queue as queue
 
+
 def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, sub_to_source, sub_to_image):
     """
     Set up a new mapping matrix, which describes the fractional unit surface brightness counts between each
@@ -80,6 +81,7 @@ def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, 
             f[sub_to_source[i]][sub_to_image[i]] = sub_grid_fraction
 
     return f
+
 
 def create_d_matrix(pixel_maps, noise_vector, image_vector):
     """
