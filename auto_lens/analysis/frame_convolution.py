@@ -200,7 +200,7 @@ class KernelConvolver(object):
         Parameters
         ----------
         sub_shape: (int, int)
-            Defines a subregion of the kernel for which the result should be calculated
+            Defines a sub-region of the kernel for which the result should be calculated
         pixel_dict: [int: float]
             A dictionary that maps image pixel indices to values
         Returns
@@ -235,7 +235,7 @@ class KernelConvolver(object):
         Parameters
         ----------
         sub_shape: (int, int)
-            Defines a subregion of the kernel for which the result should be calculated
+            Defines a sub-region of the kernel for which the result should be calculated
         pixel_index: int
             The index in the vector to be convolved
         pixel_dict: [int: float]
