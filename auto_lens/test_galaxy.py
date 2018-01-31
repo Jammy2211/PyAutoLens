@@ -11,7 +11,7 @@ def circular_sersic():
 
 class TestProfiles(object):
     def test_intensity_at_coordinates(self, sersic):
-        g = galaxy.Galaxy(1., [sersic])
+        g = galaxy.Galaxy(1., sersic)
         intensity = g.intensity_at_coordinates((0., 1.0))
         assert intensity == pytest.approx(0.351797, 1e-3)
 
@@ -19,7 +19,7 @@ class TestProfiles(object):
         power_law = mass_profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
                                                                einstein_radius=1.0, slope=2.3)
 
-        g = galaxy.Galaxy(1., [sersic], [power_law])
+        g = galaxy.Galaxy(1., sersic, power_law)
 
         surface_density = g.surface_density_at_coordinates(coordinates=(1.0, 0.0))
 
