@@ -145,11 +145,7 @@ class TestGalaxyCollection(object):
         galaxy_collection.append(g1)
         galaxy_collection.append(g2)
 
-        assert galaxy_collection[0] == g0
-        assert galaxy_collection[1] == g1
-        assert galaxy_collection[2] == g2
-
-        assert len(galaxy_collection) == 3
+        assert galaxy_collection == [g0, g1, g2]
 
     def test_reverse_ordering(self):
         galaxy_collection = GalaxyCollection()
@@ -160,11 +156,7 @@ class TestGalaxyCollection(object):
         galaxy_collection.append(g1)
         galaxy_collection.append(g0)
 
-        assert galaxy_collection[0] == g0
-        assert galaxy_collection[1] == g1
-        assert galaxy_collection[2] == g2
-
-        assert len(galaxy_collection) == 3
+        assert galaxy_collection == [g0, g1, g2]
 
     def test_out_of_order(self):
         galaxy_collection = GalaxyCollection()
@@ -175,8 +167,4 @@ class TestGalaxyCollection(object):
         galaxy_collection.append(g2)
         galaxy_collection.append(g1)
 
-        assert galaxy_collection[0] == g0
-        assert galaxy_collection[1] == g1
-        assert galaxy_collection[2] == g2
-        
-        assert len(galaxy_collection) == 3
+        assert galaxy_collection == [g0, g1, g2]
