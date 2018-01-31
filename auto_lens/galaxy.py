@@ -1,6 +1,3 @@
-from profile import light_profile, mass_profile
-
-
 class GalaxyCollection(list):
     """A collection of galaxies ordered by redshift"""
 
@@ -29,22 +26,20 @@ class Galaxy(object):
     """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass
     profiles"""
 
-    def __init__(self, redshift, light_profiles=None, mass_profiles=None):
+    def __init__(self, redshift, light_profile=None, mass_profile=None):
         """
         Parameters
         ----------
         redshift: float
             The redshift of this galaxy
-        light_profiles: [LightProfile]
+        light_profile: LightProfile
             A list of light profiles describing the light profile of this galaxy
-        mass_profiles: [MassProfile]
+        mass_profile: MassProfile
             A list of mass profiles describing the mass profile of this galaxy
         """
         self.redshift = redshift
-        self.light_profiles = light_profile.CombinedLightProfile(
-            *light_profiles) if light_profiles is not None else light_profile.CombinedLightProfile()
-        self.mass_profiles = mass_profile.CombinedMassProfile(
-            *mass_profiles) if mass_profiles is not None else mass_profile.CombinedMassProfile()
+        self.light_profile = light_profile
+        self.mass_profile = mass_profile
 
     def intensity_at_coordinates(self, coordinates):
         """
@@ -58,7 +53,7 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return self.light_profiles.intensity_at_coordinates(coordinates)
+        return self.light_profile.intensity_at_coordinates(coordinates)
 
     def surface_density_at_coordinates(self, coordinates):
         """
@@ -74,7 +69,7 @@ class Galaxy(object):
         The summed values of surface density at the given coordinates.
         """
 
-        return self.mass_profiles.surface_density_at_coordinates(coordinates)
+        return self.mass_profile.surface_density_at_coordinates(coordinates)
 
     def potential_at_coordinates(self, coordinates):
         """
@@ -90,7 +85,7 @@ class Galaxy(object):
         The summed values of gravitational potential at the given coordinates.
         """
 
-        return self.mass_profiles.potential_at_coordinates(coordinates)
+        return self.mass_profile.potential_at_coordinates(coordinates)
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
@@ -105,7 +100,7 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given coordinates.
         """
-        return self.mass_profiles.deflection_angles_at_coordinates(coordinates)
+        return self.mass_profile.deflection_angles_at_coordinates(coordinates)
 
     def __repr__(self):
         return "<Galaxy redshift={}>".format(self.redshift)
