@@ -4,6 +4,7 @@ import pytest
 
 class GalaxyCollection(list):
     """A collection of galaxies ordered by redshift"""
+
     def append(self, galaxy):
         """
         Append a new galaxy to the collection in the correct position according to its redshift.
@@ -13,6 +14,7 @@ class GalaxyCollection(list):
         galaxy: Galaxy
             A galaxy
         """
+
         def insert(position):
             if position == len(self):
                 super(GalaxyCollection, self).append(galaxy)
@@ -147,6 +149,8 @@ class TestGalaxyCollection(object):
         assert galaxy_collection[1] == g1
         assert galaxy_collection[2] == g2
 
+        assert len(galaxy_collection) == 3
+
     def test_reverse_ordering(self):
         galaxy_collection = GalaxyCollection()
         g0 = Galaxy(0)
@@ -160,6 +164,8 @@ class TestGalaxyCollection(object):
         assert galaxy_collection[1] == g1
         assert galaxy_collection[2] == g2
 
+        assert len(galaxy_collection) == 3
+
     def test_out_of_order(self):
         galaxy_collection = GalaxyCollection()
         g0 = Galaxy(0)
@@ -172,3 +178,5 @@ class TestGalaxyCollection(object):
         assert galaxy_collection[0] == g0
         assert galaxy_collection[1] == g1
         assert galaxy_collection[2] == g2
+        
+        assert len(galaxy_collection) == 3
