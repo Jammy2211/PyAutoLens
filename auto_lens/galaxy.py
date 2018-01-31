@@ -3,7 +3,16 @@ import pytest
 
 
 class GalaxyCollection(list):
+    """A collection of galaxies ordered by redshift"""
     def append(self, galaxy):
+        """
+        Append a new galaxy to the collection in the correct position according to its redshift.
+
+        Parameters
+        ----------
+        galaxy: Galaxy
+            A galaxy
+        """
         def insert(position):
             if position == len(self):
                 super(GalaxyCollection, self).append(galaxy)
