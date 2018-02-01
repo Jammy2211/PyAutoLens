@@ -23,29 +23,6 @@ class MassProfile(object):
     def deflection_angles_at_coordinates(self, coordinates):
         raise AssertionError("Deflection angles at coordinates should be overridden")
 
-    def dimensionless_mass_within_circle(self, radius):
-        """
-        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
-        integration of the surface density profile and is centred on the mass model.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
-        """
-        return quad(self.dimensionless_mass_integral, a=0.0, b=radius, args=(1.0,))[0]
-
-    def dimensionless_mass_integral(self, x, axis_ratio):
-        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
-        circle"""
-        r = x * axis_ratio
-        return 2 * math.pi * r * self.surface_density_at_radius(x)
-
 
 class CombinedMassProfile(list, MassProfile):
     """A combined mass profile comprising of one or more mass profiles"""
@@ -104,7 +81,73 @@ class CombinedMassProfile(list, MassProfile):
         return sum_tuple
 
 
-class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
+class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
+    """Generic class for an elliptical light profile"""
+
+    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of light profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The circular radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        """
+        super(EllipticalMassProfile, self).__init__(axis_ratio, phi, centre)
+        self.axis_ratio = axis_ratio
+        self.phi = phi
+
+    def dimensionless_mass_within_circle(self, radius):
+        """
+        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
+        integration of the surface density profile and is centred on the mass model.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return quad(self.dimensionless_mass_integral, a=0.0, b=radius, args=(1.0,))[0]
+
+    def dimensionless_mass_within_ellipse(self, major_axis):
+        """
+        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
+        integration of the surface density profile and is centred on the mass model.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return quad(self.dimensionless_mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+
+    def dimensionless_mass_integral(self, x, axis_ratio):
+        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
+        circle"""
+        r = x * axis_ratio
+        return 2 * math.pi * r * self.surface_density_at_radius(x)
+
+
+class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
     """Represents an elliptical power-law density distribution"""
 
     def __init__(self, axis_ratio, phi, einstein_radius, slope, centre=(0, 0)):
@@ -471,7 +514,7 @@ class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
         super(CoredSphericalIsothermalMassProfile, self).__init__(einstein_radius, 2.0, core_radius, centre)
 
 
-class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
+class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
     """The elliptical NFW profile, used to fit the dark matter halo of the lens."""
 
     def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0, 0)):
