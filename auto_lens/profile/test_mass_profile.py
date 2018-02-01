@@ -7,7 +7,7 @@ class TestMassIntegral(object):
 
     class TestWithinCircle(object):
 
-        def test__spherical_isothermal_sphere__compare_to_analytic1(self):
+        def test__singular_isothermal_sphere__compare_to_analytic1(self):
 
             import math
 
@@ -19,7 +19,7 @@ class TestMassIntegral(object):
 
             assert math.pi*sis.einstein_radius*integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
 
-        def test__spherical_isothermal_sphere__compare_to_analytic2(self):
+        def test__singular_isothermal_sphere__compare_to_analytic2(self):
 
             import math
 
@@ -31,7 +31,7 @@ class TestMassIntegral(object):
 
             assert math.pi*sis.einstein_radius*integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
 
-        def test__spherical_isothermal__compare_to_grid(self):
+        def test__singular_isothermal__compare_to_grid(self):
 
             sis = mass_profile.SphericalIsothermalMassProfile(einstein_radius=2.0)
 
@@ -260,85 +260,169 @@ class TestMassIntegral(object):
 
             assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
 
-    # class TestWithinEllipse(object):
-    #
-    #     def test__elliptical_exponential__compare_to_grid(self):
-    #
-    #         sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
-    #                                                   sersic_index=1.0)
-    #
-    #         integral_radius = 0.5
-    #         luminosity_tot = 0.0
-    #
-    #         xs = np.linspace(-1.0, 1.0, 40)
-    #         ys = np.linspace(-1.0, 1.0, 40)
-    #
-    #         edge = xs[1] - xs[0]
-    #         area = edge ** 2
-    #
-    #         for x in xs:
-    #             for y in ys:
-    #
-    #                 eta = sersic.coordinates_to_elliptical_radius((x, y))
-    #
-    #                 if eta < integral_radius:
-    #                     luminosity_tot += sersic.intensity_at_radius(eta) * area
-    #
-    #         intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
-    #
-    #         assert luminosity_tot == pytest.approx(intensity_integral, 0.02)
-    #
-    #     def test__elliptical_sersic_2__compare_to_grid(self):
-    #
-    #         sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
-    #                                                   sersic_index=2.0)
-    #
-    #         integral_radius = 0.5
-    #         luminosity_tot = 0.0
-    #
-    #         xs = np.linspace(-1.8, 1.8, 80)
-    #         ys = np.linspace(-1.8, 1.8, 80)
-    #
-    #         edge = xs[1] - xs[0]
-    #         area = edge ** 2
-    #
-    #         for x in xs:
-    #             for y in ys:
-    #
-    #                 eta = sersic.coordinates_to_elliptical_radius((x, y))
-    #
-    #                 if eta < integral_radius:
-    #                     luminosity_tot += sersic.intensity_at_radius(eta) * area
-    #
-    #         intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
-    #
-    #         assert luminosity_tot == pytest.approx(intensity_integral, 0.02)
-    #
-    #     def test__elliptical_dev_vaucauleurs__compare_to_grid(self):
-    #
-    #         sersic = light_profile.SersicLightProfile(axis_ratio=0.7, phi=30.0, intensity=3.0, effective_radius=2.0,
-    #                                                   sersic_index=4.0)
-    #
-    #         integral_radius = 0.5
-    #         luminosity_tot = 0.0
-    #
-    #         xs = np.linspace(-1.5, 1.5, 50)
-    #         ys = np.linspace(-1.5, 1.5, 50)
-    #
-    #         edge = xs[1] - xs[0]
-    #         area = edge ** 2
-    #
-    #         for x in xs:
-    #             for y in ys:
-    #
-    #                 eta = sersic.coordinates_to_elliptical_radius((x, y))
-    #
-    #                 if eta < integral_radius:
-    #                     luminosity_tot += sersic.intensity_at_radius(eta) * area
-    #
-    #         intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
-    #
-    #         assert luminosity_tot == pytest.approx(intensity_integral, 0.01)
+    class TestWithinEllipse(object):
+
+        def test__singular_isothermal_sphere__compare_circle_and_ellipse(self):
+
+            sis = mass_profile.SphericalIsothermalMassProfile(einstein_radius=2.0)
+
+            integral_radius = 2.0
+
+            dimensionless_mass_integral_circle = sis.dimensionless_mass_within_circle(radius=integral_radius)
+
+            dimensionless_mass_integral_ellipse = sis.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse
+
+        def test__singular_isothermal_ellipsoid__compare_circle_and_ellipse(self):
+
+            sie = mass_profile.EllipticalIsothermalMassProfile(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 2.0
+
+            dimensionless_mass_integral_circle = sie.dimensionless_mass_within_circle(radius=integral_radius)
+
+            dimensionless_mass_integral_ellipse = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse * 2.0
+
+        def test__singular_isothermal_ellipsoid__compare_to_grid(self):
+
+            import numpy as np
+
+            sie = mass_profile.EllipticalIsothermalMassProfile(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = sie.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += sie.surface_density_at_radius(eta) * area
+
+            intensity_integral = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.1)
+
+        def test__singular_power_law_ellipsoid__compare_to_grid(self):
+
+            import numpy as np
+
+            sple = mass_profile.EllipticalPowerLawMassProfile(einstein_radius=2.0, slope=1.5, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = sple.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += sple.surface_density_at_radius(eta) * area
+
+            intensity_integral = sple.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.01)
+
+        def test__cored_singular_power_law_ellipsoid__compare_to_grid(self):
+
+            import numpy as np
+
+            sple_core = mass_profile.CoredEllipticalPowerLawMassProfile(einstein_radius=2.0, slope=1.8, core_radius=0.5,
+                                                                   axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = sple_core.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += sple_core.surface_density_at_radius(eta) * area
+
+            intensity_integral = sple_core.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.02)
+
+        def test__elliptical_nfw__compare_to_grid(self):
+
+            import numpy as np
+
+            nfw = mass_profile.EllipticalNFWMassProfile(kappa_s=1.0, scale_radius=5.0, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = nfw.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += nfw.surface_density_at_radius(eta) * area
+
+            intensity_integral = nfw.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.02)
+
+        def test__generalized_elliptical_nfw__compare_to_grid(self):
+
+            import numpy as np
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(kappa_s=1.0, scale_radius=5.0, inner_slope=1.0,
+                                                               axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = gnfw.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += gnfw.surface_density_at_radius(eta) * area
+
+            intensity_integral = gnfw.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.01)
 
 
 class TestEllipticalPowerLaw(object):
