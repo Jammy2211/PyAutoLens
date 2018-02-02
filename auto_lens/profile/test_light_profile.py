@@ -95,6 +95,7 @@ class TestSetupProfiles(object):
 
 
 class TestLuminosityIntegral(object):
+
     class TestWithinCircle(object):
 
         def test__spherical_exponential__compare_to_analytic(self):
