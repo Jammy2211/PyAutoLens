@@ -66,3 +66,11 @@ class TestCollection(object):
         mock_object = MockClass(**collection.arguments_for_vector([1, 1]))
         assert mock_object.one == 1.
         assert mock_object.two == 1.
+
+
+class TestClassMappingCollection(object):
+    def test__map_and_recover(self):
+        collection = prior.ClassMappingPriorCollection()
+        collection.add_class(MockClass)
+        assert 1 == len(collection.classes)
+        assert 2 == len(collection.class_priors[0])

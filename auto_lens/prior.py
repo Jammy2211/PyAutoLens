@@ -1,5 +1,6 @@
 import math
 from scipy.special import erfinv
+import inspect
 
 
 class Prior(object):
@@ -27,7 +28,7 @@ class Prior(object):
         argument: (String, float)
             Returns the name of an attribute and its calculated value as a tuple
         """
-        return self.name, self.value_for(unit)
+        return self.name.split(".")[-1], self.value_for(unit)
 
     def value_for(self, unit):
         raise AssertionError("Prior.value_for should be overridden")
@@ -78,6 +79,7 @@ class UniformPrior(Prior):
 
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
+
     def __init__(self, name, mean, sigma):
         super(GaussianPrior, self).__init__(name)
         self.mean = mean
@@ -155,3 +157,15 @@ class PriorCollection(list):
 
     def append(self, p_object):
         raise AssertionError("Append should not be called directly")
+
+
+class ClassMappingPriorCollection(PriorCollection):
+    def __init__(self):
+        super(ClassMappingPriorCollection, self).__init__()
+        self.class_priors = []
+        self.classes = []
+
+    def add_class(self, cls, *priors):
+        args = inspect.getargspec(cls.__init__).args[1:]
+        self.classes.append(cls)
+        self.class_priors.append(map(UniformPrior, args))
