@@ -69,8 +69,16 @@ class TestCollection(object):
 
 
 class TestClassMappingCollection(object):
-    def test__map_and_recover(self):
+    def test__argument_extraction(self):
         collection = prior.ClassMappingPriorCollection()
         collection.add_class(MockClass)
         assert 1 == len(collection.classes)
         assert 2 == len(collection.class_priors[0])
+
+    def test__prior_substitution(self):
+        collection = prior.ClassMappingPriorCollection()
+        uniform_prior = prior.UniformPrior("two")
+
+        collection.add_class(MockClass, uniform_prior)
+
+        assert uniform_prior is collection.class_priors[0][1]
