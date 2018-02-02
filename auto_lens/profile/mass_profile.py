@@ -6,6 +6,11 @@ from scipy import special
 
 
 class MassProfile(object):
+
+    # noinspection PyMethodMayBeStatic
+    def surface_density_at_radius(self, eta):
+        raise AssertionError("Surface density at radius should be overridden")
+
     # noinspection PyMethodMayBeStatic
     def surface_density_at_coordinates(self, coordinates):
         raise AssertionError("Surface density at coordinates should be overridden")
@@ -76,7 +81,73 @@ class CombinedMassProfile(list, MassProfile):
         return sum_tuple
 
 
-class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
+class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
+    """Generic class for an elliptical light profile"""
+
+    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profile
+        axis_ratio : float
+            Ratio of light profile ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall intensity normalisation in the light profile (electrons per second)
+        effective_radius : float
+            The circular radius containing half the light of this model
+        sersic_index : Int
+            The concentration of the light profile
+        """
+        super(EllipticalMassProfile, self).__init__(axis_ratio, phi, centre)
+        self.axis_ratio = axis_ratio
+        self.phi = phi
+
+    def dimensionless_mass_within_circle(self, radius):
+        """
+        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
+        integration of the surface density profile and is centred on the mass model.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return quad(self.dimensionless_mass_integral, a=0.0, b=radius, args=(1.0,))[0]
+
+    def dimensionless_mass_within_ellipse(self, major_axis):
+        """
+        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
+        integration of the surface density profile and is centred on the mass model.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return quad(self.dimensionless_mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+
+    def dimensionless_mass_integral(self, x, axis_ratio):
+        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
+        circle"""
+        r = x * axis_ratio
+        return 2 * math.pi * r * self.surface_density_at_radius(x)
+
+
+class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
     """Represents an elliptical power-law density distribution"""
 
     def __init__(self, axis_ratio, phi, einstein_radius, slope, centre=(0, 0)):
@@ -108,8 +179,8 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         parameters"""
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
-    def surface_density_func(self, eta):
-        return self.einstein_radius_rescaled * eta ** (-(self.slope - 1))
+    def surface_density_at_radius(self, radius):
+        return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
 
     @profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
@@ -127,7 +198,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
         """
 
         eta = self.coordinates_to_elliptical_radius(coordinates)
-        return self.surface_density_func(eta)
+        return self.surface_density_at_radius(eta)
 
     def potential_func(self, u, coordinates):
         eta = self.eta_u(u, coordinates)
@@ -154,7 +225,7 @@ class EllipticalPowerLawMassProfile(profile.EllipticalProfile, MassProfile):
 
     def deflection_func(self, u, coordinates, npow):
         eta = self.eta_u(u, coordinates)
-        return self.surface_density_func(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        return self.surface_density_at_radius(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
@@ -347,8 +418,8 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
 
         self.core_radius = core_radius
 
-    def surface_density_func(self, eta):
-        return self.einstein_radius_rescaled * (self.core_radius ** 2 + eta ** 2) ** (-(self.slope - 1) / 2.0)
+    def surface_density_at_radius(self, radius):
+        return self.einstein_radius_rescaled * (self.core_radius ** 2 + radius ** 2) ** (-(self.slope - 1) / 2.0)
 
     def potential_func(self, u, coordinates):
         eta = self.eta_u(u, coordinates)
@@ -443,7 +514,7 @@ class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
         super(CoredSphericalIsothermalMassProfile, self).__init__(einstein_radius, 2.0, core_radius, centre)
 
 
-class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
+class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
     """The elliptical NFW profile, used to fit the dark matter halo of the lens."""
 
     def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0, 0)):
@@ -477,8 +548,8 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
         elif r == 1:
             return 1
 
-    def surface_density_func(self, eta):
-        return 2.0 * self.kappa_s * (1 - self.coord_func(eta)) / (eta ** 2 - 1)
+    def surface_density_at_radius(self, radius):
+        return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
 
     @profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
@@ -497,7 +568,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
 
         eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
 
-        return self.surface_density_func(eta)
+        return self.surface_density_at_radius(eta)
 
     def potential_func(self, u, coordinates):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
@@ -523,7 +594,7 @@ class EllipticalNFWMassProfile(profile.EllipticalProfile, MassProfile):
 
     def deflection_func(self, u, coordinates, npow):
         eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
-        return self.surface_density_func(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
@@ -646,11 +717,11 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
     def integral_y_2(self, y, eta):
         return (y + eta) ** (self.inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
 
-    def surface_density_func(self, eta):
-        integral_y = quad(self.integral_y, a=0.0, b=1.0, args=(eta))[0]
+    def surface_density_at_radius(self, radius):
+        integral_y = quad(self.integral_y, a=0.0, b=1.0, args=(radius))[0]
 
-        return 2.0 * self.kappa_s * (eta ** (1 - self.inner_slope)) * \
-               ((1 + eta) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
+        return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * \
+               ((1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
 
     def potential_func_ell(self, u, coordinates):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
@@ -682,7 +753,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
     def deflection_func_ell(self, u, coordinates, npow):
         eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
 
-        return self.surface_density_func(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):

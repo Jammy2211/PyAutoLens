@@ -3,6 +3,428 @@ import profile
 import pytest
 
 
+class TestMassIntegral(object):
+
+    class TestWithinCircle(object):
+
+        def test__singular_isothermal_sphere__compare_to_analytic1(self):
+
+            import math
+
+            sis = mass_profile.SphericalIsothermalMassProfile(einstein_radius=2.0)
+
+            integral_radius = 2.0
+
+            dimensionless_mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert math.pi*sis.einstein_radius*integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
+
+        def test__singular_isothermal_sphere__compare_to_analytic2(self):
+
+            import math
+
+            sis = mass_profile.SphericalIsothermalMassProfile(einstein_radius=4.0)
+
+            integral_radius = 4.0
+
+            dimensionless_mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert math.pi*sis.einstein_radius*integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
+
+        def test__singular_isothermal__compare_to_grid(self):
+
+            sis = mass_profile.SphericalIsothermalMassProfile(einstein_radius=2.0)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += sis.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__elliptical_isothermal__compare_to_grid(self):
+
+            sie = mass_profile.EllipticalIsothermalMassProfile(einstein_radius=2.0, axis_ratio=0.2, phi=0.0)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += sie.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = sie.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__cored_elliptical_isothermal__compare_to_grid(self):
+
+            cored_sie = mass_profile.CoredEllipticalIsothermalMassProfile(einstein_radius=2.0, axis_ratio=0.2, phi=0.0,
+                                                                          core_radius=0.6)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += cored_sie.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = cored_sie.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__cored_power_law_isothermal__compare_to_grid1(self):
+
+            cored_power_law = mass_profile.CoredEllipticalPowerLawMassProfile(einstein_radius=2.0, axis_ratio=0.2, phi=0.0,
+                                                                          slope=2.7, core_radius=0.6)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += cored_power_law.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = cored_power_law.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__cored_power_law_isothermal__compare_to_grid2(self):
+
+            cored_power_law = mass_profile.CoredEllipticalPowerLawMassProfile(einstein_radius=2.0, axis_ratio=0.2, phi=0.0,
+                                                                          slope=1.3, core_radius=0.6)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += cored_power_law.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = cored_power_law.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__elliptical_nfw_profile__compare_to_grid(self):
+
+            nfw = mass_profile.EllipticalNFWMassProfile(kappa_s=2.0, axis_ratio=0.2, phi=0.0, scale_radius=5.0)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += nfw.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = nfw.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__elliptical_gnfw_profile__compare_to_grid1(self):
+
+            nfw = mass_profile.EllipticalGeneralizedNFWMassProfile(kappa_s=2.0, axis_ratio=0.2, phi=0.0, inner_slope=0.2,
+                                                                   scale_radius=5.0)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += nfw.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = nfw.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+        def test__elliptical_gnfw_profile__compare_to_grid2(self):
+
+            nfw = mass_profile.EllipticalGeneralizedNFWMassProfile(kappa_s=2.0, axis_ratio=0.2, phi=0.0, inner_slope=1.8,
+                                                                   scale_radius=5.0)
+
+            import math
+            import numpy as np
+
+            integral_radius = 1.0
+            dimensionless_mass_total = 0.0
+
+            xs = np.linspace(-1.5, 1.5, 40)
+            ys = np.linspace(-1.5, 1.5, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = math.sqrt(x ** 2 + y ** 2)
+
+                    if eta < integral_radius:
+                        dimensionless_mass_total += nfw.surface_density_at_radius(eta) * area
+
+            dimensionless_mass_integral = nfw.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
+
+    class TestWithinEllipse(object):
+
+        def test__singular_isothermal_sphere__compare_circle_and_ellipse(self):
+
+            sis = mass_profile.SphericalIsothermalMassProfile(einstein_radius=2.0)
+
+            integral_radius = 2.0
+
+            dimensionless_mass_integral_circle = sis.dimensionless_mass_within_circle(radius=integral_radius)
+
+            dimensionless_mass_integral_ellipse = sis.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse
+
+        def test__singular_isothermal_ellipsoid__compare_circle_and_ellipse(self):
+
+            sie = mass_profile.EllipticalIsothermalMassProfile(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 2.0
+
+            dimensionless_mass_integral_circle = sie.dimensionless_mass_within_circle(radius=integral_radius)
+
+            dimensionless_mass_integral_ellipse = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse * 2.0
+
+        def test__singular_isothermal_ellipsoid__compare_to_grid(self):
+
+            import numpy as np
+
+            sie = mass_profile.EllipticalIsothermalMassProfile(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = sie.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += sie.surface_density_at_radius(eta) * area
+
+            intensity_integral = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.1)
+
+        def test__singular_power_law_ellipsoid__compare_to_grid(self):
+
+            import numpy as np
+
+            sple = mass_profile.EllipticalPowerLawMassProfile(einstein_radius=2.0, slope=1.5, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = sple.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += sple.surface_density_at_radius(eta) * area
+
+            intensity_integral = sple.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.01)
+
+        def test__cored_singular_power_law_ellipsoid__compare_to_grid(self):
+
+            import numpy as np
+
+            sple_core = mass_profile.CoredEllipticalPowerLawMassProfile(einstein_radius=2.0, slope=1.8, core_radius=0.5,
+                                                                   axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = sple_core.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += sple_core.surface_density_at_radius(eta) * area
+
+            intensity_integral = sple_core.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.02)
+
+        def test__elliptical_nfw__compare_to_grid(self):
+
+            import numpy as np
+
+            nfw = mass_profile.EllipticalNFWMassProfile(kappa_s=1.0, scale_radius=5.0, axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = nfw.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += nfw.surface_density_at_radius(eta) * area
+
+            intensity_integral = nfw.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.02)
+
+        def test__generalized_elliptical_nfw__compare_to_grid(self):
+
+            import numpy as np
+
+            gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(kappa_s=1.0, scale_radius=5.0, inner_slope=1.0,
+                                                               axis_ratio=0.5, phi=0.0)
+
+            integral_radius = 0.5
+            dimensionless_mass_tot = 0.0
+
+            xs = np.linspace(-1.0, 1.0, 40)
+            ys = np.linspace(-1.0, 1.0, 40)
+
+            edge = xs[1] - xs[0]
+            area = edge ** 2
+
+            for x in xs:
+                for y in ys:
+
+                    eta = gnfw.coordinates_to_elliptical_radius((x, y))
+
+                    if eta < integral_radius:
+                        dimensionless_mass_tot += gnfw.surface_density_at_radius(eta) * area
+
+            intensity_integral = gnfw.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.01)
+
+
 class TestEllipticalPowerLaw(object):
     class TestSetup(object):
         def test__setup_elliptical_power_law__correct_values(self):
@@ -569,7 +991,7 @@ class TestCoredEllipticalPowerLaw(object):
             power_law = mass_profile.CoredEllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                                         einstein_radius=1.0, slope=2.2, core_radius=0.1)
 
-            kappa = power_law.surface_density_func(eta=1.0)
+            kappa = power_law.surface_density_at_radius(radius=1.0)
 
             assert kappa == pytest.approx(0.39762, 1e-4)
 
@@ -578,12 +1000,12 @@ class TestCoredEllipticalPowerLaw(object):
                                                                              einstein_radius=1.0, slope=2.2,
                                                                              core_radius=0.)
 
-            kappa_core = power_law_core.surface_density_func(eta=3.0)
+            kappa_core = power_law_core.surface_density_at_radius(radius=3.0)
 
             power_law = mass_profile.EllipticalPowerLawMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                                    einstein_radius=1.0, slope=2.2)
 
-            kappa = power_law.surface_density_func(eta=3.0)
+            kappa = power_law.surface_density_at_radius(radius=3.0)
 
             assert kappa == kappa_core
 
@@ -895,7 +1317,7 @@ class TestCoredSphericalPowerLaw(object):
             power_law = mass_profile.CoredSphericalPowerLawMassProfile(centre=(1, 1), einstein_radius=1.0, slope=2.2,
                                                                        core_radius=0.1)
 
-            kappa = power_law.surface_density_func(eta=1.0)
+            kappa = power_law.surface_density_at_radius(radius=1.0)
 
             assert kappa == pytest.approx(0.39761, 1e-4)
 
@@ -904,11 +1326,11 @@ class TestCoredSphericalPowerLaw(object):
                                                                             slope=2.2,
                                                                             core_radius=0.)
 
-            kappa_core = power_law_core.surface_density_func(eta=3.0)
+            kappa_core = power_law_core.surface_density_at_radius(radius=3.0)
 
             power_law = mass_profile.SphericalPowerLawMassProfile(centre=(1, 1), einstein_radius=1.0, slope=2.2)
 
-            kappa = power_law.surface_density_func(eta=3.0)
+            kappa = power_law.surface_density_at_radius(radius=3.0)
 
             assert kappa == kappa_core
 
@@ -1549,7 +1971,7 @@ class TestCoredEllipticalIsothermal(object):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                                                 einstein_radius=1.0, core_radius=0.1)
 
-            kappa = isothermal_core.surface_density_func(eta=1.0)
+            kappa = isothermal_core.surface_density_at_radius(radius=1.0)
 
             assert kappa == pytest.approx(0.49752, 1e-4)
 
@@ -1557,12 +1979,12 @@ class TestCoredEllipticalIsothermal(object):
             isothermal_core = mass_profile.CoredEllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                                                 einstein_radius=1.0, core_radius=0.0)
 
-            kappa_core = isothermal_core.surface_density_func(eta=3.0)
+            kappa_core = isothermal_core.surface_density_at_radius(radius=3.0)
 
             isothermal = mass_profile.EllipticalIsothermalMassProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                                       einstein_radius=1.0)
 
-            kappa = isothermal.surface_density_func(eta=3.0)
+            kappa = isothermal.surface_density_at_radius(radius=3.0)
 
             assert kappa == kappa_core
 
@@ -1861,7 +2283,7 @@ class TestCoredSphericalIsothermal(object):
             isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1, 1),
                                                                                einstein_radius=1.0, core_radius=0.1)
 
-            kappa = isothermal_core.surface_density_func(eta=1.0)
+            kappa = isothermal_core.surface_density_at_radius(radius=1.0)
 
             assert kappa == pytest.approx(0.49751, 1e-4)
 
@@ -1869,11 +2291,11 @@ class TestCoredSphericalIsothermal(object):
             isothermal_core = mass_profile.CoredSphericalIsothermalMassProfile(centre=(1, 1),
                                                                                einstein_radius=1.0, core_radius=0.0)
 
-            kappa_core = isothermal_core.surface_density_func(eta=3.0)
+            kappa_core = isothermal_core.surface_density_at_radius(radius=3.0)
 
             isothermal = mass_profile.SphericalIsothermalMassProfile(centre=(1, 1), einstein_radius=1.0)
 
-            kappa = isothermal.surface_density_func(eta=3.0)
+            kappa = isothermal.surface_density_at_radius(radius=3.0)
 
             assert kappa == kappa_core
 
