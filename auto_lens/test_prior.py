@@ -52,8 +52,8 @@ class TestCollection(object):
         collection.add(prior.UniformPrior("one", lower_limit=1., upper_limit=2.))
 
         assert len(collection) == 2
-        collection[0].lower_limit = 1.
-        collection[0].name = "one"
+        assert collection[0].lower_limit == 1.
+        assert collection[0].name == "one"
 
     def test__exceptions(self, collection, uniform_simple):
         with pytest.raises(AssertionError):
@@ -92,8 +92,19 @@ class TestClassMappingCollection(object):
         collection.add_class(MockClass)
         collection.add_class(MockClass)
 
-        assert "0.one" == collection.class_priors[0][0].name
-        assert "0.two" == collection.class_priors[0][1].name
+        assert "0.one" == collection.class_priors[0][0].path
+        assert "0.two" == collection.class_priors[0][1].path
 
-        assert "1.one" == collection.class_priors[1][0].name
-        assert "1.two" == collection.class_priors[1][1].name
+        assert "1.one" == collection.class_priors[1][0].path
+        assert "1.two" == collection.class_priors[1][1].path
+
+    def test_substitute_prior_naming(self):
+        collection = prior.ClassMappingPriorCollection()
+        priors = collection.add_class(MockClass)
+        collection.add_class(MockClass, priors[0])
+
+        assert "0.one" == collection.class_priors[0][0].path
+        assert "0.two" == collection.class_priors[0][1].path
+
+        assert "0.one" == collection.class_priors[1][0].path
+        assert "1.two" == collection.class_priors[1][1].path
