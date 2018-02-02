@@ -86,3 +86,14 @@ class TestClassMappingCollection(object):
         assert uniform_prior is collection.class_priors[0][1]
 
         assert len(collection) == 2
+
+    def test__prior_naming(self):
+        collection = prior.ClassMappingPriorCollection()
+        collection.add_class(MockClass)
+        collection.add_class(MockClass)
+
+        assert "0.one" == collection.class_priors[0][0].name
+        assert "0.two" == collection.class_priors[0][1].name
+
+        assert "1.one" == collection.class_priors[1][0].name
+        assert "1.two" == collection.class_priors[1][1].name
