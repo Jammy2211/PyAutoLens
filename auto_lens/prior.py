@@ -6,15 +6,15 @@ import inspect
 class Prior(object):
     """Defines a prior that converts unit hypercube values into argument values"""
 
-    def __init__(self, name):
+    def __init__(self, path):
         """
 
         Parameters
         ----------
-        name: String
+        path: String
             The name of the attribute to which this prior is associated
         """
-        self.name = name
+        self.path = path
 
     def argument_for(self, unit):
         """
@@ -28,37 +28,41 @@ class Prior(object):
         argument: (String, float)
             Returns the name of an attribute and its calculated value as a tuple
         """
-        return self.name.split(".")[-1], self.value_for(unit)
+        return self.name, self.value_for(unit)
+
+    @property
+    def name(self):
+        return self.path.split(".")[-1]
 
     def value_for(self, unit):
         raise AssertionError("Prior.value_for should be overridden")
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.path == other.path
 
     def __ne__(self, other):
-        return self.name != other.name
+        return self.path != other.path
 
     def __hash__(self):
-        return hash(self.name)
+        return hash(self.path)
 
 
 class UniformPrior(Prior):
     """A prior with a uniform distribution between a lower and upper limit"""
 
-    def __init__(self, name, lower_limit=0., upper_limit=1.):
+    def __init__(self, path, lower_limit=0., upper_limit=1.):
         """
 
         Parameters
         ----------
-        name: String
+        path: String
             The attribute name
         lower_limit: Float
             The lowest value this prior can return
         upper_limit: Float
             The highest value this prior can return
         """
-        super(UniformPrior, self).__init__(name)
+        super(UniformPrior, self).__init__(path)
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
 
@@ -80,8 +84,8 @@ class UniformPrior(Prior):
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
 
-    def __init__(self, name, mean, sigma):
-        super(GaussianPrior, self).__init__(name)
+    def __init__(self, path, mean, sigma):
+        super(GaussianPrior, self).__init__(path)
         self.mean = mean
         self.sigma = sigma
 
@@ -173,11 +177,12 @@ class ClassMappingPriorCollection(PriorCollection):
             matching_priors = filter(lambda p: p.name == arg, priors)
             if len(matching_priors) > 0:
                 prior = matching_priors[0]
-                priors_for_class.append(prior)
             else:
                 prior = UniformPrior("{}.{}".format(len(self.classes), arg))
-                priors_for_class.append(prior)
+            priors_for_class.append(prior)
             self.add(prior)
-            
+
         self.classes.append(cls)
         self.class_priors.append(priors_for_class)
+
+        return priors_for_class
