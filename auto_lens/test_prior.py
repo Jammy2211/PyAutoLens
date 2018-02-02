@@ -75,6 +75,8 @@ class TestClassMappingCollection(object):
         assert 1 == len(collection.classes)
         assert 2 == len(collection.class_priors[0])
 
+        assert len(collection) == 2
+
     def test__prior_substitution(self):
         collection = prior.ClassMappingPriorCollection()
         uniform_prior = prior.UniformPrior("two")
@@ -82,3 +84,5 @@ class TestClassMappingCollection(object):
         collection.add_class(MockClass, uniform_prior)
 
         assert uniform_prior is collection.class_priors[0][1]
+
+        assert len(collection) == 2
