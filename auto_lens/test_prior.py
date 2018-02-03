@@ -159,3 +159,22 @@ class TestReconstruction(object):
         reconstruction = collection.reconstruction_for_vector([1., 1.])
 
         assert isinstance(reconstruction.mock_class, MockClass)
+        assert reconstruction.mock_class.one == 1.
+        assert reconstruction.mock_class.two == 1.
+
+    def test_two_object_reconstruction(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_class_1", MockClass)
+        collection.add_class("mock_class_2", MockClass)
+
+        reconstruction = collection.reconstruction_for_vector([1., 0., 0., 1.])
+
+        assert isinstance(reconstruction.mock_class_1, MockClass)
+        assert isinstance(reconstruction.mock_class_2, MockClass)
+
+        assert reconstruction.mock_class_1.one == 1.
+        assert reconstruction.mock_class_1.two == 0.
+
+        assert reconstruction.mock_class_2.one == 0.
+        assert reconstruction.mock_class_2.two == 1.
