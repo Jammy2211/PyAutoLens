@@ -371,7 +371,7 @@ class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
     @classmethod
-    def mask(cls, arc_second_dimensions, pixel_scale, function, centre, blurring_region_size):
+    def mask(cls, arc_second_dimensions, pixel_scale, function, centre):
         """
 
         Parameters
@@ -486,8 +486,45 @@ class Mask(object):
                             if 0 <= i+i1 <= image_dimensions_pixels[0]-1 and 0 <= j+j1 <= image_dimensions_pixels[0]-1:
                                 if (mask[j+j1, i+i1]) == False:
                                     blurring_region[j+j1, i+i1] = True
+                            else:
+                                raise MaskException("blurring_region extends beynod the size of the mask - pad the image"
+                                                    "before masking")
 
         return blurring_region
+
+    @classmethod
+    def border_list(cls, mask):
+        """Compute the border_list of a mask, where the border_list is defined as all pixels which are on the edge of the mask \
+         and therefore are next to a pixel with False value. This border_list is used for relocating source-pixels to the \
+         edge of the source-plane border_list
+
+        Parameters
+        ----------
+        mask : image.Mask
+            The image mask we are finding the border_list of.
+
+
+        Returns
+        -------
+        A list of the border_list image pixels, given as a list of the index of each border_list pixel.
+        """
+
+        # TODO : This border only works for circular / elliptical masks which do not have masked image pixels in their
+        # TODO : center (like an annulus). Do we need a separate routine for annuli masks?
+
+        image_dimensions_pixels = mask.shape
+        border_list = []
+        image_pixel_index = 0
+
+        for i in range(image_dimensions_pixels[0]):
+            for j in range(image_dimensions_pixels[1]):
+                if mask[i, j] == True:
+                    if mask[i+1, j] == 0 or mask[i-1, j] == 0 or mask[i, j+1] == 0 or mask[i, j-1] == 0 or \
+                       mask[i+1, j+1] == 0 or mask[i+1, j-1] == 0 or mask[i-1, j+1] == 0 or mask[i-1, j-1] == 0:
+                        border_list.append(image_pixel_index)
+                    image_pixel_index += 1
+
+        return border_list
 
 class MaskException(Exception):
     pass
