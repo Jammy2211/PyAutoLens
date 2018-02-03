@@ -165,6 +165,7 @@ class PriorCollection(list):
 
 class PriorModel(object):
     """Object comprising class, name and associated priors"""
+
     def __init__(self, name, cls):
         """
         Parameters
@@ -198,11 +199,12 @@ class Reconstruction(object):
     pass
 
 
+# TODO: make PriorModel prior setting work elegantly. Test config loading and implement inherited attribute setting
 class ClassMappingPriorCollection(PriorCollection):
     """A collection of priors formed by passing in classes to be reconstructed"""
+
     def __init__(self, config):
         super(ClassMappingPriorCollection, self).__init__()
-        self.class_priors = []
         self.prior_models = []
         self.config = config
 
@@ -232,7 +234,6 @@ class ClassMappingPriorCollection(PriorCollection):
         setattr(self, name, prior_model)
 
         self.prior_models.append(prior_model)
-        self.class_priors.append(priors_for_class)
 
         return priors_for_class
 
