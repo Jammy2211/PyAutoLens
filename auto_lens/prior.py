@@ -164,10 +164,11 @@ class PriorCollection(list):
 
 
 class ClassMappingPriorCollection(PriorCollection):
-    def __init__(self):
+    def __init__(self, config):
         super(ClassMappingPriorCollection, self).__init__()
         self.class_priors = []
         self.classes = []
+        self.config = config
 
     def add_class(self, cls, *priors):
         args = inspect.getargspec(cls.__init__).args[1:]
@@ -178,7 +179,8 @@ class ClassMappingPriorCollection(PriorCollection):
             if len(matching_priors) > 0:
                 prior = matching_priors[0]
             else:
-                prior = UniformPrior("{}.{}".format(len(self.classes), arg))
+                config_arr = self.config.get(cls.__name__, arg)
+                prior = UniformPrior("{}.{}".format(len(self.classes), arg), config_arr[1], config_arr[2])
             priors_for_class.append(prior)
             self.add(prior)
 
