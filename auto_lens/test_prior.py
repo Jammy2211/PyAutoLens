@@ -87,7 +87,6 @@ class TestClassMappingCollection(object):
         collection = prior.ClassMappingPriorCollection(MockConfig())
         collection.add_class("mock_class", MockClass)
         assert 1 == len(collection.prior_models)
-        assert 2 == len(collection.class_priors[0])
 
         assert len(collection) == 2
 
@@ -97,7 +96,7 @@ class TestClassMappingCollection(object):
 
         collection.add_class("mock_class", MockClass, uniform_prior)
 
-        assert uniform_prior is collection.class_priors[0][1]
+        assert uniform_prior is collection.mock_class.two
 
         assert len(collection) == 2
 
@@ -106,40 +105,40 @@ class TestClassMappingCollection(object):
         collection.add_class("mock_class_1", MockClass)
         collection.add_class("mock_class_2", MockClass)
 
-        assert "0.one" == collection.class_priors[0][0].path
-        assert "0.two" == collection.class_priors[0][1].path
+        assert "0.one" == collection.mock_class_1.one.path
+        assert "0.two" == collection.mock_class_1.two.path
 
-        assert "1.one" == collection.class_priors[1][0].path
-        assert "1.two" == collection.class_priors[1][1].path
+        assert "1.one" == collection.mock_class_2.one.path
+        assert "1.two" == collection.mock_class_2.two.path
 
     def test_substitute_prior_naming(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
         priors = collection.add_class("mock_class_1", MockClass)
         collection.add_class("mock_class_2", MockClass, priors[0])
 
-        assert "0.one" == collection.class_priors[0][0].path
-        assert "0.two" == collection.class_priors[0][1].path
+        assert "0.one" == collection.mock_class_1.one.path
+        assert "0.two" == collection.mock_class_1.two.path
 
-        assert "0.one" == collection.class_priors[1][0].path
-        assert "1.two" == collection.class_priors[1][1].path
+        assert "0.one" == collection.mock_class_2.one.path
+        assert "1.two" == collection.mock_class_2.two.path
 
     def test_config_limits(self):
         collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["u", 1., 2.]}}))
 
         collection.add_class("mock_class", MockClass)
 
-        assert collection.class_priors[0][0].lower_limit == 1.
-        assert collection.class_priors[0][0].upper_limit == 2.
+        assert collection.mock_class.one.lower_limit == 1.
+        assert collection.mock_class.one.upper_limit == 2.
 
     def test_config_prior_type(self):
         collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["g", 1., 2.]}}))
 
         collection.add_class("mock_class", MockClass)
 
-        assert isinstance(collection.class_priors[0][0], prior.GaussianPrior)
+        assert isinstance(collection.mock_class.one, prior.GaussianPrior)
 
-        assert collection.class_priors[0][0].mean == 1.
-        assert collection.class_priors[0][0].sigma == 2.
+        assert collection.mock_class.one.mean == 1.
+        assert collection.mock_class.one.sigma == 2.
 
     def test_attribution(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
