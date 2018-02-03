@@ -90,16 +90,6 @@ class TestClassMappingCollection(object):
 
         assert len(collection.priors) == 2
 
-    def test__prior_substitution(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
-        uniform_prior = prior.UniformPrior("two")
-
-        collection.add_class("mock_class", MockClass, uniform_prior)
-
-        assert uniform_prior is collection.mock_class.two
-
-        assert len(collection.priors) == 2
-
     def test__prior_naming(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
         collection.add_class("mock_class_1", MockClass)
@@ -109,17 +99,6 @@ class TestClassMappingCollection(object):
         assert "0.two" == collection.mock_class_1.two.path
 
         assert "1.one" == collection.mock_class_2.one.path
-        assert "1.two" == collection.mock_class_2.two.path
-
-    def test_substitute_prior_naming(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
-        priors = collection.add_class("mock_class_1", MockClass)
-        collection.add_class("mock_class_2", MockClass, priors[0])
-
-        assert "0.one" == collection.mock_class_1.one.path
-        assert "0.two" == collection.mock_class_1.two.path
-
-        assert "0.one" == collection.mock_class_2.one.path
         assert "1.two" == collection.mock_class_2.two.path
 
     def test_config_limits(self):
@@ -177,23 +156,6 @@ class TestReconstruction(object):
 
         assert reconstruction.mock_class_2.one == 0.
         assert reconstruction.mock_class_2.two == 1.
-
-    def test_shared_prior_construction(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
-
-        priors = collection.add_class("mock_class_1", MockClass)
-        collection.add_class("mock_class_2", MockClass, priors[0])
-
-        reconstruction = collection.reconstruction_for_vector([1., 0., 0.])
-
-        assert isinstance(reconstruction.mock_class_1, MockClass)
-        assert isinstance(reconstruction.mock_class_2, MockClass)
-
-        assert reconstruction.mock_class_1.one == 1.
-        assert reconstruction.mock_class_1.two == 0.
-
-        assert reconstruction.mock_class_2.one == 1.
-        assert reconstruction.mock_class_2.two == 0.
 
     def test_swapped_prior_construction(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
