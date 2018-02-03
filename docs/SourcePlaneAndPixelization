@@ -1,7 +1,7 @@
 We most likely want to split our SourcePlane and Pixelization into two distinct classes, where:
 
 A SourcePlane represents the coordinates of an image traced to the source-plane. For this source-plane, we can recentre
-the coordinates, setup a border, move coordinates outside the border to its edge and so forth.
+the coordinates, setup a border_list, move coordinates outside the border_list to its edge and so forth.
 
 A Pixelization takes a set of coordinates and builds a pixel-grid using them, whcih is then used to perform the
 source and image reconstruction.

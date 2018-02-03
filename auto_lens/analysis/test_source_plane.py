@@ -4,7 +4,7 @@ import source_plane as sp
 import math
 
 
-# TODO : Work out some more test cases, particularly for the border / move factors / relocate routines
+# TODO : Work out some more test cases, particularly for the border_list / move factors / relocate routines
 # TODO : Need to add functionality for sub-coordinates.
 
 class TestSourcePlane(object):
@@ -226,10 +226,10 @@ class TestSorucePlaneBorder(object):
 
         def test__four_coordinates_in_circle__correct_border(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
-            border_mask = [True, True, True, True]
+            border_list = [0, 1, 2, 3]
 
             source_plane = sp.SourcePlane(coordinates, centre=(0.0, 0.0))
-            border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
 
             assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
             assert border.radii == [1.0, 1.0, 1.0, 1.0]
@@ -237,10 +237,10 @@ class TestSorucePlaneBorder(object):
 
         def test__six_coordinates_two_masked__correct_border(self):
             coordinates = [(1.0, 0.0), (20., 20.), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0), (1.0, 1.0)]
-            border_mask = [True, False, True, True, True, False]
+            border_list = [0, 2, 3, 4]
 
             source_plane = sp.SourcePlane(coordinates, centre=(0.0, 0.0))
-            border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
 
             assert border.coordinates == [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)]
             assert border.radii == [1.0, 1.0, 1.0, 1.0]
@@ -248,10 +248,10 @@ class TestSorucePlaneBorder(object):
 
         def test__test_other_thetas_radii(self):
             coordinates = [(2.0, 0.0), (20., 20.), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0), (1.0, 1.0)]
-            border_mask = [True, False, True, True, True, False]
+            border_list = [0, 2, 3, 4]
 
             source_plane = sp.SourcePlane(coordinates, centre=(0.0, 0.0))
-            border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
 
             assert border.coordinates == [(2.0, 0.0), (2.0, 2.0), (-1.0, -1.0), (0.0, -3.0)]
             assert border.radii == [2.0, 2.0 * math.sqrt(2), math.sqrt(2.0), 3.0]
@@ -259,10 +259,10 @@ class TestSorucePlaneBorder(object):
 
         def test__source_plane_centre_offset__coordinates_same_r_and_theta_shifted(self):
             coordinates = [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
-            border_mask = [True, True, True, True]
+            border_list = [0, 1, 2, 3]
 
             source_plane = sp.SourcePlane(coordinates, centre=(1.0, 1.0))
-            border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
 
             assert border.coordinates == [(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]
             assert border.radii == [1.0, 1.0, 1.0, 1.0]
@@ -271,10 +271,10 @@ class TestSorucePlaneBorder(object):
     class TestBorderPolynomial(object):
         def test__four_coordinates_in_circle__thetas_at_radius_are_each_coordinates_radius(self):
             coordinates = [(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0), (0.0, 0.0)]
-            border_mask = [True, True, True, True, False]
+            border_list = [0, 1, 2, 3]
 
             source_plane = sp.SourcePlane(coordinates)
-            border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
 
             assert border.border_radius_at_theta(theta=0.0) == pytest.approx(1.0, 1e-3)
             assert border.border_radius_at_theta(theta=90.0) == pytest.approx(1.0, 1e-3)
@@ -287,10 +287,10 @@ class TestSorucePlaneBorder(object):
                            (-1.0, 0.0), (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), (0.0, -1.0),
                            (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))]
 
-            border_mask = [True, True, True, True, True, True, True, True]
+            border_list = [0, 1, 2, 3, 4, 5, 6, 7]
 
             source_plane = sp.SourcePlane(coordinates)
-            border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
 
             assert border.border_radius_at_theta(theta=0.0) == pytest.approx(1.0, 1e-3)
             assert border.border_radius_at_theta(theta=45.0) == pytest.approx(1.0, 1e-3)
@@ -351,7 +351,7 @@ class TestSorucePlaneBorder(object):
             relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, -1.0))
             assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
 
-        def test__outside_border_simple_cases_setup__via_source_plane_border_mask_routine__relocates_to_source_border(
+        def test__outside_border_simple_cases_setup__via_source_plane_border_list_routine__relocates_to_source_border(
                 self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
@@ -359,10 +359,10 @@ class TestSorucePlaneBorder(object):
             coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
                                     (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
 
-            border_mask = [True] * 16 + [False] * 8
+            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
             source_plane = sp.SourcePlane(coordinates)
-            source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
@@ -376,17 +376,17 @@ class TestSorucePlaneBorder(object):
             assert source_plane.coordinates[:][22] == (0.0, -1.0)
             assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
 
-        def test__outside_border_same_as_above_but_setup_via_border_mask__relocates_to_source_border(self):
+        def test__outside_border_same_as_above_but_setup_via_border_list__relocates_to_source_border(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
             coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
                                     (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
 
-            border_mask = [True] * 16 + [False] * 8
+            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
             source_plane = sp.SourcePlane(coordinates)
-            source_border = source_plane.border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
             source_plane.relocate_coordinates_outside_border(source_border)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
@@ -408,26 +408,26 @@ class TestSorucePlaneBorder(object):
             coordinates_original = circle + [(0.2, 0.0), (0.1, 0.1), (0.0, 0.2), (-0.1, 0.1),
                                              (-0.2, 0.0), (-0.1, -0.1), (0.0, -0.2), (0.1, -0.1)]
 
-            border_mask = [True] * 16 + [False] * 8
+            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
             source_plane = sp.SourcePlane(coordinates_original)
-            source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
             assert source_plane.coordinates == coordinates_original
 
-        def test__inside_border_simple_cases_setup_via_border_mask__no_relocations(self):
+        def test__inside_border_simple_cases_setup_via_border_list__no_relocations(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
             coordinates = circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
                                     (-0.5, 0.0), (-0.5, -0.5), (0.0, -0.5), (0.5, -0.5)]
 
-            border_mask = [True] * 16 + [False] * 8
+            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
             source_plane = sp.SourcePlane(coordinates)
-            source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
@@ -440,11 +440,11 @@ class TestSorucePlaneBorder(object):
             coordinates = circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
                                     (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
 
-            border_mask = [True] * 16 + [False] * 8
+            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
             source_plane = sp.SourcePlane(coordinates)
 
-            source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
@@ -454,18 +454,18 @@ class TestSorucePlaneBorder(object):
             assert source_plane.coordinates[:][22] == (0.0, -1.0)
             assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
 
-        def test__change_border_mask__works_as_above(self):
+        def test__change_border_list__works_as_above(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
 
             coordinates = [(-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)] + circle + \
                           [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5)]
 
-            border_mask = [False] * 4 + [True] * 16 + [False] * 4
+            border_list = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
             source_plane = sp.SourcePlane(coordinates)
 
-            source_plane.relocate_coordinates_outside_border_with_mask_and_polynomial_degree(border_mask, 3)
+            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
 
             source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
 
