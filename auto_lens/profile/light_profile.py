@@ -1,8 +1,7 @@
 import profile
-from matplotlib import pyplot
-import numpy as np
 import math
 from scipy.integrate import quad
+
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
@@ -36,7 +35,6 @@ class LightProfile(object):
             The value of intensity at the given coordinates
         """
         raise AssertionError("Flux at coordinates should be overridden")
-
 
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
@@ -196,8 +194,8 @@ class SersicLightProfile(EllipticalLightProfile):
             A parameter, derived from sersic_index, that ensures that effective_radius always contains 50% of the light.
         """
         return (2 * self.sersic_index) - (1. / 3.) + (4. / (405. * self.sersic_index)) + (
-            46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
-                   2194697. / (30690717750. * self.sersic_index ** 4))
+                46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
+                       2194697. / (30690717750. * self.sersic_index ** 4))
 
     def intensity_at_radius(self, radius):
         """
@@ -326,7 +324,7 @@ class CoreSersicLightProfile(SersicLightProfile):
         """Overall intensity normalisation in the rescaled Core-Sersic light profile (electrons per second)"""
         return self.intensity_break * (2.0 ** (-self.gamma / self.alpha)) * math.exp(
             self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
-                1.0 / self.sersic_index))
+                    1.0 / self.sersic_index))
 
     def intensity_at_radius(self, radius):
         """
@@ -341,8 +339,8 @@ class CoreSersicLightProfile(SersicLightProfile):
             The intensity at that radius
         """
         return self.intensity_prime * (
-            (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * math.exp(
+                (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * math.exp(
             -self.sersic_constant * (
-                (((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
-                    self.effective_radius ** self.alpha)) ** (
-                    1.0 / (self.alpha * self.sersic_index))))
+                    (((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
+                            self.effective_radius ** self.alpha)) ** (
+                            1.0 / (self.alpha * self.sersic_index))))
