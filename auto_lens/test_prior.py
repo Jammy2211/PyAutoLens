@@ -68,9 +68,23 @@ class TestCollection(object):
         assert mock_object.two == 1.
 
 
+class MockConfig(object):
+    def __init__(self, d=None):
+        if d is not None:
+            self.d = d
+        else:
+            self.d = {}
+
+    def get(self, class_name, var_name):
+        try:
+            return self.d[class_name][var_name]
+        except KeyError:
+            return ["u", 0, 1]
+
+
 class TestClassMappingCollection(object):
     def test__argument_extraction(self):
-        collection = prior.ClassMappingPriorCollection()
+        collection = prior.ClassMappingPriorCollection(MockConfig())
         collection.add_class(MockClass)
         assert 1 == len(collection.classes)
         assert 2 == len(collection.class_priors[0])
@@ -78,7 +92,7 @@ class TestClassMappingCollection(object):
         assert len(collection) == 2
 
     def test__prior_substitution(self):
-        collection = prior.ClassMappingPriorCollection()
+        collection = prior.ClassMappingPriorCollection(MockConfig())
         uniform_prior = prior.UniformPrior("two")
 
         collection.add_class(MockClass, uniform_prior)
@@ -88,7 +102,7 @@ class TestClassMappingCollection(object):
         assert len(collection) == 2
 
     def test__prior_naming(self):
-        collection = prior.ClassMappingPriorCollection()
+        collection = prior.ClassMappingPriorCollection(MockConfig())
         collection.add_class(MockClass)
         collection.add_class(MockClass)
 
@@ -99,7 +113,7 @@ class TestClassMappingCollection(object):
         assert "1.two" == collection.class_priors[1][1].path
 
     def test_substitute_prior_naming(self):
-        collection = prior.ClassMappingPriorCollection()
+        collection = prior.ClassMappingPriorCollection(MockConfig())
         priors = collection.add_class(MockClass)
         collection.add_class(MockClass, priors[0])
 
@@ -108,3 +122,11 @@ class TestClassMappingCollection(object):
 
         assert "0.one" == collection.class_priors[1][0].path
         assert "1.two" == collection.class_priors[1][1].path
+
+    def test_config_limits(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["u", 1., 2.]}}))
+
+        collection.add_class(MockClass)
+
+        assert collection.class_priors[0][0].lower_limit == 1.
+        assert collection.class_priors[0][0].upper_limit == 2.
