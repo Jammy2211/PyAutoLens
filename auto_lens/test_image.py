@@ -1020,65 +1020,77 @@ class TestMask(object):
 
         def test__size_is_5x5__multiple_points(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False,  False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False]])
 
             blurring_region = image.Mask.blurring_region(mask, blurring_region_size=(5, 5))
 
-            assert (blurring_region == np.array([[True,   True,  True, True,  True,  True,  True],
-                                                 [True,  False,  True, True,  True, False,  True],
-                                                 [True,   True,  True, True,  True,  True,  True],
-                                                 [True,   True,  True, True,  True,  True,  True],
-                                                 [True,   True,  True, True,  True,  True,  True],
-                                                 [True,  False,  True, True,  True, False,  True],
-                                                 [True,   True,  True, True,  True,  True,  True]])).all()
+            assert (blurring_region == np.array([[True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,  False,  True, True,  True, False,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,  False,  True, True,  True, False,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True]])).all()
 
         def test__size_is_5x3__multiple_points(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False,  False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False]])
 
             blurring_region = image.Mask.blurring_region(mask, blurring_region_size=(5, 3))
 
-            assert (blurring_region == np.array([[True,   True,  True, True,  True,  True,  True],
-                                                 [True,  False,  True, True,  True, False,  True],
-                                                 [True,   True,  True, True,  True,  True,  True],
-                                                 [False, False, False, False, False, False, False],
-                                                 [True,   True,  True, True,  True,  True,  True],
-                                                 [True,  False,  True, True,  True, False,  True],
-                                                 [True,   True,  True, True,  True,  True,  True]])).all()
+            assert (blurring_region == np.array([[False, False, False, False, False, False, False, False, False],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,  False,  True, True,  True, False,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [False, False, False, False, False, False, False, False, False],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [True, True,  False,  True, True,  True, False,  True, True],
+                                                 [True, True,   True,  True, True,  True,  True,  True, True],
+                                                 [False, False, False, False, False, False, False, False, False]])).all()
 
         def test__size_is_3x5__multiple_points(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False,  False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False, False]])
 
             blurring_region = image.Mask.blurring_region(mask, blurring_region_size=(3, 5))
 
-            assert (blurring_region == np.array([[True,   True,  True, False,  True,  True,  True],
-                                                 [True,  False,  True, False,  True, False,  True],
-                                                 [True,   True,  True, False,  True,  True,  True],
-                                                 [True, True, True,    False,  True,  True,  True],
-                                                 [True,   True,  True, False,  True,  True,  True],
-                                                 [True,  False,  True, False,  True, False,  True],
-                                                 [True,   True,  True, False,  True,  True,  True]])).all()
+            assert (blurring_region == np.array([[False, True,   True,  True, False,  True,  True,  True, False],
+                                                 [False, True,   True,  True, False,  True,  True,  True, False],
+                                                 [False, True,  False,  True, False,  True, False,  True, False],
+                                                 [False, True,   True,  True, False,  True,  True,  True, False],
+                                                 [False, True,   True,  True, False,  True,  True,  True, False],
+                                                 [False, True,   True,  True, False,  True,  True,  True, False],
+                                                 [False, True,  False,  True, False,  True, False,  True, False],
+                                                 [False, True,   True,  True, False,  True,  True,  True, False],
+                                                 [False, True,   True,  True, False,  True,  True,  True, False]])).all()
 
-        def test__size_is_3x3__evens_sized_image(self):
+        def test__size_is_3x3__even_sized_image(self):
 
             mask = np.array([[False, False, False, False, False, False, False, False],
                              [False, True, False, False, False, True, False, False],
@@ -1100,27 +1112,40 @@ class TestMask(object):
                                                  [True,   True,  True, False,  True,  True,  True, False],
                                                  [False, False, False, False, False, False, False, False]])).all()
 
-        def test__size_is_5x5__evens_sized_image(self):
+        def test__size_is_5x5__even_sized_image(self):
 
             mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False],
                              [False, False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False, False],
                              [False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False],
+                             [False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False, False],
+                             [False, False, False, False, False, True, False, False],
                              [False, False, False, False, False, False, False, False],
                              [False, False, False, False, False, False, False, False]])
 
             blurring_region = image.Mask.blurring_region(mask, blurring_region_size=(5, 5))
 
-            assert (blurring_region == np.array([[True,   True,  True, True,  True,  True,  True, True],
-                                                 [True,  False,  True, True,  True, False,  True, True],
-                                                 [True,   True,  True, True,  True,  True,  True, True],
-                                                 [True,   True,  True, True,  True,  True,  True, True],
-                                                 [True,   True,  True, True,  True,  True,  True, True],
-                                                 [True,  False,  True, True,  True, False,  True, True],
-                                                 [True,   True,  True, True,  True,  True,  True, True],
-                                                 [True,   True,  True,  True,  True,  True,  True, True]])).all()
+            assert (blurring_region == np.array([[False, False, False,  False, False, False, False, False],
+                                                 [False, False, False, False, False, False, False, False],
+                                                 [False, False, False, False, False, False, False, False],
+                                                 [False, False, False, True,  True,  True,  True, True],
+                                                 [False, False, False, True,  True,  True,  True, True],
+                                                 [False, False, False, True,  True, False,  True, True],
+                                                 [False, False, False, True,  True,  True,  True, True],
+                                                 [False, False, False,  True,  True,  True,  True, True]])).all()
+
+        def test__size_is_5x5__multiple_points__mask_extends_beyond_border_so_raises_mask_exception(self):
+
+            mask = np.array([[False, False, False, False, False, False, False],
+                             [False, True, False, False, False, True, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, False, False,  False, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, True, False, False, False, True, False],
+                             [False, False, False, False, False, False, False]])
+
+            with pytest.raises(image.MaskException):
+                blurring_region = image.Mask.blurring_region(mask, blurring_region_size=(5, 5))
 
         def test__setup_via_image(self):
 
@@ -1136,3 +1161,78 @@ class TestMask(object):
                                                 [True, False, True],
                                                 [True, True, True]])).all()
 
+    class TestBorderList(object):
+
+        def test__7x7_mask_one_central_pixel__is_entire_border(self):
+
+            mask = np.array([[False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, False, True,  False, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False]])
+
+            border_list = image.Mask.border_list(mask)
+
+            assert border_list == [0]
+
+        def test__7x7_mask_nine_central_pixels__is_border(self):
+
+            mask = np.array([[False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, False, False, False, False, False],
+                             [False, False, False, False, False, False, False]])
+
+            border_list = image.Mask.border_list(mask)
+
+            assert border_list == [0, 1, 2, 3, 5, 6, 7, 8]
+
+        def test__7x7_mask_rectangle_of_fifteen_central_pixels__is_border(self):
+
+            mask = np.array([[False, False, False, False, False, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True, True, False, False],
+                             [False, False, False, False, False, False, False]])
+
+            border_list = image.Mask.border_list(mask)
+
+            assert border_list == [0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14]
+
+        def test__7x7_mask_add_edge_pixels__also_in_border(self):
+
+            mask = np.array([[False, False, False, False, False, False, False],
+                             [False, False, False, True, False, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, True,  True,  True,  True, True, False],
+                             [False, False, True,  True,  True, False, False],
+                             [False, False, True,  True, True, False, False],
+                             [False, False, False, True, False, False, False],
+                             [False, False, False, False, False, False, False]])
+
+            border_list = image.Mask.border_list(mask)
+
+            assert border_list == [0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18]
+
+        def test__7x7_mask_big_square(self):
+
+            mask = np.array([[False, False, False, False, False, False, False],
+                             [False, True, True, True,  True, True, False],
+                             [False, True, True,  True, True, True, False],
+                             [False, True, True,  True, True, True, False],
+                             [False, True, True,  True, True, True, False],
+                             [False, True, True,  True, True, True, False],
+                             [False, True, True,  True, True, True, False],
+                             [False, True, True,  True, True, True, False],
+                             [False, False, False, False, False, False, False]])
+
+            border_list = image.Mask.border_list(mask)
+
+            assert border_list == [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 29, 30, 31, 32, 33, 34]
