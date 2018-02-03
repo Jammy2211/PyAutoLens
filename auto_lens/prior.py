@@ -163,6 +163,11 @@ class PriorCollection(list):
         raise AssertionError("Append should not be called directly")
 
 
+class PriorModel(object):
+    def __init__(self, cls):
+        self.cls = cls
+
+
 class ClassMappingPriorCollection(PriorCollection):
     def __init__(self, config):
         super(ClassMappingPriorCollection, self).__init__()
@@ -173,7 +178,7 @@ class ClassMappingPriorCollection(PriorCollection):
     def add_class(self, name, cls, *priors):
         args = inspect.getargspec(cls.__init__).args[1:]
 
-        prior_model = object()
+        prior_model = PriorModel(cls)
 
         priors_for_class = []
         for arg in args:
@@ -188,6 +193,9 @@ class ClassMappingPriorCollection(PriorCollection):
                 elif config_arr[0] == "g":
                     prior = GaussianPrior(path, config_arr[1], config_arr[2])
             priors_for_class.append(prior)
+
+            setattr(prior_model, arg, prior)
+
             self.add(prior)
 
         setattr(self, name, prior_model)
