@@ -147,3 +147,4 @@ class TestClassMappingCollection(object):
         collection.add_class("mock_class", MockClass)
 
         assert hasattr(collection, "mock_class")
+        assert hasattr(collection.mock_class, "one")
