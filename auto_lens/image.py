@@ -4,12 +4,13 @@ import os
 import logging
 from functools import wraps
 import numpy as np
+from matplotlib import pyplot
 
 # TODO: this gives us a logger that will print stuff with the name of the module
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-data_path = "{}/../../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
+data_path = "{}/../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def numpy_array_from_fits(file_path, hdu):
@@ -92,7 +93,6 @@ def keep_attributes(func):
     return wrapper
 
 
-# TODO: It seemed to meet that many of these functions are best made general. They really can apply to any array.
 @keep_attributes
 def trim(array, pixel_dimensions):
     """ Trim the data array to a new size around its central pixel.
@@ -182,8 +182,7 @@ def output_for_fortran(array, image_name, path=data_path):
 
 
 class Image(np.ndarray):
-    # TODO: this is a bit of magic. __new__ gets called before __init__. In this case we can use it to initialise an
-    # TODO: ndarray with some extra attributes
+
     def __new__(cls, array, pixel_scale, sky_background_level=None, sky_background_noise=None):
         """
         Creates a new image, accounting for the fact that Image is a ndarray
@@ -231,7 +230,6 @@ class Image(np.ndarray):
     def shape_arc_seconds(self):
         return pixel_dimensions_to_arc_seconds(self.shape, self.pixel_scale)
 
-    # TODO: please can we use filename? It's pretty standard. file_name is very rare.
     @classmethod
     def from_fits(cls, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
                   path=data_path):
@@ -316,6 +314,13 @@ class Image(np.ndarray):
                             outer_radius=outer_radius_arc,
                             inner_radius=inner_radius_arc)
 
+    def blurring_region(self, mask, psf_kernel_size):
+        return Mask.blurring_region(mask, psf_kernel_size)
+
+    def plot(self):
+        pyplot.imshow(self)
+        pyplot.show()
+
 
 # noinspection PyClassHasNoInit
 class Array(np.ndarray):
@@ -366,7 +371,7 @@ class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
     @classmethod
-    def mask(cls, arc_second_dimensions, pixel_scale, function, centre):
+    def mask(cls, arc_second_dimensions, pixel_scale, function, centre, blurring_region_size):
         """
 
         Parameters
@@ -385,7 +390,6 @@ class Mask(object):
             An empty array
         """
         pixel_dimensions = arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
-        print(pixel_dimensions)
         array = np.zeros((int(pixel_dimensions[0]), int(pixel_dimensions[1])))
 
         central_pixel_coords = central_pixel(pixel_dimensions)
@@ -396,6 +400,7 @@ class Mask(object):
                 y_pix = pixel_scale * (j - central_pixel_coords[1]) - centre[1]
 
                 array[i, j] = function(x_pix, y_pix)
+
         return np.ma.make_mask(array)
 
     @classmethod
@@ -443,3 +448,46 @@ class Mask(object):
             return outer_radius >= radius_arc >= inner_radius
 
         return Mask.mask(arc_second_dimensions, pixel_scale, is_within_radii, centre)
+
+    @classmethod
+    def blurring_region(cls, mask, blurring_region_size):
+        """Compute the blurring region of a mask, where the blurring region is defined as all pixels which are outside \
+         of the mask but will have their light blurred into the mask during PSF convolution. Thus, their light must be \
+         computed during the analysis to ensure accurate PSF blurring.
+
+         The blurring_region_size is a tuple describing the rectangular pixel dimensions of the blurring kernel. \
+         Therefore, it maps directly to the size of the PSF kernel of an image.
+
+        Parameters
+        ----------
+        mask : image.Mask
+            The image mask we are finding the blurring region around.
+        blurring_region_size : int
+            The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
+
+        Returns
+        -------
+        blurring_region : numpy.ma
+            A mask where every True value is a pixel which is within the mask's blurring region.
+
+         """
+
+        if blurring_region_size[0] % 2 == 0 or blurring_region_size[1] % 2 == 0:
+            raise MaskException("blurring_region_size of exterior region must be odd")
+
+        image_dimensions_pixels = mask.shape
+        blurring_region = np.zeros(image_dimensions_pixels)
+
+        for i in range(image_dimensions_pixels[0]):
+            for j in range(image_dimensions_pixels[1]):
+                if mask[i, j] == True:
+                    for i1 in range((-blurring_region_size[0] + 1) // 2, (blurring_region_size[0] + 1) // 2):
+                        for j1 in range((-blurring_region_size[1] + 1) // 2, (blurring_region_size[1] + 1) // 2):
+                            if 0 <= i+i1 <= image_dimensions_pixels[0]-1 and 0 <= j+j1 <= image_dimensions_pixels[0]-1:
+                                if (mask[j+j1, i+i1]) == False:
+                                    blurring_region[j+j1, i+i1] = True
+
+        return blurring_region
+
+class MaskException(Exception):
+    pass
