@@ -164,11 +164,32 @@ class PriorCollection(list):
 
 
 class PriorModel(object):
+    """Object comprising class, name and associated priors"""
     def __init__(self, name, cls):
+        """
+        Parameters
+        ----------
+        name: String
+            The name of this prior model instance (e.g. sersic_profile_1)
+        cls: class
+            The class associated with this instance
+        """
         self.name = name
         self.cls = cls
 
     def instance_for_arguments(self, arguments):
+        """
+        Create an instance of the associated class for a set of arguments
+
+        Parameters
+        ----------
+        arguments: {Prior: (str: any)}
+            Dictionary mapping priors to attribute name and value pairs
+
+        Returns
+        -------
+            An instance of the class
+        """
         model_arguments = {arguments[val][0]: arguments[val][1] for val in self.__dict__.values() if val in arguments}
         return self.cls(**model_arguments)
 
@@ -178,6 +199,7 @@ class Reconstruction(object):
 
 
 class ClassMappingPriorCollection(PriorCollection):
+    """A collection of priors formed by passing in classes to be reconstructed"""
     def __init__(self, config):
         super(ClassMappingPriorCollection, self).__init__()
         self.class_priors = []
