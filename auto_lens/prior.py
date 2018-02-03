@@ -170,8 +170,10 @@ class ClassMappingPriorCollection(PriorCollection):
         self.classes = []
         self.config = config
 
-    def add_class(self, cls, *priors):
+    def add_class(self, name, cls, *priors):
         args = inspect.getargspec(cls.__init__).args[1:]
+
+        prior_model = object()
 
         priors_for_class = []
         for arg in args:
@@ -187,6 +189,8 @@ class ClassMappingPriorCollection(PriorCollection):
                     prior = GaussianPrior(path, config_arr[1], config_arr[2])
             priors_for_class.append(prior)
             self.add(prior)
+
+        setattr(self, name, prior_model)
 
         self.classes.append(cls)
         self.class_priors.append(priors_for_class)
