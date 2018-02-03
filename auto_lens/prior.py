@@ -172,7 +172,7 @@ class ClassMappingPriorCollection(PriorCollection):
     def __init__(self, config):
         super(ClassMappingPriorCollection, self).__init__()
         self.class_priors = []
-        self.classes = []
+        self.prior_models = []
         self.config = config
 
     def add_class(self, name, cls, *priors):
@@ -187,7 +187,7 @@ class ClassMappingPriorCollection(PriorCollection):
                 prior = matching_priors[0]
             else:
                 config_arr = self.config.get(cls.__name__, arg)
-                path = "{}.{}".format(len(self.classes), arg)
+                path = "{}.{}".format(len(self.prior_models), arg)
                 if config_arr[0] == "u":
                     prior = UniformPrior(path, config_arr[1], config_arr[2])
                 elif config_arr[0] == "g":
@@ -200,7 +200,7 @@ class ClassMappingPriorCollection(PriorCollection):
 
         setattr(self, name, prior_model)
 
-        self.classes.append(cls)
+        self.prior_models.append(prior_model)
         self.class_priors.append(priors_for_class)
 
         return priors_for_class

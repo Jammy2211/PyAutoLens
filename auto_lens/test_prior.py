@@ -86,7 +86,7 @@ class TestClassMappingCollection(object):
     def test__argument_extraction(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
         collection.add_class("mock_class", MockClass)
-        assert 1 == len(collection.classes)
+        assert 1 == len(collection.prior_models)
         assert 2 == len(collection.class_priors[0])
 
         assert len(collection) == 2
