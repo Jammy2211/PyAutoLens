@@ -213,3 +213,14 @@ class TestReconstruction(object):
 
         assert reconstruction.mock_class_2.one == 1.
         assert reconstruction.mock_class_2.two == 0.
+
+    def test_prior_replacement(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_class", MockClass)
+
+        collection.mock_class.one = prior.UniformPrior("one", 100, 200)
+
+        reconstruction = collection.reconstruction_for_vector([0., 0.])
+
+        assert reconstruction.mock_class.one == 100.
