@@ -46,6 +46,9 @@ class Prior(object):
     def __hash__(self):
         return hash(self.path)
 
+    def __repr__(self):
+        return "<Prior path={}>".format(self.path)
+
 
 class UniformPrior(Prior):
     """A prior with a uniform distribution between a lower and upper limit"""
@@ -178,6 +181,10 @@ class PriorModel(object):
         self.name = name
         self.cls = cls
 
+    @property
+    def priors(self):
+        return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
+
     def instance_for_arguments(self, arguments):
         """
         Create an instance of the associated class for a set of arguments
@@ -200,7 +207,7 @@ class Reconstruction(object):
 
 
 # TODO: make PriorModel prior setting work elegantly. Test config loading and implement inherited attribute setting
-class ClassMappingPriorCollection(PriorCollection):
+class ClassMappingPriorCollection(object):
     """A collection of priors formed by passing in classes to be reconstructed"""
 
     def __init__(self, config):
@@ -229,16 +236,22 @@ class ClassMappingPriorCollection(PriorCollection):
 
             setattr(prior_model, arg, prior)
 
-            self.add(prior)
-
         setattr(self, name, prior_model)
 
         self.prior_models.append(prior_model)
 
         return priors_for_class
 
+    @property
+    def prior_set(self):
+        return {prior for prior_model in self.prior_models for prior in prior_model.priors}
+
+    @property
+    def priors(self):
+        return sorted(list(self.prior_set), key=lambda prior: prior.path)
+
     def reconstruction_for_vector(self, vector):
-        arguments = dict(map(lambda prior, unit: (prior, prior.argument_for(unit)), self, vector))
+        arguments = dict(map(lambda prior, unit: (prior, prior.argument_for(unit)), self.priors, vector))
 
         reconstruction = Reconstruction()
 

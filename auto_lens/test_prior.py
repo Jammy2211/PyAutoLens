@@ -88,7 +88,7 @@ class TestClassMappingCollection(object):
         collection.add_class("mock_class", MockClass)
         assert 1 == len(collection.prior_models)
 
-        assert len(collection) == 2
+        assert len(collection.priors) == 2
 
     def test__prior_substitution(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
@@ -98,7 +98,7 @@ class TestClassMappingCollection(object):
 
         assert uniform_prior is collection.mock_class.two
 
-        assert len(collection) == 2
+        assert len(collection.priors) == 2
 
     def test__prior_naming(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
@@ -203,7 +203,7 @@ class TestReconstruction(object):
 
         collection.mock_class_2.one = collection.mock_class_1.one
 
-        reconstruction = collection.reconstruction_for_vector([1., 0., 0., 0.])
+        reconstruction = collection.reconstruction_for_vector([1., 0., 0.])
 
         assert isinstance(reconstruction.mock_class_1, MockClass)
         assert isinstance(reconstruction.mock_class_2, MockClass)
