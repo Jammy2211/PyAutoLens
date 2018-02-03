@@ -130,3 +130,13 @@ class TestClassMappingCollection(object):
 
         assert collection.class_priors[0][0].lower_limit == 1.
         assert collection.class_priors[0][0].upper_limit == 2.
+
+    def test_config_prior_type(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["g", 1., 2.]}}))
+
+        collection.add_class(MockClass)
+
+        assert isinstance(collection.class_priors[0][0], prior.GaussianPrior)
+
+        assert collection.class_priors[0][0].mean == 1.
+        assert collection.class_priors[0][0].sigma == 2.

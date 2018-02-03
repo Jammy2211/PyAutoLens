@@ -180,7 +180,11 @@ class ClassMappingPriorCollection(PriorCollection):
                 prior = matching_priors[0]
             else:
                 config_arr = self.config.get(cls.__name__, arg)
-                prior = UniformPrior("{}.{}".format(len(self.classes), arg), config_arr[1], config_arr[2])
+                path = "{}.{}".format(len(self.classes), arg)
+                if config_arr[0] == "u":
+                    prior = UniformPrior(path, config_arr[1], config_arr[2])
+                elif config_arr[0] == "g":
+                    prior = GaussianPrior(path, config_arr[1], config_arr[2])
             priors_for_class.append(prior)
             self.add(prior)
 
