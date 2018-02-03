@@ -179,13 +179,32 @@ class TestReconstruction(object):
         assert reconstruction.mock_class_2.one == 0.
         assert reconstruction.mock_class_2.two == 1.
 
-    def test_shared_variable_construction(self):
+    def test_shared_prior_construction(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
 
         priors = collection.add_class("mock_class_1", MockClass)
         collection.add_class("mock_class_2", MockClass, priors[0])
 
         reconstruction = collection.reconstruction_for_vector([1., 0., 0.])
+
+        assert isinstance(reconstruction.mock_class_1, MockClass)
+        assert isinstance(reconstruction.mock_class_2, MockClass)
+
+        assert reconstruction.mock_class_1.one == 1.
+        assert reconstruction.mock_class_1.two == 0.
+
+        assert reconstruction.mock_class_2.one == 1.
+        assert reconstruction.mock_class_2.two == 0.
+
+    def test_swapped_prior_construction(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_class_1", MockClass)
+        collection.add_class("mock_class_2", MockClass)
+
+        collection.mock_class_2.one = collection.mock_class_1.one
+
+        reconstruction = collection.reconstruction_for_vector([1., 0., 0., 0.])
 
         assert isinstance(reconstruction.mock_class_1, MockClass)
         assert isinstance(reconstruction.mock_class_2, MockClass)
