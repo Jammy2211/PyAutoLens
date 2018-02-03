@@ -206,32 +206,47 @@ class Reconstruction(object):
     pass
 
 
-# TODO: make PriorModel prior setting work elegantly. Test config loading and implement inherited attribute setting
+# TODO: Test config loading and implement inherited attribute setting
 class ClassMappingPriorCollection(object):
     """A collection of priors formed by passing in classes to be reconstructed"""
 
     def __init__(self, config):
+        """
+        Parameters
+        ----------
+        config: Config
+            An object that wraps a configuration
+        """
         super(ClassMappingPriorCollection, self).__init__()
         self.prior_models = []
         self.config = config
 
-    def add_class(self, name, cls, *priors):
+    def add_class(self, name, cls):
+        """
+        Add a class to this collection. Priors are automatically generated for __init__ arguments. Prior type and
+        configuration is taken from matching module.class.attribute entries in the config.
+
+        Parameters
+        ----------
+        name: String
+            The name of this class. This is also the attribute name for the class in the collection and reconstruction.
+        cls: class
+            The class for which priors are to be generated.
+
+        """
+
         args = inspect.getargspec(cls.__init__).args[1:]
 
         prior_model = PriorModel(name, cls)
 
         priors_for_class = []
         for arg in args:
-            matching_priors = filter(lambda p: p.name == arg, priors)
-            if len(matching_priors) > 0:
-                prior = matching_priors[0]
-            else:
-                config_arr = self.config.get(cls.__name__, arg)
-                path = "{}.{}".format(len(self.prior_models), arg)
-                if config_arr[0] == "u":
-                    prior = UniformPrior(path, config_arr[1], config_arr[2])
-                elif config_arr[0] == "g":
-                    prior = GaussianPrior(path, config_arr[1], config_arr[2])
+            config_arr = self.config.get(cls.__name__, arg)
+            path = "{}.{}".format(len(self.prior_models), arg)
+            if config_arr[0] == "u":
+                prior = UniformPrior(path, config_arr[1], config_arr[2])
+            elif config_arr[0] == "g":
+                prior = GaussianPrior(path, config_arr[1], config_arr[2])
             priors_for_class.append(prior)
 
             setattr(prior_model, arg, prior)
@@ -239,8 +254,6 @@ class ClassMappingPriorCollection(object):
         setattr(self, name, prior_model)
 
         self.prior_models.append(prior_model)
-
-        return priors_for_class
 
     @property
     def prior_set(self):
