@@ -164,8 +164,17 @@ class PriorCollection(list):
 
 
 class PriorModel(object):
-    def __init__(self, cls):
+    def __init__(self, name, cls):
+        self.name = name
         self.cls = cls
+
+    def instance_for_arguments(self, arguments):
+        model_arguments = {arguments[val][0]: arguments[val][1] for val in self.__dict__.values() if val in arguments}
+        return self.cls(**model_arguments)
+
+
+class Reconstruction(object):
+    pass
 
 
 class ClassMappingPriorCollection(PriorCollection):
@@ -178,7 +187,7 @@ class ClassMappingPriorCollection(PriorCollection):
     def add_class(self, name, cls, *priors):
         args = inspect.getargspec(cls.__init__).args[1:]
 
-        prior_model = PriorModel(cls)
+        prior_model = PriorModel(name, cls)
 
         priors_for_class = []
         for arg in args:
@@ -204,3 +213,14 @@ class ClassMappingPriorCollection(PriorCollection):
         self.class_priors.append(priors_for_class)
 
         return priors_for_class
+
+    def reconstruction_for_vector(self, vector):
+        arguments = dict(map(lambda prior, unit: (prior, prior.argument_for(unit)), self, vector))
+
+        reconstruction = Reconstruction()
+
+        for prior_model in self.prior_models:
+            prior_model.instance_for_arguments(arguments)
+            setattr(reconstruction, prior_model.name, prior_model.instance_for_arguments(arguments))
+
+        return reconstruction

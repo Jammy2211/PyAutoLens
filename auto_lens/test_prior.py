@@ -148,3 +148,14 @@ class TestClassMappingCollection(object):
 
         assert hasattr(collection, "mock_class")
         assert hasattr(collection.mock_class, "one")
+
+
+class TestReconstruction(object):
+    def test_simple_reconstruction(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_class", MockClass)
+
+        reconstruction = collection.reconstruction_for_vector([1., 1.])
+
+        assert isinstance(reconstruction.mock_class, MockClass)
