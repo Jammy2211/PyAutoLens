@@ -209,3 +209,14 @@ class TestReconstruction(object):
 
         assert reconstruction.mock_profile.intensity == 0.
         assert reconstruction.mock_profile.centre == (1., 0.)
+
+    def test_modify_tuple(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_profile", MockProfile)
+
+        collection.mock_profile.centre.centre_0 = prior.UniformPrior("0.centre_0", 1., 10.)
+
+        reconstruction = collection.reconstruction_for_vector([1., 1., 0.])
+
+        assert reconstruction.mock_profile.centre == (10., 1.)

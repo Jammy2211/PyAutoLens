@@ -215,7 +215,13 @@ class PriorModel(object):
 class TuplePrior(object):
     def __init__(self, name, priors):
         self.name = name
-        self.priors = priors
+        for prior in priors:
+            setattr(self, prior.name, prior)
+            print(prior.name)
+
+    @property
+    def priors(self):
+        return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
 
     def argument_for_arguments(self, arguments):
         return {self.name: tuple([arguments[prior][1] for prior in self.priors])}
