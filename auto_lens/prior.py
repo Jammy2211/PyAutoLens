@@ -282,6 +282,17 @@ class ClassMappingPriorCollection(object):
         self.prior_models = []
         self.config = config
 
+    def make_path(self, prior_name):
+        return "{}.{}".format(len(self.prior_models), prior_name)
+
+    def make_prior(self, prior_name, cls):
+        config_arr = self.config.get(cls.__name__, prior_name)
+        path = self.make_path(prior_name)
+        if config_arr[0] == "u":
+            return UniformPrior(path, config_arr[1], config_arr[2])
+        elif config_arr[0] == "g":
+            return GaussianPrior(path, config_arr[1], config_arr[2])
+
     def add_class(self, name, cls):
         """
         Add a class to this collection. Priors are automatically generated for __init__ arguments. Prior type and
@@ -305,22 +316,14 @@ class ClassMappingPriorCollection(object):
 
         prior_model = PriorModel(name, cls)
 
-        def make_prior(prior_name):
-            config_arr = self.config.get(cls.__name__, prior_name)
-            path = "{}.{}".format(len(self.prior_models), prior_name)
-            if config_arr[0] == "u":
-                return UniformPrior(path, config_arr[1], config_arr[2])
-            elif config_arr[0] == "g":
-                return GaussianPrior(path, config_arr[1], config_arr[2])
-
         for arg in args:
             if arg in defaults and isinstance(defaults[arg], tuple):
                 priors = []
                 for i in range(len(defaults[arg])):
-                    priors.append(make_prior("{}_{}".format(arg, i)))
+                    priors.append(self.make_prior("{}_{}".format(arg, i), cls))
                 setattr(prior_model, arg, TuplePrior(arg, priors))
             else:
-                setattr(prior_model, arg, make_prior(arg))
+                setattr(prior_model, arg, self.make_prior(arg, cls))
 
         setattr(self, name, prior_model)
 
