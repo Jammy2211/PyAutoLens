@@ -82,6 +82,12 @@ class MockConfig(object):
             return ["u", 0, 1]
 
 
+class MockProfile(object):
+    def __init__(self, intensity, centre=(0, 0)):
+        self.intensity = intensity
+        self.centre = centre
+
+
 class TestClassMappingCollection(object):
     def test__argument_extraction(self):
         collection = prior.ClassMappingPriorCollection(MockConfig())
@@ -126,6 +132,15 @@ class TestClassMappingCollection(object):
 
         assert hasattr(collection, "mock_class")
         assert hasattr(collection.mock_class, "one")
+
+    def test_tuple_arg(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_profile", MockProfile)
+
+        print(collection.priors)
+
+        assert 3 == len(collection.priors)
 
 
 class TestReconstruction(object):
