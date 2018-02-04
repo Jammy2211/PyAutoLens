@@ -277,7 +277,12 @@ class ClassMappingPriorCollection(object):
 
         """
 
-        args = inspect.getargspec(cls.__init__).args[1:]
+        arg_spec = inspect.getargspec(cls.__init__)
+        try:
+            defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
+        except TypeError:
+            defaults = {}
+        args = arg_spec.args[1:]
 
         prior_model = PriorModel(name, cls)
 
@@ -296,9 +301,10 @@ class ClassMappingPriorCollection(object):
 
         for arg in args:
             print(arg)
-            if arg == "centre":
-                add_prior("centre_x")
-                add_prior("centre_y")
+            if arg in defaults and isinstance(defaults[arg], tuple):
+                for i in range(len(defaults[arg])):
+                    add_prior("{}_{}".format(arg, i))
+                    add_prior("{}_{}".format(arg, i))
             else:
                 add_prior(arg)
 
