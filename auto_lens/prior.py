@@ -217,7 +217,6 @@ class TuplePrior(object):
         self.name = name
         for prior in priors:
             setattr(self, prior.name, prior)
-            print(prior.name)
 
     @property
     def priors(self):
