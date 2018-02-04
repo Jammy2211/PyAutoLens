@@ -215,6 +215,7 @@ class TestReconstruction(object):
 
         collection.add_class("mock_profile", MockProfile)
 
+        # TODO: fix this:
         collection.mock_profile.centre.centre_0 = prior.UniformPrior("0.centre_0", 1., 10.)
 
         reconstruction = collection.reconstruction_for_vector([1., 1., 0.])
