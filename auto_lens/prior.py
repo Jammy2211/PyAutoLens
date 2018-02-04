@@ -182,8 +182,16 @@ class PriorModel(object):
         self.cls = cls
 
     @property
-    def priors(self):
+    def tuple_priors(self):
+        return filter(lambda v: isinstance(v, TuplePrior), self.__dict__.values())
+
+    @property
+    def direct_priors(self):
         return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
+
+    @property
+    def priors(self):
+        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior.priors]
 
     def instance_for_arguments(self, arguments):
         """
@@ -198,13 +206,19 @@ class PriorModel(object):
         -------
             An instance of the class
         """
-        model_arguments = {arguments[val][0]: arguments[val][1] for val in self.__dict__.values() if val in arguments}
+        model_arguments = {arguments[val][0]: arguments[val][1] for val in self.direct_priors if val in arguments}
+        for tuple_prior in self.tuple_priors:
+            model_arguments.update(tuple_prior.argument_for_arguments(arguments))
         return self.cls(**model_arguments)
 
 
 class TuplePrior(object):
-    def __init__(self, priors):
+    def __init__(self, name, priors):
+        self.name = name
         self.priors = priors
+
+    def argument_for_arguments(self, arguments):
+        return {self.name: tuple([arguments[prior][1] for prior in self.priors])}
 
 
 class Reconstruction(object):
@@ -300,11 +314,11 @@ class ClassMappingPriorCollection(object):
                 return GaussianPrior(path, config_arr[1], config_arr[2])
 
         for arg in args:
-            print(arg)
             if arg in defaults and isinstance(defaults[arg], tuple):
+                priors = []
                 for i in range(len(defaults[arg])):
-                    prior_name = "{}_{}".format(arg, i)
-                    setattr(prior_model, prior_name, make_prior(prior_name))
+                    priors.append(make_prior("{}_{}".format(arg, i)))
+                setattr(prior_model, arg, TuplePrior(arg, priors))
             else:
                 setattr(prior_model, arg, make_prior(arg))
 
