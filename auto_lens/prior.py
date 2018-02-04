@@ -202,6 +202,11 @@ class PriorModel(object):
         return self.cls(**model_arguments)
 
 
+class TuplePrior(object):
+    def __init__(self, priors):
+        self.priors = priors
+
+
 class Reconstruction(object):
     pass
 
@@ -286,27 +291,22 @@ class ClassMappingPriorCollection(object):
 
         prior_model = PriorModel(name, cls)
 
-        priors_for_class = []
-
-        def add_prior(prior_name):
+        def make_prior(prior_name):
             config_arr = self.config.get(cls.__name__, prior_name)
             path = "{}.{}".format(len(self.prior_models), prior_name)
             if config_arr[0] == "u":
-                prior = UniformPrior(path, config_arr[1], config_arr[2])
+                return UniformPrior(path, config_arr[1], config_arr[2])
             elif config_arr[0] == "g":
-                prior = GaussianPrior(path, config_arr[1], config_arr[2])
-
-            priors_for_class.append(prior)
-            setattr(prior_model, prior_name, prior)
+                return GaussianPrior(path, config_arr[1], config_arr[2])
 
         for arg in args:
             print(arg)
             if arg in defaults and isinstance(defaults[arg], tuple):
                 for i in range(len(defaults[arg])):
-                    add_prior("{}_{}".format(arg, i))
-                    add_prior("{}_{}".format(arg, i))
+                    prior_name = "{}_{}".format(arg, i)
+                    setattr(prior_model, prior_name, make_prior(prior_name))
             else:
-                add_prior(arg)
+                setattr(prior_model, arg, make_prior(arg))
 
         setattr(self, name, prior_model)
 
