@@ -217,7 +217,7 @@ class TuplePrior(object):
         self.name = name
         for prior in priors:
             setattr(self, prior.name, prior)
-a
+
     @property
     def priors(self):
         return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
