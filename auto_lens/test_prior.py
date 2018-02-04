@@ -138,8 +138,6 @@ class TestClassMappingCollection(object):
 
         collection.add_class("mock_profile", MockProfile)
 
-        print(collection.priors)
-
         assert 3 == len(collection.priors)
 
 
@@ -201,3 +199,13 @@ class TestReconstruction(object):
         reconstruction = collection.reconstruction_for_vector([0., 0.])
 
         assert reconstruction.mock_class.one == 100.
+
+    def test_tuple_arg(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_profile", MockProfile)
+
+        reconstruction = collection.reconstruction_for_vector([0., 1., 0.])
+
+        assert reconstruction.mock_profile.intensity == 0.
+        assert reconstruction.mock_profile.centre == (1., 0.)
