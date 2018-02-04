@@ -205,7 +205,7 @@ class TestReconstruction(object):
 
         collection.add_class("mock_profile", MockProfile)
 
-        reconstruction = collection.reconstruction_for_vector([0., 1., 0.])
+        reconstruction = collection.reconstruction_for_vector([1., 0., 0.])
 
         assert reconstruction.mock_profile.intensity == 0.
         assert reconstruction.mock_profile.centre == (1., 0.)
