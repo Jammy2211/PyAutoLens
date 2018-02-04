@@ -480,15 +480,17 @@ class Mask(object):
 
         for i in range(image_dimensions_pixels[0]):
             for j in range(image_dimensions_pixels[1]):
-                if mask[i, j] == True:
+                if mask[i, j]:
                     for i1 in range((-blurring_region_size[0] + 1) // 2, (blurring_region_size[0] + 1) // 2):
                         for j1 in range((-blurring_region_size[1] + 1) // 2, (blurring_region_size[1] + 1) // 2):
-                            if 0 <= i+i1 <= image_dimensions_pixels[0]-1 and 0 <= j+j1 <= image_dimensions_pixels[0]-1:
-                                if (mask[j+j1, i+i1]) == False:
-                                    blurring_region[j+j1, i+i1] = True
+                            if 0 <= i + i1 <= image_dimensions_pixels[0] - 1 \
+                                    and 0 <= j + j1 <= image_dimensions_pixels[0] - 1:
+                                if not mask[j + j1, i + i1]:
+                                    blurring_region[j + j1, i + i1] = True
                             else:
-                                raise MaskException("blurring_region extends beynod the size of the mask - pad the image"
-                                                    "before masking")
+                                raise MaskException(
+                                    "blurring_region extends beynod the size of the mask - pad the image"
+                                    "before masking")
 
         return blurring_region
 
@@ -518,13 +520,15 @@ class Mask(object):
 
         for i in range(image_dimensions_pixels[0]):
             for j in range(image_dimensions_pixels[1]):
-                if mask[i, j] == True:
-                    if mask[i+1, j] == 0 or mask[i-1, j] == 0 or mask[i, j+1] == 0 or mask[i, j-1] == 0 or \
-                       mask[i+1, j+1] == 0 or mask[i+1, j-1] == 0 or mask[i-1, j+1] == 0 or mask[i-1, j-1] == 0:
+                if mask[i, j]:
+                    if mask[i + 1, j] == 0 or mask[i - 1, j] == 0 or mask[i, j + 1] == 0 or mask[i, j - 1] == 0 or \
+                            mask[i + 1, j + 1] == 0 or mask[i + 1, j - 1] == 0 or mask[i - 1, j + 1] == 0 or mask[
+                        i - 1, j - 1] == 0:
                         border_list.append(image_pixel_index)
                     image_pixel_index += 1
 
         return border_list
+
 
 class MaskException(Exception):
     pass
