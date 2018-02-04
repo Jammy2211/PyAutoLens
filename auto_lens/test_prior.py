@@ -220,3 +220,14 @@ class TestReconstruction(object):
         reconstruction = collection.reconstruction_for_vector([1., 1., 0.])
 
         assert reconstruction.mock_profile.centre == (10., 1.)
+
+    def test_match_tuple(self):
+        collection = prior.ClassMappingPriorCollection(MockConfig())
+
+        collection.add_class("mock_profile", MockProfile)
+
+        collection.mock_profile.centre.centre_0 = collection.mock_profile.centre.centre_1
+
+        reconstruction = collection.reconstruction_for_vector([1., 0.])
+
+        assert reconstruction.mock_profile.centre == (1., 1.)
