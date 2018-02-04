@@ -282,16 +282,25 @@ class ClassMappingPriorCollection(object):
         prior_model = PriorModel(name, cls)
 
         priors_for_class = []
-        for arg in args:
-            config_arr = self.config.get(cls.__name__, arg)
-            path = "{}.{}".format(len(self.prior_models), arg)
+
+        def add_prior(prior_name):
+            config_arr = self.config.get(cls.__name__, prior_name)
+            path = "{}.{}".format(len(self.prior_models), prior_name)
             if config_arr[0] == "u":
                 prior = UniformPrior(path, config_arr[1], config_arr[2])
             elif config_arr[0] == "g":
                 prior = GaussianPrior(path, config_arr[1], config_arr[2])
-            priors_for_class.append(prior)
 
-            setattr(prior_model, arg, prior)
+            priors_for_class.append(prior)
+            setattr(prior_model, prior_name, prior)
+
+        for arg in args:
+            print(arg)
+            if arg == "centre":
+                add_prior("centre_x")
+                add_prior("centre_y")
+            else:
+                add_prior(arg)
 
         setattr(self, name, prior_model)
 
