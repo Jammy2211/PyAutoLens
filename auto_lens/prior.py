@@ -6,6 +6,7 @@ prior_number = 0
 
 
 class Prior(object):
+    """An object used to map a unit value to an attribute value for a specific class attribute"""
     def __init__(self):
         global prior_number
         self.id = prior_number
