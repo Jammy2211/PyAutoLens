@@ -4,12 +4,12 @@ import pytest
 
 @pytest.fixture(name='uniform_simple')
 def make_uniform_simple():
-    return prior.UniformPrior("one", lower_limit=0., upper_limit=1.)
+    return prior.UniformPrior(lower_limit=0., upper_limit=1.)
 
 
 @pytest.fixture(name='uniform_half')
 def make_uniform_half():
-    return prior.UniformPrior("two", lower_limit=0.5, upper_limit=1.)
+    return prior.UniformPrior(lower_limit=0.5, upper_limit=1.)
 
 
 class TestUniformPrior(object):
@@ -23,9 +23,9 @@ class TestUniformPrior(object):
         assert uniform_half.value_for(1.) == 1.
         assert uniform_half.value_for(0.5) == 0.75
 
-    def test__argument(self, uniform_simple):
-        assert uniform_simple.argument_for(0.) == ("one", 0)
-        assert uniform_simple.argument_for(0.5) == ("one", 0.5)
+    # def test__argument(self, uniform_simple):
+    #     assert uniform_simple.argument_for(0.) == ("one", 0)
+    #     assert uniform_simple.argument_for(0.5) == ("one", 0.5)
 
 
 class MockClass(object):
@@ -62,16 +62,16 @@ class TestClassMappingCollection(object):
 
         assert len(collection.priors) == 2
 
-    def test__prior_naming(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
-        collection.add_class("mock_class_1", MockClass)
-        collection.add_class("mock_class_2", MockClass)
-
-        assert "0.one" == collection.mock_class_1.one.path
-        assert "0.two" == collection.mock_class_1.two.path
-
-        assert "1.one" == collection.mock_class_2.one.path
-        assert "1.two" == collection.mock_class_2.two.path
+    # def test__prior_naming(self):
+    #     collection = prior.ClassMappingPriorCollection(MockConfig())
+    #     collection.add_class("mock_class_1", MockClass)
+    #     collection.add_class("mock_class_2", MockClass)
+    #
+    #     assert "0.one" == collection.mock_class_1.one.path
+    #     assert "0.two" == collection.mock_class_1.two.path
+    #
+    #     assert "1.one" == collection.mock_class_2.one.path
+    #     assert "1.two" == collection.mock_class_2.two.path
 
     def test_config_limits(self):
         collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["u", 1., 2.]}}))
@@ -160,7 +160,7 @@ class TestReconstruction(object):
 
         collection.add_class("mock_class", MockClass)
 
-        collection.mock_class.one = prior.UniformPrior("one", 100, 200)
+        collection.mock_class.one = prior.UniformPrior(100, 200)
 
         reconstruction = collection.reconstruction_for_vector([0., 0.])
 
@@ -182,7 +182,7 @@ class TestReconstruction(object):
         collection.add_class("mock_profile", MockProfile)
 
         # TODO: fix this:
-        collection.mock_profile.centre.centre_0 = prior.UniformPrior("0.centre_0", 1., 10.)
+        collection.mock_profile.centre.centre_0 = prior.UniformPrior(1., 10.)
 
         reconstruction = collection.reconstruction_for_vector([1., 1., 0.])
 
