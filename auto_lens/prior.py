@@ -7,6 +7,7 @@ prior_number = 0
 
 class Prior(object):
     """An object used to map a unit value to an attribute value for a specific class attribute"""
+
     def __init__(self):
         global prior_number
         self.id = prior_number
@@ -137,10 +138,10 @@ class Reconstruction(object):
 
 
 # TODO: Test config loading and implement inherited attribute setting.
-class ClassMappingPriorCollection(object):
+class ClassMap(object):
     """A collection of priors formed by passing in classes to be reconstructed"""
 
-    def __init__(self, config):
+    def __init__(self, config, **classes):
         """
         Parameters
         ----------
@@ -189,9 +190,12 @@ class ClassMappingPriorCollection(object):
 
         # But this attribute is an instance of the actual SersicLightProfile class
         """
-        super(ClassMappingPriorCollection, self).__init__()
+        super(ClassMap, self).__init__()
 
         self.config = config
+
+        for name, cls in classes.iteritems():
+            self.add_class(name, cls)
 
     def make_prior(self, prior_name, cls):
         config_arr = self.config.get(cls.__name__, prior_name)

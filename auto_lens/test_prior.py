@@ -52,14 +52,14 @@ class MockProfile(object):
 
 class TestClassMappingCollection(object):
     def test__argument_extraction(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
         collection.add_class("mock_class", MockClass)
         assert 1 == len(collection.prior_models)
 
         assert len(collection.priors) == 2
 
     def test_config_limits(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["u", 1., 2.]}}))
+        collection = prior.ClassMap(MockConfig({"MockClass": {"one": ["u", 1., 2.]}}))
 
         collection.add_class("mock_class", MockClass)
 
@@ -67,7 +67,7 @@ class TestClassMappingCollection(object):
         assert collection.mock_class.one.upper_limit == 2.
 
     def test_config_prior_type(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig({"MockClass": {"one": ["g", 1., 2.]}}))
+        collection = prior.ClassMap(MockConfig({"MockClass": {"one": ["g", 1., 2.]}}))
 
         collection.add_class("mock_class", MockClass)
 
@@ -77,7 +77,7 @@ class TestClassMappingCollection(object):
         assert collection.mock_class.one.sigma == 2.
 
     def test_attribution(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_class", MockClass)
 
@@ -85,7 +85,7 @@ class TestClassMappingCollection(object):
         assert hasattr(collection.mock_class, "one")
 
     def test_tuple_arg(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_profile", MockProfile)
 
@@ -94,7 +94,7 @@ class TestClassMappingCollection(object):
 
 class TestReconstruction(object):
     def test_simple_reconstruction(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_class", MockClass)
 
@@ -105,7 +105,7 @@ class TestReconstruction(object):
         assert reconstruction.mock_class.two == 1.
 
     def test_two_object_reconstruction(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_class_1", MockClass)
         collection.add_class("mock_class_2", MockClass)
@@ -122,7 +122,7 @@ class TestReconstruction(object):
         assert reconstruction.mock_class_2.two == 1.
 
     def test_swapped_prior_construction(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_class_1", MockClass)
         collection.add_class("mock_class_2", MockClass)
@@ -141,7 +141,7 @@ class TestReconstruction(object):
         assert reconstruction.mock_class_2.two == 0.
 
     def test_prior_replacement(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_class", MockClass)
 
@@ -152,7 +152,7 @@ class TestReconstruction(object):
         assert reconstruction.mock_class.one == 100.
 
     def test_tuple_arg(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_profile", MockProfile)
 
@@ -162,7 +162,7 @@ class TestReconstruction(object):
         assert reconstruction.mock_profile.centre == (1., 0.)
 
     def test_modify_tuple(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_profile", MockProfile)
 
@@ -173,7 +173,7 @@ class TestReconstruction(object):
         assert reconstruction.mock_profile.centre == (10., 1.)
 
     def test_match_tuple(self):
-        collection = prior.ClassMappingPriorCollection(MockConfig())
+        collection = prior.ClassMap(MockConfig())
 
         collection.add_class("mock_profile", MockProfile)
 
@@ -182,3 +182,18 @@ class TestReconstruction(object):
         reconstruction = collection.reconstruction_for_vector([0., 1.])
 
         assert reconstruction.mock_profile.centre == (1., 1.)
+
+
+class TestRealClasses(object):
+
+    def test_combination(self):
+        from profile import light_profile, mass_profile
+        collection = prior.ClassMap(MockConfig(), source_light_profile=light_profile.SersicLightProfile,
+                                    lens_mass_profile=mass_profile.CoredEllipticalIsothermalMassProfile,
+                                    lens_light_profile=light_profile.CoreSersicLightProfile)
+
+        reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors))])
+
+        assert isinstance(reconstruction.source_light_profile, light_profile.SersicLightProfile)
+        assert isinstance(reconstruction.lens_mass_profile, mass_profile.CoredEllipticalIsothermalMassProfile)
+        assert isinstance(reconstruction.lens_light_profile, light_profile.CoreSersicLightProfile)
