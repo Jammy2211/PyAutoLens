@@ -107,65 +107,6 @@ class GaussianPrior(Prior):
         return self.mean + (self.sigma * math.sqrt(2) * erfinv((unit * 2.0) - 1.0))
 
 
-class PriorCollection(list):
-    """A collection of priors, perhaps associated with one component of the model (e.g. lens mass distribution)"""
-
-    def __init__(self, *priors):
-        """
-
-        Parameters
-        ----------
-        priors: [Prior]
-            A list of priors
-        """
-        super(PriorCollection, self).__init__(priors)
-
-    def arguments_for_vector(self, vector):
-        """
-        Used to obtain a dictionary of attribute values that can then be passed to construct a class.
-
-        Examples
-        --------
-        # This constructs a new profile from a collection of priors. Note the prior collection must contain a prior for
-        # each argument of the function the arguments are passed into.
-        
-        p = profile.Profile(**collection.arguments_for_vector(vector))
-
-        Parameters
-        ----------
-        vector: [Float]
-            A vector of hypercube unit values. Note that this must match the order of associated priors in the
-            collection.
-
-        Returns
-        -------
-        arguments: {String: Float}
-            A dictionary of attribute names and associated values
-        """
-        if len(vector) != len(self):
-            raise AssertionError("PriorCollection and unit vector have different lengths")
-        return dict(map(lambda prior, unit: prior.argument_for(unit), self, vector))
-
-    def add(self, prior):
-        """
-        Add a prior to the collection. If a prior with the same name is already in the collection then this prior will
-        replace it with the same index.
-
-        Parameters
-        ----------
-        prior: Prior
-            A prior to add to this collection
-
-        """
-        if prior in self:
-            self[self.index(prior)] = prior
-        else:
-            super(PriorCollection, self).append(prior)
-
-    def append(self, p_object):
-        raise AssertionError("Append should not be called directly")
-
-
 class PriorModel(object):
     """Object comprising class, name and associated priors"""
 
