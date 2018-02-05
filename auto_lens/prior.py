@@ -2,140 +2,6 @@ import math
 from scipy.special import erfinv
 import inspect
 
-prior_number = 0
-
-
-class Prior(object):
-    """An object used to map a unit value to an attribute value for a specific class attribute"""
-
-    def __init__(self):
-        global prior_number
-        self.id = prior_number
-        prior_number += 1
-
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __hash__(self):
-        return hash(self.id)
-
-    def __repr__(self):
-        return "<Prior id={}>".format(self.id)
-
-
-class UniformPrior(Prior):
-    """A prior with a uniform distribution between a lower and upper limit"""
-
-    def __init__(self, lower_limit=0., upper_limit=1.):
-        """
-
-        Parameters
-        ----------
-        lower_limit: Float
-            The lowest value this prior can return
-        upper_limit: Float
-            The highest value this prior can return
-        """
-        super(UniformPrior, self).__init__()
-        self.lower_limit = lower_limit
-        self.upper_limit = upper_limit
-
-    def value_for(self, unit):
-        """
-
-        Parameters
-        ----------
-        unit: Float
-            A unit hypercube value between 0 and 1
-        Returns
-        -------
-        value: Float
-            A value for the attribute between the upper and lower limits
-        """
-        return self.lower_limit + unit * (self.upper_limit - self.lower_limit)
-
-
-class GaussianPrior(Prior):
-    """A prior with a gaussian distribution"""
-
-    def __init__(self, mean, sigma):
-        super(GaussianPrior, self).__init__()
-        self.mean = mean
-        self.sigma = sigma
-
-    def value_for(self, unit):
-        """
-
-        Parameters
-        ----------
-        unit: Float
-            A unit hypercube value between 0 and 1
-        Returns
-        -------
-        value: Float
-            A value for the attribute biased to the gaussian distribution
-        """
-        return self.mean + (self.sigma * math.sqrt(2) * erfinv((unit * 2.0) - 1.0))
-
-
-class PriorModel(object):
-    """Object comprising class and associated priors"""
-
-    def __init__(self, cls):
-        """
-        Parameters
-        ----------
-        cls: class
-            The class associated with this instance
-        """
-        self.cls = cls
-
-    @property
-    def tuple_priors(self):
-        return filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.iteritems())
-
-    @property
-    def direct_priors(self):
-        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
-
-    @property
-    def priors(self):
-        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior[1].priors]
-
-    def instance_for_arguments(self, arguments):
-        """
-        Create an instance of the associated class for a set of arguments
-
-        Parameters
-        ----------
-        arguments: {Prior: value}
-            Dictionary mapping priors to attribute name and value pairs
-
-        Returns
-        -------
-            An instance of the class
-        """
-        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
-        for tuple_prior in self.tuple_priors:
-            model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
-        return self.cls(**model_arguments)
-
-
-class TuplePrior(object):
-    @property
-    def priors(self):
-        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
-
-    def value_for_arguments(self, arguments):
-        return tuple([arguments[prior[1]] for prior in self.priors])
-
-
-class Reconstruction(object):
-    pass
-
 
 # TODO: Test config loading and implement inherited attribute setting.
 class ClassMap(object):
@@ -286,3 +152,138 @@ class ClassMap(object):
             setattr(reconstruction, prior_model[0], prior_model[1].instance_for_arguments(arguments))
 
         return reconstruction
+
+
+prior_number = 0
+
+
+class Prior(object):
+    """An object used to map a unit value to an attribute value for a specific class attribute"""
+
+    def __init__(self):
+        global prior_number
+        self.id = prior_number
+        prior_number += 1
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self.id)
+
+    def __repr__(self):
+        return "<Prior id={}>".format(self.id)
+
+
+class UniformPrior(Prior):
+    """A prior with a uniform distribution between a lower and upper limit"""
+
+    def __init__(self, lower_limit=0., upper_limit=1.):
+        """
+
+        Parameters
+        ----------
+        lower_limit: Float
+            The lowest value this prior can return
+        upper_limit: Float
+            The highest value this prior can return
+        """
+        super(UniformPrior, self).__init__()
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+
+    def value_for(self, unit):
+        """
+
+        Parameters
+        ----------
+        unit: Float
+            A unit hypercube value between 0 and 1
+        Returns
+        -------
+        value: Float
+            A value for the attribute between the upper and lower limits
+        """
+        return self.lower_limit + unit * (self.upper_limit - self.lower_limit)
+
+
+class GaussianPrior(Prior):
+    """A prior with a gaussian distribution"""
+
+    def __init__(self, mean, sigma):
+        super(GaussianPrior, self).__init__()
+        self.mean = mean
+        self.sigma = sigma
+
+    def value_for(self, unit):
+        """
+
+        Parameters
+        ----------
+        unit: Float
+            A unit hypercube value between 0 and 1
+        Returns
+        -------
+        value: Float
+            A value for the attribute biased to the gaussian distribution
+        """
+        return self.mean + (self.sigma * math.sqrt(2) * erfinv((unit * 2.0) - 1.0))
+
+
+class PriorModel(object):
+    """Object comprising class and associated priors"""
+
+    def __init__(self, cls):
+        """
+        Parameters
+        ----------
+        cls: class
+            The class associated with this instance
+        """
+        self.cls = cls
+
+    @property
+    def tuple_priors(self):
+        return filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.iteritems())
+
+    @property
+    def direct_priors(self):
+        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
+
+    @property
+    def priors(self):
+        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior[1].priors]
+
+    def instance_for_arguments(self, arguments):
+        """
+        Create an instance of the associated class for a set of arguments
+
+        Parameters
+        ----------
+        arguments: {Prior: value}
+            Dictionary mapping priors to attribute name and value pairs
+
+        Returns
+        -------
+            An instance of the class
+        """
+        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
+        for tuple_prior in self.tuple_priors:
+            model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
+        return self.cls(**model_arguments)
+
+
+class TuplePrior(object):
+    @property
+    def priors(self):
+        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
+
+    def value_for_arguments(self, arguments):
+        return tuple([arguments[prior[1]] for prior in self.priors])
+
+
+class Reconstruction(object):
+    pass
