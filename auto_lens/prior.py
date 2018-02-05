@@ -116,7 +116,7 @@ class PriorModel(object):
         """
         model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
         for tuple_prior in self.tuple_priors:
-            model_arguments.update(tuple_prior.argument_for_arguments(arguments))
+            model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
         return self.cls(**model_arguments)
 
 
@@ -125,15 +125,15 @@ class TuplePrior(object):
     def priors(self):
         return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
 
-    def argument_for_arguments(self, arguments):
-        return tuple([arguments[prior][1] for prior in self.priors])
+    def value_for_arguments(self, arguments):
+        return tuple([arguments[prior[1]] for prior in self.priors])
 
 
 class Reconstruction(object):
     pass
 
 
-# TODO: Test config loading and implement inherited attribute setting. Priors that can produce Tuples?
+# TODO: Test config loading and implement inherited attribute setting.
 class ClassMappingPriorCollection(object):
     """A collection of priors formed by passing in classes to be reconstructed"""
 
@@ -253,7 +253,7 @@ class ClassMappingPriorCollection(object):
         priors: [Prior]
             An ordered list of unique priors associated with this collection
         """
-        return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
+        return sorted(list(self.prior_set), key=lambda prior: prior[0] + prior[1].id)
 
     def reconstruction_for_vector(self, vector):
         """
