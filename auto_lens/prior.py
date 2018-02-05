@@ -243,7 +243,7 @@ class ClassMappingPriorCollection(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {prior for _, prior_model in self.prior_models for prior in prior_model.priors}
+        return {prior[1]: prior for _, prior_model in self.prior_models for prior in prior_model.priors}.values()
 
     @property
     def priors(self):
