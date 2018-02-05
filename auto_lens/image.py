@@ -495,27 +495,28 @@ class Mask(object):
         return blurring_region
 
     @classmethod
-    def border_list(cls, mask):
-        """Compute the border_list of a mask, where the border_list is defined as all pixels which are on the edge of the mask \
-         and therefore are next to a pixel with False value. This border_list is used for relocating source-pixels to the \
-         edge of the source-plane border_list
+    def border_pixels(cls, mask):
+        """Compute the border image pixels of a mask, where the border pixels are defined as all pixels which are on the
+         edge of the mask and neighboring a pixel with a  *False* value.
+
+         The border pixels are used to relocate highly demagnified traced image pixels in the source-plane to its edge.
 
         Parameters
         ----------
         mask : image.Mask
-            The image mask we are finding the border_list of.
-
+            The image mask we are finding the border pixels of.
 
         Returns
         -------
-        A list of the border_list image pixels, given as a list of the index of each border_list pixel.
+        A list of the border image pixels. Each entry in this list gives the 1D index of the image pixel in \
+        the mask.
         """
 
         # TODO : This border only works for circular / elliptical masks which do not have masked image pixels in their
         # TODO : center (like an annulus). Do we need a separate routine for annuli masks?
 
         image_dimensions_pixels = mask.shape
-        border_list = []
+        border_pixels = []
         image_pixel_index = 0
 
         for i in range(image_dimensions_pixels[0]):
@@ -524,11 +525,46 @@ class Mask(object):
                     if mask[i + 1, j] == 0 or mask[i - 1, j] == 0 or mask[i, j + 1] == 0 or mask[i, j - 1] == 0 or \
                             mask[i + 1, j + 1] == 0 or mask[i + 1, j - 1] == 0 or mask[i - 1, j + 1] == 0 or mask[
                         i - 1, j - 1] == 0:
-                        border_list.append(image_pixel_index)
+                        border_pixels.append(image_pixel_index)
                     image_pixel_index += 1
 
-        return border_list
+        return border_pixels
 
+    @classmethod
+    def sparse_clustering_pixels(cls, mask, sparse_grid_size):
+        """Compure the sparse cluster image pixels of a mask, where the sparse cluster image pixels are the sub-set of \
+        image-pixels used within the mask to perform KMeans clustering (this is used purely for speeding up the \
+        KMeans clustering algorithim).
+
+        This sparse grid is a uniform subsample of the masked image and is computed by only including image pixels \
+        which, when divided by the sparse_grid_size, do not give a remainder.
+
+        Parameters
+        ----------
+        mask : image.Mask
+            The image mask we are finding the sparse clustering pixels of.
+        sparse_grid_size : int
+            The spacing of the sparse image pixel grid (e.g. a value of 2 will compute a sparse grid of pixels which \
+            are two pixels apart)
+
+        Returns
+        -------
+        A list of the sparse clustering image pixels. Each entry in this list gives the 1D index of the image pixel in \
+        the mask.
+        """
+
+        image_dimensions_pixels = mask.shape
+        sparse_clustering_pixels = []
+        image_pixel_index = 0
+
+        for i in range(image_dimensions_pixels[0]):
+            for j in range(image_dimensions_pixels[1]):
+                if mask[i, j]:
+                    if i % sparse_grid_size == 0 and j % sparse_grid_size == 0:
+                        sparse_clustering_pixels.append(image_pixel_index)
+                    image_pixel_index += 1
+
+        return sparse_clustering_pixels
 
 class MaskException(Exception):
     pass
