@@ -1,6 +1,7 @@
 import math
 from scipy.special import erfinv
 import inspect
+from ConfigParser import ConfigParser
 
 
 # TODO: Test config loading and implement inherited attribute setting.
@@ -69,8 +70,8 @@ class ClassMap(object):
         for name, cls in classes.iteritems():
             self.add_class(name, cls)
 
-    def make_prior(self, prior_name, cls):
-        config_arr = self.config.get(cls.__name__, prior_name)
+    def make_prior(self, attribute_name, cls):
+        config_arr = self.config.get(cls.__module__, cls.__name__, attribute_name)
         if config_arr[0] == "u":
             return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":
@@ -293,3 +294,15 @@ class TuplePrior(object):
 
 class Reconstruction(object):
     pass
+
+
+class Config(object):
+    def __init__(self, path):
+        self.path = path
+        self.parser = ConfigParser()
+
+    def get(self, module_name, class_name, attribute_name):
+        self.parser.read("{}/{}.ini".format(self.path, module_name))
+        arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
+
+        return [arr[0]] + map(float, arr[1:])
