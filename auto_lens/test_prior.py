@@ -197,3 +197,11 @@ class TestRealClasses(object):
         assert isinstance(reconstruction.source_light_profile, light_profile.SersicLightProfile)
         assert isinstance(reconstruction.lens_mass_profile, mass_profile.CoredEllipticalIsothermalMassProfile)
         assert isinstance(reconstruction.lens_light_profile, light_profile.CoreSersicLightProfile)
+
+
+class TestConfig(object):
+    def test_loading_config(self):
+        config = prior.Config(path="config_test")
+
+        assert ['g', 0, 1] == config.get("profile", "profile", "centre_0")
+        assert ['g', 0, 1] == config.get("profile", "profile", "centre_1")

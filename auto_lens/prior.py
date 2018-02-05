@@ -1,6 +1,7 @@
 import math
 from scipy.special import erfinv
 import inspect
+from ConfigParser import ConfigParser
 
 
 # TODO: Test config loading and implement inherited attribute setting.
@@ -293,3 +294,15 @@ class TuplePrior(object):
 
 class Reconstruction(object):
     pass
+
+
+class Config(object):
+    def __init__(self, path):
+        self.path = path
+        self.parser = ConfigParser()
+
+    def get(self, module_name, class_name, attribute_name):
+        self.parser.read("{}/{}.ini".format(self.path, module_name))
+        arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
+
+        return [arr[0]] + map(float, arr[1:])
