@@ -204,5 +204,14 @@ class TestConfig(object):
     def test_loading_config(self):
         config = prior.Config(path="config_test")
 
-        assert ['g', 0, 1] == config.get("profile", "profile", "centre_0")
-        assert ['g', 0, 0.5] == config.get("profile", "profile", "centre_1")
+        assert ['u', 0, 1] == config.get("profile", "Profile", "centre_0")
+        assert ['u', 0, 0.5] == config.get("profile", "Profile", "centre_1")
+
+    def test_reconstruction(self):
+        from profile import profile
+
+        collection = prior.ClassMap(prior.Config(path="config_test"), profile=profile.Profile)
+
+        reconstruction = collection.reconstruction_for_vector([1., 1.])
+
+        assert reconstruction.profile.centre == (1., 0.5)

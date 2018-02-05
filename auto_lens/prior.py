@@ -104,7 +104,8 @@ class ClassMap(object):
             if arg in defaults and isinstance(defaults[arg], tuple):
                 tuple_prior = TuplePrior()
                 for i in range(len(defaults[arg])):
-                    setattr(tuple_prior, "{}_{}".format(arg, i), self.make_prior(arg, cls))
+                    attribute_name = "{}_{}".format(arg, i)
+                    setattr(tuple_prior, attribute_name, self.make_prior(attribute_name, cls))
                 setattr(prior_model, arg, tuple_prior)
             else:
                 setattr(prior_model, arg, self.make_prior(arg, cls))
@@ -302,7 +303,7 @@ class Config(object):
         self.parser = ConfigParser()
 
     def get(self, module_name, class_name, attribute_name):
-        self.parser.read("{}/{}.ini".format(self.path, module_name))
+        self.parser.read("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
         arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
 
         return [arr[0]] + map(float, arr[1:])
