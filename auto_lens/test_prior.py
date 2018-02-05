@@ -30,14 +30,15 @@ class MockClass(object):
         self.two = two
 
 
-class MockConfig(object):
+class MockConfig(prior.Config):
     def __init__(self, d=None):
+        super(MockConfig, self).__init__("")
         if d is not None:
             self.d = d
         else:
             self.d = {}
 
-    def get(self, class_name, var_name):
+    def get(self, _, class_name, var_name):
         try:
             return self.d[class_name][var_name]
         except KeyError:
@@ -197,3 +198,11 @@ class TestRealClasses(object):
         assert isinstance(reconstruction.source_light_profile, light_profile.SersicLightProfile)
         assert isinstance(reconstruction.lens_mass_profile, mass_profile.CoredEllipticalIsothermalMassProfile)
         assert isinstance(reconstruction.lens_light_profile, light_profile.CoreSersicLightProfile)
+
+
+class TestConfig(object):
+    def test_loading_config(self):
+        config = prior.Config(path="config_test")
+
+        assert ['g', 0, 1] == config.get("profile", "profile", "centre_0")
+        assert ['g', 0, 0.5] == config.get("profile", "profile", "centre_1")
