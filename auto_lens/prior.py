@@ -255,7 +255,7 @@ class ClassMappingPriorCollection(object):
         priors: [Prior]
             An ordered list of unique priors associated with this collection
         """
-        return sorted(list(self.prior_set), key=lambda prior: prior[0] + str(prior[1].id))
+        return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
 
     def reconstruction_for_vector(self, vector):
         """
