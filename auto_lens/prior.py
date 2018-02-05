@@ -114,7 +114,7 @@ class PriorModel(object):
         -------
             An instance of the class
         """
-        model_arguments = {arguments[val][0]: arguments[val][1] for val in self.direct_priors if val in arguments}
+        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
         for tuple_prior in self.tuple_priors:
             model_arguments.update(tuple_prior.argument_for_arguments(arguments))
         return self.cls(**model_arguments)
@@ -271,7 +271,7 @@ class ClassMappingPriorCollection(object):
             An object containing reconstructed model instances
 
         """
-        arguments = dict(map(lambda prior, unit: (prior, prior[1].value_for(unit)), self.priors, vector))
+        arguments = dict(map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors, vector))
 
         reconstruction = Reconstruction()
 
