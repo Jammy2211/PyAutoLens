@@ -12,11 +12,6 @@ def make_uniform_half():
     return prior.UniformPrior("two", lower_limit=0.5, upper_limit=1.)
 
 
-@pytest.fixture(name='collection')
-def make_collection(uniform_simple, uniform_half):
-    return prior.PriorCollection(uniform_simple, uniform_half)
-
-
 class TestUniformPrior(object):
     def test__simple_assumptions(self, uniform_simple):
         assert uniform_simple.value_for(0.) == 0.
@@ -37,35 +32,6 @@ class MockClass(object):
     def __init__(self, one, two):
         self.one = one
         self.two = two
-
-
-class TestCollection(object):
-    def test__arguments(self, collection):
-        assert collection.arguments_for_vector([0., 0.]) == {"one": 0., "two": 0.5}
-        assert collection.arguments_for_vector([1., 0.]) == {"one": 1., "two": 0.5}
-
-    def test__equals(self, uniform_simple):
-        assert uniform_simple != prior.Prior("two")
-        assert uniform_simple == prior.Prior("one")
-
-    def test__override(self, collection):
-        collection.add(prior.UniformPrior("one", lower_limit=1., upper_limit=2.))
-
-        assert len(collection) == 2
-        assert collection[0].lower_limit == 1.
-        assert collection[0].name == "one"
-
-    def test__exceptions(self, collection, uniform_simple):
-        with pytest.raises(AssertionError):
-            collection.arguments_for_vector([0])
-
-        with pytest.raises(AssertionError):
-            collection.append(uniform_simple)
-
-    def test__construct(self, collection):
-        mock_object = MockClass(**collection.arguments_for_vector([1, 1]))
-        assert mock_object.one == 1.
-        assert mock_object.two == 1.
 
 
 class MockConfig(object):
