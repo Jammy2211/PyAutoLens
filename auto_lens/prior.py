@@ -91,15 +91,15 @@ class PriorModel(object):
 
     @property
     def tuple_priors(self):
-        return filter(lambda v: isinstance(v, TuplePrior), self.__dict__.values())
+        return filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.iteritems())
 
     @property
     def direct_priors(self):
-        return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
+        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
 
     @property
     def priors(self):
-        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior.priors]
+        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior[1].priors]
 
     def instance_for_arguments(self, arguments):
         """
@@ -107,7 +107,7 @@ class PriorModel(object):
 
         Parameters
         ----------
-        arguments: {Prior: (str: any)}
+        arguments: {Prior: value}
             Dictionary mapping priors to attribute name and value pairs
 
         Returns
@@ -123,7 +123,7 @@ class PriorModel(object):
 class TuplePrior(object):
     @property
     def priors(self):
-        return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
+        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
 
     def argument_for_arguments(self, arguments):
         return tuple([arguments[prior][1] for prior in self.priors])
@@ -253,7 +253,7 @@ class ClassMappingPriorCollection(object):
         priors: [Prior]
             An ordered list of unique priors associated with this collection
         """
-        return sorted(list(self.prior_set), key=lambda prior: prior.id)
+        return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
 
     def reconstruction_for_vector(self, vector):
         """
@@ -271,12 +271,11 @@ class ClassMappingPriorCollection(object):
             An object containing reconstructed model instances
 
         """
-        arguments = dict(map(lambda prior, unit: (prior, prior.value_for(unit)), self.priors, vector))
+        arguments = dict(map(lambda prior, unit: (prior, prior[1].value_for(unit)), self.priors, vector))
 
         reconstruction = Reconstruction()
 
         for prior_model in self.prior_models:
-            prior_model.instance_for_arguments(arguments)
-            setattr(reconstruction, prior_model.name, prior_model.instance_for_arguments(arguments))
+            setattr(reconstruction, prior_model[0], prior_model[1].instance_for_arguments(arguments))
 
         return reconstruction
