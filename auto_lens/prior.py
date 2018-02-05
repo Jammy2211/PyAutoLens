@@ -70,8 +70,8 @@ class ClassMap(object):
         for name, cls in classes.iteritems():
             self.add_class(name, cls)
 
-    def make_prior(self, prior_name, cls):
-        config_arr = self.config.get(cls.__name__, prior_name)
+    def make_prior(self, attribute_name, cls):
+        config_arr = self.config.get(cls.__module__, cls.__name__, attribute_name)
         if config_arr[0] == "u":
             return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":

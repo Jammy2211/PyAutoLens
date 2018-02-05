@@ -37,7 +37,7 @@ class MockConfig(object):
         else:
             self.d = {}
 
-    def get(self, class_name, var_name):
+    def get(self, _, class_name, var_name):
         try:
             return self.d[class_name][var_name]
         except KeyError:
@@ -204,4 +204,4 @@ class TestConfig(object):
         config = prior.Config(path="config_test")
 
         assert ['g', 0, 1] == config.get("profile", "profile", "centre_0")
-        assert ['g', 0, 1] == config.get("profile", "profile", "centre_1")
+        assert ['g', 0, 0.5] == config.get("profile", "profile", "centre_1")
