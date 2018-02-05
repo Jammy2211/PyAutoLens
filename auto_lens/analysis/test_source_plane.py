@@ -4,7 +4,7 @@ import source_plane as sp
 import math
 
 
-# TODO : Work out some more test cases, particularly for the border_list / move factors / relocate routines
+# TODO : Work out some more test cases, particularly for the border_pixels / move factors / relocate routines
 # TODO : Need to add functionality for sub-coordinates.
 
 class TestSourcePlane(object):
