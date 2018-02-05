@@ -156,7 +156,7 @@ class TestReconstruction(object):
 
         collection.add_class("mock_profile", MockProfile)
 
-        reconstruction = collection.reconstruction_for_vector([1., 0., 0.])
+        reconstruction = collection.reconstruction_for_vector([0., 1., 0.])
 
         assert reconstruction.mock_profile.intensity == 0.
         assert reconstruction.mock_profile.centre == (1., 0.)
@@ -168,7 +168,7 @@ class TestReconstruction(object):
 
         collection.mock_profile.centre.centre_0 = prior.UniformPrior(1., 10.)
 
-        reconstruction = collection.reconstruction_for_vector([1., 1., 0.])
+        reconstruction = collection.reconstruction_for_vector([1., 1., 1.])
 
         assert reconstruction.mock_profile.centre == (10., 1.)
 
@@ -177,8 +177,8 @@ class TestReconstruction(object):
 
         collection.add_class("mock_profile", MockProfile)
 
-        collection.mock_profile.centre.centre_0 = collection.mock_profile.centre.centre_1
+        collection.mock_profile.centre.centre_1 = collection.mock_profile.centre.centre_0
 
-        reconstruction = collection.reconstruction_for_vector([1., 0.])
+        reconstruction = collection.reconstruction_for_vector([0., 1.])
 
         assert reconstruction.mock_profile.centre == (1., 1.)
