@@ -30,8 +30,9 @@ class MockClass(object):
         self.two = two
 
 
-class MockConfig(object):
+class MockConfig(prior.Config):
     def __init__(self, d=None):
+        super(MockConfig, self).__init__("")
         if d is not None:
             self.d = d
         else:
