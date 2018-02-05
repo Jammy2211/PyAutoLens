@@ -1,13 +1,15 @@
 import math
 from scipy.special import erfinv
 import inspect
-import random
-import string
+
+prior_number = 0
 
 
 class Prior(object):
     def __init__(self):
-        self.id = "".join(random.choice(string.ascii_letters) for _ in range(10))
+        global prior_number
+        self.id = prior_number
+        prior_number += 1
 
     def __eq__(self, other):
         return self.id == other.id
@@ -253,7 +255,7 @@ class ClassMappingPriorCollection(object):
         priors: [Prior]
             An ordered list of unique priors associated with this collection
         """
-        return sorted(list(self.prior_set), key=lambda prior: prior[0] + prior[1].id)
+        return sorted(list(self.prior_set), key=lambda prior: prior[0] + str(prior[1].id))
 
     def reconstruction_for_vector(self, vector):
         """
