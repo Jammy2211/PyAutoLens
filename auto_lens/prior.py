@@ -1,71 +1,41 @@
 import math
 from scipy.special import erfinv
 import inspect
+import random
+import string
 
 
 class Prior(object):
-    """Defines a prior that converts unit hypercube values into argument values"""
-
-    def __init__(self, path):
-        """
-
-        Parameters
-        ----------
-        path: String
-            The name of the attribute to which this prior is associated
-        """
-        self.path = path
-
-    def argument_for(self, unit):
-        """
-
-        Parameters
-        ----------
-        unit: Int
-            A unit hypercube value between 0 and 1
-        Returns
-        -------
-        argument: (String, float)
-            Returns the name of an attribute and its calculated value as a tuple
-        """
-        return self.name, self.value_for(unit)
-
-    @property
-    def name(self):
-        return self.path.split(".")[-1]
-
-    def value_for(self, unit):
-        raise AssertionError("Prior.value_for should be overridden")
+    def __init__(self):
+        self.id = "".join(random.choice(string.ascii_letters) for _ in range(10))
 
     def __eq__(self, other):
-        return self.path == other.path
+        return self.id == other.id
 
     def __ne__(self, other):
-        return self.path != other.path
+        return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(self.path)
+        return hash(self.id)
 
     def __repr__(self):
-        return "<Prior path={}>".format(self.path)
+        return "<Prior id={}>".format(self.id)
 
 
 class UniformPrior(Prior):
     """A prior with a uniform distribution between a lower and upper limit"""
 
-    def __init__(self, path, lower_limit=0., upper_limit=1.):
+    def __init__(self, lower_limit=0., upper_limit=1.):
         """
 
         Parameters
         ----------
-        path: String
-            The attribute name
         lower_limit: Float
             The lowest value this prior can return
         upper_limit: Float
             The highest value this prior can return
         """
-        super(UniformPrior, self).__init__(path)
+        super(UniformPrior, self).__init__()
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
 
@@ -87,8 +57,8 @@ class UniformPrior(Prior):
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
 
-    def __init__(self, path, mean, sigma):
-        super(GaussianPrior, self).__init__(path)
+    def __init__(self, mean, sigma):
+        super(GaussianPrior, self).__init__()
         self.mean = mean
         self.sigma = sigma
 
@@ -108,18 +78,15 @@ class GaussianPrior(Prior):
 
 
 class PriorModel(object):
-    """Object comprising class, name and associated priors"""
+    """Object comprising class and associated priors"""
 
-    def __init__(self, name, cls):
+    def __init__(self, cls):
         """
         Parameters
         ----------
-        name: String
-            The name of this prior model instance (e.g. sersic_profile_1)
         cls: class
             The class associated with this instance
         """
-        self.name = name
         self.cls = cls
 
     @property
@@ -154,17 +121,12 @@ class PriorModel(object):
 
 
 class TuplePrior(object):
-    def __init__(self, name, priors):
-        self.name = name
-        for prior in priors:
-            setattr(self, prior.name, prior)
-
     @property
     def priors(self):
         return filter(lambda v: isinstance(v, Prior), self.__dict__.values())
 
     def argument_for_arguments(self, arguments):
-        return {self.name: tuple([arguments[prior][1] for prior in self.priors])}
+        return tuple([arguments[prior][1] for prior in self.priors])
 
 
 class Reconstruction(object):
@@ -225,19 +187,15 @@ class ClassMappingPriorCollection(object):
         # But this attribute is an instance of the actual SersicLightProfile class
         """
         super(ClassMappingPriorCollection, self).__init__()
-        self.prior_models = []
-        self.config = config
 
-    def make_path(self, prior_name):
-        return "{}.{}".format(len(self.prior_models), prior_name)
+        self.config = config
 
     def make_prior(self, prior_name, cls):
         config_arr = self.config.get(cls.__name__, prior_name)
-        path = self.make_path(prior_name)
         if config_arr[0] == "u":
-            return UniformPrior(path, config_arr[1], config_arr[2])
+            return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":
-            return GaussianPrior(path, config_arr[1], config_arr[2])
+            return GaussianPrior(config_arr[1], config_arr[2])
 
     def add_class(self, name, cls):
         """
@@ -260,20 +218,22 @@ class ClassMappingPriorCollection(object):
             defaults = {}
         args = arg_spec.args[1:]
 
-        prior_model = PriorModel(name, cls)
+        prior_model = PriorModel(cls)
 
         for arg in args:
             if arg in defaults and isinstance(defaults[arg], tuple):
-                priors = []
+                tuple_prior = TuplePrior()
                 for i in range(len(defaults[arg])):
-                    priors.append(self.make_prior("{}_{}".format(arg, i), cls))
-                setattr(prior_model, arg, TuplePrior(arg, priors))
+                    setattr(tuple_prior, "{}_{}".format(arg, i), self.make_prior(arg, cls))
+                setattr(prior_model, arg, tuple_prior)
             else:
                 setattr(prior_model, arg, self.make_prior(arg, cls))
 
         setattr(self, name, prior_model)
 
-        self.prior_models.append(prior_model)
+    @property
+    def prior_models(self):
+        return filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.iteritems())
 
     @property
     def prior_set(self):
@@ -283,7 +243,7 @@ class ClassMappingPriorCollection(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {prior for prior_model in self.prior_models for prior in prior_model.priors}
+        return {prior for _, prior_model in self.prior_models for prior in prior_model.priors}
 
     @property
     def priors(self):
@@ -293,7 +253,7 @@ class ClassMappingPriorCollection(object):
         priors: [Prior]
             An ordered list of unique priors associated with this collection
         """
-        return sorted(list(self.prior_set), key=lambda prior: prior.path)
+        return sorted(list(self.prior_set), key=lambda prior: prior.id)
 
     def reconstruction_for_vector(self, vector):
         """
@@ -311,7 +271,7 @@ class ClassMappingPriorCollection(object):
             An object containing reconstructed model instances
 
         """
-        arguments = dict(map(lambda prior, unit: (prior, prior.argument_for(unit)), self.priors, vector))
+        arguments = dict(map(lambda prior, unit: (prior, prior.value_for(unit)), self.priors, vector))
 
         reconstruction = Reconstruction()
 
