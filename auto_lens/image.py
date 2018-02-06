@@ -508,15 +508,15 @@ class Mask(object):
 
         Returns
         -------
-        A list of the border image pixels. Each entry in this list gives the 1D index of the image pixel in \
-        the mask.
+        border_pixels : ndarray
+            The border image pixels, where each entry gives the 1D index of the image pixel in the mask.
         """
 
         # TODO : This border only works for circular / elliptical masks which do not have masked image pixels in their
         # TODO : center (like an annulus). Do we need a separate routine for annuli masks?
 
         image_dimensions_pixels = mask.shape
-        border_pixels = []
+        border_pixels = np.empty(0)
         image_pixel_index = 0
 
         for i in range(image_dimensions_pixels[0]):
@@ -525,14 +525,17 @@ class Mask(object):
                     if mask[i + 1, j] == 0 or mask[i - 1, j] == 0 or mask[i, j + 1] == 0 or mask[i, j - 1] == 0 or \
                             mask[i + 1, j + 1] == 0 or mask[i + 1, j - 1] == 0 or mask[i - 1, j + 1] == 0 or mask[
                         i - 1, j - 1] == 0:
-                        border_pixels.append(image_pixel_index)
+                        border_pixels = np.append(border_pixels, image_pixel_index)
                     image_pixel_index += 1
 
         return border_pixels
 
+    # TODO : These routines are only used for certain Adaptive grids (i.e. not a Square grid). Move there in future?
+    # TODO : Remember - we compute these pre-analysis before the grids are derived, so may make sense in image module.
+
     @classmethod
     def sparse_clustering_pixels(cls, mask, sparse_grid_size):
-        """Compure the sparse cluster image pixels of a mask, where the sparse cluster image pixels are the sub-set of \
+        """Compute the sparse cluster image pixels of a mask, where the sparse cluster image pixels are the sub-set of \
         image-pixels used within the mask to perform KMeans clustering (this is used purely for speeding up the \
         KMeans clustering algorithim).
 
@@ -549,22 +552,44 @@ class Mask(object):
 
         Returns
         -------
-        A list of the sparse clustering image pixels. Each entry in this list gives the 1D index of the image pixel in \
-        the mask.
+        sparse_clustering_pixels : ndarray
+            The sparse clustering image pixels, where each entry gives the 1D index of the image pixel in the mask.
         """
 
         image_dimensions_pixels = mask.shape
-        sparse_clustering_pixels = []
+        sparse_clustering_pixels = np.empty(0)
         image_pixel_index = 0
 
         for i in range(image_dimensions_pixels[0]):
             for j in range(image_dimensions_pixels[1]):
                 if mask[i, j]:
                     if i % sparse_grid_size == 0 and j % sparse_grid_size == 0:
-                        sparse_clustering_pixels.append(image_pixel_index)
+                        sparse_clustering_pixels = np.append(sparse_clustering_pixels, image_pixel_index)
                     image_pixel_index += 1
 
         return sparse_clustering_pixels
+
+    @classmethod
+    def sub_pixels_to_sparse_pixels(cls, mask, sparse_clustering_pixels, sub_grid_size):
+        """Compute the list describing which sparse pixel every sub pixel maps too.
+
+        Parameters
+        ----------
+        mask : image.Mask
+            The image mask we are finding the sparse clustering pixels of.
+        sparse_clustering_pixels : list
+            A list of the sparse clustering image pixels. Each entry in this list gives the 1D index of the image pixel in \
+            the mask.
+        sub_grid_size : int
+            The size of the sub-grid in each pixel used to compute their deflection angles
+
+        Returns
+        -------
+        A mapping each sub-pixel to the index of its closest sparse pixel
+        """
+
+
+
 
 class MaskException(Exception):
     pass
