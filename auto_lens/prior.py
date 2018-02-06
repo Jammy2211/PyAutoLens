@@ -4,7 +4,6 @@ import inspect
 from ConfigParser import ConfigParser
 
 
-# TODO: Test config loading and implement inherited attribute setting.
 class ClassMap(object):
     """A collection of priors formed by passing in classes to be reconstructed"""
 
@@ -302,14 +301,46 @@ class PriorException(Exception):
 
 
 class Config(object):
+    """Parses prior config"""
+
     def __init__(self, path):
+        """
+        Parameters
+        ----------
+        path: String
+            The path to the prior config folder
+        """
         self.path = path
         self.parser = ConfigParser()
 
     def read(self, module_name):
+        """
+        Read a particular config file
+
+        Parameters
+        ----------
+        module_name: String
+            The name of the module for which a config is to be read (priors relate one to one with configs).
+
+        """
         self.parser.read("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
 
     def get_for_nearest_ancestor(self, cls, attribute_name):
+        """
+        Find a prior with the attribute name from the config for this class or one of its ancestors
+
+        Parameters
+        ----------
+        cls: class
+            The class of interest
+        attribute_name: String
+            The name of the attribute
+        Returns
+        -------
+        prior_array: []
+            An array describing this prior
+        """
+
         def family(current_class):
             yield current_class
             for next_class in current_class.__bases__:
@@ -325,11 +356,41 @@ class Config(object):
                                                                                                       attribute_name))
 
     def get(self, module_name, class_name, attribute_name):
+        """
+
+        Parameters
+        ----------
+        module_name: String
+            The name of the module
+        class_name: String
+            The name of the class
+        attribute_name: String
+            The name of the attribute
+
+        Returns
+        -------
+        prior_array: []
+            An array describing a prior
+        """
         self.read(module_name)
         arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
         return [arr[0]] + map(float, arr[1:])
 
     def has(self, module_name, class_name, attribute_name):
+        """
+        Parameters
+        ----------
+        module_name: String
+            The name of the module
+        class_name: String
+            The name of the class
+        attribute_name: String
+            The name of the attribute
+
+        Returns
+        -------
+        has_prior: bool
+            True iff a prior exists for the module, class and attribute
+        """
         self.read(module_name)
-        print(module_name, class_name, attribute_name)
         return self.parser.has_option(class_name, attribute_name)
