@@ -2,12 +2,15 @@ import math
 from scipy.special import erfinv
 import inspect
 from ConfigParser import ConfigParser
+import os
+
+path = os.path.dirname(os.path.realpath(__file__))
 
 
 class ClassMap(object):
     """A collection of priors formed by passing in classes to be reconstructed"""
 
-    def __init__(self, config, **classes):
+    def __init__(self, config=None, **classes):
         """
         Parameters
         ----------
@@ -64,7 +67,7 @@ class ClassMap(object):
         """
         super(ClassMap, self).__init__()
 
-        self.config = config
+        self.config = (config if config is not None else Config("{}/config".format(path)))
 
         for name, cls in classes.iteritems():
             self.add_class(name, cls)
