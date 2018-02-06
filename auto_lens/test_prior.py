@@ -1,5 +1,6 @@
 import prior
 import pytest
+from profile import profile
 
 
 @pytest.fixture(name='uniform_simple')
@@ -37,6 +38,9 @@ class MockConfig(prior.Config):
             self.d = d
         else:
             self.d = {}
+
+    def get_for_nearest_ancestor(self, cls, attribute_name):
+        return self.get(None, cls.__name__, attribute_name)
 
     def get(self, _, class_name, var_name):
         try:
@@ -208,10 +212,15 @@ class TestConfig(object):
         assert ['u', 0, 0.5] == config.get("profile", "Profile", "centre_1")
 
     def test_reconstruction(self):
-        from profile import profile
-
         collection = prior.ClassMap(prior.Config(path="config_test"), profile=profile.Profile)
 
         reconstruction = collection.reconstruction_for_vector([1., 1.])
+
+        assert reconstruction.profile.centre == (1., 0.5)
+
+    def test_inheritance(self):
+        collection = prior.ClassMap(prior.Config(path="config_test"), profile=profile.EllipticalProfile)
+
+        reconstruction = collection.reconstruction_for_vector([1., 1., 1., 1.])
 
         assert reconstruction.profile.centre == (1., 0.5)
