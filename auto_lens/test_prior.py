@@ -1,6 +1,7 @@
 import prior
 import pytest
 from profile import profile
+from profile import light_profile, mass_profile
 
 
 @pytest.fixture(name='uniform_simple')
@@ -192,7 +193,6 @@ class TestReconstruction(object):
 class TestRealClasses(object):
 
     def test_combination(self):
-        from profile import light_profile, mass_profile
         collection = prior.ClassMap(MockConfig(), source_light_profile=light_profile.SersicLightProfile,
                                     lens_mass_profile=mass_profile.CoredEllipticalIsothermalMassProfile,
                                     lens_light_profile=light_profile.CoreSersicLightProfile)
@@ -224,3 +224,20 @@ class TestConfig(object):
         reconstruction = collection.reconstruction_for_vector([1., 1., 1., 1.])
 
         assert reconstruction.profile.centre == (1., 0.5)
+
+    def test_true_config(self):
+        collection = prior.ClassMap(profile=profile.EllipticalProfile, elliptical_profile=profile.EllipticalProfile,
+                                    spherical_profile=profile.SphericalProfile,
+                                    elliptical_light_profile=light_profile.EllipticalLightProfile,
+                                    sersic_light_profile=light_profile.SersicLightProfile,
+                                    exponential_light_profile=light_profile.ExponentialLightProfile)
+
+        reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors))])
+
+        assert isinstance(reconstruction.profile, profile.EllipticalProfile)
+        assert isinstance(reconstruction.elliptical_profile, profile.EllipticalProfile)
+        assert isinstance(reconstruction.spherical_profile, profile.SphericalProfile)
+
+        assert isinstance(reconstruction.elliptical_light_profile, light_profile.EllipticalLightProfile)
+        assert isinstance(reconstruction.sersic_light_profile, light_profile.SersicLightProfile)
+        assert isinstance(reconstruction.exponential_light_profile, light_profile.ExponentialLightProfile)
