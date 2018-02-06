@@ -71,7 +71,7 @@ class ClassMap(object):
             self.add_class(name, cls)
 
     def make_prior(self, attribute_name, cls):
-        config_arr = self.config.get(cls.__module__, cls.__name__, attribute_name)
+        config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
         if config_arr[0] == "u":
             return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":
@@ -297,13 +297,39 @@ class Reconstruction(object):
     pass
 
 
+class PriorException(Exception):
+    pass
+
+
 class Config(object):
     def __init__(self, path):
         self.path = path
         self.parser = ConfigParser()
 
-    def get(self, module_name, class_name, attribute_name):
+    def read(self, module_name):
         self.parser.read("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
-        arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
 
+    def get_for_nearest_ancestor(self, cls, attribute_name):
+        def family(current_class):
+            yield current_class
+            for next_class in current_class.__bases__:
+                for val in family(next_class):
+                    yield val
+
+        for family_cls in family(cls):
+            if self.has(family_cls.__module__, family_cls.__name__, attribute_name):
+                return self.get(family_cls.__module__, family_cls.__name__, attribute_name)
+        raise PriorException(
+            "The prior config for {}.{} and the prior configs of its parents do no contain {}".format(cls.__module__,
+                                                                                                      cls.__name__,
+                                                                                                      attribute_name))
+
+    def get(self, module_name, class_name, attribute_name):
+        self.read(module_name)
+        arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
         return [arr[0]] + map(float, arr[1:])
+
+    def has(self, module_name, class_name, attribute_name):
+        self.read(module_name)
+        print(module_name, class_name, attribute_name)
+        return self.parser.has_option(class_name, attribute_name)
