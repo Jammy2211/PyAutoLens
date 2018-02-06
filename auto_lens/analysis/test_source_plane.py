@@ -1154,22 +1154,22 @@ class TestMatchCoordinatesFromClusters:
     def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
         sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
 
-        assert sp.find_index_of_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
-        assert sp.find_index_of_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
-        assert sp.find_index_of_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
-        assert sp.find_index_of_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
-        assert sp.find_index_of_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
-        assert sp.find_index_of_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
+        assert sp.find_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
+        assert sp.find_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
+        assert sp.find_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
+        assert sp.find_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
+        assert sp.find_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
+        assert sp.find_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
 
     def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
         source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
 
-        assert sp.find_index_of_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
-        assert sp.find_index_of_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
-        assert sp.find_index_of_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
-        assert sp.find_index_of_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
-        assert sp.find_index_of_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
-        assert sp.find_index_of_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
+        assert sp.find_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
+        assert sp.find_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
+        assert sp.find_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
+        assert sp.find_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
+        assert sp.find_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
+        assert sp.find_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
 
     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
         source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
@@ -1206,9 +1206,9 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1, 2, 3, 4]
 
-        index, separation = sp.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                             source_pixel_centers,
-                                                                                             source_pixel_neighbors)
+        index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
+                                                                                    source_pixel_centers,
+                                                                                    source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
@@ -1222,9 +1222,9 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1, 2, 3, 4]
 
-        index, separation = sp.find_separation_and_index_of_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                             source_pixel_centers,
-                                                                                             source_pixel_neighbors)
+        index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
+                                                                                    source_pixel_centers,
+                                                                                    source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
