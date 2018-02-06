@@ -1175,7 +1175,7 @@ class TestMask(object):
 
             border_pixels = image.Mask.border_pixels(mask)
 
-            assert border_pixels == [0]
+            assert (border_pixels == np.array([0])).all()
 
         def test__7x7_mask_nine_central_pixels__is_border(self):
 
@@ -1189,7 +1189,7 @@ class TestMask(object):
 
             border_pixels = image.Mask.border_pixels(mask)
 
-            assert border_pixels == [0, 1, 2, 3, 5, 6, 7, 8]
+            assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
         def test__7x7_mask_rectangle_of_fifteen_central_pixels__is_border(self):
 
@@ -1203,7 +1203,7 @@ class TestMask(object):
 
             border_pixels = image.Mask.border_pixels(mask)
 
-            assert border_pixels == [0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14]
+            assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
         def test__7x7_mask_add_edge_pixels__also_in_border(self):
 
@@ -1219,7 +1219,7 @@ class TestMask(object):
 
             border_pixels = image.Mask.border_pixels(mask)
 
-            assert border_pixels == [0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18]
+            assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17, 18])).all()
 
         def test__7x7_mask_big_square(self):
 
@@ -1235,7 +1235,7 @@ class TestMask(object):
 
             border_pixels = image.Mask.border_pixels(mask)
 
-            assert border_pixels == [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 29, 30, 31, 32, 33, 34]
+            assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 29, 30, 31, 32, 33, 34])).all()
 
     class TestSparseClusteringImagePixelList(object):
 
@@ -1251,7 +1251,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=1)
 
-            assert sparse_list == [0, 1, 2, 3, 4]
+            assert (sparse_list == np.array([0, 1, 2, 3, 4])).all()
 
         def test__7x7_circle_mask__sparse_grid_size_1(self):
 
@@ -1265,7 +1265,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=1)
 
-            assert sparse_list == [a for a in range(21)]
+            assert (sparse_list == np.arange(21)).all()
             
         def test__7x7_rectangle_mask__sparse_grid_size_1(self):
 
@@ -1279,7 +1279,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=1)
 
-            assert sparse_list == [a for a in range(49)]
+            assert (sparse_list == np.arange(49)).all()
 
         def test__7x7_circle_mask__sparse_grid_size_2(self):
 
@@ -1293,7 +1293,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=2)
 
-            assert sparse_list == [4, 6, 14, 16]
+            assert (sparse_list == np.array([4, 6, 14, 16])).all()
 
         def test__8x8_sporadic_mask__sparse_grid_size_2(self):
 
@@ -1308,9 +1308,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=2)
 
-            print(sparse_list)
-
-            assert sparse_list == [0, 8, 10, 12, 22, 24, 26, 33]
+            assert (sparse_list == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
 
         def test__7x7_circle_mask_trues_on_even_values__sparse_grid_size_2(self):
 
@@ -1324,7 +1322,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=2)
 
-            assert sparse_list == [a for a in range(16)]
+            assert (sparse_list == np.arange(16)).all()
 
         def test__7x7_circle_mask__sparse_grid_size_3(self):
 
@@ -1338,7 +1336,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=3)
 
-            assert sparse_list == [10]
+            assert (sparse_list == np.array([10])).all()
 
         def test__7x7_circle_mask_more_points_added__sparse_grid_size_3(self):
 
@@ -1352,7 +1350,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=3)
 
-            assert sparse_list == [0, 1, 3, 14, 17, 26]
+            assert (sparse_list == np.array([0, 1, 3, 14, 17, 26])).all()
 
         def test__7x7_mask_trues_on_values_which_divide_by_3__sparse_grid_size_3(self):
 
@@ -1366,7 +1364,7 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=3)
 
-            assert sparse_list == [a for a in range(9)]
+            assert (sparse_list == np.arange(9)).all()
 
         def test__8x8_mask_trues_on_values_which_divide_by_3_and_other_values__sparse_grid_size_3(self):
 
@@ -1380,4 +1378,9 @@ class TestMask(object):
 
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=3)
 
-            assert sparse_list == [0, 2, 3, 7, 8, 9, 10, 13, 16]
+            assert (sparse_list == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
+
+    # class TestSubPixelsToSparsePixels(object):
+    #
+    #     def test__7x7_mask__one_sparse_pixel__2x2_sub_grid_in_it(self):
+
