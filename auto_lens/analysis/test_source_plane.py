@@ -351,129 +351,129 @@ class TestSorucePlaneBorder(object):
             relocated_coordinate = source_border.relocated_coordinate(coordinate=(1.0, -1.0))
             assert relocated_coordinate == pytest.approx((0.5 * math.sqrt(2), -0.5 * math.sqrt(2)), 1e-3)
 
-        def test__outside_border_simple_cases_setup__via_source_plane_border_list_routine__relocates_to_source_border(
-                self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
-                                    (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
-
-            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-
-            source_plane = sp.SourcePlane(coordinates)
-            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
-
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
-
-            assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
-            assert source_plane.coordinates[:][16] == (1.0, 0.0)
-            assert source_plane.coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][18] == (0.0, 1.0)
-            assert source_plane.coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-
-        def test__outside_border_same_as_above_but_setup_via_border_list__relocates_to_source_border(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
-                                    (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
-
-            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-
-            source_plane = sp.SourcePlane(coordinates)
-            source_border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
-            source_plane.relocate_coordinates_outside_border(source_border)
-
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
-
-            assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
-            assert source_plane.coordinates[:][16] == (1.0, 0.0)
-            assert source_plane.coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][18] == (0.0, 1.0)
-            assert source_plane.coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-
-        def test__all_inside_border_simple_cases__no_relocations(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            coordinates_original = circle + [(0.2, 0.0), (0.1, 0.1), (0.0, 0.2), (-0.1, 0.1),
-                                             (-0.2, 0.0), (-0.1, -0.1), (0.0, -0.2), (0.1, -0.1)]
-
-            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-
-            source_plane = sp.SourcePlane(coordinates_original)
-            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
-
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
-
-            assert source_plane.coordinates == coordinates_original
-
-        def test__inside_border_simple_cases_setup_via_border_list__no_relocations(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            coordinates = circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
-                                    (-0.5, 0.0), (-0.5, -0.5), (0.0, -0.5), (0.5, -0.5)]
-
-            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-
-            source_plane = sp.SourcePlane(coordinates)
-            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
-
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
-
-            assert source_plane.coordinates[:][0:24] == coordinates[:][0:24]
-
-        def test__inside_and_outside_border_simple_cases__changes_where_appropriate(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            coordinates = circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
-                                    (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
-
-            border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-
-            source_plane = sp.SourcePlane(coordinates)
-
-            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
-
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
-
-            assert source_plane.coordinates[:][0:20] == coordinates[:][0:20]
-            assert source_plane.coordinates[:][20] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][22] == (0.0, -1.0)
-            assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-
-        def test__change_border_list__works_as_above(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 16)
-            circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-
-            coordinates = [(-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)] + circle + \
-                          [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5)]
-
-            border_list = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-
-            source_plane = sp.SourcePlane(coordinates)
-
-            source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
-
-            source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
-
-            assert source_plane.coordinates[:][0] == (-1.0, 0.0)
-            assert source_plane.coordinates[:][1] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][2] == (0.0, -1.0)
-            assert source_plane.coordinates[:][3] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
-            assert source_plane.coordinates[:][4:24] == coordinates[:][4:24]
+        # def test__outside_border_simple_cases_setup__via_source_plane_border_list_routine__relocates_to_source_border(
+        #         self):
+        #     thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+        #     circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+        #
+        #     coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
+        #                             (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
+        #
+        #     border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        #
+        #     source_plane = sp.SourcePlane(coordinates)
+        #     source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
+        #
+        #     source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+        #
+        #     assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
+        #     assert source_plane.coordinates[:][16] == (1.0, 0.0)
+        #     assert source_plane.coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][18] == (0.0, 1.0)
+        #     assert source_plane.coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+        #     assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][22] == (0.0, -1.0)
+        #     assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #
+        # def test__outside_border_same_as_above_but_setup_via_border_list__relocates_to_source_border(self):
+        #     thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+        #     circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+        #
+        #     coordinates = circle + [(2.0, 0.0), (1.0, 1.0), (0.0, 2.0), (-1.0, 1.0),
+        #                             (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
+        #
+        #     border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        #
+        #     source_plane = sp.SourcePlane(coordinates)
+        #     source_border = source_plane.border_from_list_and_polynomial_degree(border_list, 3)
+        #     source_plane.relocate_coordinates_outside_border(source_border)
+        #
+        #     source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+        #
+        #     assert source_plane.coordinates[:][0:16] == coordinates[:][0:16]
+        #     assert source_plane.coordinates[:][16] == (1.0, 0.0)
+        #     assert source_plane.coordinates[:][17] == (0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][18] == (0.0, 1.0)
+        #     assert source_plane.coordinates[:][19] == (-0.5 * math.sqrt(2), 0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+        #     assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][22] == (0.0, -1.0)
+        #     assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #
+        # def test__all_inside_border_simple_cases__no_relocations(self):
+        #     thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+        #     circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+        #
+        #     coordinates_original = circle + [(0.2, 0.0), (0.1, 0.1), (0.0, 0.2), (-0.1, 0.1),
+        #                                      (-0.2, 0.0), (-0.1, -0.1), (0.0, -0.2), (0.1, -0.1)]
+        #
+        #     border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        #
+        #     source_plane = sp.SourcePlane(coordinates_original)
+        #     source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
+        #
+        #     source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+        #
+        #     assert source_plane.coordinates == coordinates_original
+        #
+        # def test__inside_border_simple_cases_setup_via_border_list__no_relocations(self):
+        #     thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+        #     circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+        #
+        #     coordinates = circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
+        #                             (-0.5, 0.0), (-0.5, -0.5), (0.0, -0.5), (0.5, -0.5)]
+        #
+        #     border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        #
+        #     source_plane = sp.SourcePlane(coordinates)
+        #     source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
+        #
+        #     source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+        #
+        #     assert source_plane.coordinates[:][0:24] == coordinates[:][0:24]
+        #
+        # def test__inside_and_outside_border_simple_cases__changes_where_appropriate(self):
+        #     thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+        #     circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+        #
+        #     coordinates = circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5),
+        #                             (-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)]
+        #
+        #     border_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        #
+        #     source_plane = sp.SourcePlane(coordinates)
+        #
+        #     source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
+        #
+        #     source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+        #
+        #     assert source_plane.coordinates[:][0:20] == coordinates[:][0:20]
+        #     assert source_plane.coordinates[:][20] == (-1.0, 0.0)
+        #     assert source_plane.coordinates[:][21] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][22] == (0.0, -1.0)
+        #     assert source_plane.coordinates[:][23] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #
+        # def test__change_border_list__works_as_above(self):
+        #     thetas = np.linspace(0.0, 2.0 * np.pi, 16)
+        #     circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+        #
+        #     coordinates = [(-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)] + circle + \
+        #                   [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5)]
+        #
+        #     border_list = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        #
+        #     source_plane = sp.SourcePlane(coordinates)
+        #
+        #     source_plane.relocate_coordinates_outside_border_from_list_and_polynomial_degree(border_list, 3)
+        #
+        #     source_plane.coordinates = map(lambda r: pytest.approx(r, 1e-3), source_plane.coordinates)
+        #
+        #     assert source_plane.coordinates[:][0] == (-1.0, 0.0)
+        #     assert source_plane.coordinates[:][1] == (-0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][2] == (0.0, -1.0)
+        #     assert source_plane.coordinates[:][3] == (0.5 * math.sqrt(2), -0.5 * math.sqrt(2))
+        #     assert source_plane.coordinates[:][4:24] == coordinates[:][4:24]
 
     class TestMoveFactors(object):
         def test__inside_border__move_factor_is_1(self):
@@ -1101,190 +1101,190 @@ class TestVoronoi:
         assert set(voronoi.neighbors[8]) == set([5, 7])
 
 
-class TestMatchCoordinatesFromClusters:
-
-    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
-        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-        sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
-
-        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates,
-            source_pixels)
-
-        assert sub_image_pixel_to_source_pixel_index[0] == 0
-        assert sub_image_pixel_to_source_pixel_index[1] == 1
-        assert sub_image_pixel_to_source_pixel_index[2] == 2
-        assert sub_image_pixel_to_source_pixel_index[3] == 3
-
-    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
-        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-
-        sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
-                                    [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
-
-        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates,
-            source_pixels)
-
-        assert sub_image_pixel_to_source_pixel_index[0] == 0
-        assert sub_image_pixel_to_source_pixel_index[1] == 1
-        assert sub_image_pixel_to_source_pixel_index[2] == 2
-        assert sub_image_pixel_to_source_pixel_index[3] == 3
-        assert sub_image_pixel_to_source_pixel_index[4] == 3
-        assert sub_image_pixel_to_source_pixel_index[5] == 2
-        assert sub_image_pixel_to_source_pixel_index[6] == 1
-        assert sub_image_pixel_to_source_pixel_index[7] == 0
-
-    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
-        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
-
-        sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
-
-        sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates,
-            source_pixels)
-
-        assert sub_image_pixel_to_source_pixel_index[0] == 4
-        assert sub_image_pixel_to_source_pixel_index[1] == 4
-        assert sub_image_pixel_to_source_pixel_index[2] == 4
-        assert sub_image_pixel_to_source_pixel_index[3] == 0
-        assert sub_image_pixel_to_source_pixel_index[4] == 0
-        assert sub_image_pixel_to_source_pixel_index[5] == 5
-
-    def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
-        sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
-
-        assert sp.find_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
-        assert sp.find_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
-        assert sp.find_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
-        assert sp.find_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
-        assert sp.find_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
-        assert sp.find_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
-
-    def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
-        source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
-
-        assert sp.find_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
-        assert sp.find_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
-        assert sp.find_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
-        assert sp.find_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
-        assert sp.find_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
-        assert sp.find_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
-
-    def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
-        source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
-
-        sub_coordinate = [1.5, 0.0]
-
-        nearest_sparse_source_pixel_index = 0
-
-        separation0 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-                                                                                           sub_coordinate,
-                                                                                           nearest_sparse_source_pixel_index)
-
-        nearest_sparse_source_pixel_index = 1
-
-        separation1 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-                                                                                           sub_coordinate,
-                                                                                           nearest_sparse_source_pixel_index)
-
-        nearest_sparse_source_pixel_index = 2
-
-        separation2 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-                                                                                           sub_coordinate,
-                                                                                           nearest_sparse_source_pixel_index)
-
-        assert separation0 == 1.5 ** 2
-        assert separation1 == 0.5 ** 2
-        assert separation2 == 0.5 ** 2
-
-    def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
-        sub_coordinate = np.array([0.0, 0.0])
-        source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
-
-        # Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
-
-        source_pixel_neighbors = [1, 2, 3, 4]
-
-        index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                    source_pixel_centers,
-                                                                                    source_pixel_neighbors)
-
-        assert separation == (-0.5) ** 2
-        assert index == 4
-
-    def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
-        sub_coordinate = np.array([0.0, 0.0])
-        source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
-
-        # Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
-        # sense geometrically, but tests the code functionality).
-
-        source_pixel_neighbors = [1, 2, 3, 4]
-
-        index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
-                                                                                    source_pixel_centers,
-                                                                                    source_pixel_neighbors)
-
-        assert separation == (-0.5) ** 2
-        assert index == 4
-
-    def test__sub_coordinates_to_source_pixels_via_sparse_pairs__source_pixels_in_x_shape__correct_pairs(self):
-        source_pixels = np.array([[-1.0, 1.0], [1.0, 1.0],
-                                  [0.0, 0.0],
-                                  [-1.0, -1.0], [1.0, -1.0]])
-
-        # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
-
-        sub_coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
-                                    [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
-                                    [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
-
-        voronoi = sp.Voronoi(source_pixels)
-
-        sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates,
-            source_pixels)
-
-        # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
-        sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
-
-        coordinate_to_sparse_coordinate_index = np.array([0, 1, 0, 1, 1, 1, 2, 1, 2])
-        sparse_coordinate_to_source_pixel_index = np.array([1, 2, 4])
-
-        sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
-            sub_coordinates,
-            source_pixels, voronoi.neighbors,
-            coordinate_to_sparse_coordinate_index,
-            sparse_coordinate_to_source_pixel_index)
-
-        assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
-
-    def test__sub_coordinates_to_source_pixels_via_sparse_pairs__grid_of_source_pixels__correct_pairs(self):
-        source_pixels = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-                                  [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
-                                  [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
-
-        sub_coordinates = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-                                    [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
-                                    [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
-
-        voronoi = sp.Voronoi(source_pixels)
-
-        sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates,
-            source_pixels)
-
-        # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
-        sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
-
-        sub_coordinate_to_sparse_coordinate_index = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
-        sparse_coordinate_to_source_pixel_index = np.array([3, 4, 5])
-
-        sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
-            sub_coordinates,
-            source_pixels, voronoi.neighbors,
-            sub_coordinate_to_sparse_coordinate_index,
-            sparse_coordinate_to_source_pixel_index)
-
-        assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
+# class TestMatchCoordinatesFromClusters:
+#
+#     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
+#         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+#         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
+#
+#         sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+#             sub_coordinates,
+#             source_pixels)
+#
+#         assert sub_image_pixel_to_source_pixel_index[0] == 0
+#         assert sub_image_pixel_to_source_pixel_index[1] == 1
+#         assert sub_image_pixel_to_source_pixel_index[2] == 2
+#         assert sub_image_pixel_to_source_pixel_index[3] == 3
+#
+#     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
+#         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+#
+#         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
+#                                     [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
+#
+#         sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+#             sub_coordinates,
+#             source_pixels)
+#
+#         assert sub_image_pixel_to_source_pixel_index[0] == 0
+#         assert sub_image_pixel_to_source_pixel_index[1] == 1
+#         assert sub_image_pixel_to_source_pixel_index[2] == 2
+#         assert sub_image_pixel_to_source_pixel_index[3] == 3
+#         assert sub_image_pixel_to_source_pixel_index[4] == 3
+#         assert sub_image_pixel_to_source_pixel_index[5] == 2
+#         assert sub_image_pixel_to_source_pixel_index[6] == 1
+#         assert sub_image_pixel_to_source_pixel_index[7] == 0
+#
+#     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
+#         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
+#
+#         sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
+#
+#         sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+#             sub_coordinates,
+#             source_pixels)
+#
+#         assert sub_image_pixel_to_source_pixel_index[0] == 4
+#         assert sub_image_pixel_to_source_pixel_index[1] == 4
+#         assert sub_image_pixel_to_source_pixel_index[2] == 4
+#         assert sub_image_pixel_to_source_pixel_index[3] == 0
+#         assert sub_image_pixel_to_source_pixel_index[4] == 0
+#         assert sub_image_pixel_to_source_pixel_index[5] == 5
+#
+#     def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
+#         sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
+#
+#         assert sp.find_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
+#         assert sp.find_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
+#         assert sp.find_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
+#         assert sp.find_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
+#         assert sp.find_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
+#         assert sp.find_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
+#
+#     def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
+#         source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
+#
+#         assert sp.find_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
+#         assert sp.find_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
+#         assert sp.find_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
+#         assert sp.find_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
+#         assert sp.find_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
+#         assert sp.find_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
+#
+#     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
+#         source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
+#
+#         sub_coordinate = [1.5, 0.0]
+#
+#         nearest_sparse_source_pixel_index = 0
+#
+#         separation0 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+#                                                                                            sub_coordinate,
+#                                                                                            nearest_sparse_source_pixel_index)
+#
+#         nearest_sparse_source_pixel_index = 1
+#
+#         separation1 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+#                                                                                            sub_coordinate,
+#                                                                                            nearest_sparse_source_pixel_index)
+#
+#         nearest_sparse_source_pixel_index = 2
+#
+#         separation2 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
+#                                                                                            sub_coordinate,
+#                                                                                            nearest_sparse_source_pixel_index)
+#
+#         assert separation0 == 1.5 ** 2
+#         assert separation1 == 0.5 ** 2
+#         assert separation2 == 0.5 ** 2
+#
+#     def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
+#         sub_coordinate = np.array([0.0, 0.0])
+#         source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
+#
+#         # Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
+#
+#         source_pixel_neighbors = [1, 2, 3, 4]
+#
+#         index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
+#                                                                                     source_pixel_centers,
+#                                                                                     source_pixel_neighbors)
+#
+#         assert separation == (-0.5) ** 2
+#         assert index == 4
+#
+#     def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
+#         sub_coordinate = np.array([0.0, 0.0])
+#         source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
+#
+#         # Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
+#         # sense geometrically, but tests the code functionality).
+#
+#         source_pixel_neighbors = [1, 2, 3, 4]
+#
+#         index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
+#                                                                                     source_pixel_centers,
+#                                                                                     source_pixel_neighbors)
+#
+#         assert separation == (-0.5) ** 2
+#         assert index == 4
+#
+#     def test__sub_coordinates_to_source_pixels_via_sparse_pairs__source_pixels_in_x_shape__correct_pairs(self):
+#         source_pixels = np.array([[-1.0, 1.0], [1.0, 1.0],
+#                                   [0.0, 0.0],
+#                                   [-1.0, -1.0], [1.0, -1.0]])
+#
+#         # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
+#
+#         sub_coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
+#                                     [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
+#                                     [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
+#
+#         voronoi = sp.Voronoi(source_pixels)
+#
+#         sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+#             sub_coordinates,
+#             source_pixels)
+#
+#         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
+#         sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
+#
+#         coordinate_to_sparse_coordinate_index = np.array([0, 1, 0, 1, 1, 1, 2, 1, 2])
+#         sparse_coordinate_to_source_pixel_index = np.array([1, 2, 4])
+#
+#         sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+#             sub_coordinates,
+#             source_pixels, voronoi.neighbors,
+#             coordinate_to_sparse_coordinate_index,
+#             sparse_coordinate_to_source_pixel_index)
+#
+#         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
+#
+#     def test__sub_coordinates_to_source_pixels_via_sparse_pairs__grid_of_source_pixels__correct_pairs(self):
+#         source_pixels = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+#                                   [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+#                                   [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+#
+#         sub_coordinates = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
+#                                     [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+#                                     [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
+#
+#         voronoi = sp.Voronoi(source_pixels)
+#
+#         sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+#             sub_coordinates,
+#             source_pixels)
+#
+#         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
+#         sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
+#
+#         sub_coordinate_to_sparse_coordinate_index = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
+#         sparse_coordinate_to_source_pixel_index = np.array([3, 4, 5])
+#
+#         sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+#             sub_coordinates,
+#             source_pixels, voronoi.neighbors,
+#             sub_coordinate_to_sparse_coordinate_index,
+#             sparse_coordinate_to_source_pixel_index)
+#
+#         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs

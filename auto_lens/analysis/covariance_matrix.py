@@ -105,10 +105,10 @@ def create_d_matrix(pixel_maps, noise_vector, image_vector):
     def value_for_pixel_map(pixel_map):
         value = 0
         for index in pixel_map.keys():
-            value += image_vector[index] * pixel_map[index] / noise_vector[index]
+            value += image_vector[index] * pixel_map[index] // noise_vector[index]
         return value
 
-    return map(value_for_pixel_map, pixel_maps)
+    return list(map(value_for_pixel_map, pixel_maps))
 
 
 def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_limit=0.):
@@ -260,7 +260,7 @@ class CovarianceMatrixGenerator(object):
         """
         mapping_dict_1 = self.pixel_maps[source_index_a]
         mapping_dict_2 = self.pixel_maps[source_index_b]
-        return sum([mapping_dict_1[i] * mapping_dict_2[i] / self.noise_vector[i] for i in mapping_dict_1.keys() if
+        return sum([mapping_dict_1[i] * mapping_dict_2[i] // self.noise_vector[i] for i in mapping_dict_1.keys() if
                     i in mapping_dict_2])
 
 
