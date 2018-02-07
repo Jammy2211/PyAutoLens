@@ -771,7 +771,7 @@ class TestDecorators(object):
 
         coordinates = return_coords((-2.0, 3.0), pixel_scale=0.1, grid_size=4)
 
-        coordinates = map(lambda coords: (pytest.approx(coords[0], 1e-2), pytest.approx(coords[1], 1e-2)), coordinates)
+        coordinates = list(map(lambda coords: (pytest.approx(coords[0], 1e-2), pytest.approx(coords[1], 1e-2)), coordinates))
 
         assert coordinates == [(-2.03, 2.97), (-2.03, 2.99), (-2.03, 3.01), (-2.03, 3.03),
                                (-2.01, 2.97), (-2.01, 2.99), (-2.01, 3.01), (-2.01, 3.03),

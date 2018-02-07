@@ -241,7 +241,7 @@ class TransformedCoordinates(tuple):
     """Coordinates that have been transformed to the coordinate system of the profile"""
 
     def __init__(self, coordinates):
-        super(TransformedCoordinates, self).__init__(coordinates)
+        super(TransformedCoordinates, self).__init__()
 
 
 def transform_coordinates(func):

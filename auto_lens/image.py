@@ -18,6 +18,19 @@ def numpy_array_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
+def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale, centre):
+
+    coordinates_array = np.zeros((pixel_dimensions[0], pixel_dimensions[1], 2))
+    cen = central_pixel(pixel_dimensions)
+
+
+    for i in range(pixel_dimensions[0]):
+        for j in range(pixel_dimensions[1]):
+            coordinates_array[i, j, 0] = (i-cen[0])*pixel_scale
+            coordinates_array[i, j, 1] = (j-cen[1])*pixel_scale
+
+    return coordinates_array
+
 def pixel_dimensions_to_arc_seconds(pixel_dimensions, pixel_scale):
     return tuple(map(lambda d: d * pixel_scale, pixel_dimensions))
 
@@ -448,6 +461,9 @@ class Mask(object):
             return outer_radius >= radius_arc >= inner_radius
 
         return Mask.mask(arc_second_dimensions, pixel_scale, is_within_radii, centre)
+
+    # @classmethod
+    # def image_sub_grid_coordinates(cls):
 
     @classmethod
     def blurring_region(cls, mask, blurring_region_size):

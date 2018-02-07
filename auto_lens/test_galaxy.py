@@ -1,5 +1,5 @@
 import galaxy
-from profile import mass_profile, light_profile
+import mass_profile, light_profile
 import pytest
 
 

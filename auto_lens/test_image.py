@@ -27,6 +27,23 @@ class TestData(object):
             assert test_data.central_pixel_coordinates == (1.5, 1.0)
             assert test_data.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
+    class TestCoordinateSetup(object):
+
+        def test__array_3x3__sets_up_arcsecond_coordinates_corect(self):
+
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,3), pixel_scale=1.0, centre=(0,0))
+
+            array_coordinates2 = np.array([[[-1.0,  1.0], [0.0,  1.0], [1.0,  1.0]],
+                                                   [[-1.0,  0.0], [0.0,  0.0], [1.0,  0.0]],
+                                                   [[-1.0, -1.0], [0.0, -1.0], [1.0, -1.0]]])
+
+            print(array_coordinates[0,0,0])
+            print(array_coordinates2[0,0])
+
+            assert (array_coordinates == np.array([[[-1.0,  1.0], [0.0,  1.0], [1.0,  1.0]],
+                                                   [[-1.0,  0.0], [0.0,  0.0], [1.0,  0.0]],
+                                                   [[-1.0, -1.0], [0.0, -1.0], [1.0, -1.0]]])).all()
+
     class TestTrimData(object):
         class TestOddToOdd(object):
             def test__trimmed_5x5_to_3x3(self):
@@ -904,6 +921,16 @@ class TestMask(object):
                                       [False, False, False, False],
                                       [True, False, False, True]])).all()
 
+    class TestImageSubGrid(object):
+
+        def test__3x3_mask_with_one_pixel__2x2_sub_grid__correct_coordinates(self):
+
+            mask = np.array([[False, False, False],
+                             [False, True, False],
+                             [False, False, False]])
+
+            image_sub_grid = image.Mask.image_sub_grid_coordinates(mask, pixel_scale,  sub_grid_size)
+
     class TestBlurringRegion(object):
 
         def test__size_is_3x3_small_mask(self):
@@ -1266,7 +1293,7 @@ class TestMask(object):
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_list == np.arange(21)).all()
-            
+
         def test__7x7_rectangle_mask__sparse_grid_size_1(self):
 
             mask = np.array([[True, True, True, True, True, True, True],
@@ -1379,8 +1406,3 @@ class TestMask(object):
             sparse_list = image.Mask.sparse_clustering_pixels(mask, sparse_grid_size=3)
 
             assert (sparse_list == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
-
-    # class TestSubPixelsToSparsePixels(object):
-    #
-    #     def test__7x7_mask__one_sparse_pixel__2x2_sub_grid_in_it(self):
-

@@ -1,7 +1,7 @@
 import math
 from scipy.special import erfinv
 import inspect
-from ConfigParser import ConfigParser
+import configparser
 import os
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -69,7 +69,7 @@ class ClassMap(object):
 
         self.config = (config if config is not None else Config("{}/config".format(path)))
 
-        for name, cls in classes.iteritems():
+        for name, cls in classes.items():
             self.add_class(name, cls)
 
     def make_prior(self, attribute_name, cls):
@@ -116,7 +116,7 @@ class ClassMap(object):
 
     @property
     def prior_models(self):
-        return filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.iteritems())
+        return list(filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.items()))
 
     @property
     def prior_set(self):
@@ -257,11 +257,11 @@ class PriorModel(object):
 
     @property
     def tuple_priors(self):
-        return filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.iteritems())
+        return list(filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.items()))
 
     @property
     def direct_priors(self):
-        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
+        return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     @property
     def priors(self):
@@ -289,7 +289,7 @@ class PriorModel(object):
 class TuplePrior(object):
     @property
     def priors(self):
-        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
+        return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
@@ -314,7 +314,7 @@ class Config(object):
             The path to the prior config folder
         """
         self.path = path
-        self.parser = ConfigParser()
+        self.parser = configparser.ConfigParser()
 
     def read(self, module_name):
         """
@@ -377,7 +377,7 @@ class Config(object):
         """
         self.read(module_name)
         arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
-        return [arr[0]] + map(float, arr[1:])
+        return [arr[0]] + list(map(float, arr[1:]))
 
     def has(self, module_name, class_name, attribute_name):
         """
