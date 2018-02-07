@@ -1,7 +1,7 @@
 import prior
 import pytest
-from profile import profile
-from profile import light_profile, mass_profile
+import profile
+import light_profile, mass_profile
 
 
 @pytest.fixture(name='uniform_simple')

@@ -273,7 +273,7 @@ class TestMissingCovariances(object):
 
         # TODO: should be iter()
         # noinspection PyCompatibility
-        assert {(0, 7), (7, 0)} == {t for t, v in generator.non_zero_covariances.iteritems() if
+        assert {(0, 7), (7, 0)} == {t for t, v in generator.non_zero_covariances.items() if
                                     t not in non_zero_covariances}
 
 
