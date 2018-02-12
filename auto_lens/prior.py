@@ -143,6 +143,9 @@ class ClassMap(object):
     def class_priors_dict(self):
         return {name: prior_model.priors for name, prior_model in self.prior_models}
 
+    def value_vector_for_hypercube_vector(self, vector):
+        return map(lambda p, u: p[1].value_for(u), self.priors_ordered_by_id, vector)
+
     def reconstruction_for_vector(self, vector):
         """
         Creates a Reconstruction, which has an attribute and class instance corresponding to every PriorModel attributed
