@@ -126,10 +126,11 @@ class ClassMap(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {prior[1]: prior for _, prior_model in self.prior_models for prior in prior_model.priors}.values()
+        return {prior[1]: prior for _, prior_model in self.prior_models for prior in
+                prior_model.priors}.values()
 
     @property
-    def priors(self):
+    def priors_ordered_by_id(self):
         """
         Returns
         -------
@@ -137,6 +138,10 @@ class ClassMap(object):
             An ordered list of unique priors associated with this collection
         """
         return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
+
+    @property
+    def class_priors_dict(self):
+        return {name: prior_model.priors for name, prior_model in self.prior_models}
 
     def reconstruction_for_vector(self, vector):
         """
@@ -154,7 +159,8 @@ class ClassMap(object):
             An object containing reconstructed model instances
 
         """
-        arguments = dict(map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors, vector))
+        arguments = dict(
+            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, vector))
 
         reconstruction = Reconstruction()
 
@@ -265,7 +271,8 @@ class PriorModel(object):
 
     @property
     def priors(self):
-        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior[1].priors]
+        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in
+                                     tuple_prior[1].priors]
 
     def instance_for_arguments(self, arguments):
         """
@@ -306,14 +313,14 @@ class PriorException(Exception):
 class Config(object):
     """Parses prior config"""
 
-    def __init__(self, path):
+    def __init__(self, config_folder_path):
         """
         Parameters
         ----------
-        path: String
+        config_folder_path: String
             The path to the prior config folder
         """
-        self.path = path
+        self.path = config_folder_path
         self.parser = ConfigParser()
 
     def read(self, module_name):
