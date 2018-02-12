@@ -256,3 +256,10 @@ class TestUtility(object):
         collection.mock_class_1.two = collection.mock_class_2.two
 
         assert collection.class_priors_dict["mock_class_1"] == collection.class_priors_dict["mock_class_2"]
+
+    def test_value_vector_for_hypercube_vector(self):
+        collection = prior.ClassMap(MockConfig(), mock_class=MockClass)
+
+        collection.mock_class.two = prior.UniformPrior(upper_limit=100.)
+
+        assert collection.value_vector_for_hypercube_vector([1., 0.5]) == [1., 50.]
