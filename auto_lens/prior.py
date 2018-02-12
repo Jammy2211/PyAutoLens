@@ -141,9 +141,26 @@ class ClassMap(object):
 
     @property
     def class_priors_dict(self):
+        """
+        Returns
+        -------
+        class_priors_dict: {String: [Prior]}
+            A dictionary mapping the names of reconstructable class instances to lists of associated priors
+        """
         return {name: prior_model.priors for name, prior_model in self.prior_models}
 
     def value_vector_for_hypercube_vector(self, vector):
+        """
+        Parameters
+        ----------
+        vector: [float]
+            A unit hypercube vector
+
+        Returns
+        -------
+        values: [float]
+            A vector with values output by priors
+        """
         return map(lambda p, u: p[1].value_for(u), self.priors_ordered_by_id, vector)
 
     def reconstruction_for_vector(self, vector):
