@@ -1,7 +1,6 @@
 import prior
 import pytest
-import profile
-import light_profile, mass_profile
+from profiles import geometry_profile, light_profile, mass_profile
 
 
 @pytest.fixture(name='uniform_simple')
@@ -208,35 +207,37 @@ class TestConfig(object):
     def test_loading_config(self):
         config = prior.Config(path="config_test")
 
-        assert ['u', 0, 1] == config.get("profile", "Profile", "centre_0")
-        assert ['u', 0, 0.5] == config.get("profile", "Profile", "centre_1")
+        assert ['u', 0, 1] == config.get("profiles", "Profile", "centre_0")
+        assert ['u', 0, 0.5] == config.get("profiles", "Profile", "centre_1")
 
     def test_reconstruction(self):
-        collection = prior.ClassMap(prior.Config(path="config_test"), profile=profile.Profile)
+        collection = prior.ClassMap(prior.Config(path="config_test"), geometry_profile=geometry_profile.Profile)
+
+        print(collection)
 
         reconstruction = collection.reconstruction_for_vector([1., 1.])
 
-        assert reconstruction.profile.centre == (1., 0.5)
+        assert reconstruction.geometry_profile.centre == (1., 0.5)
 
     def test_inheritance(self):
-        collection = prior.ClassMap(prior.Config(path="config_test"), profile=profile.EllipticalProfile)
+        collection = prior.ClassMap(prior.Config(path="config_test"), geometry_profile=geometry_profile.EllipticalProfile)
 
         reconstruction = collection.reconstruction_for_vector([1., 1., 1., 1.])
 
-        assert reconstruction.profile.centre == (1., 0.5)
+        assert reconstruction.geometry_profile.centre == (1., 0.5)
 
     def test_true_config(self):
-        collection = prior.ClassMap(profile=profile.EllipticalProfile, elliptical_profile=profile.EllipticalProfile,
-                                    spherical_profile=profile.SphericalProfile,
+        collection = prior.ClassMap(profile=geometry_profile.EllipticalProfile, elliptical_profile=geometry_profile.EllipticalProfile,
+                                    spherical_profile=geometry_profile.SphericalProfile,
                                     elliptical_light_profile=light_profile.EllipticalLightProfile,
                                     sersic_light_profile=light_profile.SersicLightProfile,
                                     exponential_light_profile=light_profile.ExponentialLightProfile)
 
         reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors))])
 
-        assert isinstance(reconstruction.profile, profile.EllipticalProfile)
-        assert isinstance(reconstruction.elliptical_profile, profile.EllipticalProfile)
-        assert isinstance(reconstruction.spherical_profile, profile.SphericalProfile)
+        assert isinstance(reconstruction.profile, geometry_profile.EllipticalProfile)
+        assert isinstance(reconstruction.elliptical_profile, geometry_profile.EllipticalProfile)
+        assert isinstance(reconstruction.spherical_profile, geometry_profile.SphericalProfile)
 
         assert isinstance(reconstruction.elliptical_light_profile, light_profile.EllipticalLightProfile)
         assert isinstance(reconstruction.sersic_light_profile, light_profile.SersicLightProfile)

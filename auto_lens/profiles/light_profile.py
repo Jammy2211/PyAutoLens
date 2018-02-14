@@ -1,4 +1,4 @@
-import profile
+from profiles import geometry_profile
 import math
 from scipy.integrate import quad
 
@@ -13,7 +13,7 @@ class LightProfile(object):
         Parameters
         ----------
         radius : float
-            The distance from the centre of the profile
+            The distance from the centre of the profiles
         Returns
         -------
         intensity : float
@@ -38,7 +38,7 @@ class LightProfile(object):
 
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
-        Draws a plot of this light profile. Upper normalisation limit determined by taking mean plus one standard
+        Draws a plot of this light profiles. Upper normalisation limit determined by taking mean plus one standard
         deviation
 
         Parameters
@@ -55,16 +55,16 @@ class LightProfile(object):
             The maximum y bound
 
         """
-        # array = profile.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
+        # array = profiles.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
         #                                                          pixel_scale=pixel_scale)
         # pyplot.imshow(array)
         # pyplot.clim(vmax=np.mean(array) + np.std(array))
         # pyplot.show()
-        profile.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
+        geometry_profile.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
 
 class CombinedLightProfile(list, LightProfile):
-    """A combined light profile comprising of one or more light profiles"""
+    """A combined light profiles comprising of one or more light profiles"""
 
     def __init__(self, *light_profiles):
         super(CombinedLightProfile, self).__init__(light_profiles)
@@ -83,9 +83,8 @@ class CombinedLightProfile(list, LightProfile):
         """
         return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self))
 
-
-class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
-    """Generic class for an elliptical light profile"""
+class EllipticalLightProfile(geometry_profile.EllipticalProfile, LightProfile):
+    """Generic class for an elliptical light profiles"""
 
     def __init__(self, axis_ratio, phi, centre=(0, 0)):
         """
@@ -93,17 +92,17 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of light profile ellipse's minor and major axes (b/a)
+            Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall intensity normalisation in the light profile (electrons per second)
+            Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The circular radius containing half the light of this model
         sersic_index : Int
-            The concentration of the light profile
+            The concentration of the light profiles
         """
         super(EllipticalLightProfile, self).__init__(axis_ratio, phi, centre)
         self.axis_ratio = axis_ratio
@@ -111,7 +110,7 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
 
     def luminosity_within_circle(self, radius):
         """
-        Compute the light profile's total luminosity within a circle of specified radius. This is performed via \
+        Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
         integration and is centred on the light model.
 
         Parameters
@@ -128,7 +127,7 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
 
     def luminosity_within_ellipse(self, major_axis):
         """
-        Compute the light profile's total luminosity within an ellipse of specified major axis. This is performed via\
+        Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
         integration and is centred, oriented and aligned with on the light model.
         Parameters
         ----------
@@ -142,14 +141,14 @@ class EllipticalLightProfile(profile.EllipticalProfile, LightProfile):
         return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
     def luminosity_integral(self, x, axis_ratio):
-        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
+        """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
         return 2 * math.pi * r * self.intensity_at_radius(x)
 
 
 class SersicLightProfile(EllipticalLightProfile):
-    """The Sersic light profile, used to fit and subtract the lens galaxy's light."""
+    """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, centre=(0, 0)):
         """
@@ -157,17 +156,17 @@ class SersicLightProfile(EllipticalLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of light profile ellipse's minor and major axes (b/a)
+            Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall intensity normalisation in the light profile (electrons per second)
+            Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The circular radius containing half the light of this model
         sersic_index : Int
-            The concentration of the light profile
+            The concentration of the light profiles
         """
         super(SersicLightProfile, self).__init__(axis_ratio, phi, centre)
         self.intensity = intensity
@@ -176,9 +175,9 @@ class SersicLightProfile(EllipticalLightProfile):
 
     @property
     def elliptical_effective_radius(self):
-        """The effective_radius term used in a Sersic light profile is the circular effective radius. It describes the
-         radius within which a circular aperture contains half the light profile's light. For elliptical (i.e low axis \
-         ratio) systems, this circle won't robustly capture the light profile's elliptical shape.
+        """The effective_radius term used in a Sersic light profiles is the circular effective radius. It describes the
+         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis \
+         ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
 
          The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
          half the light, and may be more appropriate for analysis of highly flattened systems like disk galaxies."""
@@ -203,7 +202,7 @@ class SersicLightProfile(EllipticalLightProfile):
         Parameters
         ----------
         radius : float
-            The distance from the centre of the profile
+            The distance from the centre of the profiles
         Returns
         -------
         intensity : float
@@ -212,12 +211,12 @@ class SersicLightProfile(EllipticalLightProfile):
         return self.intensity * math.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def intensity_at_coordinates(self, coordinates):
         """
         Method for obtaining intensity at given coordinates.
 
-        This includes a coordinate transform to the light profile's shifted, rotated and elliptical reference frame.
+        This includes a coordinate transform to the light profiles's shifted, rotated and elliptical reference frame.
 
         Parameters
         ----------
@@ -235,7 +234,7 @@ class SersicLightProfile(EllipticalLightProfile):
 class ExponentialLightProfile(SersicLightProfile):
     """Used to fit flatter regions of light in a galaxy, typically a disk.
 
-    It is a subset of the Sersic profile, corresponding exactly to the solution sersic_index = 1"""
+    It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 1"""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, centre=(0, 0)):
         """
@@ -243,13 +242,13 @@ class ExponentialLightProfile(SersicLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of light profile ellipse's minor and major axes (b/a)
+            Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall intensity normalisation in the light profile (electrons per second)
+            Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The circular radius containing half the light of this model
         """
@@ -258,9 +257,9 @@ class ExponentialLightProfile(SersicLightProfile):
 
 class DevVaucouleursLightProfile(SersicLightProfile):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
-    profile of an elliptical / early-type galaxy.
+    profiles of an elliptical / early-type galaxy.
 
-    It is a subset of the Sersic profile, corresponding exactly to the solution sersic_index = 4."""
+    It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 4."""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, centre=(0, 0)):
         """
@@ -268,13 +267,13 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of light profile ellipse's minor and major axes (b/a)
+            Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall intensity normalisation in the light profile (electrons per second)
+            Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The circular radius containing half the light of this model
         """
@@ -282,8 +281,8 @@ class DevVaucouleursLightProfile(SersicLightProfile):
 
 
 class CoreSersicLightProfile(SersicLightProfile):
-    """The Core-Sersic profile is used to fit the light of a galaxy. It is an extension of the Sersic profile and \
-    flattens the light profiles central values (compared to the extrapolation of a pure Sersic profile), by forcing \
+    """The Core-Sersic profiles is used to fit the light of a galaxy. It is an extension of the Sersic profiles and \
+    flattens the light profiles central values (compared to the extrapolation of a pure Sersic profiles), by forcing \
     these central regions to behave instead as a power-law."""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, radius_break, intensity_break, gamma,
@@ -293,23 +292,23 @@ class CoreSersicLightProfile(SersicLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of light profile ellipse's minor and major axes (b/a)
+            Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall intensity normalisation in the light profile (electrons per second)
+            Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The circular radius containing half the light of this model
         sersic_index : Int
-            The concentration of the light profile
+            The concentration of the light profiles
         radius_break : Float
             The break radius separating the inner power-law (with logarithmic slope gamma) and outer Sersic function.
         intensity_break : Float
             The intensity at the break radius.
         gamma : Float
-            The logarithmic power-law slope of the inner core profile
+            The logarithmic power-law slope of the inner core profiles
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
@@ -321,7 +320,7 @@ class CoreSersicLightProfile(SersicLightProfile):
 
     @property
     def intensity_prime(self):
-        """Overall intensity normalisation in the rescaled Core-Sersic light profile (electrons per second)"""
+        """Overall intensity normalisation in the rescaled Core-Sersic light profiles (electrons per second)"""
         return self.intensity_break * (2.0 ** (-self.gamma / self.alpha)) * math.exp(
             self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
                     1.0 / self.sersic_index))
@@ -332,7 +331,7 @@ class CoreSersicLightProfile(SersicLightProfile):
         Parameters
         ----------
         radius : float
-            The distance from the centre of the profile
+            The distance from the centre of the profiles
         Returns
         -------
         intensity : float

@@ -1,5 +1,5 @@
 import mass_profile
-import profile
+from profiles import geometry_profile
 import pytest
 
 
@@ -1754,7 +1754,7 @@ class TestEllipticalIsothermal(object):
 
             defls = isothermal.deflection_angles_at_coordinates(coordinates=(1.0, 1.0))
 
-            # 45 degree aligns the mass profile with the axes, so there is no deflection acoss y.
+            # 45 degree aligns the mass profiles with the axes, so there is no deflection acoss y.
 
             assert defls[0] == pytest.approx(0.5698, 1e-3)
             assert defls[1] == pytest.approx(0.5700, 1e-3)
@@ -2376,12 +2376,12 @@ class TestCoredSphericalIsothermal(object):
 
         # def test__same_as_sie_for_no_core(self):
         #
-        #     isothermal_core = profile.CoredSphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
+        #     isothermal_core = profiles.CoredSphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
         #                                                       einstein_radius=1.0, core_radius=0.)
         #
         #     potential_core = isothermal_core.compute_potential(coordinates=(0.1, 0.1))
         #
-        #     isothermal = profile.SphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
+        #     isothermal = profiles.SphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
         #                                                       einstein_radius=1.0)
         #
         #     potential = isothermal.compute_potential(coordinates=(0.1, 0.1))
@@ -3404,5 +3404,5 @@ class TestArray(object):
         mp = mass_profile.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
                                                           einstein_radius=2.0)
         # noinspection PyTypeChecker
-        assert all(profile.array_function(mp.deflection_angles_at_coordinates)(-1, -1, -0.5, -0.5, 0.1)[0][
+        assert all(geometry_profile.array_function(mp.deflection_angles_at_coordinates)(-1, -1, -0.5, -0.5, 0.1)[0][
                        0] == mp.deflection_angles_at_coordinates((-1, -1)))

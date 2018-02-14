@@ -1,8 +1,8 @@
 from __future__ import division, print_function
 
 import pytest
-import light_profile
-import profile
+from profiles import light_profile
+from profiles import geometry_profile
 import math
 import numpy as np
 
@@ -473,36 +473,36 @@ class TestCombinedProfiles(object):
 
 class TestArray(object):
     def test__simple_assumptions(self, circular):
-        array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
                                                                           pixel_scale=1)
         assert array.shape == (101, 101)
         assert array[51][51] > array[51][52]
         assert array[51][51] > array[52][51]
         assert all(map(lambda i: i > 0, array[0]))
 
-        array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                           pixel_scale=0.5)
         assert array.shape == (200, 200)
 
     def test__ellipticity(self, circular, elliptical, vertical):
-        array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
                                                                           pixel_scale=1)
         assert array[60][0] == array[0][60]
 
-        array = profile.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profile.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                             pixel_scale=1)
 
         assert array[60][51] > array[51][60]
 
-        array = profile.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profile.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                           pixel_scale=1)
         assert array[60][51] < array[51][60]
 
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
-        array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                           pixel_scale=1)
-        flat_array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        flat_array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                                pixel_scale=1).flatten()
 
         assert all(array[0] == flat_array[:100])
@@ -512,12 +512,12 @@ class TestArray(object):
         combined = light_profile.CombinedLightProfile(circular, circular)
 
         assert all(map(lambda i: i == 2,
-                       profile.array_function(combined.intensity_at_coordinates)().flatten() / profile.array_function(
+                       geometry_profile.array_function(combined.intensity_at_coordinates)().flatten() / geometry_profile.array_function(
                            circular.intensity_at_coordinates)().flatten()))
 
     def test_symmetric_profile(self, circular):
         circular.centre = (50, 50)
-        array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                           pixel_scale=1.0)
 
         assert array[50][50] > array[50][51]
@@ -526,7 +526,7 @@ class TestArray(object):
         assert array[50][51] == array[50][49]
         assert array[50][49] == array[51][50]
 
-        array = profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
                                                                           pixel_scale=0.5)
 
         assert array[100][100] > array[100][101]
@@ -536,7 +536,7 @@ class TestArray(object):
         assert array[100][99] == array[101][100]
 
     def test_origin_symmetric_profile(self, circular):
-        array = profile.array_function(circular.intensity_at_coordinates)()
+        array = geometry_profile.array_function(circular.intensity_at_coordinates)()
 
         assert circular.intensity_at_coordinates((-5, 0)) < circular.intensity_at_coordinates((0, 0))
         assert circular.intensity_at_coordinates((5, 0)) < circular.intensity_at_coordinates((0, 0))
@@ -556,8 +556,8 @@ class TestArray(object):
 
 class TestTransform(object):
     def test_exceptions(self, elliptical):
-        with pytest.raises(profile.CoordinatesException):
-            elliptical.transform_to_reference_frame(profile.TransformedCoordinates((0, 0)))
+        with pytest.raises(geometry_profile.CoordinatesException):
+            elliptical.transform_to_reference_frame(geometry_profile.TransformedCoordinates((0, 0)))
 
-        with pytest.raises(profile.CoordinatesException):
+        with pytest.raises(geometry_profile.CoordinatesException):
             elliptical.transform_from_reference_frame((0, 0))

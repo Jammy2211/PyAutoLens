@@ -29,6 +29,8 @@ class TestData(object):
 
     class TestCoordinateSetup(object):
 
+        # TODO : Tests using recntagular image / array
+
         def test__array_1x1__sets_up_arcsecond_coordinates(self):
 
             array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(1,1), pixel_scale=1.0)
@@ -155,9 +157,6 @@ class TestData(object):
                                                    [[-0.75,  0.25], [-0.25,  0.25], [0.25,  0.25], [0.0, 0.0]],
                                                    [[-0.75, -0.25], [-0.25, -0.25], [0.25, -0.25], [0.75, -0.25]],
                                                    [[0.0, 0.0],     [-0.25, -0.75], [0.25, -0.75], [0.0, 0.0]]])).all()
-
-  #  class TestImagePixelToSubPixel(object):
-
 
     class TestTrimData(object):
         class TestOddToOdd(object):

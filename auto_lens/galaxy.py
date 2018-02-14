@@ -23,7 +23,7 @@ class GalaxyCollection(list):
 
 
 class Galaxy(object):
-    """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass
+    """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass \
     profiles"""
 
     def __init__(self, redshift, light_profile=None, mass_profile=None):
@@ -33,9 +33,9 @@ class Galaxy(object):
         redshift: float
             The redshift of this galaxy
         light_profile: LightProfile
-            A list of light profiles describing the light profile of this galaxy
+            A list of light profiles describing the light profiles of this galaxy
         mass_profile: MassProfile
-            A list of mass profiles describing the mass profile of this galaxy
+            A list of mass profiles describing the mass profiles of this galaxy
         """
         self.redshift = redshift
         self.light_profile = light_profile

@@ -280,7 +280,6 @@ def y_sub_pixel_to_coordinate(y_sub_pixel, y_coordinate, pixel_scale, sub_grid_s
 
     return y_coordinate + half - (y_sub_pixel + 1) * step
 
-
 def mask_blurring_region(mask, blurring_region_size):
     """Compute the blurring region of a mask, where the blurring region is defined as all pixels which are outside \
      of the mask but will have their light blurred into the mask during PSF convolution. Thus, their light must be \
@@ -360,9 +359,6 @@ def mask_border_pixels(mask):
                 image_pixel_index += 1
 
     return border_pixels
-
-# TODO : These routines are only used for certain Adaptive grids (i.e. not a Square grid). Move there in future?
-# TODO : Remember - we compute these pre-analysis before the grids are derived, so may make sense in image module.
 
 def mask_sparse_clustering_pixels(mask, sparse_grid_size):
     """Compute the sparse cluster image pixels of a mask, where the sparse cluster image pixels are the sub-set of \
@@ -501,7 +497,7 @@ class Image(np.ndarray):
 
     def set_sky_via_edges(self, no_edges):
         """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
-        histogram and fitting a Gaussian profile to this histogram. The mean (mu) of this Gaussian gives the background
+        histogram and fitting a Gaussian profiles to this histogram. The mean (mu) of this Gaussian gives the background
         sky level, whereas the FWHM (sigma) gives the noise estimate.
 
         Parameters
