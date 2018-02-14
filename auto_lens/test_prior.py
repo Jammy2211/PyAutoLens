@@ -1,6 +1,7 @@
 import prior
 import pytest
-from profiles import geometry_profile, light_profile, mass_profile
+from profile import profile
+from profile import light_profile, mass_profile
 
 
 @pytest.fixture(name='uniform_simple')
@@ -61,7 +62,7 @@ class TestClassMappingCollection(object):
         collection.add_class("mock_class", MockClass)
         assert 1 == len(collection.prior_models)
 
-        assert len(collection.priors) == 2
+        assert len(collection.priors_ordered_by_id) == 2
 
     def test_config_limits(self):
         collection = prior.ClassMap(MockConfig({"MockClass": {"one": ["u", 1., 2.]}}))
@@ -94,7 +95,7 @@ class TestClassMappingCollection(object):
 
         collection.add_class("mock_profile", MockProfile)
 
-        assert 3 == len(collection.priors)
+        assert 3 == len(collection.priors_ordered_by_id)
 
 
 class TestReconstruction(object):
@@ -196,7 +197,7 @@ class TestRealClasses(object):
                                     lens_mass_profile=mass_profile.CoredEllipticalIsothermalMassProfile,
                                     lens_light_profile=light_profile.CoreSersicLightProfile)
 
-        reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors))])
+        reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors_ordered_by_id))])
 
         assert isinstance(reconstruction.source_light_profile, light_profile.SersicLightProfile)
         assert isinstance(reconstruction.lens_mass_profile, mass_profile.CoredEllipticalIsothermalMassProfile)
@@ -205,40 +206,60 @@ class TestRealClasses(object):
 
 class TestConfig(object):
     def test_loading_config(self):
-        config = prior.Config(path="config_test")
+        config = prior.Config(config_folder_path="config_test")
 
-        assert ['u', 0, 1] == config.get("profiles", "Profile", "centre_0")
-        assert ['u', 0, 0.5] == config.get("profiles", "Profile", "centre_1")
+        assert ['u', 0, 1] == config.get("profile", "Profile", "centre_0")
+        assert ['u', 0, 0.5] == config.get("profile", "Profile", "centre_1")
 
     def test_reconstruction(self):
-        collection = prior.ClassMap(prior.Config(path="config_test"), geometry_profile=geometry_profile.Profile)
-
-        print(collection)
+        collection = prior.ClassMap(prior.Config(config_folder_path="config_test"), profile=profile.Profile)
 
         reconstruction = collection.reconstruction_for_vector([1., 1.])
 
-        assert reconstruction.geometry_profile.centre == (1., 0.5)
+        assert reconstruction.profile.centre == (1., 0.5)
 
     def test_inheritance(self):
-        collection = prior.ClassMap(prior.Config(path="config_test"), geometry_profile=geometry_profile.EllipticalProfile)
+        collection = prior.ClassMap(prior.Config(config_folder_path="config_test"), profile=profile.EllipticalProfile)
 
         reconstruction = collection.reconstruction_for_vector([1., 1., 1., 1.])
 
-        assert reconstruction.geometry_profile.centre == (1., 0.5)
+        assert reconstruction.profile.centre == (1., 0.5)
 
     def test_true_config(self):
-        collection = prior.ClassMap(profile=geometry_profile.EllipticalProfile, elliptical_profile=geometry_profile.EllipticalProfile,
-                                    spherical_profile=geometry_profile.SphericalProfile,
+        collection = prior.ClassMap(profile=profile.EllipticalProfile, elliptical_profile=profile.EllipticalProfile,
+                                    spherical_profile=profile.SphericalProfile,
                                     elliptical_light_profile=light_profile.EllipticalLightProfile,
                                     sersic_light_profile=light_profile.SersicLightProfile,
                                     exponential_light_profile=light_profile.ExponentialLightProfile)
 
-        reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors))])
+        reconstruction = collection.reconstruction_for_vector([1 for _ in range(len(collection.priors_ordered_by_id))])
 
-        assert isinstance(reconstruction.profile, geometry_profile.EllipticalProfile)
-        assert isinstance(reconstruction.elliptical_profile, geometry_profile.EllipticalProfile)
-        assert isinstance(reconstruction.spherical_profile, geometry_profile.SphericalProfile)
+        assert isinstance(reconstruction.profile, profile.EllipticalProfile)
+        assert isinstance(reconstruction.elliptical_profile, profile.EllipticalProfile)
+        assert isinstance(reconstruction.spherical_profile, profile.SphericalProfile)
 
         assert isinstance(reconstruction.elliptical_light_profile, light_profile.EllipticalLightProfile)
         assert isinstance(reconstruction.sersic_light_profile, light_profile.SersicLightProfile)
         assert isinstance(reconstruction.exponential_light_profile, light_profile.ExponentialLightProfile)
+
+
+class TestUtility(object):
+    def test_class_priors_dict(self):
+        collection = prior.ClassMap(MockConfig(), mock_class=MockClass)
+
+        assert collection.class_priors_dict.keys() == ["mock_class"]
+        assert len(collection.class_priors_dict["mock_class"]) == 2
+
+        collection = prior.ClassMap(MockConfig(), mock_class_1=MockClass, mock_class_2=MockClass)
+
+        collection.mock_class_1.one = collection.mock_class_2.one
+        collection.mock_class_1.two = collection.mock_class_2.two
+
+        assert collection.class_priors_dict["mock_class_1"] == collection.class_priors_dict["mock_class_2"]
+
+    def test_value_vector_for_hypercube_vector(self):
+        collection = prior.ClassMap(MockConfig(), mock_class=MockClass)
+
+        collection.mock_class.two = prior.UniformPrior(upper_limit=100.)
+
+        assert collection.value_vector_for_hypercube_vector([1., 0.5]) == [1., 50.]
