@@ -2,9 +2,9 @@ import sys
 print(sys.path)
 
 from galaxy import *
-from profiles.geometry_profile import *
-from profiles.light_profile import *
-from profiles.mass_profile import *
+from profiles.geometry_profiles import *
+from profiles.light_profiles import *
+from profiles.mass_profiles import *
 
 light_profile=CombinedLightProfile(
     SersicLightProfile(axis_ratio=0.88, phi=38.3, intensity=0.313, effective_radius=0.17, sersic_index=3.016, centre=(0.004, 0.015)),

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-import source_plane as sp
+from analysis import source_plane as sp
 import math
 
 

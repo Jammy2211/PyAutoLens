@@ -1,47 +1,47 @@
 from __future__ import division, print_function
 
 import pytest
-from profiles import light_profile
-from profiles import geometry_profile
+from profiles import light_profiles
+from profiles import geometry_profiles
 import math
 import numpy as np
 
 
 @pytest.fixture(name='circular')
 def circular_sersic():
-    return light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                            sersic_index=4.0)
+    return light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                             sersic_index=4.0)
 
 
 @pytest.fixture(name='elliptical')
 def elliptical_sersic():
-    return light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                            sersic_index=4.0)
+    return light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                             sersic_index=4.0)
 
 
 @pytest.fixture(name='vertical')
 def vertical_sersic():
-    return light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=1.0, effective_radius=0.6,
-                                            sersic_index=4.0)
+    return light_profiles.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=1.0, effective_radius=0.6,
+                                             sersic_index=4.0)
 
 
 @pytest.fixture(name='dev_vaucouleurs')
 def dev_vaucouleurs_profile():
-    return light_profile.DevVaucouleursLightProfile(axis_ratio=0.6, phi=10.0, intensity=2.0, effective_radius=0.9,
-                                                    centre=(0.0, 0.1))
+    return light_profiles.DevVaucouleursLightProfile(axis_ratio=0.6, phi=10.0, intensity=2.0, effective_radius=0.9,
+                                                     centre=(0.0, 0.1))
 
 
 @pytest.fixture(name="exponential")
 def exponential_profile():
-    return light_profile.ExponentialLightProfile(axis_ratio=0.5, phi=45.0, intensity=3.0, effective_radius=0.2,
-                                                 centre=(1, -1))
+    return light_profiles.ExponentialLightProfile(axis_ratio=0.5, phi=45.0, intensity=3.0, effective_radius=0.2,
+                                                  centre=(1, -1))
 
 
 @pytest.fixture(name="core")
 def core_profile():
-    return light_profile.CoreSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=1.0,
-                                                effective_radius=5.0, sersic_index=4.0, radius_break=0.01,
-                                                intensity_break=0.1, gamma=1.0, alpha=1.0)
+    return light_profiles.CoreSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=1.0,
+                                                 effective_radius=5.0, sersic_index=4.0, radius_break=0.01,
+                                                 intensity_break=0.1, gamma=1.0, alpha=1.0)
 
 
 class TestSetupProfiles(object):
@@ -103,8 +103,8 @@ class TestLuminosityIntegral(object):
             import math
             import scipy.special
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=1.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
 
             integral_radius = 5.5
 
@@ -127,8 +127,8 @@ class TestLuminosityIntegral(object):
             import math
             import scipy.special
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=2.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=2.0)
 
             integral_radius = 0.5
 
@@ -151,8 +151,8 @@ class TestLuminosityIntegral(object):
             import math
             import scipy.special
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=4.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=4.0)
 
             integral_radius = 0.5
 
@@ -172,8 +172,8 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_exponential__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=1.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
 
             import numpy as np
 
@@ -200,8 +200,8 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=2.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=2.0)
 
             import numpy as np
 
@@ -227,8 +227,8 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_dev_vaucauleurs__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=4.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=4.0)
 
             import numpy as np
 
@@ -254,8 +254,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_exponential__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=1.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
 
             integral_radius = 0.5
             luminosity_tot = 0.0
@@ -279,8 +279,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=0.3, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=2.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=0.3, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=2.0)
 
             integral_radius = 0.5
             luminosity_tot = 0.0
@@ -306,8 +306,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_exponential__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=1.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
 
             integral_radius = 0.5
             luminosity_tot = 0.0
@@ -332,8 +332,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=2.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=2.0)
 
             integral_radius = 0.5
             luminosity_tot = 0.0
@@ -358,8 +358,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_dev_vaucauleurs__compare_to_grid(self):
 
-            sersic = light_profile.SersicLightProfile(axis_ratio=0.7, phi=30.0, intensity=3.0, effective_radius=2.0,
-                                                      sersic_index=4.0)
+            sersic = light_profiles.SersicLightProfile(axis_ratio=0.7, phi=30.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=4.0)
 
             integral_radius = 0.5
             luminosity_tot = 0.0
@@ -389,28 +389,28 @@ class TestIntensityValues(object):
         assert intensity == pytest.approx(0.351797, 1e-3)
 
     def test__intensity_at_radius_2__correct_value(self):
-        sersic = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                  sersic_index=2.0)
+        sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                   sersic_index=2.0)
         intensity = sersic.intensity_at_radius(
             radius=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
         assert intensity == pytest.approx(4.90657319276, 1e-3)
 
     def test__intensity_at_coordinates__different_axis_ratio(self):
-        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                  sersic_index=2.0)
+        sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                   sersic_index=2.0)
 
         intensity = sersic.intensity_at_coordinates(coordinates=(0, 1))
 
         assert intensity == pytest.approx(5.38066670129, 1e-3)
 
     def test__intensity_at_coordinates__different_rotate_phi_90_same_result(self):
-        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
-                                                  sersic_index=2.0)
+        sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                   sersic_index=2.0)
 
         intensity_1 = sersic.intensity_at_coordinates(coordinates=(0, 1))
 
-        sersic = light_profile.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
-                                                  sersic_index=2.0)
+        sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
+                                                   sersic_index=2.0)
 
         intensity_2 = sersic.intensity_at_coordinates(coordinates=(1, 0))
 
@@ -433,33 +433,33 @@ class TestCoordinates(object):
 
 class TestCombinedProfiles(object):
     def test__summation(self, circular):
-        combined = light_profile.CombinedLightProfile(circular, circular)
+        combined = light_profiles.CombinedLightProfile(circular, circular)
         assert combined.intensity_at_coordinates((0, 0)) == 2 * circular.intensity_at_coordinates((0, 0))
 
     def test_1d_symmetry(self):
-        sersic1 = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                   sersic_index=4.0)
+        sersic1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                    sersic_index=4.0)
 
-        sersic2 = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                   sersic_index=4.0, centre=(100, 0))
+        sersic2 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                    sersic_index=4.0, centre=(100, 0))
 
-        combined = light_profile.CombinedLightProfile(sersic1, sersic2)
+        combined = light_profiles.CombinedLightProfile(sersic1, sersic2)
         assert combined.intensity_at_coordinates((0, 0)) == combined.intensity_at_coordinates((100, 0))
         assert combined.intensity_at_coordinates((49, 0)) == combined.intensity_at_coordinates((51, 0))
 
     def test_2d_symmetry(self):
-        sersic1 = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                   sersic_index=4.0)
+        sersic1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                    sersic_index=4.0)
 
-        sersic2 = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                   sersic_index=4.0, centre=(100, 0))
-        sersic3 = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                   sersic_index=4.0, centre=(0, 100))
+        sersic2 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                    sersic_index=4.0, centre=(100, 0))
+        sersic3 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                    sersic_index=4.0, centre=(0, 100))
 
-        sersic4 = light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                   sersic_index=4.0, centre=(100, 100))
+        sersic4 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                    sersic_index=4.0, centre=(100, 100))
 
-        combined = light_profile.CombinedLightProfile(sersic1, sersic2, sersic3, sersic4)
+        combined = light_profiles.CombinedLightProfile(sersic1, sersic2, sersic3, sersic4)
 
         assert combined.intensity_at_coordinates((49, 0)) == pytest.approx(combined.intensity_at_coordinates((51, 0)),
                                                                            1e-5)
@@ -473,52 +473,52 @@ class TestCombinedProfiles(object):
 
 class TestArray(object):
     def test__simple_assumptions(self, circular):
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
-                                                                          pixel_scale=1)
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+                                                                                    pixel_scale=1)
         assert array.shape == (101, 101)
         assert array[51][51] > array[51][52]
         assert array[51][51] > array[52][51]
         assert all(map(lambda i: i > 0, array[0]))
 
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                          pixel_scale=0.5)
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                    pixel_scale=0.5)
         assert array.shape == (200, 200)
 
     def test__ellipticity(self, circular, elliptical, vertical):
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
-                                                                          pixel_scale=1)
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+                                                                                    pixel_scale=1)
         assert array[60][0] == array[0][60]
 
-        array = geometry_profile.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                            pixel_scale=1)
+        array = geometry_profiles.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                      pixel_scale=1)
 
         assert array[60][51] > array[51][60]
 
-        array = geometry_profile.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                          pixel_scale=1)
+        array = geometry_profiles.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                    pixel_scale=1)
         assert array[60][51] < array[51][60]
 
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                          pixel_scale=1)
-        flat_array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                               pixel_scale=1).flatten()
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                    pixel_scale=1)
+        flat_array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                         pixel_scale=1).flatten()
 
         assert all(array[0] == flat_array[:100])
         assert all(array[1] == flat_array[100:200])
 
     def test_combined_array(self, circular):
-        combined = light_profile.CombinedLightProfile(circular, circular)
+        combined = light_profiles.CombinedLightProfile(circular, circular)
 
         assert all(map(lambda i: i == 2,
-                       geometry_profile.array_function(combined.intensity_at_coordinates)().flatten() / geometry_profile.array_function(
+                       geometry_profiles.array_function(combined.intensity_at_coordinates)().flatten() / geometry_profiles.array_function(
                            circular.intensity_at_coordinates)().flatten()))
 
     def test_symmetric_profile(self, circular):
         circular.centre = (50, 50)
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                          pixel_scale=1.0)
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                    pixel_scale=1.0)
 
         assert array[50][50] > array[50][51]
         assert array[50][50] > array[49][50]
@@ -526,8 +526,8 @@ class TestArray(object):
         assert array[50][51] == array[50][49]
         assert array[50][49] == array[51][50]
 
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
-                                                                          pixel_scale=0.5)
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+                                                                                    pixel_scale=0.5)
 
         assert array[100][100] > array[100][101]
         assert array[100][100] > array[99][100]
@@ -536,7 +536,7 @@ class TestArray(object):
         assert array[100][99] == array[101][100]
 
     def test_origin_symmetric_profile(self, circular):
-        array = geometry_profile.array_function(circular.intensity_at_coordinates)()
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)()
 
         assert circular.intensity_at_coordinates((-5, 0)) < circular.intensity_at_coordinates((0, 0))
         assert circular.intensity_at_coordinates((5, 0)) < circular.intensity_at_coordinates((0, 0))
@@ -556,8 +556,8 @@ class TestArray(object):
 
 class TestTransform(object):
     def test_exceptions(self, elliptical):
-        with pytest.raises(geometry_profile.CoordinatesException):
-            elliptical.transform_to_reference_frame(geometry_profile.TransformedCoordinates((0, 0)))
+        with pytest.raises(geometry_profiles.CoordinatesException):
+            elliptical.transform_to_reference_frame(geometry_profiles.TransformedCoordinates((0, 0)))
 
-        with pytest.raises(geometry_profile.CoordinatesException):
+        with pytest.raises(geometry_profiles.CoordinatesException):
             elliptical.transform_from_reference_frame((0, 0))
