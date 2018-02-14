@@ -238,7 +238,7 @@ def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
 
 
 class TransformedCoordinates(tuple):
-    """Coordinates that have been transformed to the coordinate system of the profile"""
+    """Coordinates that have been transformed to the coordinate system of the profiles"""
 
     def __init__(self, coordinates):
         super(TransformedCoordinates, self).__init__()
@@ -251,7 +251,7 @@ def transform_coordinates(func):
     which they were passed in.
     Parameters
     ----------
-    func : (profile, *args, **kwargs) -> Object
+    func : (profiles, *args, **kwargs) -> Object
         A function that requires transformed coordinates
 
     Returns
@@ -267,9 +267,9 @@ def transform_coordinates(func):
         Parameters
         ----------
         profile : Profile
-            The profile that owns the function
+            The profiles that owns the function
         coordinates : TransformedCoordinates or (float, float)
-            Coordinates in either cartesian or profile coordinate system
+            Coordinates in either cartesian or profiles coordinate system
         args
         kwargs
 
@@ -303,7 +303,7 @@ class Profile(object):
     # noinspection PyMethodMayBeStatic
     def transform_to_reference_frame(self, coordinates):
         """
-        Translate Cartesian image coordinates to the lens profile's reference frame (for a circular profile this
+        Translate Cartesian image coordinates to the lens profiles's reference frame (for a circular profiles this
         returns the input coordinates)
 
         Parameters
@@ -320,25 +320,25 @@ class Profile(object):
     @classmethod
     def from_profile(cls, profile, **kwargs):
         """
-        Creates any profile from any other profile, keeping all attributes from the original profile that can be passed
-        into the constructor of the new profile. Any none optional attributes required by the new profile's constructor
-        and not available as attributes of the original profile must be passed in as key word arguments. Arguments
-        matching attributes in the original profile may be passed in to override those attributes.
+        Creates any profiles from any other profiles, keeping all attributes from the original profiles that can be passed
+        into the constructor of the new profiles. Any none optional attributes required by the new profiles's constructor
+        and not available as attributes of the original profiles must be passed in as key word arguments. Arguments
+        matching attributes in the original profiles may be passed in to override those attributes.
 
         Examples
         ----------
-        p = profile.Profile(centre=(1, 1))
-        elliptical_profile = profile.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
+        p = profiles.Profile(centre=(1, 1))
+        elliptical_profile = profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
 
-        elliptical_profile = profile.EllipticalProfile(1, 2)
-        profile.Profile.from_profile(elliptical_profile).__class__ == profile.Profile
+        elliptical_profile = profiles.EllipticalProfile(1, 2)
+        profiles.Profile.from_profile(elliptical_profile).__class__ == profiles.Profile
 
         Parameters
         ----------
         profile: Profile
-            A child of the profile class
+            A child of the profiles class
         kwargs
-            Key word constructor arguments for the new profile
+            Key word constructor arguments for the new profiles
         Returns
         -------
 
@@ -356,7 +356,7 @@ class Profile(object):
         Parameters
         ----------
         coordinates: TransformedCoordinates
-            Coordinates that have been transformed to the reference frame of the profile
+            Coordinates that have been transformed to the reference frame of the profiles
         Returns
         -------
         coordinates: (float, float)
@@ -374,7 +374,7 @@ class Profile(object):
 
     def coordinates_to_centre(self, coordinates):
         """
-        Converts image coordinates to profile's centre
+        Converts image coordinates to profiles's centre
 
         Parameters
         ----------
@@ -383,7 +383,7 @@ class Profile(object):
 
         Returns
         ----------
-        The coordinates at the mass profile centre
+        The coordinates at the mass profiles centre
         """
         return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
 
@@ -408,18 +408,18 @@ class Profile(object):
 
 
 class EllipticalProfile(Profile):
-    """Generic elliptical profile class to contain functions shared by light and mass profiles"""
+    """Generic elliptical profiles class to contain functions shared by light and mass profiles"""
 
     def __init__(self, axis_ratio, phi, centre=(0, 0)):
         """
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalProfile, self).__init__(centre)
 
@@ -436,7 +436,7 @@ class EllipticalProfile(Profile):
 
     def angles_from_x_axis(self):
         """
-        Determine the sin and cosine of the angle between the profile ellipse and positive x-axis, \
+        Determine the sin and cosine of the angle between the profiles ellipse and positive x-axis, \
         defined counter-clockwise from x.
 
         Returns
@@ -465,7 +465,7 @@ class EllipticalProfile(Profile):
 
     def coordinates_angle_to_profile(self, theta):
         """
-        Compute the sin and cosine of the angle between the shifted coordinates and elliptical profile
+        Compute the sin and cosine of the angle between the shifted coordinates and elliptical profiles
 
         Parameters
         ----------
@@ -473,7 +473,7 @@ class EllipticalProfile(Profile):
 
         Returns
         ----------
-        The sin and cosine of the angle between the shifted coordinates and profile ellipse.
+        The sin and cosine of the angle between the shifted coordinates and profiles ellipse.
         """
         theta_coordinate_to_profile = math.radians(theta - self.phi)
         return math.cos(theta_coordinate_to_profile), math.sin(theta_coordinate_to_profile)
@@ -491,14 +491,14 @@ class EllipticalProfile(Profile):
 
         Returns
         ----------
-        The angle between the coordinates and the x-axis and profile centre
+        The angle between the coordinates and the x-axis and profiles centre
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
 
     def rotate_coordinates_from_profile(self, coordinates_elliptical):
-        """Rotate elliptical coordinates from the reference frame of the profile back to the image-plane Cartsian grid
-         (coordinates are not shifted away from the lens profile centre)."""
+        """Rotate elliptical coordinates from the reference frame of the profiles back to the image-plane Cartsian grid
+         (coordinates are not shifted away from the lens profiles centre)."""
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
@@ -538,7 +538,7 @@ class EllipticalProfile(Profile):
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
-        Rotate elliptical coordinates back to the original Cartesian grid (for a circular profile this
+        Rotate elliptical coordinates back to the original Cartesian grid (for a circular profiles this
         returns the input coordinates)
 
         Parameters
@@ -560,7 +560,7 @@ class EllipticalProfile(Profile):
 
     def transform_to_reference_frame(self, coordinates):
         """
-        Translate Cartesian image coordinates to the lens profile's reference frame (for a circular profile this
+        Translate Cartesian image coordinates to the lens profiles's reference frame (for a circular profiles this
         returns the input coordinates)
 
         Parameters
@@ -576,16 +576,16 @@ class EllipticalProfile(Profile):
         if isinstance(coordinates, TransformedCoordinates):
             raise CoordinatesException("Trying to transform already transformed coordinates")
 
-        # Compute distance of coordinates to the lens profile centre
+        # Compute distance of coordinates to the lens profiles centre
         radius = self.coordinates_to_radius(coordinates)
 
         # Compute the angle between the coordinates and x-axis
         theta_from_x = self.coordinates_angle_from_x(coordinates)
 
-        # Compute the angle between the coordinates and profile ellipse
+        # Compute the angle between the coordinates and profiles ellipse
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
 
-        # Multiply by radius to get their x / y distance from the profile centre in this elliptical unit system
+        # Multiply by radius to get their x / y distance from the profiles centre in this elliptical unit system
         return TransformedCoordinates((radius * cos_theta, radius * sin_theta))
 
     def eta_u(self, u, coordinates):
@@ -593,13 +593,13 @@ class EllipticalProfile(Profile):
 
 
 class SphericalProfile(EllipticalProfile):
-    """Generic circular profile class to contain functions shared by light and mass profiles"""
+    """Generic circular profiles class to contain functions shared by light and mass profiles"""
 
     def __init__(self, centre=(0, 0)):
         """
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         """
         super(SphericalProfile, self).__init__(1.0, 0.0, centre)
