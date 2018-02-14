@@ -1,5 +1,5 @@
 import numpy as np
-import frame_convolution
+from analysis import frame_convolution
 import pytest
 
 
