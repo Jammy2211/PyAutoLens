@@ -2,6 +2,8 @@ from profiles import geometry_profiles, mass_profiles
 import pytest
 
 
+# TODO : Combined mass profiles for mass integral
+
 class TestMassIntegral(object):
 
     class TestWithinCircle(object):

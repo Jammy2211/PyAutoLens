@@ -244,6 +244,184 @@ class TestConfig(object):
         assert isinstance(reconstruction.sersic_light_profile, light_profiles.SersicLightProfile)
         assert isinstance(reconstruction.exponential_light_profile, light_profiles.ExponentialLightProfile)
 
+    class TestHyperCube:
+
+        def test__in_order_of_class_constructor_one_profile(self):
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                geometry_profile=geometry_profiles.EllipticalProfile)
+
+            assert collection.value_vector_for_hypercube_vector([0.5, 0.5, 0.5, 0.5]) == [0.75, 0.8, 0.5, 0.25]
+
+        def test__in_order_of_class_constructor_multiple_profiles(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            assert collection.value_vector_for_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == \
+                   [0.75, 0.8, 0.5, 0.25, 0.5, 0.25, 0.75, 0.8, 0.5, 0.25]
+
+        # TODO : Fix This
+
+        def test__order_maintained_with_prior_change(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            collection.profile_1.axis_ratio = prior.UniformPrior(100, 200)
+
+            assert collection.value_vector_for_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == \
+                   [150.0, 0.8, 0.5, 0.25, 0.5, 0.25, 0.75, 0.8, 0.5, 0.25]
+
+    class TestReconstructions:
+
+        def test__in_order_of_class_constructor_one_profile(self):
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile)
+
+            reconstruction = collection.reconstruction_for_vector([0.5, 0.5, 0.5, 0.5])
+
+            assert reconstruction.profile_1.axis_ratio == 0.75
+            assert reconstruction.profile_1.phi == 0.8
+            assert reconstruction.profile_1.centre == (0.5, 0.25)
+
+        def test__in_order_of_class_constructor_multiple_profiles(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            reconstruction = collection.reconstruction_for_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+
+            assert reconstruction.profile_1.axis_ratio == 0.75
+            assert reconstruction.profile_1.phi == 0.8
+            assert reconstruction.profile_1.centre == (0.5, 0.25)
+
+            assert reconstruction.profile_2.centre == (0.5, 0.25)
+
+            assert reconstruction.profile_3.axis_ratio == 0.75
+            assert reconstruction.profile_3.phi == 0.8
+            assert reconstruction.profile_3.centre == (0.5, 0.25)
+
+        def test__in_order_of_class_constructor_order_maintained_with_prior_changes(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            collection.profile_1.phi = prior.UniformPrior(100, 200)
+            collection.profile_2.centre.centre_1 = prior.UniformPrior(10, 20)
+
+            reconstruction = collection.reconstruction_for_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+
+            assert reconstruction.profile_1.axis_ratio == 0.75
+            assert reconstruction.profile_1.phi == 150.0
+            assert reconstruction.profile_1.centre == (0.5, 0.25)
+
+            assert reconstruction.profile_2.centre == (0.5, 15.0)
+
+            assert reconstruction.profile_3.axis_ratio == 0.75
+            assert reconstruction.profile_3.phi == 0.8
+            assert reconstruction.profile_3.centre == (0.5, 0.25)
+
+        def test__in_order_of_class_constructor__order_maintained_when_one_prior_equals_other(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            collection.profile_1.phi = prior.UniformPrior(100, 200)
+            collection.profile_2.centre.centre_1 = prior.UniformPrior(10, 20)
+            collection.profile_1.axis_ratio = collection.profile_1.phi
+            collection.profile_3.centre.centre_1 = collection.profile_2.centre.centre_1
+
+            reconstruction = collection.reconstruction_for_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+
+            assert reconstruction.profile_1.axis_ratio == 150.0
+            assert reconstruction.profile_1.phi == 150.0
+            assert reconstruction.profile_1.centre == (0.5, 0.25)
+
+            assert reconstruction.profile_2.centre == (0.5, 15.0)
+
+            assert reconstruction.profile_3.axis_ratio == 0.75
+            assert reconstruction.profile_3.phi == 0.8
+            assert reconstruction.profile_3.centre == (0.5, 15.0)
+
+        def test__check_order_for_different_unit_values(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            collection.profile_1.axis_ratio = prior.UniformPrior(0.0, 1.0)
+            collection.profile_1.phi = prior.UniformPrior(0.0, 1.0)
+            collection.profile_1.centre.centre_0 = prior.UniformPrior(0.0, 1.0)
+            collection.profile_1.centre.centre_1 = prior.UniformPrior(0.0, 1.0)
+
+            collection.profile_2.centre.centre_0 = prior.UniformPrior(0.0, 1.0)
+            collection.profile_2.centre.centre_1 = prior.UniformPrior(0.0, 1.0)
+
+            collection.profile_3.axis_ratio = prior.UniformPrior(0.0, 1.0)
+            collection.profile_3.phi = prior.UniformPrior(0.0, 1.0)
+            collection.profile_3.centre.centre_0 = prior.UniformPrior(0.0, 1.0)
+            collection.profile_3.centre.centre_1 = prior.UniformPrior(0.0, 1.0)
+
+            reconstruction = collection.reconstruction_for_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+
+            assert reconstruction.profile_1.axis_ratio == 0.1
+            assert reconstruction.profile_1.phi == 0.2
+            assert reconstruction.profile_1.centre == (0.3, 0.4)
+
+            assert reconstruction.profile_2.centre == (0.5, 0.6)
+
+            assert reconstruction.profile_3.axis_ratio == 0.7
+            assert reconstruction.profile_3.phi == 0.8
+            assert reconstruction.profile_3.centre == (0.9, 1.0)
+
+        def test__check_order_for_different_unit_values_and_set_priors_eual_to_one_another(self):
+
+            collection = prior.ClassMap(
+                prior.Config(config_folder_path=data_path+"config_test"),
+                profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+                profile_3=geometry_profiles.EllipticalProfile)
+
+            collection.profile_1.axis_ratio = prior.UniformPrior(0.0, 1.0)
+            collection.profile_1.phi = prior.UniformPrior(0.0, 1.0)
+            collection.profile_1.centre.centre_0 = prior.UniformPrior(0.0, 1.0)
+            collection.profile_1.centre.centre_1 = prior.UniformPrior(0.0, 1.0)
+
+            collection.profile_2.centre.centre_0 = prior.UniformPrior(0.0, 1.0)
+            collection.profile_2.centre.centre_1 = prior.UniformPrior(0.0, 1.0)
+
+            collection.profile_3.axis_ratio = prior.UniformPrior(0.0, 1.0)
+            collection.profile_3.phi = prior.UniformPrior(0.0, 1.0)
+            collection.profile_3.centre.centre_0 = prior.UniformPrior(0.0, 1.0)
+            collection.profile_3.centre.centre_1 = prior.UniformPrior(0.0, 1.0)
+
+            collection.profile_1.axis_ratio = collection.profile_1.phi
+            collection.profile_3.centre.centre_1 = collection.profile_2.centre.centre_1
+
+            reconstruction = collection.reconstruction_for_vector([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+
+            assert reconstruction.profile_1.axis_ratio == 0.2
+            assert reconstruction.profile_1.phi == 0.2
+            assert reconstruction.profile_1.centre == (0.3, 0.4)
+
+            assert reconstruction.profile_2.centre == (0.5, 0.6)
+
+            assert reconstruction.profile_3.axis_ratio == 0.7
+            assert reconstruction.profile_3.phi == 0.8
+            assert reconstruction.profile_3.centre == (0.9, 0.6)
+
 
 class TestUtility(object):
     def test_class_priors_dict(self):

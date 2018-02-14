@@ -83,6 +83,7 @@ class CombinedLightProfile(list, LightProfile):
         """
         return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self))
 
+
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
