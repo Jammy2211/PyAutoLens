@@ -1,5 +1,5 @@
-import profile
-import light_profile
+from profiles import geometry_profile
+from profiles import light_profile
 import math
 from scipy.integrate import quad
 from scipy import special
@@ -25,7 +25,7 @@ class MassProfile(object):
 
 
 class CombinedMassProfile(list, MassProfile):
-    """A combined mass profile comprising of one or more mass profiles"""
+    """A combined mass profiles comprising of one or more mass profiles"""
 
     def __init__(self, *mass_profiles):
         super(CombinedMassProfile, self).__init__(mass_profiles)
@@ -81,8 +81,8 @@ class CombinedMassProfile(list, MassProfile):
         return sum_tuple
 
 
-class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
-    """Generic class for an elliptical light profile"""
+class EllipticalMassProfile(geometry_profile.EllipticalProfile, MassProfile):
+    """Generic class for an elliptical light profiles"""
 
     def __init__(self, axis_ratio, phi, centre=(0, 0)):
         """
@@ -90,17 +90,17 @@ class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of light profile ellipse's minor and major axes (b/a)
+            Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall intensity normalisation in the light profile (electrons per second)
+            Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The circular radius containing half the light of this model
         sersic_index : Int
-            The concentration of the light profile
+            The concentration of the light profiles
         """
         super(EllipticalMassProfile, self).__init__(axis_ratio, phi, centre)
         self.axis_ratio = axis_ratio
@@ -108,8 +108,8 @@ class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
 
     def dimensionless_mass_within_circle(self, radius):
         """
-        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
-        integration of the surface density profile and is centred on the mass model.
+        Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is performed via \
+        integration of the surface density profiles and is centred on the mass model.
 
         Parameters
         ----------
@@ -125,8 +125,8 @@ class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
 
     def dimensionless_mass_within_ellipse(self, major_axis):
         """
-        Compute the mass profile's total dimensionless mass within a circle of specified radius. This is performed via \
-        integration of the surface density profile and is centred on the mass model.
+        Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is performed via \
+        integration of the surface density profiles and is centred on the mass model.
 
         Parameters
         ----------
@@ -141,7 +141,7 @@ class EllipticalMassProfile(profile.EllipticalProfile, MassProfile):
         return quad(self.dimensionless_mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
     def dimensionless_mass_integral(self, x, axis_ratio):
-        """Routine to integrate an elliptical light profile - set axis ratio to 1 to compute the luminosity within a \
+        """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
         return 2 * math.pi * r * self.surface_density_at_radius(x)
@@ -156,15 +156,15 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of mass profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of mass profiles ellipse counter-clockwise from positive x-axis
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         slope : float
-            power-law density slope of mass profile
+            power-law density slope of mass profiles
         """
 
         super(EllipticalPowerLawMassProfile, self).__init__(axis_ratio, phi, centre)
@@ -175,14 +175,14 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
 
     @property
     def einstein_radius_rescaled(self):
-        """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profile \
+        """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profiles \
         parameters"""
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
     def surface_density_at_radius(self, radius):
         return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
         """
         Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
@@ -205,7 +205,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope) / \
                ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -227,7 +227,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
         eta = self.eta_u(u, coordinates)
         return self.surface_density_at_radius(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -261,20 +261,20 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of mass profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of mass profiles ellipse counter-clockwise from positive x-axis
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         slope : float
-            power-law density slope of mass profile
+            power-law density slope of mass profiles
         """
 
         super(SphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, centre)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -304,18 +304,18 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of mass profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of mass profiles ellipse counter-clockwise from positive x-axis
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         """
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -352,14 +352,14 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         """
 
         super(SphericalIsothermalMassProfile, self).__init__(1.0, 0.0, einstein_radius, centre)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -376,7 +376,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
         eta = self.coordinates_to_elliptical_radius(coordinates)
         return 2.0 * self.einstein_radius_rescaled * eta
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -402,15 +402,15 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of mass profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of mass profiles ellipse counter-clockwise from positive x-axis
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         slope : float
-            power-law density slope of mass profile
+            power-law density slope of mass profiles
         core_radius : float
             The radius of the inner core
         """
@@ -437,17 +437,17 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         slope : float
-            power-law density slope of mass profile
+            power-law density slope of mass profiles
         core_radius : float
             The radius of the inner core
         """
         super(CoredSphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, core_radius, centre)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -479,13 +479,13 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of mass profile ellipse's minor and major axes (b/a)
+            Ratio of mass profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of mass profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of mass profiles ellipse counter-clockwise from positive x-axis
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         core_radius : float
             The radius of the inner core
         """
@@ -504,9 +504,9 @@ class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         einstein_radius : float
-            Einstein radius of power-law mass profile
+            Einstein radius of power-law mass profiles
         core_radius : float
             The radius of the inner core
         """
@@ -515,19 +515,19 @@ class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
 
 
 class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
-    """The elliptical NFW profile, used to fit the dark matter halo of the lens."""
+    """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, axis_ratio, phi, kappa_s, scale_radius, centre=(0, 0)):
-        """ Setup a NFW dark matter profile.
+        """ Setup a NFW dark matter profiles.
 
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         kappa_s : float
             The overall normalization of the dark matter halo
         scale_radius : float
@@ -551,7 +551,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
     def surface_density_at_radius(self, radius):
         return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
         """
         Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
@@ -575,7 +575,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         return (self.axis_ratio / 2.0) * (eta / u) * ((math.log(eta / 2.0) + self.coord_func(eta)) / eta) / (
             (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
@@ -596,7 +596,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
         return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -622,15 +622,15 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
 
 
 class SphericalNFWMassProfile(EllipticalNFWMassProfile):
-    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+    """The spherical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, kappa_s, scale_radius, centre=(0, 0)):
-        """ Setup a NFW dark matter profile.
+        """ Setup a NFW dark matter profiles.
 
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         kappa_s : float
             The overall normalization of the dark matter halo
         scale_radius : float
@@ -646,7 +646,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
@@ -666,7 +666,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
     def deflection_func_sph(self, eta):
         return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -687,19 +687,19 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
 
 class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
-    """The elliptical NFW profile, used to fit the dark matter halo of the lens."""
+    """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, axis_ratio, phi, kappa_s, inner_slope, scale_radius, centre=(0, 0)):
-        """ Setup a NFW dark matter profile.
+        """ Setup a NFW dark matter profiles.
 
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         kappa_s : float
             The overall normalization of the dark matter halo
         inner_slope : float
@@ -727,7 +727,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
         return (eta / u) * (self.deflection_func_sph(eta)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
@@ -755,7 +755,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
 
         return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -781,15 +781,15 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
 
 
 class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
-    """The spherical NFW profile, used to fit the dark matter halo of the lens."""
+    """The spherical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, kappa_s, inner_slope, scale_radius, centre=(0, 0)):
-        """ Setup a NFW dark matter profile.
+        """ Setup a NFW dark matter profiles.
 
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         kappa_s : float
             The overall normalization of the dark matter halo
         inner_slope : float
@@ -800,7 +800,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
 
         super(SphericalGeneralizedNFWMassProfile, self).__init__(1.0, 0.0, kappa_s, inner_slope, scale_radius, centre)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -821,28 +821,28 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
 
 
 class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
-    """The Sersic light profile, used to fit and subtract the lens galaxy's light and model its mass."""
+    """The Sersic light profiles, used to fit and subtract the lens galaxy's light and model its mass."""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
         """
-        Setup a Sersic mass and light profile.
+        Setup a Sersic mass and light profiles.
 
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile
+            The coordinates of the centre of the profiles
         axis_ratio : float
-            Ratio of profile ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profile ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
-            Overall flux intensity normalisation in the light profile (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The radius containing half the light of this model
         sersic_index : Int
-            The concentration of the light profile
+            The concentration of the light profiles
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profile
+            The mass-to-light ratio of the light profiles
         """
         super(SersicMassProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, sersic_index, centre)
         super(MassProfile, self).__init__()
@@ -852,7 +852,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
     def from_sersic_light_profile(cls, sersic_light_profile, mass_to_light_ratio):
         return SersicMassProfile.from_profile(sersic_light_profile, mass_to_light_ratio=mass_to_light_ratio)
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
         """Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
 
@@ -875,7 +875,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
         eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
         return self.intensity_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @profile.transform_coordinates
+    @geometry_profile.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
