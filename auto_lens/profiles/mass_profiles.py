@@ -1,5 +1,5 @@
-from profiles import geometry_profile
-from profiles import light_profile
+from profiles import geometry_profiles
+from profiles import light_profiles
 import math
 from scipy.integrate import quad
 from scipy import special
@@ -81,7 +81,7 @@ class CombinedMassProfile(list, MassProfile):
         return sum_tuple
 
 
-class EllipticalMassProfile(geometry_profile.EllipticalProfile, MassProfile):
+class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     """Generic class for an elliptical light profiles"""
 
     def __init__(self, axis_ratio, phi, centre=(0, 0)):
@@ -182,7 +182,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
     def surface_density_at_radius(self, radius):
         return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
         """
         Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
@@ -205,7 +205,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope) / \
                ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -227,7 +227,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
         eta = self.eta_u(u, coordinates)
         return self.surface_density_at_radius(eta) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -274,7 +274,7 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
 
         super(SphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, centre)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -315,7 +315,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         super(EllipticalIsothermalMassProfile, self).__init__(axis_ratio, phi, einstein_radius, 2.0, centre)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -359,7 +359,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
 
         super(SphericalIsothermalMassProfile, self).__init__(1.0, 0.0, einstein_radius, centre)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the gravitational potential at a given set of image plane coordinates
@@ -376,7 +376,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
         eta = self.coordinates_to_elliptical_radius(coordinates)
         return 2.0 * self.einstein_radius_rescaled * eta
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -447,7 +447,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         """
         super(CoredSphericalPowerLawMassProfile, self).__init__(1.0, 0.0, einstein_radius, slope, core_radius, centre)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -551,7 +551,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
     def surface_density_at_radius(self, radius):
         return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
         """
         Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
@@ -575,7 +575,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         return (self.axis_ratio / 2.0) * (eta / u) * ((math.log(eta / 2.0) + self.coord_func(eta)) / eta) / (
             (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
@@ -596,7 +596,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
         return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -646,7 +646,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
@@ -666,7 +666,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
     def deflection_func_sph(self, eta):
         return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -727,7 +727,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
         return (eta / u) * (self.deflection_func_sph(eta)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image plane coordinates.
@@ -755,7 +755,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
 
         return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -800,7 +800,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
 
         super(SphericalGeneralizedNFWMassProfile, self).__init__(1.0, 0.0, kappa_s, inner_slope, scale_radius, centre)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates
@@ -820,7 +820,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
-class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
+class SersicMassProfile(light_profiles.SersicLightProfile, MassProfile):
     """The Sersic light profiles, used to fit and subtract the lens galaxy's light and model its mass."""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
@@ -852,7 +852,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
     def from_sersic_light_profile(cls, sersic_light_profile, mass_to_light_ratio):
         return SersicMassProfile.from_profile(sersic_light_profile, mass_to_light_ratio=mass_to_light_ratio)
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
         """Calculate the projected surface density in dimensionless units at a given set of image plane coordinates.
 
@@ -875,7 +875,7 @@ class SersicMassProfile(light_profile.SersicLightProfile, MassProfile):
         eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
         return self.intensity_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
         """
         Calculate the deflection angle at a given set of image plane coordinates

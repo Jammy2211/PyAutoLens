@@ -1,12 +1,12 @@
 import galaxy
-import mass_profile, light_profile
+from profiles import mass_profiles, light_profiles
 import pytest
 
 
 @pytest.fixture(name='sersic')
 def circular_sersic():
-    return light_profile.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                            sersic_index=4.0)
+    return light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                             sersic_index=4.0)
 
 
 class TestProfiles(object):
@@ -16,8 +16,8 @@ class TestProfiles(object):
         assert intensity == pytest.approx(0.351797, 1e-3)
 
     def test_surface_density_at_coordinates(self, sersic):
-        power_law = mass_profile.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
-                                                               einstein_radius=1.0, slope=2.3)
+        power_law = mass_profiles.EllipticalPowerLawMassProfile(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
+                                                                einstein_radius=1.0, slope=2.3)
 
         g = galaxy.Galaxy(1., sersic, power_law)
 

@@ -1,4 +1,4 @@
-from profiles import geometry_profile
+from profiles import geometry_profiles
 import math
 from scipy.integrate import quad
 
@@ -60,7 +60,7 @@ class LightProfile(object):
         # pyplot.imshow(array)
         # pyplot.clim(vmax=np.mean(array) + np.std(array))
         # pyplot.show()
-        geometry_profile.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
+        geometry_profiles.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
 
 class CombinedLightProfile(list, LightProfile):
@@ -83,7 +83,7 @@ class CombinedLightProfile(list, LightProfile):
         """
         return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self))
 
-class EllipticalLightProfile(geometry_profile.EllipticalProfile, LightProfile):
+class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
     def __init__(self, axis_ratio, phi, centre=(0, 0)):
@@ -211,7 +211,7 @@ class SersicLightProfile(EllipticalLightProfile):
         return self.intensity * math.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
-    @geometry_profile.transform_coordinates
+    @geometry_profiles.transform_coordinates
     def intensity_at_coordinates(self, coordinates):
         """
         Method for obtaining intensity at given coordinates.

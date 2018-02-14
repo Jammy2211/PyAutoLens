@@ -1,11 +1,11 @@
 import math
 import numpy as np
-import profile
+from profiles import geometry_profiles
 import sklearn.cluster
 import scipy.spatial
 
 
-class SourcePlaneGeometry(profile.Profile):
+class SourcePlaneGeometry(geometry_profiles.Profile):
     """Stores the source-plane geometry, to ensure different components of the source-plane share the
     same geometry"""
 
