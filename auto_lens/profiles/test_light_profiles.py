@@ -6,6 +6,7 @@ from profiles import geometry_profiles
 import math
 import numpy as np
 
+# TODO : Combined light profile for intensity integral
 
 @pytest.fixture(name='circular')
 def circular_sersic():
