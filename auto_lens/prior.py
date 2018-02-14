@@ -1,7 +1,7 @@
 import math
 from scipy.special import erfinv
 import inspect
-import configparser
+from ConfigParser import ConfigParser
 import os
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -69,7 +69,7 @@ class ClassMap(object):
 
         self.config = (config if config is not None else Config("{}/config".format(path)))
 
-        for name, cls in classes.items():
+        for name, cls in classes.iteritems():
             self.add_class(name, cls)
 
     def make_prior(self, attribute_name, cls):
@@ -116,7 +116,7 @@ class ClassMap(object):
 
     @property
     def prior_models(self):
-        return list(filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.items()))
+        return filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.iteritems())
 
     @property
     def prior_set(self):
@@ -126,10 +126,11 @@ class ClassMap(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {prior[1]: prior for _, prior_model in self.prior_models for prior in prior_model.priors}.values()
+        return {prior[1]: prior for _, prior_model in self.prior_models for prior in
+                prior_model.priors}.values()
 
     @property
-    def priors(self):
+    def priors_ordered_by_id(self):
         """
         Returns
         -------
@@ -137,6 +138,30 @@ class ClassMap(object):
             An ordered list of unique priors associated with this collection
         """
         return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
+
+    @property
+    def class_priors_dict(self):
+        """
+        Returns
+        -------
+        class_priors_dict: {String: [Prior]}
+            A dictionary mapping the names of reconstructable class instances to lists of associated priors
+        """
+        return {name: prior_model.priors for name, prior_model in self.prior_models}
+
+    def value_vector_for_hypercube_vector(self, vector):
+        """
+        Parameters
+        ----------
+        vector: [float]
+            A unit hypercube vector
+
+        Returns
+        -------
+        values: [float]
+            A vector with values output by priors
+        """
+        return map(lambda p, u: p[1].value_for(u), self.priors_ordered_by_id, vector)
 
     def reconstruction_for_vector(self, vector):
         """
@@ -154,7 +179,8 @@ class ClassMap(object):
             An object containing reconstructed model instances
 
         """
-        arguments = dict(map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors, vector))
+        arguments = dict(
+            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, vector))
 
         reconstruction = Reconstruction()
 
@@ -257,15 +283,16 @@ class PriorModel(object):
 
     @property
     def tuple_priors(self):
-        return list(filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.items()))
+        return filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.iteritems())
 
     @property
     def direct_priors(self):
-        return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
+        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
 
     @property
     def priors(self):
-        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in tuple_prior[1].priors]
+        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in
+                                     tuple_prior[1].priors]
 
     def instance_for_arguments(self, arguments):
         """
@@ -289,7 +316,7 @@ class PriorModel(object):
 class TuplePrior(object):
     @property
     def priors(self):
-        return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
+        return filter(lambda t: isinstance(t[1], Prior), self.__dict__.iteritems())
 
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
@@ -306,15 +333,15 @@ class PriorException(Exception):
 class Config(object):
     """Parses prior config"""
 
-    def __init__(self, path):
+    def __init__(self, config_folder_path):
         """
         Parameters
         ----------
-        path: String
+        config_folder_path: String
             The path to the prior config folder
         """
-        self.path = path
-        self.parser = configparser.ConfigParser()
+        self.path = config_folder_path
+        self.parser = ConfigParser()
 
     def read(self, module_name):
         """
@@ -377,7 +404,7 @@ class Config(object):
         """
         self.read(module_name)
         arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
-        return [arr[0]] + list(map(float, arr[1:]))
+        return [arr[0]] + map(float, arr[1:])
 
     def has(self, module_name, class_name, attribute_name):
         """
