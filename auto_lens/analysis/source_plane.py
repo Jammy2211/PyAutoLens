@@ -58,7 +58,7 @@ class SourcePlane(SourcePlaneGeometry):
         self.relocate_coordinates_outside_border(self.border_from_list_and_polynomial_degree(border_list, polynomial_degree))
 
     def relocate_coordinates_outside_border(self, border):
-        """ Move all source-plane coordinates outside of its source-plane mask_border_pixels to the edge of its mask_border_pixels"""
+        """ Move all source-plane coordinates outside of its source-plane setup_border_pixels to the edge of its setup_border_pixels"""
         self.coordinates = list(map(lambda r: border.relocated_coordinate(r), self.coordinates))
 
 
@@ -90,7 +90,7 @@ class SourcePlaneSparse(SourcePlane):
 
 
 class SourcePlaneBorder(SourcePlaneGeometry):
-    """Represents the source-plane coordinates on the source-plane mask_border_pixels. Each coordinate is stored alongside its
+    """Represents the source-plane coordinates on the source-plane setup_border_pixels. Each coordinate is stored alongside its
     distance from the source-plane centre (radius) and angle from the x-axis (theta)"""
 
     def __init__(self, coordinates, polynomial_degree, centre=(0.0, 0.0)):
@@ -99,7 +99,7 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         Parameters
         ----------
         coordinates : [(float, float)]
-            The x and y coordinates of the source-plane mask_border_pixels.
+            The x and y coordinates of the source-plane setup_border_pixels.
         centre : (float, float)
             The centre of the source-plane.
         """
@@ -112,14 +112,14 @@ class SourcePlaneBorder(SourcePlaneGeometry):
         self.polynomial = np.polyfit(self.thetas, self.radii, polynomial_degree)
 
     def border_radius_at_theta(self, theta):
-        """For a an angle theta from the x-axis, return the mask_border_pixels radius via the polynomial fit"""
+        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
         return np.polyval(self.polynomial, theta)
 
     def move_factor(self, coordinate):
         """Get the move factor of a coordinate.
-         A move-factor defines how far a coordinate outside the source-plane mask_border_pixels must be moved in order to lie on it.
-         Coordinates already within the mask_border_pixels return a move-factor of 1.0, signifying they are already within the \
-         mask_border_pixels.
+         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order to lie on it.
+         Coordinates already within the setup_border_pixels return a move-factor of 1.0, signifying they are already within the \
+         setup_border_pixels.
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class SourcePlaneBorder(SourcePlaneGeometry):
             return 1.0
 
     def relocated_coordinate(self, coordinate):
-        """Get a coordinate relocated to the source-plane mask_border_pixels if initially outside of it.
+        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
 
         Parameters
         ----------
