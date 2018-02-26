@@ -383,6 +383,207 @@ class TestLuminosityIntegral(object):
 
             assert luminosity_tot == pytest.approx(intensity_integral, 0.01)
 
+    class TestComblinedLightProfile(object):
+
+        def test__one_integral_same_as_individual_integral_circle(self):
+
+            sersic = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            integral_radius = 5.5
+
+            intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(light_profiles.SersicLightProfile(axis_ratio=1.0,
+                                                                   phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                                   sersic_index=1.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_circle(radius=integral_radius)
+
+            assert intensity_integral == combined_intensity_integral
+
+        def test__two_integrals_sum_to_combined_profile_circle(self):
+
+            sersic_1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            sersic_2 = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            integral_radius = 5.5
+
+            intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius)
+            intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(
+                              light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                effective_radius=2.0, sersic_index=1.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0,
+                                                                effective_radius=3.0, sersic_index=2.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_circle(radius=integral_radius)
+
+            assert intensity_integral == combined_intensity_integral
+
+        def test__three_integrals_sum_to_combined_profile_circle(self):
+
+            sersic_1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            sersic_2 = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            sersic_3 = light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            integral_radius = 5.5
+
+            intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius)
+            intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
+            intensity_integral += sersic_3.luminosity_within_circle(radius=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(
+                              light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                effective_radius=2.0, sersic_index=1.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0,
+                                                                effective_radius=3.0, sersic_index=2.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0,
+                                                                effective_radius=3.0, sersic_index=2.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_circle(radius=integral_radius)
+
+            assert intensity_integral == combined_intensity_integral
+
+        def test__three_integrals_individual_profiles_identical_circle(self):
+
+            sersic_1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            sersic_2 = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            sersic_3 = light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            integral_radius = 5.5
+
+            intensity_integral_1 = sersic_1.luminosity_within_circle(radius=integral_radius)
+            intensity_integral_2 = sersic_2.luminosity_within_circle(radius=integral_radius)
+            intensity_integral_3 = sersic_3.luminosity_within_circle(radius=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(
+                              light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                effective_radius=2.0, sersic_index=1.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0,
+                                                                effective_radius=3.0, sersic_index=2.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0,
+                                                                effective_radius=3.0, sersic_index=2.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_circle_individual(radius=integral_radius)
+
+            assert intensity_integral_1 == combined_intensity_integral[0]
+            assert intensity_integral_2 == combined_intensity_integral[1]
+            assert intensity_integral_3 == combined_intensity_integral[2]
+
+        def test__one_integral_same_as_individual_integral_ellipse(self):
+
+            sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            integral_radius = 0.5
+
+            intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(light_profiles.SersicLightProfile(axis_ratio=0.5,
+                                                                   phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                                   sersic_index=1.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_ellipse(major_axis=integral_radius)
+
+            assert intensity_integral == combined_intensity_integral
+
+        def test__two_integrals_sum_to_combined_profile_ellipse(self):
+            sersic_1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                         sersic_index=1.0)
+
+            sersic_2 = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0, effective_radius=3.0,
+                                                         sersic_index=2.0)
+
+            integral_radius = 5.5
+
+            intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(
+                light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                  effective_radius=2.0, sersic_index=1.0),
+                light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0,
+                                                  effective_radius=3.0, sersic_index=2.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_ellipse(major_axis=integral_radius)
+
+            assert intensity_integral == combined_intensity_integral
+
+        def test__three_integrals_sum_to_combined_profile_ellipse(self):
+
+            sersic_1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            sersic_2 = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            sersic_3 = light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            integral_radius = 5.5
+
+            intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral += sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(
+                              light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                effective_radius=2.0, sersic_index=1.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0,
+                                                                effective_radius=3.0, sersic_index=2.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0,
+                                                                effective_radius=3.0, sersic_index=2.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_ellipse(major_axis=integral_radius)
+
+            assert intensity_integral == combined_intensity_integral
+
+        def test__three_integrals_individual_profiles_identical_ellipsse(self):
+
+            sersic_1 = light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+                                                       sersic_index=1.0)
+
+            sersic_2 = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            sersic_3 = light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0, effective_radius=3.0,
+                                                       sersic_index=2.0)
+
+            integral_radius = 5.5
+
+            intensity_integral_1 = sersic_1.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral_2 = sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral_3 = sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
+
+            sersic_combined = light_profiles.CombinedLightProfile(
+                              light_profiles.SersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                effective_radius=2.0, sersic_index=1.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=7.0,
+                                                                effective_radius=3.0, sersic_index=2.0),
+                              light_profiles.SersicLightProfile(axis_ratio=0.8, phi=50.0, intensity=2.0,
+                                                                effective_radius=3.0, sersic_index=2.0))
+
+            combined_intensity_integral = sersic_combined.luminosity_within_ellipse_individual(major_axis=integral_radius)
+
+            assert intensity_integral_1 == combined_intensity_integral[0]
+            assert intensity_integral_2 == combined_intensity_integral[1]
+            assert intensity_integral_3 == combined_intensity_integral[2]
+
 
 class TestIntensityValues(object):
     def test__intensity_at_radius__correct_value(self, circular):
