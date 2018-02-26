@@ -63,96 +63,6 @@ class LightProfile(object):
         geometry_profiles.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
 
-class CombinedLightProfile(list, LightProfile):
-
-    """A combined light profiles comprising of one or more light profiles"""
-
-    def __init__(self, *light_profiles):
-        super(CombinedLightProfile, self).__init__(light_profiles)
-
-    def intensity_at_coordinates(self, coordinates):
-        """
-        Method for obtaining the summed light profiles' intensities at a given set of coordinates
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The coordinates in image space
-        Returns
-        -------
-        intensity : float
-            The summed values of intensity at the given coordinates
-        """
-        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self))
-
-    def luminosity_within_circle(self, radius):
-        """
-        Compute the combined light profiles's total luminosity within a circle of specified radius. This is performed
-        via integration of each light profile in the combined model, centred on each light model's centre.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the luminosity within.
-
-        Returns
-        -------
-        luminosity : float
-            The total combined luminosity within the specified circle.
-        """
-        return sum(map(lambda p : p.luminosity_within_circle(radius), self))
-
-    def luminosity_within_circle_individual(self, radius):
-        """
-        Compute the individual light profile total luminosity within a circle of specified radius of each light \
-        profile in the combined light profile. This is performed via integration of each light profile in the
-        combined model, centred on each light model's centre.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the luminosity within.
-
-        Returns
-        -------
-        luminosity : float
-            The total combined luminosity within the specified circle.
-        """
-        return list(map(lambda p : p.luminosity_within_circle(radius), self))
-
-    def luminosity_within_ellipse(self, major_axis):
-        """
-        Compute the combined light profiles's total luminosity within an ellipse of specified major axis. This is \
-        performed via integration of each light profile and is centred, oriented and aligned with each light model's \
-        individual geometry.
-
-        Parameters
-        ----------
-        major_axis: float
-            The major-axis of the ellipse to compute the luminosity within.
-        Returns
-        -------
-        intensity : float
-            The total luminosity within the specified ellipse.
-        """
-        return sum(map(lambda p : p.luminosity_within_ellipse(major_axis), self))
-
-    def luminosity_within_ellipse_individual(self, major_axis):
-        """
-        Compute the individual light profiles total luminosity within an ellipse of specified major axis of each light \
-        profile in the combined light profile. This is performed via integration of each light profile and is centred,
-        oriented and aligned with each light model's individual geometry.
-
-        Parameters
-        ----------
-        major_axis: float
-            The major-axis of the ellipse to compute the luminosity within.
-        Returns
-        -------
-        intensity : float
-            The total luminosity within the specified ellipse.
-        """
-        return list(map(lambda p : p.luminosity_within_ellipse(major_axis), self))
-
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
@@ -322,7 +232,7 @@ class ExponentialLightProfile(SersicLightProfile):
         effective_radius : float
             The circular radius containing half the light of this model
         """
-        super(ExponentialLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 1, centre)
+        super(ExponentialLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 1.0, centre)
 
 
 class DevVaucouleursLightProfile(SersicLightProfile):
@@ -347,7 +257,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         effective_radius : float
             The circular radius containing half the light of this model
         """
-        super(DevVaucouleursLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 4, centre)
+        super(DevVaucouleursLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 4.0, centre)
 
 
 class CoreSersicLightProfile(SersicLightProfile):
