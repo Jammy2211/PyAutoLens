@@ -1101,190 +1101,208 @@ class TestVoronoi:
         assert set(voronoi.neighbors[8]) == set([5, 7])
 
 
-# class TestMatchCoordinatesFromClusters:
-#
-#     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
-#         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-#         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
-#
-#         sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-#             sub_coordinates,
-#             source_pixels)
-#
-#         assert sub_image_pixel_to_source_pixel_index[0] == 0
-#         assert sub_image_pixel_to_source_pixel_index[1] == 1
-#         assert sub_image_pixel_to_source_pixel_index[2] == 2
-#         assert sub_image_pixel_to_source_pixel_index[3] == 3
-#
-#     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
-#         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-#
-#         sub_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
-#                                     [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
-#
-#         sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-#             sub_coordinates,
-#             source_pixels)
-#
-#         assert sub_image_pixel_to_source_pixel_index[0] == 0
-#         assert sub_image_pixel_to_source_pixel_index[1] == 1
-#         assert sub_image_pixel_to_source_pixel_index[2] == 2
-#         assert sub_image_pixel_to_source_pixel_index[3] == 3
-#         assert sub_image_pixel_to_source_pixel_index[4] == 3
-#         assert sub_image_pixel_to_source_pixel_index[5] == 2
-#         assert sub_image_pixel_to_source_pixel_index[6] == 1
-#         assert sub_image_pixel_to_source_pixel_index[7] == 0
-#
-#     def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
-#         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
-#
-#         sub_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49], [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
-#
-#         sub_image_pixel_to_source_pixel_index = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-#             sub_coordinates,
-#             source_pixels)
-#
-#         assert sub_image_pixel_to_source_pixel_index[0] == 4
-#         assert sub_image_pixel_to_source_pixel_index[1] == 4
-#         assert sub_image_pixel_to_source_pixel_index[2] == 4
-#         assert sub_image_pixel_to_source_pixel_index[3] == 0
-#         assert sub_image_pixel_to_source_pixel_index[4] == 0
-#         assert sub_image_pixel_to_source_pixel_index[5] == 5
-#
-#     def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
-#         sub_coordinate_to_sparse_coordinate_index = [0, 3, 2, 5, 1, 4]
-#
-#         assert sp.find_nearest_sparse_coordinate(0, sub_coordinate_to_sparse_coordinate_index) == 0
-#         assert sp.find_nearest_sparse_coordinate(1, sub_coordinate_to_sparse_coordinate_index) == 3
-#         assert sp.find_nearest_sparse_coordinate(2, sub_coordinate_to_sparse_coordinate_index) == 2
-#         assert sp.find_nearest_sparse_coordinate(3, sub_coordinate_to_sparse_coordinate_index) == 5
-#         assert sp.find_nearest_sparse_coordinate(4, sub_coordinate_to_sparse_coordinate_index) == 1
-#         assert sp.find_nearest_sparse_coordinate(5, sub_coordinate_to_sparse_coordinate_index) == 4
-#
-#     def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
-#         source_pixel_to_sparse_source_pixel_index = [0, 3, 2, 5, 1, 4]
-#
-#         assert sp.find_nearest_sparse_source_pixel(0, source_pixel_to_sparse_source_pixel_index) == 0
-#         assert sp.find_nearest_sparse_source_pixel(1, source_pixel_to_sparse_source_pixel_index) == 3
-#         assert sp.find_nearest_sparse_source_pixel(2, source_pixel_to_sparse_source_pixel_index) == 2
-#         assert sp.find_nearest_sparse_source_pixel(3, source_pixel_to_sparse_source_pixel_index) == 5
-#         assert sp.find_nearest_sparse_source_pixel(4, source_pixel_to_sparse_source_pixel_index) == 1
-#         assert sp.find_nearest_sparse_source_pixel(5, source_pixel_to_sparse_source_pixel_index) == 4
-#
-#     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
-#         source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
-#
-#         sub_coordinate = [1.5, 0.0]
-#
-#         nearest_sparse_source_pixel_index = 0
-#
-#         separation0 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-#                                                                                            sub_coordinate,
-#                                                                                            nearest_sparse_source_pixel_index)
-#
-#         nearest_sparse_source_pixel_index = 1
-#
-#         separation1 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-#                                                                                            sub_coordinate,
-#                                                                                            nearest_sparse_source_pixel_index)
-#
-#         nearest_sparse_source_pixel_index = 2
-#
-#         separation2 = sp.find_separation_of_sub_coordinate_and_nearest_sparse_source_pixel(source_pixel_centers,
-#                                                                                            sub_coordinate,
-#                                                                                            nearest_sparse_source_pixel_index)
-#
-#         assert separation0 == 1.5 ** 2
-#         assert separation1 == 0.5 ** 2
-#         assert separation2 == 0.5 ** 2
-#
-#     def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
-#         sub_coordinate = np.array([0.0, 0.0])
-#         source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
-#
-#         # Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
-#
-#         source_pixel_neighbors = [1, 2, 3, 4]
-#
-#         index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
-#                                                                                     source_pixel_centers,
-#                                                                                     source_pixel_neighbors)
-#
-#         assert separation == (-0.5) ** 2
-#         assert index == 4
-#
-#     def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
-#         sub_coordinate = np.array([0.0, 0.0])
-#         source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
-#
-#         # Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
-#         # sense geometrically, but tests the code functionality).
-#
-#         source_pixel_neighbors = [1, 2, 3, 4]
-#
-#         index, separation = sp.find_separation_and_nearest_neighboring_source_pixel(sub_coordinate,
-#                                                                                     source_pixel_centers,
-#                                                                                     source_pixel_neighbors)
-#
-#         assert separation == (-0.5) ** 2
-#         assert index == 4
-#
-#     def test__sub_coordinates_to_source_pixels_via_sparse_pairs__source_pixels_in_x_shape__correct_pairs(self):
-#         source_pixels = np.array([[-1.0, 1.0], [1.0, 1.0],
-#                                   [0.0, 0.0],
-#                                   [-1.0, -1.0], [1.0, -1.0]])
-#
-#         # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
-#
-#         sub_coordinates = np.array([[-1.0, 1.0], [0.0, 0.2], [1.0, 1.0],
-#                                     [-1.0, 0.2], [0.0, 0.0], [0.2, 0.0],
-#                                     [-1.0, -1.0], [0.0, -0.2], [1.0, -1.0]])
-#
-#         voronoi = sp.Voronoi(source_pixels)
-#
-#         sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-#             sub_coordinates,
-#             source_pixels)
-#
-#         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
-#         sparse_coordinates = np.array([[0.1, 1.1], [0.0, 0.0], [0.1, -1.1]])
-#
-#         coordinate_to_sparse_coordinate_index = np.array([0, 1, 0, 1, 1, 1, 2, 1, 2])
-#         sparse_coordinate_to_source_pixel_index = np.array([1, 2, 4])
-#
-#         sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
-#             sub_coordinates,
-#             source_pixels, voronoi.neighbors,
-#             coordinate_to_sparse_coordinate_index,
-#             sparse_coordinate_to_source_pixel_index)
-#
-#         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
-#
-#     def test__sub_coordinates_to_source_pixels_via_sparse_pairs__grid_of_source_pixels__correct_pairs(self):
-#         source_pixels = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-#                                   [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
-#                                   [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
-#
-#         sub_coordinates = np.array([[0.0, 0.0], [1.0, 0.0], [2.0, 0.0],
-#                                     [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
-#                                     [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
-#
-#         voronoi = sp.Voronoi(source_pixels)
-#
-#         sub_image_pixel_to_source_pixel_index_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-#             sub_coordinates,
-#             source_pixels)
-#
-#         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
-#         sparse_coordinates = np.array([[0.0, 1.0], [1.0, 1.0], [2.0, 1.0]])
-#
-#         sub_coordinate_to_sparse_coordinate_index = np.array([0, 1, 2, 0, 1, 2, 0, 1, 2])
-#         sparse_coordinate_to_source_pixel_index = np.array([3, 4, 5])
-#
-#         sub_image_pixel_to_source_pixel_index_sparse_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
-#             sub_coordinates,
-#             source_pixels, voronoi.neighbors,
-#             sub_coordinate_to_sparse_coordinate_index,
-#             sparse_coordinate_to_source_pixel_index)
-#
-#         assert sub_image_pixel_to_source_pixel_index_nearest_neighbour == sub_image_pixel_to_source_pixel_index_sparse_pairs
+class TestMatchCoordinatesFromClusters:
+
+    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
+
+        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        sub_coordinates = np.array([[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]]])
+        image_total = 1
+        sub_total = 4
+
+        image_sub_to_source = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, image_total, sub_total, source_pixels)
+
+        assert image_sub_to_source[0,0] == 0
+        assert image_sub_to_source[0,1] == 1
+        assert image_sub_to_source[0,2] == 2
+        assert image_sub_to_source[0,3] == 3
+
+    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
+
+        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        sub_coordinates = np.array([[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
+                                    [[0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]]])
+        image_total = 2
+        sub_total = 8
+
+        image_sub_to_source = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, image_total, sub_total, source_pixels)
+
+        assert image_sub_to_source[0,0] == 0
+        assert image_sub_to_source[0,1] == 1
+        assert image_sub_to_source[0,2] == 2
+        assert image_sub_to_source[0,3] == 3
+        assert image_sub_to_source[1,0] == 3
+        assert image_sub_to_source[1,1] == 2
+        assert image_sub_to_source[1,2] == 1
+        assert image_sub_to_source[1,3] == 0
+
+    def test__sub_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
+
+        source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
+        sub_coordinates = np.array([[[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49]],
+                                    [[0.51, 0.51], [1.01, 1.01], [1.51, 1.51]]])
+        image_total = 2
+        sub_total = 6
+
+        image_sub_to_source = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, sub_total, source_pixels)
+
+        assert image_sub_to_source[0,0] == 4
+        assert image_sub_to_source[0,1] == 4
+        assert image_sub_to_source[0,2] == 4
+        assert image_sub_to_source[1,0] == 0
+        assert image_sub_to_source[1,1] == 0
+        assert image_sub_to_source[1,2] == 5
+
+    def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
+        
+        image_to_sparse = [0, 3, 2, 5, 1, 4]
+
+        assert sp.find_nearest_sparse(0, image_to_sparse) == 0
+        assert sp.find_nearest_sparse(1, image_to_sparse) == 3
+        assert sp.find_nearest_sparse(2, image_to_sparse) == 2
+        assert sp.find_nearest_sparse(3, image_to_sparse) == 5
+        assert sp.find_nearest_sparse(4, image_to_sparse) == 1
+        assert sp.find_nearest_sparse(5, image_to_sparse) == 4
+
+    def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
+        
+        source_to_sparse = [0, 3, 2, 5, 1, 4]
+
+        assert sp.find_nearest_sparse_source(0, source_to_sparse) == 0
+        assert sp.find_nearest_sparse_source(1, source_to_sparse) == 3
+        assert sp.find_nearest_sparse_source(2, source_to_sparse) == 2
+        assert sp.find_nearest_sparse_source(3, source_to_sparse) == 5
+        assert sp.find_nearest_sparse_source(4, source_to_sparse) == 1
+        assert sp.find_nearest_sparse_source(5, source_to_sparse) == 4
+
+    def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
+        source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
+
+        sub_coordinate = [1.5, 0.0]
+
+        nearest_sparse_source_pixel_index = 0
+
+        separation0 = sp.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
+                                                                                  sub_coordinate,
+                                                                                  nearest_sparse_source_pixel_index)
+
+        nearest_sparse_source_pixel_index = 1
+
+        separation1 = sp.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
+                                                                                  sub_coordinate,
+                                                                                  nearest_sparse_source_pixel_index)
+
+        nearest_sparse_source_pixel_index = 2
+
+        separation2 = sp.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
+                                                                                  sub_coordinate,
+                                                                                  nearest_sparse_source_pixel_index)
+
+        assert separation0 == 1.5 ** 2
+        assert separation1 == 0.5 ** 2
+        assert separation2 == 0.5 ** 2
+
+    def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
+        sub_coordinate = np.array([0.0, 0.0])
+        source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
+
+        # Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
+
+        source_pixel_neighbors = [1, 2, 3, 4]
+
+        index, separation = sp.find_separation_and_nearest_neighboring_source(sub_coordinate,
+                                                                              source_pixel_centers,
+                                                                              source_pixel_neighbors)
+
+        assert separation == (-0.5) ** 2
+        assert index == 4
+
+    def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
+        sub_coordinate = np.array([0.0, 0.0])
+        source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
+
+        # Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
+        # sense geometrically, but tests the code functionality).
+
+        source_pixel_neighbors = [1, 2, 3, 4]
+
+        index, separation = sp.find_separation_and_nearest_neighboring_source(sub_coordinate,
+                                                                              source_pixel_centers,
+                                                                              source_pixel_neighbors)
+
+        assert separation == (-0.5) ** 2
+        assert index == 4
+
+    def test__sub_coordinates_to_source_pixels_via_sparse_pairs__source_pixels_in_x_shape__correct_pairs(self):
+
+        source_centers = np.array([[-1.0, 1.0], [1.0, 1.0],
+                                         [0.0, 0.0],
+                                  [-1.0, -1.0], [1.0, -1.0]])
+
+        # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
+
+        sub_coordinates = np.array([[[-1.1, 1.1], [-0.9, 1.1], [-1.1, 0.9], [-0.9, 0.9]],
+                                    [[-0.1, 0.1], [0.1, 0.1], [-0.1, -0.1], [0.1, -0.1]],
+                                    [ [0.9, 1.1], [1.1, 1.1], [0.9, 0.9], [1.1, 0.9]]])
+
+        image_total = 3
+        sub_total = 12
+        
+        image_coordinates = np.array([[-1.0, 1.0], 
+                                      [0.0, 0.0],
+                                      [1.0, 1.0]])
+    
+        voronoi = sp.Voronoi(source_centers)
+
+        image_sub_to_source_via_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, image_total, sub_total, source_centers)
+
+        # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
+        sparse_coordinates = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
+
+        image_to_sparse = np.array([0, 1, 2])
+
+        sparse_to_source = np.array([1, 2, 4])
+
+        image_sub_to_source_via_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+            sub_coordinates, image_total, sub_total, source_centers, voronoi.neighbors, image_to_sparse, sparse_to_source)
+
+        assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
+
+    def test__sub_coordinates_to_source_pixels_via_sparse_pairs__grid_of_source_pixels__correct_pairs(self):
+
+        source_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
+                                  [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+
+        sub_coordinates = np.array([[[0.05, 0.15], [0.15, 0.15], [0.05, 0.05], [0.15, 0.05]],
+                                    [[1.05, 0.15], [1.15, 0.15], [1.05, 0.05], [1.15, 0.05]],
+                                    [[2.05, 0.15], [2.15, 0.15], [2.05, 0.05], [2.15, 0.05]],
+                                    [[0.05, 1.15], [0.15, 1.15], [0.05, 1.05], [0.15, 1.05]],
+                                    [[1.05, 1.15], [1.15, 1.15], [1.05, 1.05], [1.15, 1.05]],
+                                    [[2.05, 1.15], [2.15, 1.15], [2.05, 1.05], [2.15, 1.05]]])
+
+        image_total = 6
+        sub_total = 24
+
+        image_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
+                                      [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+
+        voronoi = sp.Voronoi(source_centers)
+
+        image_sub_to_source_via_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, image_total, sub_total, source_centers)
+
+        # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
+        sparse_coordinates = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
+
+        image_to_sparse = np.array([0, 1, 2, 1, 1, 2])
+        sparse_to_source = np.array([3, 4, 5])
+
+        image_sub_to_source_via_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+            sub_coordinates, image_total, sub_total, source_centers, voronoi.neighbors,
+            image_to_sparse, sparse_to_source)
+
+        assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
