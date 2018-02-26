@@ -15,7 +15,6 @@ dark_matter_halo = mass_profiles.SphericalNFWMassProfile(kappa_s=0.0388839, scal
 slacs0252_0039=galaxy.Galaxy(redshift=0.2803, mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
 
 slacs0252_0039.plot_density_as_function_of_radius(maximum_radius=5.0, number_bins=300,
-                                                  labels=['Sersic Bulge', 'Exponential Stellar Halo',
-                                                                            'Dark Matter Halo'])
+                                                  labels=['Sersic Bulge', 'Exponential Stellar Halo', 'Dark Matter Halo'])
 
 #print(slacs0252_0039.dimensionless_mass_within_circle_individual(radius=4.0))

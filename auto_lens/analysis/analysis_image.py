@@ -117,8 +117,6 @@ def setup_blurring_region(mask, blurring_region_size):
 
     return blurring_region
 
-# def blurring_region_coordinates_2d(setup_blurring_region)
-
 def setup_border_pixels(mask):
     """Compute the border image pixels of a mask, where the border pixels are defined as all pixels which are on the
      edge of the mask and neighboring a pixel with a  *False* value.
@@ -153,8 +151,8 @@ def setup_border_pixels(mask):
 
     return border_pixels
 
-def setup_sparse_clustering_pixels(mask, sparse_grid_size):
-    """Compute the sparse cluster image pixels of a mask, where the sparse cluster image pixels are the sub-set of \
+def setup_sparse_pixels(mask, sparse_grid_size):
+    """Compute the sparse cluster image pixels in a mask, where the sparse cluster image pixels are the sub-set of \
     image-pixels used within the mask to perform KMeans clustering (this is used purely for speeding up the \
     KMeans clustering algorithim).
 
@@ -171,44 +169,118 @@ def setup_sparse_clustering_pixels(mask, sparse_grid_size):
 
     Returns
     -------
-    setup_sparse_clustering_pixels : ndarray
-        The sparse clustering image pixels, where each entry gives the 1D index of the image pixel in the mask.
+    sparse_to_image : ndarray
+        The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
+        of the image pixel in the mask.
+    image_to_sparse : ndarray
+        The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D \
+        index of the sparse pixel in sparse_pixel arrays.
     """
 
+    sparse_mask = setup_sparse_mask(mask, sparse_grid_size)
+    sparse_to_image = setup_sparse_to_image(mask, sparse_mask)
+    image_to_sparse = setup_image_to_sparse(mask, sparse_mask)
+
+    return sparse_to_image, image_to_sparse
+
+def setup_sparse_mask(mask, sparse_grid_size):
+    """Setup a two-dimensional sparse mask of image pixels, by keeping all image pixels which do not give a remainder \
+    when divided by the sub-grid size. """
+
     image_dimensions_pixels = mask.shape
-    sparse_clustering_pixels = np.empty(0)
-    image_pixel_index = 0
+
+    sparse_mask = np.zeros(image_dimensions_pixels)
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
             if mask[y, x]:
                 if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
-                    sparse_clustering_pixels = np.append(sparse_clustering_pixels, image_pixel_index)
+                    sparse_mask[y, x] = 1
+
+    return np.ma.make_mask(sparse_mask)
+
+def setup_sparse_to_image(mask, sparse_mask):
+    """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
+    pixels.
+
+    Parameters
+    ----------
+    mask : image.Mask
+        The image mask we are finding the sparse clustering pixels of.
+    sparse_mask : ndarray
+        The two-dimensional boolean image of the sparse grid.
+
+    Returns
+    -------
+    sparse_to_image : ndarray
+        The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
+        of the image pixel in the mask.
+    """
+    image_dimensions_pixels = mask.shape
+
+    sparse_to_image = np.empty(0)
+    image_pixel_index = 0
+
+    for y in range(image_dimensions_pixels[0]):
+        for x in range(image_dimensions_pixels[1]):
+
+            if sparse_mask[y, x]:
+                sparse_to_image = np.append(sparse_to_image, image_pixel_index)
+
+            if mask[y, x]:
                 image_pixel_index += 1
 
-    return sparse_clustering_pixels
+    return sparse_to_image
 
-# def sparse_to_sub_pixel
+def setup_image_to_sparse(mask, sparse_mask):
+    """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
 
-# def image_to_sparse_pixels(cls, mask, setup_sparse_clustering_pixels)
+    Parameters
+    ----------
+    mask : image.Mask
+        The image mask we are finding the sparse clustering pixels of.
+    sparse_mask : ndarray
+        The two-dimensional boolean image of the sparse grid.
 
-# def sub_to_sparse_pixels(cls, mask, setup_sparse_clustering_pixels, sub_grid_size):
-#     """Compute the list describing which sparse pixel every sub pixel maps too.
-#
-#     Parameters
-#     ----------
-#     mask : image.Mask
-#         The image mask we are finding the sparse clustering pixels of.
-#     setup_sparse_clustering_pixels : list
-#         A list of the sparse clustering image pixels. Each entry in this list gives the 1D index of the image pixel in \
-#         the mask.
-#     sub_grid_size : int
-#         The size of the sub-grid in each pixel used to compute their deflection angles
-#
-#     Returns
-#     -------
-#     A mapping each sub-pixel to the index of its closest sparse pixel
-#     """
+    Returns
+    -------
+    image_to_sparse : ndarray
+        The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D \
+        index of the sparse pixel in sparse_pixel arrays.
+
+    """
+
+    image_dimensions_pixels = mask.shape
+    sparse_index_2d = np.zeros(image_dimensions_pixels)
+    sparse_pixel_index = 0
+
+    for y in range(image_dimensions_pixels[0]):
+        for x in range(image_dimensions_pixels[1]):
+            if sparse_mask[y,x]:
+                sparse_pixel_index += 1
+                sparse_index_2d[y,x] = sparse_pixel_index
+
+    image_to_sparse = np.empty(0)
+
+    for y in range(image_dimensions_pixels[0]):
+        for x in range(image_dimensions_pixels[1]):
+            if mask[y, x]:
+                iboarder = 0
+                pixel_match = False
+                while pixel_match == False:
+                    for y1 in range(y-iboarder, y+iboarder+1):
+                        for x1 in range(x-iboarder, x+iboarder+1):
+                            if y1 >= 0 and y1 < image_dimensions_pixels[0] and x1 >= 0 and x1 < image_dimensions_pixels[1]:
+                                if sparse_mask[y1, x1] and pixel_match == False:
+                                    image_to_sparse = np.append(image_to_sparse, sparse_index_2d[y1,x1]-1)
+                                    pixel_match = True
+
+                    iboarder += 1
+                    if iboarder == 100:
+                        raise MaskException('setup_image_to_sparse - Stuck in infinite loop')
+
+    return image_to_sparse
+
 
 class Mask(object):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
