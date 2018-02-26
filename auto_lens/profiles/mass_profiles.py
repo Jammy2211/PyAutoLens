@@ -24,134 +24,6 @@ class MassProfile(object):
         raise AssertionError("Deflection angles at coordinates should be overridden")
 
 
-class CombinedMassProfile(list, MassProfile):
-    """A combined mass profiles comprising of one or more mass profiles"""
-
-    def __init__(self, *mass_profiles):
-        super(CombinedMassProfile, self).__init__(mass_profiles)
-
-    def surface_density_at_coordinates(self, coordinates):
-        """
-        Method for obtaining the summed mass profiles' surface densities at a given set of coordinates.
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the image
-
-        Returns
-        ----------
-        The summed values of surface density at the given coordinates.
-        """
-
-        return sum(map(lambda p: p.surface_density_at_coordinates(coordinates), self))
-
-    def potential_at_coordinates(self, coordinates):
-        """
-        Method for obtaining the summed mass profiles' gravitational potential at a given set of coordinates.
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the image
-
-        Returns
-        ----------
-        The summed values of gravitational potential at the given coordinates.
-        """
-
-        return sum(map(lambda p: p.potential_at_coordinates(coordinates), self))
-
-    def deflection_angles_at_coordinates(self, coordinates):
-        """
-        Method for obtaining the summed mass profiles' deflection angles at a given set of coordinates.
-
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the image
-
-        Returns
-        ----------
-        The summed values of deflection angles at the given coordinates.
-        """
-        sum_tuple = (0, 0)
-        for t in map(lambda p: p.deflection_angles_at_coordinates(coordinates), self):
-            sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
-        return sum_tuple
-
-    def dimensionless_mass_within_circle(self, radius):
-        """
-        Compute the combined mass profiles's total dimensionless mass within a circle of specified radius. This is \
-        performed via integration of the surface density profile of each individual profile, centred on each
-        profile's mass model centre.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
-        """
-        return sum(map(lambda p : p.dimensionless_mass_within_circle(radius), self))
-
-    def dimensionless_mass_within_circle_individual(self, radius):
-        """
-        Compute the individual mass profiles total dimensionless mass within a circle of specified radius for every \
-        mass profile in this combined mass model. This is performed via integration of the surface density profile \
-        of each individual profile, centred on each profile's mass model centre.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
-        """
-        return list(map(lambda p : p.dimensionless_mass_within_circle(radius), self))
-
-    def dimensionless_mass_within_ellipse(self, major_axis):
-        """
-        Compute the commbined mass profiles's total dimensionless mass within an ellipse of specified radius. This is \
-        performed via integration of the surface density profile of each individual profile, centred and rotationally \
-        aligned with each profile.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
-        """
-        return sum(map(lambda p : p.dimensionless_mass_within_ellipse(major_axis), self))
-
-    def dimensionless_mass_within_ellipse_individual(self, major_axis):
-        """
-        Compute the individual mass profiles total dimensionless mass within an ellipse of specified radius, for each \
-        mass profile in this combined mass model. This is performed via integration of the surface density profile \
-        of each individual profile, centred and rotationally aligned with each profile.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
-        """
-        return list(map(lambda p : p.dimensionless_mass_within_ellipse(major_axis), self))
-
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     """Generic class for an elliptical light profiles"""
 
@@ -620,6 +492,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
             return 1
 
     def surface_density_at_radius(self, radius):
+        radius = (1.0 / self.scale_radius) * radius
         return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
 
     @geometry_profiles.transform_coordinates
@@ -637,7 +510,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those coordinates
         """
 
-        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
+        eta = self.coordinates_to_elliptical_radius(coordinates)
 
         return self.surface_density_at_radius(eta)
 
@@ -664,7 +537,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         return 4.0 * self.kappa_s * self.scale_radius * potential
 
     def deflection_func(self, u, coordinates, npow):
-        eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
+        eta_u = self.eta_u(u, coordinates)
         return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @geometry_profiles.transform_coordinates
@@ -789,6 +662,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
         return (y + eta) ** (self.inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
 
     def surface_density_at_radius(self, radius):
+        radius = (1.0 / self.scale_radius) * radius
         integral_y = quad(self.integral_y, a=0.0, b=1.0, args=(radius))[0]
 
         return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * \
@@ -822,7 +696,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
             special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, -eta) + integral_y_2)
 
     def deflection_func_ell(self, u, coordinates, npow):
-        eta_u = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
+        eta_u = self.eta_u(u, coordinates)
 
         return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
@@ -891,8 +765,9 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
-class SersicMassProfile(light_profiles.SersicLightProfile, MassProfile):
-    """The Sersic light profiles, used to fit and subtract the lens galaxy's light and model its mass."""
+class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile):
+    """The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+     galaxy's light."""
 
     def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, mass_to_light_ratio, centre=(0, 0)):
         """
@@ -916,12 +791,15 @@ class SersicMassProfile(light_profiles.SersicLightProfile, MassProfile):
             The mass-to-light ratio of the light profiles
         """
         super(SersicMassProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, sersic_index, centre)
-        super(MassProfile, self).__init__()
+        super(EllipticalMassProfile, self).__init__(axis_ratio, phi, centre)
         self.mass_to_light_ratio = mass_to_light_ratio
 
     @classmethod
     def from_sersic_light_profile(cls, sersic_light_profile, mass_to_light_ratio):
         return SersicMassProfile.from_profile(sersic_light_profile, mass_to_light_ratio=mass_to_light_ratio)
+
+    def surface_density_at_radius(self, radius):
+        return self.mass_to_light_ratio * self.intensity_at_radius(radius)
 
     @geometry_profiles.transform_coordinates
     def surface_density_at_coordinates(self, coordinates):
@@ -969,3 +847,65 @@ class SersicMassProfile(light_profiles.SersicLightProfile, MassProfile):
         deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+
+
+class ExponentialMassProfile(SersicMassProfile):
+    """The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+     galaxy's light."""
+
+    def __init__(self, axis_ratio, phi, intensity, effective_radius, mass_to_light_ratio, centre=(0, 0)):
+        """
+        Setup an Exponential mass and light profile.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profiles
+        axis_ratio : float
+            Ratio of profiles ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall flux intensity normalisation in the light profiles (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        mass_to_light_ratio : float
+            The mass-to-light ratio of the light profiles
+        """
+        super(ExponentialMassProfile, self).__init__(axis_ratio, phi, intensity, effective_radius,1.0,
+                                                     mass_to_light_ratio, centre)
+
+    @classmethod
+    def from_exponential_light_profile(cls, exponential_light_profile, mass_to_light_ratio):
+        return ExponentialMassProfile.from_profile(exponential_light_profile, mass_to_light_ratio=mass_to_light_ratio)
+
+
+class DevVaucouleursMassProfile(SersicMassProfile):
+    """The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+     galaxy's light."""
+
+    def __init__(self, axis_ratio, phi, intensity, effective_radius, mass_to_light_ratio, centre=(0, 0)):
+        """
+        Setup a DevVaucouleurs mass and light profile.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The coordinates of the centre of the profiles
+        axis_ratio : float
+            Ratio of profiles ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall flux intensity normalisation in the light profiles (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model
+        mass_to_light_ratio : float
+            The mass-to-light ratio of the light profiles
+        """
+        super(DevVaucouleursMassProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 4.0,
+                                                     mass_to_light_ratio, centre)
+
+    @classmethod
+    def from_dev_vaucouleurs_light_profile(cls, dev_vaucouleurs_light_profile, mass_to_light_ratio):
+        return DevVaucouleursMassProfile.from_profile(dev_vaucouleurs_light_profile, mass_to_light_ratio=mass_to_light_ratio)
