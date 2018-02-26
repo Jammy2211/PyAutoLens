@@ -9,8 +9,6 @@ test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(
 
 class TestAnalysisRegions(object):
 
-    # TODO : Add Rectagular image tests to all masked region tests
-
     class TestImageSubGrid(object):
 
         def test__3x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
@@ -639,7 +637,6 @@ class TestAnalysisRegions(object):
                                                  [False, False, False, False, False, False, False, False],
                                                  [False, False, False, False, False, False, False, False]])).all()
 
-
         def test__size__5x5__multiple_points__mask_extends_beyond_border_so_raises_mask_exception(self):
 
             mask = np.array([[False, False, False, False, False, False, False],
@@ -757,235 +754,257 @@ class TestAnalysisRegions(object):
             assert (border_pixels == np.array
                 ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
 
-    class TestSparseClusteringPixels(object):
+    class TestSparsePixels(object):
 
-        def test__7x7_circle_mask__five_central_pixels__sparse_grid_size_1(self):
+        class TestSetupAll:
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            def test__7x7_circle_mask__five_central_pixels__sparse_grid_size_1(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=1)
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-            assert (sparse_list == np.array([0, 1, 2, 3, 4])).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
-        def test__7x7_circle_mask__sparse_grid_size_1(self):
+                assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
+                assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, True,  True, True, False, False],
-                             [False, False, False, False, False, False, False]])
+            def test__7x7_circle_mask__sparse_grid_size_1(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=1)
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, True,  True,  True, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, True,  True, True, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-            assert (sparse_list == np.arange(21)).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
-        def test__7x7_rectangle_mask__sparse_grid_size_1(self):
+                assert (sparse_to_image == np.arange(21)).all()
+                assert (image_to_sparse == np.arange(21)).all()
 
-            mask = np.array([[True, True, True, True, True, True, True],
-                             [True, True, True,  True,  True, True, True],
-                             [True, True, True,  True,  True, True, True],
-                             [True, True, True,  True,  True, True, True],
-                             [True, True, True,  True,  True, True, True],
-                             [True, True, True,  True, True, True, True],
-                             [True, True, True, True, True, True, True]])
+            def test__7x7_rectangle_mask__sparse_grid_size_1(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=1)
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True,  True,  True, True, True],
+                                 [True, True, True,  True,  True, True, True],
+                                 [True, True, True,  True,  True, True, True],
+                                 [True, True, True,  True,  True, True, True],
+                                 [True, True, True,  True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
-            assert (sparse_list == np.arange(49)).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
-        def test__7x7_circle_mask__sparse_grid_size_2(self):
+                assert (sparse_to_image == np.arange(49)).all()
+                assert (image_to_sparse == np.arange(49)).all()
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, True,  True, True, False, False],
-                             [False, False, False, False, False, False, False]])
+            def test__7x7_circle_mask__sparse_grid_size_2(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=2)
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, True,  True,  True, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, True,  True, True, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-            assert (sparse_list == np.array([4, 6, 14, 16])).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
-        def test__8x8_sporadic_mask__sparse_grid_size_2(self):
+                assert (sparse_to_image == np.array([4, 6, 14, 16])).all()
+                assert (image_to_sparse == np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
+                                                     1, 2, 2, 2, 3, 3, 2, 2, 3])).all()
 
-            mask = np.array([[False, False, False, False, False, False, True, True],
-                             [False, False, True,  True,  True, False, True, True],
-                             [False, True, True,  True,  True, True, True, True],
-                             [False, True, True,  True,  True, True, True, True],
-                             [False, True, True,  True,  True, True, True, True],
-                             [False, False, True,  True, True, False, True, True],
-                             [False, False, False, False, False, False, True, True],
-                             [False, False, True, True, True, False, True, True]])
+            def test__8x8_sporadic_mask__sparse_grid_size_2(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=2)
+                mask = np.array([[False, False, False, False, False, False, True, True],
+                                 [False, False, True,  True,  True, False, True, True],
+                                 [False, True, True,  True,  True, True, True, True],
+                                 [False, True, True,  True,  True, True, True, True],
+                                 [False, True, True,  True,  True, True, True, True],
+                                 [False, False, True,  True, True, False, True, True],
+                                 [False, False, False, False, False, False, True, True],
+                                 [False, False, True, True, True, False, True, True]])
 
-            assert (sparse_list == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
-        def test__7x7_circle_mask_trues_on_even_values__sparse_grid_size_2(self):
+                assert (sparse_to_image == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
+                assert (image_to_sparse == np.array([0, 0, 1, 1, 2, 0, 0, 1, 1, 1, 2, 2, 3, 3,
+                                                     1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 4, 4, 5, 6, 6,
+                                                     7, 7, 4, 4, 7, 7, 7])).all()
 
-            mask = np.array([[True,  False, True, False, True, False, True],
-                             [False, False, False, False, False, False, False],
-                             [True,  False, True, False, True, False, True],
-                             [False, False, False, False, False, False, False],
-                             [True,  False, True, False, True, False, True],
-                             [False, False, False, False, False, False, False],
-                             [True,  False, True, False, True, False, True]])
+            def test__7x7_circle_mask_trues_on_even_values__sparse_grid_size_2(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=2)
+                mask = np.array([[True,  False, True, False, True, False, True],
+                                 [False, False, False, False, False, False, False],
+                                 [True,  False, True, False, True, False, True],
+                                 [False, False, False, False, False, False, False],
+                                 [True,  False, True, False, True, False, True],
+                                 [False, False, False, False, False, False, False],
+                                 [True,  False, True, False, True, False, True]])
 
-            assert (sparse_list == np.arange(16)).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
-        def test__7x7_circle_mask__sparse_grid_size_3(self):
+                assert (sparse_to_image == np.arange(16)).all()
+                assert (image_to_sparse == np.arange(16)).all()
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, True,  True, True, False, False],
-                             [False, False, False, False, False, False, False]])
+            def test__7x7_circle_mask__sparse_grid_size_3(self):
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=3)
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, True,  True,  True, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, True,  True, True, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-            assert (sparse_list == np.array([10])).all()
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
-        def test__7x7_circle_mask_more_points_added__sparse_grid_size_3(self):
+                assert (sparse_to_image == np.array([10])).all()
+                assert (image_to_sparse == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
 
-            mask = np.array([[True, False, False, True, False, True, True],
-                             [False, False, True,  True,  True, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, True],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, True,  True, True, False, False],
-                             [False, False, False, False, False, False, True]])
+            def test__7x7_circle_mask_more_points_added__sparse_grid_size_3(self):
+
+                mask = np.array([[True, False, False, True, False, True, True],
+                                 [False, False, True,  True,  True, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, True],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, True,  True, True, False, False],
+                                 [False, False, False, False, False, False, True]])
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=3)
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
-            assert (sparse_list == np.array([0, 1, 3, 14, 17, 26])).all()
+                assert (sparse_to_image == np.array([0, 1, 3, 14, 17, 26])).all()
+                assert (image_to_sparse == np.array([0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
+                                                     3, 4, 3, 3, 3, 5])).all()
 
-        def test__7x7_mask_trues_on_values_which_divide_by_3__sparse_grid_size_3(self):
+            def test__7x7_mask_trues_on_values_which_divide_by_3__sparse_grid_size_3(self):
+
+                mask = np.array([[True,  False, False, True, False, False, True],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [True, False, False,  True, False, False,  True],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [True,  False, False, True, False, False, True]])
 
-            mask = np.array([[True,  False, False, True, False, False, True],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [True, False, False,  True, False, False,  True],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [True,  False, False, True, False, False, True]])
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=3)
+                assert (sparse_to_image == np.arange(9)).all()
+                assert (image_to_sparse == np.arange(9)).all()
 
-            assert (sparse_list == np.arange(9)).all()
+            def test__8x8_mask_trues_on_values_which_divide_by_3_and_other_values__sparse_grid_size_3(self):
+
+                mask = np.array([[True,  False, True, True, False, False, True],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, True, True, True, False, False],
+                                 [True, False, False,  True, False, False,  True],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [True,  True, True, True, True, True, True]])
 
-        def test__8x8_mask_trues_on_values_which_divide_by_3_and_other_values__sparse_grid_size_3(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
-            mask = np.array([[True,  False, True, True, False, False, True],
-                             [False, False, False, False, False, False, False],
-                             [False, False, True, True, True, False, False],
-                             [True, False, False,  True, False, False,  True],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [True,  True, True, True, True, True, True]])
+                assert (sparse_to_image == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
+                assert (image_to_sparse == np.array([0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=3)
+            def test__8x7__five_central_pixels__sparse_grid_size_1(self):
 
-            assert (sparse_list == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-        def test__8x7__five_central_pixels__sparse_grid_size_1(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+                assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
+                assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=1)
+            def test__8x7__five_central_pixels_2__sparse_grid_size_1(self):
 
-            assert (sparse_list == np.array([0, 1, 2, 3, 4])).all()
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-        def test__8x7__five_central_pixels_2__sparse_grid_size_1(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+                assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
+                assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=1)
+            def test__8x7__five_central_pixels__sparse_grid_size_2(self):
 
-            assert (sparse_list == np.array([0, 1, 2, 3, 4])).all()
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, True, True,  True,  True, True, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False]])
 
-        def test__8x7__five_central_pixels__sparse_grid_size_2(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+                assert (sparse_to_image == np.array([1, 3])).all()
+                assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=2)
+            def test__7x8__five_central_pixels__sparse_grid_size_1(self):
 
-            assert (sparse_list == np.array([1, 3])).all()
+                mask = np.array([[False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False]])
 
-        def test__7x8__five_central_pixels__sparse_grid_size_1(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
+                assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
+                assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=1)
+            def test__7x8__five_central_pixels__sparse_grid_size_2(self):
 
-            assert (sparse_list == np.array([0, 1, 2, 3, 4])).all()
+                mask = np.array([[False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False, False],
+                                 [False, True, True,  True,  True, True, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False]])
 
-        def test__7x8__five_central_pixels__sparse_grid_size_2(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
+                assert (sparse_to_image == np.array([1, 3])).all()
+                assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=2)
+            def test__7x8__more_central_pixels__sparse_grid_size_2(self):
 
-            assert (sparse_list == np.array([1, 3])).all()
+                mask = np.array([[False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, True, True,  True,  True, True, False, False],
+                                 [False, True, True,  True,  True, True, False, False],
+                                 [False, True, True,  True,  True, True, False, False],
+                                 [False, False, False, False, False, False, False, False],
+                                 [False, False, False, False, False, False, False, False]])
 
-        def test__7x8__more_central_pixels__sparse_grid_size_2(self):
+                sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
-
-            sparse_list = analysis_image.setup_sparse_clustering_pixels(mask, sparse_grid_size=2)
-
-            assert (sparse_list == np.array([1, 3, 11, 13])).all()
+                assert (sparse_to_image == np.array([1, 3, 11, 13])).all()
+                assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
 
 
 class TestMask(object):
