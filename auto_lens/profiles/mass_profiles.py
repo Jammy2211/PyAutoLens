@@ -80,6 +80,77 @@ class CombinedMassProfile(list, MassProfile):
             sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
         return sum_tuple
 
+    def dimensionless_mass_within_circle(self, radius):
+        """
+        Compute the combined mass profiles's total dimensionless mass within a circle of specified radius. This is \
+        performed via integration of the surface density profile of each individual profile, centred on each
+        profile's mass model centre.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return sum(map(lambda p : p.dimensionless_mass_within_circle(radius), self))
+
+    def dimensionless_mass_within_circle_individual(self, radius):
+        """
+        Compute the individual mass profiles total dimensionless mass within a circle of specified radius for every \
+        mass profile in this combined mass model. This is performed via integration of the surface density profile \
+        of each individual profile, centred on each profile's mass model centre.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return list(map(lambda p : p.dimensionless_mass_within_circle(radius), self))
+
+    def dimensionless_mass_within_ellipse(self, major_axis):
+        """
+        Compute the commbined mass profiles's total dimensionless mass within an ellipse of specified radius. This is \
+        performed via integration of the surface density profile of each individual profile, centred and rotationally \
+        aligned with each profile.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return sum(map(lambda p : p.dimensionless_mass_within_ellipse(major_axis), self))
+
+    def dimensionless_mass_within_ellipse_individual(self, major_axis):
+        """
+        Compute the individual mass profiles total dimensionless mass within an ellipse of specified radius, for each \
+        mass profile in this combined mass model. This is performed via integration of the surface density profile \
+        of each individual profile, centred and rotationally aligned with each profile.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+
+        Returns
+        -------
+        dimensionless_mass : float
+            The total dimensionless mass within the specified circle.
+        """
+        return list(map(lambda p : p.dimensionless_mass_within_ellipse(major_axis), self))
 
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     """Generic class for an elliptical light profiles"""
@@ -125,8 +196,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def dimensionless_mass_within_ellipse(self, major_axis):
         """
-        Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is performed via \
-        integration of the surface density profiles and is centred on the mass model.
+        Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is performed \
+        via integration of the surface density profiles and is centred and rotationally aligned with the mass model.
 
         Parameters
         ----------

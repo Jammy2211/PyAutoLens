@@ -425,6 +425,162 @@ class TestMassIntegral(object):
 
             assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.01)
 
+    class TestComblinedMassProfile(object):
+
+        def test__one_integral_same_as_individual_integral_circle(self):
+
+            sis = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+
+            integral_radius = 5.5
+
+            mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert mass_integral == combined_mass_integral
+
+        def test__two_integrals_sum_to_combined_profile_circle(self):
+
+            sis_1 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+            sis_2 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0)
+
+            integral_radius = 5.5
+
+            mass_integral = sis_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sis_2.dimensionless_mass_within_circle(radius=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert mass_integral == combined_mass_integral
+
+        def test__three_integrals_sum_to_combined_profile_circle(self):
+
+            sis_1 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+            sis_2 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0)
+            sis_3 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)
+
+            integral_radius = 5.5
+
+            mass_integral = sis_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sis_2.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sis_3.dimensionless_mass_within_circle(radius=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_circle(radius=integral_radius)
+
+            assert mass_integral == combined_mass_integral
+
+        def test__three_integrals_individual_profiles_identical_circle(self):
+
+            sis_1 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+            sis_2 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0)
+            sis_3 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)
+
+            integral_radius = 5.5
+
+            mass_integral_1 = sis_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_2 = sis_2.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_3 = sis_3.dimensionless_mass_within_circle(radius=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_circle_individual(radius=integral_radius)
+
+            assert mass_integral_1 == combined_mass_integral[0]
+            assert mass_integral_2 == combined_mass_integral[1]
+            assert mass_integral_3 == combined_mass_integral[2]
+
+        def test__one_integral_same_as_individual_integral_ellipse(self):
+
+            sis = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+
+            integral_radius = 0.5
+
+            mass_integral = sis.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert mass_integral == combined_mass_integral
+
+        def test__two_integrals_sum_to_combined_profile_ellipse(self):
+
+            sis_1 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+            sis_2 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0)
+
+            integral_radius = 5.5
+
+            mass_integral = sis_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            mass_integral += sis_2.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert mass_integral == combined_mass_integral
+
+        def test__three_integrals_sum_to_combined_profile_ellipse(self):
+
+            sis_1 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+            sis_2 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0)
+            sis_3 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)
+
+            integral_radius = 5.5
+
+            mass_integral = sis_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            mass_integral += sis_2.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            mass_integral += sis_3.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            assert mass_integral == combined_mass_integral
+
+        def test__three_integrals_individual_profiles_identical_ellipsse(self):
+
+            sis_1 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0)
+            sis_2 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0)
+            sis_3 = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)
+
+            integral_radius = 5.5
+
+            mass_integral_1 = sis_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            mass_integral_2 = sis_2.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            mass_integral_3 = sis_3.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+
+            sis_combined = mass_profiles.CombinedMassProfile(
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=2.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=4.0),
+                mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0))
+
+            combined_mass_integral = sis_combined.dimensionless_mass_within_ellipse_individual(major_axis=integral_radius)
+
+            assert mass_integral_1 == combined_mass_integral[0]
+            assert mass_integral_2 == combined_mass_integral[1]
+            assert mass_integral_3 == combined_mass_integral[2]
+
 
 class TestEllipticalPowerLaw(object):
     class TestSetup(object):
