@@ -64,6 +64,7 @@ class LightProfile(object):
 
 
 class CombinedLightProfile(list, LightProfile):
+
     """A combined light profiles comprising of one or more light profiles"""
 
     def __init__(self, *light_profiles):
@@ -83,6 +84,74 @@ class CombinedLightProfile(list, LightProfile):
         """
         return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self))
 
+    def luminosity_within_circle(self, radius):
+        """
+        Compute the combined light profiles's total luminosity within a circle of specified radius. This is performed
+        via integration of each light profile in the combined model, centred on each light model's centre.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the luminosity within.
+
+        Returns
+        -------
+        luminosity : float
+            The total combined luminosity within the specified circle.
+        """
+        return sum(map(lambda p : p.luminosity_within_circle(radius), self))
+
+    def luminosity_within_circle_individual(self, radius):
+        """
+        Compute the individual light profile total luminosity within a circle of specified radius of each light \
+        profile in the combined light profile. This is performed via integration of each light profile in the
+        combined model, centred on each light model's centre.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the luminosity within.
+
+        Returns
+        -------
+        luminosity : float
+            The total combined luminosity within the specified circle.
+        """
+        return list(map(lambda p : p.luminosity_within_circle(radius), self))
+
+    def luminosity_within_ellipse(self, major_axis):
+        """
+        Compute the combined light profiles's total luminosity within an ellipse of specified major axis. This is \
+        performed via integration of each light profile and is centred, oriented and aligned with each light model's \
+        individual geometry.
+
+        Parameters
+        ----------
+        major_axis: float
+            The major-axis of the ellipse to compute the luminosity within.
+        Returns
+        -------
+        intensity : float
+            The total luminosity within the specified ellipse.
+        """
+        return sum(map(lambda p : p.luminosity_within_ellipse(major_axis), self))
+
+    def luminosity_within_ellipse_individual(self, major_axis):
+        """
+        Compute the individual light profiles total luminosity within an ellipse of specified major axis of each light \
+        profile in the combined light profile. This is performed via integration of each light profile and is centred,
+        oriented and aligned with each light model's individual geometry.
+
+        Parameters
+        ----------
+        major_axis: float
+            The major-axis of the ellipse to compute the luminosity within.
+        Returns
+        -------
+        intensity : float
+            The total luminosity within the specified ellipse.
+        """
+        return list(map(lambda p : p.luminosity_within_ellipse(major_axis), self))
 
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
