@@ -6,6 +6,10 @@ from scipy.integrate import quad
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
+    @property
+    def subscript_label(self):
+        return 'l'
+
     # noinspection PyMethodMayBeStatic
     def intensity_at_radius(self, radius):
         """
@@ -66,7 +70,7 @@ class LightProfile(object):
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
-    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """
 
         Parameters
@@ -84,9 +88,13 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(EllipticalLightProfile, self).__init__(axis_ratio, phi, centre)
+        super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi']
 
     def luminosity_within_circle(self, radius):
         """
@@ -130,7 +138,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 class SersicLightProfile(EllipticalLightProfile):
     """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
 
-    def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 sersic_index=4.0):
         """
 
         Parameters
@@ -148,10 +157,14 @@ class SersicLightProfile(EllipticalLightProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(SersicLightProfile, self).__init__(axis_ratio, phi, centre)
+        super(SersicLightProfile, self).__init__(centre, axis_ratio, phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n']
 
     @property
     def elliptical_effective_radius(self):
@@ -216,7 +229,7 @@ class ExponentialLightProfile(SersicLightProfile):
 
     It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 1"""
 
-    def __init__(self, axis_ratio, phi, intensity, effective_radius, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """
 
         Parameters
@@ -232,8 +245,11 @@ class ExponentialLightProfile(SersicLightProfile):
         effective_radius : float
             The circular radius containing half the light of this model
         """
-        super(ExponentialLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 1.0, centre)
+        super(ExponentialLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 class DevVaucouleursLightProfile(SersicLightProfile):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
@@ -241,7 +257,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
 
     It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 4."""
 
-    def __init__(self, axis_ratio, phi, intensity, effective_radius, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """
 
         Parameters
@@ -257,16 +273,19 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         effective_radius : float
             The circular radius containing half the light of this model
         """
-        super(DevVaucouleursLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, 4.0, centre)
+        super(DevVaucouleursLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 class CoreSersicLightProfile(SersicLightProfile):
     """The Core-Sersic profiles is used to fit the light of a galaxy. It is an extension of the Sersic profiles and \
     flattens the light profiles central values (compared to the extrapolation of a pure Sersic profiles), by forcing \
     these central regions to behave instead as a power-law."""
 
-    def __init__(self, axis_ratio, phi, intensity, effective_radius, sersic_index, radius_break, intensity_break, gamma,
-                 alpha, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
         """
 
         Parameters
@@ -292,11 +311,15 @@ class CoreSersicLightProfile(SersicLightProfile):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(CoreSersicLightProfile, self).__init__(axis_ratio, phi, intensity, effective_radius, sersic_index, centre)
+        super(CoreSersicLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha
         self.gamma = gamma
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', 'Rb', 'Ib', '\gamma', r'\alpha']
 
     @property
     def intensity_prime(self):

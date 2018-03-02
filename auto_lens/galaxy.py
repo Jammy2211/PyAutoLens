@@ -1,14 +1,32 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+from astropy import cosmology
 
-# class Cosmology(object):
+class RayTracingPlane(list):
+    """The ray-tracing plane of this lensing system, which is made up of a collection of galaxies ordered by redshift.
 
-#    def __init__(self):
+    This is used to perform all lensing calculations, including the effects of galaxy redshifts / angular diameter \
+    distances on the ray-tracing calculations"""
 
+    def __init__(self, galaxies, cosmological_model=cosmology.Planck15):
+        """
+        The list of galaxies that form the overall ray-tracing plane.
 
-class GalaxyCollection(list):
-    """A collection of galaxies ordered by redshift"""
+        Parameters
+        ----------
+        galaxies : [Galaxy]
+            A galaxy
+        cosmological_model : astropy.cosmology.FLRW
+            The assumed cosmology for this ray-tracing calculation.
+        """
+
+        super().__init__()
+
+        for galaxy in galaxies:
+            self.append(galaxy)
+
+        self.setup_angular_diameter_distances(cosmological_model)
 
     def append(self, galaxy):
         """
@@ -22,7 +40,7 @@ class GalaxyCollection(list):
 
         def insert(position):
             if position == len(self):
-                super(GalaxyCollection, self).append(galaxy)
+                super(RayTracingPlane, self).append(galaxy)
             elif galaxy.redshift <= self[position].redshift:
                 self[:] = self[:position] + [galaxy] + self[position:]
             else:
@@ -30,6 +48,23 @@ class GalaxyCollection(list):
 
         insert(0)
 
+    def setup_angular_diameter_distances(self, cosmological_model):
+        """Using the redshift of each galaxy, setup their angular diameter distances"""
+        for i, galaxy in enumerate(self):
+
+            galaxy.angular_diameter_distance_to_earth = cosmological_model.angular_diameter_distance(z=galaxy.redshift)
+
+            if i < len(self)-1:
+
+                galaxy.angular_distance_distance_to_next_galaxy = \
+                    cosmological_model.angular_diameter_distance_z1z2(galaxy.redshift, self[i + 1].redshift)
+
+            if i > 0:
+                galaxy.angular_distance_distance_to_previous_galaxy = \
+                    cosmological_model.angular_diameter_distance_z1z2(self[i - 1].redshift, galaxy.redshift)
+
+            galaxy.arcsec_per_kpc_proper = cosmological_model.arcsec_per_kpc_proper(z=galaxy.redshift)
+            galaxy.kpc_per_arcsec_proper = 1.0 / galaxy.arcsec_per_kpc_proper
 
 class Galaxy(object):
     """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass \
@@ -350,6 +385,8 @@ class Galaxy(object):
         ----------
         maximum_radius : float
             The maximum radius the mass is plotted too.
+        labels : [str]
+            The label of each component for the legend
         number_bins : int
             The number of bins used to compute and plot the mass.
         """
@@ -365,6 +402,9 @@ class Galaxy(object):
                            self.dimensionless_mass_within_circle_individual(radii[i])) /
                            annuli_area)
 
-        plt.semilogy(radii[0:-1], density)
+        radii_plot = list(np.linspace(1e-4, maximum_radius, number_bins))
+
+        plt.semilogy(radii_plot, density)
         plt.legend(labels)
+        plt.xlabel('Radius')
         plt.show()

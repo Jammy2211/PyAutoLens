@@ -6,7 +6,6 @@ import inspect
 from matplotlib import pyplot
 import colorsys
 
-
 def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
     """
     Draws a plot from a function that accepts coordinates . Upper normalisation limit determined by taking mean plus one
@@ -297,8 +296,16 @@ class CoordinatesException(Exception):
 class Profile(object):
     """Abstract Profile, describing an object with x, y cartesian coordinates"""
 
-    def __init__(self, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0)):
         self.centre = centre
+
+    @property
+    def subscript_label(self):
+        return ''
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y']
 
     # noinspection PyMethodMayBeStatic
     def transform_to_reference_frame(self, coordinates):
@@ -410,7 +417,7 @@ class Profile(object):
 class EllipticalProfile(Profile):
     """Generic elliptical profiles class to contain functions shared by light and mass profiles"""
 
-    def __init__(self, axis_ratio, phi, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """
         Parameters
         ----------
@@ -425,6 +432,10 @@ class EllipticalProfile(Profile):
 
         self.axis_ratio = axis_ratio
         self.phi = phi
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi']
 
     @property
     def cos_phi(self):
@@ -595,7 +606,7 @@ class EllipticalProfile(Profile):
 class SphericalProfile(EllipticalProfile):
     """Generic circular profiles class to contain functions shared by light and mass profiles"""
 
-    def __init__(self, centre=(0, 0)):
+    def __init__(self, centre=(0.0, 0.0)):
         """
         Parameters
         ----------
@@ -603,3 +614,7 @@ class SphericalProfile(EllipticalProfile):
             The coordinates of the centre of the profiles
         """
         super(SphericalProfile, self).__init__(1.0, 0.0, centre)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y']
