@@ -3,6 +3,7 @@ from scipy.special import erfinv
 import inspect
 import configparser
 import os
+import MultiNestTools
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -66,6 +67,8 @@ class ClassMap(object):
                                     lens_light_profile=light_profile.CoreSersicLightProfile)
         """
         super(ClassMap, self).__init__()
+
+        self.class_dict = classes
 
         self.config = (config if config is not None else Config("{}/config".format(path)))
 
@@ -149,11 +152,11 @@ class ClassMap(object):
         """
         return {name: prior_model.priors for name, prior_model in self.prior_models}
 
-    def value_vector_for_hypercube_vector(self, vector):
+    def physical_vector_from_hypercube_vector(self, hypercube_vector):
         """
         Parameters
         ----------
-        vector: [float]
+        hypercube_vector: [float]
             A unit hypercube vector
 
         Returns
@@ -161,26 +164,72 @@ class ClassMap(object):
         values: [float]
             A vector with values output by priors
         """
-        return list(map(lambda p, u: p[1].value_for(u), self.priors_ordered_by_id, vector))
+        return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
 
-    def reconstruction_for_vector(self, vector):
+    def reconstruction_from_unit_vector(self, unit_vector):
+        """
+        Creates a Reconstruction, which has an attribute and class instance corresponding to every PriorModel attributed
+        to this instance.
+
+        This method takes as input a unit vector of parameter values, converting each to physical values via their \
+        priors.
+
+        Parameters
+        ----------
+        physical_vector: [float]
+            A vector of physical parameter values.
+
+        Returns
+        -------
+        reconstruction : Reconstruction
+            An object containing reconstructed model instances
+
+        """
+        arguments = dict(
+            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, unit_vector))
+
+        return self.reconstruction(arguments)
+
+    def reconstruction_from_physical_vector(self, physical_vector):
+        """
+        Creates a Reconstruction, which has an attribute and class instance corresponding to every PriorModel attributed
+        to this instance.
+
+        This method takes as input a physical vector of parameter values, thus omitting the use of priors.
+
+        Parameters
+        ----------
+        physical_vector: [float]
+            A unit hypercube vector
+
+        Returns
+        -------
+        reconstruction : Reconstruction
+            An object containing reconstructed model instances
+
+        """
+        arguments = dict(
+            map(lambda prior, physical_unit: (prior[1], physical_unit), self.priors_ordered_by_id, physical_vector))
+
+        return self.reconstruction(arguments)
+
+    def reconstruction(self, arguments):
         """
         Creates a Reconstruction, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
 
         Parameters
         ----------
-        vector: [float]
-            A unit hypercube vector
+        argument : dict
+            The dictionary representation of prior and parameter values. This is created in the reconstruction_from_* \
+            routines.
 
         Returns
         -------
-        reconstruction: Reconstruction
+        reconstruction : Reconstruction
             An object containing reconstructed model instances
 
         """
-        arguments = dict(
-            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, vector))
 
         reconstruction = Reconstruction()
 
@@ -189,6 +238,66 @@ class ClassMap(object):
 
         return reconstruction
 
+    def reconstruction_most_probable(self, results_path):
+        """ Setup a Reconstruction of the most probable model, determined from the results of a MultiNest non-linear \
+        analysis
+        
+        The most probable model is the model where each parameter is the mean value of all samples weighted \
+        by each sample's sampling probability.
+        
+        Parameters
+        ----------
+        results_path : str
+            A string pointing to the directory with the MultiNest results (e.g. weighted_samples.txt, phy_live.points, \
+            stats.dat, summary.txt, etc.)
+        """
+        
+        most_probable_vector = MultiNestTools.read_most_probable(results_path)
+
+        return self.reconstruction_from_physical_vector(most_probable_vector)
+
+    def reconstruction_most_likely(self, results_path):
+        """ Setup a Reconstruction of the most likely model, determined from the results of a MultiNest non-linear \
+        analysis
+
+        The most likely model is the set of parameters corresponding to the highest likelihood solution.
+
+        Parameters
+        ----------
+        results_path : str
+            A string pointing to the directory with the MultiNest results (e.g. weighted_samples.txt, phy_live.points, \
+            stats.dat, summary.txt, etc.)
+        """
+
+        most_likely_vector = MultiNestTools.read_most_likely(results_path)
+
+        return self.reconstruction_from_physical_vector(most_likely_vector)
+
+    def output_paramnames_file(self, results_path, subscripts=True):
+
+        paramnames = open(results_path + 'weighted_samples.paramnames', 'w')
+
+        cls_index = 0
+
+        for name, cls in self.class_dict.items():
+
+            param_labels = cls.parameter_labels.__get__(cls)
+            if subscripts == True:
+                subscript_label = cls.subscript_label.__get__(cls)
+                latex_labels = MultiNestTools.generate_parameter_latex(param_labels, subscript_label)
+            elif subscripts == False:
+                latex_labels = MultiNestTools.generate_parameter_latex(param_labels)
+
+            for param_no, param in enumerate(self.class_priors_dict[name]):
+
+                paramnames_line = str(cls_index) + '_' + name + '_' + param[0]
+                paramnames_line += ' '*(40-len(paramnames_line)) + latex_labels[param_no]
+
+                paramnames.write(paramnames_line + '\n')
+
+            cls_index += 1
+
+        paramnames.close()
 
 prior_number = 0
 
@@ -289,10 +398,13 @@ class PriorModel(object):
     def direct_priors(self):
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
+    # TODO : I have swapped the routine below, as I require that the first input parameters (e.g. centre) are always
+    # TODO : The tuples. Obviously, it'd be better if tuples can go anywhere.
+
     @property
     def priors(self):
-        return self.direct_priors + [prior for tuple_prior in self.tuple_priors for prior in
-                                     tuple_prior[1].priors]
+        return [prior for tuple_prior in self.tuple_priors for prior in
+                                     tuple_prior[1].priors] + self.direct_priors
 
     def instance_for_arguments(self, arguments):
         """
