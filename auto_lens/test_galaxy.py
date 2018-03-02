@@ -1,44 +1,63 @@
 import galaxy
 from profiles import geometry_profiles, mass_profiles, light_profiles
 import pytest
+import math
+from astropy import cosmology
 
-# class TestCosmology(object):
-
-
-class TestGalaxyCollection(object):
+class TestRayTracingPlane(object):
     def test_trivial_ordering(self):
-        galaxy_collection = galaxy.GalaxyCollection()
-        g0 = galaxy.Galaxy(0)
-        g1 = galaxy.Galaxy(1)
-        g2 = galaxy.Galaxy(2)
-        galaxy_collection.append(g0)
-        galaxy_collection.append(g1)
-        galaxy_collection.append(g2)
 
-        assert galaxy_collection == [g0, g1, g2]
+        g0 = galaxy.Galaxy(redshift=0)
+        g1 = galaxy.Galaxy(redshift=1)
+        g2 = galaxy.Galaxy(redshift=2)
+
+        ray_tracing_plane = galaxy.RayTracingPlane(galaxies=[g0, g1, g2])
+
+        assert ray_tracing_plane == [g0, g1, g2]
 
     def test_reverse_ordering(self):
-        galaxy_collection = galaxy.GalaxyCollection()
-        g0 = galaxy.Galaxy(0)
-        g1 = galaxy.Galaxy(1)
-        g2 = galaxy.Galaxy(2)
-        galaxy_collection.append(g2)
-        galaxy_collection.append(g1)
-        galaxy_collection.append(g0)
 
-        assert galaxy_collection == [g0, g1, g2]
+        g0 = galaxy.Galaxy(redshift=0)
+        g1 = galaxy.Galaxy(redshift=1)
+        g2 = galaxy.Galaxy(redshift=2)
+
+        ray_tracing_plane = galaxy.RayTracingPlane(galaxies=[g2, g1, g0])
+
+        assert ray_tracing_plane == [g0, g1, g2]
 
     def test_out_of_order(self):
-        galaxy_collection = galaxy.GalaxyCollection()
-        g0 = galaxy.Galaxy(0)
-        g1 = galaxy.Galaxy(1)
-        g2 = galaxy.Galaxy(2)
-        galaxy_collection.append(g0)
-        galaxy_collection.append(g2)
-        galaxy_collection.append(g1)
 
-        assert galaxy_collection == [g0, g1, g2]
+        g0 = galaxy.Galaxy(redshift=0)
+        g1 = galaxy.Galaxy(redshift=1)
+        g2 = galaxy.Galaxy(redshift=2)
 
+        ray_tracing_plane = galaxy.RayTracingPlane(galaxies=[g0, g2, g1])
+
+        assert ray_tracing_plane == [g0, g1, g2]
+
+    def test_angular_diameter_distances(self):
+
+        g0 = galaxy.Galaxy(redshift=0.1)
+        g1 = galaxy.Galaxy(redshift=1)
+        g2 = galaxy.Galaxy(redshift=2)
+
+        ray_tracing_plane = galaxy.RayTracingPlane(galaxies=[g0, g2, g1], cosmological_model=cosmology.Planck15)
+
+        assert ray_tracing_plane[0].angular_diameter_distance_to_earth.value == pytest.approx(392.840,1e-5)
+        assert ray_tracing_plane[0].angular_distance_distance_to_next_galaxy.value == pytest.approx(1481.8904, 1e-5)
+        assert ray_tracing_plane[0].arcsec_per_kpc_proper.value == pytest.approx(0.525060, 1e-5)
+        assert ray_tracing_plane[0].kpc_per_arcsec_proper.value == pytest.approx(1.904544, 1e-5)
+
+        assert ray_tracing_plane[1].angular_diameter_distance_to_earth.value == pytest.approx(1697.95, 1e-5)
+        assert ray_tracing_plane[1].angular_distance_distance_to_previous_galaxy.value == pytest.approx(1481.8904, 1e-5)
+        assert ray_tracing_plane[1].angular_distance_distance_to_next_galaxy.value == pytest.approx(638.544, 1e-5)
+        assert ray_tracing_plane[1].arcsec_per_kpc_proper.value == pytest.approx(0.121478, 1e-5)
+        assert ray_tracing_plane[1].kpc_per_arcsec_proper.value == pytest.approx(8.231907, 1e-5)
+
+        assert ray_tracing_plane[2].angular_diameter_distance_to_earth.value == pytest.approx(1770.513, 1e-5)
+        assert ray_tracing_plane[2].angular_distance_distance_to_previous_galaxy.value == pytest.approx(638.544, 1e-5)
+        assert ray_tracing_plane[2].arcsec_per_kpc_proper.value == pytest.approx(0.1165000, 1e-5)
+        assert ray_tracing_plane[2].kpc_per_arcsec_proper.value == pytest.approx(8.583688, 1e-5)
 
 class TestLightProfiles(object):
     
