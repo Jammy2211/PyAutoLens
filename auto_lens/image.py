@@ -10,7 +10,7 @@ from matplotlib import pyplot
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-data_path = "{}/../data/prep_lens/".format(os.path.dirname(os.path.realpath(__file__)))
+data_path = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def numpy_array_from_fits(file_path, hdu):
@@ -191,7 +191,6 @@ def output_for_fortran(array, image_name, path=data_path):
     image_name : str
         The name of the image for this file
     """
-    # TODO: Here a default option was necessary else the code would crash if a different type was passed in
     if isinstance(array, PSF):
         file_path = path + image_name + "PSF.dat"
     elif isinstance(array, Noise):
@@ -200,7 +199,6 @@ def output_for_fortran(array, image_name, path=data_path):
         file_path = path + image_name + ".dat"
     shape = array.shape
 
-    # TODO: This convention is nice. file f exists in the scope but if closed after execution is finished
     with open(file_path, "w+") as f:
         for ix, x in enumerate(range(shape[0])):
             for iy, y in enumerate(range(shape[1])):
@@ -324,7 +322,7 @@ class Image(np.ndarray):
         A circular mask for this image
         """
         return Mask.circular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
-                             radius=radius_arc)
+                             radius_mask=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
@@ -342,15 +340,35 @@ class Image(np.ndarray):
         An annulus mask for this image
         """
         return Mask.annular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
-                            outer_radius=outer_radius_arc,
-                            inner_radius=inner_radius_arc)
-
-    def blurring_region(self, mask, psf_kernel_size):
-        return mask_blurring_region(mask, psf_kernel_size)
+                            outer_radius_mask=outer_radius_arc,
+                            inner_radius_mask=inner_radius_arc)
 
     def plot(self):
         pyplot.imshow(self)
         pyplot.show()
+
+
+class SimulatedImage(Image):
+
+    def __new__(cls, image_dimensions, pixel_scale):
+        """
+        Creates a new simulated image.
+
+        Parameters
+        ----------
+        image_dimensions : (int, int)
+            The dimensios of the image
+        pixel_scale: float
+            The scale of an image pixel
+
+        Returns
+        -------
+            A new Image object
+        """
+        obj = np.zeros(image_dimensions).view(cls)
+        obj.pixel_scale = pixel_scale
+
+        return obj
 
 
 # noinspection PyClassHasNoInit
@@ -387,6 +405,9 @@ class Array(np.ndarray):
             normalize(array)
         return array.view(cls)
 
+    def plot(self):
+        pyplot.imshow(self)
+        pyplot.show()
 
 # noinspection PyClassHasNoInit
 class PSF(Array):
@@ -395,4 +416,91 @@ class PSF(Array):
 
 # noinspection PyClassHasNoInit
 class Noise(Array):
+    pass
+
+
+class Mask(np.ndarray):
+    """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
+
+    @classmethod
+    def mask(cls, arc_second_dimensions, pixel_scale, function, centre):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre in arc seconds
+        function: function(x, y) -> Bool
+            A function that determines what the value of a mask should be at particular coordinates
+        pixel_scale: float
+            The size of a pixel in arc seconds
+        arc_second_dimensions: (float, float)
+            The spatial dimensions of the mask in arc seconds
+
+        Returns
+        -------
+            An empty array
+        """
+        pixel_dimensions = arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
+        array = np.zeros((int(pixel_dimensions[0]), int(pixel_dimensions[1])))
+
+        central_pixel_coords = central_pixel(pixel_dimensions)
+        for i in range(int(pixel_dimensions[0])):
+            for j in range(int(pixel_dimensions[1])):
+                # Convert from pixel coordinates to image coordinates
+                x_pix = pixel_scale * (i - central_pixel_coords[0]) - centre[0]
+                y_pix = pixel_scale * (j - central_pixel_coords[1]) - centre[1]
+
+                array[i, j] = function(x_pix, y_pix)
+
+        return np.ma.asarray(array)
+
+    @classmethod
+    def circular(cls, arc_second_dimensions, pixel_scale, radius_mask, centre=(0., 0.)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre in image coordinates in arc seconds
+        arc_second_dimensions : (int, int)
+            The dimensions of the image (x, y) in arc seconds
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds
+        radius_mask : float
+            The radius of the circle (arc seconds)
+        """
+
+        def is_radius_outside_mask(x_pix, y_pix):
+            radius = np.sqrt(x_pix ** 2 + y_pix ** 2)
+            return radius > radius_mask
+
+        return Mask.mask(arc_second_dimensions, pixel_scale, is_radius_outside_mask, centre)
+
+    @classmethod
+    def annular(cls, arc_second_dimensions, pixel_scale, inner_radius_mask, outer_radius_mask, centre=(0., 0.)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre in arc seconds
+        arc_second_dimensions : (int, int)
+            The dimensions of the image in arcs seconds
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds
+        inner_radius_mask : float
+            The inner radius of the circular annulus (arc seconds
+        outer_radius_mask : float
+            The outer radius of the circular annulus (arc seconds)
+        """
+
+        def is_radius_outside_mask(x_pix, y_pix):
+            radius = np.sqrt(x_pix ** 2 + y_pix ** 2)
+            return radius > outer_radius_mask or radius < inner_radius_mask
+
+        return Mask.mask(arc_second_dimensions, pixel_scale, is_radius_outside_mask, centre)
+
+
+class MaskException(Exception):
     pass

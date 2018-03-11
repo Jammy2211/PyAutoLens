@@ -13,9 +13,9 @@ class TestAnalysisRegions(object):
 
         def test__3x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, False],
-                             [False, True, False],
-                             [False, False, False]])
+            mask = np.array([[True, True, True],
+                             [True, False, True],
+                             [True, True, True]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, 
                                                                                          pixel_scale=3.0, sub_grid_size=2)
@@ -30,9 +30,9 @@ class TestAnalysisRegions(object):
 
         def test__3x3_mask_with_row_of_pixels__2x2_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, False],
-                             [True, True, True],
-                             [False, False, False]])
+            mask = np.array([[True, True, True],
+                             [False, False, False],
+                             [True, True, True]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=3.0,
                                                                                          sub_grid_size=2)
@@ -58,9 +58,9 @@ class TestAnalysisRegions(object):
 
         def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, True],
-                             [True,  True,  True],
-                             [False, False, True]])
+            mask = np.array([[True, True, False],
+                             [False, False, False],
+                             [True, True, False]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=3.0,
                                                                                          sub_grid_size=2)
@@ -98,9 +98,9 @@ class TestAnalysisRegions(object):
 
         def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__different_pixel_scale(self):
 
-            mask = np.array([[False, False, True],
-                             [True,  True,  True],
-                             [False, False, True]])
+            mask = np.array([[True, True, False],
+                             [False, False, False],
+                             [True, True, False]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=0.3,
                                                                                          sub_grid_size=2)
@@ -140,9 +140,9 @@ class TestAnalysisRegions(object):
 
         def test__3x3_mask_with_one_pixel__3x3_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, False],
-                             [False, True, False],
-                             [False, False, False]])
+            mask = np.array([[True, True, True],
+                             [True, False, True],
+                             [True, True, True]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=3.0,
                                                                                          sub_grid_size=3)
@@ -163,9 +163,9 @@ class TestAnalysisRegions(object):
 
         def test__3x3_mask_with_one_row__3x3_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, True],
-                             [False, True, False],
-                             [False, False, True]])
+            mask = np.array([[True, True, False],
+                             [True, False, True],
+                             [True, True, False]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=2.0,
                                                                                          sub_grid_size=3)
@@ -202,10 +202,10 @@ class TestAnalysisRegions(object):
 
         def test__4x4_mask_with_one_pixel__4x4_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, False, False],
-                             [False, True, True, False],
-                             [False, True, True, False],
-                             [False, False, False, True]])
+            mask = np.array([[True, True, True, True],
+                             [True, False, False, True],
+                             [True, False, False, True],
+                             [True, True, True, False]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=2.0,
                                                                                          sub_grid_size=4)
@@ -299,10 +299,10 @@ class TestAnalysisRegions(object):
 
         def test__4x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, False],
-                             [False, True, False],
-                             [False, True, True],
-                             [True, False, False]])
+            mask = np.array([[True, True, True],
+                             [True, False, True],
+                             [True, False, False],
+                             [False, True, True]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=3.0,
                                                                                          sub_grid_size=2)
@@ -329,9 +329,9 @@ class TestAnalysisRegions(object):
 
         def test__3x4_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
 
-            mask = np.array([[False, False, False, True],
-                             [False, True, True, False],
-                             [True, False, True, False]])
+            mask = np.array([[True, True, True, False],
+                             [True, False, False, True],
+                             [False, True, False, True]])
 
             image_sub_grid_coordinates = analysis_image.setup_image_sub_grid_coordinates(mask=mask, pixel_scale=3.0,
                                                                                          sub_grid_size=2)
@@ -365,9 +365,9 @@ class TestAnalysisRegions(object):
 
         def test__size__3x3_small_mask(self):
 
-            mask = np.array([[False, False, False],
-                             [False, True, False],
-                             [False, False, False]])
+            mask = np.array([[True, True, True],
+                             [True, False, True],
+                             [True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
 
@@ -377,13 +377,13 @@ class TestAnalysisRegions(object):
 
         def test__size__3x3__large_mask(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, True,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
 
@@ -397,13 +397,13 @@ class TestAnalysisRegions(object):
 
         def test__size__5x5__large_mask(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, True,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
 
@@ -417,13 +417,13 @@ class TestAnalysisRegions(object):
 
         def test__size__5x3__large_mask(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, True, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 3))
 
@@ -437,13 +437,13 @@ class TestAnalysisRegions(object):
 
         def test__size__3x5__large_mask(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, True, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 5))
 
@@ -457,13 +457,13 @@ class TestAnalysisRegions(object):
 
         def test__size__3x3__multiple_points(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True],
+                             [True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
 
@@ -476,16 +476,16 @@ class TestAnalysisRegions(object):
                                                  [True,   True,  True, False,  True,  True,  True]])).all()
 
         def test__size__5x5__multiple_points(self):
-
-            mask = np.array([[False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False,  False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False]])
+            
+            mask = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
 
@@ -501,15 +501,15 @@ class TestAnalysisRegions(object):
 
         def test__size__5x3__multiple_points(self):
 
-            mask = np.array([[False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False,  False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 3))
 
@@ -524,16 +524,16 @@ class TestAnalysisRegions(object):
                                                  [False, False, False, False, False, False, False, False, False]])).all()
 
         def test__size__3x5__multiple_points(self):
-
-            mask = np.array([[False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False,  False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False]])
+            
+            mask = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 5))
 
@@ -548,15 +548,15 @@ class TestAnalysisRegions(object):
                                                  [False, True,   True,  True, False,  True,  True,  True, False]])).all()
 
         def test__size__3x3__even_sized_image(self):
-
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
+            
+            mask = np.array([[True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
 
@@ -570,15 +570,15 @@ class TestAnalysisRegions(object):
                                                  [False, False, False, False, False, False, False, False]])).all()
 
         def test__size__5x5__even_sized_image(self):
-
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
+            
+            mask = np.array([[True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
 
@@ -592,15 +592,15 @@ class TestAnalysisRegions(object):
                                                  [False, False, False,  True,  True,  True,  True, True]])).all()
 
         def test__size__3x3__rectangular_8x9_image(self):
-
-            mask = np.array([[False, False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False, False],
-                             [False, False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False, False]])
+            
+            mask = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
 
@@ -615,15 +615,15 @@ class TestAnalysisRegions(object):
 
         def test__size__3x3__rectangular_9x8_image(self):
 
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True]])
 
             blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
 
@@ -638,29 +638,30 @@ class TestAnalysisRegions(object):
                                                  [False, False, False, False, False, False, False, False]])).all()
 
         def test__size__5x5__multiple_points__mask_extends_beyond_border_so_raises_mask_exception(self):
+            
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True],
+                             [True, True, True, True, True, True, True]])
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, True, False, False, False, True, False],
-                             [False, False, False, False, False, False, False]])
 
-            with pytest.raises(analysis_image.MaskException):
+            with pytest.raises(image.MaskException):
                 blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
 
     class TestBorderPixels(object):
 
         def test__7x7_mask_one_central_pixel__is_entire_border(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, True,  False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, False,  True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
@@ -668,13 +669,13 @@ class TestAnalysisRegions(object):
 
         def test__7x7_mask_nine_central_pixels__is_border(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, False, False, False, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
@@ -682,13 +683,13 @@ class TestAnalysisRegions(object):
 
         def test__7x7_mask_rectangle_of_fifteen_central_pixels__is_border(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True, True, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
@@ -696,29 +697,28 @@ class TestAnalysisRegions(object):
 
         def test__8x7_mask_add_edge_pixels__also_in_border(self):
 
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, False, False, True, False, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, True,  True,  True,  True, True, False],
-                             [False, False, True,  True,  True, False, False],
-                             [False, False, True,  True, True, False, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, True, True, False, True, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, False, False, False, False, False, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, False, False, False, True, True],
+                             [True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17])).all()
 
         def test__8x7_mask_big_square(self):
-
-            mask = np.array([[False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False],
-                             [False, True, True,  True, True, True, False],
-                             [False, True, True,  True, True, True, False],
-                             [False, True, True,  True, True, True, False],
-                             [False, True, True,  True, True, True, False],
-                             [False, True, True,  True, True, True, False],
-                             [False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True],
+                             [True, False,False, False, False,False, True],
+                             [True, False, False, False, False, False, True],
+                             [True, False, False, False, False, False, True],
+                             [True, False, False, False, False, False, True],
+                             [True, False, False, False, False, False, True],
+                             [True, False, False, False, False, False, True],
+                             [True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
@@ -727,13 +727,13 @@ class TestAnalysisRegions(object):
 
         def test__7x8_mask_add_edge_pixels__also_in_border(self):
 
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, False, False, True, False, False, False, False],
-                             [False, False, True,  True,  True, False, False, False],
-                             [False, False, True,  True,  True, False, False, False],
-                             [False, True,  True,  True,  True, True, False, False],
-                             [False, False, True,  True,  True, False, False, False],
-                             [False, False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True, True],
+                             [True, True, True, False, True, True, True, True],
+                             [True, True, False, False, False, True, True, True],
+                             [True, True, False, False, False, True, True, True],
+                             [True, False, False, False, False, False, True, True],
+                             [True, True, False, False, False, True, True, True],
+                             [True, True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
@@ -741,13 +741,13 @@ class TestAnalysisRegions(object):
 
         def test__7x8_mask_big_square(self):
 
-            mask = np.array([[False, False, False, False, False, False, False, False],
-                             [False, True, True,  True,  True, True, False, False],
-                             [False, True, True,  True, True, True, False, False],
-                             [False, True, True,  True, True, True, False, False],
-                             [False, True, True,  True, True, True, False, False],
-                             [False, True, True,  True, True, True, False, False],
-                             [False, False, False, False, False, False, False, False]])
+            mask = np.array([[True, True, True, True, True, True, True, True],
+                             [True, False,False, False, False,False, True, True],
+                             [True, False, False, False, False, False, True, True],
+                             [True, False, False, False, False, False, True, True],
+                             [True, False, False, False, False, False, True, True],
+                             [True, False, False, False, False, False, True, True],
+                             [True, True, True, True, True, True, True, True]])
 
             border_pixels = analysis_image.setup_border_pixels(mask)
 
@@ -760,13 +760,13 @@ class TestAnalysisRegions(object):
 
             def test__7x7_circle_mask__five_central_pixels__sparse_grid_size_1(self):
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, False,False,False,False,False, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
@@ -774,14 +774,15 @@ class TestAnalysisRegions(object):
                 assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
 
             def test__7x7_circle_mask__sparse_grid_size_1(self):
+                
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True,False, False, False,False, False, True],
+                                 [True, False, False, False,False, False, True],
+                                 [True, False, False, False,False, False, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True, True, True, True, True, True, True]])
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, True,  True,  True, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, True,  True, True, False, False],
-                                 [False, False, False, False, False, False, False]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
@@ -790,13 +791,13 @@ class TestAnalysisRegions(object):
 
             def test__7x7_rectangle_mask__sparse_grid_size_1(self):
 
-                mask = np.array([[True, True, True, True, True, True, True],
-                                 [True, True, True,  True,  True, True, True],
-                                 [True, True, True,  True,  True, True, True],
-                                 [True, True, True,  True,  True, True, True],
-                                 [True, True, True,  True,  True, True, True],
-                                 [True, True, True,  True, True, True, True],
-                                 [True, True, True, True, True, True, True]])
+                mask = np.array([[False, False, False, False, False, False, False],
+                                 [False, False, False,  False,  False, False, False],
+                                 [False, False, False,  False,  False, False, False],
+                                 [False, False, False,  False,  False, False, False],
+                                 [False, False, False,  False,  False, False, False],
+                                 [False, False, False,  False, False, False, False],
+                                 [False, False, False, False, False, False, False]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
@@ -805,13 +806,13 @@ class TestAnalysisRegions(object):
 
             def test__7x7_circle_mask__sparse_grid_size_2(self):
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, True,  True,  True, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, True,  True, True, False, False],
-                                 [False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True, False, False, False,False, False, True],
+                                 [True, False, False, False,False, False, True],
+                                 [True, False, False, False,False, False, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
@@ -821,14 +822,14 @@ class TestAnalysisRegions(object):
 
             def test__8x8_sporadic_mask__sparse_grid_size_2(self):
 
-                mask = np.array([[False, False, False, False, False, False, True, True],
-                                 [False, False, True,  True,  True, False, True, True],
-                                 [False, True, True,  True,  True, True, True, True],
-                                 [False, True, True,  True,  True, True, True, True],
-                                 [False, True, True,  True,  True, True, True, True],
-                                 [False, False, True,  True, True, False, True, True],
-                                 [False, False, False, False, False, False, True, True],
-                                 [False, False, True, True, True, False, True, True]])
+                mask = np.array([[True, True, True, True, True, True, False, False],
+                                 [True, True, False, False, False, True, False, False],
+                                 [True, False, False, False,False, False, False,False],
+                                 [True, False, False, False, False, False, False, False],
+                                 [True, False, False, False, False, False, False, False],
+                                 [True, True, False, False, False, True, False, False],
+                                 [True, True, True, True, True, True, False, False],
+                                 [True, True, False, False, False, True, False, False]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
@@ -839,13 +840,13 @@ class TestAnalysisRegions(object):
 
             def test__7x7_circle_mask_trues_on_even_values__sparse_grid_size_2(self):
 
-                mask = np.array([[True,  False, True, False, True, False, True],
-                                 [False, False, False, False, False, False, False],
-                                 [True,  False, True, False, True, False, True],
-                                 [False, False, False, False, False, False, False],
-                                 [True,  False, True, False, True, False, True],
-                                 [False, False, False, False, False, False, False],
-                                 [True,  False, True, False, True, False, True]])
+                mask = np.array([[False, True, False, True, False, True, False],
+                                 [True,  True, True,  True, True,  True, True],
+                                 [False, True, False, True, False, True, False],
+                                 [True,  True, True,  True, True,  True, True],
+                                 [False, True, False, True, False, True, False],
+                                 [True,  True, True,  True, True,  True, True],
+                                 [False, True, False, True, False, True, False]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
@@ -854,13 +855,13 @@ class TestAnalysisRegions(object):
 
             def test__7x7_circle_mask__sparse_grid_size_3(self):
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, True,  True,  True, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, True,  True, True, False, False],
-                                 [False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
@@ -869,13 +870,13 @@ class TestAnalysisRegions(object):
 
             def test__7x7_circle_mask_more_points_added__sparse_grid_size_3(self):
 
-                mask = np.array([[True, False, False, True, False, True, True],
-                                 [False, False, True,  True,  True, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, True],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, True,  True, True, False, False],
-                                 [False, False, False, False, False, False, True]])
+                mask = np.array([[False, True, True, False, True, False, False],
+                                 [True, True, False, False, False, True, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, False, False, False, False, False, False],
+                                 [True, False, False, False, False, False, True],
+                                 [True, True, False, False, False, True, True],
+                                 [True, True, True, True, True, True, False]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
@@ -884,14 +885,15 @@ class TestAnalysisRegions(object):
                                                      3, 4, 3, 3, 3, 5])).all()
 
             def test__7x7_mask_trues_on_values_which_divide_by_3__sparse_grid_size_3(self):
+                
+                mask = np.array([[False,  True, True, False, True, True, False],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [False, True, True,  False, True, True,  False],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [False,  True, True, False, True, True, False]])
 
-                mask = np.array([[True,  False, False, True, False, False, True],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [True, False, False,  True, False, False,  True],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [True,  False, False, True, False, False, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
@@ -899,14 +901,14 @@ class TestAnalysisRegions(object):
                 assert (image_to_sparse == np.arange(9)).all()
 
             def test__8x8_mask_trues_on_values_which_divide_by_3_and_other_values__sparse_grid_size_3(self):
-
-                mask = np.array([[True,  False, True, True, False, False, True],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, True, True, True, False, False],
-                                 [True, False, False,  True, False, False,  True],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [True,  True, True, True, True, True, True]])
+                
+                mask = np.array([[False,  True, False, False, True, True, False],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, False, False, False, True, True],
+                                 [False, True, True,  False, True, True,  False],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [False, False, False, False, False, False, False]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
 
@@ -915,14 +917,14 @@ class TestAnalysisRegions(object):
 
             def test__8x7__five_central_pixels__sparse_grid_size_1(self):
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
@@ -931,14 +933,14 @@ class TestAnalysisRegions(object):
 
             def test__8x7__five_central_pixels_2__sparse_grid_size_1(self):
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
@@ -947,14 +949,14 @@ class TestAnalysisRegions(object):
 
             def test__8x7__five_central_pixels__sparse_grid_size_2(self):
 
-                mask = np.array([[False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, True, True,  True,  True, True, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, False, False, False, False, False, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
@@ -962,14 +964,14 @@ class TestAnalysisRegions(object):
                 assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
             def test__7x8__five_central_pixels__sparse_grid_size_1(self):
-
-                mask = np.array([[False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False]])
+                
+                mask = np.array([[True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, False, False, False, False, False, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
 
@@ -978,13 +980,13 @@ class TestAnalysisRegions(object):
 
             def test__7x8__five_central_pixels__sparse_grid_size_2(self):
 
-                mask = np.array([[False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False, False],
-                                 [False, True, True,  True,  True, True, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, False, False, False, False, False, True, True],
+                                 [True, False, False, False, False, False, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
@@ -993,13 +995,13 @@ class TestAnalysisRegions(object):
 
             def test__7x8__more_central_pixels__sparse_grid_size_2(self):
 
-                mask = np.array([[False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, True, True,  True,  True, True, False, False],
-                                 [False, True, True,  True,  True, True, False, False],
-                                 [False, True, True,  True,  True, True, False, False],
-                                 [False, False, False, False, False, False, False, False],
-                                 [False, False, False, False, False, False, False, False]])
+                mask = np.array([[True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, False, False, False, False, False, True, True],
+                                 [True, False, False, False, False, False, True, True],
+                                 [True, False, False, False, False, False, True, True],
+                                 [True, True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True, True]])
 
                 sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
 
@@ -1007,165 +1009,3 @@ class TestAnalysisRegions(object):
                 assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
 
 
-class TestMask(object):
-    class TestPixelScale(object):
-        def test__central_pixel(self):
-            assert image.central_pixel((3, 3)) == (1.0, 1.0)
-
-        def test__shape(self):
-            assert analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=5).shape == (3, 3)
-            assert analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=0.5, radius=5).shape == (6, 6)
-            assert analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=0.2, radius=5).shape == (15, 15)
-
-        def test__odd_x_odd_mask_input_radius_small__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=0.5, radius=0.5)
-            assert (mask == np.array([[False, False, False, False, False, False],
-                                      [False, False, False, False, False, False],
-                                      [False, False, True, True, False, False],
-                                      [False, False, True, True, False, False],
-                                      [False, False, False, False, False, False],
-                                      [False, False, False, False, False, False]])).all()
-
-    class TestCentre(object):
-        def test__simple_shift_back(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(-1, 0))
-            assert mask.shape == (3, 3)
-            assert (mask == np.array([[False, True, False],
-                                      [False, False, False],
-                                      [False, False, False]])).all()
-
-        def test__simple_shift_forward(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(0, 1))
-            assert mask.shape == (3, 3)
-            assert (mask == np.array([[False, False, False],
-                                      [False, False, True],
-                                      [False, False, False]])).all()
-
-        def test__diagonal_shift(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5, centre=(1, 1))
-            assert (mask == np.array([[False, False, False],
-                                      [False, False, False],
-                                      [False, False, True]])).all()
-
-    class TestCircular(object):
-        def test__input_big_mask__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=5)
-            assert mask.shape == (3, 3)
-            assert (mask == np.array([[True, True, True],
-                                      [True, True, True],
-                                      [True, True, True]])).all()
-
-        def test__odd_x_odd_mask_input_radius_small__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=0.5)
-            assert (mask == np.array([[False, False, False],
-                                      [False, True, False],
-                                      [False, False, False]])).all()
-
-        def test__odd_x_odd_mask_input_radius_medium__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=1)
-
-            assert (mask == np.array([[False, True, False],
-                                      [True, True, True],
-                                      [False, True, False]])).all()
-
-        def test__odd_x_odd_mask_input_radius_large__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius=3)
-
-            assert (mask == np.array([[True, True, True],
-                                      [True, True, True],
-                                      [True, True, True]])).all()
-
-        def test__even_x_odd_mask_input_radius_small__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(4, 3), pixel_scale=1, radius=0.5)
-
-            assert (mask == np.array([[False, False, False],
-                                      [False, True, False],
-                                      [False, True, False],
-                                      [False, False, False]])).all()
-
-        def test__even_x_odd_mask_input_radius_medium__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(4, 3), pixel_scale=1, radius=1.50001)
-
-            assert (mask == np.array([[False, True, False],
-                                      [True, True, True],
-                                      [True, True, True],
-                                      [False, True, False]])).all()
-
-        def test__even_x_odd_mask_input_radius_large__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(4, 3), pixel_scale=1, radius=3)
-
-            assert (mask == np.array([[True, True, True],
-                                      [True, True, True],
-                                      [True, True, True],
-                                      [True, True, True]])).all()
-
-        def test__even_x_even_mask_input_radius_small__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(4, 4), pixel_scale=1, radius=0.72)
-
-            assert (mask == np.array([[False, False, False, False],
-                                      [False, True, True, False],
-                                      [False, True, True, False],
-                                      [False, False, False, False]])).all()
-
-        def test__even_x_even_mask_input_radius_medium__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(4, 4), pixel_scale=1, radius=1.7)
-
-            assert (mask == np.array([[False, True, True, False],
-                                      [True, True, True, True],
-                                      [True, True, True, True],
-                                      [False, True, True, False]])).all()
-
-        def test__even_x_even_mask_input_radius_large__mask(self):
-            mask = analysis_image.Mask.circular(arc_second_dimensions=(4, 4), pixel_scale=1, radius=3)
-
-            assert (mask == np.array([[True, True, True, True],
-                                      [True, True, True, True],
-                                      [True, True, True, True],
-                                      [True, True, True, True]])).all()
-
-    class TestAnnular(object):
-        def test__odd_x_odd_mask_inner_radius_zero_outer_radius_small__mask(self):
-            mask = analysis_image.Mask.annular(arc_second_dimensions=(3, 3), pixel_scale=1, inner_radius=0, outer_radius=0.5)
-
-            assert (mask == np.array([[False, False, False],
-                                      [False, True, False],
-                                      [False, False, False]])).all()
-
-        def test__odd_x_odd_mask_inner_radius_small_outer_radius_large__mask(self):
-            mask = analysis_image.Mask.annular(arc_second_dimensions=(3, 3), pixel_scale=1, inner_radius=0.5, outer_radius=3)
-
-            assert (mask == np.array([[True, True, True],
-                                      [True, False, True],
-                                      [True, True, True]])).all()
-
-        def test__even_x_odd_mask_inner_radius_small_outer_radius_medium__mask(self):
-            mask = analysis_image.Mask.annular(arc_second_dimensions=(4, 3), pixel_scale=1, inner_radius=0.51, outer_radius=1.51)
-
-            assert (mask == np.array([[False, True, False],
-                                      [True, False, True],
-                                      [True, False, True],
-                                      [False, True, False]])).all()
-
-        def test__even_x_odd_mask_inner_radius_medium_outer_radius_large__mask(self):
-            mask = analysis_image.Mask.annular(arc_second_dimensions=(4, 3), pixel_scale=1, inner_radius=1.51, outer_radius=3)
-
-            assert (mask == np.array([[True, False, True],
-                                      [False, False, False],
-                                      [False, False, False],
-                                      [True, False, True]])).all()
-
-        def test__even_x_even_mask_inner_radius_small_outer_radius_medium__mask(self):
-            mask = analysis_image.Mask.annular(arc_second_dimensions=(4, 4), pixel_scale=1, inner_radius=0.81, outer_radius=2)
-
-            assert (mask == np.array([[False, True, True, False],
-                                      [True, False, False, True],
-                                      [True, False, False, True],
-                                      [False, True, True, False]])).all()
-
-        def test__even_x_even_mask_inner_radius_medium_outer_radius_large__mask(self):
-            mask = analysis_image.Mask.annular(arc_second_dimensions=(4, 4), pixel_scale=1, inner_radius=1.71, outer_radius=3)
-
-            assert (mask == np.array([[True, False, False, True],
-                                      [False, False, False, False],
-                                      [False, False, False, False],
-                                      [True, False, False, True]])).all()
