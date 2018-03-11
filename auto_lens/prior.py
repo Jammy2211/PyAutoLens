@@ -3,7 +3,7 @@ from scipy.special import erfinv
 import inspect
 import configparser
 import os
-from auto_lens import MultiNestTools
+from auto_lens import multi_nest_tools
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -252,7 +252,7 @@ class ClassMap(object):
             stats.dat, summary.txt, etc.)
         """
         
-        most_probable_vector = MultiNestTools.read_most_probable(results_path)
+        most_probable_vector = multi_nest_tools.read_most_probable(results_path)
 
         return self.reconstruction_from_physical_vector(most_probable_vector)
 
@@ -269,7 +269,7 @@ class ClassMap(object):
             stats.dat, summary.txt, etc.)
         """
 
-        most_likely_vector = MultiNestTools.read_most_likely(results_path)
+        most_likely_vector = multi_nest_tools.read_most_likely(results_path)
 
         return self.reconstruction_from_physical_vector(most_likely_vector)
 
@@ -284,9 +284,9 @@ class ClassMap(object):
             param_labels = cls.parameter_labels.__get__(cls)
             if subscripts == True:
                 subscript_label = cls.subscript_label.__get__(cls)
-                latex_labels = MultiNestTools.generate_parameter_latex(param_labels, subscript_label)
+                latex_labels = multi_nest_tools.generate_parameter_latex(param_labels, subscript_label)
             elif subscripts == False:
-                latex_labels = MultiNestTools.generate_parameter_latex(param_labels)
+                latex_labels = multi_nest_tools.generate_parameter_latex(param_labels)
 
             for param_no, param in enumerate(self.class_priors_dict[name]):
 

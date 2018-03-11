@@ -1,8 +1,8 @@
 from __future__ import division, print_function
 
 import pytest
-from profiles import light_profiles
-from profiles import geometry_profiles
+from auto_lens.profiles import light_profiles
+from auto_lens.profiles import geometry_profiles
 import math
 import numpy as np
 
