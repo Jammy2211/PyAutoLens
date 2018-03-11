@@ -468,6 +468,7 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', r'\theta', 'S']
 
+
 class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
     """Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
@@ -490,6 +491,7 @@ class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
     @property
     def parameter_labels(self):
         return ['x', 'y', r'\theta', 'S']
+
 
 class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
     """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
