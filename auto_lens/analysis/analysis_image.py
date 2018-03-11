@@ -42,8 +42,9 @@ def setup_image_sub_grid_coordinates(mask, pixel_scale, sub_grid_size):
     One-dimensional array containing the sub-image coordinates of each image pixel in the mask.
     """
 
-    image_pixels = np.sum(mask)
     pixel_dimensions = mask.shape
+
+    image_pixels = np.size(mask) - np.sum(mask)
 
     cen = image.central_pixel(pixel_dimensions)
 
@@ -53,7 +54,7 @@ def setup_image_sub_grid_coordinates(mask, pixel_scale, sub_grid_size):
 
     for y in range(pixel_dimensions[0]):
         for x in range(pixel_dimensions[1]):
-            if mask is None or mask[y, x] == True:
+            if mask is None or mask[y, x] == False:
                 x_coordinate = image.x_pixel_to_arc_seconds(x, cen[1], pixel_scale)
                 y_coordinate = image.y_pixel_to_arc_seconds(y, cen[0], pixel_scale)
                 sub_pixel_count = 0
@@ -85,7 +86,7 @@ def setup_blurring_region(mask, blurring_region_size):
     ----------
     mask : image.Mask
         The image mask we are finding the blurring region around.
-    blurring_region_size : int
+    blurring_region_size : (int, int)
         The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
 
     Returns
@@ -96,22 +97,22 @@ def setup_blurring_region(mask, blurring_region_size):
      """
 
     if blurring_region_size[0] % 2 == 0 or blurring_region_size[1] % 2 == 0:
-        raise MaskException("blurring_region_size of exterior region must be odd")
+        raise image.MaskException("blurring_region_size of exterior region must be odd")
 
     image_dimensions_pixels = mask.shape
     blurring_region = np.zeros(image_dimensions_pixels)
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x]:
+            if mask[y, x] == False:
                 for y1 in range((-blurring_region_size[1] + 1) // 2, (blurring_region_size[1] + 1) // 2):
                     for x1 in range((-blurring_region_size[0] + 1) // 2, (blurring_region_size[0] + 1) // 2):
                         if 0 <= y + y1 <= image_dimensions_pixels[0] - 1 \
                                 and 0 <= x + x1 <= image_dimensions_pixels[1] - 1:
-                            if not mask[y + y1, x + x1]:
+                            if mask[y + y1, x + x1]:
                                 blurring_region[y + y1, x + x1] = True
                         else:
-                            raise MaskException(
+                            raise image.MaskException(
                                 "setup_blurring_region extends beynod the size of the mask - pad the image"
                                 "before masking")
 
@@ -143,9 +144,9 @@ def setup_border_pixels(mask):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x]:
-                if mask[y+1,x] == 0 or mask[y-1,x] == 0 or mask[y,x+1] == 0 or mask[y,x-1] == 0 or \
-                        mask[y+1,x+1] == 0 or mask[y+1, x-1] == 0 or mask[y-1, x+1] == 0 or mask[y-1,x-1] == 0:
+            if mask[y, x] == False:
+                if mask[y+1,x] == 1 or mask[y-1,x] == 1 or mask[y,x+1] == 1 or mask[y,x-1] == 1 or \
+                        mask[y+1,x+1] == 1 or mask[y+1, x-1] == 1 or mask[y-1, x+1] == 1 or mask[y-1,x-1] == 1:
                     border_pixels = np.append(border_pixels, image_pixel_index)
                 image_pixel_index += 1
 
@@ -189,15 +190,15 @@ def setup_sparse_mask(mask, sparse_grid_size):
 
     image_dimensions_pixels = mask.shape
 
-    sparse_mask = np.zeros(image_dimensions_pixels)
+    sparse_mask = np.ones(image_dimensions_pixels)
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x]:
+            if mask[y, x] == False:
                 if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
-                    sparse_mask[y, x] = 1
+                    sparse_mask[y, x] = False
 
-    return np.ma.make_mask(sparse_mask)
+    return np.ma.asarray(sparse_mask)
 
 def setup_sparse_to_image(mask, sparse_mask):
     """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
@@ -224,10 +225,10 @@ def setup_sparse_to_image(mask, sparse_mask):
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
 
-            if sparse_mask[y, x]:
+            if sparse_mask[y, x] == False:
                 sparse_to_image = np.append(sparse_to_image, image_pixel_index)
 
-            if mask[y, x]:
+            if mask[y, x] == False:
                 image_pixel_index += 1
 
     return sparse_to_image
@@ -256,7 +257,7 @@ def setup_image_to_sparse(mask, sparse_mask):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if sparse_mask[y,x]:
+            if sparse_mask[y,x] == False:
                 sparse_pixel_index += 1
                 sparse_index_2d[y,x] = sparse_pixel_index
 
@@ -264,105 +265,19 @@ def setup_image_to_sparse(mask, sparse_mask):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x]:
+            if mask[y, x] == False:
                 iboarder = 0
                 pixel_match = False
                 while pixel_match == False:
                     for y1 in range(y-iboarder, y+iboarder+1):
                         for x1 in range(x-iboarder, x+iboarder+1):
                             if y1 >= 0 and y1 < image_dimensions_pixels[0] and x1 >= 0 and x1 < image_dimensions_pixels[1]:
-                                if sparse_mask[y1, x1] and pixel_match == False:
+                                if sparse_mask[y1, x1] == False and pixel_match == False:
                                     image_to_sparse = np.append(image_to_sparse, sparse_index_2d[y1,x1]-1)
                                     pixel_match = True
 
                     iboarder += 1
                     if iboarder == 100:
-                        raise MaskException('setup_image_to_sparse - Stuck in infinite loop')
+                        raise image.MaskException('setup_image_to_sparse - Stuck in infinite loop')
 
     return image_to_sparse
-
-
-class Mask(object):
-    """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
-
-    @classmethod
-    def mask(cls, arc_second_dimensions, pixel_scale, function, centre):
-        """
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The centre in arc seconds
-        function: function(x, y) -> Bool
-            A function that determines what the value of a mask should be at particular coordinates
-        pixel_scale: float
-            The size of a pixel in arc seconds
-        arc_second_dimensions: (float, float)
-            The spatial dimensions of the mask in arc seconds
-
-        Returns
-        -------
-            An empty array
-        """
-        pixel_dimensions = image.arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
-        array = np.zeros((int(pixel_dimensions[0]), int(pixel_dimensions[1])))
-
-        central_pixel_coords = image.central_pixel(pixel_dimensions)
-        for i in range(int(pixel_dimensions[0])):
-            for j in range(int(pixel_dimensions[1])):
-                # Convert from pixel coordinates to image coordinates
-                x_pix = pixel_scale * (i - central_pixel_coords[0]) - centre[0]
-                y_pix = pixel_scale * (j - central_pixel_coords[1]) - centre[1]
-
-                array[i, j] = function(x_pix, y_pix)
-
-        return np.ma.make_mask(array)
-
-    @classmethod
-    def circular(cls, arc_second_dimensions, pixel_scale, radius, centre=(0., 0.)):
-        """
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The centre in image coordinates in arc seconds
-        arc_second_dimensions : (int, int)
-            The dimensions of the image (x, y) in arc seconds
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds
-        radius : float
-            The radius of the circle (arc seconds)
-        """
-
-        def is_within_radius(x_pix, y_pix):
-            radius_arc = np.sqrt(x_pix ** 2 + y_pix ** 2)
-            return radius_arc <= radius
-
-        return Mask.mask(arc_second_dimensions, pixel_scale, is_within_radius, centre)
-
-    @classmethod
-    def annular(cls, arc_second_dimensions, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
-        """
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The centre in arc seconds
-        arc_second_dimensions : (int, int)
-            The dimensions of the image in arcs seconds
-        pixel_scale : float
-            The scale size of a pixel (x, y) in arc seconds
-        inner_radius : float
-            The inner radius of the circular annulus (arc seconds
-        outer_radius : float
-            The outer radius of the circular annulus (arc seconds)
-        """
-
-        def is_within_radii(x_pix, y_pix):
-            radius_arc = np.sqrt(x_pix ** 2 + y_pix ** 2)
-            return outer_radius >= radius_arc >= inner_radius
-
-        return Mask.mask(arc_second_dimensions, pixel_scale, is_within_radii, centre)
-
-class MaskException(Exception):
-    pass
