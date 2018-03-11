@@ -1,5 +1,5 @@
-from profiles import geometry_profiles
-from profiles import light_profiles
+from auto_lens.profiles import geometry_profiles
+from auto_lens.profiles import light_profiles
 import math
 from scipy.integrate import quad
 from scipy import special
