@@ -15,4 +15,4 @@ pytz==2017.3
 scipy==1.0.0
 singledispatch==3.4.0.3
 six==1.11.0
-subprocess32==3.2.7
+subprocess32

@@ -3,7 +3,7 @@ from scipy.special import erfinv
 import inspect
 import configparser
 import os
-import MultiNestTools
+from auto_lens import MultiNestTools
 
 path = os.path.dirname(os.path.realpath(__file__))
 
