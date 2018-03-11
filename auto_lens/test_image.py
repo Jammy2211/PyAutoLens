@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 import pytest
 import numpy as np
-import image
+from auto_lens import image
 import os
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))

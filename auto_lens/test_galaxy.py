@@ -1,5 +1,5 @@
-import galaxy
-from profiles import geometry_profiles, mass_profiles, light_profiles
+from auto_lens import galaxy
+from auto_lens.profiles import geometry_profiles, mass_profiles, light_profiles
 import pytest
 from astropy import cosmology
 

@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from profiles import geometry_profiles
+from auto_lens.profiles import geometry_profiles
 import sklearn.cluster
 import scipy.spatial
 

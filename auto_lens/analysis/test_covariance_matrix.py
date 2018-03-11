@@ -1,4 +1,4 @@
-from analysis import covariance_matrix
+from auto_lens.analysis import covariance_matrix
 import pytest
 
 
