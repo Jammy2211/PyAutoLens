@@ -1,5 +1,5 @@
 import numpy as np
-from analysis import frame_convolution
+from auto_lens.analysis import frame_convolution
 import pytest
 
 

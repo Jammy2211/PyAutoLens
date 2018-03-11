@@ -1,4 +1,4 @@
-from profiles import geometry_profiles
+from auto_lens.profiles import geometry_profiles
 import math
 from scipy.integrate import quad
 

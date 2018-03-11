@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from analysis import source_plane as sp
+from auto_lens.analysis import source_plane as sp
 import math
 
 

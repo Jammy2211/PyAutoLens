@@ -524,10 +524,10 @@ class Galaxy(object):
 
         plt.title('Decomposed surface density profile of ' + image_name, size=16)
 
-        if convert_x_to_kpc == True:
+        if convert_x_to_kpc:
             radii_plot = list(np.linspace(1e-4, maximum_radius*self.kpc_per_arcsec, number_bins))
             plt.xlabel('Distance From Galaxy Center (kpc)', size=16)
-        elif convert_x_to_kpc == False:
+        else:
             radii_plot = list(np.linspace(1e-4, maximum_radius, number_bins))
             plt.xlabel('Distance From Galaxy Center (")', size=16)
 
