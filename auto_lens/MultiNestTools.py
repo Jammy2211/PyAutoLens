@@ -1,5 +1,6 @@
 import getdist
 
+
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a parameter, typically used for the MultiNest / getdist paramnames file and \
     outputting the results of a MultiNest run to a latex table.
@@ -24,6 +25,7 @@ def generate_parameter_latex(parameters, subscript=''):
             latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
 
     return latex
+
 
 def read_most_probable(results_path):
     """
@@ -56,6 +58,7 @@ def read_most_probable(results_path):
 
     return most_probable_vector
 
+
 def read_most_likely(results_path):
     """
     Read the most probable model from the results of a MultiNest non-linear sampling run. This is performed by using \
@@ -75,7 +78,7 @@ def read_most_likely(results_path):
 
     total_parameters = compute_total_parameters(summary)
 
-    skip = summary.read(2 + 28*total_parameters)  # skip the first 3 characters of the file, which are an indentation
+    skip = summary.read(2 + 28 * total_parameters)  # skip the first 3 characters of the file, which are an indentation
 
     most_likely_vector = []
 
@@ -85,6 +88,7 @@ def read_most_likely(results_path):
     summary.close()
 
     return most_likely_vector
+
 
 def compute_total_parameters(summary, reset_position=True):
     """ Each parameter in the summary file is 28 characters long (including its 4 spaces). Parameters are listed twice \

@@ -1,7 +1,6 @@
-import prior
+from auto_lens import prior
 import pytest
-from profiles import geometry_profiles, light_profiles, mass_profiles
-import MultiNestTools
+from auto_lens.profiles import geometry_profiles, light_profiles, mass_profiles
 
 import os
 data_path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
