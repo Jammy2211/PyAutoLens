@@ -1,6 +1,36 @@
 import numpy as np
 import image
 
+def setup_image_coordinates(mask, pixel_scale):
+    """ Given a mask and the image pixel_scale, compute the arc second coordinates at the center of every unmasked
+    image-pixel. This is defined from the top-left corner, such that pixels in the top-left corner of the image
+    have a negative x value for and positive y value in arc seconds.
+    Parameters
+    ----------
+    mask : image.Mask
+        The image mask we are finding the blurring region around.
+    pixel_scale : float
+        The arcsecond to pixel conversion factor of the array.
+
+    Returns
+    -------
+    One-dimensional array containing the image coordinates of each image pixel in the mask.
+    """
+    pixel_dimensions = mask.shape
+    coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale)
+
+    image_pixels = np.size(mask) - np.sum(mask)
+    image_coordinates = np.zeros(shape=(image_pixels, 2))
+    image_pixel_count = 0
+
+    for y in range(pixel_dimensions[0]):
+        for x in range(pixel_dimensions[1]):
+            if mask[y, x] == False:
+                image_coordinates[image_pixel_count, :] = coordinates[y,x]
+                image_pixel_count += 1
+
+    return image_coordinates
+
 def x_sub_pixel_to_coordinate(x_sub_pixel, x_coordinate, pixel_scale, sub_grid_size):
     """Convert a coordinate on the regular image-pixel grid to a sub-coordinate, using the pixel scale and sub-grid \
     size"""
@@ -19,10 +49,10 @@ def y_sub_pixel_to_coordinate(y_sub_pixel, y_coordinate, pixel_scale, sub_grid_s
 
     return y_coordinate + half - (y_sub_pixel + 1) * step
 
-def setup_image_sub_grid_coordinates(mask, pixel_scale, sub_grid_size):
+def setup_image_sub_coordinates(mask, pixel_scale, sub_grid_size):
     """
-    Given a mask, the dimensions of the observed image and its pixel_scale, compute the arc second coordinates of every \
-    sub image-pixel. This is defined from the top-left corner, such that pixels in the top-left corner of the image
+    Given a mask and the image pixel_scale, compute the arc second coordinates of every unmasked \
+    sub image-pixel. This is defined from the top-left corner, such that pixels in the top-left corner of the image \
     have a negative x value for and positive y value in arc seconds. Sub-pixel are defined from the top-left hand \
     corner of each image pixel.
 
@@ -30,8 +60,6 @@ def setup_image_sub_grid_coordinates(mask, pixel_scale, sub_grid_size):
     ----------
     mask : image.Mask
         The image mask we are finding the blurring region around.
-    pixel_dimensions : (int, int)
-        The dimensions of the input array
     pixel_scale : float
         The arcsecond to pixel conversion factor of the array.
     sub_grid_size : int
@@ -54,7 +82,7 @@ def setup_image_sub_grid_coordinates(mask, pixel_scale, sub_grid_size):
 
     for y in range(pixel_dimensions[0]):
         for x in range(pixel_dimensions[1]):
-            if mask is None or mask[y, x] == False:
+            if mask[y, x] == False:
                 x_coordinate = image.x_pixel_to_arc_seconds(x, cen[1], pixel_scale)
                 y_coordinate = image.y_pixel_to_arc_seconds(y, cen[0], pixel_scale)
                 sub_pixel_count = 0
@@ -281,3 +309,29 @@ def setup_image_to_sparse(mask, sparse_mask):
                         raise image.MaskException('setup_image_to_sparse - Stuck in infinite loop')
 
     return image_to_sparse
+
+class AnalysisImage(object):
+
+    def __init__(self, image, noise, psf, mask):
+        """The core grouping of lens modeling data, including the image data, noise-map and psf. Optional \
+        inputs (e.g. effective exposure time map / positional image pixels) have their functionality automatically \
+        switched on or off depending on if they are included.
+
+        A mask must be supplied, which converts all 2D image quantities to data vectors. These vectors are designed to \
+        provide optimal lens modeling efficiency. Image region vectors are also set-up, which describe specific \
+        regions of the image. These are used for specific calculations, like the image sub-grid, and to provide \
+
+        Parameters
+        ----------
+        image : image.Image
+            The image data, in electrons per second.
+        noise : image.Noise
+            The image noise-map, in variances in electrons per second.
+        psf : image.PSF
+            The image PSF
+        mask : image.Mask
+            The image mask, where False indicates a pixel is included in the analysis.
+        """
+        pass
+
+
