@@ -17,7 +17,7 @@ def numpy_array_from_fits(file_path, hdu):
     hdu_list = fits.open(file_path)  # Open the fits file
     return np.array(hdu_list[hdu].data)
 
-def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale, mask=None):
+def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
     """
     Given the dimensions of an array and its pixel_scale, this routine computes the arc second coordinates of every
     pixel. This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a \
@@ -43,11 +43,10 @@ def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale, mask=None):
     coordinates_array = np.zeros((pixel_dimensions[0], pixel_dimensions[1], 2))
     cen = central_pixel(pixel_dimensions)
 
-    for i in range(pixel_dimensions[0]):
-        for j in range(pixel_dimensions[1]):
-            if mask is None or mask[i, j] == True:
-                coordinates_array[i, j, 0] = x_pixel_to_arc_seconds(j, cen[0], pixel_scale)
-                coordinates_array[i, j, 1] = y_pixel_to_arc_seconds(i, cen[1], pixel_scale)
+    for y in range(pixel_dimensions[0]):
+        for x in range(pixel_dimensions[1]):
+            coordinates_array[y, x, 0] = x_pixel_to_arc_seconds(x, cen[1], pixel_scale)
+            coordinates_array[y, x, 1] = y_pixel_to_arc_seconds(y, cen[0], pixel_scale)
 
     return coordinates_array
 
@@ -343,6 +342,10 @@ class Image(np.ndarray):
                             outer_radius_mask=outer_radius_arc,
                             inner_radius_mask=inner_radius_arc)
 
+    def unmasked(self):
+        """Create a new mask for this image, which is all False and thus completely unmasked"""
+        return Mask.unmasked(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale)
+
     def plot(self):
         pyplot.imshow(self)
         pyplot.show()
@@ -500,6 +503,29 @@ class Mask(np.ndarray):
             return radius > outer_radius_mask or radius < inner_radius_mask
 
         return Mask.mask(arc_second_dimensions, pixel_scale, is_radius_outside_mask, centre)
+
+    @classmethod
+    def unmasked(cls, arc_second_dimensions, pixel_scale, centre=(0., 0.)):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre in arc seconds
+        arc_second_dimensions : (int, int)
+            The dimensions of the image in arcs seconds
+        pixel_scale : float
+            The scale size of a pixel (x, y) in arc seconds
+        inner_radius_mask : float
+            The inner radius of the circular annulus (arc seconds
+        outer_radius_mask : float
+            The outer radius of the circular annulus (arc seconds)
+        """
+
+        def is_unmasked(x_pix, y_pix):
+            return False
+
+        return Mask.mask(arc_second_dimensions, pixel_scale, is_unmasked, centre)
 
 
 class MaskException(Exception):

@@ -28,8 +28,6 @@ class TestData(object):
 
     class TestCoordinateSetup(object):
 
-        # TODO : Tests using recntagular image / array
-
         def test__array_1x1__sets_up_arcsecond_coordinates(self):
 
             array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(1,1), pixel_scale=1.0)
@@ -77,85 +75,34 @@ class TestData(object):
                                                    [[-0.75, -0.25], [-0.25, -0.25], [0.25, -0.25], [0.75, -0.25]],
                                                    [[-0.75, -0.75], [-0.25, -0.75], [0.25, -0.75], [0.75, -0.75]]])).all()
 
-        def test__array_3x3__includes_mask_one_row__sets_up_arcsecond_coordinates_in_mask(self):
+        def test__array_2x3__sets_up_arcsecond_coordinates(self):
 
-            mask = np.array([[False, False, False],
-                             [True, True, True],
-                             [False, False, False]])
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(2,3), pixel_scale=1.0)
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,3), pixel_scale=1.0, mask=mask)
+            assert (array_coordinates == np.array([[[-1.0,  0.5], [0.0,  0.5], [1.0,  0.5]],
+                                                   [[-1.0, -0.5], [0.0, -0.5], [1.0, -0.5]]])).all()
 
-            assert (array_coordinates == np.array([[[0.0, 0.0], [0.0,  0.0], [0.0,  0.0]],
-                                                   [[-1.0,  0.0], [0.0,  0.0], [1.0,  0.0]],
-                                                   [[0.0,  0.0], [0.0,  0.0], [0.0,  0.0]]])).all()
+            assert (array_coordinates[0,0] == np.array([[-1.0, 0.5]])).all()
+            assert (array_coordinates[0,1] == np.array([[0.0,  0.5]])).all()
+            assert (array_coordinates[0,2] == np.array([[1.0,  0.5]])).all()
+            assert (array_coordinates[1,0] == np.array([[-1.0,-0.5]])).all()
+            assert (array_coordinates[1,1] == np.array([[0.0, -0.5]])).all()
+            assert (array_coordinates[1,2] == np.array([[1.0, -0.5]])).all()
 
-            assert (array_coordinates[0,0] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[0,1] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[0,2] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[1,0] == np.array([[-1.0, 0.0]])).all()
-            assert (array_coordinates[1,1] == np.array([[0.0, 0.0]])).all()
-            assert (array_coordinates[1,2] == np.array([[1.0, 0.0]])).all()
-            assert (array_coordinates[2,0] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[2,1] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[2,2] == np.array([[0.0,  0.0]])).all()
+        def test__array_3x2__sets_up_arcsecond_coordinates(self):
 
-        def test__array_3x3__includes_mask_one_row_one_column__sets_up_arcsecond_coordinates_in_mask(self):
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,2), pixel_scale=1.0)
 
-            mask = np.array([[False, True, False],
-                             [True, True, True],
-                             [False, True, False]])
+            assert (array_coordinates == np.array([[[-0.5,  1.0], [0.5, 1.0]],
+                                                    [[-0.5, 0.0], [0.5, 0.0]],
+                                                    [[-0.5,-1.0], [0.5,-1.0]]])).all()
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,3), pixel_scale=1.0, mask=mask)
-
-            assert (array_coordinates == np.array([[[0.0, 0.0], [0.0,  1.0], [0.0,  0.0]],
-                                                   [[-1.0,  0.0], [0.0,  0.0], [1.0,  0.0]],
-                                                   [[0.0,  0.0], [0.0,  -1.0], [0.0,  0.0]]])).all()
-
-            assert (array_coordinates[0,0] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[0,1] == np.array([[0.0,  1.0]])).all()
-            assert (array_coordinates[0,2] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[1,0] == np.array([[-1.0, 0.0]])).all()
-            assert (array_coordinates[1,1] == np.array([[0.0, 0.0]])).all()
-            assert (array_coordinates[1,2] == np.array([[1.0, 0.0]])).all()
-            assert (array_coordinates[2,0] == np.array([[0.0,  0.0]])).all()
-            assert (array_coordinates[2,1] == np.array([[0.0,  -1.0]])).all()
-            assert (array_coordinates[2,2] == np.array([[0.0,  0.0]])).all()
-
-        def test__array_3x3__includes_full_mask__sets_up_arcsecond_coordinates_in_mask(self):
-
-            mask = np.array([[True, True, True],
-                             [True, True, True],
-                             [True, True, True]])
-
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,3), pixel_scale=1.0, mask=mask)
-
-            assert (array_coordinates == np.array([[[-1.0,  1.0], [0.0,  1.0], [1.0,  1.0]],
-                                                   [[-1.0,  0.0], [0.0,  0.0], [1.0,  0.0]],
-                                                   [[-1.0, -1.0], [0.0, -1.0], [1.0, -1.0]]])).all()
-
-            assert (array_coordinates[0,0] == np.array([[-1.0, 1.0]])).all()
-            assert (array_coordinates[0,1] == np.array([[0.0, 1.0]])).all()
-            assert (array_coordinates[0,2] == np.array([[1.0, 1.0]])).all()
-            assert (array_coordinates[1,0] == np.array([[-1.0, 0.0]])).all()
-            assert (array_coordinates[1,1] == np.array([[0.0, 0.0]])).all()
-            assert (array_coordinates[1,2] == np.array([[1.0, 0.0]])).all()
-            assert (array_coordinates[2,0] == np.array([[-1.0, -1.0]])).all()
-            assert (array_coordinates[2,1] == np.array([[0.0, -1.0]])).all()
-            assert (array_coordinates[2,2] == np.array([[1.0, -1.0]])).all()
-
-        def test__array_4x4_incudes_mask__sets_up_arcsecond_coordinates(self):
-
-            mask = np.array([[False, True, True, True],
-                             [True, True, True, False],
-                             [True, True, True, True],
-                             [False, True, True, False]])
-
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(4,4), pixel_scale=0.5, mask=mask)
-
-            assert (array_coordinates == np.array([[[0.0, 0.0],     [-0.25,  0.75], [0.25,  0.75], [0.75,  0.75]],
-                                                   [[-0.75,  0.25], [-0.25,  0.25], [0.25,  0.25], [0.0, 0.0]],
-                                                   [[-0.75, -0.25], [-0.25, -0.25], [0.25, -0.25], [0.75, -0.25]],
-                                                   [[0.0, 0.0],     [-0.25, -0.75], [0.25, -0.75], [0.0, 0.0]]])).all()
+            assert (array_coordinates[0,0] == np.array([[-0.5, 1.0]])).all()
+            assert (array_coordinates[0,1] == np.array([[0.5,  1.0]])).all()
+            assert (array_coordinates[1,0] == np.array([[-0.5, 0.0]])).all()
+            assert (array_coordinates[1,1] == np.array([[0.5,  0.0]])).all()
+            assert (array_coordinates[2,0] == np.array([[-0.5,-1.0]])).all()
+            assert (array_coordinates[2,1] == np.array([[0.5, -1.0]])).all()
 
     class TestTrimData(object):
         class TestOddToOdd(object):
@@ -1048,3 +995,25 @@ class TestMask(object):
                                       [True, True, True, True],
                                       [True, True, True, True],
                                       [False, True, True, False]])).all()
+
+    class TestUnmasked(object):
+
+        def test__3x3__input__all_are_false(self):
+
+            mask = image.Mask.unmasked(arc_second_dimensions=(3, 3), pixel_scale=1)
+
+            assert mask.shape == (3, 3)
+            assert (mask == np.array([[False, False, False],
+                                      [False, False, False],
+                                      [False, False, False]])).all()
+
+        def test__5x5__input__all_are_false(self):
+
+            mask = image.Mask.unmasked(arc_second_dimensions=(5, 5), pixel_scale=1)
+
+            assert mask.shape == (5, 5)
+            assert (mask == np.array([[False, False, False, False, False],
+                                      [False, False, False, False, False],
+                                      [False, False, False, False, False],
+                                      [False, False, False, False, False],
+                                      [False, False, False, False, False]])).all()
