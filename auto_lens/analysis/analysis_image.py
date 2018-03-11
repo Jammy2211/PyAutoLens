@@ -1,5 +1,5 @@
 import numpy as np
-import image
+from auto_lens import image
 
 def x_sub_pixel_to_coordinate(x_sub_pixel, x_coordinate, pixel_scale, sub_grid_size):
     """Convert a coordinate on the regular image-pixel grid to a sub-coordinate, using the pixel scale and sub-grid \
