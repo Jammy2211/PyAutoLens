@@ -1,209 +1,79 @@
 import math
 import numpy as np
 from profiles import geometry_profiles
-#import sklearn.cluster
+import sklearn.cluster
 import scipy.spatial
 
 
-class SourcePlaneGeometry(geometry_profiles.Profile):
-    """Stores the source-plane geometry, to ensure different components of the source-plane share the
-    same geometry"""
+def setup_regularization_matrix_via_pixel_pairs(dimension, regularization_weights, no_pairs, pixel_pairs):
+    """
+    Setup a new regularization matrix, bypassing matrix multiplication by exploiting a list of pixel-pairs.
 
-    def __init__(self, centre=(0, 0)):
-        super(SourcePlaneGeometry, self).__init__(centre)
+    Parameters
+    ----------
+    dimension : int
+        The dimensions of the square regularization matrix
+    regularization_weights : list(float)
+        The regularization weight of each source-pixel
+    no_pairs : list(int)
+        The number of pairs each source-plane pixel shares with its other pixels
+    pixel_pairs : list(float, float)
+        A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
+    """
 
-    def coordinates_angle_from_x(self, coordinates):
-        """
-        Compute the angle between the coordinates and source-plane positive x-axis, defined counter-clockwise.
+    matrix = np.zeros(shape=(dimension, dimension))
 
-        Parameters
-        ----------
-        coordinates : (float, float)
-            The x and y coordinates of the source-plane.
+    reg_weight = regularization_weights ** 2
 
-        Returns
-        ----------
-        The angle between the coordinates and the x-axis.
-        """
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
-        if theta_from_x < 0.0:
-            theta_from_x += 360.
-        return theta_from_x
+    for i in range(dimension):
+        matrix[i][i] += no_pairs[i] * reg_weight[i]
 
+    for j in range(len(pixel_pairs)):
+        matrix[pixel_pairs[j, 0], pixel_pairs[j, 0]] += reg_weight[pixel_pairs[j, 1]]
+        matrix[pixel_pairs[j, 1], pixel_pairs[j, 1]] += reg_weight[pixel_pairs[j, 0]]
+        matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[pixel_pairs[j, 0]]
+        matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 0]]
+        matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[pixel_pairs[j, 1]]
+        matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 1]]
 
-class SourcePlane(SourcePlaneGeometry):
-    """Represents the source-plane and its corresponding traced image sub-coordinates"""
+    return matrix
 
-    def __init__(self, coordinates, centre=(0, 0)):
-        """
+def kmeans_cluster(coordinates, n_clusters):
+    """Perform k-means clustering on a set of coordinates to compute the set of k-means clustering that group the data.
 
-        Parameters
-        ----------
-        coordinates : [(float, float)]
-            The x and y coordinates of each traced image sub-pixel
-        centre : (float, float)
-            The centre of the source-plane.
-        """
+    This is used to compute the source-pixel centers of the *AmorphousPixelization*
 
-        super(SourcePlane, self).__init__(centre)
+    Parameters
+    ----------
+    coordinates : ndarray
+        The x and y coordinates to be clustered.
+    n_clusters : int
+        The number of clusters to cluster the data with.
+    """
+    kmeans = sklearn.cluster.KMeans(n_clusters)
+    return kmeans.fit(coordinates)
 
-        self.coordinates = coordinates
+def setup_voronoi(coordinates):
+    """Setup a Voronoi grid for a given set of coordinates, as well as a list of each Voronoi cell's neighboring \
+     Voronoi cells.
 
-    def border_from_list_and_polynomial_degree(self, border_list, polynomial_degree):
-        return SourcePlaneBorder(list(map(lambda b : self.coordinates[b], border_list)), polynomial_degree,
-                                 centre=self.centre)
+    This is used to compute the Voronoi grid of the source-pixel centers of the *AmorphousPixelization*.
 
-    def relocate_coordinates_outside_border_from_list_and_polynomial_degree(self, border_list, polynomial_degree):
-        self.relocate_coordinates_outside_border(self.border_from_list_and_polynomial_degree(border_list, polynomial_degree))
+    Parameters
+    ----------
+    coordinates : ndarray
+        The x and y coordinates to derive the Voronoi grid.
+    """
+    voronoi = scipy.spatial.Voronoi(coordinates, qhull_options='Qbb Qc Qx Qm')
 
-    def relocate_coordinates_outside_border(self, border):
-        """ Move all source-plane coordinates outside of its source-plane setup_border_pixels to the edge of its setup_border_pixels"""
-        self.coordinates = list(map(lambda r: border.relocated_coordinate(r), self.coordinates))
+    voronoi.neighbors = [[] for _ in range(len(coordinates))]
 
+    for pair in reversed(voronoi.ridge_points):
+        voronoi.neighbors[pair[0]].append(pair[1])
+        voronoi.neighbors[pair[1]].append(pair[0])
 
-class SourcePlaneBorder(SourcePlaneGeometry):
-    """Represents the source-plane coordinates on the source-plane setup_border_pixels. Each coordinate is stored alongside its
-    distance from the source-plane centre (radius) and angle from the x-axis (theta)"""
-
-    def __init__(self, coordinates, polynomial_degree, centre=(0.0, 0.0)):
-        """
-
-        Parameters
-        ----------
-        coordinates : [(float, float)]
-            The x and y coordinates of the source-plane setup_border_pixels.
-        centre : (float, float)
-            The centre of the source-plane.
-        """
-
-        super(SourcePlaneBorder, self).__init__(centre)
-
-        self.coordinates = coordinates
-        self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), coordinates))
-        self.radii = list(map(lambda r: self.coordinates_to_radius(r), coordinates))
-        self.polynomial = np.polyfit(self.thetas, self.radii, polynomial_degree)
-
-    def border_radius_at_theta(self, theta):
-        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
-        return np.polyval(self.polynomial, theta)
-
-    def move_factor(self, coordinate):
-        """Get the move factor of a coordinate.
-         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order to lie on it.
-         Coordinates already within the setup_border_pixels return a move-factor of 1.0, signifying they are already within the \
-         setup_border_pixels.
-
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The x and y coordinates of the pixel to have its move-factor computed.
-        """
-        theta = self.coordinates_angle_from_x(coordinate)
-        radius = self.coordinates_to_radius(coordinate)
-
-        border_radius = self.border_radius_at_theta(theta)
-
-        if radius > border_radius:
-            return border_radius / radius
-        else:
-            return 1.0
-
-    def relocated_coordinate(self, coordinate):
-        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
-
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The x and y coordinates of the pixel to have its move-factor computed.
-        """
-        move_factor = self.move_factor(coordinate)
-        return coordinate[0] * move_factor, coordinate[1] * move_factor
-
-#
-# class KMeans(sklearn.cluster.KMeans):
-#     """An adaptive source-plane pixelization generated using a (weighted) k-means clusteriing algorithm"""
-#
-#     def __init__(self, points, n_clusters):
-#         super(KMeans, self).__init__(n_clusters=n_clusters)
-#         self.fit(points)
-
-
-class Voronoi(scipy.spatial.Voronoi):
-    def __init__(self, source_pixel_centers):
-        super(Voronoi, self).__init__(source_pixel_centers, qhull_options='Qbb Qc Qx Qm')
-
-        self.neighbors = [[] for _ in range(len(source_pixel_centers))]
-
-        for pair in reversed(self.ridge_points):
-            self.neighbors[pair[0]].append(pair[1])
-            self.neighbors[pair[1]].append(pair[0])
-
-        self.neighbors_total = list(map(lambda x: len(x), self.neighbors))
-
-
-class RegularizationMatrix(np.ndarray):
-    """Class used for generating the regularization matrix H, which describes how each source-plane pixel is
-    regularized by other source-plane pixels during the source-reconstruction.
-
-    Python linear algrebra uses ndarray, not matrix, so this inherites from the former."""
-
-    def __new__(cls, dimension, regularization_weights, no_vertices, pixel_pairs):
-        """
-        Setup a new regularization matrix
-
-        Parameters
-        ----------
-        dimension : int
-            The dimensions of the square regularization matrix
-        regularization_weights : list(float)
-            A vector of regularization weights of each source-pixel
-        no_vertices : list(int)
-            The number of Voronoi vertices each source-plane pixel shares with other pixels
-        pixel_pairs : list(float, float)
-            A list of all pixel-pairs in the source-plane, as computed by the Voronoi griding routine.
-        """
-
-        obj = np.zeros(shape=(dimension, dimension)).view(cls)
-        obj = obj.make_via_pairs(dimension, regularization_weights, no_vertices, pixel_pairs)
-
-        return obj
-
-    @staticmethod
-    def make_via_pairs(dimension, regularization_weights, no_vertices, pixel_pairs):
-        """
-        Setup a new Voronoi adaptive griding regularization matrix, bypassing matrix multiplication by exploiting the
-        symmetry in pixel-neighbourings.
-
-        Parameters
-        ----------
-        dimension : int
-            The dimensions of the square regularization matrix
-        regularization_weights : list(float)
-            A vector of regularization weights of each source-pixel
-        no_vertices : list(int)
-            The number of Voronoi vertices each source-plane pixel shares with other pixels
-        pixel_pairs : list(float, float)
-            A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
-        """
-
-        matrix = np.zeros(shape=(dimension, dimension))
-
-        reg_weight = regularization_weights ** 2
-
-        for i in range(dimension):
-            matrix[i][i] += no_vertices[i] * reg_weight[i]
-
-        for j in range(len(pixel_pairs)):
-            matrix[pixel_pairs[j, 0], pixel_pairs[j, 0]] += reg_weight[pixel_pairs[j, 1]]
-            matrix[pixel_pairs[j, 1], pixel_pairs[j, 1]] += reg_weight[pixel_pairs[j, 0]]
-            matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[pixel_pairs[j, 0]]
-            matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 0]]
-            matrix[pixel_pairs[j, 0], pixel_pairs[j, 1]] -= reg_weight[pixel_pairs[j, 1]]
-            matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 1]]
-
-        return matrix
-
+    voronoi.neighbors_total = list(map(lambda x: len(x), voronoi.neighbors))
+    return voronoi
 
 def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, image_total, sub_total, source_centers):
     """ Match a set of sub image-pixel coordinates to their closest source-pixels, using the source-pixel centers (x,y).
@@ -237,14 +107,12 @@ def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, imag
     for image_index in range(len(sub_coordinates)):
         sub_index = 0
         for sub_coordinate in sub_coordinates[image_index]:
-
             distances = list(map(lambda centers: compute_squared_separation(sub_coordinate, centers), source_centers))
 
             image_sub_to_source[image_index, sub_index] = (np.argmin(distances))
             sub_index += 1
 
     return image_sub_to_source
-
 
 def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_total, sub_total, source_centers,
                                                       source_neighbors, image_to_sparse, sparse_to_source):
@@ -260,7 +128,7 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
         (traced to the source-plane) or a sparser grid of image-pixels. The sub_coordinates will be the sub \
         image-pixels (again, traced to the source-plane). A benefit of this is the source-pixelization (e.g. using \
         KMeans) will be dervied using significantly fewer sub_coordinates, offering run-time speedup.
-        
+
         In the routine below, some variables and function names refer to a 'sparse_source_'. This term describes a \
         source-pixel that we have paired to a sub_coordinate using the sparse grid of image pixels. Thus, it may not \
         actually be that sub_coordinate's closest source-pixel (the routine will eventually determine this).
@@ -325,7 +193,6 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
 
     return image_sub_to_source
 
-
 def find_nearest_sparse(image_index, image_to_sparse):
     return image_to_sparse[image_index]
 
@@ -339,7 +206,7 @@ def find_separation_sub_coordinate_and_nearest_sparse_source(source_centers, sub
 def find_separation_and_nearest_neighboring_source(sub_coordinate, source_centers, source_neighbors):
     """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
     our input coordinaates.
-    
+
         Parameters
         ----------
         sub_coordinate : (float, float)
@@ -355,7 +222,7 @@ def find_separation_and_nearest_neighboring_source(sub_coordinate, source_center
             The index in source_pixel_centers of the closest source_pixel neighbor.
         source_pixel_neighbor_separation : float
             The separation between the input coordinate and closest source_pixel neighbor
-    
+
     """
 
     separation_from_neighbor = list(map(lambda neighbors:
@@ -366,7 +233,120 @@ def find_separation_and_nearest_neighboring_source(sub_coordinate, source_center
 
     return source_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
 
-
 def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two coordinates (no square root for efficiency)"""
     return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+
+
+class SourcePlaneGeometry(geometry_profiles.Profile):
+    """Stores the source-plane geometry, to ensure different components of the source-plane share the
+    same geometry"""
+
+    def __init__(self, centre=(0, 0)):
+        super(SourcePlaneGeometry, self).__init__(centre)
+
+    def coordinates_angle_from_x(self, coordinates):
+        """
+        Compute the angle between the coordinates and source-plane positive x-axis, defined counter-clockwise.
+
+        Parameters
+        ----------
+        coordinates : (float, float)
+            The x and y coordinates of the source-plane.
+
+        Returns
+        ----------
+        The angle between the coordinates and the x-axis.
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        theta_from_x = math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        if theta_from_x < 0.0:
+            theta_from_x += 360.
+        return theta_from_x
+
+
+class SourcePlane(SourcePlaneGeometry):
+    """Represents the source-plane and its corresponding traced image sub-coordinates"""
+
+    def __init__(self, coordinates, centre=(0, 0)):
+        """
+
+        Parameters
+        ----------
+        coordinates : [(float, float)]
+            The x and y coordinates of each traced image sub-pixel
+        centre : (float, float)
+            The centre of the source-plane.
+        """
+
+        super(SourcePlane, self).__init__(centre)
+
+        self.coordinates = coordinates
+
+
+class SourcePlaneWithBorder(SourcePlane):
+    """Represents the source-plane coordinates on the source-plane setup_border_pixels. Each coordinate is stored alongside its
+    distance from the source-plane centre (radius) and angle from the x-axis (theta)"""
+
+    def __init__(self, coordinates, border_pixels, polynomial_degree, centre=(0.0, 0.0)):
+        """
+
+        Parameters
+        ----------
+        coordinates : [(float, float)]
+            The x and y coordinates of the source-plane setup_border_pixels.
+        centre : (float, float)
+            The centre of the source-plane.
+        """
+
+        super(SourcePlaneWithBorder, self).__init__(coordinates, centre)
+
+        self.border_coordinates = np.zeros((len(border_pixels), 2))
+
+        for i, border_pixel in enumerate(border_pixels):
+            self.border_coordinates[i] = self.coordinates[border_pixel]
+
+        self.border_thetas = list(map(lambda r: self.coordinates_angle_from_x(r), self.border_coordinates))
+        self.border_radii = list(map(lambda r: self.coordinates_to_radius(r), self.border_coordinates))
+        self.border_polynomial = np.polyfit(self.border_thetas, self.border_radii, polynomial_degree)
+
+        for (i, coordinate) in enumerate(self.coordinates):
+            self.coordinates[i] = self.relocated_coordinate(coordinate)
+
+    def border_radius_at_theta(self, theta):
+        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
+        return np.polyval(self.border_polynomial, theta)
+
+    def move_factor(self, coordinate):
+        """Get the move factor of a coordinate.
+         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order to lie on it.
+         Coordinates already within the setup_border_pixels return a move-factor of 1.0, signifying they are already within the \
+         setup_border_pixels.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y coordinates of the pixel to have its move-factor computed.
+        """
+        theta = self.coordinates_angle_from_x(coordinate)
+        radius = self.coordinates_to_radius(coordinate)
+
+        border_radius = self.border_radius_at_theta(theta)
+
+        if radius > border_radius:
+            return border_radius / radius
+        else:
+            return 1.0
+
+    def relocated_coordinate(self, coordinate):
+        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
+
+        Parameters
+        ----------
+        coordinate : ndarray[float, float]
+            The x and y coordinates of the pixel to have its move-factor computed.
+        """
+        move_factor = self.move_factor(coordinate)
+        return coordinate[0] * move_factor, coordinate[1] * move_factor
+
+

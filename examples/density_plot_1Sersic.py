@@ -86,29 +86,17 @@ chab_stellar_frac_error = 0.09
 sal_stellar_frac = 0.59
 sal_stellar_frac_error = 0.16
 
-# pipeline_folder = 'Pipeline_Total'
-# phase_folder = 'PL_Phase_8'
-
-# pipeline_folder = 'Pipeline_LMDM'
-# phase_folder = 'PL_Phase_7'
-
-pipeline_folder = 'Pipeline_LTM2'
-phase_folder = 'PL_Phase_7'
+pipeline_folder = 'Pipeline_LMDM'
+phase_folder = 'PL_Phase_6'
 
 image_dir = image_dir + image_name + '/' + pipeline_folder + '/' + phase_folder + '/'
 
-model_folder = getModelFolders(image_dir)
+model_folder = 'SersicEll[XY_New][Rot_New]+NFWSph[XY_Fg][Rot_Off]+LTM[XY_Fg][Rot_Fg]+Shear+Sub_Ext_1'
 
-pdf_file = image_dir + model_folder[0] + '/' + image_name + '.txt'
+pdf_file = image_dir + model_folder + '/' + image_name + '.txt'
 
 pdf = getdist.mcsamples.loadMCSamples(pdf_file)
 params = pdf.paramNames
-
-if image_name == 'SLACSJ1250+0523' or image_name == 'SLACSJ1430+4105':
-    center_skip = 2
-
-if pipeline_folder == 'Pipeline_LTM2':
-    ltm_skip = 1
 
 sample_weights = []
 
@@ -119,19 +107,16 @@ for i in range(len(pdf.samples)):
 
     if pdf.weights[i] > 1e-6:
 
-    #    values = pdf.samples[i]
+        values = pdf.samples[i]
 
         values = pdf.getMeans()
 
         sersic_bulge = mass_profiles.SersicMassProfile(centre=(values[0], values[1]), axis_ratio=values[5], phi=values[6], intensity=values[2], effective_radius=values[3],
-                                                       sersic_index=values[4], mass_to_light_ratio=values[12+center_skip])
+                                                       sersic_index=values[4], mass_to_light_ratio=values[8])
 
-        exponential_halo = mass_profiles.ExponentialMassProfile(axis_ratio=values[9+center_skip], phi=values[10+center_skip], intensity=values[7+center_skip],
-                                                                effective_radius=values[8+center_skip], mass_to_light_ratio=values[12+ltm_skip+center_skip])
+        dark_matter_halo = mass_profiles.SphericalNFWMassProfile(kappa_s=values[7], scale_radius=20.0)
 
-        dark_matter_halo = mass_profiles.SphericalNFWMassProfile(kappa_s=values[11+center_skip], scale_radius=20.0)
-
-        lens_galaxy=galaxy.Galaxy(redshift=redshift, mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
+        lens_galaxy=galaxy.Galaxy(redshift=redshift, mass_profiles=[sersic_bulge, dark_matter_halo])
 
         lens_galaxy.einstein_radius = einstein_radius
         lens_galaxy.source_light_min = source_light_min
@@ -143,16 +128,16 @@ for i in range(len(pdf.samples)):
 
         scale_r = 30*lens_galaxy.arcsec_per_kpc
         dark_matter_halo.scale_radius = scale_r
-        lens_galaxy.mass_profiles[2].scale_radius = scale_r
+        lens_galaxy.mass_profiles[1].scale_radius = scale_r
 
         radius = slacs_ein_r_kpc*lens_galaxy.arcsec_per_kpc
-        radius = 200.0*lens_galaxy.arcsec_per_kpc
+        radius = 1.0*lens_galaxy.arcsec_per_kpc
 
         sample_weights.append(pdf.weights[i])
 
         total_mass_all.append(lens_galaxy.mass_within_circles(radius=radius))
         masses = lens_galaxy.mass_within_circles_individual(radius=radius)
-        stellar_mass_all.append((masses[0] + masses[1]))
+        stellar_mass_all.append((masses[0]))
 
 print(masses)
 
@@ -181,5 +166,5 @@ print('SLACS Salpeter stellar mass = ', '{0:e}'.format(float(slacs_sal_stellar_m
 print('Our Stellar Mass / SLACS Chabrier Stellar Mass = ', stellar_mass / float(slacs_chab_stellar_mass))
 print('Our Stellar Mass / SLACS Salpeter Stellar Mass = ', stellar_mass / float(slacs_sal_stellar_mass))
 
-lens_galaxy.plot_density_as_function_of_radius(maximum_radius=200.0*lens_galaxy.arcsec_per_kpc, number_bins=300, image_name=image_name, plot_errors=False,
+lens_galaxy.plot_density_as_function_of_radius(maximum_radius=20.0*lens_galaxy.arcsec_per_kpc, number_bins=300, image_name=image_name, plot_errors=False,
                                                labels=['Sersic Bulge', 'Exponential Stellar Halo', 'Dark Matter Halo'])
