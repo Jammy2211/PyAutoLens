@@ -130,7 +130,7 @@ def setup_border_pixels(mask):
 
     Returns
     -------
-    setup_border_pixels : ndarray
+    border_pixels : ndarray
         The border image pixels, where each entry gives the 1D index of the image pixel in the mask.
     """
 

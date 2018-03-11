@@ -33,36 +33,36 @@ center_skip = 0
 
 image_dir = '/gpfs/data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidence tables from
 #
-image_name = 'SLACSJ0252+0039'
-redshift = 0.2803
-source_redshift = 0.9818
-einstein_radius = 1.02
-source_light_min = 0.8
-source_light_max = 1.3
-slacs_ein_r_kpc = 4.18
-slacs_mass = '{0:e}'.format(10**11.25)
-slacs_radius = 4.4
-slacs_chab_stellar_mass =  '{0:e}'.format(10**11.21)
-slacs_chab_stellar_mass_lower =  '{0:e}'.format(10**11.08)
-slacs_chab_stellar_mass_upper =  '{0:e}'.format(10**11.34)
-slacs_sal_stellar_mass =  '{0:e}'.format(10**11.46)
-slacs_sal_stellar_mass_lower =  '{0:e}'.format(10**11.33)
-slacs_sal_stellar_mass_upper =  '{0:e}'.format(10**11.59)
-#
-# image_name = 'SLACSJ1250+0523'
-# redshift = 0.2318
-# source_redshift = 0.7953
-# einstein_radius = 1.120
-# source_light_min = 0.5
-# source_light_max = 1.5
+# image_name = 'SLACSJ0252+0039'
+# redshift = 0.2803
+# source_redshift = 0.9818
+# einstein_radius = 1.02
+# source_light_min = 0.8
+# source_light_max = 1.3
 # slacs_ein_r_kpc = 4.18
-# slacs_mass =  '{0:e}'.format(10**11.26)
-# slacs_chab_stellar_mass =  '{0:e}'.format(10**11.53)
-# slacs_chab_stellar_mass_lower =  '{0:e}'.format(10**11.46)
-# slacs_chab_stellar_mass_upper =  '{0:e}'.format(10**11.60)
-# slacs_sal_stellar_mass =  '{0:e}'.format(10**11.77)
-# slacs_sal_stellar_mass_lower =  '{0:e}'.format(10**11.7)
-# slacs_sal_stellar_mass_upper =  '{0:e}'.format(10**12.84)
+# slacs_mass = '{0:e}'.format(10**11.25)
+# slacs_radius = 4.4
+# slacs_chab_stellar_mass =  '{0:e}'.format(10**11.21)
+# slacs_chab_stellar_mass_lower =  '{0:e}'.format(10**11.08)
+# slacs_chab_stellar_mass_upper =  '{0:e}'.format(10**11.34)
+# slacs_sal_stellar_mass =  '{0:e}'.format(10**11.46)
+# slacs_sal_stellar_mass_lower =  '{0:e}'.format(10**11.33)
+# slacs_sal_stellar_mass_upper =  '{0:e}'.format(10**11.59)
+#
+image_name = 'SLACSJ1250+0523'
+redshift = 0.2318
+source_redshift = 0.7953
+einstein_radius = 1.120
+source_light_min = 0.5
+source_light_max = 1.5
+slacs_ein_r_kpc = 4.18
+slacs_mass =  '{0:e}'.format(10**11.26)
+slacs_chab_stellar_mass =  '{0:e}'.format(10**11.53)
+slacs_chab_stellar_mass_lower =  '{0:e}'.format(10**11.46)
+slacs_chab_stellar_mass_upper =  '{0:e}'.format(10**11.60)
+slacs_sal_stellar_mass =  '{0:e}'.format(10**11.77)
+slacs_sal_stellar_mass_lower =  '{0:e}'.format(10**11.7)
+slacs_sal_stellar_mass_upper =  '{0:e}'.format(10**12.84)
 
 # image_name = 'SLACSJ1430+4105'
 # redshift = 0.2850
@@ -86,29 +86,17 @@ chab_stellar_frac_error = 0.09
 sal_stellar_frac = 0.59
 sal_stellar_frac_error = 0.16
 
-# pipeline_folder = 'Pipeline_Total'
-# phase_folder = 'PL_Phase_8'
-
-# pipeline_folder = 'Pipeline_LMDM'
-# phase_folder = 'PL_Phase_7'
-
-pipeline_folder = 'Pipeline_LTM2'
-phase_folder = 'PL_Phase_7'
+pipeline_folder = 'Pipeline_LMDM'
+phase_folder = 'PL_Phase_6'
 
 image_dir = image_dir + image_name + '/' + pipeline_folder + '/' + phase_folder + '/'
 
-model_folder = getModelFolders(image_dir)
+model_folder = 'SersicEll[XY_New][Rot_New]+ExpEll[XY_Prev][Rot_Prev]+NFWSph[XY_Fg][Rot_Off]+LTM[XY_Fg][Rot_Fg]+Shear'
 
-pdf_file = image_dir + model_folder[0] + '/' + image_name + '.txt'
+pdf_file = image_dir + model_folder + '/' + image_name + '.txt'
 
 pdf = getdist.mcsamples.loadMCSamples(pdf_file)
 params = pdf.paramNames
-
-if image_name == 'SLACSJ1250+0523' or image_name == 'SLACSJ1430+4105':
-    center_skip = 2
-
-if pipeline_folder == 'Pipeline_LTM2':
-    ltm_skip = 1
 
 sample_weights = []
 
@@ -119,17 +107,17 @@ for i in range(len(pdf.samples)):
 
     if pdf.weights[i] > 1e-6:
 
-    #    values = pdf.samples[i]
+        values = pdf.samples[i]
 
-        values = pdf.getMeans()
+    #    values = pdf.getMeans()
 
         sersic_bulge = mass_profiles.SersicMassProfile(centre=(values[0], values[1]), axis_ratio=values[5], phi=values[6], intensity=values[2], effective_radius=values[3],
-                                                       sersic_index=values[4], mass_to_light_ratio=values[12+center_skip])
+                                                       sersic_index=values[4], mass_to_light_ratio=values[11])
 
-        exponential_halo = mass_profiles.ExponentialMassProfile(axis_ratio=values[9+center_skip], phi=values[10+center_skip], intensity=values[7+center_skip],
-                                                                effective_radius=values[8+center_skip], mass_to_light_ratio=values[12+ltm_skip+center_skip])
+        exponential_halo = mass_profiles.ExponentialMassProfile(axis_ratio=values[9], phi=values[6], intensity=values[7],
+                                                                effective_radius=values[8], mass_to_light_ratio=values[11])
 
-        dark_matter_halo = mass_profiles.SphericalNFWMassProfile(kappa_s=values[11+center_skip], scale_radius=20.0)
+        dark_matter_halo = mass_profiles.SphericalNFWMassProfile(kappa_s=values[10], scale_radius=20.0)
 
         lens_galaxy=galaxy.Galaxy(redshift=redshift, mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
 
@@ -181,5 +169,5 @@ print('SLACS Salpeter stellar mass = ', '{0:e}'.format(float(slacs_sal_stellar_m
 print('Our Stellar Mass / SLACS Chabrier Stellar Mass = ', stellar_mass / float(slacs_chab_stellar_mass))
 print('Our Stellar Mass / SLACS Salpeter Stellar Mass = ', stellar_mass / float(slacs_sal_stellar_mass))
 
-lens_galaxy.plot_density_as_function_of_radius(maximum_radius=200.0*lens_galaxy.arcsec_per_kpc, number_bins=300, image_name=image_name, plot_errors=False,
+lens_galaxy.plot_density_as_function_of_radius(maximum_radius=20.0*lens_galaxy.arcsec_per_kpc, number_bins=300, image_name=image_name, plot_errors=False,
                                                labels=['Sersic Bulge', 'Exponential Stellar Halo', 'Dark Matter Halo'])

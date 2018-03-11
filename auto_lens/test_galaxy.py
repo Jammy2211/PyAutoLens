@@ -1,7 +1,6 @@
 import galaxy
 from profiles import geometry_profiles, mass_profiles, light_profiles
 import pytest
-import math
 from astropy import cosmology
 
 class TestRayTracingPlane(object):
@@ -43,21 +42,47 @@ class TestRayTracingPlane(object):
 
         ray_tracing_plane = galaxy.RayTracingPlane(galaxies=[g0, g2, g1], cosmological_model=cosmology.Planck15)
 
-        assert ray_tracing_plane[0].angular_diameter_distance_to_earth.value == pytest.approx(392.840,1e-5)
-        assert ray_tracing_plane[0].angular_distance_distance_to_next_galaxy.value == pytest.approx(1481.8904, 1e-5)
-        assert ray_tracing_plane[0].arcsec_per_kpc_proper.value == pytest.approx(0.525060, 1e-5)
-        assert ray_tracing_plane[0].kpc_per_arcsec_proper.value == pytest.approx(1.904544, 1e-5)
+        assert ray_tracing_plane[0].arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
+        assert ray_tracing_plane[0].kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
 
-        assert ray_tracing_plane[1].angular_diameter_distance_to_earth.value == pytest.approx(1697.95, 1e-5)
-        assert ray_tracing_plane[1].angular_distance_distance_to_previous_galaxy.value == pytest.approx(1481.8904, 1e-5)
-        assert ray_tracing_plane[1].angular_distance_distance_to_next_galaxy.value == pytest.approx(638.544, 1e-5)
-        assert ray_tracing_plane[1].arcsec_per_kpc_proper.value == pytest.approx(0.121478, 1e-5)
-        assert ray_tracing_plane[1].kpc_per_arcsec_proper.value == pytest.approx(8.231907, 1e-5)
+        assert ray_tracing_plane[0].ang_to_earth_kpc == pytest.approx(392840, 1e-5)
+        assert ray_tracing_plane[0].ang_to_next_galaxy_kpc == pytest.approx(1481890.4, 1e-5)
 
-        assert ray_tracing_plane[2].angular_diameter_distance_to_earth.value == pytest.approx(1770.513, 1e-5)
-        assert ray_tracing_plane[2].angular_distance_distance_to_previous_galaxy.value == pytest.approx(638.544, 1e-5)
-        assert ray_tracing_plane[2].arcsec_per_kpc_proper.value == pytest.approx(0.1165000, 1e-5)
-        assert ray_tracing_plane[2].kpc_per_arcsec_proper.value == pytest.approx(8.583688, 1e-5)
+        assert ray_tracing_plane[0].ang_to_earth == pytest.approx(206264, 1e-5)
+        assert ray_tracing_plane[0].ang_to_next_galaxy == pytest.approx(778081.4, 1e-5)
+
+
+        assert ray_tracing_plane[1].arcsec_per_kpc == pytest.approx(0.121478, 1e-5)
+        assert ray_tracing_plane[1].kpc_per_arcsec == pytest.approx(8.231907, 1e-5)
+
+        assert ray_tracing_plane[1].ang_to_earth_kpc == pytest.approx(1697952, 1e-5)
+        assert ray_tracing_plane[1].ang_to_previous_galaxy_kpc == pytest.approx(1481890.4, 1e-5)
+        assert ray_tracing_plane[1].ang_to_next_galaxy_kpc == pytest.approx(638544, 1e-5)
+
+        assert ray_tracing_plane[1].ang_to_earth == pytest.approx(206264, 1e-5)
+        assert ray_tracing_plane[1].ang_to_previous_galaxy == pytest.approx(180017, 1e-5)
+        assert ray_tracing_plane[1].ang_to_next_galaxy == pytest.approx(77569, 1e-5)
+
+
+        assert ray_tracing_plane[2].arcsec_per_kpc == pytest.approx(0.1165000, 1e-5)
+        assert ray_tracing_plane[2].kpc_per_arcsec == pytest.approx(8.583688, 1e-5)
+
+        assert ray_tracing_plane[2].ang_to_earth_kpc == pytest.approx(1770513, 1e-5)
+        assert ray_tracing_plane[2].ang_to_previous_galaxy_kpc == pytest.approx(638544, 1e-5)
+
+        assert ray_tracing_plane[2].ang_to_earth == pytest.approx(206264, 1e-5)
+        assert ray_tracing_plane[2].ang_to_previous_galaxy == pytest.approx(74390, 1e-5)
+
+    def test_critical_densitieis(self):
+
+        g0 = galaxy.Galaxy(redshift=0.1)
+        g1 = galaxy.Galaxy(redshift=1)
+
+        ray_tracing_plane = galaxy.RayTracingPlane(galaxies=[g0, g1], cosmological_model=cosmology.Planck15)
+
+        assert ray_tracing_plane[0].critical_density_kpc == pytest.approx(4.85e9, 1e-2)
+        assert ray_tracing_plane[0].critical_density == pytest.approx(17593241668, 1e-2)
+
 
 class TestLightProfiles(object):
     
@@ -661,6 +686,9 @@ class TestMassProfiles(object):
             assert deflection_angles_2 == galaxy_deflection_angles[1]
             assert deflection_angles_3 == galaxy_deflection_angles[2]
 
+    # TODO : At the moment, these tests set the critical density =1.0 to pass. Once we have properly set up our \
+    # TODO : RayTracingPlane class, we should fix this to be less by-hand.
+
     class TestMassWithinCircle:
 
         def test__one_profile_galaxy__integral_is_same_as_individual_profile(self):
@@ -669,14 +697,16 @@ class TestMassProfiles(object):
             
             sie = mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
 
-            dimensionless_mass_integral = sie.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral = sie.dimensionless_mass_within_circle(radius=integral_radius)
 
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_circle(radius=integral_radius)
+            galaxy_sie.critical_density = 1.0
 
-            assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
+            galaxy_mass_integral = galaxy_sie.mass_within_circles(radius=integral_radius)
+
+            assert mass_integral == galaxy_mass_integral
 
         def test__two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
 
@@ -685,16 +715,18 @@ class TestMassProfiles(object):
 
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-            dimensionless_mass_integral += sie_2.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sie_2.dimensionless_mass_within_circle(radius=integral_radius)
 
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_circle(radius=integral_radius)
+            galaxy_sie.critical_density = 1.0
 
-            assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
+            galaxy_mass_integral = galaxy_sie.mass_within_circles(radius=integral_radius)
+
+            assert mass_integral == galaxy_mass_integral
 
         def test__three_profile_galaxy__integral_is_sum_of_individual_profiles(self):
             
@@ -704,18 +736,20 @@ class TestMassProfiles(object):
             
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-            dimensionless_mass_integral += sie_2.dimensionless_mass_within_circle(radius=integral_radius)
-            dimensionless_mass_integral += sie_3.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sie_2.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sie_3.dimensionless_mass_within_circle(radius=integral_radius)
 
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.6, phi=30.0, einstein_radius=1.2),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_circle(radius=integral_radius)
+            galaxy_sie.critical_density = 1.0
 
-            assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
+            galaxy_mass_integral = galaxy_sie.mass_within_circles(radius=integral_radius)
+
+            assert mass_integral == galaxy_mass_integral
 
         def test__three_profile_galaxy__individual_integrals_can_be_extracted(self):
             
@@ -725,21 +759,23 @@ class TestMassProfiles(object):
 
             integral_radius = 5.5
 
-            dimensionless_mass_integral_1 = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-            dimensionless_mass_integral_2 = sie_2.dimensionless_mass_within_circle(radius=integral_radius)
-            dimensionless_mass_integral_3 = sie_3.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_1 = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_2 = sie_2.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_3 = sie_3.dimensionless_mass_within_circle(radius=integral_radius)
 
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.6, phi=30.0, einstein_radius=1.2),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_circle_individual(
+            galaxy_sie.critical_density = 1.0
+
+            galaxy_mass_integral = galaxy_sie.mass_within_circles_individual(
                 radius=integral_radius)
 
-            assert dimensionless_mass_integral_1 == galaxy_dimensionless_mass_integral[0]
-            assert dimensionless_mass_integral_2 == galaxy_dimensionless_mass_integral[1]
-            assert dimensionless_mass_integral_3 == galaxy_dimensionless_mass_integral[2]
+            assert mass_integral_1 == galaxy_mass_integral[0]
+            assert mass_integral_2 == galaxy_mass_integral[1]
+            assert mass_integral_3 == galaxy_mass_integral[2]
 
     class TestMassWithinEllipse:
 
@@ -754,7 +790,9 @@ class TestMassProfiles(object):
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            galaxy_sie.critical_density = 1.0
+
+            galaxy_dimensionless_mass_integral = galaxy_sie.mass_within_ellipses(major_axis=integral_radius)
 
             assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
 
@@ -772,7 +810,9 @@ class TestMassProfiles(object):
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.8, phi=10.0, einstein_radius=1.0),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            galaxy_sie.critical_density = 1.0
+
+            galaxy_dimensionless_mass_integral = galaxy_sie.mass_within_ellipses(major_axis=integral_radius)
 
             assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
 
@@ -793,7 +833,9 @@ class TestMassProfiles(object):
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.6, phi=30.0, einstein_radius=1.2),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            galaxy_sie.critical_density = 1.0
+
+            galaxy_dimensionless_mass_integral = galaxy_sie.mass_within_ellipses(major_axis=integral_radius)
 
             assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
 
@@ -814,7 +856,9 @@ class TestMassProfiles(object):
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.6, phi=30.0, einstein_radius=1.2),
                 mass_profiles.EllipticalIsothermalMassProfile(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)])
 
-            galaxy_dimensionless_mass_integral = galaxy_sie.dimensionless_mass_within_ellipse_individual(
+            galaxy_sie.critical_density = 1.0
+
+            galaxy_dimensionless_mass_integral = galaxy_sie.mass_within_ellipses_individual(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral_1 == galaxy_dimensionless_mass_integral[0]
