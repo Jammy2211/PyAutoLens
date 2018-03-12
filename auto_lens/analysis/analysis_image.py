@@ -26,7 +26,7 @@ def setup_image_coordinates(mask, pixel_scale):
 
     for y in range(pixel_dimensions[0]):
         for x in range(pixel_dimensions[1]):
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 image_coordinates[image_pixel_count, :] = coordinates[y, x]
                 image_pixel_count += 1
 
@@ -86,7 +86,7 @@ def setup_image_sub_coordinates(mask, pixel_scale, sub_grid_size):
 
     for y in range(pixel_dimensions[0]):
         for x in range(pixel_dimensions[1]):
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 x_coordinate = image.x_pixel_to_arc_seconds(x, cen[1], pixel_scale)
                 y_coordinate = image.y_pixel_to_arc_seconds(y, cen[0], pixel_scale)
                 sub_pixel_count = 0
@@ -136,7 +136,7 @@ def setup_blurring_region(mask, blurring_region_size):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 for y1 in range((-blurring_region_size[1] + 1) // 2, (blurring_region_size[1] + 1) // 2):
                     for x1 in range((-blurring_region_size[0] + 1) // 2, (blurring_region_size[0] + 1) // 2):
                         if 0 <= y + y1 <= image_dimensions_pixels[0] - 1 \
@@ -177,7 +177,7 @@ def setup_border_pixels(mask):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 if mask[y + 1, x] == 1 or mask[y - 1, x] == 1 or mask[y, x + 1] == 1 or mask[y, x - 1] == 1 or \
                         mask[y + 1, x + 1] == 1 or mask[y + 1, x - 1] == 1 or mask[y - 1, x + 1] == 1 or mask[
                     y - 1, x - 1] == 1:
@@ -230,7 +230,7 @@ def setup_sparse_mask(mask, sparse_grid_size):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
                     sparse_mask[y, x] = False
 
@@ -262,10 +262,10 @@ def setup_sparse_to_image(mask, sparse_mask):
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
 
-            if sparse_mask[y, x] == False:
+            if not sparse_mask[y, x]:
                 sparse_to_image = np.append(sparse_to_image, image_pixel_index)
 
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 image_pixel_index += 1
 
     return sparse_to_image
@@ -303,15 +303,15 @@ def setup_image_to_sparse(mask, sparse_mask):
 
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
-            if mask[y, x] == False:
+            if not mask[y, x]:
                 iboarder = 0
                 pixel_match = False
-                while pixel_match == False:
+                while not pixel_match:
                     for y1 in range(y - iboarder, y + iboarder + 1):
                         for x1 in range(x - iboarder, x + iboarder + 1):
                             if y1 >= 0 and y1 < image_dimensions_pixels[0] and x1 >= 0 and x1 < image_dimensions_pixels[
                                 1]:
-                                if sparse_mask[y1, x1] == False and pixel_match == False:
+                                if not sparse_mask[y1, x1] and not pixel_match:
                                     image_to_sparse = np.append(image_to_sparse, sparse_index_2d[y1, x1] - 1)
                                     pixel_match = True
 
