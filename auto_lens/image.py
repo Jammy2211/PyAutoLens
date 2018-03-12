@@ -541,7 +541,7 @@ class Mask(np.ndarray):
 
     @property
     def pixels_in_mask(self):
-        return np.size(self) - np.sum(self)
+        return int(np.size(self) - np.sum(self))
 
 
 class MaskException(Exception):
