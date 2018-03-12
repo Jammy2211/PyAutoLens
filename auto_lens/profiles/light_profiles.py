@@ -1,7 +1,7 @@
 from auto_lens.profiles import geometry_profiles
 import math
 from scipy.integrate import quad
-
+import numpy as np
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
@@ -31,7 +31,7 @@ class LightProfile(object):
         Abstract method for obtaining intensity at given coordinates
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The coordinates in image space (arc seconds)
         Returns
         -------
@@ -201,7 +201,7 @@ class SersicLightProfile(EllipticalLightProfile):
         intensity : float
             The intensity at that distance
         """
-        return self.intensity * math.exp(
+        return self.intensity * np.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
     @geometry_profiles.transform_coordinates
@@ -213,14 +213,14 @@ class SersicLightProfile(EllipticalLightProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The coordinates in image space
         Returns
         -------
         intensity : float
             The value of intensity at the given coordinates
         """
-        eta = math.sqrt(self.axis_ratio) * self.coordinates_to_elliptical_radius(coordinates)
+        eta = np.sqrt(self.axis_ratio) * self.coordinates_to_elliptical_radius(coordinates)
         return self.intensity_at_radius(eta)
 
 
@@ -343,8 +343,6 @@ class CoreSersicLightProfile(SersicLightProfile):
             The intensity at that radius
         """
         return self.intensity_prime * (
-                (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * math.exp(
-            -self.sersic_constant * (
-                    (((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
-                            self.effective_radius ** self.alpha)) ** (
-                            1.0 / (self.alpha * self.sersic_index))))
+                (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * np.exp(
+            -self.sersic_constant * ((((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
+                            self.effective_radius ** self.alpha)) ** (1.0 / (self.alpha * self.sersic_index))))

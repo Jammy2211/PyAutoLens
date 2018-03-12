@@ -111,7 +111,7 @@ class TestProfiles(object):
             sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=2.0)
 
-            intensity = sersic.intensity_at_coordinates(coordinates=(0, 1))
+            intensity = sersic.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
             assert intensity == pytest.approx(5.38066670129, 1e-3)
 
@@ -119,12 +119,12 @@ class TestProfiles(object):
             sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=2.0)
 
-            intensity_1 = sersic.intensity_at_coordinates(coordinates=(0, 1))
+            intensity_1 = sersic.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
             sersic = light_profiles.SersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=2.0)
 
-            intensity_2 = sersic.intensity_at_coordinates(coordinates=(1, 0))
+            intensity_2 = sersic.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity_1 == intensity_2
 
@@ -147,7 +147,7 @@ class TestProfiles(object):
             exponential = light_profiles.ExponentialLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                  effective_radius=2.0)
 
-            intensity = exponential.intensity_at_coordinates(coordinates=(0, 1))
+            intensity = exponential.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
             assert intensity == pytest.approx(4.9047, 1e-3)
 
@@ -155,7 +155,7 @@ class TestProfiles(object):
             exponential = light_profiles.ExponentialLightProfile(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                                  effective_radius=3.0)
 
-            intensity = exponential.intensity_at_coordinates(coordinates=(1, 0))
+            intensity = exponential.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity == pytest.approx(4.8566, 1e-3)
 
@@ -163,7 +163,7 @@ class TestProfiles(object):
             exponential = light_profiles.ExponentialLightProfile(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                                  effective_radius=3.0)
 
-            intensity = exponential.intensity_at_coordinates(coordinates=(1, 0))
+            intensity = exponential.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity == pytest.approx(2.0 * 4.8566, 1e-3)
 
@@ -171,12 +171,12 @@ class TestProfiles(object):
             exponential = light_profiles.ExponentialLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                  effective_radius=2.0)
 
-            intensity_1 = exponential.intensity_at_coordinates(coordinates=(0, 1))
+            intensity_1 = exponential.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
             exponential = light_profiles.ExponentialLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                                  effective_radius=2.0)
 
-            intensity_2 = exponential.intensity_at_coordinates(coordinates=(1, 0))
+            intensity_2 = exponential.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity_1 == intensity_2
 
@@ -199,7 +199,7 @@ class TestProfiles(object):
             dev_vaucouleurs = light_profiles.DevVaucouleursLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                         effective_radius=2.0)
 
-            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=(0, 1))
+            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
             assert intensity == pytest.approx(5.6697, 1e-3)
 
@@ -207,7 +207,7 @@ class TestProfiles(object):
             dev_vaucouleurs = light_profiles.DevVaucouleursLightProfile(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                                         effective_radius=3.0)
 
-            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=(1, 0))
+            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity == pytest.approx(7.4455, 1e-3)
 
@@ -215,7 +215,7 @@ class TestProfiles(object):
             dev_vaucouleurs = light_profiles.DevVaucouleursLightProfile(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                                         effective_radius=3.0)
 
-            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=(1, 0))
+            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity == pytest.approx(2.0 * 7.4455, 1e-3)
 
@@ -223,12 +223,12 @@ class TestProfiles(object):
             dev_vaucouleurs = light_profiles.DevVaucouleursLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                         effective_radius=2.0)
 
-            intensity_1 = dev_vaucouleurs.intensity_at_coordinates(coordinates=(0, 1))
+            intensity_1 = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
             dev_vaucouleurs = light_profiles.DevVaucouleursLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                                         effective_radius=2.0)
 
-            intensity_2 = dev_vaucouleurs.intensity_at_coordinates(coordinates=(1, 0))
+            intensity_2 = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity_1 == intensity_2
 

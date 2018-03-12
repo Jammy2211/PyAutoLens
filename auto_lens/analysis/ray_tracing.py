@@ -31,8 +31,8 @@ def deflection_angles_analysis_array(galaxy, coordinates):
     """
     deflection_angles = np.zeros(coordinates.shape)
 
-    for defl_count, [y, x] in enumerate(coordinates):
-        deflection_angles[defl_count, :] = galaxy.deflection_angles_at_coordinates(coordinates=(y,x))
+    for defl_count, coordinate in enumerate(coordinates):
+        deflection_angles[defl_count, :] = galaxy.deflection_angles_at_coordinates(coordinates=coordinate)
 
     return deflection_angles
 
@@ -42,9 +42,9 @@ def deflection_angles_analysis_sub_array(galaxy, sub_coordinates):
     """
     deflection_angles = np.zeros(sub_coordinates.shape)
 
-    for sub_count, sub_coordinate in enumerate(sub_coordinates):
-        for defl_count, [y,x] in enumerate(sub_coordinate):
+    for sub_count, image_pixel in enumerate(sub_coordinates):
+        for defl_count, sub_coordinate in enumerate(image_pixel):
 
-            deflection_angles[sub_count, defl_count, :] = galaxy.deflection_angles_at_coordinates(coordinates=(y,x))
+            deflection_angles[sub_count, defl_count, :] = galaxy.deflection_angles_at_coordinates(coordinates=sub_coordinate)
 
     return deflection_angles

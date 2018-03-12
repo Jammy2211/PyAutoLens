@@ -141,7 +141,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -164,7 +164,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -186,7 +186,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -237,7 +237,7 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -282,7 +282,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -330,7 +330,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -347,7 +347,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -426,7 +426,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -547,7 +547,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -571,7 +571,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -592,7 +592,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -646,7 +646,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -666,7 +666,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -732,7 +732,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -760,7 +760,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -809,7 +809,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -869,7 +869,7 @@ class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -893,7 +893,7 @@ class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
