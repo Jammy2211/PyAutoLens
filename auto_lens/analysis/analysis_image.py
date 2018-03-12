@@ -1,30 +1,30 @@
 import numpy as np
 import image
 
-def setup_image_coordinates(mask, pixel_scale):
-    """ Given a mask and the image pixel_scale, compute the arc second coordinates at the center of every unmasked
-    image-pixel. This is defined from the top-left corner, such that pixels in the top-left corner of the image
+def setup_image_coordinates(mask):
+    """ Given a mask and the image pixel_scale, compute the arc second coordinates at the center of every unmasked \
+    image-pixel. This is defined from the top-left corner, such that pixels in the top-left corner of the image \
     have a negative x value for and positive y value in arc seconds.
+
+    The results are returned as a 1D array, structured for efficient lens modeling calculations.
+
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the blurring region around.
-    pixel_scale : float
-        The arcsecond to pixel conversion factor of the array.
+        The image mask containing the pixels we are computing the coordinates of and the image dimensions / pixel scale.
 
     Returns
     -------
     One-dimensional array containing the image coordinates of each image pixel in the mask.
     """
-    pixel_dimensions = mask.shape
-    coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale)
+    coordinates = image.arc_seconds_coordinates_of_array(mask.pixel_dimensions, mask.pixel_scale)
 
-    image_pixels = np.size(mask) - np.sum(mask)
+    image_pixels = mask.pixels_in_mask
     image_coordinates = np.zeros(shape=(image_pixels, 2))
     image_pixel_count = 0
 
-    for y in range(pixel_dimensions[0]):
-        for x in range(pixel_dimensions[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
                 image_coordinates[image_pixel_count, :] = coordinates[y,x]
                 image_pixel_count += 1
@@ -49,7 +49,7 @@ def y_sub_pixel_to_coordinate(y_sub_pixel, y_coordinate, pixel_scale, sub_grid_s
 
     return y_coordinate + half - (y_sub_pixel + 1) * step
 
-def setup_image_sub_coordinates(mask, pixel_scale, sub_grid_size):
+def setup_image_sub_coordinates(mask, sub_grid_size):
     """
     Given a mask and the image pixel_scale, compute the arc second coordinates of every unmasked \
     sub image-pixel. This is defined from the top-left corner, such that pixels in the top-left corner of the image \
@@ -59,9 +59,7 @@ def setup_image_sub_coordinates(mask, pixel_scale, sub_grid_size):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the blurring region around.
-    pixel_scale : float
-        The arcsecond to pixel conversion factor of the array.
+        The image mask we are finding the blurring region around and the image dimensions / pixel scale.
     sub_grid_size : int
         The sub_grid_size x sub_grid_size of the sub-grid of each image pixel.
 
@@ -70,31 +68,29 @@ def setup_image_sub_coordinates(mask, pixel_scale, sub_grid_size):
     One-dimensional array containing the sub-image coordinates of each image pixel in the mask.
     """
 
-    pixel_dimensions = mask.shape
+    image_pixels = mask.pixels_in_mask
 
-    image_pixels = np.size(mask) - np.sum(mask)
-
-    cen = image.central_pixel(pixel_dimensions)
+    cen = image.central_pixel(mask.pixel_dimensions)
 
     image_sub_grid_coordinates = np.zeros(shape=(image_pixels, sub_grid_size**2, 2))
 
     image_pixel_count = 0
 
-    for y in range(pixel_dimensions[0]):
-        for x in range(pixel_dimensions[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
-                x_coordinate = image.x_pixel_to_arc_seconds(x, cen[1], pixel_scale)
-                y_coordinate = image.y_pixel_to_arc_seconds(y, cen[0], pixel_scale)
+                x_coordinate = image.x_pixel_to_arc_seconds(x, cen[1], mask.pixel_scale)
+                y_coordinate = image.y_pixel_to_arc_seconds(y, cen[0], mask.pixel_scale)
                 sub_pixel_count = 0
 
                 for y1 in range(sub_grid_size):
                     for x1 in range(sub_grid_size):
 
                         image_sub_grid_coordinates[image_pixel_count, sub_pixel_count, 0] = \
-                            x_sub_pixel_to_coordinate(x1, x_coordinate, pixel_scale, sub_grid_size)
+                            x_sub_pixel_to_coordinate(x1, x_coordinate, mask.pixel_scale, sub_grid_size)
 
                         image_sub_grid_coordinates[image_pixel_count, sub_pixel_count, 1] = \
-                            y_sub_pixel_to_coordinate(y1, y_coordinate, pixel_scale, sub_grid_size)
+                            y_sub_pixel_to_coordinate(y1, y_coordinate, mask.pixel_scale, sub_grid_size)
 
                         sub_pixel_count += 1
 
@@ -113,7 +109,7 @@ def setup_blurring_region(mask, blurring_region_size):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the blurring region around.
+        The image mask we are finding the blurring region around and the image dimensions / pixel scale.
     blurring_region_size : (int, int)
         The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
 
@@ -127,16 +123,15 @@ def setup_blurring_region(mask, blurring_region_size):
     if blurring_region_size[0] % 2 == 0 or blurring_region_size[1] % 2 == 0:
         raise image.MaskException("blurring_region_size of exterior region must be odd")
 
-    image_dimensions_pixels = mask.shape
-    blurring_region = np.zeros(image_dimensions_pixels)
+    blurring_region = np.zeros(mask.pixel_dimensions)
 
-    for y in range(image_dimensions_pixels[0]):
-        for x in range(image_dimensions_pixels[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
                 for y1 in range((-blurring_region_size[1] + 1) // 2, (blurring_region_size[1] + 1) // 2):
                     for x1 in range((-blurring_region_size[0] + 1) // 2, (blurring_region_size[0] + 1) // 2):
-                        if 0 <= y + y1 <= image_dimensions_pixels[0] - 1 \
-                                and 0 <= x + x1 <= image_dimensions_pixels[1] - 1:
+                        if 0 <= y + y1 <= mask.pixel_dimensions[0] - 1 \
+                                and 0 <= x + x1 <= mask.pixel_dimensions[1] - 1:
                             if mask[y + y1, x + x1]:
                                 blurring_region[y + y1, x + x1] = True
                         else:
@@ -155,7 +150,7 @@ def setup_border_pixels(mask):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the border pixels of.
+        The image mask we are finding the border pixels of and the image dimensions / pixel scale.
 
     Returns
     -------
@@ -165,13 +160,11 @@ def setup_border_pixels(mask):
 
     # TODO : This border only works for circular / elliptical masks which do not have masked image pixels in their
     # TODO : center (like an annulus). Do we need a separate routine for annuli masks?
-
-    image_dimensions_pixels = mask.shape
     border_pixels = np.empty(0)
     image_pixel_index = 0
 
-    for y in range(image_dimensions_pixels[0]):
-        for x in range(image_dimensions_pixels[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
                 if mask[y+1,x] == 1 or mask[y-1,x] == 1 or mask[y,x+1] == 1 or mask[y,x-1] == 1 or \
                         mask[y+1,x+1] == 1 or mask[y+1, x-1] == 1 or mask[y-1, x+1] == 1 or mask[y-1,x-1] == 1:
@@ -191,7 +184,7 @@ def setup_sparse_pixels(mask, sparse_grid_size):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the sparse clustering pixels of.
+        The image mask we are finding the sparse clustering pixels of and the image dimensions / pixel scale.
     sparse_grid_size : int
         The spacing of the sparse image pixel grid (e.g. a value of 2 will compute a sparse grid of pixels which \
         are two pixels apart)
@@ -215,13 +208,10 @@ def setup_sparse_pixels(mask, sparse_grid_size):
 def setup_sparse_mask(mask, sparse_grid_size):
     """Setup a two-dimensional sparse mask of image pixels, by keeping all image pixels which do not give a remainder \
     when divided by the sub-grid size. """
+    sparse_mask = np.ones(mask.pixel_dimensions)
 
-    image_dimensions_pixels = mask.shape
-
-    sparse_mask = np.ones(image_dimensions_pixels)
-
-    for y in range(image_dimensions_pixels[0]):
-        for x in range(image_dimensions_pixels[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
                 if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
                     sparse_mask[y, x] = False
@@ -235,7 +225,7 @@ def setup_sparse_to_image(mask, sparse_mask):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the sparse clustering pixels of.
+        The image mask we are finding the sparse clustering pixels of and the image dimensions / pixel scale.
     sparse_mask : ndarray
         The two-dimensional boolean image of the sparse grid.
 
@@ -245,13 +235,11 @@ def setup_sparse_to_image(mask, sparse_mask):
         The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
         of the image pixel in the mask.
     """
-    image_dimensions_pixels = mask.shape
-
     sparse_to_image = np.empty(0)
     image_pixel_index = 0
 
-    for y in range(image_dimensions_pixels[0]):
-        for x in range(image_dimensions_pixels[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
 
             if sparse_mask[y, x] == False:
                 sparse_to_image = np.append(sparse_to_image, image_pixel_index)
@@ -267,7 +255,7 @@ def setup_image_to_sparse(mask, sparse_mask):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the sparse clustering pixels of.
+        The image mask we are finding the sparse clustering pixels of and the image dimensions / pixel scale.
     sparse_mask : ndarray
         The two-dimensional boolean image of the sparse grid.
 
@@ -278,28 +266,26 @@ def setup_image_to_sparse(mask, sparse_mask):
         index of the sparse pixel in sparse_pixel arrays.
 
     """
-
-    image_dimensions_pixels = mask.shape
-    sparse_index_2d = np.zeros(image_dimensions_pixels)
+    sparse_index_2d = np.zeros(mask.pixel_dimensions)
     sparse_pixel_index = 0
 
-    for y in range(image_dimensions_pixels[0]):
-        for x in range(image_dimensions_pixels[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if sparse_mask[y,x] == False:
                 sparse_pixel_index += 1
                 sparse_index_2d[y,x] = sparse_pixel_index
 
     image_to_sparse = np.empty(0)
 
-    for y in range(image_dimensions_pixels[0]):
-        for x in range(image_dimensions_pixels[1]):
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
                 iboarder = 0
                 pixel_match = False
                 while pixel_match == False:
                     for y1 in range(y-iboarder, y+iboarder+1):
                         for x1 in range(x-iboarder, x+iboarder+1):
-                            if y1 >= 0 and y1 < image_dimensions_pixels[0] and x1 >= 0 and x1 < image_dimensions_pixels[1]:
+                            if y1 >= 0 and y1 < mask.pixel_dimensions[0] and x1 >= 0 and x1 < mask.pixel_dimensions[1]:
                                 if sparse_mask[y1, x1] == False and pixel_match == False:
                                     image_to_sparse = np.append(image_to_sparse, sparse_index_2d[y1,x1]-1)
                                     pixel_match = True

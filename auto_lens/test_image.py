@@ -855,9 +855,9 @@ class TestMask(object):
         def test__simple_shift_back(self):
             mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(-1, 0))
             assert mask.shape == (3, 3)
-            assert (mask == np.array([[True, False, True],
+            assert (mask == np.array([[True, True, True],
                                       [True, True, True],
-                                      [True, True, True]])).all()
+                                      [True, False, True]])).all()
 
         def test__simple_shift_forward(self):
             mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(0, 1))
@@ -868,9 +868,9 @@ class TestMask(object):
 
         def test__diagonal_shift(self):
             mask = image.Mask.circular(arc_second_dimensions=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(1, 1))
-            assert (mask == np.array([[True, True, True],
+            assert (mask == np.array([[True, True, False],
                                       [True, True, True],
-                                      [True, True, False]])).all()
+                                      [True, True, True]])).all()
 
     class TestCircular(object):
         def test__input_big_mask__mask(self):
@@ -996,6 +996,34 @@ class TestMask(object):
                                       [True, True, True, True],
                                       [False, True, True, False]])).all()
 
+    class TestFromArray(object):
+
+        def test__simple_array_in(self):
+
+            mask_array = np.array([[True, True, True],
+                                  [True, False, True],
+                                  [True, True, True]])
+
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=1)
+
+            assert mask.shape == (3, 3)
+            assert (mask == np.array([[True, True, True],
+                                      [True, False, True],
+                                      [True, True, True]])).all()
+
+        def test__rectangular_array_in(self):
+
+            mask_array = np.array([[True, True, True, True],
+                                  [True, False, False, True],
+                                  [True, True, True, True]])
+
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=1)
+
+            assert mask.shape == (3, 4)
+            assert (mask == np.array([[True, True, True, True],
+                                      [True, False, False, True],
+                                      [True, True, True, True]])).all()
+
     class TestUnmasked(object):
 
         def test__3x3__input__all_are_false(self):
@@ -1006,6 +1034,15 @@ class TestMask(object):
             assert (mask == np.array([[False, False, False],
                                       [False, False, False],
                                       [False, False, False]])).all()
+
+        def test__3x2__input__all_are_false(self):
+
+            mask = image.Mask.unmasked(arc_second_dimensions=(1.5, 1.0), pixel_scale=0.5)
+
+            assert mask.shape == (3, 2)
+            assert (mask == np.array([[False, False],
+                                      [False, False],
+                                      [False, False]])).all()
 
         def test__5x5__input__all_are_false(self):
 
