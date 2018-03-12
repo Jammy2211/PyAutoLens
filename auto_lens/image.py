@@ -17,6 +17,7 @@ def numpy_array_from_fits(file_path, hdu):
     hdu_list = fits.open(file_path)  # Open the fits file
     return np.array(hdu_list[hdu].data)
 
+
 def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
     """
     Given the dimensions of an array and its pixel_scale, this routine computes the arc second coordinates of every
@@ -50,20 +51,26 @@ def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
 
     return coordinates_array
 
+
 def x_pixel_to_arc_seconds(x_pixel, x_central_pixel, pixel_scale):
-    return (x_pixel-  x_central_pixel)*pixel_scale
+    return (x_pixel - x_central_pixel) * pixel_scale
+
 
 def y_pixel_to_arc_seconds(y_pixel, y_central_pixel, pixel_scale):
-    return -(y_pixel-  y_central_pixel)*pixel_scale
+    return -(y_pixel - y_central_pixel) * pixel_scale
+
 
 def pixel_dimensions_to_arc_seconds(pixel_dimensions, pixel_scale):
     return tuple(map(lambda d: d * pixel_scale, pixel_dimensions))
 
+
 def arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale):
     return tuple(map(lambda d: d / pixel_scale, arc_second_dimensions))
 
+
 def central_pixel(pixel_dimensions):
     return tuple(map(lambda d: (float(d + 1) / 2) - 1, pixel_dimensions))
+
 
 def copy_attributes(old_obj, new_obj):
     """
@@ -84,8 +91,10 @@ def copy_attributes(old_obj, new_obj):
             setattr(new_obj, t[0], t[1])
     return new_obj
 
+
 def normalize(array):
     return np.divide(array, np.sum(array))
+
 
 def keep_attributes(func):
     """
@@ -125,6 +134,7 @@ def keep_attributes(func):
 
     return wrapper
 
+
 @keep_attributes
 def trim(array, pixel_dimensions):
     """ Trim the data array to a new size around its central pixel.
@@ -157,6 +167,7 @@ def trim(array, pixel_dimensions):
             'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
     return array
 
+
 @keep_attributes
 def pad(array, pixel_dimensions):
     """ Pad the data array with zeros around its central pixel.
@@ -177,6 +188,7 @@ def pad(array, pixel_dimensions):
     x_pad = int((pixel_dimensions[0] - shape[0] + 1) / 2)
     y_pad = int((pixel_dimensions[1] - shape[1] + 1) / 2)
     return np.pad(array, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
+
 
 def output_for_fortran(array, image_name, path=data_path):
     """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
@@ -412,6 +424,7 @@ class Array(np.ndarray):
         pyplot.imshow(self)
         pyplot.show()
 
+
 # noinspection PyClassHasNoInit
 class PSF(Array):
     pass
@@ -422,7 +435,7 @@ class Noise(Array):
     pass
 
 
-class Mask(np.ndarray):
+class Mask(Array):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
     @classmethod
