@@ -28,7 +28,7 @@ def setup_data(mask, data):
     return data_1d
 
 def setup_coordinates(mask):
-    """ Given an image.Mask, compute the arc second coordinates at the center of every unmasked image-pixel.
+    """ Given an image.Mask, compute the arc second coordinates at the center of every unmasked pixel.
 
     This is defined from the top-left corner, such that pixels in the top-left corner of the image have a negative \
     x value for and positive y value in arc seconds.
@@ -44,19 +44,19 @@ def setup_coordinates(mask):
     -------
     One-dimensional array containing the image coordinates of each image pixel in the mask.
     """
-    coordinates = image.arc_seconds_coordinates_of_array(mask.pixel_dimensions, mask.pixel_scale)
+    coordinates_arc = image.arc_seconds_coordinates_of_array(mask.pixel_dimensions, mask.pixel_scale)
 
-    image_pixels = mask.pixels_in_mask
-    image_coordinates = np.zeros(shape=(image_pixels, 2))
-    image_pixel_count = 0
+    pixels = mask.pixels_in_mask
+    coordinates = np.zeros(shape=(pixels, 2))
+    pixel_count = 0
 
     for y in range(mask.pixel_dimensions[0]):
         for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
-                image_coordinates[image_pixel_count, :] = coordinates[y,x]
-                image_pixel_count += 1
+                coordinates[pixel_count, :] = coordinates_arc[y,x]
+                pixel_count += 1
 
-    return image_coordinates
+    return coordinates
 
 def x_sub_pixel_to_coordinate(x_sub_pixel, x_coordinate, pixel_scale, sub_grid_size):
     """Convert a coordinate on the regular image-pixel grid to a sub-coordinate, using the pixel scale and sub-grid \
@@ -89,7 +89,7 @@ def setup_sub_coordinates(mask, sub_grid_size):
     mask : image.Mask
         The image mask we are finding the blurring region around and the image dimensions / pixel scale.
     sub_grid_size : int
-        The sub_grid_size x sub_grid_size of the sub-grid of each image pixel.
+        The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
 
     Returns
     -------
@@ -125,48 +125,63 @@ def setup_sub_coordinates(mask, sub_grid_size):
 
     return image_sub_grid_coordinates
 
-def setup_blurring_region(mask, blurring_region_size):
-    """Given an image.Mask, compute its blurring region, defined as all pixels which are outside of the mask but \
-    will have their light blurred into the mask during PSF convolution. Thus, their light must be computed during \
-    the analysis to ensure accurate PSF blurring.
-
-     The blurring_region_size is a tuple describing the rectangular pixel dimensions of the blurring kernel. \
-     Therefore, it maps directly to the size of the PSF kernel of an image.
+def setup_blurring_coordinates(mask, psf_size):
+    """Given an image.Mask, compute its blurring mask and use this to find the coordinates of all regions in the \
+    bluring mask.
 
     Parameters
     ----------
     mask : image.Mask
         The image mask we are finding the blurring region around and the image dimensions / pixel scale.
-    blurring_region_size : (int, int)
+    psf_size : (int, int)
+        The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
+
+
+    """
+    blurring_mask = setup_blurring_mask(mask, psf_size)
+    return setup_coordinates(blurring_mask)
+
+def setup_blurring_mask(mask, psf_size):
+    """Given an image.Mask, compute its blurring mask, defined as all pixels which are outside of the image mask but \
+    will have their light blurred into the mask during PSF convolution. Thus, their light must be computed during \
+    the analysis to ensure accurate PSF blurring.
+
+    The blurring_region_size is a tuple describing the rectangular pixel dimensions of the blurring kernel. \
+    Therefore, it maps directly to the size of the PSF kernel of an image.
+
+    Parameters
+    ----------
+    mask : image.Mask
+        The image mask we are finding the blurring region around and the image dimensions / pixel scale.
+    psf_size : (int, int)
         The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
 
     Returns
     -------
-    setup_blurring_region : numpy.ma
-        A mask where every True value is a pixel which is within the mask's blurring region.
+    blurring_mask : image.Mask
+        A mask where every False value is a pixel which is within the mask's blurring region.
 
      """
 
-    if blurring_region_size[0] % 2 == 0 or blurring_region_size[1] % 2 == 0:
-        raise image.MaskException("blurring_region_size of exterior region must be odd")
+    if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
+        raise image.MaskException("psf_size of exterior region must be odd")
 
-    blurring_region = np.zeros(mask.pixel_dimensions)
+    blurring_mask = np.ones(mask.pixel_dimensions)
 
     for y in range(mask.pixel_dimensions[0]):
         for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
-                for y1 in range((-blurring_region_size[1] + 1) // 2, (blurring_region_size[1] + 1) // 2):
-                    for x1 in range((-blurring_region_size[0] + 1) // 2, (blurring_region_size[0] + 1) // 2):
+                for y1 in range((-psf_size[1] + 1) // 2, (psf_size[1] + 1) // 2):
+                    for x1 in range((-psf_size[0] + 1) // 2, (psf_size[0] + 1) // 2):
                         if 0 <= y + y1 <= mask.pixel_dimensions[0] - 1 \
                                 and 0 <= x + x1 <= mask.pixel_dimensions[1] - 1:
-                            if mask[y + y1, x + x1]:
-                                blurring_region[y + y1, x + x1] = True
+                            if mask[y + y1, x + x1] == True:
+                                blurring_mask[y + y1, x + x1] = False
                         else:
-                            raise image.MaskException(
-                                "setup_blurring_region extends beynod the size of the mask - pad the image"
+                            raise image.MaskException("setup_blurring_mask extends beynod the size of the mask - pad the image"
                                 "before masking")
 
-    return blurring_region
+    return image.Mask.from_array(blurring_mask, mask.pixel_scale)
 
 def setup_border_pixels(mask):
     """Given an image.Mask, compute its border image pixels, defined as all pixels which are on the edge of the mask \
@@ -243,7 +258,7 @@ def setup_uniform_sparse_mask(mask, sparse_grid_size):
                 if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
                     sparse_mask[y, x] = False
 
-    return np.ma.asarray(sparse_mask)
+    return image.Mask.from_array(sparse_mask, mask.pixel_scale)
 
 def setup_sparse_index_image(mask, sparse_mask):
     """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
@@ -338,7 +353,7 @@ def setup_image_to_sparse(mask, sparse_mask, sparse_index_image):
 
 class AnalysisData(object):
 
-    def __init__(self, image, noise, psf, mask):
+    def __init__(self, mask, image, noise, psf, sub_grid_size=2):
         """The core grouping of lens modeling data, including the image data, noise-map and psf. Optional \
         inputs (e.g. effective exposure time map / positional image pixels) have their functionality automatically \
         switched on or off depending on if they are included.
@@ -349,14 +364,19 @@ class AnalysisData(object):
 
         Parameters
         ----------
+        mask : image.Mask
+            The image mask, where False indicates a pixel is included in the analysis.
         image : image.Image
             The image data, in electrons per second.
         noise : image.Noise
             The image noise-map, in variances in electrons per second.
         psf : image.PSF
             The image PSF
-        mask : image.Mask
-            The image mask, where False indicates a pixel is included in the analysis.
+        sub_grid_size : int
+            The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
         """
-        self.image = image
+        self.image = setup_data(mask, image)
+        self.noise = setup_data(mask, noise)
+        self.psf = psf
         self.coordinates = setup_coordinates(mask)
+        self.sub_coordinates = setup_sub_coordinates(mask, sub_grid_size)
