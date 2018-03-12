@@ -6,6 +6,7 @@ import inspect
 from matplotlib import pyplot
 import colorsys
 
+
 def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
     """
     Draws a plot from a function that accepts coordinates . Upper normalisation limit determined by taking mean plus one
@@ -59,6 +60,7 @@ def nan_tuple(func):
             return func(*args, **kwargs)
         except ZeroDivisionError:
             return np.nan, np.nan
+
     return wrapper
 
 
@@ -613,7 +615,7 @@ class SphericalProfile(EllipticalProfile):
         centre: (float, float)
             The coordinates of the centre of the profiles
         """
-        super(SphericalProfile, self).__init__(1.0, 0.0, centre)
+        super(SphericalProfile, self).__init__(centre, 1.0, 0.0)
 
     @property
     def parameter_labels(self):
