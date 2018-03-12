@@ -2,12 +2,12 @@ from __future__ import division, print_function
 import pytest
 import numpy as np
 import os
-from analysis import analysis_image
+from analysis import analysis_data
 import image
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
-class TestArrayConversion(object):
+class TestDataConversion(object):
 
     def test__setup_3x3___one_data_in_mask(self):
 
@@ -21,7 +21,7 @@ class TestArrayConversion(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        data_1d = analysis_image.setup_data(mask, data)
+        data_1d = analysis_data.setup_data(mask, data)
 
         assert (data_1d[0] == 5.0)
 
@@ -37,7 +37,7 @@ class TestArrayConversion(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        data_1d = analysis_image.setup_data(mask, data)
+        data_1d = analysis_data.setup_data(mask, data)
 
         assert (data_1d[0] == 2.0)
         assert (data_1d[1] == 4.0)
@@ -60,7 +60,7 @@ class TestArrayConversion(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        data_1d = analysis_image.setup_data(mask, data)
+        data_1d = analysis_data.setup_data(mask, data)
 
         assert (data_1d[0] == 2.0)
         assert (data_1d[1] == 3.0)
@@ -85,7 +85,7 @@ class TestArrayConversion(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        data_1d = analysis_image.setup_data(mask, data)
+        data_1d = analysis_data.setup_data(mask, data)
 
         assert (data_1d[0] == 2.0)
         assert (data_1d[1] == 8.0)
@@ -93,6 +93,7 @@ class TestArrayConversion(object):
         assert (data_1d[3] == 6.0)
         assert (data_1d[4] == 10.0)
         assert (data_1d[5] == 12.0)
+
 
 class TestImageCoordinates(object):
 
@@ -104,7 +105,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_coordinates = analysis_image.setup_coordinates(mask)
+        image_coordinates = analysis_data.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([0.0, 0.0])).all()
 
@@ -116,7 +117,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_coordinates = analysis_image.setup_coordinates(mask)
+        image_coordinates = analysis_data.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([ 0.0, 3.0])).all()
         assert (image_coordinates[1] == np.array([-3.0, 0.0])).all()
@@ -133,7 +134,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=1.0)
 
-        image_coordinates = analysis_image.setup_coordinates(mask)
+        image_coordinates = analysis_data.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([-0.5, 1.5])).all()
         assert (image_coordinates[1] == np.array([ 0.5, 1.5])).all()
@@ -154,7 +155,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_coordinates = analysis_image.setup_coordinates(mask)
+        image_coordinates = analysis_data.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([-1.5, 3.0])).all()
         assert (image_coordinates[1] == np.array([-4.5, 0.0])).all()
@@ -174,7 +175,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates == np.array
             ([[[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]]])).all()
@@ -192,7 +193,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates == np.array([[[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
                                                         [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]],
@@ -221,7 +222,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates == np.array([[[2.5, 3.5], [3.5, 3.5], [2.5, 2.5], [3.5, 2.5]],
                                                         [[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
@@ -262,7 +263,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=0.3)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         image_sub_coordinates = np.round(image_sub_coordinates, decimals=2)
 
@@ -305,7 +306,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=3)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=3)
 
         assert (image_sub_coordinates == np.array([[[-0.75, 0.75],  [0.0, 0.75],  [0.75, 0.75],
                                                          [-0.75, 0.0],   [0.0, 0.0],   [0.75, 0.0],
@@ -329,7 +330,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=2.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=3)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=3)
 
         assert (image_sub_coordinates[0 ,0] == np.array([1.5, 2.5])).all()
         assert (image_sub_coordinates[0 ,1] == np.array([2.0, 2.5])).all()
@@ -370,7 +371,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=2.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=4)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=4)
 
         image_sub_coordinates = np.round(image_sub_coordinates, decimals=1)
 
@@ -468,7 +469,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates[0,0] == np.array([-0.5, 2.0])).all()
         assert (image_sub_coordinates[0,1] == np.array([ 0.5, 2.0])).all()
@@ -498,7 +499,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_data.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates[0,0] == np.array([4.0, 3.5])).all()
         assert (image_sub_coordinates[0,1] == np.array([5.0, 3.5])).all()
@@ -528,320 +529,421 @@ class TestImageSubCoordinates(object):
 
 class TestBlurringRegion(object):
 
-    def test__size__3x3_small_mask(self):
+    class TestBlurringMask:
 
-        mask_array = np.array([[True, True, True],
-                         [True, False, True],
-                         [True, True, True]])
+        def test__size__3x3_small_mask(self):
+    
+            mask_array = np.array([[True, True, True],
+                                  [True, False, True],
+                                  [True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 3))
+    
+            assert (blurring_mask == np.array([[False, False, False],
+                                               [False, True, False],
+                                               [False, False, False]])).all()
+    
+        def test__size__3x3__large_mask(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                                   [True, True, True, True, True, True, True],
+                                   [True, True, True, True, True, True, True],
+                                   [True, True, True, False, True, True, True],
+                                   [True, True, True, True, True, True, True],
+                                   [True, True, True, True, True, True, True],
+                                   [True, True, True, True, True, True, True]])
+            
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 3))
+    
+            assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
+                                                 [True, True, True, True, True, True, True],
+                                                 [True, True, False, False, False, True, True],
+                                                 [True, True, False, True, False, True, True],
+                                                 [True, True, False, False, False, True, True],
+                                                 [True, True, True, True, True, True, True],
+                                                 [True, True, True, True, True, True, True]])).all()
+    
+        def test__size__5x5__large_mask(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True],
+                                     [True, True, True, False, True, True, True],
+                                     [True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(5, 5))
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+            assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, False, False, True, False, False,  True],
+                                               [True, False, False, False, False, False,  True],
+                                               [True, False, False, False, False, False,  True],
+                                               [True, True, True, True, True, True, True]])).all()
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
+        def test__size__5x3__large_mask(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, False, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(5, 3))
 
-        assert (blurring_region == np.array([[True, True, True],
-                                             [True, False, True],
-                                             [True, True, True]])).all()
-
-    def test__size__3x3__large_mask(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, False, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
-        
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
-
-        assert (blurring_region == np.array([[False, False, False, False, False, False, False],
-                                             [False, False, False, False, False, False, False],
-                                             [False, False, True, True, True, False, False],
-                                             [False, False, True, False, True, False, False],
-                                             [False, False, True, True, True, False, False],
-                                             [False, False, False, False, False, False, False],
-                                             [False, False, False, False, False, False, False]])).all()
-
-    def test__size__5x5__large_mask(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, False, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
-
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
-
-        assert (blurring_region == np.array([[False, False, False, False, False, False, False],
-                                             [False, True, True, True, True, True, False],
-                                             [False, True, True, True, True, True, False],
-                                             [False, True, True, False, True, True, False],
-                                             [False, True, True, True, True, True, False],
-                                             [False, True, True, True, True, True, False],
-                                             [False, False, False, False, False, False, False]])).all()
-
-    def test__size__5x3__large_mask(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True],
+            assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
+                                                 [True, True, True, True, True, True, True],
+                                                 [True, False, False, False, False, False, True],
+                                                 [True, False, False, True, False, False, True],
+                                                 [True, False, False, False, False, False, True],
+                                                 [True, True, True, True, True, True, True],
+                                                 [True, True, True, True, True, True, True]])).all()
+    
+        def test__size__3x5__large_mask(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True],
                              [True, True, True, True, True, True, True],
                              [True, True, True, True, True, True, True],
                              [True, True, True, False, True, True, True],
                              [True, True, True, True, True, True, True],
                              [True, True, True, True, True, True, True],
                              [True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 5))
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+            assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
+                                                 [True, True, False, False, False, True, True],
+                                                 [True, True, False, False, False, True, True],
+                                                 [True, True, False, True, False, True, True],
+                                                 [True, True, False, False, False, True, True],
+                                                 [True, True, False, False, False, True, True],
+                                                 [True, True, True, True, True, True, True]])).all()
+    
+        def test__size__3x3__multiple_points(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True],
+                             [True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True],
+                             [True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True],
+                             [True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 3))
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 3))
+            assert (blurring_mask == np.array([[False, False, False, True, False, False, False],
+                                               [False, True,  False, True, False, True,  False],
+                                               [False, False, False, True, False, False, False],
+                                               [True,  True,  True,  True, True,  True,  True],
+                                               [False, False, False, True, False, False, False],
+                                               [False, True,  False, True, False, True,  False],
+                                               [False, False, False, True, False, False, False]])).all()
 
-        assert (blurring_region == np.array([[False, False, False, False, False, False, False],
-                                             [False, False, False, False, False, False, False],
-                                             [False, True, True, True, True, True, False],
-                                             [False, True, True, False, True, True, False],
-                                             [False, True, True, True, True, True, False],
-                                             [False, False, False, False, False, False, False],
-                                             [False, False, False, False, False, False, False]])).all()
+        def test__size__5x5__multiple_points(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(5, 5))
 
-    def test__size__3x5__large_mask(self):
+            assert (blurring_mask == np.array([[False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False, False]])).all()
+    
+        def test__size__5x3__multiple_points(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(5, 3))
 
-        mask_array = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, False, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
+            assert (blurring_mask == np.array([[True,   True,  True,  True,  True,  True,  True,  True,  True],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [True,   True,  True,  True,  True,  True,  True,  True,  True],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [True,   True,  True,  True,  True,  True,  True,  True,  True]])).all()
+    
+        def test__size__3x5__multiple_points(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 5))
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+            assert (blurring_mask == np.array([[True, False, False,  False, True,  False,  False,  False, True],
+                                               [True, False, False,  False, True,  False,  False,  False, True],
+                                               [True, False,  True,  False, True,  False,   True,  False, True],
+                                               [True, False, False,  False, True,  False,  False,  False, True],
+                                               [True, False, False,  False, True,  False,  False,  False, True],
+                                               [True, False, False,  False, True,  False,  False,  False, True],
+                                               [True, False,  True,  False, True,  False,   True,  False, True],
+                                               [True, False, False,  False, True,  False,  False,  False, True],
+                                               [True, False, False,  False, True,  False,  False,  False, True]])).all()
+    
+        def test__size__3x3__even_sized_image(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 3))
+            
+            assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
+                                               [False,  True, False, True, False, True,  False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True,   True,  True, True,  True,  True,  True, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [False,  True, False, True, False,  True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [ True,  True,  True, True,  True,  True,  True, True]])).all()
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 5))
+        def test__size__5x5__even_sized_image(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True],
+                                  [True, True, True, True, True, True, True, True],
+                                  [True, True, True, True, True, True, True, True],
+                                  [True, True, True, True, True, True, True, True],
+                                  [True, True, True, True, True, True, True, True],
+                                  [True, True, True, True, True, False, True, True],
+                                  [True, True, True, True, True, True, True, True],
+                                  [True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(5, 5))
 
-        assert (blurring_region == np.array([[False, False, False, False, False, False, False],
-                                             [False, False, True, True, True, False, False],
-                                             [False, False, True, True, True, False, False],
-                                             [False, False, True, False, True, False, False],
-                                             [False, False, True, True, True, False, False],
-                                             [False, False, True, True, True, False, False],
-                                             [False, False, False, False, False, False, False]])).all()
+            assert (blurring_mask == np.array([[True, True, True,  True, True, True, True, True],
+                                                 [True, True, True, True, True, True, True, True],
+                                                 [True, True, True, True, True, True, True, True],
+                                                 [True, True, True, False, False, False, False, False],
+                                                 [True, True, True, False, False, False, False, False],
+                                                 [True, True, True, False, False, True, False, False],
+                                                 [True, True, True, False, False, False, False, False],
+                                                 [True, True, True, False, False, False, False, False]])).all()
+    
+        def test__size__3x3__rectangular_8x9_image(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True, True],
+                             [True, True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 3))
+    
+            assert (blurring_mask == np.array([[False, False, False, True,  False,  False,  False, True, True],
+                                               [False,  True,  False, True,  False, True,  False,  True, True],
+                                                [False, False, False, True,  False, False, False,  True, True],
+                                                [True,   True,  True, True, True,   True,  True,  True, True],
+                                                [False, False, False, True,  False, False, False,  True, True],
+                                                [False,  True,  False, True, False,  True,  False,  True, True],
+                                                [False, False, False, True,  False, False, False,  True, True],
+                                                [True,  True,  True,  True,  True,  True,   True,  True, True]])).all()
+    
+        def test__size__3x3__rectangular_9x8_image(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True,  True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, False, True, True, True, False, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True],
+                             [True, True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(3, 3))
 
-    def test__size__3x3__multiple_points(self):
+            assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
+                                               [False, True,  False, True, False,  True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True,   True,  True, True,  True,  True,  True, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [False,  True, False, True, False,  True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True,   True,  True, True,  True,  True,  True, True],
+                                               [True,   True,  True, True,  True,  True,  True, True]])).all()
 
-        mask_array = np.array([[True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True,  True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True],
-                         [True, True, True, True, True, True, True]])
+        def test__size__5x5__multiple_points__mask_extends_beyond_border_so_raises_mask_exception(self):
+    
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                                 [True, False, True, True, True, False, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True,  True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, False, True, True, True, False, True],
+                                 [True, True, True, True, True, True, True]])
+    
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    
+            with pytest.raises(image.MaskException):
+                blurring_mask = analysis_data.setup_blurring_mask(mask, psf_size=(5, 5))
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+    class TestBlurringCoordinates:
+        
+        def test__3x3_blurring_mask_correct_coordinates(self):
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
+            mask_array = np.array([[True, True, True],
+                                   [True, False, True],
+                                   [True, True, True]])
 
-        assert (blurring_region == np.array([[True,   True,  True, False,  True,  True,  True],
-                                             [True,  False,  True, False,  True, False,  True],
-                                             [True,   True,  True, False,  True,  True,  True],
-                                             [False, False, False, False, False, False, False],
-                                             [True,   True,  True, False,  True,  True,  True],
-                                             [True,  False,  True, False,  True, False,  True],
-                                             [True,   True,  True, False,  True,  True,  True]])).all()
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-    def test__size__5x5__multiple_points(self):
+            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(3,3))
 
-        mask_array = np.array([[True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True,  True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True]])
+            assert (blurring_coordinates[0] == np.array([-3.0, 3.0])).all()
+            assert (blurring_coordinates[1] == np.array([0.0, 3.0])).all()
+            assert (blurring_coordinates[2] == np.array([3.0, 3.0])).all()
+            assert (blurring_coordinates[3] == np.array([-3.0, 0.0])).all()
+            assert (blurring_coordinates[4] == np.array([3.0, 0.0])).all()
+            assert (blurring_coordinates[5] == np.array([-3.0, -3.0])).all()
+            assert (blurring_coordinates[6] == np.array([0.0, -3.0])).all()
+            assert (blurring_coordinates[7] == np.array([3.0, -3.0])).all()
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+        def test__3x5_blurring_mask_correct_coordinates(self):
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, False, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
-        assert (blurring_region == np.array([[True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,  False,  True, True,  True, False,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,  False,  True, True,  True, False,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True]])).all()
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-    def test__size__5x3__multiple_points(self):
+            # Blurring mask
 
-        mask_array = np.array([[True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True,  True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True]])
+            #[[True, True, True, True, True, True, True],
+            # [True, True, False, False, False, True, True],
+            # [True, True, False, False, False, True, True],
+            # [True, True, False, True, False, True, True],
+            # [True, True, False, False, False, True, True],
+            # [True, True, False, False, False, True, True],
+            # [True, True, True, True, True, True, True]])
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(3,5))
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 3))
+            assert (blurring_coordinates[0] ==  np.array([-3.0,  6.0])).all()
+            assert (blurring_coordinates[1] ==  np.array([ 0.0,  6.0])).all()
+            assert (blurring_coordinates[2] ==  np.array([ 3.0,  6.0])).all()
+            assert (blurring_coordinates[3] ==  np.array([-3.0,  3.0])).all()
+            assert (blurring_coordinates[4] ==  np.array([ 0.0,  3.0])).all()
+            assert (blurring_coordinates[5] ==  np.array([ 3.0,  3.0])).all()
+            assert (blurring_coordinates[6] ==  np.array([-3.0,  0.0])).all()
+            assert (blurring_coordinates[7] ==  np.array([ 3.0,  0.0])).all()
+            assert (blurring_coordinates[8] ==  np.array([-3.0, -3.0])).all()
+            assert (blurring_coordinates[9] ==  np.array([ 0.0, -3.0])).all()
+            assert (blurring_coordinates[10] == np.array([ 3.0, -3.0])).all()
+            assert (blurring_coordinates[11] == np.array([-3.0, -6.0])).all()
+            assert (blurring_coordinates[12] == np.array([ 0.0, -6.0])).all()
+            assert (blurring_coordinates[13] == np.array([ 3.0, -6.0])).all()
 
-        assert (blurring_region == np.array([[False, False, False, False, False, False, False, False, False],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,  False,  True, True,  True, False,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [False, False, False, False, False, False, False, False, False],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [True, True,  False,  True, True,  True, False,  True, True],
-                                             [True, True,   True,  True, True,  True,  True,  True, True],
-                                             [False, False, False, False, False, False, False, False, False]])).all()
+        def test__5x3_blurring_mask_correct_coordinates(self):
 
-    def test__size__3x5__multiple_points(self):
+            mask_array = np.array([[True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, False, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True],
+                                 [True, True, True, True, True, True, True]])
 
-        mask_array = np.array([[True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True,  True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True]])
+            mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+            # Blurring mask
 
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 5))
+            # [[True, True, True, True, True, True, True],
+            #  [True, True, True, True, True, True, True],
+            #  [True, False, False, False, False, False, True],
+            #  [True, False, False, True, False, False, True],
+            #  [True, False, False, False, False, False, True],
+            #  [True, True, True, True, True, True, True],
+            #  [True, True, True, True, True, True, True]]
 
-        assert (blurring_region == np.array([[False, True,   True,  True, False,  True,  True,  True, False],
-                                             [False, True,   True,  True, False,  True,  True,  True, False],
-                                             [False, True,  False,  True, False,  True, False,  True, False],
-                                             [False, True,   True,  True, False,  True,  True,  True, False],
-                                             [False, True,   True,  True, False,  True,  True,  True, False],
-                                             [False, True,   True,  True, False,  True,  True,  True, False],
-                                             [False, True,  False,  True, False,  True, False,  True, False],
-                                             [False, True,   True,  True, False,  True,  True,  True, False],
-                                             [False, True,   True,  True, False,  True,  True,  True, False]])).all()
+            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(5,3))
 
-    def test__size__3x3__even_sized_image(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True,  True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True]])
-
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
-
-        assert (blurring_region == np.array([[True,   True,  True, False,  True,  True,  True, False],
-                                             [True,  False,  True, False,  True, False,  True, False],
-                                             [True,   True,  True, False,  True,  True,  True, False],
-                                             [False, False, False, False, False, False, False, False],
-                                             [True,   True,  True, False,  True,  True,  True, False],
-                                             [True,  False,  True, False,  True, False,  True, False],
-                                             [True,   True,  True, False,  True,  True,  True, False],
-                                             [False, False, False, False, False, False, False, False]])).all()
-
-    def test__size__5x5__even_sized_image(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True]])
-
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
-
-        assert (blurring_region == np.array([[False, False, False,  False, False, False, False, False],
-                                             [False, False, False, False, False, False, False, False],
-                                             [False, False, False, False, False, False, False, False],
-                                             [False, False, False, True,  True,  True,  True, True],
-                                             [False, False, False, True,  True,  True,  True, True],
-                                             [False, False, False, True,  True, False,  True, True],
-                                             [False, False, False, True,  True,  True,  True, True],
-                                             [False, False, False,  True,  True,  True,  True, True]])).all()
-
-    def test__size__3x3__rectangular_8x9_image(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True,  True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True, True, True],
-                         [True, True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True, True]])
-
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
-
-        assert (blurring_region == np.array([[True,   True,  True, False,  True,  True,  True, False, False],
-                                             [True,  False,  True, False,  True, False,  True, False, False],
-                                             [True,   True,  True, False,  True,  True,  True, False, False],
-                                             [False, False, False, False, False, False, False, False, False],
-                                             [True,   True,  True, False,  True,  True,  True, False, False],
-                                             [True,  False,  True, False,  True, False,  True, False, False],
-                                             [True,   True,  True, False,  True,  True,  True, False, False],
-                                             [False, False, False, False, False, False, False, False, False]])).all()
-
-    def test__size__3x3__rectangular_9x8_image(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True,  True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True, True]])
-
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(3, 3))
-
-        assert (blurring_region == np.array([[True,   True,  True, False,  True,  True,  True, False],
-                                             [True,  False,  True, False,  True, False,  True, False],
-                                             [True,   True,  True, False,  True,  True,  True, False],
-                                             [False, False, False, False, False, False, False, False],
-                                             [True,   True,  True, False,  True,  True,  True, False],
-                                             [True,  False,  True, False,  True, False,  True, False],
-                                             [True,   True,  True, False,  True,  True,  True, False],
-                                             [False, False, False, False, False, False, False, False],
-                                             [False, False, False, False, False, False, False, False]])).all()
-
-    def test__size__5x5__multiple_points__mask_extends_beyond_border_so_raises_mask_exception(self):
-
-        mask_array = np.array([[True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True,  True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, False, True, True, True, False, True],
-                         [True, True, True, True, True, True, True]])
-
-        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
-
-        with pytest.raises(image.MaskException):
-            blurring_region = analysis_image.setup_blurring_region(mask, blurring_region_size=(5, 5))
+            assert (blurring_coordinates[0] ==  np.array([-6.0,  3.0])).all()
+            assert (blurring_coordinates[1] ==  np.array([-3.0,  3.0])).all()
+            assert (blurring_coordinates[2] ==  np.array([ 0.0,  3.0])).all()
+            assert (blurring_coordinates[3] ==  np.array([ 3.0,  3.0])).all()
+            assert (blurring_coordinates[4] ==  np.array([ 6.0,  3.0])).all()
+            assert (blurring_coordinates[5] ==  np.array([-6.0,  0.0])).all()
+            assert (blurring_coordinates[6] ==  np.array([-3.0,  0.0])).all()
+            assert (blurring_coordinates[7] ==  np.array([ 3.0,  0.0])).all()
+            assert (blurring_coordinates[8] ==  np.array([ 6.0,  0.0])).all()
+            assert (blurring_coordinates[9] ==  np.array([-6.0, -3.0])).all()
+            assert (blurring_coordinates[10] == np.array([-3.0, -3.0])).all()
+            assert (blurring_coordinates[11] == np.array([ 0.0, -3.0])).all()
+            assert (blurring_coordinates[12] == np.array([ 3.0, -3.0])).all()
+            assert (blurring_coordinates[13] == np.array([ 6.0, -3.0])).all()
 
 
 class TestBorderPixels(object):
@@ -858,7 +960,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array([0])).all()
 
@@ -874,7 +976,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -890,7 +992,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
@@ -907,7 +1009,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17])).all()
 
@@ -923,7 +1025,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array
             ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 26, 27, 28, 29])).all()
@@ -940,7 +1042,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14])).all()
 
@@ -956,7 +1058,7 @@ class TestBorderPixels(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        border_pixels = analysis_image.setup_border_pixels(mask)
+        border_pixels = analysis_data.setup_border_pixels(mask)
 
         assert (border_pixels == np.array
             ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
@@ -978,7 +1080,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -995,7 +1097,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_to_image == np.arange(21)).all()
             assert (image_to_sparse == np.arange(21)).all()
@@ -1012,7 +1114,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_to_image == np.arange(49)).all()
             assert (image_to_sparse == np.arange(49)).all()
@@ -1029,7 +1131,7 @@ class TestSparsePixels(object):
 
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([4, 6, 14, 16])).all()
             assert (image_to_sparse == np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
@@ -1048,7 +1150,7 @@ class TestSparsePixels(object):
 
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
             assert (image_to_sparse == np.array([0, 0, 1, 1, 2, 0, 0, 1, 1, 1, 2, 2, 3, 3,
@@ -1067,7 +1169,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=2)
 
             assert (sparse_to_image == np.arange(16)).all()
             assert (image_to_sparse == np.arange(16)).all()
@@ -1084,7 +1186,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=3)
 
             assert (sparse_to_image == np.array([10])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
@@ -1101,7 +1203,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=3)
 
             assert (sparse_to_image == np.array([0, 1, 3, 14, 17, 26])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
@@ -1119,7 +1221,7 @@ class TestSparsePixels(object):
 
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=3)
 
             assert (sparse_to_image == np.arange(9)).all()
             assert (image_to_sparse == np.arange(9)).all()
@@ -1136,7 +1238,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=3)
 
             assert (sparse_to_image == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
             assert (image_to_sparse == np.array([0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
@@ -1154,7 +1256,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -1172,7 +1274,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -1190,7 +1292,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([1, 3])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
@@ -1207,7 +1309,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -1224,7 +1326,7 @@ class TestSparsePixels(object):
                         
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([1, 3])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
@@ -1241,7 +1343,7 @@ class TestSparsePixels(object):
             
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = analysis_image.setup_sparse_pixels(mask, sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = analysis_data.setup_sparse_pixels(mask, sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([1, 3, 11, 13])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
@@ -1249,11 +1351,20 @@ class TestSparsePixels(object):
 
 class TestAnalyisImageConstructor(object):
 
-    def test__input_all_image_properties__sets_up_correctly(self):
+    def test__4x4_input_all_image_properties__4_central_pixels_unmasked(self):
 
-        test_image = image.Image(array=np.ones((3, 3)), pixel_scale=0.1)
-        test_noise = image.Noise.from_array(array=np.ones((3, 3)))
-        test_psf = image.PSF.from_array(array=np.ones((3, 3)), renormalize=False)
-        test_mask = test_image.unmasked()
+        test_image = image.Image(array=np.ones((4, 4)), pixel_scale=1.5)
+        test_noise = image.Noise.from_array(array=np.ones((4, 4)))
+        test_psf = image.PSF.from_array(array=np.ones((2, 2)), renormalize=False)
+        test_mask = image.Mask.from_array(mask_array=np.array([[True, True, True, True],
+                                                               [True, False, False, True],
+                                                               [True, False, False, True],
+                                                               [True, True, True, True]]), pixel_scale=1.5)
 
-        analysis_im = analysis_image.AnalysisData(test_image, test_noise, test_psf, test_mask)
+        adata = analysis_data.AnalysisData(test_mask, test_image, test_noise, test_psf, sub_grid_size=2)
+
+        assert (adata.image == np.array([1, 1, 1, 1])).all()
+        assert (adata.noise == np.array([1, 1, 1, 1])).all()
+        assert (adata.psf == np.ones((2, 2))).all()
+        assert (adata.coordinates == np.array([[-0.75, 0.75], [0.75, 0.75], [-0.75, -0.75], [0.75, -0.75]])).all()
+        assert (adata.sub_coordinates == analysis_data.setup_sub_coordinates(test_mask, sub_grid_size=2)).all()
