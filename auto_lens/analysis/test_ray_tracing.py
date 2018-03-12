@@ -41,11 +41,11 @@ class TestDeflArray(object):
                                                                 einstein_radius=1.0, slope=2.2)
         nfw = mass_profiles.SphericalNFWMassProfile(kappa_s=0.1, scale_radius=5.0)
 
-        defls_0 = np.array(power_law.deflection_angles_at_coordinates(coordinates[0])) + \
-                              np.array(nfw.deflection_angles_at_coordinates(coordinates[0]))
+        defls_0 = power_law.deflection_angles_at_coordinates(coordinates[0]) + \
+                  nfw.deflection_angles_at_coordinates(coordinates[0])
 
-        defls_1 = np.array(power_law.deflection_angles_at_coordinates(coordinates[1])) + \
-                              np.array(nfw.deflection_angles_at_coordinates(coordinates[1]))
+        defls_1 = power_law.deflection_angles_at_coordinates(coordinates[1]) + \
+                  nfw.deflection_angles_at_coordinates(coordinates[1])
 
         lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
 
@@ -82,17 +82,17 @@ class TestDeflArray(object):
                                                                 einstein_radius=1.0, slope=2.2)
         nfw = mass_profiles.SphericalNFWMassProfile(kappa_s=0.1, scale_radius=5.0)
 
-        defls_0 = np.array(power_law.deflection_angles_at_coordinates(sub_coordinates[0,0])) + \
-                              np.array(nfw.deflection_angles_at_coordinates(sub_coordinates[0,0]))
+        defls_0 = power_law.deflection_angles_at_coordinates(sub_coordinates[0,0]) + \
+                            nfw.deflection_angles_at_coordinates(sub_coordinates[0,0])
 
-        defls_1 = np.array(power_law.deflection_angles_at_coordinates(sub_coordinates[0,1])) + \
-                              np.array(nfw.deflection_angles_at_coordinates(sub_coordinates[0,1]))
+        defls_1 = power_law.deflection_angles_at_coordinates(sub_coordinates[0,1]) + \
+                              nfw.deflection_angles_at_coordinates(sub_coordinates[0,1])
 
-        defls_2 = np.array(power_law.deflection_angles_at_coordinates(sub_coordinates[1,0])) + \
-                              np.array(nfw.deflection_angles_at_coordinates(sub_coordinates[1,0]))
+        defls_2 = power_law.deflection_angles_at_coordinates(sub_coordinates[1,0]) + \
+                              nfw.deflection_angles_at_coordinates(sub_coordinates[1,0])
 
-        defls_3 = np.array(power_law.deflection_angles_at_coordinates(sub_coordinates[1,1])) + \
-                              np.array(nfw.deflection_angles_at_coordinates(sub_coordinates[1,1]))
+        defls_3 = power_law.deflection_angles_at_coordinates(sub_coordinates[1,1]) + \
+                              nfw.deflection_angles_at_coordinates(sub_coordinates[1,1])
 
         lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
 

@@ -103,7 +103,7 @@ def subgrid(func):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             A coordinate pair
         pixel_scale : float
             The scale of a pixel
@@ -146,7 +146,7 @@ def iterative_subgrid(subgrid_func):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             x, y coordinates in image space
         pixel_scale : float
             The size of a pixel
@@ -267,7 +267,7 @@ def transform_coordinates(func):
         ----------
         profile : Profile
             The profiles that owns the function
-        coordinates : TransformedCoordinates or (float, float)
+        coordinates : TransformedCoordinates or ndarray
             Coordinates in either cartesian or profiles coordinate system
         args
         kwargs
@@ -280,7 +280,7 @@ def transform_coordinates(func):
             result = func(profile, profile.transform_to_reference_frame(coordinates), *args, **kwargs)
             if isinstance(result, TransformedCoordinates):
                 result = profile.transform_from_reference_frame(result)
-            return result
+            return np.asarray(result)
         return func(profile, coordinates, *args, **kwargs)
 
     return wrapper
@@ -315,7 +315,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -392,10 +392,10 @@ class Profile(object):
         ----------
         The coordinates at the mass profiles centre
         """
-        return coordinates[0] - self.x_cen, coordinates[1] - self.y_cen
+        return np.subtract(coordinates, self.centre)
 
     def coordinates_from_centre(self, coordinates):
-        return coordinates[0] + self.x_cen, coordinates[1] + self.y_cen
+        return np.add(coordinates, self.centre)
 
     def coordinates_to_radius(self, coordinates):
         """
@@ -403,7 +403,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The image coordinates (x, y)
 
         Returns
@@ -411,7 +411,7 @@ class Profile(object):
         The radius at those coordinates
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-        return math.sqrt(shifted_coordinates[0] ** 2 + shifted_coordinates[1] ** 2)
+        return np.sqrt(np.sum(shifted_coordinates**2.0))
 
 
 class EllipticalProfile(Profile):
@@ -454,8 +454,8 @@ class EllipticalProfile(Profile):
         -------
         The sin and cosine of the angle
         """
-        phi_radians = math.radians(self.phi)
-        return math.cos(phi_radians), math.sin(phi_radians)
+        phi_radians = np.radians(self.phi)
+        return np.cos(phi_radians), np.sin(phi_radians)
 
     @transform_coordinates
     def coordinates_to_eccentric_radius(self, coordinates):
@@ -464,15 +464,14 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The image coordinates (x, y)
         Returns
         -------
         The radius at those coordinates
         """
 
-        return math.sqrt(self.axis_ratio) * math.sqrt(
-            coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
+        return np.sqrt(self.axis_ratio) * np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
     def coordinates_angle_to_profile(self, theta):
         """
@@ -486,8 +485,8 @@ class EllipticalProfile(Profile):
         ----------
         The sin and cosine of the angle between the shifted coordinates and profiles ellipse.
         """
-        theta_coordinate_to_profile = math.radians(theta - self.phi)
-        return math.cos(theta_coordinate_to_profile), math.sin(theta_coordinate_to_profile)
+        theta_coordinate_to_profile = np.radians(theta - self.phi)
+        return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
     def coordinates_angle_from_x(self, coordinates):
         """
@@ -497,7 +496,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image.
 
         Returns
@@ -505,7 +504,7 @@ class EllipticalProfile(Profile):
         The angle between the coordinates and the x-axis and profiles centre
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-        return math.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        return np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
 
     def rotate_coordinates_from_profile(self, coordinates_elliptical):
         """Rotate elliptical coordinates from the reference frame of the profiles back to the image-plane Cartsian grid
@@ -522,20 +521,20 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The image coordinates (x, y)
         Returns
         -------
         The radius at those coordinates
         """
-        return math.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
+        return np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
     def coordinates_radius_to_x_and_y(self, coordinates, radius):
         """Decomposed a coordinate at a given radius r into its x and y vectors
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The image coordinates (x, y)
         radius : float
             The radius r from the centre of the coordinate reference frame.
@@ -543,7 +542,7 @@ class EllipticalProfile(Profile):
         Returns
         ----------
         The coordinates after the decomposed into x and y components"""
-        theta_from_x = math.degrees(np.arctan2(coordinates[1], coordinates[0]))
+        theta_from_x = np.degrees(np.arctan2(coordinates[1], coordinates[0]))
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
         return radius * cos_theta, radius * sin_theta
 
@@ -576,7 +575,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -600,7 +599,7 @@ class EllipticalProfile(Profile):
         return TransformedCoordinates((radius * cos_theta, radius * sin_theta))
 
     def eta_u(self, u, coordinates):
-        return math.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
+        return np.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
 
 class SphericalProfile(EllipticalProfile):
@@ -613,7 +612,7 @@ class SphericalProfile(EllipticalProfile):
         centre: (float, float)
             The coordinates of the centre of the profiles
         """
-        super(SphericalProfile, self).__init__(1.0, 0.0, centre)
+        super(SphericalProfile, self).__init__(centre, 1.0, 0.0)
 
     @property
     def parameter_labels(self):
