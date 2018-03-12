@@ -178,9 +178,9 @@ def setup_border_pixels(mask):
     for y in range(image_dimensions_pixels[0]):
         for x in range(image_dimensions_pixels[1]):
             if not mask[y, x]:
-                if mask[y + 1, x] == 1 or mask[y - 1, x] == 1 or mask[y, x + 1] == 1 or mask[y, x - 1] == 1 or \
-                        mask[y + 1, x + 1] == 1 or mask[y + 1, x - 1] == 1 or mask[y - 1, x + 1] == 1 or mask[
-                    y - 1, x - 1] == 1:
+                if 1 in (mask[y + 1, x], mask[y - 1, x], mask[y, x + 1], mask[y, x - 1],
+                         mask[y + 1, x + 1], mask[y + 1, x - 1], mask[y - 1, x + 1], mask[
+                             y - 1, x - 1]):
                     border_pixels = np.append(border_pixels, image_pixel_index)
                 image_pixel_index += 1
 
