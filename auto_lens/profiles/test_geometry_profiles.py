@@ -152,7 +152,7 @@ class TestEllipticalProfile(object):
             assert theta_from_x == -45.0
 
         def test__include_shift_from_lens_centre__angles_follow_trig(self):
-            elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(1.0, 1.0))
+            elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=(2.0, 2.0))
 
@@ -200,7 +200,7 @@ class TestEllipticalProfile(object):
             assert sin_theta == pytest.approx(-0.866, 1e-3)
 
         def test__include_lens_offset__rotation_follows_trig(self):
-            elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(1.0, 1.0))
+            elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=(2.0, 2.0))
 
@@ -317,7 +317,7 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(2 ** 0.5, 1e-3)
 
         def test__shift_x_and_y_first__correct_rotation(self):
-            elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0, centre=(1.0, 1.0))
+            elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=90.0)
 
             # NOTE - whilst the profiles and coordinates are defined counter-clockwise from x, the rotation is performed
             # clockwise
@@ -331,11 +331,11 @@ class TestEllipticalProfile(object):
 
     class TestCoordinateMovements(object):
         def test__moving_lens_and_coordinates__same_answer(self):
-            elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(0, 0))
+            elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
             coordinates1 = (1.0, 1.0)
             coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
 
-            elliptical_profile2 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(-1, -1))
+            elliptical_profile2 = geometry_profiles.EllipticalProfile(centre=(-1, -1), axis_ratio=1.0, phi=0.0)
             coordinates2 = (0.0, 0.0)
             coordinates2 = elliptical_profile2.transform_to_reference_frame(coordinates2)
 
@@ -343,11 +343,11 @@ class TestEllipticalProfile(object):
             assert coordinates1[1] == coordinates2[1]
 
         def test__moving_lens_and_coordinates_with_phi__same_answer(self):
-            elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(0, 0))
+            elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0)
             coordinates1 = (1.0, 1.0)
             coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
 
-            elliptical_profile2 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(-1, -1))
+            elliptical_profile2 = geometry_profiles.EllipticalProfile(centre=(-1, -1), axis_ratio=1.0, phi=55.0)
             coordinates2 = (0.0, 0.0)
             coordinates2 = elliptical_profile2.transform_to_reference_frame(coordinates2)
 
@@ -355,11 +355,11 @@ class TestEllipticalProfile(object):
             assert coordinates1[1] == coordinates2[1]
 
         def test__coordinates_both_on_centre___same_answer(self):
-            elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(1, 1))
+            elliptical_profile1 = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=55.0)
             coordinates1 = (1.0, 1.0)
             coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
 
-            elliptical_profile2 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(-1, -1))
+            elliptical_profile2 = geometry_profiles.EllipticalProfile(centre=(-1, -1), axis_ratio=1.0, phi=55.0)
             coordinates2 = (-1.0, -1.0)
             coordinates2 = elliptical_profile2.transform_to_reference_frame(coordinates2)
 
@@ -405,7 +405,7 @@ class TestEllipticalProfile(object):
 
         def test__include_offset_profile_centre__original_coordinates_shift_but_returned_coordinates_do_not_shift_back(
                 self):
-            elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=174.342, centre=(1.0, 1.0))
+            elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=174.342)
 
             coordinates_original = (-42.2, -93.6)
 
@@ -595,7 +595,7 @@ class TestSphericalProfile(object):
             assert sin_theta == 0.0
 
         def test_coordinate_at_45__angle_follows_trig(self):
-            elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(0.0, 0.0))
+            elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=(1.0, 1.0))
 
@@ -605,7 +605,7 @@ class TestSphericalProfile(object):
             assert sin_theta == pytest.approx(0.707, 1e-3)
 
         def test__include_lens_offset__rotation_follows_trig(self):
-            elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(1.0, 1.0))
+            elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=(2.0, 2.0))
 
@@ -846,7 +846,7 @@ class TestTransform(object):
             geometry_profiles.TransformedCoordinates((0, 0))) == geometry_profiles.TransformedCoordinates((0, 0))
 
     def test_symmetry(self):
-        p = geometry_profiles.EllipticalProfile(2, 2, (3, 5))
+        p = geometry_profiles.EllipticalProfile((3, 5), 2, 2)
         assert p.transform_from_reference_frame(p.transform_to_reference_frame((5, 7))) == (5, 7)
 
 
@@ -864,7 +864,7 @@ class TestFromProfile(object):
         assert elliptical_profile.phi == 2
 
     def test__profile_from_elliptical_profile(self):
-        elliptical_profile = geometry_profiles.EllipticalProfile(1, 2, centre=(1, 1))
+        elliptical_profile = geometry_profiles.EllipticalProfile((1, 1), 1, 2)
         p = geometry_profiles.Profile.from_profile(elliptical_profile)
         assert p.__class__ == geometry_profiles.Profile
         assert p.centre == (1, 1)
