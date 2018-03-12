@@ -59,8 +59,14 @@ def y_pixel_to_arc_seconds(y_pixel, y_central_pixel, pixel_scale):
 def pixel_dimensions_to_arc_seconds(pixel_dimensions, pixel_scale):
     return tuple(map(lambda d: d * pixel_scale, pixel_dimensions))
 
+def x_arc_seconds_to_pixel(x_arcsec, x_central_pixel, pixel_scale):
+    return (x_arcsec)/pixel_scale + x_central_pixel
+
+def y_arc_seconds_to_pixel(y_arcsec, y_central_pixel, pixel_scale):
+    return -(y_arcsec)/pixel_scale + y_central_pixel
+
 def arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale):
-    return tuple(map(lambda d: d / pixel_scale, arc_second_dimensions))
+    return tuple(map(lambda d: int(d / pixel_scale), arc_second_dimensions))
 
 def central_pixel(pixel_dimensions):
     return tuple(map(lambda d: (float(d + 1) / 2) - 1, pixel_dimensions))
@@ -425,38 +431,22 @@ class Noise(Array):
 class Mask(np.ndarray):
     """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
 
-    @classmethod
-    def mask(cls, arc_second_dimensions, pixel_scale, function, centre):
+    def __new__(cls, mask_array, pixel_scale):
         """
 
         Parameters
         ----------
-        centre: (float, float)
-            The centre in arc seconds
-        function: function(x, y) -> Bool
-            A function that determines what the value of a mask should be at particular coordinates
-        pixel_scale: float
-            The size of a pixel in arc seconds
-        arc_second_dimensions: (float, float)
-            The spatial dimensions of the mask in arc seconds
+        mask_array : ndarray
+            The boolean array of masked pixels (False = pixel is not masked and included in analysis)
 
         Returns
         -------
             An empty array
         """
-        pixel_dimensions = arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
-        array = np.zeros((int(pixel_dimensions[0]), int(pixel_dimensions[1])))
-
-        central_pixel_coords = central_pixel(pixel_dimensions)
-        for i in range(int(pixel_dimensions[0])):
-            for j in range(int(pixel_dimensions[1])):
-                # Convert from pixel coordinates to image coordinates
-                x_pix = pixel_scale * (i - central_pixel_coords[0]) - centre[0]
-                y_pix = pixel_scale * (j - central_pixel_coords[1]) - centre[1]
-
-                array[i, j] = function(x_pix, y_pix)
-
-        return np.ma.asarray(array)
+        mask = np.asarray(mask_array).view(cls)
+        mask.pixel_dimensions = mask.shape
+        mask.pixel_scale = pixel_scale
+        return mask
 
     @classmethod
     def circular(cls, arc_second_dimensions, pixel_scale, radius_mask, centre=(0., 0.)):
@@ -466,19 +456,29 @@ class Mask(np.ndarray):
         ----------
         centre: (float, float)
             The centre in image coordinates in arc seconds
-        arc_second_dimensions : (int, int)
+        arc_second_dimensions : (float, float)
             The dimensions of the image (x, y) in arc seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         radius_mask : float
-            The radius of the circle (arc seconds)
+            The radius_arcsec of the circle (arc seconds)
         """
 
-        def is_radius_outside_mask(x_pix, y_pix):
-            radius = np.sqrt(x_pix ** 2 + y_pix ** 2)
-            return radius > radius_mask
+        pixel_dimensions = arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
+        mask_array = np.zeros((int(pixel_dimensions[0]), int(pixel_dimensions[1])))
 
-        return Mask.mask(arc_second_dimensions, pixel_scale, is_radius_outside_mask, centre)
+        central_pixel_coords = central_pixel(pixel_dimensions)
+        for y in range(int(pixel_dimensions[0])):
+            for x in range(int(pixel_dimensions[1])):
+
+                x_arcsec = x_pixel_to_arc_seconds(x, central_pixel_coords[1], pixel_scale) - centre[1]
+                y_arcsec = y_pixel_to_arc_seconds(y, central_pixel_coords[0], pixel_scale) - centre[0]
+
+                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+                mask_array[y, x] = radius_arcsec > radius_mask
+
+        return Mask(mask_array, pixel_scale)
 
     @classmethod
     def annular(cls, arc_second_dimensions, pixel_scale, inner_radius_mask, outer_radius_mask, centre=(0., 0.)):
@@ -488,31 +488,46 @@ class Mask(np.ndarray):
         ----------
         centre: (float, float)
             The centre in arc seconds
-        arc_second_dimensions : (int, int)
+        arc_second_dimensions : (float, float)
             The dimensions of the image in arcs seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius_mask : float
-            The inner radius of the circular annulus (arc seconds
+            The inner radius_arcsec of the circular annulus (arc seconds
         outer_radius_mask : float
-            The outer radius of the circular annulus (arc seconds)
+            The outer radius_arcsec of the circular annulus (arc seconds)
         """
 
-        def is_radius_outside_mask(x_pix, y_pix):
-            radius = np.sqrt(x_pix ** 2 + y_pix ** 2)
-            return radius > outer_radius_mask or radius < inner_radius_mask
+        pixel_dimensions = arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
+        mask_array = np.zeros((int(pixel_dimensions[0]), int(pixel_dimensions[1])))
 
-        return Mask.mask(arc_second_dimensions, pixel_scale, is_radius_outside_mask, centre)
+        central_pixel_coords = central_pixel(pixel_dimensions)
+        for y in range(int(pixel_dimensions[0])):
+            for x in range(int(pixel_dimensions[1])):
+
+                x_arcsec = x_pixel_to_arc_seconds(x, central_pixel_coords[1], pixel_scale) - centre[1]
+                y_arcsec = y_pixel_to_arc_seconds(y, central_pixel_coords[0], pixel_scale) - centre[0]
+
+                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+                mask_array[y, x] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
+
+        return Mask(mask_array, pixel_scale)
 
     @classmethod
-    def unmasked(cls, arc_second_dimensions, pixel_scale, centre=(0., 0.)):
+    def from_array(cls, mask_array, pixel_scale):
+        """Generate the mask from an already determined mask array"""
+        return Mask(mask_array, pixel_scale)
+
+    @classmethod
+    def unmasked(cls, arc_second_dimensions, pixel_scale):
         """
 
         Parameters
         ----------
         centre: (float, float)
             The centre in arc seconds
-        arc_second_dimensions : (int, int)
+        arc_second_dimensions : (float, float)
             The dimensions of the image in arcs seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
@@ -521,12 +536,12 @@ class Mask(np.ndarray):
         outer_radius_mask : float
             The outer radius of the circular annulus (arc seconds)
         """
+        pixel_dimensions = arc_second_dimensions_to_pixel(arc_second_dimensions, pixel_scale)
+        return Mask(np.ma.make_mask_none(pixel_dimensions), pixel_scale)
 
-        def is_unmasked(x_pix, y_pix):
-            return False
-
-        return Mask.mask(arc_second_dimensions, pixel_scale, is_unmasked, centre)
-
+    @property
+    def pixels_in_mask(self):
+        return np.size(self) - np.sum(self)
 
 class MaskException(Exception):
     pass
