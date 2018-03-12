@@ -7,6 +7,93 @@ import image
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
+class TestArrayConversion(object):
+
+    def test__setup_3x3___one_data_in_mask(self):
+
+        data =  np.array([[1.0, 2.0, 3.0],
+                          [4.0, 5.0, 6.0],
+                          [7.0, 8.0, 9.0]])
+
+        mask_array = np.array([[True, True, True],
+                               [True, False, True],
+                               [True, True, True]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        data_1d = analysis_image.setup_data(mask, data)
+
+        assert (data_1d[0] == 5.0)
+
+    def test__setup_3x3_image__five_coordinates(self):
+
+        data =  np.array([[1.0, 2.0, 3.0],
+                          [4.0, 5.0, 6.0],
+                          [7.0, 8.0, 9.0]])
+
+        mask_array = np.array([[True, False, True],
+                             [False, False, False],
+                             [True, False, True]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        data_1d = analysis_image.setup_data(mask, data)
+
+        assert (data_1d[0] == 2.0)
+        assert (data_1d[1] == 4.0)
+        assert (data_1d[2] == 5.0)
+        assert (data_1d[3] == 6.0)
+        assert (data_1d[4] == 8.0)
+
+
+    def test__setup_4x4_image__ten_coordinates__new_pixel_scale(self):
+
+        data =  np.array([[1.0, 2.0, 3.0, 4.0],
+                          [8.0, 7.0, 6.0, 5.0],
+                          [9.0, 10.0, 11.0, 12.0],
+                          [16.0, 15.0, 14.0, 13.0]])
+
+        mask_array = np.array([[True, False, False, True],
+                              [False, False, False, True],
+                              [True, False, False, True],
+                              [False, False, False, True]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        data_1d = analysis_image.setup_data(mask, data)
+
+        assert (data_1d[0] == 2.0)
+        assert (data_1d[1] == 3.0)
+        assert (data_1d[2] == 8.0)
+        assert (data_1d[3] == 7.0)
+        assert (data_1d[4] == 6.0)
+        assert (data_1d[5] == 10.0)
+        assert (data_1d[6] == 11.0)
+        assert (data_1d[7] == 16.0)
+        assert (data_1d[8] == 15.0)
+        assert (data_1d[9] == 14.0)
+
+    def test__setup_3x4_image__six_coordinates(self):
+
+        mask_array = np.array([[True, False, True, True],
+                         [False, False, False, True],
+                         [True, False, True, False]])
+
+        data =  np.array([[1.0, 2.0, 3.0, 4.0],
+                          [8.0, 7.0, 6.0, 5.0],
+                          [9.0, 10.0, 11.0, 12.0]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        data_1d = analysis_image.setup_data(mask, data)
+
+        assert (data_1d[0] == 2.0)
+        assert (data_1d[1] == 8.0)
+        assert (data_1d[2] == 7.0)
+        assert (data_1d[3] == 6.0)
+        assert (data_1d[4] == 10.0)
+        assert (data_1d[5] == 12.0)
+
 class TestImageCoordinates(object):
 
     def test__setup_3x3_image_one_coordinate(self):
@@ -17,7 +104,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_coordinates = analysis_image.setup_image_coordinates(mask)
+        image_coordinates = analysis_image.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([0.0, 0.0])).all()
 
@@ -29,7 +116,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_coordinates = analysis_image.setup_image_coordinates(mask)
+        image_coordinates = analysis_image.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([ 0.0, 3.0])).all()
         assert (image_coordinates[1] == np.array([-3.0, 0.0])).all()
@@ -46,7 +133,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=1.0)
 
-        image_coordinates = analysis_image.setup_image_coordinates(mask)
+        image_coordinates = analysis_image.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([-0.5, 1.5])).all()
         assert (image_coordinates[1] == np.array([ 0.5, 1.5])).all()
@@ -67,7 +154,7 @@ class TestImageCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_coordinates = analysis_image.setup_image_coordinates(mask)
+        image_coordinates = analysis_image.setup_coordinates(mask)
 
         assert (image_coordinates[0] == np.array([-1.5, 3.0])).all()
         assert (image_coordinates[1] == np.array([-4.5, 0.0])).all()
@@ -87,7 +174,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates == np.array
             ([[[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]]])).all()
@@ -105,7 +192,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates == np.array([[[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
                                                         [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]],
@@ -134,7 +221,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates == np.array([[[2.5, 3.5], [3.5, 3.5], [2.5, 2.5], [3.5, 2.5]],
                                                         [[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
@@ -175,7 +262,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=0.3)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         image_sub_coordinates = np.round(image_sub_coordinates, decimals=2)
 
@@ -218,7 +305,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=3)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=3)
 
         assert (image_sub_coordinates == np.array([[[-0.75, 0.75],  [0.0, 0.75],  [0.75, 0.75],
                                                          [-0.75, 0.0],   [0.0, 0.0],   [0.75, 0.0],
@@ -242,7 +329,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=2.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=3)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=3)
 
         assert (image_sub_coordinates[0 ,0] == np.array([1.5, 2.5])).all()
         assert (image_sub_coordinates[0 ,1] == np.array([2.0, 2.5])).all()
@@ -283,7 +370,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=2.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=4)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=4)
 
         image_sub_coordinates = np.round(image_sub_coordinates, decimals=1)
 
@@ -381,7 +468,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates[0,0] == np.array([-0.5, 2.0])).all()
         assert (image_sub_coordinates[0,1] == np.array([ 0.5, 2.0])).all()
@@ -411,7 +498,7 @@ class TestImageSubCoordinates(object):
 
         mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-        image_sub_coordinates = analysis_image.setup_image_sub_coordinates(mask=mask, sub_grid_size=2)
+        image_sub_coordinates = analysis_image.setup_sub_coordinates(mask=mask, sub_grid_size=2)
 
         assert (image_sub_coordinates[0,0] == np.array([4.0, 3.5])).all()
         assert (image_sub_coordinates[0,1] == np.array([5.0, 3.5])).all()
@@ -1160,7 +1247,13 @@ class TestSparsePixels(object):
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
 
 
-# class TestAnalyisImageConstructor(ojbect):
-#
-#     def test__input_all_image_properties__sets_up_correctly(self):
+class TestAnalyisImageConstructor(object):
 
+    def test__input_all_image_properties__sets_up_correctly(self):
+
+        test_image = image.Image(array=np.ones((3, 3)), pixel_scale=0.1)
+        test_noise = image.Noise.from_array(array=np.ones((3, 3)))
+        test_psf = image.PSF.from_array(array=np.ones((3, 3)), renormalize=False)
+        test_mask = test_image.unmasked()
+
+        analysis_im = analysis_image.AnalysisData(test_image, test_noise, test_psf, test_mask)
