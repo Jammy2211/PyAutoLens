@@ -519,7 +519,7 @@ class TestRegularizationMatrix(object):
 
     ### COMBINING B MATRICES ###
 
-    # Whereas the examples above had each -1 going down the diagonal, this is not necessary. It valid to put each pairing
+    # Whereas the paper_plots above had each -1 going down the diagonal, this is not necessary. It valid to put each pairing
     # anywhere. So, if we had a 4x4 B matrix, where pixel 0 regularizes 1, 2 -> 3 and 3 -> 0, we can set this up
     # as one matrix even though the pixel 0 comes up twice!
 
