@@ -45,7 +45,6 @@ class TestDataConversion(object):
         assert (data_1d[3] == 6.0)
         assert (data_1d[4] == 8.0)
 
-
     def test__setup_4x4_image__ten_coordinates__new_pixel_scale(self):
 
         data =  np.array([[1.0, 2.0, 3.0, 4.0],
@@ -94,6 +93,75 @@ class TestDataConversion(object):
         assert (data_1d[4] == 10.0)
         assert (data_1d[5] == 12.0)
 
+
+class TestMapper2d(object):
+
+    def test__setup_3x3___one_data_in_mask(self):
+
+        mask_array = np.array([[True, True, True],
+                               [True, False, True],
+                               [True, True, True]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        mapper_2d = analysis_data.setup_mapper_2d(mask)
+
+        assert (mapper_2d[0] == np.array([1, 1])).all()
+
+    def test__setup_3x3_image__five_coordinates(self):
+
+        mask_array = np.array([[True, False, True],
+                               [False, False, False],
+                               [True, False, True]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        mapper_2d = analysis_data.setup_mapper_2d(mask)
+
+        assert (mapper_2d[0] == np.array([0, 1])).all()
+        assert (mapper_2d[1] == np.array([1, 0])).all()
+        assert (mapper_2d[2] == np.array([1, 1])).all()
+        assert (mapper_2d[3] == np.array([1, 2])).all()
+        assert (mapper_2d[4] == np.array([2, 1])).all()
+
+    def test__setup_4x4_image__ten_coordinates__new_pixel_scale(self):
+
+        mask_array = np.array([[True, False, False, True],
+                              [False, False, False, True],
+                              [True, False, False, True],
+                              [False, False, False, True]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        mapper_2d = analysis_data.setup_mapper_2d(mask)
+
+        assert (mapper_2d[0] == np.array([0, 1])).all()
+        assert (mapper_2d[1] == np.array([0, 2])).all()
+        assert (mapper_2d[2] == np.array([1, 0])).all()
+        assert (mapper_2d[3] == np.array([1, 1])).all()
+        assert (mapper_2d[4] == np.array([1, 2])).all()
+        assert (mapper_2d[5] == np.array([2, 1])).all()
+        assert (mapper_2d[6] == np.array([2, 2])).all()
+        assert (mapper_2d[7] == np.array([3, 0])).all()
+        assert (mapper_2d[8] == np.array([3, 1])).all()
+        assert (mapper_2d[9] == np.array([3, 2])).all()
+
+    def test__setup_3x4_image__six_coordinates(self):
+
+        mask_array = np.array([[True, False, True, True],
+                             [False, False, False, True],
+                              [True, False, True, False]])
+
+        mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
+
+        mapper_2d = analysis_data.setup_mapper_2d(mask)
+
+        assert (mapper_2d[0] == np.array([0, 1])).all()
+        assert (mapper_2d[1] == np.array([1, 0])).all()
+        assert (mapper_2d[2] == np.array([1, 1])).all()
+        assert (mapper_2d[3] == np.array([1, 2])).all()
+        assert (mapper_2d[4] == np.array([2, 1])).all()
+        assert (mapper_2d[5] == np.array([2, 3])).all()
 
 class TestImageCoordinates(object):
 
@@ -1355,7 +1423,7 @@ class TestAnalyisImageConstructor(object):
 
         test_image = image.Image(array=np.ones((4, 4)), pixel_scale=1.5)
         test_noise = image.Noise.from_array(array=np.ones((4, 4)))
-        test_psf = image.PSF.from_array(array=np.ones((2, 2)), renormalize=False)
+        test_psf = image.PSF.from_array(array=np.ones((3, 3)), renormalize=False)
         test_mask = image.Mask.from_array(mask_array=np.array([[True, True, True, True],
                                                                [True, False, False, True],
                                                                [True, False, False, True],
@@ -1365,6 +1433,8 @@ class TestAnalyisImageConstructor(object):
 
         assert (adata.image == np.array([1, 1, 1, 1])).all()
         assert (adata.noise == np.array([1, 1, 1, 1])).all()
-        assert (adata.psf == np.ones((2, 2))).all()
+        assert (adata.psf == np.ones((3, 3))).all()
         assert (adata.coordinates == np.array([[-0.75, 0.75], [0.75, 0.75], [-0.75, -0.75], [0.75, -0.75]])).all()
         assert (adata.sub_coordinates == analysis_data.setup_sub_coordinates(test_mask, sub_grid_size=2)).all()
+        assert (adata.blurring_coordinates == analysis_data.setup_blurring_coordinates(test_mask, psf_size=(3,3))).all()
+        assert (adata.border_pixels == analysis_data.setup_border_pixels(test_mask)).all()

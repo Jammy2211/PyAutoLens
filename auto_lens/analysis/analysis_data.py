@@ -27,6 +27,26 @@ def setup_data(mask, data):
 
     return data_1d
 
+def setup_mapper_2d(mask):
+    """ Given an image.Mask, setup an array that can be used to map the input masks coordinates back to their 2D image \
+    pixels.
+
+    Parameters
+    ----------
+    mask : image.Mask
+        The image mask containing the pixels we are computing the coordinates of and the image dimensions / pixel scale.
+    """
+    image_pixels = mask.pixels_in_mask
+    mapper_2d = np.zeros(shape=(image_pixels, 2))
+    data_count = 0
+    for y in range(mask.pixel_dimensions[0]):
+        for x in range(mask.pixel_dimensions[1]):
+            if mask[y, x] == False:
+                mapper_2d[data_count, :] = np.array([y, x])
+                data_count += 1
+
+    return mapper_2d
+
 def setup_coordinates(mask):
     """ Given an image.Mask, compute the arc second coordinates at the center of every unmasked pixel.
 
@@ -380,3 +400,23 @@ class AnalysisData(object):
         self.psf = psf
         self.coordinates = setup_coordinates(mask)
         self.sub_coordinates = setup_sub_coordinates(mask, sub_grid_size)
+        self.blurring_coordinates = setup_blurring_coordinates(mask, self.psf.shape)
+        self.border_pixels = setup_border_pixels(mask)
+
+class AnalysisArray(object):
+
+    def __new__(cls, mask, data):
+        """
+
+        Parameters
+        ----------
+        mask_array : ndarray
+            The boolean array of masked pixels (False = pixel is not masked and included in analysis)
+
+        Returns
+        -------
+            An empty array
+        """
+        data = setup_data.view(cls)
+        data.mapper_2d = setup_mapper_2d(mask)
+        return array
