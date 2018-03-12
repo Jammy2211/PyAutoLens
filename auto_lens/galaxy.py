@@ -4,6 +4,7 @@ import math
 from astropy import cosmology
 from astropy import constants
 
+
 class RayTracingPlane(list):
     """The ray-tracing plane of this lensing system, which is made up of a collection of galaxies ordered by redshift.
 
@@ -60,12 +61,10 @@ class RayTracingPlane(list):
 
             galaxy.setup_angular_diameter_distance_to_earth(cosmological_model)
 
-            if i < len(self)-1:
-                
+            if i < len(self) - 1:
                 galaxy.setup_angular_diameter_distance_to_next_galaxy(cosmological_model, self[i + 1].redshift)
 
             if i > 0:
-
                 galaxy.setup_angular_diameter_distance_to_previous_galaxy(cosmological_model, self[i - 1].redshift)
 
     def setup_critical_densities(self):
@@ -77,16 +76,15 @@ class RayTracingPlane(list):
 
             for i, galaxy in enumerate(self):
 
-                if i < len(self)-1:
-
-                    constant_kpc = (constants.c.to('kpc / s').value)**2.0  \
+                if i < len(self) - 1:
+                    constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
                                    / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
-                    galaxy.critical_density_kpc = constant_kpc*self[i+1].ang_to_earth_kpc \
-                        / (galaxy.ang_to_next_galaxy_kpc *
-                           galaxy.ang_to_earth_kpc)
+                    galaxy.critical_density_kpc = constant_kpc * self[i + 1].ang_to_earth_kpc \
+                                                  / (galaxy.ang_to_next_galaxy_kpc *
+                                                     galaxy.ang_to_earth_kpc)
 
-                    galaxy.critical_density = galaxy.critical_density_kpc * galaxy.kpc_per_arcsec**2.0
+                    galaxy.critical_density = galaxy.critical_density_kpc * galaxy.kpc_per_arcsec ** 2.0
 
 
 class Galaxy(object):
@@ -108,10 +106,14 @@ class Galaxy(object):
         self.light_profiles = light_profiles
         self.mass_profiles = mass_profiles
 
+        # TODO: All of the initial calls to an instance variable should be made in the constructor. self.ang_to_earth
+        # TODO: etc. should be made here. However, it's still bad practice to be setting these variables to None at the
+        # TODO: point of construction because much of the function of a class depends on them not being None.
         self.setup_cosmological_quantities()
-        
+
     def setup_cosmological_quantities(self):
-        
+        # TODO: these shouldn't be in the Galaxy class. A Galaxy doesn't care about its angle to earth.
+
         self.ang_to_earth_kpc = None
         self.ang_to_next_galaxy_kpc = None
         self.ang_to_previous_galaxy_kpc = None
@@ -120,22 +122,27 @@ class Galaxy(object):
         self.ang_to_previous_galaxy = None
         self.arcsec_per_kpc = None
         self.kpc_per_arcsec = None
+
+        # TODO: I still don't fully understand what critical density means. However, if it is something dependent on the
+        # TODO: system as a whole (i.e. multiple galaxies) then it should not belong to any one galaxy. Either Critical
+        # TODO: density is passed in as an argument or those functions that use it should not be in the galaxy class
         self.critical_density = None
 
     def setup_angular_diameter_distance_to_earth(self, cosmological_model):
-       self.ang_to_earth_kpc = cosmological_model.angular_diameter_distance(z=self.redshift).to('kpc').value
-       self.ang_to_earth = self.ang_to_earth_kpc * self.arcsec_per_kpc
+        self.ang_to_earth_kpc = cosmological_model.angular_diameter_distance(z=self.redshift).to('kpc').value
+        self.ang_to_earth = self.ang_to_earth_kpc * self.arcsec_per_kpc
 
     def setup_angular_diameter_distance_to_next_galaxy(self, cosmological_model, next_redshift):
 
         self.ang_to_next_galaxy_kpc = cosmological_model.angular_diameter_distance_z1z2(self.redshift,
-                                                                        next_redshift).to('kpc').value
+                                                                                        next_redshift).to('kpc').value
         self.ang_to_next_galaxy = self.ang_to_next_galaxy_kpc * self.arcsec_per_kpc
 
     def setup_angular_diameter_distance_to_previous_galaxy(self, cosmological_model, previous_redshift):
 
         self.ang_to_previous_galaxy_kpc = cosmological_model.angular_diameter_distance_z1z2(previous_redshift,
-                                                                            self.redshift).to('kpc').value
+                                                                                            self.redshift).to(
+            'kpc').value
         self.ang_to_previous_galaxy = self.ang_to_previous_galaxy_kpc * self.arcsec_per_kpc
 
     def __repr__(self):
@@ -156,7 +163,7 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return sum(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
+        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
@@ -173,7 +180,7 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return list(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
+        return list(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def luminosity_within_circle(self, radius):
         """
@@ -191,7 +198,7 @@ class Galaxy(object):
         luminosity : float
             The total combined luminosity within the specified circle.
         """
-        return sum(map(lambda p : p.luminosity_within_circle(radius), self.light_profiles))
+        return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_circle_individual(self, radius):
         """
@@ -210,7 +217,7 @@ class Galaxy(object):
         luminosity : float
             The total combined luminosity within the specified circle.
         """
-        return list(map(lambda p : p.luminosity_within_circle(radius), self.light_profiles))
+        return list(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_ellipse(self, major_axis):
         """
@@ -229,7 +236,7 @@ class Galaxy(object):
         intensity : float
             The total luminosity within the specified ellipse.
         """
-        return sum(map(lambda p : p.luminosity_within_ellipse(major_axis), self.light_profiles))
+        return sum(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
     def luminosity_within_ellipse_individual(self, major_axis):
         """
@@ -247,7 +254,7 @@ class Galaxy(object):
         intensity : float
             The total luminosity within the specified ellipse.
         """
-        return list(map(lambda p : p.luminosity_within_ellipse(major_axis), self.light_profiles))
+        return list(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
     def surface_density_at_coordinates(self, coordinates):
         """
@@ -265,7 +272,7 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given coordinates.
         """
-        return sum(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def surface_density_at_coordinates_individual(self, coordinates):
         """
@@ -283,7 +290,7 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given coordinates.
         """
-        return list(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates(self, coordinates):
         """
@@ -300,7 +307,7 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        return sum(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates_individual(self, coordinates):
         """
@@ -317,7 +324,7 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        return list(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
@@ -354,7 +361,7 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given coordinates.
         """
-        return list(map(lambda p : p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
 
     def mass_within_circles(self, radius):
         """
@@ -373,7 +380,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
+        return self.critical_density * sum(
+            map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
     def mass_within_circles_individual(self, radius):
         """
@@ -391,7 +399,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
+        return self.critical_density * np.asarray(
+            list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
 
     def mass_within_ellipses(self, major_axis):
         """
@@ -410,7 +419,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
+        return self.critical_density * sum(
+            map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
     def mass_within_ellipses_individual(self, major_axis):
         """
@@ -429,7 +439,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
+        return self.critical_density * np.asarray(
+            list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
 
     def plot_density_as_function_of_radius(self, maximum_radius, image_name='', labels=None, number_bins=50,
                                            convert_x_to_kpc=True, plot_errors=True):
@@ -445,22 +456,21 @@ class Galaxy(object):
             The number of bins used to compute and plot the mass.
         """
 
-        radii = list(np.linspace(1e-4, maximum_radius, number_bins+1))
+        radii = list(np.linspace(1e-4, maximum_radius, number_bins + 1))
 
         density_0 = []
         density_1 = []
-      #  density_2 = []
+        #  density_2 = []
         for i in range(number_bins):
-
-            annuli_area = (math.pi*radii[i+1]**2 - math.pi*radii[i]**2)
+            annuli_area = (math.pi * radii[i + 1] ** 2 - math.pi * radii[i] ** 2)
 
             densities = ((self.mass_within_circles_individual(radii[i + 1]) -
-                           self.mass_within_circles_individual(radii[i])) /
-                           annuli_area)
+                          self.mass_within_circles_individual(radii[i])) /
+                         annuli_area)
 
             density_0.append(densities[0])
             density_1.append(densities[1])
-      #      density_2.append(densities[2])
+        #      density_2.append(densities[2])
 
         # TODO: Well, this isn't a very good way to plot errors is it.... We need to think carefully about how our
         # TODO : High level lens model handles all this 0_0
@@ -525,14 +535,14 @@ class Galaxy(object):
         plt.title('Decomposed surface density profile of ' + image_name, size=16)
 
         if convert_x_to_kpc:
-            radii_plot = list(np.linspace(1e-4, maximum_radius*self.kpc_per_arcsec, number_bins))
+            radii_plot = list(np.linspace(1e-4, maximum_radius * self.kpc_per_arcsec, number_bins))
             plt.xlabel('Distance From Galaxy Center (kpc)', size=16)
         else:
             radii_plot = list(np.linspace(1e-4, maximum_radius, number_bins))
             plt.xlabel('Distance From Galaxy Center (")', size=16)
 
         plt.semilogy(radii_plot, density_0, color='r', label='Sersic Bulge')
-    #    plt.semilogy(radii_plot, density_1, color='g', label='Exponential Halo')
+        #    plt.semilogy(radii_plot, density_1, color='g', label='Exponential Halo')
         plt.semilogy(radii_plot, density_1, color='k', label='Dark Matter Halo')
 
         # plt.loglog(radii_plot, density_0, color='r', label='Sersic Bulge')
@@ -546,9 +556,9 @@ class Galaxy(object):
         # plt.semilogy(radii_plot, density_lower[:, 2], color='k', linestyle='--')
         # plt.semilogy(radii_plot, density_upper[:, 2], color='k', linestyle='--')
 
-        plt.axvline(x=self.einstein_radius*self.kpc_per_arcsec, linestyle='--')
-        plt.axvline(x=self.source_light_min*self.kpc_per_arcsec, linestyle='-')
-        plt.axvline(x=self.source_light_max*self.kpc_per_arcsec, linestyle='-')
+        plt.axvline(x=self.einstein_radius * self.kpc_per_arcsec, linestyle='--')
+        plt.axvline(x=self.source_light_min * self.kpc_per_arcsec, linestyle='-')
+        plt.axvline(x=self.source_light_max * self.kpc_per_arcsec, linestyle='-')
 
         plt.legend()
         plt.show()
