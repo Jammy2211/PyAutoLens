@@ -2,8 +2,8 @@ from __future__ import division, print_function
 import pytest
 import numpy as np
 import os
-from analysis import analysis_image
-import image
+from auto_lens.analysis import analysis_image
+from auto_lens import image
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
