@@ -418,13 +418,13 @@ class Array(np.ndarray):
         pyplot.imshow(self)
         pyplot.show()
 
-# noinspection PyClassHasNoInit
-class PSF(Array):
-    pass
-
 
 # noinspection PyClassHasNoInit
 class Noise(Array):
+    pass
+
+# noinspection PyClassHasNoInit
+class PSF(Array):
     pass
 
 
@@ -542,6 +542,7 @@ class Mask(np.ndarray):
     @property
     def pixels_in_mask(self):
         return np.size(self) - np.sum(self)
+
 
 class MaskException(Exception):
     pass
