@@ -760,6 +760,30 @@ class TestSimulatedImage(object):
             assert (mock_image.pixel_scale == 0.1)
 
 
+class TestNoise(object):
+    class TestSetup(object):
+        def test__init__input_noise_3x3__all_attributes(self):
+            test_noise = image.Noise.from_array(array=np.ones((3, 3)))
+
+            assert (test_noise == np.ones((3, 3))).all()
+
+        def test__init__input_noise_4x3__all_attributes(self):
+            test_noise = image.Noise.from_array(array=np.ones((4, 3)))
+
+            assert (test_noise == np.ones((4, 3))).all()
+
+        def test__from_fits__input_noise_3x3__all_attributes(self):
+            test_noise = image.Noise.from_fits('3x3_ones.fits', hdu=0, path=test_data_dir)
+
+            assert (test_noise == np.ones((3, 3))).all()
+
+        def test__from_fits__input_noise_4x3__all_attributes(self):
+            test_noise = image.Noise.from_fits('4x3_ones.fits', hdu=0, path=test_data_dir)
+
+            assert (test_noise == np.ones((4, 3))).all()
+
+
+
 class TestPSF(object):
     class TestSetup(object):
         def test__init__input_psf_3x3__all_attributes(self):
@@ -805,30 +829,6 @@ class TestPSF(object):
             normalization_factor = 2.0 * 4.0 + 12
 
             assert image.normalize(psf_data) == pytest.approx(psf_data / normalization_factor, 1e-3)
-
-
-class TestNoise(object):
-    class TestSetup(object):
-        def test__init__input_noise_3x3__all_attributes(self):
-            test_noise = image.Noise.from_array(array=np.ones((3, 3)))
-
-            assert (test_noise == np.ones((3, 3))).all()
-
-        def test__init__input_noise_4x3__all_attributes(self):
-            test_noise = image.Noise.from_array(array=np.ones((4, 3)))
-
-            assert (test_noise == np.ones((4, 3))).all()
-
-        def test__from_fits__input_noise_3x3__all_attributes(self):
-            test_noise = image.Noise.from_fits('3x3_ones.fits', hdu=0, path=test_data_dir)
-
-            assert (test_noise == np.ones((3, 3))).all()
-
-        def test__from_fits__input_noise_4x3__all_attributes(self):
-            test_noise = image.Noise.from_fits('4x3_ones.fits', hdu=0, path=test_data_dir)
-
-            assert (test_noise == np.ones((4, 3))).all()
-
 
 class TestMask(object):
 
