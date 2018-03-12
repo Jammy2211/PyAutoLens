@@ -385,7 +385,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns

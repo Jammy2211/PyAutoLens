@@ -6,8 +6,10 @@ from auto_lens.profiles import geometry_profiles
 
 
 class TestEllipticalProfile(object):
+
     class TestAnglesFromXAxis(object):
         def test__phi_is_zero__angles_one_and_zero(self):
+
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=0.0)
 
             cos_phi, sin_phi = elliptical_profile.angles_from_x_axis()
@@ -43,7 +45,7 @@ class TestEllipticalProfile(object):
         def test__profile_centre_zeros__no_shift(self):
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-            coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=(0.0, 0.0))
+            coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
 
             assert coordinates_shift[0] == 0.0
             assert coordinates_shift[1] == 0.0

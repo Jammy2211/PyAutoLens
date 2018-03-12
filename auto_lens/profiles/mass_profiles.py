@@ -1,6 +1,7 @@
 from auto_lens.profiles import geometry_profiles
 from auto_lens.profiles import light_profiles
 import math
+import numpy as np
 from scipy.integrate import quad
 from scipy import special
 
