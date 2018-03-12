@@ -1,5 +1,6 @@
 from auto_lens.profiles import geometry_profiles, mass_profiles
 import pytest
+import numpy as np
 
 
 class TestConstructors(object):
@@ -3939,9 +3940,11 @@ class TestMassIntegral(object):
 
 
 class TestArray(object):
+
     def test__deflection_angle_array(self):
         mp = mass_profiles.EllipticalIsothermalMassProfile(centre=(0, 0), axis_ratio=0.5, phi=45.0,
                                                            einstein_radius=2.0)
+
         # noinspection PyTypeChecker
         assert all(geometry_profiles.array_function(mp.deflection_angles_at_coordinates)(-1, -1, -0.5, -0.5, 0.1)[0][
                        0] == mp.deflection_angles_at_coordinates((-1, -1)))

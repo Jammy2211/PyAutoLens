@@ -251,6 +251,7 @@ class ExponentialLightProfile(SersicLightProfile):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
+
 class DevVaucouleursLightProfile(SersicLightProfile):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
     profiles of an elliptical / early-type galaxy.
@@ -278,6 +279,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
+
 
 class CoreSersicLightProfile(SersicLightProfile):
     """The Core-Sersic profiles is used to fit the light of a galaxy. It is an extension of the Sersic profiles and \

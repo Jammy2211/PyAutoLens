@@ -37,7 +37,7 @@ def setup_mapper_2d(mask):
         The image mask containing the pixels we are computing the coordinates of and the image dimensions / pixel scale.
     """
     image_pixels = mask.pixels_in_mask
-    mapper_2d = np.zeros(shape=(image_pixels, 2))
+    mapper_2d = np.zeros(shape=(image_pixels, 2), dtype=int)
     data_count = 0
     for y in range(mask.pixel_dimensions[0]):
         for x in range(mask.pixel_dimensions[1]):
@@ -47,8 +47,8 @@ def setup_mapper_2d(mask):
 
     return mapper_2d
 
-def setup_coordinates(mask):
-    """ Given an image.Mask, compute the arc second coordinates at the center of every unmasked pixel.
+def setup_image_coordinates(mask):
+    """ Given an image.Mask, compute the arc second image_coordinates at the center of every unmasked pixel.
 
     This is defined from the top-left corner, such that pixels in the top-left corner of the image have a negative \
     x value for and positive y value in arc seconds.
@@ -58,25 +58,25 @@ def setup_coordinates(mask):
     Parameters
     ----------
     mask : image.Mask
-        The image mask containing the pixels we are computing the coordinates of and the image dimensions / pixel scale.
+        The image mask containing the pixels we are computing the image_coordinates of and the image dimensions / pixel scale.
 
     Returns
     -------
-    One-dimensional array containing the image coordinates of each image pixel in the mask.
+    One-dimensional array containing the image image_coordinates of each image pixel in the mask.
     """
-    coordinates_arc = image.arc_seconds_coordinates_of_array(mask.pixel_dimensions, mask.pixel_scale)
+    coordinates = image.arc_seconds_coordinates_of_array(mask.pixel_dimensions, mask.pixel_scale)
 
     pixels = mask.pixels_in_mask
-    coordinates = np.zeros(shape=(pixels, 2))
+    image_coordinates = np.zeros(shape=(pixels, 2))
     pixel_count = 0
 
     for y in range(mask.pixel_dimensions[0]):
         for x in range(mask.pixel_dimensions[1]):
             if mask[y, x] == False:
-                coordinates[pixel_count, :] = coordinates_arc[y,x]
+                image_coordinates[pixel_count, :] = coordinates[y,x]
                 pixel_count += 1
 
-    return coordinates
+    return image_coordinates
 
 def x_sub_pixel_to_coordinate(x_sub_pixel, x_coordinate, pixel_scale, sub_grid_size):
     """Convert a coordinate on the regular image-pixel grid to a sub-coordinate, using the pixel scale and sub-grid \
@@ -159,7 +159,7 @@ def setup_blurring_coordinates(mask, psf_size):
 
     """
     blurring_mask = setup_blurring_mask(mask, psf_size)
-    return setup_coordinates(blurring_mask)
+    return setup_image_coordinates(blurring_mask)
 
 def setup_blurring_mask(mask, psf_size):
     """Given an image.Mask, compute its blurring mask, defined as all pixels which are outside of the image mask but \
@@ -395,15 +395,16 @@ class AnalysisData(object):
         sub_grid_size : int
             The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
         """
-        self.image = setup_data(mask, image)
+        self.image = AnalysisImage(mask, image)
         self.noise = setup_data(mask, noise)
         self.psf = psf
-        self.coordinates = setup_coordinates(mask)
+        self.coordinates = setup_image_coordinates(mask)
         self.sub_coordinates = setup_sub_coordinates(mask, sub_grid_size)
         self.blurring_coordinates = setup_blurring_coordinates(mask, self.psf.shape)
         self.border_pixels = setup_border_pixels(mask)
 
-class AnalysisArray(object):
+
+class AnalysisArray(np.ndarray):
 
     def __new__(cls, mask, data):
         """
@@ -417,6 +418,26 @@ class AnalysisArray(object):
         -------
             An empty array
         """
-        data = setup_data.view(cls)
+        data = setup_data(mask, data).view(cls)
         data.mapper_2d = setup_mapper_2d(mask)
+        data.shape_2d = mask.shape
+        return data
+
+    def map_to_2d(self):
+        array = np.zeros((self.shape_2d))
+        for data_count, [y, x] in enumerate(self.mapper_2d):
+            array[y,x] = self[data_count]
+
         return array
+
+
+# TODO : This may be where we put our hyper-parameter functions for the image and noise maps. E.g. for noise map \
+# TODO : scaling, we could have an AnalysisNoise class with functions def scale_lens_noise, etc. I'll decide on this \
+# TODO : As we continue to develop the analysis code.
+
+# TODO : Can we handle these classes using inheritance of Analysis Array? I can't figue out how but this works...
+
+class AnalysisImage(np.ndarray):
+
+    def __new__(cls, mask, image):
+        return AnalysisArray(mask, image)
