@@ -3,7 +3,9 @@ import pytest
 from auto_lens.profiles import geometry_profiles, light_profiles, mass_profiles
 
 import os
+
 data_path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
+
 
 @pytest.fixture(name='uniform_simple')
 def make_uniform_simple():
@@ -199,7 +201,8 @@ class TestRealClasses(object):
                                     lens_mass_profile=mass_profiles.CoredEllipticalIsothermalMassProfile,
                                     lens_light_profile=light_profiles.CoreSersicLightProfile)
 
-        reconstruction = collection.reconstruction_from_unit_vector([1 for _ in range(len(collection.priors_ordered_by_id))])
+        reconstruction = collection.reconstruction_from_unit_vector(
+            [1 for _ in range(len(collection.priors_ordered_by_id))])
 
         assert isinstance(reconstruction.source_light_profile, light_profiles.SersicLightProfile)
         assert isinstance(reconstruction.lens_mass_profile, mass_profiles.CoredEllipticalIsothermalMassProfile)
@@ -209,27 +212,30 @@ class TestRealClasses(object):
 class TestConfigFunctions:
 
     def test_loading_config(self):
-        config = prior.Config(config_folder_path=data_path+"test_files/config")
+        config = prior.Config(config_folder_path=data_path + "test_files/config")
 
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "Profile", "centre_0")
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "Profile", "centre_1")
 
     def test_reconstruction_from_unit_vector(self):
-        collection = prior.ClassMap(prior.Config(config_folder_path=data_path+"test_files/config"), geometry_profile=geometry_profiles.Profile)
+        collection = prior.ClassMap(prior.Config(config_folder_path=data_path + "test_files/config"),
+                                    geometry_profile=geometry_profiles.Profile)
 
         reconstruction = collection.reconstruction_from_unit_vector([1., 1.])
 
         assert reconstruction.geometry_profile.centre == (1., 1.0)
 
     def test_reconstruction_from_physical_vector(self):
-        collection = prior.ClassMap(prior.Config(config_folder_path=data_path+"test_files/config"), geometry_profile=geometry_profiles.Profile)
+        collection = prior.ClassMap(prior.Config(config_folder_path=data_path + "test_files/config"),
+                                    geometry_profile=geometry_profiles.Profile)
 
         reconstruction = collection.reconstruction_from_physical_vector([10., 50.])
 
         assert reconstruction.geometry_profile.centre == (10., 50.0)
 
     def test_inheritance(self):
-        collection = prior.ClassMap(prior.Config(config_folder_path=data_path+"test_files/config"), geometry_profile=geometry_profiles.EllipticalProfile)
+        collection = prior.ClassMap(prior.Config(config_folder_path=data_path + "test_files/config"),
+                                    geometry_profile=geometry_profiles.EllipticalProfile)
 
         reconstruction = collection.reconstruction_from_unit_vector([1., 1., 1., 1.])
 
@@ -243,7 +249,8 @@ class TestConfigFunctions:
                                     sersic_light_profile=light_profiles.SersicLightProfile,
                                     exponential_light_profile=light_profiles.ExponentialLightProfile)
 
-        reconstruction = collection.reconstruction_from_unit_vector([1 for _ in range(len(collection.priors_ordered_by_id))])
+        reconstruction = collection.reconstruction_from_unit_vector(
+            [1 for _ in range(len(collection.priors_ordered_by_id))])
 
         assert isinstance(reconstruction.elliptical_profile_1, geometry_profiles.EllipticalProfile)
         assert isinstance(reconstruction.elliptical_profile_2, geometry_profiles.EllipticalProfile)
@@ -258,15 +265,14 @@ class TestHyperCube:
 
     def test__in_order_of_class_constructor_one_profile(self):
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             geometry_profile=geometry_profiles.EllipticalProfile)
 
         assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5]) == [0.5, 0.5, 1.0, 1.0]
 
     def test__in_order_of_class_constructor_multiple_profiles(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -274,9 +280,8 @@ class TestHyperCube:
                [0.5, 0.5, 1.0, 1.0, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
 
     def test__in_order_of_class_constructor_multiple_profiles_bigger_range_of_unit_values(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -302,7 +307,7 @@ class TestReconstructions:
 
     def test__in_order_of_class_constructor_one_profile(self):
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile)
 
         reconstruction = collection.reconstruction_from_unit_vector([0.25, 0.5, 0.75, 1.0])
@@ -312,9 +317,8 @@ class TestReconstructions:
         assert reconstruction.profile_1.phi == 2.0
 
     def test__order_of_class_construtors_with_multiple_profiles(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -387,9 +391,8 @@ class TestReconstructions:
     # TODO : This test works because we reasign each parameter in order... pretty useless.
 
     def test__check_order_for_different_unit_values(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -421,9 +424,8 @@ class TestReconstructions:
     # TODO : It doesnt totally make sense to me why this one works tbh...
 
     def test__check_order_for_different_unit_values_and_set_priors_equal_to_one_another(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -456,13 +458,13 @@ class TestReconstructions:
         assert reconstruction.profile_3.phi == 0.9
 
     def test__check_order_for_physical_values(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        reconstruction = collection.reconstruction_from_physical_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+        reconstruction = collection.reconstruction_from_physical_vector(
+            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
 
         assert reconstruction.profile_1.centre == (0.1, 0.2)
         assert reconstruction.profile_1.axis_ratio == 0.3
@@ -478,27 +480,25 @@ class TestReconstructions:
 class TestMulitNestModels(object):
 
     def test__most_probable_reconstruction__simple_model(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile)
 
         most_probable = collection.reconstruction_most_probable(results_path=
-                                                                   data_path+'test_files/multinest/short_')
+                                                                data_path + 'test_files/multinest/short_')
 
         assert most_probable.profile_1.centre == (1.0, 2.0)
         assert most_probable.profile_1.axis_ratio == 3.0
         assert most_probable.profile_1.phi == 4.0
 
     def test__load_most_probable_from_multinest_weighted_sample__more_complex_model(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile, profile_4=geometry_profiles.Profile)
 
         most_probable = collection.reconstruction_most_probable(results_path=
-                                                                 data_path+'test_files/multinest/long_')
+                                                                data_path + 'test_files/multinest/long_')
 
         assert most_probable.profile_1.centre == (1.0, 2.0)
         assert most_probable.profile_1.axis_ratio == 3.0
@@ -513,27 +513,25 @@ class TestMulitNestModels(object):
         assert most_probable.profile_4.centre == (11.0, 12.0)
 
     def test__load_most_likely_from_summary__simple_model(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile)
 
         most_likely = collection.reconstruction_most_likely(results_path=
-                                                            data_path+'test_files/multinest/short_')
+                                                            data_path + 'test_files/multinest/short_')
 
         assert most_likely.profile_1.centre == (5.0, 6.0)
         assert most_likely.profile_1.axis_ratio == 7.0
         assert most_likely.profile_1.phi == 8.0
 
     def test__load_most_likely_from_summary__more_complex_model(self):
-
         collection = prior.ClassMap(
-            prior.Config(config_folder_path=data_path+"test_files/config"),
+            prior.Config(config_folder_path=data_path + "test_files/config"),
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile, profile_4=geometry_profiles.Profile)
 
         most_likely = collection.reconstruction_most_likely(results_path=
-                                                            data_path+'test_files/multinest/long_')
+                                                            data_path + 'test_files/multinest/long_')
 
         assert most_likely.profile_1.centre == (13.0, 14.0)
         assert most_likely.profile_1.axis_ratio == 15.0
@@ -551,9 +549,8 @@ class TestMulitNestModels(object):
 class TestGenerateParamNames(object):
 
     def test__input_class_map__single_profile__outputs_paramnames(self):
-
         collection = prior.ClassMap(prior.Config(config_folder_path=data_path + "test_files/config"),
-        profile=geometry_profiles.EllipticalProfile)
+                                    profile=geometry_profiles.EllipticalProfile)
 
         collection.output_paramnames_file(results_path=data_path + 'test_files/multinest/')
 
@@ -563,15 +560,15 @@ class TestGenerateParamNames(object):
         paramnames_str_3 = paramnames_test.readline()
         paramnames_str_4 = paramnames_test.readline()
 
-        assert paramnames_str_1 == r'0_profile_centre_0                      $x$'+'\n'
-        assert paramnames_str_2 == r'0_profile_centre_1                      $y$'+'\n'
-        assert paramnames_str_3 == r'0_profile_axis_ratio                    $q$'+'\n'
-        assert paramnames_str_4 == r'0_profile_phi                           $\phi$'+'\n'
+        assert paramnames_str_1 == r'0_profile_centre_0                      $x$' + '\n'
+        assert paramnames_str_2 == r'0_profile_centre_1                      $y$' + '\n'
+        assert paramnames_str_3 == r'0_profile_axis_ratio                    $q$' + '\n'
+        assert paramnames_str_4 == r'0_profile_phi                           $\phi$' + '\n'
 
     def test__input_class_map__two_profiles__outputs_paramnames(self):
-
         collection = prior.ClassMap(prior.Config(config_folder_path=data_path + "test_files/config"),
-        profile=geometry_profiles.EllipticalProfile, mass_profile=mass_profiles.SphericalNFWMassProfile)
+                                    profile=geometry_profiles.EllipticalProfile,
+                                    mass_profile=mass_profiles.SphericalNFWMassProfile)
 
         collection.output_paramnames_file(results_path=data_path + 'test_files/multinest/')
 
@@ -585,14 +582,15 @@ class TestGenerateParamNames(object):
         paramnames_str_7 = paramnames_test.readline()
         paramnames_str_8 = paramnames_test.readline()
 
-        assert paramnames_str_1 == r'0_profile_centre_0                      $x$'+'\n'
-        assert paramnames_str_2 == r'0_profile_centre_1                      $y$'+'\n'
-        assert paramnames_str_3 == r'0_profile_axis_ratio                    $q$'+'\n'
-        assert paramnames_str_4 == r'0_profile_phi                           $\phi$'+'\n'
-        assert paramnames_str_5 == r'1_mass_profile_centre_0                 $x_{\mathrm{d}}$'+'\n'
-        assert paramnames_str_6 == r'1_mass_profile_centre_1                 $y_{\mathrm{d}}$'+'\n'
-        assert paramnames_str_7 == r'1_mass_profile_kappa_s                  $\kappa_{\mathrm{d}}$'+'\n'
-        assert paramnames_str_8 == r'1_mass_profile_scale_radius             $Rs_{\mathrm{d}}$'+'\n'
+        assert paramnames_str_1 == r'0_profile_centre_0                      $x$' + '\n'
+        assert paramnames_str_2 == r'0_profile_centre_1                      $y$' + '\n'
+        assert paramnames_str_3 == r'0_profile_axis_ratio                    $q$' + '\n'
+        assert paramnames_str_4 == r'0_profile_phi                           $\phi$' + '\n'
+        assert paramnames_str_5 == r'1_mass_profile_centre_0                 $x_{\mathrm{d}}$' + '\n'
+        assert paramnames_str_6 == r'1_mass_profile_centre_1                 $y_{\mathrm{d}}$' + '\n'
+        assert paramnames_str_7 == r'1_mass_profile_kappa_s                  $\kappa_{\mathrm{d}}$' + '\n'
+        assert paramnames_str_8 == r'1_mass_profile_scale_radius             $Rs_{\mathrm{d}}$' + '\n'
+
 
 class TestUtility(object):
 
