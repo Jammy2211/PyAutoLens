@@ -127,7 +127,7 @@ for i in range(len(pdf.samples)):
 
         source_galaxy = galaxy.Galaxy(redshift=source_redshift)
 
-        galaxy.RayTracingPlane(galaxies=[lens_galaxy, source_galaxy], cosmological_model=cosmology.LambdaCDM(H0=70, Om0=0.3, Ode0=0.7))
+        galaxy.LensingPlanes(galaxies=[lens_galaxy, source_galaxy], cosmological_model=cosmology.LambdaCDM(H0=70, Om0=0.3, Ode0=0.7))
 
         scale_r = 30*lens_galaxy.arcsec_per_kpc
         dark_matter_halo.scale_radius = scale_r

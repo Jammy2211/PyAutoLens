@@ -136,7 +136,7 @@ lens_galaxy=galaxy.Galaxy(redshift=redshift, light_profiles=[sersic_bulge, expon
 
 source_galaxy = galaxy.Galaxy(redshift=source_redshift)
 
-galaxy.RayTracingPlane(galaxies=[lens_galaxy, source_galaxy], cosmological_model=cosmology.LambdaCDM(H0=70, Om0=0.3, Ode0=0.7))
+galaxy.LensingPlanes(galaxies=[lens_galaxy, source_galaxy], cosmological_model=cosmology.LambdaCDM(H0=70, Om0=0.3, Ode0=0.7))
 
 radius = lens_galaxy.mass_profiles[0].einstein_radius
 
