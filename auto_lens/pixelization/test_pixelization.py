@@ -1,3 +1,5 @@
+from auto_lens.pixelization import pixelization
+
 import pytest
 import numpy as np
 import math
@@ -129,7 +131,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0, 1]])
         regularization_weights = np.ones((3))
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(3, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(3, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -146,7 +148,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0, 2], [1, 3]])
         regularization_weights = np.ones((4))
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -172,7 +174,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0, 1], [1, 2], [2, 3], [3, 0]])
         regularization_weights = np.ones((4))
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -198,7 +200,7 @@ class TestRegularizationMatrix(object):
         pixel_pairs = np.array([[0, 2], [1, 2], [0, 3]])
         regularization_weights = np.ones((4))
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -229,7 +231,7 @@ class TestRegularizationMatrix(object):
 
         regularization_weights = np.ones((3))
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(3, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(3, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
 
@@ -284,7 +286,7 @@ class TestRegularizationMatrix(object):
 
         regularization_weights = np.ones((6))
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(6, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(6, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -313,7 +315,7 @@ class TestRegularizationMatrix(object):
         no_verticies = np.array([1, 1, 0])
         pixel_pairs = np.array([[0, 1]])
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(3, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(3, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -349,7 +351,7 @@ class TestRegularizationMatrix(object):
         no_verticies = np.array([2, 3, 2, 1])
         pixel_pairs = np.array([[0, 1], [0, 2], [1, 2], [1, 3]])
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(4, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -399,7 +401,7 @@ class TestRegularizationMatrix(object):
         test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
                                      test_regularization_matrix_3 + test_regularization_matrix_4
 
-        regularization_matrix = sp.setup_regularization_matrix_via_pixel_pairs(6, regularization_weights,
+        regularization_matrix = pixelization.setup_regularization_matrix_via_pixel_pairs(6, regularization_weights,
                                                                                no_verticies, pixel_pairs)
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -412,7 +414,7 @@ class TestKMeans:
         sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = sp.kmeans_cluster(sparse_coordinates, n_clusters=2)
+        kmeans = pixelization.kmeans_cluster(sparse_coordinates, n_clusters=2)
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -426,7 +428,7 @@ class TestKMeans:
                                        [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = sp.kmeans_cluster(sparse_coordinates, n_clusters=3)
+        kmeans = pixelization.kmeans_cluster(sparse_coordinates, n_clusters=3)
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -448,7 +450,7 @@ class TestKMeans:
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = sp.kmeans_cluster(sparse_coordinates, n_clusters=3)
+        kmeans = pixelization.kmeans_cluster(sparse_coordinates, n_clusters=3)
 
         kmeans.cluster_centers_ = list(map(lambda x: pytest.approx(list(x), 1e-3), kmeans.cluster_centers_))
 
@@ -472,7 +474,7 @@ class TestVoronoi:
                            [0.0, 0.0],
                            [-1.0, -1.0], [1.0, -1.0]])
 
-        voronoi = sp.setup_voronoi(points)
+        voronoi = pixelization.setup_voronoi(points)
 
         voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
 
@@ -488,7 +490,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = sp.setup_voronoi(points)
+        voronoi = pixelization.setup_voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -507,7 +509,7 @@ class TestVoronoi:
                            [0.0, 0.0],
                            [-1.0, -1.0], [1.0, -1.0]])
 
-        voronoi = sp.setup_voronoi(points)
+        voronoi = pixelization.setup_voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -532,7 +534,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = sp.setup_voronoi(points)
+        voronoi = pixelization.setup_voronoi(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -562,7 +564,7 @@ class TestVoronoi:
                            [0.0, 0.0],
                            [-1.0, -1.0], [1.0, -1.0]])
 
-        voronoi = sp.setup_voronoi(points)
+        voronoi = pixelization.setup_voronoi(points)
 
         assert voronoi.neighbors_total[0] == 3
         assert voronoi.neighbors_total[1] == 3
@@ -583,7 +585,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = sp.setup_voronoi(points)
+        voronoi = pixelization.setup_voronoi(points)
 
         assert voronoi.neighbors_total[0] == 2
         assert voronoi.neighbors_total[1] == 3
@@ -615,7 +617,7 @@ class TestMatchCoordinatesFromClusters:
         image_total = 1
         sub_total = 4
 
-        image_sub_to_source = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+        image_sub_to_source = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_pixels)
 
         assert image_sub_to_source[0,0] == 0
@@ -631,7 +633,7 @@ class TestMatchCoordinatesFromClusters:
         image_total = 2
         sub_total = 8
 
-        image_sub_to_source = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+        image_sub_to_source = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_pixels)
 
         assert image_sub_to_source[0,0] == 0
@@ -651,7 +653,7 @@ class TestMatchCoordinatesFromClusters:
         image_total = 2
         sub_total = 6
 
-        image_sub_to_source = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+        image_sub_to_source = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_pixels)
 
         assert image_sub_to_source[0,0] == 4
@@ -665,23 +667,23 @@ class TestMatchCoordinatesFromClusters:
         
         image_to_sparse = [0, 3, 2, 5, 1, 4]
 
-        assert sp.find_nearest_sparse(0, image_to_sparse) == 0
-        assert sp.find_nearest_sparse(1, image_to_sparse) == 3
-        assert sp.find_nearest_sparse(2, image_to_sparse) == 2
-        assert sp.find_nearest_sparse(3, image_to_sparse) == 5
-        assert sp.find_nearest_sparse(4, image_to_sparse) == 1
-        assert sp.find_nearest_sparse(5, image_to_sparse) == 4
+        assert pixelization.find_nearest_sparse(0, image_to_sparse) == 0
+        assert pixelization.find_nearest_sparse(1, image_to_sparse) == 3
+        assert pixelization.find_nearest_sparse(2, image_to_sparse) == 2
+        assert pixelization.find_nearest_sparse(3, image_to_sparse) == 5
+        assert pixelization.find_nearest_sparse(4, image_to_sparse) == 1
+        assert pixelization.find_nearest_sparse(5, image_to_sparse) == 4
 
     def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
         
         source_to_sparse = [0, 3, 2, 5, 1, 4]
 
-        assert sp.find_nearest_sparse_source(0, source_to_sparse) == 0
-        assert sp.find_nearest_sparse_source(1, source_to_sparse) == 3
-        assert sp.find_nearest_sparse_source(2, source_to_sparse) == 2
-        assert sp.find_nearest_sparse_source(3, source_to_sparse) == 5
-        assert sp.find_nearest_sparse_source(4, source_to_sparse) == 1
-        assert sp.find_nearest_sparse_source(5, source_to_sparse) == 4
+        assert pixelization.find_nearest_sparse_source(0, source_to_sparse) == 0
+        assert pixelization.find_nearest_sparse_source(1, source_to_sparse) == 3
+        assert pixelization.find_nearest_sparse_source(2, source_to_sparse) == 2
+        assert pixelization.find_nearest_sparse_source(3, source_to_sparse) == 5
+        assert pixelization.find_nearest_sparse_source(4, source_to_sparse) == 1
+        assert pixelization.find_nearest_sparse_source(5, source_to_sparse) == 4
 
     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
         source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
@@ -690,19 +692,19 @@ class TestMatchCoordinatesFromClusters:
 
         nearest_sparse_source_pixel_index = 0
 
-        separation0 = sp.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
+        separation0 = pixelization.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
                                                                                   sub_coordinate,
                                                                                   nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 1
 
-        separation1 = sp.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
+        separation1 = pixelization.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
                                                                                   sub_coordinate,
                                                                                   nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 2
 
-        separation2 = sp.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
+        separation2 = pixelization.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
                                                                                   sub_coordinate,
                                                                                   nearest_sparse_source_pixel_index)
 
@@ -718,7 +720,7 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1, 2, 3, 4]
 
-        index, separation = sp.find_separation_and_nearest_neighboring_source(sub_coordinate,
+        index, separation = pixelization.find_separation_and_nearest_neighboring_source(sub_coordinate,
                                                                               source_pixel_centers,
                                                                               source_pixel_neighbors)
 
@@ -734,7 +736,7 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1, 2, 3, 4]
 
-        index, separation = sp.find_separation_and_nearest_neighboring_source(sub_coordinate,
+        index, separation = pixelization.find_separation_and_nearest_neighboring_source(sub_coordinate,
                                                                               source_pixel_centers,
                                                                               source_pixel_neighbors)
 
@@ -760,9 +762,9 @@ class TestMatchCoordinatesFromClusters:
                                       [0.0, 0.0],
                                       [1.0, 1.0]])
     
-        voronoi = sp.setup_voronoi(source_centers)
+        voronoi = pixelization.setup_voronoi(source_centers)
 
-        image_sub_to_source_via_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+        image_sub_to_source_via_nearest_neighbour = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_centers)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
@@ -772,7 +774,7 @@ class TestMatchCoordinatesFromClusters:
 
         sparse_to_source = np.array([1, 2, 4])
 
-        image_sub_to_source_via_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+        image_sub_to_source_via_pairs = pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs(
             sub_coordinates, image_total, sub_total, source_centers, voronoi.neighbors, image_to_sparse, sparse_to_source)
 
         assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
@@ -795,9 +797,9 @@ class TestMatchCoordinatesFromClusters:
         image_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                       [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
 
-        voronoi = sp.setup_voronoi(source_centers)
+        voronoi = pixelization.setup_voronoi(source_centers)
 
-        image_sub_to_source_via_nearest_neighbour = sp.sub_coordinates_to_source_pixels_via_nearest_neighbour(
+        image_sub_to_source_via_nearest_neighbour = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_centers)
 
         # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
@@ -806,7 +808,7 @@ class TestMatchCoordinatesFromClusters:
         image_to_sparse = np.array([0, 1, 2, 1, 1, 2])
         sparse_to_source = np.array([3, 4, 5])
 
-        image_sub_to_source_via_pairs = sp.sub_coordinates_to_source_pixels_via_sparse_pairs(
+        image_sub_to_source_via_pairs = pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs(
             sub_coordinates, image_total, sub_total, source_centers, voronoi.neighbors,
             image_to_sparse, sparse_to_source)
 

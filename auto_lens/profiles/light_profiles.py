@@ -173,7 +173,7 @@ class SersicLightProfile(EllipticalLightProfile):
          ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
 
          The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
-         half the light, and may be more appropriate for analysis of highly flattened systems like disk galaxies."""
+         half the light, and may be more appropriate for pixelization of highly flattened systems like disk galaxies."""
         return self.effective_radius / math.sqrt(self.axis_ratio)
 
     @property

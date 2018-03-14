@@ -4,76 +4,6 @@ import math
 from astropy import cosmology
 from astropy import constants
 
-class LensingPlanes(list):
-
-    def __init__(self, galaxies, cosmological_model=cosmology.Planck15):
-
-
-        super().__init__()
-
-        for galaxy in galaxies:
-            self.append(galaxy)
-
-        self.setup_angular_diameter_distances(cosmological_model)
-
-        self.setup_critical_densities()
-
-    def append(self, galaxy):
-        """
-        Append a new galaxy to the collection in the correct position according to its redshift.
-
-        Parameters
-        ----------
-        galaxy: Galaxy
-            A galaxy
-        """
-
-        def insert(position):
-            if position == len(self):
-                super(LensingPlanes, self).append(galaxy)
-            elif galaxy.redshift <= self[position].redshift:
-                self[:] = self[:position] + [galaxy] + self[position:]
-            else:
-                insert(position + 1)
-
-        insert(0)
-
-    def setup_angular_diameter_distances(self, cosmological_model):
-        """Using the redshift of each galaxy, setup their angular diameter distances"""
-        for i, galaxy in enumerate(self):
-
-            galaxy.arcsec_per_kpc = cosmological_model.arcsec_per_kpc_proper(z=galaxy.redshift).value
-            galaxy.kpc_per_arcsec = 1.0 / galaxy.arcsec_per_kpc
-
-            galaxy.setup_angular_diameter_distance_to_earth(cosmological_model)
-
-            if i < len(self) - 1:
-                galaxy.setup_angular_diameter_distance_to_next_galaxy(cosmological_model, self[i + 1].redshift)
-
-            if i > 0:
-
-                galaxy.setup_angular_diameter_distance_to_previous_galaxy(cosmological_model, self[i - 1].redshift)
-
-    def setup_critical_densities(self):
-        """Setup the critical density of each galaxy."""
-
-        # TODO : Don't know how to do this for multiple galaxies, so currently requires a standard 2 lens-source system.
-
-        if len(self) == 2:
-
-            for i, galaxy in enumerate(self):
-
-                if i < len(self) - 1:
-                    constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
-                                   / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
-
-                    galaxy.critical_density_kpc = constant_kpc * self[i + 1].ang_to_earth_kpc \
-                                                  / (galaxy.ang_to_next_galaxy_kpc *
-                                                     galaxy.ang_to_earth_kpc)
-
-                    galaxy.critical_density = galaxy.critical_density_kpc * galaxy.kpc_per_arcsec ** 2.0
-
-
 class Galaxy(object):
     """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass \
     profiles"""
@@ -93,45 +23,6 @@ class Galaxy(object):
         self.light_profiles = light_profiles
         self.mass_profiles = mass_profiles
         self.pixelization = pixelization
-
-        # TODO: All of the initial calls to an instance variable should be made in the constructor. self.ang_to_earth
-        # TODO: etc. should be made here. However, it's still bad practice to be setting these variables to None at the
-        # TODO: point of construction because much of the function of a class depends on them not being None.
-        self.setup_cosmological_quantities()
-        
-    def setup_cosmological_quantities(self):
-        # TODO: these shouldn't be in the Galaxy class. A Galaxy doesn't care about its angle to earth.
-
-        self.ang_to_earth_kpc = None
-        self.ang_to_next_galaxy_kpc = None
-        self.ang_to_previous_galaxy_kpc = None
-        self.ang_to_earth = None
-        self.ang_to_next_galaxy = None
-        self.ang_to_previous_galaxy = None
-        self.arcsec_per_kpc = None
-        self.kpc_per_arcsec = None
-
-        # TODO: I still don't fully understand what critical density means. However, if it is something dependent on the
-        # TODO: system as a whole (i.e. multiple galaxies) then it should not belong to any one galaxy. Either Critical
-        # TODO: density is passed in as an argument or those functions that use it should not be in the galaxy class
-        self.critical_density = None
-
-    def setup_angular_diameter_distance_to_earth(self, cosmological_model):
-        self.ang_to_earth_kpc = cosmological_model.angular_diameter_distance(z=self.redshift).to('kpc').value
-        self.ang_to_earth = self.ang_to_earth_kpc * self.arcsec_per_kpc
-
-    def setup_angular_diameter_distance_to_next_galaxy(self, cosmological_model, next_redshift):
-
-        self.ang_to_next_galaxy_kpc = cosmological_model.angular_diameter_distance_z1z2(self.redshift,
-                                                                                        next_redshift).to('kpc').value
-        self.ang_to_next_galaxy = self.ang_to_next_galaxy_kpc * self.arcsec_per_kpc
-
-    def setup_angular_diameter_distance_to_previous_galaxy(self, cosmological_model, previous_redshift):
-
-        self.ang_to_previous_galaxy_kpc = cosmological_model.angular_diameter_distance_z1z2(previous_redshift,
-                                                                                            self.redshift).to(
-            'kpc').value
-        self.ang_to_previous_galaxy = self.ang_to_previous_galaxy_kpc * self.arcsec_per_kpc
 
     def __repr__(self):
         return "<Galaxy redshift={}>".format(self.redshift)
@@ -329,10 +220,10 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given coordinates.
         """
-        sum_tuple = (0, 0)
-        for t in map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles):
-            sum_tuple = (sum_tuple[0] + t[0], sum_tuple[1] + t[1])
-        return sum_tuple
+        if self.mass_profiles is not None:
+            return sum(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
+        else:
+            return np.array([0.0, 0.0])
 
     def deflection_angles_at_coordinates_individual(self, coordinates):
         """
@@ -349,7 +240,40 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given coordinates.
         """
-        return list(map(lambda p : p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
+        return np.asarray(list(map(lambda p : p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
+
+    # TODO : I don't expect these to be the best way to do this - I'm just getting them up so I can develop the \
+    # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
+    # TODO : mass profiles given a NumPy array.
+
+    # TODO : I'm expecting there'll be a general solution to performing the calculations below, which can go somewhere \
+    # TODO : in the profiles module
+
+    # TODO : If we require bespoke routines for each structure, we could make them class methods in the analysis_data \
+    # TODO : module, e.g. AnalysisCoordinates.compute_deflection_angles(galaxy) and AnalysisSubCoordinates.compute_defl...
+
+    def deflection_angles_array(self, coordinates):
+        """Compute the deflections angles for a mass profile, at a set of coordinates using the analysis_data structure.
+        """
+        deflection_angles = np.zeros(coordinates.shape)
+
+        for defl_count, coordinate in enumerate(coordinates):
+            deflection_angles[defl_count, :] = self.deflection_angles_at_coordinates(coordinates=coordinate)
+
+        return deflection_angles
+
+    def deflection_angles_sub_array(self, sub_coordinates):
+        """Compute the deflections angles for a mass profile, at a set of sub coordinates using the analysis_data \
+        structure
+        """
+        deflection_angles = np.zeros(sub_coordinates.shape)
+
+        for sub_count, image_pixel in enumerate(sub_coordinates):
+            for defl_count, sub_coordinate in enumerate(image_pixel):
+                deflection_angles[sub_count, defl_count, :] = self.deflection_angles_at_coordinates(
+                    coordinates=sub_coordinate)
+
+        return deflection_angles
 
     def mass_within_circles(self, radius):
         """
