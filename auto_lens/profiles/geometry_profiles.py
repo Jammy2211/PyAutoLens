@@ -239,7 +239,7 @@ def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
 
 
 class TransformedCoordinates(tuple):
-    """Coordinates that have been transformed to the coordinate system of the profiles"""
+    """PlaneCoordinates that have been transformed to the coordinate system of the profiles"""
 
     def __init__(self, coordinates):
         super(TransformedCoordinates, self).__init__()
@@ -270,7 +270,7 @@ def transform_coordinates(func):
         profile : Profile
             The profiles that owns the function
         coordinates : TransformedCoordinates or ndarray
-            Coordinates in either cartesian or profiles coordinate system
+            PlaneCoordinates in either cartesian or profiles coordinate system
         args
         kwargs
 
@@ -365,11 +365,11 @@ class Profile(object):
         Parameters
         ----------
         coordinates: TransformedCoordinates
-            Coordinates that have been transformed to the reference frame of the profiles
+            PlaneCoordinates that have been transformed to the reference frame of the profiles
         Returns
         -------
         coordinates: (float, float)
-            Coordinates that are back in the original reference frame
+            PlaneCoordinates that are back in the original reference frame
         """
         raise AssertionError("Transform from reference frame should be overridden")
 

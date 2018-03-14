@@ -1,6 +1,4 @@
-import math
 import numpy as np
-from auto_lens.profiles import geometry_profiles
 import sklearn.cluster
 import scipy.spatial
 
@@ -124,7 +122,7 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
         pixelization derived (e.g. using the KMeans class) and the neighbors of each source-pixel must be known \
         (e.g. using the Voronoi class). Both must have been performed prior to this function call.
 
-        In a realistic lens analysis, the sparse coordinates will correspond to the center of each image pixel \
+        In a realistic lens pixelization, the sparse coordinates will correspond to the center of each image pixel \
         (traced to the source-plane) or a sparser grid of image-pixels. The sub_coordinates will be the sub \
         image-pixels (again, traced to the source-plane). A benefit of this is the source-pixelization (e.g. using \
         KMeans) will be dervied using significantly fewer sub_coordinates, offering run-time speedup.

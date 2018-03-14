@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 import pytest
 import numpy as np
-from auto_lens import image
+from data import image
 import os
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -30,7 +30,7 @@ class TestData(object):
 
         def test__array_1x1__sets_up_arcsecond_coordinates(self):
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(1,1), pixel_scale=1.0)
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(1, 1), pixel_scale=1.0)
 
             assert (array_coordinates == np.array([[[0.0,  0.0]]])).all()
 
@@ -38,7 +38,7 @@ class TestData(object):
 
         def test__array_2x2__sets_up_arcsecond_coordinates(self):
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(2,2), pixel_scale=1.0)
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(2, 2), pixel_scale=1.0)
 
             assert (array_coordinates == np.array([[[-0.5,  0.5], [0.5,  0.5]],
                                                    [[-0.5,  -0.5], [0.5,  -0.5]]])).all()
@@ -50,7 +50,7 @@ class TestData(object):
 
         def test__array_3x3__sets_up_arcsecond_coordinates(self):
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,3), pixel_scale=1.0)
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3, 3), pixel_scale=1.0)
 
             assert (array_coordinates == np.array([[[-1.0,  1.0], [0.0,  1.0], [1.0,  1.0]],
                                                    [[-1.0,  0.0], [0.0,  0.0], [1.0,  0.0]],
@@ -68,7 +68,7 @@ class TestData(object):
 
         def test__array_4x4__sets_up_arcsecond_coordinates(self):
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(4,4), pixel_scale=0.5)
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(4, 4), pixel_scale=0.5)
 
             assert (array_coordinates == np.array([[[-0.75,  0.75], [-0.25,  0.75], [0.25,  0.75], [0.75,  0.75]],
                                                    [[-0.75,  0.25], [-0.25,  0.25], [0.25,  0.25], [0.75,  0.25]],
@@ -77,7 +77,7 @@ class TestData(object):
 
         def test__array_2x3__sets_up_arcsecond_coordinates(self):
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(2,3), pixel_scale=1.0)
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(2, 3), pixel_scale=1.0)
 
             assert (array_coordinates == np.array([[[-1.0,  0.5], [0.0,  0.5], [1.0,  0.5]],
                                                    [[-1.0, -0.5], [0.0, -0.5], [1.0, -0.5]]])).all()
@@ -91,7 +91,7 @@ class TestData(object):
 
         def test__array_3x2__sets_up_arcsecond_coordinates(self):
 
-            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3,2), pixel_scale=1.0)
+            array_coordinates = image.arc_seconds_coordinates_of_array(pixel_dimensions=(3, 2), pixel_scale=1.0)
 
             assert (array_coordinates == np.array([[[-0.5,  1.0], [0.5, 1.0]],
                                                     [[-0.5, 0.0], [0.5, 0.0]],
@@ -754,7 +754,7 @@ class TestSimulatedImage(object):
 
         def test__setup(self):
 
-            mock_image = image.SimulatedImage(image_dimensions=(3,3), pixel_scale=0.1)
+            mock_image = image.SimulatedImage(image_dimensions=(3, 3), pixel_scale=0.1)
 
             assert (mock_image == np.zeros((3,3))).all()
             assert (mock_image.pixel_scale == 0.1)
@@ -781,7 +781,6 @@ class TestNoise(object):
             test_noise = image.Noise.from_fits('4x3_ones.fits', hdu=0, path=test_data_dir)
 
             assert (test_noise == np.ones((4, 3))).all()
-
 
 
 class TestPSF(object):
@@ -829,6 +828,7 @@ class TestPSF(object):
             normalization_factor = 2.0 * 4.0 + 12
 
             assert image.normalize(psf_data) == pytest.approx(psf_data / normalization_factor, 1e-3)
+
 
 class TestMask(object):
 

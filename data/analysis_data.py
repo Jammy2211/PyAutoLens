@@ -1,5 +1,6 @@
 import numpy as np
-import image
+from data import image
+
 
 def setup_data(mask, data):
     """ Given an image.Mask, convert a 2d data of data values to a 1D vector, structured for efficient lens modeling \
@@ -164,7 +165,7 @@ def setup_blurring_coordinates(mask, psf_size):
 def setup_blurring_mask(mask, psf_size):
     """Given an image.Mask, compute its blurring mask, defined as all pixels which are outside of the image mask but \
     will have their light blurred into the mask during PSF convolution. Thus, their light must be computed during \
-    the analysis to ensure accurate PSF blurring.
+    the pixelization to ensure accurate PSF blurring.
 
     The blurring_region_size is a tuple describing the rectangular pixel dimensions of the blurring kernel. \
     Therefore, it maps directly to the size of the PSF kernel of an image.
@@ -385,7 +386,7 @@ class AnalysisData(object):
         Parameters
         ----------
         mask : image.Mask
-            The image mask, where False indicates a pixel is included in the analysis.
+            The image mask, where False indicates a pixel is included in the pixelization.
         image : image.Image
             The image data, in electrons per second.
         noise : image.Noise
@@ -412,7 +413,7 @@ class AnalysisArray(np.ndarray):
         Parameters
         ----------
         mask_array : ndarray
-            The boolean array of masked pixels (False = pixel is not masked and included in analysis)
+            The boolean array of masked pixels (False = pixel is not masked and included in pixelization)
 
         Returns
         -------
