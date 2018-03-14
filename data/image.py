@@ -429,7 +429,7 @@ class PSF(Array):
 
 
 class Mask(np.ndarray):
-    """Abstract Class for preparing and storing the image mask used for the AutoLens analysis"""
+    """Abstract Class for preparing and storing the image mask used for the AutoLens pixelization"""
 
     def __new__(cls, mask_array, pixel_scale):
         """
@@ -437,7 +437,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         mask_array : ndarray
-            The boolean array of masked pixels (False = pixel is not masked and included in analysis)
+            The boolean array of masked pixels (False = pixel is not masked and included in pixelization)
 
         Returns
         -------

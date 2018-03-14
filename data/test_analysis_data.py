@@ -2,8 +2,7 @@ from __future__ import division, print_function
 import pytest
 import numpy as np
 import os
-from analysis import analysis_data
-import image
+from data import image, analysis_data
 
 test_data_dir = "{}/../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -925,7 +924,7 @@ class TestBlurringRegion(object):
 
             mask = image.Mask.from_array(mask_array=mask_array, pixel_scale=3.0)
 
-            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(3,3))
+            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(3, 3))
 
             assert (blurring_coordinates[0] == np.array([-3.0, 3.0])).all()
             assert (blurring_coordinates[1] == np.array([0.0, 3.0])).all()
@@ -958,7 +957,7 @@ class TestBlurringRegion(object):
             # [True, True, False, False, False, True, True],
             # [True, True, True, True, True, True, True]])
 
-            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(3,5))
+            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(3, 5))
 
             assert (blurring_coordinates[0] ==  np.array([-3.0,  6.0])).all()
             assert (blurring_coordinates[1] ==  np.array([ 0.0,  6.0])).all()
@@ -997,7 +996,7 @@ class TestBlurringRegion(object):
             #  [True, True, True, True, True, True, True],
             #  [True, True, True, True, True, True, True]]
 
-            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(5,3))
+            blurring_coordinates = analysis_data.setup_blurring_coordinates(mask, psf_size=(5, 3))
 
             assert (blurring_coordinates[0] ==  np.array([-6.0,  3.0])).all()
             assert (blurring_coordinates[1] ==  np.array([-3.0,  3.0])).all()
@@ -1423,7 +1422,7 @@ class TestAnalysisArray:
     def test__sets_up_array_fully_unmasked__maps_back_to_2d(self):
 
         array = np.ones((2,2))
-        mask = image.Mask.from_array(mask_array=np.zeros((2,2)), pixel_scale=1.0)
+        mask = image.Mask.from_array(mask_array=np.zeros((2, 2)), pixel_scale=1.0)
 
         analysis_array = analysis_data.AnalysisArray(mask, array)
 
@@ -1512,5 +1511,5 @@ class TestAnalyisData(object):
             assert (adata.psf == np.ones((3, 3))).all()
             assert (adata.coordinates == np.array([[-0.75, 0.75], [0.75, 0.75], [-0.75, -0.75], [0.75, -0.75]])).all()
             assert (adata.sub_coordinates == analysis_data.setup_sub_coordinates(test_mask, sub_grid_size=2)).all()
-            assert (adata.blurring_coordinates == analysis_data.setup_blurring_coordinates(test_mask, psf_size=(3,3))).all()
+            assert (adata.blurring_coordinates == analysis_data.setup_blurring_coordinates(test_mask, psf_size=(3, 3))).all()
             assert (adata.border_pixels == analysis_data.setup_border_pixels(test_mask)).all()

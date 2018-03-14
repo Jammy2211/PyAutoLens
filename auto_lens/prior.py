@@ -240,7 +240,7 @@ class ClassMap(object):
 
     def reconstruction_most_probable(self, results_path):
         """ Setup a Reconstruction of the most probable model, determined from the results of a MultiNest non-linear \
-        analysis
+        pixelization
         
         The most probable model is the model where each parameter is the mean value of all samples weighted \
         by each sample's sampling probability.
@@ -258,7 +258,7 @@ class ClassMap(object):
 
     def reconstruction_most_likely(self, results_path):
         """ Setup a Reconstruction of the most likely model, determined from the results of a MultiNest non-linear \
-        analysis
+        pixelization
 
         The most likely model is the set of parameters corresponding to the highest likelihood solution.
 
