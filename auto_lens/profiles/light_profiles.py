@@ -345,4 +345,5 @@ class CoreSersicLightProfile(SersicLightProfile):
         return self.intensity_prime * (
                 (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * np.exp(
             -self.sersic_constant * ((((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
-                            self.effective_radius ** self.alpha)) ** (1.0 / (self.alpha * self.sersic_index))))
+                            self.effective_radius ** self.alpha)) ** (
+    1.0 / (self.alpha * self.sersic_index))))

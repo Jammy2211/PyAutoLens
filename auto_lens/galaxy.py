@@ -4,24 +4,10 @@ import math
 from astropy import cosmology
 from astropy import constants
 
-
-class RayTracingPlane(list):
-    """The ray-tracing plane of this lensing system, which is made up of a collection of galaxies ordered by redshift.
-
-    This is used to perform all lensing calculations, including the effects of galaxy redshifts / angular diameter \
-    distances on the ray-tracing calculations"""
+class LensingPlanes(list):
 
     def __init__(self, galaxies, cosmological_model=cosmology.Planck15):
-        """
-        The list of galaxies that form the overall ray-tracing plane.
 
-        Parameters
-        ----------
-        galaxies : [Galaxy]
-            A galaxy
-        cosmological_model : astropy.cosmology.FLRW
-            The assumed cosmology for this ray-tracing calculation.
-        """
 
         super().__init__()
 
@@ -44,7 +30,7 @@ class RayTracingPlane(list):
 
         def insert(position):
             if position == len(self):
-                super(RayTracingPlane, self).append(galaxy)
+                super(LensingPlanes, self).append(galaxy)
             elif galaxy.redshift <= self[position].redshift:
                 self[:] = self[:position] + [galaxy] + self[position:]
             else:
@@ -65,6 +51,7 @@ class RayTracingPlane(list):
                 galaxy.setup_angular_diameter_distance_to_next_galaxy(cosmological_model, self[i + 1].redshift)
 
             if i > 0:
+
                 galaxy.setup_angular_diameter_distance_to_previous_galaxy(cosmological_model, self[i - 1].redshift)
 
     def setup_critical_densities(self):
@@ -91,7 +78,7 @@ class Galaxy(object):
     """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass \
     profiles"""
 
-    def __init__(self, redshift, light_profiles=None, mass_profiles=None):
+    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None, pixelization=None):
         """
         Parameters
         ----------
@@ -105,12 +92,13 @@ class Galaxy(object):
         self.redshift = redshift
         self.light_profiles = light_profiles
         self.mass_profiles = mass_profiles
+        self.pixelization = pixelization
 
         # TODO: All of the initial calls to an instance variable should be made in the constructor. self.ang_to_earth
         # TODO: etc. should be made here. However, it's still bad practice to be setting these variables to None at the
         # TODO: point of construction because much of the function of a class depends on them not being None.
         self.setup_cosmological_quantities()
-
+        
     def setup_cosmological_quantities(self):
         # TODO: these shouldn't be in the Galaxy class. A Galaxy doesn't care about its angle to earth.
 
@@ -156,14 +144,14 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The coordinates in image space
         Returns
         -------
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
+        return sum(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
@@ -173,14 +161,14 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The coordinates in image space
         Returns
         -------
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return list(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
+        return list(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def luminosity_within_circle(self, radius):
         """
@@ -198,7 +186,7 @@ class Galaxy(object):
         luminosity : float
             The total combined luminosity within the specified circle.
         """
-        return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
+        return sum(map(lambda p : p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_circle_individual(self, radius):
         """
@@ -217,7 +205,7 @@ class Galaxy(object):
         luminosity : float
             The total combined luminosity within the specified circle.
         """
-        return list(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
+        return list(map(lambda p : p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_ellipse(self, major_axis):
         """
@@ -236,7 +224,7 @@ class Galaxy(object):
         intensity : float
             The total luminosity within the specified ellipse.
         """
-        return sum(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
+        return sum(map(lambda p : p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
     def luminosity_within_ellipse_individual(self, major_axis):
         """
@@ -254,7 +242,7 @@ class Galaxy(object):
         intensity : float
             The total luminosity within the specified ellipse.
         """
-        return list(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
+        return list(map(lambda p : p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
     def surface_density_at_coordinates(self, coordinates):
         """
@@ -265,14 +253,14 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
         ----------
         The summed values of surface density at the given coordinates.
         """
-        return sum(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def surface_density_at_coordinates_individual(self, coordinates):
         """
@@ -283,14 +271,14 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
         ----------
         The summed values of surface density at the given coordinates.
         """
-        return list(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates(self, coordinates):
         """
@@ -300,14 +288,14 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        return sum(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates_individual(self, coordinates):
         """
@@ -317,14 +305,14 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        return list(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
@@ -334,7 +322,7 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : ndarray
             The x and y coordinates of the image
 
         Returns
@@ -361,7 +349,7 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given coordinates.
         """
-        return list(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p : p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
 
     def mass_within_circles(self, radius):
         """
@@ -380,8 +368,7 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(
-            map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
+        return self.critical_density * sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
     def mass_within_circles_individual(self, radius):
         """
@@ -399,8 +386,7 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(
-            list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
+        return self.critical_density * np.asarray(list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
 
     def mass_within_ellipses(self, major_axis):
         """
@@ -419,8 +405,7 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(
-            map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
+        return self.critical_density * sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
     def mass_within_ellipses_individual(self, major_axis):
         """
@@ -439,11 +424,10 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(
-            list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
+        return self.critical_density * np.asarray(list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
 
     def plot_density_as_function_of_radius(self, maximum_radius, image_name='', labels=None, number_bins=50,
-                                           convert_x_to_kpc=True, plot_errors=True):
+                                           xaxis_is_physical=True, yaxis_is_physical=True):
         """Produce a plot of the galaxy density as a function of radius.
 
         Parameters
@@ -456,109 +440,35 @@ class Galaxy(object):
             The number of bins used to compute and plot the mass.
         """
 
-        radii = list(np.linspace(1e-4, maximum_radius, number_bins + 1))
+        radii = list(np.linspace(1e-4, maximum_radius, number_bins+1))
 
-        density_0 = []
-        density_1 = []
-        #  density_2 = []
         for i in range(number_bins):
-            annuli_area = (math.pi * radii[i + 1] ** 2 - math.pi * radii[i] ** 2)
+
+            annuli_area = (math.pi*radii[i+1]**2 - math.pi*radii[i]**2)
 
             densities = ((self.mass_within_circles_individual(radii[i + 1]) -
-                          self.mass_within_circles_individual(radii[i])) /
-                         annuli_area)
-
-            density_0.append(densities[0])
-            density_1.append(densities[1])
-        #      density_2.append(densities[2])
-
-        # TODO: Well, this isn't a very good way to plot errors is it.... We need to think carefully about how our
-        # TODO : High level lens model handles all this 0_0
-
-        # if plot_errors is True:
-        #
-        #     self.mass_profiles[0].centre = self.mass_profiles[0].centre_lower_limit_3_sigma
-        #     self.mass_profiles[0].axis_ratio = self.mass_profiles[0].axis_ratio_lower_limit_3_sigma
-        #     self.mass_profiles[0].phi = self.mass_profiles[0].phi_lower_limit_3_sigma
-        #     self.mass_profiles[0].intensity = self.mass_profiles[0].intensity_lower_limit_3_sigma
-        #     self.mass_profiles[0].effective_radius = self.mass_profiles[0].effective_radius_lower_limit_3_sigma
-        #     self.mass_profiles[0].sersic_index = self.mass_profiles[0].sersic_index_lower_limit_3_sigma
-        #     self.mass_profiles[0].mass_to_light_ratio = self.mass_profiles[0].mass_to_light_ratio_lower_limit_3_sigma
-        #
-        #     self.mass_profiles[1].centre = self.mass_profiles[1].centre_lower_limit_3_sigma
-        #     self.mass_profiles[1].axis_ratio = self.mass_profiles[1].axis_ratio_lower_limit_3_sigma
-        #     self.mass_profiles[1].phi = self.mass_profiles[1].phi_lower_limit_3_sigma
-        #     self.mass_profiles[1].intensity = self.mass_profiles[1].intensity_lower_limit_3_sigma
-        #     self.mass_profiles[1].effective_radius = self.mass_profiles[1].effective_radius_lower_limit_3_sigma
-        #     self.mass_profiles[1].mass_to_light_ratio = self.mass_profiles[1].mass_to_light_ratio_lower_limit_3_sigma
-        #
-        #     self.mass_profiles[2].kappa_s = self.mass_profiles[2].kappa_s_lower_limit_3_sigma
-        #
-        #     density_lower = []
-        #     for i in range(number_bins):
-        #
-        #         annuli_area = (math.pi*radii[i+1]**2 - math.pi*radii[i]**2)
-        #
-        #         density_lower.append((self.mass_within_circles_individual(radii[i + 1]) -
-        #                               self.mass_within_circles_individual(radii[i])) /
-        #                              annuli_area)
-        #
-        #     density_lower = density_lower*self.critical_density
-        #
-        #     self.mass_profiles[0].centre = self.mass_profiles[0].centre_upper_limit_3_sigma
-        #     self.mass_profiles[0].axis_ratio = self.mass_profiles[0].axis_ratio_upper_limit_3_sigma
-        #     self.mass_profiles[0].phi = self.mass_profiles[0].phi_upper_limit_3_sigma
-        #     self.mass_profiles[0].intensity = self.mass_profiles[0].intensity_upper_limit_3_sigma
-        #     self.mass_profiles[0].effective_radius = self.mass_profiles[0].effective_radius_upper_limit_3_sigma
-        #     self.mass_profiles[0].sersic_index = self.mass_profiles[0].sersic_index_upper_limit_3_sigma
-        #     self.mass_profiles[0].mass_to_light_ratio = self.mass_profiles[0].mass_to_light_ratio_upper_limit_3_sigma
-        #
-        #     self.mass_profiles[1].centre = self.mass_profiles[1].centre_upper_limit_3_sigma
-        #     self.mass_profiles[1].axis_ratio = self.mass_profiles[1].axis_ratio_upper_limit_3_sigma
-        #     self.mass_profiles[1].phi = self.mass_profiles[1].phi_upper_limit_3_sigma
-        #     self.mass_profiles[1].intensity = self.mass_profiles[1].intensity_upper_limit_3_sigma
-        #     self.mass_profiles[1].effective_radius = self.mass_profiles[1].effective_radius_upper_limit_3_sigma
-        #     self.mass_profiles[1].mass_to_light_ratio = self.mass_profiles[1].mass_to_light_ratio_upper_limit_3_sigma
-        #
-        #     self.mass_profiles[2].kappa_s = self.mass_profiles[2].kappa_s_upper_limit_3_sigma
-        #
-        #     density_upper = []
-        #     for i in range(number_bins):
-        #         annuli_area = (math.pi * radii[i + 1] ** 2 - math.pi * radii[i] ** 2)
-        #
-        #         density_upper.append((self.mass_within_circles_individual(radii[i + 1]) -
-        #                               self.mass_within_circles_individual(radii[i])) /
-        #                              annuli_area)
-        #
-        #     density_upper = density_upper*self.critical_density
+                           self.mass_within_circles_individual(radii[i])) /
+                           annuli_area)
 
         plt.title('Decomposed surface density profile of ' + image_name, size=16)
 
-        if convert_x_to_kpc:
-            radii_plot = list(np.linspace(1e-4, maximum_radius * self.kpc_per_arcsec, number_bins))
+        if xaxis_is_physical:
+            radii_plot = list(np.linspace(1e-4, maximum_radius*self.kpc_per_arcsec, number_bins))
             plt.xlabel('Distance From Galaxy Center (kpc)', size=16)
         else:
             radii_plot = list(np.linspace(1e-4, maximum_radius, number_bins))
             plt.xlabel('Distance From Galaxy Center (")', size=16)
 
-        plt.semilogy(radii_plot, density_0, color='r', label='Sersic Bulge')
-        #    plt.semilogy(radii_plot, density_1, color='g', label='Exponential Halo')
-        plt.semilogy(radii_plot, density_1, color='k', label='Dark Matter Halo')
+        if yaxis_is_physical:
+            plt.ylabel(r'Surface Mass Density $\Sigma$ ($\frac{M_{odot}}{kpc^2}})$')
+        else:
+            pass
 
-        # plt.loglog(radii_plot, density_0, color='r', label='Sersic Bulge')
-        # plt.loglog(radii_plot, density_1, color='g', label='Exponential Halo')
-        # plt.loglog(radii_plot, density_2, color='k', label='Dark Matter Halo')
+        plt.semilogy(radii_plot, densities, color='r', label='Sersic Bulge')
 
-        # plt.semilogy(radii_plot, density_lower[:, 0], color='r', linestyle='--')
-        # plt.semilogy(radii_plot, density_upper[:, 0], color='r', linestyle='--')
-        # plt.semilogy(radii_plot, density_lower[:, 1], color='g', linestyle='--')
-        # plt.semilogy(radii_plot, density_upper[:, 1], color='g', linestyle='--')
-        # plt.semilogy(radii_plot, density_lower[:, 2], color='k', linestyle='--')
-        # plt.semilogy(radii_plot, density_upper[:, 2], color='k', linestyle='--')
+        # plt.axvline(x=self.einstein_radius*self.kpc_per_arcsec, linestyle='--')
+        # plt.axvline(x=self.source_light_min*self.kpc_per_arcsec, linestyle='-')
+        # plt.axvline(x=self.source_light_max*self.kpc_per_arcsec, linestyle='-')
 
-        plt.axvline(x=self.einstein_radius * self.kpc_per_arcsec, linestyle='--')
-        plt.axvline(x=self.source_light_min * self.kpc_per_arcsec, linestyle='-')
-        plt.axvline(x=self.source_light_max * self.kpc_per_arcsec, linestyle='-')
-
-        plt.legend()
+        plt.legend(labels)
         plt.show()

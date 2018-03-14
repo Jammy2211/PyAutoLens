@@ -18,7 +18,7 @@ lens_galaxy = galaxy.Galaxy(redshift=0.2803, mass_profiles=[sis])
 
 source_galaxy = galaxy.Galaxy(redshift=0.9818)
 
-galaxy.RayTracingPlane(galaxies=[lens_galaxy, source_galaxy], cosmological_model=cosmology.LambdaCDM(H0=70, Om0=0.3, Ode0=0.7))
+galaxy.LensingPlanes(galaxies=[lens_galaxy, source_galaxy], cosmological_model=cosmology.LambdaCDM(H0=70, Om0=0.3, Ode0=0.7))
 
 print(4.4*lens_galaxy.arcsec_per_kpc)
 
