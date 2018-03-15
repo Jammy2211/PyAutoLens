@@ -16,131 +16,364 @@ def lens_sis():
     lens_sis = galaxy.Galaxy(mass_profiles=[sis])
     return lens_sis
 
-class TestTraceImageAndSoure(object):
-
-    class TestCoordinatesOnly(object):
-    
-        def test__no_galaxy__no_deflections__image_and_source_plane_setup(self, no_galaxies):
-
-            coordinates = np.array([[1.0, 0.0]])
-
-            ray_tracing_coordinates = ray_tracing.PlaneCoordinates(coordinates)
-
-            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
-                                                      image_plane_coordinates=ray_tracing_coordinates)
-
-            assert lensing.image_plane.coordinates == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
-            assert lensing.source_plane.coordinates == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
-
-        def test__lens_galaxy_on__source_plane_is_deflected(self, lens_sis):
-
-            coordinates = np.array([[1.0, 0.0]])
-
-            ray_tracing_coordinates = ray_tracing.PlaneCoordinates(coordinates)
-
-            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_sis], source_galaxies=no_galaxies,
-                                                      image_plane_coordinates=ray_tracing_coordinates)
-
-            assert lensing.image_plane.coordinates == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
-            assert lensing.source_plane.coordinates == pytest.approx(np.array([[0.0, 0.0]]), 1e-3)
-
-        def test__two_lens_galaxies__source_plane_deflected_doubles(self, lens_sis):
-
-            coordinates = np.array([[1.0, 0.0]])
-
-            ray_tracing_coordinates = ray_tracing.PlaneCoordinates(coordinates)
-
-            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_sis, lens_sis], source_galaxies=no_galaxies,
-                                                      image_plane_coordinates=ray_tracing_coordinates)
-
-            assert lensing.image_plane.coordinates == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
-            assert lensing.source_plane.coordinates == pytest.approx(np.array([[-1.0, 0.0]]), 1e-3)
-
-        def test__sub_and_sparse_coordinates__source_plane_deflections(self, lens_sis):
-            
-            coordinates = np.array([[1.0, 0.0]])
-            sub_coordinates = np.array([[[1.0, 0.0]], [[0.0, 1.0]]])
-            sparse_coordinates = np.array([[-1.0, 0.0]])
-            
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
-
-            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_sis], source_galaxies=no_galaxies,
-                                                      image_plane_coordinates=image_plane_coordinates)
-
-            assert lensing.image_plane.coordinates[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert lensing.image_plane.sub_coordinates[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert lensing.image_plane.sub_coordinates[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
-            assert lensing.image_plane.sparse_coordinates[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
-            
-            assert lensing.image_plane.deflection_angles[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert lensing.image_plane.sub_deflection_angles[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert lensing.image_plane.sub_deflection_angles[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
-            assert lensing.image_plane.sparse_deflection_angles[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
-            
-            assert lensing.source_plane.coordinates[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert lensing.source_plane.sub_coordinates[0,0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert lensing.source_plane.sub_coordinates[1,0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert lensing.source_plane.sparse_coordinates[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-
 
 class TestPlaneCoordinates(object):
 
     class TestBasicSetup(object):
-        coordinates = np.array([[1.0, 1.0]])
-        sub_coordinates = np.array([[[1.0, 1.0], [1.0, 2.0]]])
-        sparse_coordinates = np.array([0.0, 0.0])
 
-        ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
+        def test__image_coordinates_only(self):
 
-        assert (ray_trace_coordinates.coordinates == np.array([[1.0, 1.0]])).all()
-        assert (ray_trace_coordinates.sub_coordinates == np.array([[[1.0, 1.0], [1.0, 2.0]]])).all()
-        assert (ray_trace_coordinates.sparse_coordinates == np.array([0.0, 0.0])).all()
-        assert ray_trace_coordinates.blurring_coordinates == None
+            coordinates = np.array([[1.0, 1.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates)
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub == None
+            assert ray_trace_coordinates.sparse == None
+            assert ray_trace_coordinates.blurring == None
+
+        def test__image_and_sub_coordinates(self):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 2.0]]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates)
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,1] == pytest.approx(np.array([1.0, 2.0]), 1e-5)
+            assert ray_trace_coordinates.sparse == None
+            assert ray_trace_coordinates.blurring == None
+
+        def test__image_and_sparse_coodinates(self):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sparse_coordinates = np.array([[0.0, 0.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sparse_coordinates=sparse_coordinates)
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub == None
+            assert ray_trace_coordinates.sparse[0] == pytest.approx(np.array([0.0, 0.0]), 1e-5)
+            assert ray_trace_coordinates.blurring == None
+
+        def test__image_and_blurring_coordinates(self):
+
+            coordinates = np.array([[1.0, 1.0]])
+            blurring_coordinates = np.array([[0.0, 0.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, blurring_coordinates=blurring_coordinates)
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub == None
+            assert ray_trace_coordinates.sparse == None
+            assert ray_trace_coordinates.blurring[0] == pytest.approx(np.array([0.0, 0.0]), 1e-5)
+
+        def test_all_coordinates(self):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 2.0]]])
+            sparse_coordinates = np.array([[0.0, 0.0]])
+            blurring_coordinates = np.array([[-3.0, 3.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+                                                                 blurring_coordinates)
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,1] == pytest.approx(np.array([1.0, 2.0]), 1e-5)
+            assert ray_trace_coordinates.sparse[0] == pytest.approx(np.array([0.0, 0.0]), 1e-5)
+            assert ray_trace_coordinates.blurring[0] == pytest.approx(np.array([-3.0, 3.0]), 1e-5)
+
+    class TestDeflectionAnglesForGalaxies(object):
+
+        def test__image_coordinates_only(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates)
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub == None
+            assert ray_trace_coordinates.sparse == None
+            assert ray_trace_coordinates.blurring == None
+
+            assert ray_trace_deflection_angles.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.sub == None
+            assert ray_trace_deflection_angles.sparse == None
+            assert ray_trace_deflection_angles.blurring == None
+
+        def test__image_and_sub_coordinates(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates)
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert ray_trace_coordinates.sparse == None
+            assert ray_trace_coordinates.blurring == None
+
+            assert ray_trace_deflection_angles.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace_deflection_angles.sparse == None
+            assert ray_trace_deflection_angles.blurring == None
+
+        def test__image_and_sparse_coodinates(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sparse_coordinates = np.array([[1.0, 1.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sparse_coordinates=sparse_coordinates)
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub == None
+            assert ray_trace_coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.blurring == None
+
+            assert ray_trace_deflection_angles.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.sub == None
+            assert ray_trace_deflection_angles.sparse == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.blurring == None
+
+        def test__image_and_blurring_coordinates(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+            blurring_coordinates = np.array([[1.0, 0.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, blurring_coordinates=blurring_coordinates)
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub == None
+            assert ray_trace_coordinates.sparse == None
+            assert ray_trace_coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+
+            assert ray_trace_deflection_angles.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.sub == None
+            assert ray_trace_deflection_angles.sparse == None
+            assert ray_trace_deflection_angles.blurring == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
+
+        def test_all_coordinates(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+            sparse_coordinates = np.array([[1.0, 1.0]])
+            blurring_coordinates = np.array([[1.0, 0.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+                                                                 blurring_coordinates)
+
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert ray_trace_coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+
+            assert ray_trace_deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace_deflection_angles.sparse[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace_deflection_angles.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+
+        def test_three_identical_lenses__deflection_angles_triple(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+            sparse_coordinates = np.array([[1.0, 1.0]])
+            blurring_coordinates = np.array([[1.0, 0.0]])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+                                                                 blurring_coordinates)
+
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis, lens_sis, lens_sis])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert ray_trace_coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+
+            assert ray_trace_deflection_angles.image == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert ray_trace_deflection_angles.sparse == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.blurring == pytest.approx(np.array([[3.0, 0.0]]), 1e-3)
+
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+            sparse_coordinates = np.array([[1.0, 1.0]])
+            blurring_coordinates = np.array([[1.0, 0.0]])
+
+            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)])
+
+            ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+                                                                 blurring_coordinates)
+
+            ray_trace_deflection_angles = ray_trace_coordinates.deflection_angles_for_galaxies([lens_sis_x3])
+
+            assert ray_trace_coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert ray_trace_coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert ray_trace_coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+
+            assert ray_trace_deflection_angles.image == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert ray_trace_deflection_angles.sparse == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert ray_trace_deflection_angles.blurring == pytest.approx(np.array([[3.0, 0.0]]), 1e-3)
+
+
+class TestPlaneDeflectionAngles(object):
+
+    class TestBasicSetup(object):
+
+        def test__image_deflection_angles_only(self):
+
+            deflection_angles = np.array([[1.0, 1.0]])
+
+            ray_trace_deflection_angles = ray_tracing.PlaneDeflectionAngles(deflection_angles)
+
+            assert ray_trace_deflection_angles.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub == None
+            assert ray_trace_deflection_angles.sparse == None
+            assert ray_trace_deflection_angles.blurring == None
+
+        def test__image_and_sub_deflection_angles(self):
+
+            deflection_angles = np.array([[1.0, 1.0]])
+            sub_deflection_angles = np.array([[[1.0, 1.0], [1.0, 2.0]]])
+
+            ray_trace_deflection_angles = ray_tracing.PlaneDeflectionAngles(deflection_angles, sub_deflection_angles)
+
+            assert ray_trace_deflection_angles.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 2.0]), 1e-3)
+            assert ray_trace_deflection_angles.sparse == None
+            assert ray_trace_deflection_angles.blurring == None
+
+        def test__image_and_sparse_coodinates(self):
+
+            deflection_angles = np.array([[1.0, 1.0]])
+            sparse_deflection_angles = np.array([[0.0, 0.0]])
+
+            ray_trace_deflection_angles = ray_tracing.PlaneDeflectionAngles(deflection_angles,
+                                                                            sparse_deflection_angles=sparse_deflection_angles)
+
+            assert ray_trace_deflection_angles.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub == None
+            assert ray_trace_deflection_angles.sparse[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace_deflection_angles.blurring == None
+
+        def test__image_and_blurring_deflection_angles(self):
+
+            deflection_angles = np.array([[1.0, 1.0]])
+            blurring_deflection_angles = np.array([[0.0, 0.0]])
+
+            ray_trace_deflection_angles = ray_tracing.PlaneDeflectionAngles(deflection_angles,
+                                                                            blurring_deflection_angles=blurring_deflection_angles)
+
+            assert ray_trace_deflection_angles.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub == None
+            assert ray_trace_deflection_angles.sparse == None
+            assert ray_trace_deflection_angles.blurring[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+
+        def test_all_deflection_angles(self):
+
+            deflection_angles = np.array([[1.0, 1.0]])
+            sub_deflection_angles = np.array([[[1.0, 1.0], [1.0, 2.0]]])
+            sparse_deflection_angles = np.array([[0.0, 0.0]])
+            blurring_deflection_angles = np.array([[3.0, 3.0]])
+
+            ray_trace_deflection_angles = ray_tracing.PlaneDeflectionAngles(deflection_angles, sub_deflection_angles, sparse_deflection_angles,
+                                                                 blurring_deflection_angles)
+
+            assert ray_trace_deflection_angles.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace_deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 2.0]), 1e-3)
+            assert ray_trace_deflection_angles.sparse[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace_deflection_angles.blurring[0] == pytest.approx(np.array([3.0, 3.0]), 1e-3)
 
 
 class TestImagePlane(object):
-    
+
     class TestBasicSetup(object):
 
-        def test__setup_correct_values(self, no_galaxies):
+        def test__setup_only_coordinates__simple_lens(self, lens_sis):
 
             coordinates = np.array([[1.0, 1.0]])
-            sub_coordinates = np.array([[[1.0, 0.0]], [[0.0, 1.0]]])
-            sparse_coordinates = np.array([[0.0, 0.0]])
 
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
+            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
 
-            image_plane = ray_tracing.ImagePlane(no_galaxies, image_plane_coordinates)
+            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.coordinates[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert image_plane.sub_coordinates[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert image_plane.sub_coordinates[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
-            assert image_plane.blurring_coordinates == None
+            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert image_plane.coordinates.sub == None
+            assert image_plane.coordinates.sparse == None
+            assert image_plane.coordinates.blurring == None
+
+            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert image_plane.deflection_angles.sub == None
+            assert image_plane.deflection_angles.sparse == None
+            assert image_plane.deflection_angles.blurring == None
+
+        def test__setup_all_coordinates(self, lens_sis):
+
+            coordinates = np.array([[1.0, 1.0]])
+            sub_coordinates = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+            sparse_coordinates = np.array([[1.0, 1.0]])
+            blurring_coordinates = np.array([[1.0, 0.0]])
+
+            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+                                                                   blurring_coordinates)
+
+            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=image_plane_coordinates)
+
+            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert image_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert image_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert image_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert image_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+
+            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert image_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert image_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.sparse[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert image_plane.deflection_angles.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
     class TestDeflectionAngleCalc:
 
         def test__coordinates_only__simple_lens(self, lens_sis):
-
             coordinates = np.array([[1.0, 0.0]])
 
             image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
 
             image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.deflection_angles[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
         def test__coordinates_only__two_lens_galaxies(self, lens_sis):
-
             coordinates = np.array([[1.0, 0.0]])
 
             image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis, lens_sis], plane_coordinates=image_plane_coordinates)
+            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis, lens_sis],
+                                                 plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.deflection_angles[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
 
         def test__coordinates_only__complex_mas_model(self):
-
             coordinates = np.array([[1.0, 0.0]])
 
             power_law = mass_profiles.EllipticalPowerLawMassProfile(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
@@ -148,7 +381,7 @@ class TestImagePlane(object):
             nfw = mass_profiles.SphericalNFWMassProfile(kappa_s=0.1, scale_radius=5.0)
 
             defls = power_law.deflection_angles_at_coordinates(coordinates[0]) + \
-                      nfw.deflection_angles_at_coordinates(coordinates[0])
+                    nfw.deflection_angles_at_coordinates(coordinates[0])
 
             image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
 
@@ -156,10 +389,9 @@ class TestImagePlane(object):
 
             image_plane = ray_tracing.ImagePlane(galaxies=[lens_galaxy], plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.deflection_angles[0] == pytest.approx(defls, 1e-3)
+            assert image_plane.deflection_angles.image[0] == pytest.approx(defls, 1e-3)
 
         def test__coordinates_sub_and_sparse__simple_lens(self, lens_sis):
-
             coordinates = np.array([[1.0, 0.0]])
             sub_coordinates = np.array([[[1.0, 0.0]], [[0.0, 1.0]]])
             sparse_coordinates = np.array([[-1.0, 0.0]])
@@ -168,28 +400,27 @@ class TestImagePlane(object):
 
             image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.deflection_angles[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert image_plane.sub_deflection_angles[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert image_plane.sub_deflection_angles[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
-            assert image_plane.sparse_deflection_angles[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.sub[0, 0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.sub[1, 0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
+            assert image_plane.deflection_angles.sparse[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
 
         def test__coordinates_sub_and_sparse__two_lens_galaxies(self, lens_sis):
-
             coordinates = np.array([[1.0, 0.0]])
             sub_coordinates = np.array([[[1.0, 0.0]], [[0.0, 1.0]]])
             sparse_coordinates = np.array([[-1.0, 0.0]])
 
             image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis, lens_sis], plane_coordinates=image_plane_coordinates)
+            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis, lens_sis],
+                                                 plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.deflection_angles[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
-            assert image_plane.sub_deflection_angles[0,0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
-            assert image_plane.sub_deflection_angles[1,0] == pytest.approx(np.array([0.0, 2.0]), 1e-3)
-            assert image_plane.sparse_deflection_angles[0] == pytest.approx(np.array([-2.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.sub[0, 0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
+            assert image_plane.deflection_angles.sub[1, 0] == pytest.approx(np.array([0.0, 2.0]), 1e-3)
+            assert image_plane.deflection_angles.sparse[0] == pytest.approx(np.array([-2.0, 0.0]), 1e-3)
 
         def test__coordinates_sub_and_sparse__complex_mass_model(self):
-
             coordinates = np.array([[1.0, 0.0]])
             sub_coordinates = np.array([[[1.0, 0.0]], [[0.0, 1.0]]])
             sparse_coordinates = np.array([[-1.0, 0.0]])
@@ -199,16 +430,16 @@ class TestImagePlane(object):
             nfw = mass_profiles.SphericalNFWMassProfile(kappa_s=0.1, scale_radius=5.0)
 
             defls = power_law.deflection_angles_at_coordinates(coordinates[0]) + \
-                      nfw.deflection_angles_at_coordinates(coordinates[0])
+                    nfw.deflection_angles_at_coordinates(coordinates[0])
 
-            sub_defls_0 = power_law.deflection_angles_at_coordinates(sub_coordinates[0,0]) + \
-                      nfw.deflection_angles_at_coordinates(sub_coordinates[0,0])
+            sub_defls_0 = power_law.deflection_angles_at_coordinates(sub_coordinates[0, 0]) + \
+                          nfw.deflection_angles_at_coordinates(sub_coordinates[0, 0])
 
-            sub_defls_1 = power_law.deflection_angles_at_coordinates(sub_coordinates[1,0]) + \
-                      nfw.deflection_angles_at_coordinates(sub_coordinates[1,0])
+            sub_defls_1 = power_law.deflection_angles_at_coordinates(sub_coordinates[1, 0]) + \
+                          nfw.deflection_angles_at_coordinates(sub_coordinates[1, 0])
 
             sparse_defls = power_law.deflection_angles_at_coordinates(sparse_coordinates[0]) + \
-                      nfw.deflection_angles_at_coordinates(sparse_coordinates[0])
+                           nfw.deflection_angles_at_coordinates(sparse_coordinates[0])
 
             image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
 
@@ -216,18 +447,16 @@ class TestImagePlane(object):
 
             image_plane = ray_tracing.ImagePlane(galaxies=[lens_galaxy], plane_coordinates=image_plane_coordinates)
 
-            assert image_plane.deflection_angles[0] == pytest.approx(defls, 1e-3)
-            assert image_plane.sub_deflection_angles[0,0] == pytest.approx(sub_defls_0, 1e-3)
-            assert image_plane.sub_deflection_angles[1,0] == pytest.approx(sub_defls_1, 1e-3)
-            assert image_plane.sparse_deflection_angles[0] == pytest.approx(sparse_defls, 1e-3)
+            assert image_plane.deflection_angles.image[0] == pytest.approx(defls, 1e-3)
+            assert image_plane.deflection_angles.sub[0, 0] == pytest.approx(sub_defls_0, 1e-3)
+            assert image_plane.deflection_angles.sub[1, 0] == pytest.approx(sub_defls_1, 1e-3)
+            assert image_plane.deflection_angles.sparse[0] == pytest.approx(sparse_defls, 1e-3)
 
 
 class TestSourcePlane(object):
-
     class TestCoordinatesInit(object):
 
         def test__sets_correct_values(self, no_galaxies):
-
             coordinates = np.array([[1.0, 1.0]])
             sub_coordinates = np.array([[[1.0, 1.0], [1.0, 2.0]]])
             sparse_coordinates = np.array([0.0, 0.0])
@@ -236,23 +465,21 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert (source_plane.coordinates == np.array([[1.0, 1.0]])).all()
-            assert (source_plane.sub_coordinates == np.array([[[1.0, 1.0], [1.0, 2.0]]])).all()
-            assert (source_plane.sparse_coordinates == np.array([0.0, 0.0])).all()
-            assert source_plane.blurring_coordinates == None
+            assert (source_plane.coordinates.image == np.array([[1.0, 1.0]])).all()
+            assert (source_plane.coordinates.sub == np.array([[[1.0, 1.0], [1.0, 2.0]]])).all()
+            assert (source_plane.coordinates.sparse == np.array([0.0, 0.0])).all()
+            assert source_plane.coordinates.blurring == None
 
         def test__four_coordinates__correct_source_plane(self, no_galaxies):
-
             coordinates = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
             source_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert (source_plane.coordinates == [[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]]).all()
+            assert (source_plane.coordinates.image == [[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]]).all()
 
         def test__four_coordinates_and_offset_centre__doesnt_change_coordinate_values(self, no_galaxies):
-
             # The centre is used by SourcePlaneGeomtry, but doesn't change the input coordinate values
             coordinates = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
@@ -260,7 +487,8 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert (source_plane.coordinates == np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])).all()
+            assert (source_plane.coordinates.image == np.array(
+                [[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])).all()
 
     class TestCoordinatesToCentre(object):
         def test__source_plane_centre_zeros_by_default__no_shift(self, no_galaxies):
@@ -270,20 +498,19 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            coordinates_shift = source_plane.coordinates_to_centre(coordinates)
+            coordinates_shift = source_plane.coordinates.coordinates_to_centre(coordinates)
 
             assert coordinates_shift[0] == 0.0
             assert coordinates_shift[1] == 0.0
 
         def test__source_plane_centre_x_shift__x_shifts(self, no_galaxies):
-
             coordinates = np.array([0.0, 0.0])
 
             source_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, centre=(0.5, 0.0))
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            coordinates_shift = source_plane.coordinates_to_centre(source_plane.coordinates)
+            coordinates_shift = source_plane.coordinates.coordinates_to_centre(source_plane.coordinates.image)
 
             assert coordinates_shift[0] == -0.5
             assert coordinates_shift[1] == 0.0
@@ -295,7 +522,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            coordinates_shift = source_plane.coordinates_to_centre(coordinates)
+            coordinates_shift = source_plane.coordinates.coordinates_to_centre(coordinates)
 
             assert coordinates_shift[0] == 0.0
             assert coordinates_shift[1] == -0.5
@@ -307,7 +534,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            coordinates_shift = source_plane.coordinates_to_centre(coordinates)
+            coordinates_shift = source_plane.coordinates.coordinates_to_centre(coordinates)
 
             assert coordinates_shift[0] == -0.5
             assert coordinates_shift[1] == -0.5
@@ -319,7 +546,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            coordinates_shift = source_plane.coordinates_to_centre(coordinates)
+            coordinates_shift = source_plane.coordinates.coordinates_to_centre(coordinates)
 
             assert coordinates_shift[0] == -0.8
             assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
@@ -332,7 +559,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert source_plane.coordinates_to_radius(coordinates) == 0.0
+            assert source_plane.coordinates.coordinates_to_radius(coordinates) == 0.0
 
         def test__x_coordinates_is_one__r_is_one(self, no_galaxies):
             coordinates = np.array([1.0, 0.0])
@@ -341,7 +568,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert source_plane.coordinates_to_radius(coordinates) == 1.0
+            assert source_plane.coordinates.coordinates_to_radius(coordinates) == 1.0
 
         def test__x_and_y_coordinates_are_one__r_is_root_two(self, no_galaxies):
             coordinates = np.array([1.0, 1.0])
@@ -350,7 +577,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(np.sqrt(2), 1e-5)
+            assert source_plane.coordinates.coordinates_to_radius(coordinates) == pytest.approx(np.sqrt(2), 1e-5)
 
         def test__shift_x_coordinate_first__r_includes_shift(self, no_galaxies):
             coordinates = np.array([1.0, 0.0])
@@ -359,7 +586,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(2.0, 1e-5)
+            assert source_plane.coordinates.coordinates_to_radius(coordinates) == pytest.approx(2.0, 1e-5)
 
         def test__shift_x_and_y_coordinates_first__r_includes_shift(self, no_galaxies):
             coordinates = np.array([3.0, 3.0])
@@ -368,7 +595,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            assert source_plane.coordinates_to_radius(coordinates) == pytest.approx(np.sqrt(2.0), 1e-5)
+            assert source_plane.coordinates.coordinates_to_radius(coordinates) == pytest.approx(np.sqrt(2.0), 1e-5)
 
     class TestCoordinatesAngleFromX(object):
         def test__angle_is_zero__angles_follow_trig(self, no_galaxies):
@@ -378,7 +605,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == 0.0
 
@@ -389,7 +616,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == 45.0
 
@@ -400,7 +627,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == pytest.approx(60.0, 1e-3)
 
@@ -411,7 +638,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == 135.0
 
@@ -422,7 +649,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == 225.0
 
@@ -433,7 +660,7 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == 315.0
 
@@ -444,17 +671,15 @@ class TestSourcePlane(object):
 
             source_plane = ray_tracing.SourcePlane(no_galaxies, source_plane_coordinates)
 
-            theta_from_x = source_plane.coordinates_angle_from_x(coordinates)
+            theta_from_x = source_plane.coordinates.coordinates_angle_from_x(coordinates)
 
             assert theta_from_x == 45.0
 
 
 class TestSorucePlaneWithBorder(object):
-    
     class TestCoordinatesThetasAndRadii(object):
 
         def test__four_coordinates_in_circle__correct_border(self, no_galaxies):
-            
             coordinates = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
             border_pixels = np.array([0, 1, 2, 3])
 
@@ -462,7 +687,7 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert source_plane.coordinates == \
+            assert source_plane.coordinates.image == \
                    pytest.approx(np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]]), 1e-3)
             assert source_plane.border_coordinates == \
                    pytest.approx(np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]]), 1e-3)
@@ -477,7 +702,7 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert source_plane.coordinates == \
+            assert source_plane.coordinates.image == \
                    pytest.approx(np.array([[2.0, 0.0], [2.0, 2.0], [-1.0, -1.0], [0.0, -3.0]]), 1e-3)
             assert source_plane.border_coordinates == \
                    pytest.approx(np.array([[2.0, 0.0], [2.0, 2.0], [-1.0, -1.0], [0.0, -3.0]]), 1e-3)
@@ -492,7 +717,7 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert source_plane.coordinates == \
+            assert source_plane.coordinates.image == \
                    pytest.approx(np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0]]), 1e-3)
             assert source_plane.border_coordinates == \
                    pytest.approx(np.array([(2.0, 1.0), (1.0, 2.0), (0.0, 1.0), (1.0, 0.0)]), 1e-3)
@@ -601,16 +826,16 @@ class TestSorucePlaneWithBorder(object):
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
             relocated_coordinate = source_plane.relocated_coordinate(coordinate=np.array([2.5, 0.37]))
-            assert source_plane.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+            assert source_plane.coordinates.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
 
             relocated_coordinate = source_plane.relocated_coordinate(coordinate=np.array([25.3, -9.2]))
-            assert source_plane.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+            assert source_plane.coordinates.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
 
             relocated_coordinate = source_plane.relocated_coordinate(coordinate=np.array([13.5, 0.0]))
-            assert source_plane.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+            assert source_plane.coordinates.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
 
             relocated_coordinate = source_plane.relocated_coordinate(coordinate=np.array([-2.5, -0.37]))
-            assert source_plane.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
+            assert source_plane.coordinates.coordinates_to_radius(relocated_coordinate) == pytest.approx(1.0, 1e-3)
 
         def test__outside_border_simple_cases_2__relocates_to_source_border(self, no_galaxies):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -660,7 +885,7 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates == coordinates).all()
+            assert (source_plane.coordinates.image == coordinates).all()
 
         def test__all_coordinates_inside_border_again__no_relocations(self, no_galaxies):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -675,10 +900,9 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates == coordinates).all()
+            assert (source_plane.coordinates.image == coordinates).all()
 
         def test__6_coordinates_total__2_outside_border__relocate_to_source_border(self, no_galaxies):
-
             coordinates = np.array([[1.0, 0.0], [20., 20.], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 1.0]])
             border_pixels = np.array([0, 2, 3, 4])
 
@@ -686,12 +910,12 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates[0] == coordinates[0]).all()
-            assert source_plane.coordinates[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
-            assert (source_plane.coordinates[2] == coordinates[2]).all()
-            assert (source_plane.coordinates[3] == coordinates[3]).all()
-            assert (source_plane.coordinates[4] == coordinates[4]).all()
-            assert source_plane.coordinates[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert (source_plane.coordinates.image[0] == coordinates[0]).all()
+            assert source_plane.coordinates.image[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert (source_plane.coordinates.image[2] == coordinates[2]).all()
+            assert (source_plane.coordinates.image[3] == coordinates[3]).all()
+            assert (source_plane.coordinates.image[4] == coordinates[4]).all()
+            assert source_plane.coordinates.image[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
 
         def test__24_coordinates_total__8_coordinates_outside_border__relocate_to_source_border(self, no_galaxies):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -706,15 +930,15 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates[0:16] == coordinates[0:16]).all()
-            assert source_plane.coordinates[16] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert source_plane.coordinates[17] == pytest.approx(np.array([0.5 * np.sqrt(2), 0.5 * np.sqrt(2)]))
-            assert source_plane.coordinates[18] == pytest.approx(np.array([0.0, 1.0]))
-            assert source_plane.coordinates[19] == pytest.approx(np.array([-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)]))
-            assert source_plane.coordinates[20] == pytest.approx(np.array([-1.0, 0.0]))
-            assert source_plane.coordinates[21] == pytest.approx(np.array([-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
-            assert source_plane.coordinates[22] == pytest.approx(np.array([0.0, -1.0]))
-            assert source_plane.coordinates[23] == pytest.approx(np.array([0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
+            assert (source_plane.coordinates.image[0:16] == coordinates[0:16]).all()
+            assert source_plane.coordinates.image[16] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert source_plane.coordinates.image[17] == pytest.approx(np.array([0.5 * np.sqrt(2), 0.5 * np.sqrt(2)]))
+            assert source_plane.coordinates.image[18] == pytest.approx(np.array([0.0, 1.0]))
+            assert source_plane.coordinates.image[19] == pytest.approx(np.array([-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)]))
+            assert source_plane.coordinates.image[20] == pytest.approx(np.array([-1.0, 0.0]))
+            assert source_plane.coordinates.image[21] == pytest.approx(np.array([-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
+            assert source_plane.coordinates.image[22] == pytest.approx(np.array([0.0, -1.0]))
+            assert source_plane.coordinates.image[23] == pytest.approx(np.array([0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
 
         def test__24_coordinates_total__4_coordinates_outside_border__relates_to_source_border(self, no_galaxies):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -729,11 +953,11 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates[0:20] == coordinates[0:20]).all()
-            assert source_plane.coordinates[20] == pytest.approx(np.array([-1.0, 0.0]))
-            assert source_plane.coordinates[21] == pytest.approx(np.array([-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
-            assert source_plane.coordinates[22] == pytest.approx(np.array([0.0, -1.0]))
-            assert source_plane.coordinates[23] == pytest.approx(np.array([0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
+            assert (source_plane.coordinates.image[0:20] == coordinates[0:20]).all()
+            assert source_plane.coordinates.image[20] == pytest.approx(np.array([-1.0, 0.0]))
+            assert source_plane.coordinates.image[21] == pytest.approx(np.array([-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
+            assert source_plane.coordinates.image[22] == pytest.approx(np.array([0.0, -1.0]))
+            assert source_plane.coordinates.image[23] == pytest.approx(np.array([0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
 
         def test__change_pixel_order_and_border_pixels__works_as_above(self, no_galaxies):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -748,14 +972,13 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert source_plane.coordinates[0] == pytest.approx(np.array([-1.0, 0.0]))
-            assert source_plane.coordinates[1] == pytest.approx(np.array([-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
-            assert source_plane.coordinates[2] == pytest.approx(np.array([0.0, -1.0]))
-            assert source_plane.coordinates[3] == pytest.approx(np.array([0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
-            assert (source_plane.coordinates[4:24] == coordinates[4:24]).all()
+            assert source_plane.coordinates.image[0] == pytest.approx(np.array([-1.0, 0.0]))
+            assert source_plane.coordinates.image[1] == pytest.approx(np.array([-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
+            assert source_plane.coordinates.image[2] == pytest.approx(np.array([0.0, -1.0]))
+            assert source_plane.coordinates.image[3] == pytest.approx(np.array([0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]))
+            assert (source_plane.coordinates.image[4:24] == coordinates[4:24]).all()
 
         def test__sub_pixels_in_border__are_not_relocated(self, no_galaxies):
-
             coordinates = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
             sub_coordinates = np.array([[[0.1, 0.0], [0.2, 0.0], [0.3, 0.0], [0.4, 0.0]],
                                         [[0.1, 0.0], [0.2, 0.0], [0.3, 0.0], [0.4, 0.0]],
@@ -768,11 +991,10 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates == coordinates).all()
-            assert (source_plane.sub_coordinates == sub_coordinates).all()
+            assert (source_plane.coordinates.image == coordinates).all()
+            assert (source_plane.coordinates.sub == sub_coordinates).all()
 
         def test__sub_pixels_outside_border__are_relocated(self, no_galaxies):
-
             coordinates = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
             sub_coordinates = np.array([[[2.0, 0.0], [0.2, 0.0], [2.0, 2.0], [0.4, 0.0]],
                                         [[0.0, 2.0], [-2.0, 2.0], [0.3, 0.0], [0.4, 0.0]],
@@ -785,30 +1007,29 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates == coordinates).all()
+            assert (source_plane.coordinates.image == coordinates).all()
 
-            assert (source_plane.sub_coordinates[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3))
-            assert (source_plane.sub_coordinates[0,1] == sub_coordinates[0,1]).all()
-            assert (source_plane.sub_coordinates[0,2] == pytest.approx(np.array([0.707, 0.707]), 1e-3))
-            assert (source_plane.sub_coordinates[0,3] == sub_coordinates[0,3]).all()
+            assert (source_plane.coordinates.sub[0, 0] == pytest.approx(np.array([1.0, 0.0]), 1e-3))
+            assert (source_plane.coordinates.sub[0, 1] == sub_coordinates[0, 1]).all()
+            assert (source_plane.coordinates.sub[0, 2] == pytest.approx(np.array([0.707, 0.707]), 1e-3))
+            assert (source_plane.coordinates.sub[0, 3] == sub_coordinates[0, 3]).all()
 
-            assert (source_plane.sub_coordinates[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3))
-            assert (source_plane.sub_coordinates[1,1] == pytest.approx(np.array([-0.707, 0.707]), 1e-3))
-            assert (source_plane.sub_coordinates[1,2] == sub_coordinates[1,2]).all()
-            assert (source_plane.sub_coordinates[1,3] == sub_coordinates[1,3]).all()
+            assert (source_plane.coordinates.sub[1, 0] == pytest.approx(np.array([0.0, 1.0]), 1e-3))
+            assert (source_plane.coordinates.sub[1, 1] == pytest.approx(np.array([-0.707, 0.707]), 1e-3))
+            assert (source_plane.coordinates.sub[1, 2] == sub_coordinates[1, 2]).all()
+            assert (source_plane.coordinates.sub[1, 3] == sub_coordinates[1, 3]).all()
 
-            assert (source_plane.sub_coordinates[2,0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3))
-            assert (source_plane.sub_coordinates[2,1] == sub_coordinates[2,1]).all()
-            assert (source_plane.sub_coordinates[2,2] == sub_coordinates[2,2]).all()
-            assert (source_plane.sub_coordinates[2,3] == pytest.approx(np.array([0.707, -0.707]), 1e-3))
+            assert (source_plane.coordinates.sub[2, 0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3))
+            assert (source_plane.coordinates.sub[2, 1] == sub_coordinates[2, 1]).all()
+            assert (source_plane.coordinates.sub[2, 2] == sub_coordinates[2, 2]).all()
+            assert (source_plane.coordinates.sub[2, 3] == pytest.approx(np.array([0.707, -0.707]), 1e-3))
 
-            assert (source_plane.sub_coordinates[3,0] == pytest.approx(np.array([0.0, -1.0]), 1e-3))
-            assert (source_plane.sub_coordinates[3,1] == sub_coordinates[3,1]).all()
-            assert (source_plane.sub_coordinates[3,2] == sub_coordinates[3,2]).all()
-            assert (source_plane.sub_coordinates[3,3] == sub_coordinates[3,3]).all()
+            assert (source_plane.coordinates.sub[3, 0] == pytest.approx(np.array([0.0, -1.0]), 1e-3))
+            assert (source_plane.coordinates.sub[3, 1] == sub_coordinates[3, 1]).all()
+            assert (source_plane.coordinates.sub[3, 2] == sub_coordinates[3, 2]).all()
+            assert (source_plane.coordinates.sub[3, 3] == sub_coordinates[3, 3]).all()
 
         def test__sparse_coordinates_are_relocated__same_as_normal_coordinates(self, no_galaxies):
-
             coordinates = np.array([[1.0, 0.0], [20., 20.], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 1.0]])
             sparse_coordinates = np.array([[1.0, 0.0], [20., 20.], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 1.0]])
             border_pixels = np.array([0, 2, 3, 4])
@@ -817,16 +1038,83 @@ class TestSorucePlaneWithBorder(object):
 
             source_plane = ray_tracing.SourcePlaneWithBorder(no_galaxies, border_pixels, 3, source_plane_coordinates)
 
-            assert (source_plane.coordinates[0] == coordinates[0]).all()
-            assert source_plane.coordinates[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
-            assert (source_plane.coordinates[2] == coordinates[2]).all()
-            assert (source_plane.coordinates[3] == coordinates[3]).all()
-            assert (source_plane.coordinates[4] == coordinates[4]).all()
-            assert source_plane.coordinates[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert (source_plane.coordinates.image[0] == coordinates[0]).all()
+            assert source_plane.coordinates.image[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert (source_plane.coordinates.image[2] == coordinates[2]).all()
+            assert (source_plane.coordinates.image[3] == coordinates[3]).all()
+            assert (source_plane.coordinates.image[4] == coordinates[4]).all()
+            assert source_plane.coordinates.image[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
 
-            assert (source_plane.sparse_coordinates[0] == sparse_coordinates[0]).all()
-            assert source_plane.sparse_coordinates[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
-            assert (source_plane.sparse_coordinates[2] == sparse_coordinates[2]).all()
-            assert (source_plane.sparse_coordinates[3] == sparse_coordinates[3]).all()
-            assert (source_plane.sparse_coordinates[4] == sparse_coordinates[4]).all()
-            assert source_plane.sparse_coordinates[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert (source_plane.coordinates.sparse[0] == sparse_coordinates[0]).all()
+            assert source_plane.coordinates.sparse[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert (source_plane.coordinates.sparse[2] == sparse_coordinates[2]).all()
+            assert (source_plane.coordinates.sparse[3] == sparse_coordinates[3]).all()
+            assert (source_plane.coordinates.sparse[4] == sparse_coordinates[4]).all()
+            assert source_plane.coordinates.sparse[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+
+
+class TestTraceImageAndSoure(object):
+
+    class TestCoordinatesOnly(object):
+    
+        def test__no_galaxy__no_deflections__image_and_source_plane_setup(self, no_galaxies):
+
+            coordinates = np.array([[1.0, 0.0]])
+
+            ray_tracing_coordinates = ray_tracing.PlaneCoordinates(coordinates)
+
+            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
+                                                      image_plane_coordinates=ray_tracing_coordinates)
+
+            assert lensing.image_plane.coordinates.image == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
+            assert lensing.source_plane.coordinates.image == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
+
+        def test__lens_galaxy_on__source_plane_is_deflected(self, lens_sis):
+
+            coordinates = np.array([[1.0, 0.0]])
+
+            ray_tracing_coordinates = ray_tracing.PlaneCoordinates(coordinates)
+
+            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_sis], source_galaxies=no_galaxies,
+                                                      image_plane_coordinates=ray_tracing_coordinates)
+
+            assert lensing.image_plane.coordinates.image == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
+            assert lensing.source_plane.coordinates.image == pytest.approx(np.array([[0.0, 0.0]]), 1e-3)
+
+        def test__two_lens_galaxies__source_plane_deflected_doubles(self, lens_sis):
+
+            coordinates = np.array([[1.0, 0.0]])
+
+            ray_tracing_coordinates = ray_tracing.PlaneCoordinates(coordinates)
+
+            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_sis, lens_sis], source_galaxies=no_galaxies,
+                                                      image_plane_coordinates=ray_tracing_coordinates)
+
+            assert lensing.image_plane.coordinates.image == pytest.approx(np.array([[1.0, 0.0]]), 1e-3)
+            assert lensing.source_plane.coordinates.image == pytest.approx(np.array([[-1.0, 0.0]]), 1e-3)
+
+        def test__sub_and_sparse_coordinates__source_plane_deflections(self, lens_sis):
+            
+            coordinates = np.array([[1.0, 0.0]])
+            sub_coordinates = np.array([[[1.0, 0.0]], [[0.0, 1.0]]])
+            sparse_coordinates = np.array([[-1.0, 0.0]])
+            
+            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
+
+            lensing = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_sis], source_galaxies=no_galaxies,
+                                                      image_plane_coordinates=image_plane_coordinates)
+
+            assert lensing.image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lensing.image_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lensing.image_plane.coordinates.sub[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
+            assert lensing.image_plane.coordinates.sparse[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+            
+            assert lensing.image_plane.deflection_angles.image[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lensing.image_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lensing.image_plane.deflection_angles.sub[1,0] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
+            assert lensing.image_plane.deflection_angles.sparse[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+            
+            assert lensing.source_plane.coordinates.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert lensing.source_plane.coordinates.sub[0,0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert lensing.source_plane.coordinates.sub[1,0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert lensing.source_plane.coordinates.sparse[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)

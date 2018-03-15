@@ -116,13 +116,13 @@ class FrameMaker(object):
         Parameters
         ----------
         coords: (int, int)
-            The coordinates of number_array on which the frame should be centred
+            The image of number_array on which the frame should be centred
         kernel_shape: (int, int)
             The shape of the kernel for which this frame will be used
         Returns
         -------
         frame: ndarray
-            A subset of number_array of shape kernel_shape where elements with coordinates outside of frame_array have
+            A subset of number_array of shape kernel_shape where elements with image outside of frame_array have
             value -1
         """
         half_x = int(kernel_shape[0] / 2)

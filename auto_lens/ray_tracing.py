@@ -34,7 +34,7 @@ class TraceImageAndSource(object):
         Parameters
         ----------
         image_plane_coordinates : PlaneCoordinates
-            The coordinates of the ray-tracing calculation, (includes the image-grid, sub-grid, sparse-grid, \
+            The image of the ray-tracing calculation, (includes the image-grid, sub-grid, sparse-grid, \
             blurring region etc.), which begins in the image-plane.
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the image-plane.
@@ -48,17 +48,17 @@ class TraceImageAndSource(object):
         self.source_plane = SourcePlane(source_galaxies, source_plane_coordinates)
 
     def trace_to_next_plane(self):
-        """Trace the image pixel coordinates to the next plane, the source-plane."""
+        """Trace the image pixel image to the next plane, the source-plane."""
 
-        coordinates = np.subtract(self.image_plane.coordinates, self.image_plane.deflection_angles)
+        coordinates = np.subtract(self.image_plane.coordinates.image, self.image_plane.deflection_angles.image)
 
-        if self.image_plane.sub_coordinates is not None:
-            sub_coordinates = np.subtract(self.image_plane.sub_coordinates, self.image_plane.sub_deflection_angles)
+        if self.image_plane.coordinates.sub is not None:
+            sub_coordinates = np.subtract(self.image_plane.coordinates.sub, self.image_plane.deflection_angles.sub)
         else:
             sub_coordinates = None
 
-        if self.image_plane.sparse_coordinates is not None:
-            sparse_coordinates = np.subtract(self.image_plane.sparse_coordinates, self.image_plane.sparse_deflection_angles)
+        if self.image_plane.coordinates.sparse is not None:
+            sparse_coordinates = np.subtract(self.image_plane.coordinates.sparse, self.image_plane.deflection_angles. sparse)
         else:
             sparse_coordinates = None
 
@@ -69,67 +69,65 @@ class PlaneCoordinates(geometry_profiles.Profile):
 
     def __init__(self, coordinates, sub_coordinates=None, sparse_coordinates=None, blurring_coordinates=None,
                  centre=(0.0, 0.0)):
-        """Represents the coordinates during ray-tracing.
+        """Represents the image during ray-tracing.
 
         Parameters
         ----------
         galaxies : [Galaxy]
             The galaxies in the plane.
         coordinates : ndarray
-            The x and y coordinates in the plane.
+            The x and y image in the plane.
         sub_coordinates : ndarray
-            The x and y sub-coordinates in the plane.
+            The x and y sub-image in the plane.
         sparse_coordinates : ndarray
-            The x and y sparse-coordinates in the plane.
+            The x and y sparse-image in the plane.
         blurring_coordinates : ndarray
-            The x and y blurring region coordinates of the plane.
+            The x and y blurring region image of the plane.
         centre : (float, float)
             The centre of the plane.
         """
 
         super(PlaneCoordinates, self).__init__(centre)
 
-        self.coordinates = coordinates
-        self.sub_coordinates = sub_coordinates
-        self.sparse_coordinates = sparse_coordinates
-        self.blurring_coordinates = blurring_coordinates
+        self.image = coordinates
+        self.sub = sub_coordinates
+        self.sparse = sparse_coordinates
+        self.blurring = blurring_coordinates
 
+    def deflection_angles_for_galaxies(self, lens_galaxies):
 
-class Plane(geometry_profiles.Profile):
-    """Represents a plane of galaxies and its corresponding coordinates.
+        deflection_angles = sum(map(lambda lens : lens.deflection_angles_array(self.image), lens_galaxies))
 
-    Parameters
-    ----------
-    galaxies : [Galaxy]
-        The galaxies in the plane.
-    plane_coordinates : PlaneCoordinates
-        The x and y coordinates in the plane. Includes all coordinates e.g. the image, sub-grid, sparse-grid, etc.
-    centre : (float, float)
-        The centre of the plane.
-    """
-    def __init__(self, galaxies, plane_coordinates):
+        if self.sub is not None:
+            sub_deflection_angles = sum(map(lambda lens: lens.deflection_angles_sub_array(self.sub), lens_galaxies))
+        else:
+            sub_deflection_angles = None
 
-        super(Plane, self).__init__(plane_coordinates.centre)
+        if self.sparse is not None:
+            sparse_deflection_angles = sum(map(lambda lens: lens.deflection_angles_array(self.sparse), lens_galaxies))
+        else:
+            sparse_deflection_angles = None
 
-        self.galaxies = galaxies
+        if self.blurring is not None:
+            blurring_deflection_angles = sum(map(lambda lens: lens.deflection_angles_array(self.blurring), lens_galaxies))
+        else:
+            blurring_deflection_angles = None
 
-        self.coordinates = plane_coordinates.coordinates
-        self.sub_coordinates = plane_coordinates.sub_coordinates
-        self.sparse_coordinates = plane_coordinates.sparse_coordinates
-        self.blurring_coordinates = plane_coordinates.blurring_coordinates
+        return PlaneDeflectionAngles(deflection_angles, sub_deflection_angles, sparse_deflection_angles,
+                                     blurring_deflection_angles)
 
     def coordinates_angle_from_x(self, coordinates):
         """
-        Compute the angle in degrees between the coordinates and plane positive x-axis, defined counter-clockwise.
+        Compute the angle in degrees between the image and plane positive x-axis, defined counter-clockwise.
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the plane.
+            The x and y image of the plane.
 
         Returns
         ----------
-        The angle between the coordinates and the x-axis.
+        The angle between the image and the x-axis.
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         theta_from_x = np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
@@ -138,48 +136,85 @@ class Plane(geometry_profiles.Profile):
         return theta_from_x
 
 
+class PlaneDeflectionAngles(object):
+
+    def __init__(self, deflection_angles, sub_deflection_angles=None, sparse_deflection_angles=None,
+                 blurring_deflection_angles=None):
+        """Represents the image during ray-tracing.
+
+        Parameters
+        ----------
+        galaxies : [Galaxy]
+            The galaxies in the plane.
+        deflection_angles : ndarray
+            The x and y image in the plane.
+        sub_deflection_angles : ndarray
+            The x and y sub-image in the plane.
+        sparse_deflection_angles : ndarray
+            The x and y sparse-image in the plane.
+        blurring_deflection_angles : ndarray
+            The x and y blurring region image of the plane.
+        centre : (float, float)
+            The centre of the plane.
+        """
+
+        self.image = deflection_angles
+        self.sub = sub_deflection_angles
+        self.sparse = sparse_deflection_angles
+        self.blurring = blurring_deflection_angles
+
+
+class Plane(object):
+    """Represents a plane of galaxies and its corresponding image.
+
+    Parameters
+    ----------
+    galaxies : [Galaxy]
+        The galaxies in the plane.
+    plane_coordinates : PlaneCoordinates
+        The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
+    centre : (float, float)
+        The centre of the plane.
+    """
+    def __init__(self, galaxies, plane_coordinates):
+
+        self.galaxies = galaxies
+
+        self.coordinates = plane_coordinates
+
+
 class ImagePlane(Plane):
 
     def __init__(self, galaxies, plane_coordinates):
-        """Represents the image-plane and its corresponding image coordinates.
+        """Represents the image-plane and its corresponding image image.
 
         Parameters
         ----------
         galaxies : [Galaxy]
             The galaxies in the image-plane.
         plane_coordinates : PlaneCoordinates
-            The x and y coordinates in the plane. Includes all coordinates e.g. the image, sub-grid, sparse-grid, etc.
+            The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
         centre : (float, float)
             The centre of the image-plane.
         """
+
         super(ImagePlane, self).__init__(galaxies, plane_coordinates)
-        self.deflection_angles_at_plane_coordinates()
 
-    def deflection_angles_at_plane_coordinates(self):
-
-        self.deflection_angles = sum(map(lambda lens : lens.deflection_angles_array(self.coordinates), self.galaxies))
-
-        if self.sub_coordinates is not None:
-            self.sub_deflection_angles = sum(map(lambda lens: lens.deflection_angles_sub_array(self.sub_coordinates),
-                                                 self.galaxies))
-
-        if self.sparse_coordinates is not None:
-            self.sparse_deflection_angles = sum(map(lambda lens: lens.deflection_angles_array(self.sparse_coordinates),
-                                                    self.galaxies))
+        self.deflection_angles = self.coordinates.deflection_angles_for_galaxies(galaxies)
 
 
 class SourcePlane(Plane):
 
     def __init__(self, galaxies, plane_coordinates):
         """
-        Represents the source-plane and its corresponding traced image coordinates.
+        Represents the source-plane and its corresponding traced image image.
 
         Parameters
         ----------
         galaxies : [Galaxy]
             The galaxies in the source-plane.
         plane_coordinates : PlaneCoordinates
-            The x and y coordinates in the plane. Includes all coordinates e.g. the image, sub-grid, sparse-grid, etc.
+            The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
         centre : (float, float)
             The centre of the source-plane.
         """
@@ -190,9 +225,9 @@ class SourcePlaneWithBorder(SourcePlane):
 
     def __init__(self, galaxies, border_pixels, polynomial_degree, plane_coordinates):
         """
-        Represents the source-plane and its corresponding traced image coordinates. \
+        Represents the source-plane and its corresponding traced image image. \
 
-        This source-plane has a border, such that coordinates that trace outside of this border are relocated to the \
+        This source-plane has a border, such that image that trace outside of this border are relocated to the \
         border-edge, which is required to ensure highly demagnified central pixels do not bias a pixelized pixelization.
 
         Parameters
@@ -200,11 +235,11 @@ class SourcePlaneWithBorder(SourcePlane):
         galaxies : [Galaxy]
             The galaxies in the source-plane.
         border_pixels : np.ndarray
-            The the border source pixels, specified by their 1D index in *coordinates*.
+            The the border source pixels, specified by their 1D index in *image*.
         polynomial_degree : int
             The degree of the polynomial used to fit the source-plane border edge.
         plane_coordinates : PlaneCoordinates
-            The x and y coordinates in the plane. Includes all coordinates e.g. the image, sub-grid, sparse-grid, etc.
+            The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
         centre : (float, float)
             The centre of the source-plane.
         """
@@ -214,25 +249,25 @@ class SourcePlaneWithBorder(SourcePlane):
         self.border_coordinates = np.zeros((len(border_pixels), 2))
 
         for i, border_pixel in enumerate(border_pixels):
-            self.border_coordinates[i] = self.coordinates[border_pixel]
+            self.border_coordinates[i] = self.coordinates.image[border_pixel]
 
-        self.border_thetas = list(map(lambda r: self.coordinates_angle_from_x(r), self.border_coordinates))
-        self.border_radii = list(map(lambda r: self.coordinates_to_radius(r), self.border_coordinates))
+        self.border_thetas = list(map(lambda r: self.coordinates.coordinates_angle_from_x(r), self.border_coordinates))
+        self.border_radii = list(map(lambda r: self.coordinates.coordinates_to_radius(r), self.border_coordinates))
         self.border_polynomial = np.polyfit(self.border_thetas, self.border_radii, polynomial_degree)
 
-        for (i, coordinate) in enumerate(self.coordinates):
-            self.coordinates[i] = self.relocated_coordinate(coordinate)
+        for (i, coordinate) in enumerate(self.coordinates.image):
+            self.coordinates.image[i] = self.relocated_coordinate(coordinate)
 
-        # TODO : Speed up using self.coordinates to avoid scanning all sub-pixels
+        # TODO : Speed up using self.image to avoid scanning all sub-pixels
 
-        if self.sub_coordinates is not None:
-            for image_pixel in range(len(self.sub_coordinates)):
-                for (sub_pixel, sub_coordinate) in enumerate(self.sub_coordinates[image_pixel]):
-                    self.sub_coordinates[image_pixel, sub_pixel] = self.relocated_coordinate(sub_coordinate)
+        if self.coordinates.sub is not None:
+            for image_pixel in range(len(self.coordinates.sub)):
+                for (sub_pixel, sub_coordinate) in enumerate(self.coordinates.sub[image_pixel]):
+                    self.coordinates.sub[image_pixel, sub_pixel] = self.relocated_coordinate(sub_coordinate)
 
-        if self.sparse_coordinates is not None:
-            for (i, sparse_coordinate) in enumerate(self.sparse_coordinates):
-                self.sparse_coordinates[i] = self.relocated_coordinate(sparse_coordinate)
+        if self.coordinates.sparse is not None:
+            for (i, sparse_coordinate) in enumerate(self.coordinates.sparse):
+                self.coordinates.sparse[i] = self.relocated_coordinate(sparse_coordinate)
 
     def border_radius_at_theta(self, theta):
         """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
@@ -247,10 +282,10 @@ class SourcePlaneWithBorder(SourcePlane):
         Parameters
         ----------
         coordinate : (float, float)
-            The x and y coordinates of the pixel to have its move-factor computed.
+            The x and y image of the pixel to have its move-factor computed.
         """
-        theta = self.coordinates_angle_from_x(coordinate)
-        radius = self.coordinates_to_radius(coordinate)
+        theta = self.coordinates.coordinates_angle_from_x(coordinate)
+        radius = self.coordinates.coordinates_to_radius(coordinate)
 
         border_radius = self.border_radius_at_theta(theta)
 
@@ -265,7 +300,7 @@ class SourcePlaneWithBorder(SourcePlane):
         Parameters
         ----------
         coordinate : ndarray[float, float]
-            The x and y coordinates of the pixel to have its move-factor computed.
+            The x and y image of the pixel to have its move-factor computed.
         """
         move_factor = self.move_factor(coordinate)
         return coordinate[0] * move_factor, coordinate[1] * move_factor

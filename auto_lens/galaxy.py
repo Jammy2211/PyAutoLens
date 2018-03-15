@@ -29,35 +29,35 @@ class Galaxy(object):
 
     def intensity_at_coordinates(self, coordinates):
         """
-        Compute the summed intensity of the galaxy's light profiles at a given set of coordinates.
+        Compute the summed intensity of the galaxy's light profiles at a given set of image.
 
         See *light_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The coordinates in image space
+            The image in image space
         Returns
         -------
         intensity : float
-            The summed values of intensity at the given coordinates
+            The summed values of intensity at the given image
         """
         return sum(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
-        Compute the individual intensities of the galaxy's light profiles at a given set of coordinates.
+        Compute the individual intensities of the galaxy's light profiles at a given set of image.
 
         See *light_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The coordinates in image space
+            The image in image space
         Returns
         -------
         intensity : float
-            The summed values of intensity at the given coordinates
+            The summed values of intensity at the given image
         """
         return list(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
 
@@ -138,87 +138,87 @@ class Galaxy(object):
     def surface_density_at_coordinates(self, coordinates):
         """
 
-        Compute the summed surface density of the galaxy's mass profiles at a given set of coordinates.
+        Compute the summed surface density of the galaxy's mass profiles at a given set of image.
 
         See *mass_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The summed values of surface density at the given coordinates.
+        The summed values of surface density at the given image.
         """
         return sum(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def surface_density_at_coordinates_individual(self, coordinates):
         """
 
-        Compute the individual surface densities of the galaxy's mass profiles at a given set of coordinates.
+        Compute the individual surface densities of the galaxy's mass profiles at a given set of image.
 
         See *mass_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The summed values of surface density at the given coordinates.
+        The summed values of surface density at the given image.
         """
         return list(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates(self, coordinates):
         """
-        Compute the summed gravitional potential of the galaxy's mass profiles at a given set of coordinates.
+        Compute the summed gravitional potential of the galaxy's mass profiles at a given set of image.
 
         See *mass_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The summed values of gravitational potential at the given coordinates.
+        The summed values of gravitational potential at the given image.
         """
         return sum(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates_individual(self, coordinates):
         """
-        Compute the individual gravitional potentials of the galaxy's mass profiles at a given set of coordinates.
+        Compute the individual gravitional potentials of the galaxy's mass profiles at a given set of image.
 
         See *mass_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The summed values of gravitational potential at the given coordinates.
+        The summed values of gravitational potential at the given image.
         """
         return list(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
-        Compute the summed deflection angles of the galaxy's mass profiles at a given set of coordinates.
+        Compute the summed deflection angles of the galaxy's mass profiles at a given set of image.
 
         See *mass_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The summed values of deflection angles at the given coordinates.
+        The summed values of deflection angles at the given image.
         """
         if self.mass_profiles is not None:
             return sum(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
@@ -227,18 +227,18 @@ class Galaxy(object):
 
     def deflection_angles_at_coordinates_individual(self, coordinates):
         """
-        Compute the individual deflection angles of the galaxy's mass profiles at a given set of coordinates.
+        Compute the individual deflection angles of the galaxy's mass profiles at a given set of image.
 
         See *mass_profiles* module for details of how this is performed.
 
         Parameters
         ----------
         coordinates : (float, float)
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The summed values of deflection angles at the given coordinates.
+        The summed values of deflection angles at the given image.
         """
         return np.asarray(list(map(lambda p : p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
 
@@ -253,7 +253,7 @@ class Galaxy(object):
     # TODO : module, e.g. AnalysisCoordinates.compute_deflection_angles(galaxy) and AnalysisSubCoordinates.compute_defl...
 
     def deflection_angles_array(self, coordinates):
-        """Compute the deflections angles for a mass profile, at a set of coordinates using the analysis_data structure.
+        """Compute the deflections angles for a mass profile, at a set of image using the analysis_data structure.
         """
         deflection_angles = np.zeros(coordinates.shape)
 
@@ -263,7 +263,7 @@ class Galaxy(object):
         return deflection_angles
 
     def deflection_angles_sub_array(self, sub_coordinates):
-        """Compute the deflections angles for a mass profile, at a set of sub coordinates using the analysis_data \
+        """Compute the deflections angles for a mass profile, at a set of sub image using the analysis_data \
         structure
         """
         deflection_angles = np.zeros(sub_coordinates.shape)
