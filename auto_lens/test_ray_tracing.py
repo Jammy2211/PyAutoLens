@@ -351,7 +351,7 @@ class TestPlaneDeflectionAngles(object):
             assert ray_trace_deflection_angles.blurring[0] == pytest.approx(np.array([3.0, 3.0]), 1e-3)
 
 
-class TestImagePlane(object):
+class TestLensPlane(object):
 
     class TestBasicSetup(object):
 
@@ -359,19 +359,19 @@ class TestImagePlane(object):
 
             coordinates = np.array([[1.0, 1.0]])
 
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
+            lens_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=image_plane_coordinates)
+            lens_plane = ray_tracing.LensPlane(galaxies=[lens_sis], plane_coordinates=lens_plane_coordinates)
 
-            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert image_plane.coordinates.sub == None
-            assert image_plane.coordinates.sparse == None
-            assert image_plane.coordinates.blurring == None
+            assert lens_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert lens_plane.coordinates.sub == None
+            assert lens_plane.coordinates.sparse == None
+            assert lens_plane.coordinates.blurring == None
 
-            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert image_plane.deflection_angles.sub == None
-            assert image_plane.deflection_angles.sparse == None
-            assert image_plane.deflection_angles.blurring == None
+            assert lens_plane.deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert lens_plane.deflection_angles.sub == None
+            assert lens_plane.deflection_angles.sparse == None
+            assert lens_plane.deflection_angles.blurring == None
 
         def test__setup_all_coordinates(self, lens_sis):
 
@@ -380,22 +380,22 @@ class TestImagePlane(object):
             sparse_coordinates = np.array([[1.0, 1.0]])
             blurring_coordinates = np.array([[1.0, 0.0]])
 
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+            lens_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
                                                                    blurring_coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=image_plane_coordinates)
+            lens_plane = ray_tracing.LensPlane(galaxies=[lens_sis], plane_coordinates=lens_plane_coordinates)
 
-            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert image_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert image_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert image_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert image_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert lens_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert lens_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert lens_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
-            assert image_plane.deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert image_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert image_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert image_plane.deflection_angles.sparse[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert image_plane.deflection_angles.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lens_plane.deflection_angles.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert lens_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert lens_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert lens_plane.deflection_angles.sparse[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert lens_plane.deflection_angles.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
         def test_three_identical_lenses__deflection_angles_triple(self, lens_sis):
 
@@ -404,22 +404,22 @@ class TestImagePlane(object):
             sparse_coordinates = np.array([[1.0, 1.0]])
             blurring_coordinates = np.array([[1.0, 0.0]])
 
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+            lens_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
                                                                    blurring_coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis, lens_sis, lens_sis], plane_coordinates=image_plane_coordinates)
+            lens_plane = ray_tracing.LensPlane(galaxies=[lens_sis, lens_sis, lens_sis], plane_coordinates=lens_plane_coordinates)
 
-            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert image_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
-            assert image_plane.deflection_angles.image == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
-            assert image_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
-            assert image_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert image_plane.deflection_angles.sparse == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
-            assert image_plane.deflection_angles.blurring == pytest.approx(np.array([[3.0, 0.0]]), 1e-3)
+            assert lens_plane.deflection_angles.image == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert lens_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
+            assert lens_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflection_angles.sparse == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert lens_plane.deflection_angles.blurring == pytest.approx(np.array([[3.0, 0.0]]), 1e-3)
 
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
 
@@ -430,23 +430,23 @@ class TestImagePlane(object):
 
             lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)])
 
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+            lens_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
                                                                    blurring_coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis_x3],
-                                                 plane_coordinates=image_plane_coordinates)
+            lens_plane = ray_tracing.LensPlane(galaxies=[lens_sis_x3],
+                                                 plane_coordinates=lens_plane_coordinates)
 
-            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert image_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
-            assert image_plane.deflection_angles.image == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
-            assert image_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
-            assert image_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert image_plane.deflection_angles.sparse == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
-            assert image_plane.deflection_angles.blurring == pytest.approx(np.array([[3.0, 0.0]]), 1e-3)
+            assert lens_plane.deflection_angles.image == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert lens_plane.deflection_angles.sub[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
+            assert lens_plane.deflection_angles.sub[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflection_angles.sparse == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
+            assert lens_plane.deflection_angles.blurring == pytest.approx(np.array([[3.0, 0.0]]), 1e-3)
 
         def test__complex_mass_model(self):
 
@@ -461,16 +461,16 @@ class TestImagePlane(object):
 
             lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
 
-            image_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+            lens_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
                                                                    blurring_coordinates)
 
-            image_plane = ray_tracing.ImagePlane(galaxies=[lens_galaxy], plane_coordinates=image_plane_coordinates)
+            lens_plane = ray_tracing.LensPlane(galaxies=[lens_galaxy], plane_coordinates=lens_plane_coordinates)
 
-            assert image_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert image_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert image_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.sub[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.sub[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates.sparse[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
             defls = power_law.deflection_angles_at_coordinates(coordinates[0]) + \
                     nfw.deflection_angles_at_coordinates(coordinates[0])
@@ -487,12 +487,40 @@ class TestImagePlane(object):
             blurring_defls = power_law.deflection_angles_at_coordinates(blurring_coordinates[0]) + \
                            nfw.deflection_angles_at_coordinates(blurring_coordinates[0])
 
-            assert image_plane.deflection_angles.image[0] == pytest.approx(defls, 1e-3)
-            assert image_plane.deflection_angles.sub[0,0] == pytest.approx(sub_defls_0, 1e-3)
-            assert image_plane.deflection_angles.sub[0,1] == pytest.approx(sub_defls_1, 1e-3)
-            assert image_plane.deflection_angles.sparse[0] == pytest.approx(sparse_defls, 1e-3)
-            assert image_plane.deflection_angles.blurring[0] == pytest.approx(blurring_defls, 1e-3)
+            assert lens_plane.deflection_angles.image[0] == pytest.approx(defls, 1e-3)
+            assert lens_plane.deflection_angles.sub[0,0] == pytest.approx(sub_defls_0, 1e-3)
+            assert lens_plane.deflection_angles.sub[0,1] == pytest.approx(sub_defls_1, 1e-3)
+            assert lens_plane.deflection_angles.sparse[0] == pytest.approx(sparse_defls, 1e-3)
+            assert lens_plane.deflection_angles.blurring[0] == pytest.approx(blurring_defls, 1e-3)
 
+
+class TestImagePlane(object):
+
+    def test__inheritance_from_lens_plane(self, lens_sis):
+
+        coordinates = np.array([[1.0, 1.0]])
+        sub_coordinates = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+        sparse_coordinates = np.array([[1.0, 1.0]])
+        blurring_coordinates = np.array([[1.0, 0.0]])
+
+        plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
+                                                               blurring_coordinates)
+
+        lens_plane = ray_tracing.LensPlane(galaxies=[lens_sis], plane_coordinates=plane_coordinates)
+
+        image_plane = ray_tracing.ImagePlane(galaxies=[lens_sis], plane_coordinates=plane_coordinates)
+
+        assert (lens_plane.coordinates.image[0] == image_plane.coordinates.image[0]).all()
+        assert (lens_plane.coordinates.sub[0,0] == image_plane.coordinates.sub[0,0]).all()
+        assert (image_plane.coordinates.sub[0,1] == image_plane.coordinates.sub[0,1]).all()
+        assert (lens_plane.coordinates.sparse[0] == image_plane.coordinates.sparse[0]).all()
+        assert (lens_plane.coordinates.blurring[0] == image_plane.coordinates.blurring[0]).all()
+
+        assert (lens_plane.deflection_angles.image[0] == image_plane.deflection_angles.image[0]).all()
+        assert (lens_plane.deflection_angles.sub[0,0] == image_plane.deflection_angles.sub[0,0]).all()
+        assert (lens_plane.deflection_angles.sub[0,1] == image_plane.deflection_angles.sub[0,1]).all()
+        assert (lens_plane.deflection_angles.sparse[0] == image_plane.deflection_angles.sparse[0]).all()
+        assert (lens_plane.deflection_angles.blurring[0] == image_plane.deflection_angles.blurring[0]).all()
 
 class TestSourcePlane(object):
 

@@ -170,7 +170,7 @@ class PlaneDeflectionAngles(object):
 
 
 class Plane(object):
-    """Represents a plane of galaxies and its corresponding image.
+    """Represents a plane of galaxies and coordinates.
 
     Parameters
     ----------
@@ -178,8 +178,6 @@ class Plane(object):
         The galaxies in the plane.
     plane_coordinates : PlaneCoordinates
         The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
-    centre : (float, float)
-        The centre of the plane.
     """
     def __init__(self, galaxies, plane_coordinates):
 
@@ -188,10 +186,14 @@ class Plane(object):
         self.coordinates = plane_coordinates
 
 
-class ImagePlane(Plane):
+class LensPlane(Plane):
 
     def __init__(self, galaxies, plane_coordinates):
-        """Represents the image-plane and its corresponding image image.
+        """Represents a lens-plane, a set of galaxies and coordinates at an intermediate redshift in the lens \
+        ray-tracing calculation.
+
+        A lens-plane is not the final ray-tracing plane and its coordinates will be traced another, higher \
+        redshift, plane. Thus, the deflection angles due to the plane's galaxies are calculated.
 
         Parameters
         ----------
@@ -199,20 +201,52 @@ class ImagePlane(Plane):
             The galaxies in the image-plane.
         plane_coordinates : PlaneCoordinates
             The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
-        centre : (float, float)
-            The centre of the image-plane.
         """
 
-        super(ImagePlane, self).__init__(galaxies, plane_coordinates)
+        super(LensPlane, self).__init__(galaxies, plane_coordinates)
 
         self.deflection_angles = self.coordinates.deflection_angles_for_galaxies(galaxies)
 
 
+class ImagePlane(LensPlane):
+
+    def __init__(self, galaxies, plane_coordinates):
+        """Represents an image-plane, a set of galaxies and coordinates at the lowest redshift in the lens \
+        ray-tracing calculation.
+
+        The image-plane is, by definition, a lens-plane, thus the deflection angles at each coordinates are computed.
+
+        The image-plane coodinates are defined on the observed image's uniform regular grid. Calculating its light \
+        profiles therefore exploits this uniformity to perform more efficient and precise calculations.
+
+        The light profiles of galaxies at higher redshifts (and therefore in different lens-planes) can be assigned to \
+        the ImagePlane instead. This occurs when:
+
+        1) The efficiency and precision offered by computing the light profile on a uniform grid is preferred and \
+        won't lead noticeable inaccuracy. For example, computing the light profile of main lens galaxy, ignoring \
+        minor lensing effects due to a low mass foreground substructure.
+
+        2) If evaluating the light profile in its lens-plane is inaccurate. For example, when modeling the \
+        point-source images of a lensed quasar, effects like micro-lensing means lens-plane modeling will be inaccurate.
+
+        Parameters
+        ----------
+        galaxies : [Galaxy]
+            The galaxies in the image-plane.
+        plane_coordinates : PlaneCoordinates
+            The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
+        """
+
+        super(ImagePlane, self).__init__(galaxies, plane_coordinates)
+
 class SourcePlane(Plane):
 
     def __init__(self, galaxies, plane_coordinates):
-        """
-        Represents the source-plane and its corresponding traced image image.
+        """Represents a source-plane, a set of galaxies and coordinates at the highest redshift in the lens \
+        ray-tracing calculation.
+
+        A source-plane is the final ray-tracing plane, thus the deflection angles due to the plane's galaxies are \
+        not calculated.
 
         Parameters
         ----------
@@ -220,8 +254,6 @@ class SourcePlane(Plane):
             The galaxies in the source-plane.
         plane_coordinates : PlaneCoordinates
             The x and y image in the plane. Includes all image e.g. the image, sub-grid, sparse-grid, etc.
-        centre : (float, float)
-            The centre of the source-plane.
         """
         super(SourcePlane, self).__init__(galaxies, plane_coordinates)
 
