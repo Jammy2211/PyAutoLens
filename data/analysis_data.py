@@ -3,15 +3,15 @@ from data import image
 
 
 def setup_data(mask, data):
-    """ Given an image.Mask, convert a 2d data of data values to a 1D vector, structured for efficient lens modeling \
+    """ Given an image_grid.Mask, convert a 2d data of data values to a 1D vector, structured for efficient lens modeling \
     calculations.
 
     Parameters
     ----------
     data : ndarray
-        A 2D data of data, e.g. the image, noise-map, etc.
+        A 2D data of data, e.g. the image_grid, noise-map, etc.
     mask : image.Mask
-        The image mask containing the pixels we are computing the image of and the image dimensions / pixel scale.
+        The image_grid mask containing the pixels we are computing the image_grid of and the image_grid dimensions / pixel scale.
 
     Returns
     -------
@@ -29,13 +29,13 @@ def setup_data(mask, data):
     return data_1d
 
 def setup_mapper_2d(mask):
-    """ Given an image.Mask, setup an array that can be used to map the input masks image back to their 2D image \
+    """ Given an image_grid.Mask, setup an array that can be used to map the input masks image_grid back to their 2D image_grid \
     pixels.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask containing the pixels we are computing the image of and the image dimensions / pixel scale.
+        The image_grid mask containing the pixels we are computing the image_grid of and the image_grid dimensions / pixel scale.
     """
     image_pixels = mask.pixels_in_mask
     mapper_2d = np.zeros(shape=(image_pixels, 2), dtype=int)
@@ -49,9 +49,9 @@ def setup_mapper_2d(mask):
     return mapper_2d
 
 def setup_image_coordinates(mask):
-    """ Given an image.Mask, compute the arc second image_coordinates at the center of every unmasked pixel.
+    """ Given an image_grid.Mask, compute the arc second image_coordinates at the center of every unmasked pixel.
 
-    This is defined from the top-left corner, such that pixels in the top-left corner of the image have a negative \
+    This is defined from the top-left corner, such that pixels in the top-left corner of the image_grid have a negative \
     x value for and positive y value in arc seconds.
 
     The results are returned as a 1D array, structured for efficient lens modeling calculations.
@@ -59,11 +59,11 @@ def setup_image_coordinates(mask):
     Parameters
     ----------
     mask : image.Mask
-        The image mask containing the pixels we are computing the image_coordinates of and the image dimensions / pixel scale.
+        The image_grid mask containing the pixels we are computing the image_coordinates of and the image_grid dimensions / pixel scale.
 
     Returns
     -------
-    One-dimensional array containing the image image_coordinates of each image pixel in the mask.
+    One-dimensional array containing the image_grid image_coordinates of each image_grid pixel in the mask.
     """
     coordinates = image.arc_seconds_coordinates_of_array(mask.pixel_dimensions, mask.pixel_scale)
 
@@ -80,7 +80,7 @@ def setup_image_coordinates(mask):
     return image_coordinates
 
 def x_sub_pixel_to_coordinate(x_sub_pixel, x_coordinate, pixel_scale, sub_grid_size):
-    """Convert a coordinate on the regular image-pixel grid to a sub-coordinate, using the pixel scale and sub-grid \
+    """Convert a coordinate on the regular image_grid-pixel grid to a sub_grid-coordinate, using the pixel scale and sub_grid-grid \
     size"""
 
     half = pixel_scale / 2
@@ -89,7 +89,7 @@ def x_sub_pixel_to_coordinate(x_sub_pixel, x_coordinate, pixel_scale, sub_grid_s
     return x_coordinate - half + (x_sub_pixel + 1) * step
 
 def y_sub_pixel_to_coordinate(y_sub_pixel, y_coordinate, pixel_scale, sub_grid_size):
-    """Convert a coordinate on the regular image-pixel grid to a sub-coordinate, using the pixel scale and sub-grid \
+    """Convert a coordinate on the regular image_grid-pixel grid to a sub_grid-coordinate, using the pixel scale and sub_grid-grid \
     size"""
 
     half = pixel_scale / 2
@@ -99,22 +99,22 @@ def y_sub_pixel_to_coordinate(y_sub_pixel, y_coordinate, pixel_scale, sub_grid_s
 
 def setup_sub_coordinates(mask, sub_grid_size):
     """
-    Given an image.Mask, compute the arc second image of every unmasked sub image-pixel.
+    Given an image_grid.Mask, compute the arc second image_grid of every unmasked sub_grid image_grid-pixel.
 
-    This is defined from the top-left corner, such that pixels in the top-left corner of the image have a negative x
+    This is defined from the top-left corner, such that pixels in the top-left corner of the image_grid have a negative x
     value for and positive y value in arc seconds. Sub-pixel are defined from the top-left hand corner of each \
-    image pixel.
+    image_grid pixel.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the blurring region around and the image dimensions / pixel scale.
+        The image_grid mask we are finding the blurring_grid region around and the image_grid dimensions / pixel scale.
     sub_grid_size : int
-        The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
+        The (sub_grid_size x sub_grid_size) of the sub_grid-grid of each image_grid pixel.
 
     Returns
     -------
-    One-dimensional array containing the sub-image image of each image pixel in the mask.
+    One-dimensional array containing the sub_grid-image_grid image_grid of each image_grid pixel in the mask.
     """
 
     cen = image.central_pixel(mask.pixel_dimensions)
@@ -147,15 +147,15 @@ def setup_sub_coordinates(mask, sub_grid_size):
     return image_sub_grid_coordinates
 
 def setup_blurring_coordinates(mask, psf_size):
-    """Given an image.Mask, compute its blurring mask and use this to find the image of all regions in the \
+    """Given an image_grid.Mask, compute its blurring_grid mask and use this to find the image_grid of all regions in the \
     bluring mask.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the blurring region around and the image dimensions / pixel scale.
+        The image_grid mask we are finding the blurring_grid region around and the image_grid dimensions / pixel scale.
     psf_size : (int, int)
-        The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
+        The size of the kernel which defines the blurring_grid region (e.g. the pixel dimensions of the PSF kernel)
 
 
     """
@@ -163,24 +163,24 @@ def setup_blurring_coordinates(mask, psf_size):
     return setup_image_coordinates(blurring_mask)
 
 def setup_blurring_mask(mask, psf_size):
-    """Given an image.Mask, compute its blurring mask, defined as all pixels which are outside of the image mask but \
+    """Given an image_grid.Mask, compute its blurring_grid mask, defined as all pixels which are outside of the image_grid mask but \
     will have their light blurred into the mask during PSF convolution. Thus, their light must be computed during \
-    the pixelization to ensure accurate PSF blurring.
+    the pixelization to ensure accurate PSF blurring_grid.
 
-    The blurring_region_size is a tuple describing the rectangular pixel dimensions of the blurring kernel. \
-    Therefore, it maps directly to the size of the PSF kernel of an image.
+    The blurring_region_size is a tuple describing the rectangular pixel dimensions of the blurring_grid kernel. \
+    Therefore, it maps directly to the size of the PSF kernel of an image_grid.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the blurring region around and the image dimensions / pixel scale.
+        The image_grid mask we are finding the blurring_grid region around and the image_grid dimensions / pixel scale.
     psf_size : (int, int)
-        The size of the kernel which defines the blurring region (e.g. the pixel dimensions of the PSF kernel)
+        The size of the kernel which defines the blurring_grid region (e.g. the pixel dimensions of the PSF kernel)
 
     Returns
     -------
     blurring_mask : image.Mask
-        A mask where every False value is a pixel which is within the mask's blurring region.
+        A mask where every False value is a pixel which is within the mask's blurring_grid region.
 
      """
 
@@ -199,29 +199,29 @@ def setup_blurring_mask(mask, psf_size):
                             if mask[y + y1, x + x1] == True:
                                 blurring_mask[y + y1, x + x1] = False
                         else:
-                            raise image.MaskException("setup_blurring_mask extends beynod the size of the mask - pad the image"
+                            raise image.MaskException("setup_blurring_mask extends beynod the size of the mask - pad the image_grid"
                                 "before masking")
 
     return image.Mask.from_array(blurring_mask, mask.pixel_scale)
 
 def setup_border_pixels(mask):
-    """Given an image.Mask, compute its border image pixels, defined as all pixels which are on the edge of the mask \
+    """Given an image_grid.Mask, compute its border image_grid pixels, defined as all pixels which are on the edge of the mask \
     and therefore neighboring a pixel with a *True* value.
 
-    The border pixels are used to relocate highly demagnified traced image pixels in the source-plane to its edge.
+    The border pixels are used to relocate highly demagnified traced image_grid pixels in the source-plane to its edge.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the border pixels of and the image dimensions / pixel scale.
+        The image_grid mask we are finding the border pixels of and the image_grid dimensions / pixel scale.
 
     Returns
     -------
     border_pixels : ndarray
-        The border image pixels, where each entry gives the 1D index of the image pixel in the mask.
+        The border image_grid pixels, where each entry gives the 1D index of the image_grid pixel in the mask.
     """
 
-    # TODO : This border only works for circular / elliptical masks which do not have masked image pixels in their
+    # TODO : This border only works for circular / elliptical masks which do not have masked image_grid pixels in their
     # TODO : center (like an annulus). Do we need a separate routine for annuli masks?
     border_pixels = np.empty(0)
     image_pixel_index = 0
@@ -237,28 +237,28 @@ def setup_border_pixels(mask):
     return border_pixels
 
 def setup_sparse_pixels(mask, sparse_grid_size):
-    """Given an image.Mask, compute the sparse cluster image pixels, defined as the sub-set of image-pixels used \
+    """Given an image_grid.Mask, compute the sparse_grid cluster image_grid pixels, defined as the sub_grid-set of image_grid-pixels used \
     to perform KMeans clustering (this is used purely for speeding up the KMeans clustering algorithim).
 
-    This sparse grid is a uniform subsample of the masked image and is computed by only including image pixels \
+    This sparse_grid grid is a uniform subsample of the masked image_grid and is computed by only including image_grid pixels \
     which, when divided by the sparse_grid_size, do not give a remainder.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the sparse clustering pixels of and the image dimensions / pixel scale.
+        The image_grid mask we are finding the sparse_grid clustering pixels of and the image_grid dimensions / pixel scale.
     sparse_grid_size : int
-        The spacing of the sparse image pixel grid (e.g. a value of 2 will compute a sparse grid of pixels which \
+        The spacing of the sparse_grid image_grid pixel grid (e.g. a value of 2 will compute a sparse_grid grid of pixels which \
         are two pixels apart)
 
     Returns
     -------
     sparse_to_image : ndarray
-        The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
-        of the image pixel in the mask.
+        The mapping between every sparse_grid clustering image_grid pixel and image_grid pixel, where each entry gives the 1D index
+        of the image_grid pixel in the mask.
     image_to_sparse : ndarray
-        The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D \
-        index of the sparse pixel in sparse_pixel arrays.
+        The mapping between every image_grid pixel and its closest sparse_grid clustering pixel, where each entry give the 1D \
+        index of the sparse_grid pixel in sparse_pixel arrays.
     """
 
     sparse_mask = setup_uniform_sparse_mask(mask, sparse_grid_size)
@@ -269,8 +269,8 @@ def setup_sparse_pixels(mask, sparse_grid_size):
     return sparse_to_image, image_to_sparse
 
 def setup_uniform_sparse_mask(mask, sparse_grid_size):
-    """Setup a two-dimensional sparse mask of image pixels, by keeping all image pixels which do not give a remainder \
-    when divided by the sub-grid size. """
+    """Setup a two-dimensional sparse_grid mask of image_grid pixels, by keeping all image_grid pixels which do not give a remainder \
+    when divided by the sub_grid-grid size. """
     sparse_mask = np.ones(mask.pixel_dimensions)
 
     for y in range(mask.pixel_dimensions[0]):
@@ -282,10 +282,10 @@ def setup_uniform_sparse_mask(mask, sparse_grid_size):
     return image.Mask.from_array(sparse_mask, mask.pixel_scale)
 
 def setup_sparse_index_image(mask, sparse_mask):
-    """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
+    """Setup an image_grid which, for each *False* entry in the sparse_grid mask, puts the sparse_grid pixel index in that pixel.
 
-     This is used for computing the image_to_sparse vector, whereby each image pixel is paired to the sparse pixel \
-     in this image via a neighbor search."""
+     This is used for computing the image_to_sparse vector, whereby each image_grid pixel is paired to the sparse_grid pixel \
+     in this image_grid via a neighbor search."""
 
     sparse_index_2d = np.zeros(mask.pixel_dimensions)
     sparse_pixel_index = 0
@@ -299,21 +299,21 @@ def setup_sparse_index_image(mask, sparse_mask):
     return sparse_index_2d
 
 def setup_sparse_to_image(mask, sparse_mask):
-    """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
+    """Compute the mapping of each sparse_grid image_grid pixel to its closest image_grid pixel, defined using a mask of image_grid \
     pixels.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the sparse clustering pixels of and the image dimensions / pixel scale.
+        The image_grid mask we are finding the sparse_grid clustering pixels of and the image_grid dimensions / pixel scale.
     sparse_mask : ndarray
-        The two-dimensional boolean image of the sparse grid.
+        The two-dimensional boolean image_grid of the sparse_grid grid.
 
     Returns
     -------
     sparse_to_image : ndarray
-        The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
-        of the image pixel in the mask.
+        The mapping between every sparse_grid clustering image_grid pixel and image_grid pixel, where each entry gives the 1D index
+        of the image_grid pixel in the mask.
     """
     sparse_to_image = np.empty(0)
     image_pixel_index = 0
@@ -330,9 +330,9 @@ def setup_sparse_to_image(mask, sparse_mask):
     return sparse_to_image
 
 def setup_image_to_sparse(mask, sparse_mask, sparse_index_image):
-    """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
+    """Compute the mapping between every image_grid pixel in the mask and its closest sparse_grid clustering pixel.
 
-    This is performed by going to each image pixel in the *mask*, and pairing it with its nearest neighboring pixel \
+    This is performed by going to each image_grid pixel in the *mask*, and pairing it with its nearest neighboring pixel \
     in the *sparse_mask*. The index of the *sparse_mask* pixel is drawn from the *sparse_index_image*. This \
     neighbor search continue grows larger and larger around a pixel, until a pixel contained in the *sparse_mask* is \
     successfully found.
@@ -340,15 +340,15 @@ def setup_image_to_sparse(mask, sparse_mask, sparse_index_image):
     Parameters
     ----------
     mask : image.Mask
-        The image mask we are finding the sparse clustering pixels of and the image dimensions / pixel scale.
+        The image_grid mask we are finding the sparse_grid clustering pixels of and the image_grid dimensions / pixel scale.
     sparse_mask : ndarray
-        The two-dimensional boolean image of the sparse grid.
+        The two-dimensional boolean image_grid of the sparse_grid grid.
 
     Returns
     -------
     image_to_sparse : ndarray
-        The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D \
-        index of the sparse pixel in sparse_pixel arrays.
+        The mapping between every image_grid pixel and its closest sparse_grid clustering pixel, where each entry give the 1D \
+        index of the sparse_grid pixel in sparse_pixel arrays.
 
     """
     image_to_sparse = np.empty(0)
@@ -375,26 +375,26 @@ def setup_image_to_sparse(mask, sparse_mask, sparse_index_image):
 class AnalysisData(object):
 
     def __init__(self, mask, image, noise, psf, sub_grid_size=2):
-        """The core grouping of lens modeling data, including the image data, noise-map and psf. Optional \
-        inputs (e.g. effective exposure time map / positional image pixels) have their functionality automatically \
+        """The core grouping of lens modeling data, including the image_grid data, noise-map and psf. Optional \
+        inputs (e.g. effective exposure time map / positional image_grid pixels) have their functionality automatically \
         switched on or off depending on if they are included.
 
-        A mask must be supplied, which converts all 2D image quantities to data vectors. These vectors are designed to \
+        A mask must be supplied, which converts all 2D image_grid quantities to data vectors. These vectors are designed to \
         provide optimal lens modeling efficiency. Image region vectors are also set-up, which describe specific \
-        regions of the image. These are used for specific calculations, like the image sub-grid, and to provide \
+        regions of the image_grid. These are used for specific calculations, like the image_grid sub_grid-grid, and to provide \
 
         Parameters
         ----------
         mask : image.Mask
-            The image mask, where False indicates a pixel is included in the pixelization.
+            The image_grid mask, where False indicates a pixel is included in the pixelization.
         image : image.Image
-            The image data, in electrons per second.
+            The image_grid data, in electrons per second.
         noise : image.Noise
-            The image noise-map, in variances in electrons per second.
+            The image_grid noise-map, in variances in electrons per second.
         psf : image.PSF
-            The image PSF
+            The image_grid PSF
         sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
+            The (sub_grid_size x sub_grid_size) of the sub_grid-grid of each image_grid pixel.
         """
         self.image = AnalysisImage(mask, image)
         self.noise = setup_data(mask, noise)
@@ -432,7 +432,7 @@ class AnalysisArray(np.ndarray):
         return array
 
 
-# TODO : This may be where we put our hyper-parameter functions for the image and noise maps. E.g. for noise map \
+# TODO : This may be where we put our hyper-parameter functions for the image_grid and noise maps. E.g. for noise map \
 # TODO : scaling, we could have an AnalysisNoise class with functions def scale_lens_noise, etc. I'll decide on this \
 # TODO : As we continue to develop the analysis code.
 
