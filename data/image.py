@@ -19,12 +19,12 @@ def numpy_array_from_fits(file_path, hdu):
 
 def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
     """
-    Given the dimensions of an array and its pixel_scale, this routine computes the arc second image of every
+    Given the dimensions of an array and its pixel_scale, this routine computes the arc second image_grid of every
     pixel. This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a \
     negative x value for arcseconds and positive y value.
 
-    If an input mask is specified, the image are computed exclusively in the region of the mask. All other \
-    image retain values [0.0, 0.0].
+    If an input mask is specified, the image_grid are computed exclusively in the region of the mask. All other \
+    image_grid retain values [0.0, 0.0].
 
     Parameters
     ----------
@@ -32,12 +32,12 @@ def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
         The dimensions of the input array
     pixel_scale : float
         The arcsecond to pixel conversion factor of the array.
-    mask : image.Mask or ndarray
-        The image mask we are finding the image within.
+    mask : image_grid.Mask or ndarray
+        The image_grid mask we are finding the image_grid within.
 
     Returns
     -------
-    An two-dimensional array of the masked image pixel image.
+    An two-dimensional array of the masked image_grid pixel image_grid.
     """
 
     coordinates_array = np.zeros((pixel_dimensions[0], pixel_dimensions[1], 2))
@@ -139,28 +139,28 @@ def trim(array, pixel_dimensions):
     Parameters
     ----------
     array: ndarray (or Noise or PSF)
-        The image array
+        The image_grid array
     pixel_dimensions : (int, int)
         The new pixel dimensions of the trimmed data-array
     """
     shape = array.shape
     if pixel_dimensions[0] > shape[0]:
-        raise ValueError('image.Data.trim_data - You have specified a new x_size bigger than the data array')
+        raise ValueError('image_grid.Data.trim_data - You have specified a new x_size bigger than the data array')
     elif pixel_dimensions[1] > shape[1]:
-        raise ValueError('image.Data.trim_data - You have specified a new y_size bigger than the data array')
+        raise ValueError('image_grid.Data.trim_data - You have specified a new y_size bigger than the data array')
     x_trim = int((shape[0] - pixel_dimensions[0]) / 2)
     y_trim = int((shape[1] - pixel_dimensions[1]) / 2)
     array = array[x_trim:shape[0] - x_trim, y_trim:shape[1] - y_trim]
     if shape[0] != pixel_dimensions[0]:
         logger.debug(
-            'image.data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+            'image_grid.data.trim_data - Your specified x_size was odd (even) when the image_grid x dimension is even (odd)')
         logger.debug(
-            'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
+            'The method has automatically used x_size+1 to ensure the image_grid is not miscentred by a half-pixel.')
     elif shape[1] != pixel_dimensions[1]:
         logger.debug(
-            'image.data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+            'image_grid.data.trim_data - Your specified y_size was odd (even) when the image_grid y dimension is even (odd)')
         logger.debug(
-            'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
+            'The method has automatically used y_size+1 to ensure the image_grid is not miscentred by a half-pixel.')
     return array
 
 @keep_attributes
@@ -171,15 +171,15 @@ def pad(array, pixel_dimensions):
     Parameters
     ----------
     array: ndarray (or Noise or PSF)
-        The image array
+        The image_grid array
     pixel_dimensions : (int, int)
         The new pixel dimension of the data-array
     """
     shape = array.shape
     if pixel_dimensions[0] < shape[0]:
-        raise ValueError('image.Data.pad_data - You have specified a new x_size smaller than the data array')
+        raise ValueError('image_grid.Data.pad_data - You have specified a new x_size smaller than the data array')
     elif pixel_dimensions[1] < shape[1]:
-        raise ValueError('image.Data.pad_data - You have specified a new y_size smaller than the data array')
+        raise ValueError('image_grid.Data.pad_data - You have specified a new y_size smaller than the data array')
     x_pad = int((pixel_dimensions[0] - shape[0] + 1) / 2)
     y_pad = int((pixel_dimensions[1] - shape[1] + 1) / 2)
     return np.pad(array, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
@@ -190,11 +190,11 @@ def output_for_fortran(array, image_name, path=data_path):
     Parameters
     ----------
     array: ndarray (or Noise or PSF)
-        The image array
+        The image_grid array
     path : str
         The directory the files are output too
     image_name : str
-        The name of the image for this file
+        The name of the image_grid for this file
     """
     if isinstance(array, PSF):
         file_path = path + image_name + "PSF.dat"
@@ -219,13 +219,13 @@ class Image(np.ndarray):
 
     def __new__(cls, array, pixel_scale, sky_background_level=None, sky_background_noise=None):
         """
-        Creates a new image, accounting for the fact that Image is a ndarray
+        Creates a new image_grid, accounting for the fact that Image is a ndarray
         Parameters
         ----------
         array: ndarray
             The array of data
         pixel_scale: float
-            The scale of an image pixel
+            The scale of an image_grid pixel
         sky_background_level
         sky_background_noise
 
@@ -247,11 +247,11 @@ class Image(np.ndarray):
         Parameters
         ----------
         obj: Image
-            The original image
+            The original image_grid
 
         Returns
         -------
-            The new image
+            The new image_grid
         """
         if obj is not None:
             copy_attributes(obj, self)
@@ -267,7 +267,7 @@ class Image(np.ndarray):
     @classmethod
     def from_fits(cls, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None,
                   path=data_path):
-        """Load the image from a fits file.
+        """Load the image_grid from a fits file.
 
         Parameters
         ----------
@@ -278,7 +278,7 @@ class Image(np.ndarray):
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds.
         sky_background_level : float
-            An estimate of the level of background sky in the image (electrons per second).
+            An estimate of the level of background sky in the image_grid (electrons per second).
         sky_background_noise : float
             An estimate of the noise level in the background sky (electrons per second).
         path : str
@@ -289,7 +289,7 @@ class Image(np.ndarray):
                      sky_background_noise)
 
     def set_sky_via_edges(self, no_edges):
-        """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
+        """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image_grid into a
         histogram and fitting a Gaussian profiles to this histogram. The mean (mu) of this Gaussian gives the background
         sky level, whereas the FWHM (sigma) gives the noise estimate.
 
@@ -315,7 +315,7 @@ class Image(np.ndarray):
 
     def circle_mask(self, radius_arc):
         """
-        Create a new circular mask for this image
+        Create a new circular mask for this image_grid
 
         Parameters
         ----------
@@ -324,14 +324,14 @@ class Image(np.ndarray):
 
         Returns
         -------
-        A circular mask for this image
+        A circular mask for this image_grid
         """
         return Mask.circular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
                              radius_mask=radius_arc)
 
     def annulus_mask(self, inner_radius_arc, outer_radius_arc):
         """
-        Create a new annular mask for this image
+        Create a new annular mask for this image_grid
 
         Parameters
         ----------
@@ -342,14 +342,14 @@ class Image(np.ndarray):
 
         Returns
         -------
-        An annulus mask for this image
+        An annulus mask for this image_grid
         """
         return Mask.annular(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale,
                             outer_radius_mask=outer_radius_arc,
                             inner_radius_mask=inner_radius_arc)
 
     def unmasked(self):
-        """Create a new mask for this image, which is all False and thus completely unmasked"""
+        """Create a new mask for this image_grid, which is all False and thus completely unmasked"""
         return Mask.unmasked(arc_second_dimensions=self.shape_arc_seconds, pixel_scale=self.pixel_scale)
 
     def plot(self):
@@ -361,14 +361,14 @@ class SimulatedImage(Image):
 
     def __new__(cls, image_dimensions, pixel_scale):
         """
-        Creates a new simulated image.
+        Creates a new simulated image_grid.
 
         Parameters
         ----------
         image_dimensions : (int, int)
-            The dimensios of the image
+            The dimensios of the image_grid
         pixel_scale: float
-            The scale of an image pixel
+            The scale of an image_grid pixel
 
         Returns
         -------
@@ -429,7 +429,7 @@ class PSF(Array):
 
 
 class Mask(np.ndarray):
-    """Abstract Class for preparing and storing the image mask used for the AutoLens pixelization"""
+    """Abstract Class for preparing and storing the image_grid mask used for the AutoLens pixelization"""
 
     def __new__(cls, mask_array, pixel_scale):
         """
@@ -455,9 +455,9 @@ class Mask(np.ndarray):
         Parameters
         ----------
         centre: (float, float)
-            The centre in image image in arc seconds
+            The centre in image_grid image_grid in arc seconds
         arc_second_dimensions : (float, float)
-            The dimensions of the image (x, y) in arc seconds
+            The dimensions of the image_grid (x, y) in arc seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         radius_mask : float
@@ -489,7 +489,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre in arc seconds
         arc_second_dimensions : (float, float)
-            The dimensions of the image in arcs seconds
+            The dimensions of the image_grid in arcs seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius_mask : float
@@ -528,7 +528,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre in arc seconds
         arc_second_dimensions : (float, float)
-            The dimensions of the image in arcs seconds
+            The dimensions of the image_grid in arcs seconds
         pixel_scale : float
             The scale size of a pixel (x, y) in arc seconds
         inner_radius_mask : float
