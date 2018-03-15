@@ -19,12 +19,12 @@ def numpy_array_from_fits(file_path, hdu):
 
 def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
     """
-    Given the dimensions of an array and its pixel_scale, this routine computes the arc second coordinates of every
+    Given the dimensions of an array and its pixel_scale, this routine computes the arc second image of every
     pixel. This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a \
     negative x value for arcseconds and positive y value.
 
-    If an input mask is specified, the coordinates are computed exclusively in the region of the mask. All other \
-    coordinates retain values [0.0, 0.0].
+    If an input mask is specified, the image are computed exclusively in the region of the mask. All other \
+    image retain values [0.0, 0.0].
 
     Parameters
     ----------
@@ -33,11 +33,11 @@ def arc_seconds_coordinates_of_array(pixel_dimensions, pixel_scale):
     pixel_scale : float
         The arcsecond to pixel conversion factor of the array.
     mask : image.Mask or ndarray
-        The image mask we are finding the coordinates within.
+        The image mask we are finding the image within.
 
     Returns
     -------
-    An two-dimensional array of the masked image pixel coordinates.
+    An two-dimensional array of the masked image pixel image.
     """
 
     coordinates_array = np.zeros((pixel_dimensions[0], pixel_dimensions[1], 2))
@@ -455,7 +455,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         centre: (float, float)
-            The centre in image coordinates in arc seconds
+            The centre in image image in arc seconds
         arc_second_dimensions : (float, float)
             The dimensions of the image (x, y) in arc seconds
         pixel_scale : float
