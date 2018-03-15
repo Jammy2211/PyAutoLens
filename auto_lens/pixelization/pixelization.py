@@ -36,6 +36,7 @@ def setup_regularization_matrix_via_pixel_pairs(dimension, regularization_weight
 
     return matrix
 
+
 def kmeans_cluster(coordinates, n_clusters):
     """Perform k-means clustering on a set of coordinates to compute the set of k-means clustering that group the data.
 
@@ -50,6 +51,7 @@ def kmeans_cluster(coordinates, n_clusters):
     """
     kmeans = sklearn.cluster.KMeans(n_clusters)
     return kmeans.fit(coordinates)
+
 
 def setup_voronoi(coordinates):
     """Setup a Voronoi grid for a given set of coordinates, as well as a list of each Voronoi cell's neighboring \
@@ -72,6 +74,7 @@ def setup_voronoi(coordinates):
 
     voronoi.neighbors_total = list(map(lambda x: len(x), voronoi.neighbors))
     return voronoi
+
 
 def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, image_total, sub_total, source_centers):
     """ Match a set of sub image-pixel coordinates to their closest source-pixels, using the source-pixel centers (x,y).
@@ -111,6 +114,7 @@ def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, imag
             sub_index += 1
 
     return image_sub_to_source
+
 
 def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_total, sub_total, source_centers,
                                                       source_neighbors, image_to_sparse, sparse_to_source):
@@ -191,15 +195,19 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
 
     return image_sub_to_source
 
+
 def find_nearest_sparse(image_index, image_to_sparse):
     return image_to_sparse[image_index]
+
 
 def find_nearest_sparse_source(nearest_sparse, sparse_to_source):
     return sparse_to_source[nearest_sparse]
 
+
 def find_separation_sub_coordinate_and_nearest_sparse_source(source_centers, sub_coordinate, source_pixel):
     nearest_sparse_source_pixel_center = source_centers[source_pixel]
     return compute_squared_separation(sub_coordinate, nearest_sparse_source_pixel_center)
+
 
 def find_separation_and_nearest_neighboring_source(sub_coordinate, source_centers, source_neighbors):
     """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
@@ -211,7 +219,7 @@ def find_separation_and_nearest_neighboring_source(sub_coordinate, source_center
             The x and y coordinate to be matched with the neighboring set of source_pixels.
         source_centers: [(float, float)
             The source_pixel centers the coordinates are matched with.
-        source_neighbors : list
+        source_neighbors : [int]
             The neighboring source_pixels of the sparse source_pixel the coordinate is currently matched with
 
         Returns
@@ -231,7 +239,7 @@ def find_separation_and_nearest_neighboring_source(sub_coordinate, source_center
 
     return source_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
 
+
 def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two coordinates (no square root for efficiency)"""
     return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
-
