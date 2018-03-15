@@ -274,11 +274,11 @@ class Galaxy(object):
 
         return deflection_angles
 
-    def mass_within_circles(self, radius):
+    def dimensionless_mass_within_circles(self, radius):
         """
         Compute the total dimensionless mass of the galaxy's mass profiles within a circle of specified radius.
 
-        See *mass_profiles.mass_within_circles* for details of how this is performed.
+        See *mass_profiles.dimensionless_mass_within_circles* for details of how this is performed.
 
 
         Parameters
@@ -291,14 +291,13 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(
-            map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
+        return sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
-    def mass_within_circles_individual(self, radius):
+    def dimensionless_mass_within_circles_individual(self, radius):
         """
         Compute the individual dimensionless mass of the galaxy's mass profiles within a circle of specified radius.
 
-        See *mass_profiles.mass_within_circles* for details of how this is performed.
+        See *mass_profiles.dimensionless_mass_within_circles* for details of how this is performed.
 
         Parameters
         ----------
@@ -310,14 +309,13 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(
-            list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
+        return list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
-    def mass_within_ellipses(self, major_axis):
+    def dimensionless_mass_within_ellipses(self, major_axis):
         """
         Compute the total dimensionless mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
-        See *mass_profiles.mass_within_ellipses* for details of how this is performed.
+        See *mass_profiles.dimensionless_mass_within_ellipses* for details of how this is performed.
 
 
         Parameters
@@ -330,15 +328,14 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(
-            map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
+        return sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
-    def mass_within_ellipses_individual(self, major_axis):
+    def dimensionless_mass_within_ellipses_individual(self, major_axis):
         """
         Compute the individual dimensionless mass of the galaxy's mass profiles within an ellipse of specified \
         major-axis.
 
-        See *mass_profiles.mass_within_circles* for details of how this is performed.
+        See *mass_profiles.dimensionless_mass_within_circles* for details of how this is performed.
 
         Parameters
         ----------
@@ -350,8 +347,7 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(
-            list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
+        return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
     def plot_density_as_function_of_radius(self, maximum_radius, image_name='', labels=None, number_bins=50,
                                            xaxis_is_physical=True, yaxis_is_physical=True):
