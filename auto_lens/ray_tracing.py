@@ -61,8 +61,13 @@ class TraceImageAndSource(object):
             sparse_coordinates = np.subtract(self.image_plane.coordinates.sparse, self.image_plane.deflection_angles. sparse)
         else:
             sparse_coordinates = None
+            
+        if self.image_plane.coordinates.blurring is not None:
+            blurring_coordinates = np.subtract(self.image_plane.coordinates.blurring, self.image_plane.deflection_angles. blurring)
+        else:
+            blurring_coordinates = None
 
-        return PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates)
+        return PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates, blurring_coordinates)
 
 
 class PlaneCoordinates(geometry_profiles.Profile):
