@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from astropy import cosmology
-from astropy import constants
+
 
 class Galaxy(object):
     """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass \
@@ -42,7 +41,7 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return sum(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
+        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
@@ -59,7 +58,7 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given coordinates
         """
-        return list(map(lambda p : p.intensity_at_coordinates(coordinates), self.light_profiles))
+        return list(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
 
     def luminosity_within_circle(self, radius):
         """
@@ -77,7 +76,7 @@ class Galaxy(object):
         luminosity : float
             The total combined luminosity within the specified circle.
         """
-        return sum(map(lambda p : p.luminosity_within_circle(radius), self.light_profiles))
+        return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_circle_individual(self, radius):
         """
@@ -96,7 +95,7 @@ class Galaxy(object):
         luminosity : float
             The total combined luminosity within the specified circle.
         """
-        return list(map(lambda p : p.luminosity_within_circle(radius), self.light_profiles))
+        return list(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_ellipse(self, major_axis):
         """
@@ -115,7 +114,7 @@ class Galaxy(object):
         intensity : float
             The total luminosity within the specified ellipse.
         """
-        return sum(map(lambda p : p.luminosity_within_ellipse(major_axis), self.light_profiles))
+        return sum(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
     def luminosity_within_ellipse_individual(self, major_axis):
         """
@@ -133,7 +132,7 @@ class Galaxy(object):
         intensity : float
             The total luminosity within the specified ellipse.
         """
-        return list(map(lambda p : p.luminosity_within_ellipse(major_axis), self.light_profiles))
+        return list(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
     def surface_density_at_coordinates(self, coordinates):
         """
@@ -151,7 +150,7 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given coordinates.
         """
-        return sum(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def surface_density_at_coordinates_individual(self, coordinates):
         """
@@ -169,7 +168,7 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given coordinates.
         """
-        return list(map(lambda p : p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates(self, coordinates):
         """
@@ -186,7 +185,7 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        return sum(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def potential_at_coordinates_individual(self, coordinates):
         """
@@ -203,7 +202,7 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given coordinates.
         """
-        return list(map(lambda p : p.potential_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
 
     def deflection_angles_at_coordinates(self, coordinates):
         """
@@ -240,7 +239,7 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given coordinates.
         """
-        return np.asarray(list(map(lambda p : p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
+        return np.asarray(list(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
 
     # TODO : I don't expect these to be the best way to do this - I'm just getting them up so I can develop the \
     # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
@@ -292,7 +291,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
+        return self.critical_density * sum(
+            map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
     def mass_within_circles_individual(self, radius):
         """
@@ -310,7 +310,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
+        return self.critical_density * np.asarray(
+            list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
 
     def mass_within_ellipses(self, major_axis):
         """
@@ -329,7 +330,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
+        return self.critical_density * sum(
+            map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
     def mass_within_ellipses_individual(self, major_axis):
         """
@@ -348,7 +350,8 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return self.critical_density * np.asarray(list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
+        return self.critical_density * np.asarray(
+            list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles)))
 
     def plot_density_as_function_of_radius(self, maximum_radius, image_name='', labels=None, number_bins=50,
                                            xaxis_is_physical=True, yaxis_is_physical=True):
@@ -364,20 +367,19 @@ class Galaxy(object):
             The number of bins used to compute and plot the mass.
         """
 
-        radii = list(np.linspace(1e-4, maximum_radius, number_bins+1))
+        radii = list(np.linspace(1e-4, maximum_radius, number_bins + 1))
 
         for i in range(number_bins):
-
-            annuli_area = (math.pi*radii[i+1]**2 - math.pi*radii[i]**2)
+            annuli_area = (math.pi * radii[i + 1] ** 2 - math.pi * radii[i] ** 2)
 
             densities = ((self.mass_within_circles_individual(radii[i + 1]) -
-                           self.mass_within_circles_individual(radii[i])) /
-                           annuli_area)
+                          self.mass_within_circles_individual(radii[i])) /
+                         annuli_area)
 
         plt.title('Decomposed surface density profile of ' + image_name, size=16)
 
         if xaxis_is_physical:
-            radii_plot = list(np.linspace(1e-4, maximum_radius*self.kpc_per_arcsec, number_bins))
+            radii_plot = list(np.linspace(1e-4, maximum_radius * self.kpc_per_arcsec, number_bins))
             plt.xlabel('Distance From Galaxy Center (kpc)', size=16)
         else:
             radii_plot = list(np.linspace(1e-4, maximum_radius, number_bins))
