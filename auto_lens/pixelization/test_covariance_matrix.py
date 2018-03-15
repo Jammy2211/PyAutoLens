@@ -9,7 +9,7 @@ class TestMappingMatrix:
         image_pixel_total = 6
         sub_grid_size = 1
 
-        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5]  # For no sub grid, image pixels map to sub-pixels.
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5]  # For no sub_grid grid, image_grid pixels map to sub_grid-pixels.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2]
 
         mapping_matrix = covariance_matrix.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
@@ -28,7 +28,7 @@ class TestMappingMatrix:
         sub_grid_size = 1
 
         sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                                                10]  # For no sub grid, image pixels map to sub-pixels.
+                                                10]  # For no sub_grid grid, image_grid pixels map to sub_grid-pixels.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
 
         mapping_matrix = covariance_matrix.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
@@ -50,7 +50,7 @@ class TestMappingMatrix:
         image_pixel_total = 6
         sub_grid_size = 2
 
-        # all sub-pixels to pixel / source_pixel mappings below have been set up such that all sub-pixels in an image pixel
+        # all sub_grid-pixels to pixel / source_pixel mappings below have been set up such that all sub_grid-pixels in an image_grid pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
@@ -75,7 +75,7 @@ class TestMappingMatrix:
         image_pixel_total = 11
         sub_grid_size = 2
 
-        # all sub-pixels to pixel / source_pixel mappings below have been set up such that all sub-pixels in an image pixel
+        # all sub_grid-pixels to pixel / source_pixel mappings below have been set up such that all sub_grid-pixels in an image_grid pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
@@ -105,7 +105,7 @@ class TestMappingMatrix:
         image_pixel_total = 6
         sub_grid_size = 2
 
-        # all sub-pixels to pixel / source_pixel mappings below have been set up such that all sub-pixels in an image pixel
+        # all sub_grid-pixels to pixel / source_pixel mappings below have been set up such that all sub_grid-pixels in an image_grid pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
@@ -132,7 +132,7 @@ class TestMappingMatrix:
         image_pixel_total = 11
         sub_grid_size = 2
 
-        # Moving one of every 4 sub-pixels to the right compared to the example above. This should turn each 1 in the
+        # Moving one of every 4 sub_grid-pixels to the right compared to the example above. This should turn each 1 in the
         # mapping matrix to a 0.75, and add a 0.25 to the element to its right
 
         # Note the last value retains all 4 of it's '10's, so keeps a 1 in the mapping matrix
@@ -166,14 +166,14 @@ class TestMappingMatrix:
         image_pixel_total = 3
         sub_grid_size = 4
 
-        # 4x4 sub pixel, so 16 sub-pixels per pixel, so 48 sub-image pixels,
+        # 4x4 sub_grid pixel, so 16 sub_grid-pixels per pixel, so 48 sub_grid-image_grid pixels,
 
-        # No sub-pixels labelled 0 map to source_pixel 0, so f(0,0) remains 0
-        # 15 sub-pixels labelled 1 map to source_pixel_index 0, so add 4 * (1/16) = 0.9375 to f(1,1)
-        # 1 sub-pixel labelled 2 map to source_pixel_index 0, so add (1/16) = 0.0625 to f(2,1)
-        # 4 sub-pixels labelled 0 map to source_pixel_index 1, so add 4 * (1/16) = 0.25 to f(0,2)
-        # 12 sub-pixels labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
-        # 16 sub-pixels labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
+        # No sub_grid-pixels labelled 0 map to source_pixel 0, so f(0,0) remains 0
+        # 15 sub_grid-pixels labelled 1 map to source_pixel_index 0, so add 4 * (1/16) = 0.9375 to f(1,1)
+        # 1 sub_grid-pixel labelled 2 map to source_pixel_index 0, so add (1/16) = 0.0625 to f(2,1)
+        # 4 sub_grid-pixels labelled 0 map to source_pixel_index 1, so add 4 * (1/16) = 0.25 to f(0,2)
+        # 12 sub_grid-pixels labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
+        # 16 sub_grid-pixels labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
 
         sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                 # 50:50 ratio so 1 in each entry of the mapping matrix
@@ -357,7 +357,7 @@ class TestCalculateCovariance(object):
         assert generator.calculate_covariance(0, 1) == 2
 
     def test_no_covariance(self):
-        """Is covariance zero when two source pixels share no image pixels?"""
+        """Is covariance zero when two source pixels share no image_grid pixels?"""
         generator = covariance_matrix.CovarianceMatrixGenerator([{1: 3}, {0: 1}], [1, 1], None)
 
         assert generator.calculate_covariance(0, 1) == 0

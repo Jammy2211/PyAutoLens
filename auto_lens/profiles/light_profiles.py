@@ -28,17 +28,17 @@ class LightProfile(object):
     # noinspection PyMethodMayBeStatic
     def intensity_at_coordinates(self, coordinates):
         """
-        Abstract method for obtaining intensity at given image
+        Abstract method for obtaining intensity at given image_grid
         Parameters
         ----------
         coordinates : ndarray
-            The image in image space (arc seconds)
+            The image_grid in image_grid space (arc seconds)
         Returns
         -------
         intensity : float
-            The value of intensity at the given image
+            The value of intensity at the given image_grid
         """
-        raise AssertionError("Flux at image should be overridden")
+        raise AssertionError("Flux at image_grid should be overridden")
 
     def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
         """
@@ -76,7 +76,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image of the centre of the profiles
+            The image_grid of the centre of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -145,7 +145,7 @@ class SersicLightProfile(EllipticalLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image of the centre of the profiles
+            The image_grid of the centre of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -207,18 +207,18 @@ class SersicLightProfile(EllipticalLightProfile):
     @geometry_profiles.transform_coordinates
     def intensity_at_coordinates(self, coordinates):
         """
-        Method for obtaining intensity at given image.
+        Method for obtaining intensity at given image_grid.
 
         This includes a coordinate transform to the light profiles's shifted, rotated and elliptical reference frame.
 
         Parameters
         ----------
         coordinates : ndarray
-            The image in image space
+            The image_grid in image_grid space
         Returns
         -------
         intensity : float
-            The value of intensity at the given image
+            The value of intensity at the given image_grid
         """
         eta = np.sqrt(self.axis_ratio) * self.coordinates_to_elliptical_radius(coordinates)
         return self.intensity_at_radius(eta)
@@ -235,7 +235,7 @@ class ExponentialLightProfile(SersicLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image of the centre of the profiles
+            The image_grid of the centre of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -264,7 +264,7 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image of the centre of the profiles
+            The image_grid of the centre of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -293,7 +293,7 @@ class CoreSersicLightProfile(SersicLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image of the centre of the profiles
+            The image_grid of the centre of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float

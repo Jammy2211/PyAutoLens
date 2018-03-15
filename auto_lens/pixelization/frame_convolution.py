@@ -1,7 +1,7 @@
 import numpy as np
 
 """
-This module is for the application of convolution to sparse vectors.
+This module is for the application of convolution to sparse_grid vectors.
 
 Take a simple mask:
 
@@ -9,7 +9,7 @@ Take a simple mask:
  [1, 1, 1],
  [0, 1, 0]]
 
-A set of values in a corresponding image might be represented in a 1D array:
+A set of values in a corresponding image_grid might be represented in a 1D array:
 
 [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
@@ -39,7 +39,7 @@ convolved_vector = convolver.convolve_vector(vector)
 
 The returned convolved vector is also in the dictionary format.
 
-The convolver can also be applied for some sub-shape of the kernel:
+The convolver can also be applied for some sub_grid-shape of the kernel:
 
 convolved_vector = convolver.convolve_vector(vector, sub_shape=(3, 3))
 
@@ -116,13 +116,13 @@ class FrameMaker(object):
         Parameters
         ----------
         coords: (int, int)
-            The image of number_array on which the frame should be centred
+            The image_grid of number_array on which the frame should be centred
         kernel_shape: (int, int)
             The shape of the kernel for which this frame will be used
         Returns
         -------
         frame: ndarray
-            A subset of number_array of shape kernel_shape where elements with image outside of frame_array have
+            A subset of number_array of shape kernel_shape where elements with image_grid outside of frame_array have
             value -1
         """
         half_x = int(kernel_shape[0] / 2)
@@ -185,12 +185,12 @@ class KernelConvolver(object):
         Parameters
         ----------
         mapping_matrix: [{int: float}]
-            A matrix representing the mapping of source pixels to image pixels
+            A matrix representing the mapping of source pixels to image_grid pixels
 
         Returns
         -------
         convolved_mapping_matrix: [{int: float}]
-            A matrix representing the mapping of source pixels to image pixels accounting for convolution
+            A matrix representing the mapping of source pixels to image_grid pixels accounting for convolution
         """
         return map(self.convolve_vector, mapping_matrix)
 
@@ -200,9 +200,9 @@ class KernelConvolver(object):
         Parameters
         ----------
         sub_shape: (int, int)
-            Defines a sub-region of the kernel for which the result should be calculated
+            Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_dict: [int: float]
-            A dictionary that maps image pixel indices to values
+            A dictionary that maps image_grid pixel indices to values
         Returns
         -------
         convolved_vector: [float]
@@ -235,11 +235,11 @@ class KernelConvolver(object):
         Parameters
         ----------
         sub_shape: (int, int)
-            Defines a sub-region of the kernel for which the result should be calculated
+            Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_index: int
             The index in the vector to be convolved
         pixel_dict: [int: float]
-            A dictionary that maps image pixel indices to values
+            A dictionary that maps image_grid pixel indices to values
         Returns
         -------
         convolution_dict: [int: float]

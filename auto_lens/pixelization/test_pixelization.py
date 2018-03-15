@@ -767,7 +767,7 @@ class TestMatchCoordinatesFromClusters:
         image_sub_to_source_via_nearest_neighbour = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_centers)
 
-        # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
+        # The sparse_grid coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
 
         image_to_sparse = np.array([0, 1, 2])
@@ -802,7 +802,7 @@ class TestMatchCoordinatesFromClusters:
         image_sub_to_source_via_nearest_neighbour = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
             sub_coordinates, image_total, sub_total, source_centers)
 
-        # The sparse coordinates are not required by the pairing routine routine below, but included here for clarity
+        # The sparse_grid coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
 
         image_to_sparse = np.array([0, 1, 2, 1, 1, 2])

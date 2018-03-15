@@ -454,7 +454,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = power_law.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -471,7 +471,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = power_law.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -995,7 +995,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = power_law_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -1016,7 +1016,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = power_law_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -1254,7 +1254,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = power_law_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -1273,7 +1273,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = power_law_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -1943,7 +1943,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = isothermal_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -1964,7 +1964,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = isothermal_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2154,12 +2154,12 @@ class TestProfiles(object):
             #     isothermal_core = profiles.CoredSphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
             #                                                       einstein_radius=1.0, core_radius=0.)
             #
-            #     potential_core = isothermal_core.compute_potential(image=np.array([0.1, 0.1]))
+            #     potential_core = isothermal_core.compute_potential(image_grid=np.array([0.1, 0.1]))
             #
             #     isothermal = profiles.SphericalIsothermalMassProfile(centre=(1, 1), axis_ratio=0.9, phi=45.0,
             #                                                       einstein_radius=1.0)
             #
-            #     potential = isothermal.compute_potential(image=np.array([0.1, 0.1]))
+            #     potential = isothermal.compute_potential(image_grid=np.array([0.1, 0.1]))
             #
             #     assert potential_core == potential
 
@@ -2227,7 +2227,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = isothermal_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2246,7 +2246,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = isothermal_core.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2441,7 +2441,7 @@ class TestProfiles(object):
 
                 potential_2 = nfw.potential_at_coordinates(coordinates=np.array([0.0, 1.1]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert potential_1 == pytest.approx(potential_2, 1e-5)
 
@@ -2477,7 +2477,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=np.array([0.00001, 0.00001]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2494,7 +2494,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.1]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2579,7 +2579,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = nfw.deflection_angles_at_coordinates(coordinates=np.array([0.00001, 0.00001]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2710,12 +2710,12 @@ class TestProfiles(object):
                 # def test__compare_to_elliptical_model__same_value(self):
                 #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), kappa_s=5.0, inner_slope=1.5, scale_radius=10.0)
                 #
-                #     potential_1 = gnfw.potential_at_coordinates(image=np.array([2.0, 2.0]))
+                #     potential_1 = gnfw.potential_at_coordinates(image_grid=np.array([2.0, 2.0]))
                 #
                 #     gnfw = mass_profile.EllipticalGeneralizedNFWMassProfile(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, inner_slope=1.5,
                 #                                                 kappa_s=5.0, scale_radius=10.0)
                 #
-                #     potential_2 = gnfw.potential_at_coordinates(image=np.array([2.0, 2.0]))
+                #     potential_2 = gnfw.potential_at_coordinates(image_grid=np.array([2.0, 2.0]))
                 #
                 #     assert potential_1 == pytest.approx(potential_2, 1e-4)
 
@@ -2731,7 +2731,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=np.array([0.00001, 0.00001]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -2882,7 +2882,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = gnfw.deflection_angles_at_coordinates(coordinates=np.array([0.00001, 0.00001]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -3057,7 +3057,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -3076,7 +3076,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -3268,7 +3268,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = exponential.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -3287,7 +3287,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = exponential.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -3450,7 +3450,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = dev_vaucouleurs.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
 
-                # Foro deflection angles, a flip of image also reverses the deflection angles
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
                 deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
@@ -3469,7 +3469,7 @@ class TestProfiles(object):
 
                 deflection_angle_2 = dev_vaucouleurs.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
-                # Foro deflection angles, a 90 degree rtation flips the x / y image
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
 
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)

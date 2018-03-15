@@ -3,7 +3,7 @@ import sys
 """
 Find an F matrix from an f matrix efficiently.
 
-It is assumed that the f matrix is sparse. It is also assumed that covariance of source pixels will principally be found
+It is assumed that the f matrix is sparse_grid. It is also assumed that covariance of source pixels will principally be found
 between a pixel and pixels in a contiguous patch about that pixel in the source plane, except for the case that overlap
 occurs between convolution kernels. See https://github.com/Jammy2211/AutoLens/issues/6 for a thorough discussion.
 
@@ -34,22 +34,22 @@ else:
 def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, sub_to_source, sub_to_image):
     """
     Set up a new mapping matrix, which describes the fractional unit surface brightness counts between each
-    image-pixel and source pixel pair.
+    image_grid-pixel and source pixel pair.
 
     The mapping matrix is the matrix denoted 'f_ij' in Warren & Dye 2003, Nightingale & Dye 2015 and Nightingale, \
     Dye & Massey 2018.
 
     It is a matrix of dimensions [source_pixels x image_pixels], wherein a non-zero entry represents an \
-    image-pixel to source-pixel mapping. For example, if image-pixel 4 maps to source-pixel 2, then element (2,4) \
+    image_grid-pixel to source-pixel mapping. For example, if image_grid-pixel 4 maps to source-pixel 2, then element (2,4) \
     of the mapping matrix will = 1.
 
-    The mapping matrix supports sub-gridding.  Here, each image-pixel in the observed image is divided into a \
-    finer sub-grid. For example, if sub_grid_size = 4, each image-pixel is split into a 4 x 4 sub-grid, giving a \
-    total of 16 sub image-pixels. All 16 sub image-pixels are individually mapped to the source-plane and each is
+    The mapping matrix supports sub_grid-gridding.  Here, each image_grid-pixel in the observed image_grid is divided into a \
+    finer sub_grid-grid. For example, if sub_grid_size = 4, each image_grid-pixel is split into a 4 x 4 sub_grid-grid, giving a \
+    total of 16 sub_grid image_grid-pixels. All 16 sub_grid image_grid-pixels are individually mapped to the source-plane and each is
     paired with a source-pixel.
 
-    The entries in the mapping matrix now become fractional values representing the number of sub image-pixels \
-    which map to each source-pixel. For example if 3 sub image-pixels within image-pixel 4 map to source-pixel 2, \
+    The entries in the mapping matrix now become fractional values representing the number of sub_grid image_grid-pixels \
+    which map to each source-pixel. For example if 3 sub_grid image_grid-pixels within image_grid-pixel 4 map to source-pixel 2, \
     and the sub_grid_size=2, then element (2,4) of the mapping matrix \
     will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
 
@@ -58,15 +58,15 @@ def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, 
     source_pixel_total : int
         The number of source-pixels in the source-plane (and first dimension of the mapping matrix)
     image_pixel_total : int
-        The number of image-pixels in the masked observed image (and second dimension of the mapping matrix)
+        The number of image_grid-pixels in the masked observed image_grid (and second dimension of the mapping matrix)
     sub_grid_size : int
-        The size of sub-gridding used on the observed image.
+        The size of sub_grid-gridding used on the observed image_grid.
     sub_to_source : [int]
-        The index of the source_pixel each image sub-pixel is mapped too (e.g. if the fifth sub image pixel \
+        The index of the source_pixel each image_grid sub_grid-pixel is mapped too (e.g. if the fifth sub_grid image_grid pixel \
         is mapped to the 3rd source_pixel in the source plane, sub_to_source[4] = 2).
     sub_to_image : [int]
-        The index of the image-pixel each image sub-pixel belongs too (e.g. if the fifth sub image pixel \
-        is within the 3rd image-pixel in the observed image, sub_to_image[4] = 2).
+        The index of the image_grid-pixel each image_grid sub_grid-pixel belongs too (e.g. if the fifth sub_grid image_grid pixel \
+        is within the 3rd image_grid-pixel in the observed image_grid, sub_to_image[4] = 2).
     """
 
     total_sub_pixels = image_pixel_total * sub_grid_size ** 2
@@ -90,11 +90,11 @@ def create_d_matrix(pixel_maps, noise_vector, image_vector):
     Parameters
     ----------
     pixel_maps: [{int: float}]
-        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
+        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
     noise_vector: [float]
-        A list of noise values of length image pixels
+        A list of noise values of length image_grid pixels
     image_vector: [float]
-        A vector describing the image
+        A vector describing the image_grid
 
     Returns
     -------
@@ -118,9 +118,9 @@ def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_l
     Parameters
     ----------
     pixel_maps: [{int: float}]
-        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
+        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
     noise_vector: [float]
-        A list of noise values of length image pixels
+        A list of noise values of length image_grid pixels
     graph: [[int]]
         A graph representing source pixel neighbouring
     neighbour_search_limit: float
@@ -147,9 +147,9 @@ class CovarianceMatrixGenerator(object):
         Parameters
         ----------
         pixel_maps: [{int: float}]
-            List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image pixels.
+            List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
         noise_vector: [float]
-            A list of noise values of length image pixels
+            A list of noise values of length image_grid pixels
         graph: [[int]]
             A graph representing source pixel neighbouring
         neighbour_search_limit: float

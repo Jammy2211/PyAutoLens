@@ -257,7 +257,7 @@ class TestEllipticalProfile(object):
         def test__phi_is_ninety__correct_rotation(self):
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0)
 
-            # NOTE - whilst the profiles and image are defined counter-clockwise from x, the rotation is performed
+            # NOTE - whilst the profiles and image_grid are defined counter-clockwise from x, the rotation is performed
             # clockwise
 
             coordinates = np.array([1.0, 1.0])
@@ -268,7 +268,7 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
         def test__phi_is_one_eighty__correct_rotation(self):
-            # NOTE - whilst the profiles and image are defined counter-clockwise from x, the rotation is performed
+            # NOTE - whilst the profiles and image_grid are defined counter-clockwise from x, the rotation is performed
             # clockwise
 
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=180.0)
@@ -281,7 +281,7 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
         def test__phi_is_two_seventy__correct_rotation(self):
-            # NOTE - whilst the profiles and image are defined counter-clockwise from x, the rotation is performed
+            # NOTE - whilst the profiles and image_grid are defined counter-clockwise from x, the rotation is performed
             # clockwise
 
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=270.0)
@@ -294,7 +294,7 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(1.0, 1e-3)
 
         def test__phi_is_three_sixty__correct_rotation(self):
-            # NOTE - whilst the profiles and image are defined counter-clockwise from x, the rotation is performed
+            # NOTE - whilst the profiles and image_grid are defined counter-clockwise from x, the rotation is performed
             # clockwise
 
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=360.0)
@@ -307,7 +307,7 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(1.0, 1e-3)
 
         def test__phi_is_three_one_five__correct_rotation(self):
-            # NOTE - whilst the profiles and image are defined counter-clockwise from x, the rotation is performed
+            # NOTE - whilst the profiles and image_grid are defined counter-clockwise from x, the rotation is performed
             # clockwise
 
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=315.0)
@@ -322,7 +322,7 @@ class TestEllipticalProfile(object):
         def test__shift_x_and_y_first__correct_rotation(self):
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0, centre=(1.0, 1.0))
 
-            # NOTE - whilst the profiles and image are defined counter-clockwise from x, the rotation is performed
+            # NOTE - whilst the profiles and image_grid are defined counter-clockwise from x, the rotation is performed
             # clockwise
 
             coordinates = np.array([2.0, 2.0])
