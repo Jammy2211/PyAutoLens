@@ -1,0 +1,57 @@
+LENS + SOURCE
+-------------
+
+For a simple lens-source system, the ray tracing is as follows:
+
+            / \
+           /   \
+          /     \
+         /       \
+        /         \
+       /           \
+Earth  --- Lens1 --- Source
+       \           /
+        \         /
+         \       /
+          \     /
+           \   /
+            \ /
+
+So, to perform ray-tracing, we:
+
+1) Compute deflection angles at Lens1 (the image-plane).
+2) Trace image-plane coordinates to source-plane.
+
+LENS + LENS + SOURCE
+--------------------
+
+For a lens-lens-source system, the ray tracing is as follows:
+
+                / \
+               /   \
+            --      \
+           /         \
+          /           \
+         /             \
+Earth-Lens1-Lens2----- Source
+         \             /
+          \           /
+           \         /
+            --      /
+               \   /
+                \ /
+
+So, to perform ray-tracing, we:
+
+1) Compute deflection angles at Lens1 (the image-plane)
+2) Trace to Lens2's lens-plane, by using the deflection angles scaled by the ratio of angular diameter distances, Beta.
+3) Compute deflection angles at Lens2, using Lens2's lens-plane coordinates.
+4) Trace to Source's plane, using each set of deflection angles scaled by new values of Beta to reflect the new redshifts
+of the tracing.
+
+MULTIPLE PLANES
+---------------
+
+Following LENS+LENS+SOURCE above, we go to each lens, compute its deflection angles at its lens-plane coordinates
+and then use them with the scale factor beta to trace them to the next source-plane. We compute the deflection angles at
+each set of source-plane coordinates and scale by redshift as appropriate.
