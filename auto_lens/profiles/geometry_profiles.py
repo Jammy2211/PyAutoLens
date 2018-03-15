@@ -9,7 +9,7 @@ import colorsys
 
 def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
     """
-    Draws a plot from a function that accepts coordinates . Upper normalisation limit determined by taking mean plus one
+    Draws a plot from a function that accepts image . Upper normalisation limit determined by taking mean plus one
     standard deviation. Creates colour plot if the input function returns a tuple.
 
     func
@@ -91,12 +91,12 @@ def subgrid(func):
     Decorator to permit generic subgridding
     Parameters
     ----------
-    func : function(coordinates) -> value OR (value, value)
-        Function that takes coordinates and calculates some value
+    func : function(image) -> value OR (value, value)
+        Function that takes image and calculates some value
     Returns
     -------
-    func: function(coordinates, pixel_scale, grid_size)
-        Function that takes coordinates and pixel scale/grid_size required for subgridding
+    func: function(image, pixel_scale, grid_size)
+        Function that takes image and pixel scale/grid_size required for subgridding
     """
 
     @wraps(func)
@@ -135,7 +135,7 @@ def iterative_subgrid(subgrid_func):
     Decorator to iteratively increase the grid size until the difference between results reaches a defined threshold
     Parameters
     ----------
-    subgrid_func : function(coordinates, pixel_scale, grid_size) -> value
+    subgrid_func : function(image, pixel_scale, grid_size) -> value
         A function decorated with subgrid and average
     Returns
     -------
@@ -149,7 +149,7 @@ def iterative_subgrid(subgrid_func):
         Parameters
         ----------
         coordinates : ndarray
-            x, y coordinates in image space
+            x, y image in image space
         pixel_scale : float
             The size of a pixel
         threshold : float
@@ -175,8 +175,8 @@ def array_function(func):
 
     Parameters
     ----------
-    func : function(coordinates)
-            A function that takes coordinates and returns a value
+    func : function(image)
+            A function that takes image and returns a value
 
     Returns
     -------
@@ -190,7 +190,7 @@ def array_function(func):
         Parameters
         ----------
         mask : Mask
-            An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
+            An object that has an is_masked method which returns True if (x, y) image should be masked (i.e. not
             return a value)
         x_min : float
             The minimum x bound
@@ -247,17 +247,17 @@ class TransformedCoordinates(tuple):
 
 def transform_coordinates(func):
     """
-    Wrap the function in a function that checks whether the coordinates have been transformed. If they have not been
-    transformed then they are transformed. If coordinates are returned they are returned in the coordinate system in
+    Wrap the function in a function that checks whether the image have been transformed. If they have not been
+    transformed then they are transformed. If image are returned they are returned in the coordinate system in
     which they were passed in.
     Parameters
     ----------
     func : (profiles, *args, **kwargs) -> Object
-        A function that requires transformed coordinates
+        A function that requires transformed image
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can except cartesian or transformed image
 
     """
 
@@ -276,7 +276,7 @@ def transform_coordinates(func):
 
         Returns
         -------
-            A value or coordinates in the same coordinate system as those passed ins
+            A value or image in the same coordinate system as those passed ins
         """
         if not isinstance(coordinates, TransformedCoordinates):
             result = func(profile, profile.transform_to_reference_frame(coordinates), *args, **kwargs)
@@ -289,14 +289,14 @@ def transform_coordinates(func):
 
 
 class CoordinatesException(Exception):
-    """Exception thrown when coordinates assertion fails"""
+    """Exception thrown when image assertion fails"""
 
     def __init__(self, message):
         super(CoordinatesException, self).__init__(message)
 
 
 class Profile(object):
-    """Abstract Profile, describing an object with x, y cartesian coordinates"""
+    """Abstract Profile, describing an object with x, y cartesian image"""
 
     def __init__(self, centre=(0.0, 0.0)):
         self.centre = centre
@@ -312,17 +312,17 @@ class Profile(object):
     # noinspection PyMethodMayBeStatic
     def transform_to_reference_frame(self, coordinates):
         """
-        Translate Cartesian image coordinates to the lens profiles's reference frame (for a circular profiles this
-        returns the input coordinates)
+        Translate Cartesian image image to the lens profiles's reference frame (for a circular profiles this
+        returns the input image)
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The coordinates after the elliptical translation
+        The image after the elliptical translation
         """
         raise AssertionError("Transform to reference frame should be overridden")
 
@@ -368,7 +368,7 @@ class Profile(object):
             PlaneCoordinates that have been transformed to the reference frame of the profiles
         Returns
         -------
-        coordinates: (float, float)
+        image: (float, float)
             PlaneCoordinates that are back in the original reference frame
         """
         raise AssertionError("Transform from reference frame should be overridden")
@@ -383,16 +383,16 @@ class Profile(object):
 
     def coordinates_to_centre(self, coordinates):
         """
-        Converts image coordinates to profiles's centre
+        Converts image image to profiles's centre
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The coordinates at the mass profiles centre
+        The image at the mass profiles centre
         """
         return np.subtract(coordinates, self.centre)
 
@@ -401,16 +401,16 @@ class Profile(object):
 
     def coordinates_to_radius(self, coordinates):
         """
-        Convert the coordinates to a radius
+        Convert the image to a radius
 
         Parameters
         ----------
         coordinates : ndarray
-            The image coordinates (x, y)
+            The image image (x, y)
 
         Returns
         -------
-        The radius at those coordinates
+        The radius at those image
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return np.sqrt(np.sum(shifted_coordinates**2.0))
@@ -424,7 +424,7 @@ class EllipticalProfile(Profile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profiles
+            The image of the centre of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -462,22 +462,22 @@ class EllipticalProfile(Profile):
     @transform_coordinates
     def coordinates_to_eccentric_radius(self, coordinates):
         """
-        Convert the coordinates to a radius in elliptical space.
+        Convert the image to a radius in elliptical space.
 
         Parameters
         ----------
         coordinates : ndarray
-            The image coordinates (x, y)
+            The image image (x, y)
         Returns
         -------
-        The radius at those coordinates
+        The radius at those image
         """
 
         return np.sqrt(self.axis_ratio) * np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
     def coordinates_angle_to_profile(self, theta):
         """
-        Compute the sin and cosine of the angle between the shifted coordinates and elliptical profiles
+        Compute the sin and cosine of the angle between the shifted image and elliptical profiles
 
         Parameters
         ----------
@@ -485,32 +485,32 @@ class EllipticalProfile(Profile):
 
         Returns
         ----------
-        The sin and cosine of the angle between the shifted coordinates and profiles ellipse.
+        The sin and cosine of the angle between the shifted image and profiles ellipse.
         """
         theta_coordinate_to_profile = np.radians(theta - self.phi)
         return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
     def coordinates_angle_from_x(self, coordinates):
         """
-        Compute the angle between the coordinates and positive x-axis, defined counter-clockwise. Elliptical profiles
+        Compute the angle between the image and positive x-axis, defined counter-clockwise. Elliptical profiles
         are symmetric after 180 degrees, so angles above 180 are converted to their equivalent value from 0.
         (e.g. 225 degrees counter-clockwise from the x-axis is equivalent to 45 degrees counter-clockwise)
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image.
+            The x and y image of the image.
 
         Returns
         ----------
-        The angle between the coordinates and the x-axis and profiles centre
+        The angle between the image and the x-axis and profiles centre
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
 
     def rotate_coordinates_from_profile(self, coordinates_elliptical):
-        """Rotate elliptical coordinates from the reference frame of the profiles back to the image-plane Cartsian grid
-         (coordinates are not shifted away from the lens profiles centre)."""
+        """Rotate elliptical image from the reference frame of the profiles back to the image-plane Cartsian grid
+         (image are not shifted away from the lens profiles centre)."""
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
@@ -519,15 +519,15 @@ class EllipticalProfile(Profile):
     @transform_coordinates
     def coordinates_to_elliptical_radius(self, coordinates):
         """
-        Convert coordinates which are already transformed to an elliptical radius.
+        Convert image which are already transformed to an elliptical radius.
 
         Parameters
         ----------
         coordinates : ndarray
-            The image coordinates (x, y)
+            The image image (x, y)
         Returns
         -------
-        The radius at those coordinates
+        The radius at those image
         """
         return np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
@@ -537,64 +537,64 @@ class EllipticalProfile(Profile):
         Parameters
         ----------
         coordinates : ndarray
-            The image coordinates (x, y)
+            The image image (x, y)
         radius : float
             The radius r from the centre of the coordinate reference frame.
 
         Returns
         ----------
-        The coordinates after the decomposed into x and y components"""
+        The image after the decomposed into x and y components"""
         theta_from_x = np.degrees(np.arctan2(coordinates[1], coordinates[0]))
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
         return radius * cos_theta, radius * sin_theta
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """
-        Rotate elliptical coordinates back to the original Cartesian grid (for a circular profiles this
-        returns the input coordinates)
+        Rotate elliptical image back to the original Cartesian grid (for a circular profiles this
+        returns the input image)
 
         Parameters
         ----------
         coordinates_elliptical : TransformedCoordinates(float, float)
-            The x and y coordinates of the image translated to the elliptical coordinate system
+            The x and y image of the image translated to the elliptical coordinate system
 
         Returns
         ----------
-        The coordinates (typically deflection angles) on a regular Cartesian grid
+        The image (typically deflection angles) on a regular Cartesian grid
         """
 
         if not isinstance(coordinates_elliptical, TransformedCoordinates):
-            raise CoordinatesException("Can't return cartesian coordinates to cartesian coordinates. Did you remember"
-                                       " to explicitly make the elliptical coordinates TransformedCoordinates?")
+            raise CoordinatesException("Can't return cartesian image to cartesian image. Did you remember"
+                                       " to explicitly make the elliptical image TransformedCoordinates?")
 
         x, y = self.rotate_coordinates_from_profile(coordinates_elliptical)
         return self.coordinates_from_centre((x, y))
 
     def transform_to_reference_frame(self, coordinates):
         """
-        Translate Cartesian image coordinates to the lens profiles's reference frame (for a circular profiles this
-        returns the input coordinates)
+        Translate Cartesian image image to the lens profiles's reference frame (for a circular profiles this
+        returns the input image)
 
         Parameters
         ----------
         coordinates : ndarray
-            The x and y coordinates of the image
+            The x and y image of the image
 
         Returns
         ----------
-        The coordinates after the elliptical translation
+        The image after the elliptical translation
         """
 
         if isinstance(coordinates, TransformedCoordinates):
-            raise CoordinatesException("Trying to transform already transformed coordinates")
+            raise CoordinatesException("Trying to transform already transformed image")
 
-        # Compute distance of coordinates to the lens profiles centre
+        # Compute distance of image to the lens profiles centre
         radius = self.coordinates_to_radius(coordinates)
 
-        # Compute the angle between the coordinates and x-axis
+        # Compute the angle between the image and x-axis
         theta_from_x = self.coordinates_angle_from_x(coordinates)
 
-        # Compute the angle between the coordinates and profiles ellipse
+        # Compute the angle between the image and profiles ellipse
         cos_theta, sin_theta = self.coordinates_angle_to_profile(theta_from_x)
 
         # Multiply by radius to get their x / y distance from the profiles centre in this elliptical unit system
@@ -612,7 +612,7 @@ class SphericalProfile(EllipticalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profiles
+            The image of the centre of the profiles
         """
         super(SphericalProfile, self).__init__(centre, 1.0, 0.0)
 

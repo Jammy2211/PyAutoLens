@@ -11,7 +11,7 @@ def setup_data(mask, data):
     data : ndarray
         A 2D data of data, e.g. the image, noise-map, etc.
     mask : image.Mask
-        The image mask containing the pixels we are computing the coordinates of and the image dimensions / pixel scale.
+        The image mask containing the pixels we are computing the image of and the image dimensions / pixel scale.
 
     Returns
     -------
@@ -29,13 +29,13 @@ def setup_data(mask, data):
     return data_1d
 
 def setup_mapper_2d(mask):
-    """ Given an image.Mask, setup an array that can be used to map the input masks coordinates back to their 2D image \
+    """ Given an image.Mask, setup an array that can be used to map the input masks image back to their 2D image \
     pixels.
 
     Parameters
     ----------
     mask : image.Mask
-        The image mask containing the pixels we are computing the coordinates of and the image dimensions / pixel scale.
+        The image mask containing the pixels we are computing the image of and the image dimensions / pixel scale.
     """
     image_pixels = mask.pixels_in_mask
     mapper_2d = np.zeros(shape=(image_pixels, 2), dtype=int)
@@ -99,7 +99,7 @@ def y_sub_pixel_to_coordinate(y_sub_pixel, y_coordinate, pixel_scale, sub_grid_s
 
 def setup_sub_coordinates(mask, sub_grid_size):
     """
-    Given an image.Mask, compute the arc second coordinates of every unmasked sub image-pixel.
+    Given an image.Mask, compute the arc second image of every unmasked sub image-pixel.
 
     This is defined from the top-left corner, such that pixels in the top-left corner of the image have a negative x
     value for and positive y value in arc seconds. Sub-pixel are defined from the top-left hand corner of each \
@@ -114,7 +114,7 @@ def setup_sub_coordinates(mask, sub_grid_size):
 
     Returns
     -------
-    One-dimensional array containing the sub-image coordinates of each image pixel in the mask.
+    One-dimensional array containing the sub-image image of each image pixel in the mask.
     """
 
     cen = image.central_pixel(mask.pixel_dimensions)
@@ -147,7 +147,7 @@ def setup_sub_coordinates(mask, sub_grid_size):
     return image_sub_grid_coordinates
 
 def setup_blurring_coordinates(mask, psf_size):
-    """Given an image.Mask, compute its blurring mask and use this to find the coordinates of all regions in the \
+    """Given an image.Mask, compute its blurring mask and use this to find the image of all regions in the \
     bluring mask.
 
     Parameters
