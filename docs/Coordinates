@@ -62,10 +62,10 @@ routines, analogous to profile. I've taken the latter approach for now, but feel
 It is useful to define the source-plane with two sets of coordinates:
 
 - sub_coordinates - this is the location of every traced image sub-pixel in the source-plane. The sub-pixels are used
-by the linear matrix inversion to reconstruct the source, thus they are the core of the source-reconstruction.
+by the linear matrix inversion to reconstruct the source, thus they are the core of the source-model_instance.
 
 - sparse_coordinates - this is the location of a sparse sub-set of traced image pixels in the source-plane. These are not
-used by the source reconstruction per-se, but can offer significantly speed up the k-means clustering, as if we feed
+used by the source model_instance per-se, but can offer significantly speed up the k-means clustering, as if we feed
 every sub_coordinate into a k-means algoirthm for high resolution imaging or a high grid_size it'll take ages!
 
 Therefore, the sparse_coordinates are only required for a Pixelization which uses the k-means clustering alogirthm. A rectangular

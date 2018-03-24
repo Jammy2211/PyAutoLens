@@ -93,11 +93,11 @@ throw in a few extra new parameters with Uniform priors.
 At the end of AutoLens, we 'fix' our lens model and every single parameter will be initialised using a prior inferred from
 the previous phase.
 
-I think our class inheritance should automatically take care of a lot of linking. So, if we go from an EllipticalIsothermalMassProfile
-(5 parameters - x, y, ein_rad, phi, axis_ratio) to an EllipticalPowerLawMassProfile (6 parameters - x, y, ein_rad, phi, axis_ratio, slope),
+I think our class inheritance should automatically take care of a lot of linking. So, if we go from an EllipticalIsothermal
+(5 parameters - x, y, ein_rad, phi, axis_ratio) to an EllipticalPowerLaw (6 parameters - x, y, ein_rad, phi, axis_ratio, slope),
 it should be obvious that the first 5 parameters can inherit from the IsothermalMassProfile and only slope needs special treatment.
 
-A similar thing is true if we go from the EllipticalIsothermalMassProfile to a NFWDarkMatterMassProfile (6 - parameters,
+A similar thing is true if we go from the EllipticalIsothermal to a NFWDarkMatterMassProfile (6 - parameters,
 x,, y, kappa, phi, axis_ratio, scale_radius). The Profile class will tell the new dark matter model that it can use
 the x and y of EllipticalIsothermal. Although phi and axis_ratio are shared between these two profiles, its generally
 not wise to assume the Isothermal's axis-ratio or phi (which represent ALL the mass in the lens) correlate with the
