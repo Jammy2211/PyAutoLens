@@ -12,7 +12,7 @@ image_dir = '/gpfs/data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidenc
 
 image_name = 'SLACSJ0252+0039'
 image_name = 'SLACSJ1250+0523'
-image_name = 'SLACSJ1430+4105'
+# image_name = 'SLACSJ1430+4105'
 
 slacs = density_plot_tools.SLACS(image_dir, image_name)
 
@@ -39,17 +39,17 @@ pdf_file = image_dir + model_folder[0] + '/' + image_name + '.txt'
 
 slacs.load_samples(pdf_file, center_skip, ltm_skip)
 
-# model_indexes, sample_weights, total_masses, stellar_masses, dark_masses, stellar_fractions = \
-#      slacs.masses_of_all_samples(radius_kpc=10.0)
-#
-# total_mass, total_mass_std = density_plot_tools.weighted_avg_and_std(total_masses, sample_weights)
-# total_mass_lower = total_mass - total_mass_std
-# total_mass_upper = total_mass + total_mass_std
-#
-# stellar_mass, stellar_mass_std = density_plot_tools.weighted_avg_and_std(stellar_masses, sample_weights)
-# stellar_mass_lower = stellar_mass - stellar_mass_std
-# stellar_mass_upper = stellar_mass + stellar_mass_std
-#
+model_indexes, sample_weights, total_masses, stellar_masses, dark_masses, stellar_fractions = \
+     slacs.masses_of_all_samples(radius_kpc=10.0)
+
+total_mass, total_mass_std = density_plot_tools.weighted_avg_and_std(total_masses, sample_weights)
+total_mass_lower = total_mass - total_mass_std
+total_mass_upper = total_mass + total_mass_std
+
+stellar_mass, stellar_mass_std = density_plot_tools.weighted_avg_and_std(stellar_masses, sample_weights)
+stellar_mass_lower = stellar_mass - stellar_mass_std
+stellar_mass_upper = stellar_mass + stellar_mass_std
+
 # print()
 # print('Our Mass = ', '{0:e}'.format(total_mass), '(', '{0:e}'.format(total_mass_lower), '{0:e}'.format(total_mass_upper), ')')
 # print('SLACS Mass in R_Ein= ', slacs.mass)
@@ -68,7 +68,6 @@ slacs.load_samples(pdf_file, center_skip, ltm_skip)
 # print('Our Stellar Mass / SLACS Salpeter Stellar Mass = ', stellar_mass / float(slacs.sal_stellar_mass))
 
 
+slacs.weighted_densities_vs_radii(radius_kpc=30.0, weight_cut=1e-3, number_bins=20)
 
-slacs.weighted_densities_vs_radii(radius_kpc=30.0, weight_cut=1e-5, number_bins=100)
-
-slacs.plot_density(image_name=image_name, labels=['Sersic Bulge', 'Exponential Stellar Halo', 'Dark Matter Halo'])
+slacs.plot_density(image_name=image_name, labels=['Sersic Bulge', 'EllipticalExponentialMass Stellar Halo', 'Dark Matter Halo'])

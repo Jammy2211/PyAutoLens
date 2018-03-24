@@ -2,12 +2,13 @@ from auto_lens.profiles import geometry_profiles
 import math
 from scipy.integrate import quad
 import numpy as np
+from itertools import count
 
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
     @property
-    def subscript_label(self):
+    def subscript(self):
         return 'l'
 
     # noinspection PyMethodMayBeStatic
@@ -66,9 +67,10 @@ class LightProfile(object):
         # pyplot.show()
         geometry_profiles.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
-
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
+
+    _ids = count()
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """
@@ -91,6 +93,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+        self.component_number = next(self._ids)
 
     @property
     def parameter_labels(self):
@@ -135,7 +138,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         return 2 * math.pi * r * self.intensity_at_radius(x)
 
 
-class SersicLightProfile(EllipticalLightProfile):
+class EllipticalSersic(EllipticalLightProfile):
     """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
@@ -157,7 +160,7 @@ class SersicLightProfile(EllipticalLightProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(SersicLightProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
@@ -224,7 +227,7 @@ class SersicLightProfile(EllipticalLightProfile):
         return self.intensity_at_radius(eta)
 
 
-class ExponentialLightProfile(SersicLightProfile):
+class EllipticalExponential(EllipticalSersic):
     """Used to fit flatter regions of light in a galaxy, typically a disk.
 
     It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 1"""
@@ -245,14 +248,14 @@ class ExponentialLightProfile(SersicLightProfile):
         effective_radius : float
             The circular radius containing half the light of this model
         """
-        super(ExponentialLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
+        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class DevVaucouleursLightProfile(SersicLightProfile):
+class EllipticalDevVaucouleurs(EllipticalSersic):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
     profiles of an elliptical / early-type galaxy.
 
@@ -274,14 +277,14 @@ class DevVaucouleursLightProfile(SersicLightProfile):
         effective_radius : float
             The circular radius containing half the light of this model
         """
-        super(DevVaucouleursLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
+        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class CoreSersicLightProfile(SersicLightProfile):
+class EllipticalCoreSersic(EllipticalSersic):
     """The Core-Sersic profiles is used to fit the light of a galaxy. It is an extension of the Sersic profiles and \
     flattens the light profiles central values (compared to the extrapolation of a pure Sersic profiles), by forcing \
     these central regions to behave instead as a power-law."""
@@ -313,7 +316,7 @@ class CoreSersicLightProfile(SersicLightProfile):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(CoreSersicLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
+        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha

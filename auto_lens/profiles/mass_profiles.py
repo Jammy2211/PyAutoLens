@@ -4,7 +4,7 @@ import math
 import numpy as np
 from scipy.integrate import quad
 from scipy import special
-
+from itertools import count
 
 class MassProfile(object):
 
@@ -28,6 +28,8 @@ class MassProfile(object):
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     """Generic class for an elliptical light profiles"""
 
+    _ids = count()
+
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """
 
@@ -49,6 +51,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+        self.component_number = next(self._ids)
+
+    @property
+    def subscript(self):
+        return ''
 
     @property
     def parameter_labels(self):
@@ -95,7 +102,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return 2 * math.pi * r * self.surface_density_at_radius(x)
 
 
-class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
+class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
     """Represents an elliptical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0):
@@ -115,7 +122,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
             power-law density slope of mass profiles
         """
 
-        super(EllipticalPowerLawMassProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalPowerLaw, self).__init__(centre, axis_ratio, phi)
         super(MassProfile, self).__init__()
 
         self.einstein_radius = einstein_radius
@@ -204,7 +211,7 @@ class EllipticalPowerLawMassProfile(EllipticalMassProfile, MassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
-class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
+class SphericalPowerLaw(EllipticalPowerLaw):
     """Represents a spherical power-law density distribution"""
 
     def __init__(self,centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0):
@@ -224,7 +231,7 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
             power-law density slope of mass profiles
         """
 
-        super(SphericalPowerLawMassProfile, self).__init__(centre, 1.0, 0.0, einstein_radius, slope)
+        super(SphericalPowerLaw, self).__init__(centre, 1.0, 0.0, einstein_radius, slope)
 
     @property
     def parameter_labels(self):
@@ -250,7 +257,7 @@ class SphericalPowerLawMassProfile(EllipticalPowerLawMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
-class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
+class EllipticalIsothermal(EllipticalPowerLaw):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
 
@@ -269,7 +276,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
             Einstein radius of power-law mass profiles
         """
 
-        super(EllipticalIsothermalMassProfile, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0)
+        super(EllipticalIsothermal, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0)
 
     @property
     def parameter_labels(self):
@@ -302,7 +309,7 @@ class EllipticalIsothermalMassProfile(EllipticalPowerLawMassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
-class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
+class SphericalIsothermal(EllipticalIsothermal):
     """Represents a spherical isothermal density distribution, which is equivalent to the spherical power-law
     density distribution for the value slope=2.0"""
 
@@ -317,7 +324,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
             Einstein radius of power-law mass profiles
         """
 
-        super(SphericalIsothermalMassProfile, self).__init__(centre, 1.0, 0.0, einstein_radius)
+        super(SphericalIsothermal, self).__init__(centre, 1.0, 0.0, einstein_radius)
 
     @property
     def parameter_labels(self):
@@ -357,7 +364,7 @@ class SphericalIsothermalMassProfile(EllipticalIsothermalMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, 2.0 * self.einstein_radius_rescaled)
 
 
-class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
+class EllipticalCoredPowerLaw(EllipticalPowerLaw):
     """Represents a cored elliptical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0, core_radius=0.05):
@@ -378,7 +385,7 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
         core_radius : float
             The radius of the inner core
         """
-        super(CoredEllipticalPowerLawMassProfile, self).__init__(centre, axis_ratio, phi, einstein_radius, slope)
+        super(EllipticalCoredPowerLaw, self).__init__(centre, axis_ratio, phi, einstein_radius, slope)
 
         self.core_radius = core_radius
 
@@ -396,7 +403,7 @@ class CoredEllipticalPowerLawMassProfile(EllipticalPowerLawMassProfile):
                 self.core_radius ** (3 - self.slope)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
 
 
-class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
+class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
     """Represents a cored spherical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, core_radius=0.05):
@@ -413,7 +420,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         core_radius : float
             The radius of the inner core
         """
-        super(CoredSphericalPowerLawMassProfile, self).__init__(centre, 1.0, 0.0, einstein_radius, slope, core_radius)
+        super(SphericalCoredPowerLaw, self).__init__(centre, 1.0, 0.0, einstein_radius, slope, core_radius)
 
     @property
     def parameter_labels(self):
@@ -441,7 +448,7 @@ class CoredSphericalPowerLawMassProfile(CoredEllipticalPowerLawMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
-class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
+class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
     """Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
 
@@ -462,15 +469,15 @@ class CoredEllipticalIsothermalMassProfile(CoredEllipticalPowerLawMassProfile):
             The radius of the inner core
         """
 
-        super(CoredEllipticalIsothermalMassProfile, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0,
-                                                                   core_radius)
+        super(EllipticalCoredIsothermal, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0,
+                                                        core_radius)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', r'\theta', 'S']
 
 
-class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
+class SphericalCoredIsothermal(SphericalCoredPowerLaw):
     """Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
 
@@ -487,14 +494,14 @@ class CoredSphericalIsothermalMassProfile(CoredSphericalPowerLawMassProfile):
             The radius of the inner core
         """
 
-        super(CoredSphericalIsothermalMassProfile, self).__init__(centre, einstein_radius, 2.0, core_radius)
+        super(SphericalCoredIsothermal, self).__init__(centre, einstein_radius, 2.0, core_radius)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', r'\theta', 'S']
 
 
-class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
+class EllipticalNFW(EllipticalMassProfile, MassProfile):
     """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
@@ -514,18 +521,18 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
             The radius containing half the light of this model
         """
 
-        super(EllipticalNFWMassProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalNFW, self).__init__(centre, axis_ratio, phi)
         super(MassProfile, self).__init__()
         self.kappa_s = kappa_s
         self.scale_radius = scale_radius
 
     @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', r'\kappa', 'Rs']
+    def subscript(self):
+        return 'd'
 
     @property
-    def subscript_label(self):
-        return 'd'
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', r'\kappa', 'Rs']
 
     @staticmethod
     def coord_func(r):
@@ -610,7 +617,7 @@ class EllipticalNFWMassProfile(EllipticalMassProfile, MassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
-class SphericalNFWMassProfile(EllipticalNFWMassProfile):
+class SphericalNFW(EllipticalNFW):
     """The spherical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
@@ -626,7 +633,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
             The radius containing half the light of this model
         """
 
-        super(SphericalNFWMassProfile, self).__init__(centre, 1.0, 0.0, kappa_s, scale_radius)
+        super(SphericalNFW, self).__init__(centre, 1.0, 0.0, kappa_s, scale_radius)
 
     @property
     def parameter_labels(self):
@@ -679,7 +686,7 @@ class SphericalNFWMassProfile(EllipticalNFWMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
-class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
+class EllipticalGeneralizedNFW(EllipticalNFW):
     """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -701,7 +708,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
             The radius containing half the light of this model
         """
 
-        super(EllipticalGeneralizedNFWMassProfile, self).__init__(centre, axis_ratio, phi, kappa_s, scale_radius)
+        super(EllipticalGeneralizedNFW, self).__init__(centre, axis_ratio, phi, kappa_s, scale_radius)
         self.inner_slope = inner_slope
 
     @property
@@ -778,7 +785,7 @@ class EllipticalGeneralizedNFWMassProfile(EllipticalNFWMassProfile):
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
-class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
+class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
     """The spherical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -796,7 +803,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
             The radius containing half the light of this model
         """
 
-        super(SphericalGeneralizedNFWMassProfile, self).__init__(centre, 1.0, 0.0, kappa_s, inner_slope, scale_radius)
+        super(SphericalGeneralizedNFW, self).__init__(centre, 1.0, 0.0, kappa_s, inner_slope, scale_radius)
 
     @property
     def parameter_labels(self):
@@ -822,7 +829,7 @@ class SphericalGeneralizedNFWMassProfile(EllipticalGeneralizedNFWMassProfile):
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
 
-class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile):
+class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfile):
     """The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
      galaxy's light."""
 
@@ -848,7 +855,7 @@ class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(SersicMassProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
+        super(EllipticalSersicMass, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.mass_to_light_ratio = mass_to_light_ratio
 
@@ -858,7 +865,7 @@ class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile
 
     @classmethod
     def from_sersic_light_profile(cls, sersic_light_profile, mass_to_light_ratio):
-        return SersicMassProfile.from_profile(sersic_light_profile, mass_to_light_ratio=mass_to_light_ratio)
+        return EllipticalSersicMass.from_profile(sersic_light_profile, mass_to_light_ratio=mass_to_light_ratio)
 
     def surface_density_at_radius(self, radius):
         return self.mass_to_light_ratio * self.intensity_at_radius(radius)
@@ -911,14 +918,14 @@ class SersicMassProfile(light_profiles.SersicLightProfile, EllipticalMassProfile
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
 
-class ExponentialMassProfile(SersicMassProfile):
-    """The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+class EllipticalExponentialMass(EllipticalSersicMass):
+    """The EllipticalExponentialMass mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
      galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0,phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        Setup an Exponential mass and light profile.
+        Setup an EllipticalExponentialMass mass and light profile.
 
         Parameters
         ----------
@@ -935,8 +942,8 @@ class ExponentialMassProfile(SersicMassProfile):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(ExponentialMassProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0,
-                                                     mass_to_light_ratio)
+        super(EllipticalExponentialMass, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0,
+                                                        mass_to_light_ratio)
 
     @property
     def parameter_labels(self):
@@ -944,17 +951,17 @@ class ExponentialMassProfile(SersicMassProfile):
 
     @classmethod
     def from_exponential_light_profile(cls, exponential_light_profile, mass_to_light_ratio):
-        return ExponentialMassProfile.from_profile(exponential_light_profile, mass_to_light_ratio=mass_to_light_ratio)
+        return EllipticalExponentialMass.from_profile(exponential_light_profile, mass_to_light_ratio=mass_to_light_ratio)
 
 
-class DevVaucouleursMassProfile(SersicMassProfile):
-    """The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+class EllipticalDevVaucouleursMass(EllipticalSersicMass):
+    """The EllipticalDevVaucouleursMass mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
      galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0,phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        Setup a DevVaucouleurs mass and light profile.
+        Setup a EllipticalDevVaucouleursMass mass and light profile.
 
         Parameters
         ----------
@@ -971,8 +978,8 @@ class DevVaucouleursMassProfile(SersicMassProfile):
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(DevVaucouleursMassProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0,
-                                                     mass_to_light_ratio)
+        super(EllipticalDevVaucouleursMass, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0,
+                                                           mass_to_light_ratio)
 
     @property
     def parameter_labels(self):
@@ -980,4 +987,4 @@ class DevVaucouleursMassProfile(SersicMassProfile):
 
     @classmethod
     def from_dev_vaucouleurs_light_profile(cls, dev_vaucouleurs_light_profile, mass_to_light_ratio):
-        return DevVaucouleursMassProfile.from_profile(dev_vaucouleurs_light_profile, mass_to_light_ratio=mass_to_light_ratio)
+        return EllipticalDevVaucouleursMass.from_profile(dev_vaucouleurs_light_profile, mass_to_light_ratio=mass_to_light_ratio)
