@@ -309,7 +309,7 @@ class Galaxy(object):
         dimensionless_mass : float
             The total dimensionless mass within the specified circle.
         """
-        return list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
+        return np.asarray(list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
 
     def dimensionless_mass_within_ellipses(self, major_axis):
         """

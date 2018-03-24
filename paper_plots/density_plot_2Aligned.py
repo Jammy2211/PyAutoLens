@@ -170,4 +170,4 @@ print('Our Stellar Mass / SLACS Chabrier Stellar Mass = ', stellar_mass / float(
 print('Our Stellar Mass / SLACS Salpeter Stellar Mass = ', stellar_mass / float(slacs_sal_stellar_mass))
 
 lens_galaxy.plot_density_as_function_of_radius(maximum_radius=20.0*lens_galaxy.arcsec_per_kpc, number_bins=300, image_name=image_name, plot_errors=False,
-                                               labels=['Sersic Bulge', 'Exponential Stellar Halo', 'Dark Matter Halo'])
+                                               labels=['Sersic Bulge', 'EllipticalExponentialMass Stellar Halo', 'Dark Matter Halo'])

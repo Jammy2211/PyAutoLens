@@ -12,7 +12,7 @@ def no_galaxies():
 
 @pytest.fixture(scope='function')
 def lens_sis():
-    sis = mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)
+    sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     lens_sis = galaxy.Galaxy(mass_profiles=[sis])
     return lens_sis
 
@@ -215,7 +215,7 @@ class TestPlaneCoordinates(object):
             sparse_coordinates = np.array([[1.0, 1.0]])
             blurring_coordinates = np.array([[1.0, 0.0]])
 
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)])
+            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             ray_trace_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
                                                                  blurring_coordinates)
@@ -241,9 +241,9 @@ class TestPlaneCoordinates(object):
             sparse_coordinates = np.array([[1.0, 1.0]])
             blurring_coordinates = np.array([[1.0, 0.0]])
 
-            power_law = mass_profiles.EllipticalPowerLawMassProfile(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
+            power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
                                                                     einstein_radius=1.0, slope=2.2)
-            nfw = mass_profiles.SphericalNFWMassProfile(kappa_s=0.1, scale_radius=5.0)
+            nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
 
             lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
 
@@ -905,7 +905,7 @@ class TestLensPlane(object):
             sparse_coordinates = np.array([[1.0, 1.0]])
             blurring_coordinates = np.array([[1.0, 0.0]])
 
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermalMassProfile(einstein_radius=1.0)])
+            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             lens_plane_coordinates = ray_tracing.PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates,
                                                                    blurring_coordinates)
@@ -932,9 +932,9 @@ class TestLensPlane(object):
             sparse_coordinates = np.array([[1.0, 1.0]])
             blurring_coordinates = np.array([[1.0, 0.0]])
 
-            power_law = mass_profiles.EllipticalPowerLawMassProfile(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
+            power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
                                                                     einstein_radius=1.0, slope=2.2)
-            nfw = mass_profiles.SphericalNFWMassProfile(kappa_s=0.1, scale_radius=5.0)
+            nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
 
             lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
 

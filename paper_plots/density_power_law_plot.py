@@ -178,4 +178,4 @@ print(float(slacs_mass) / total_mass )
 stop
 
 lens_galaxy.plot_density_as_function_of_radius(maximum_radius=5.0, number_bins=300, image_name=image_name, plot_errors=True,
-                                               labels=['Sersic Bulge', 'Exponential Stellar Halo', 'Dark Matter Halo'])
+                                               labels=['Sersic Bulge', 'EllipticalExponentialMass Stellar Halo', 'Dark Matter Halo'])

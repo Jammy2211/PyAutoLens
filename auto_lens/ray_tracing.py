@@ -69,7 +69,6 @@ class TraceImageAndSource(object):
 
         return PlaneCoordinates(coordinates, sub_coordinates, sparse_coordinates, blurring_coordinates)
 
-
 class PlaneCoordinates(geometry_profiles.Profile):
 
     def __init__(self, image_grid, sub_grid=None, sparse_grid=None, blurring_grid=None, centre=(0.0, 0.0)):
