@@ -13,7 +13,7 @@ a graph describing neighbours on the source plane [[int]] this module will retur
 
 matrix = covariance_matrix.create_covariance_matrix(pixel_maps, noise_vector, graph)
 
-The optional key word argument neighbour_search_limit can be specified to change the sensitivity of the model to smaller
+The optional key word argument neighbour_search_limit can be specified to change the sensitivity of the model_mapper to smaller
 covariance values. The initial step of the process is to find a contiguous neighbour in the source plane of non-zero
 covariance with some pixel. If a zero covariance is found for some pixel then the search does not include further
 neighbours of that pixel. Setting neighbour_search_limit causes the adding of neighbours to stop at the set covariance

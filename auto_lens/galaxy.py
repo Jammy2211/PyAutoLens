@@ -101,7 +101,7 @@ class Galaxy(object):
         """
         Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This \
         is performed via integration of each light profile and is centred, oriented and \ aligned with each light \
-        model's individual geometry.
+        model_mapper's individual geometry.
 
         See *light_profiles.luminosity_within_ellipse* for details of how this is performed.
 
