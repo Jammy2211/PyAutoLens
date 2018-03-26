@@ -62,34 +62,34 @@ class TestNonLinearDirectory(object):
     
         def test__one_light_profile__correct_directory(self):
     
-            if os.path.exists(path + 'test_files/non_linear/directory_setup/EllipticalSersic'):
-                shutil.rmtree(path + 'test_files/non_linear/directory_setup/EllipticalSersic')
+            if os.path.exists(path + 'test_files/non_linear/directory/EllipticalSersic'):
+                shutil.rmtree(path + 'test_files/non_linear/directory/EllipticalSersic')
     
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
     
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/', model_mapper=model_map)
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/', model_mapper=model_map)
     
             assert nl_directory.total_parameters == 7
     
         def test__one_mass_profile__correct_directory(self):
     
-            if os.path.exists(path + 'test_files/non_linear/directory_setup/SphericalNFW'):
-                shutil.rmtree(path + 'test_files/non_linear/directory_setup/SphericalNFW')
+            if os.path.exists(path + 'test_files/non_linear/directory/SphericalNFW'):
+                shutil.rmtree(path + 'test_files/non_linear/directory/SphericalNFW')
     
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
     
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/', model_mapper=model_map)
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/', model_mapper=model_map)
     
             assert nl_directory.total_parameters == 4
     
         def test__nl_directoryple_light_and_mass_profiles__correct_directory(self):
     
             if os.path.exists(path +
-                              'test_files/non_linear/directory_setup/EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW'):
+                              'test_files/non_linear/directory/EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/directory_setup/EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW')
+                    path + 'test_files/non_linear/directory/EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW')
     
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic,
@@ -98,7 +98,7 @@ class TestNonLinearDirectory(object):
                                                   mass_profile=mass_profiles.SphericalNFW,
                                                   mass_profile_2=mass_profiles.SphericalNFW)
     
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/', model_mapper=model_map)
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/', model_mapper=model_map)
     
             assert nl_directory.total_parameters == 29
 
@@ -110,7 +110,7 @@ class TestNonLinearDirectory(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/',
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/',
                                                          model_mapper=model_map)
 
             assert nl_directory.generate_parameter_latex('x') == ['$x$']
@@ -120,7 +120,7 @@ class TestNonLinearDirectory(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/',
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/',
                                                          model_mapper=model_map)
 
             assert nl_directory.generate_parameter_latex(['x', 'y', 'z']) == ['$x$', '$y$', '$z$']
@@ -130,7 +130,7 @@ class TestNonLinearDirectory(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/',
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/',
                                                          model_mapper=model_map)
 
             assert nl_directory.generate_parameter_latex(['x'], subscript='d') == [r'$x_{\mathrm{d}}$']
@@ -140,7 +140,7 @@ class TestNonLinearDirectory(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
-            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory_setup/',
+            nl_directory = non_linear.NonLinearDirectory(path=path + 'test_files/non_linear/directory/',
                                                          model_mapper=model_map)
 
             assert nl_directory.generate_parameter_latex(['x', 'y', 'z'], subscript='d') == [r'$x_{\mathrm{d}}$',
@@ -155,17 +155,17 @@ class TestMultiNest(object):
 
         def test__directory_parameters_and_latex_all_work(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/optimizer/directory_setup/EllipticalSersic'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/optimizer/directory_setup/EllipticalSersic')
+            if os.path.exists(path + 'test_files/non_linear/multinest/optimizer/directory/EllipticalSersic'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/optimizer/directory/EllipticalSersic')
 
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
             multi = non_linear.MultiNestOptimizer(path=path + 'test_files/non_linear/multinest/'
-                                                              'optimizer/directory_setup/', model_mapper=model_map)
+                                                              'optimizer/directory/', model_mapper=model_map)
 
             assert os.path.exists(path + 'test_files/non_linear/multinest/optimizer/'
-                                         'directory_setup/EllipticalSersic') == True
+                                         'directory/EllipticalSersic') == True
             assert multi.total_parameters == 7
             assert multi.generate_parameter_latex('x') == ['$x$']
 
