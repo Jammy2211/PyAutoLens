@@ -44,7 +44,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         intensity : float
             Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The circular radius containing half the light of this model
+            The circular radius containing half the light of this model_mapper
         sersic_index : Int
             The concentration of the light profiles
         """
@@ -64,7 +64,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     def dimensionless_mass_within_circle(self, radius):
         """
         Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is performed via \
-        integration of the surface density profiles and is centred on the mass model.
+        integration of the surface density profiles and is centred on the mass model_mapper.
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
     def dimensionless_mass_within_ellipse(self, major_axis):
         """
         Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is performed \
-        via integration of the surface density profiles and is centred and rotationally aligned with the mass model.
+        via integration of the surface density profiles and is centred and rotationally aligned with the mass model_mapper.
 
         Parameters
         ----------
@@ -518,7 +518,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         kappa_s : float
             The overall normalization of the dark matter halo
         scale_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         """
 
         super(EllipticalNFW, self).__init__(centre, axis_ratio, phi)
@@ -630,7 +630,7 @@ class SphericalNFW(EllipticalNFW):
         kappa_s : float
             The overall normalization of the dark matter halo
         scale_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         """
 
         super(SphericalNFW, self).__init__(centre, 1.0, 0.0, kappa_s, scale_radius)
@@ -705,7 +705,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         inner_slope : float
             The inner slope of the dark matter halo
         scale_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         """
 
         super(EllipticalGeneralizedNFW, self).__init__(centre, axis_ratio, phi, kappa_s, scale_radius)
@@ -800,7 +800,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         inner_slope : float
             The inner slope of the dark matter halo
         scale_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         """
 
         super(SphericalGeneralizedNFW, self).__init__(centre, 1.0, 0.0, kappa_s, inner_slope, scale_radius)
@@ -849,7 +849,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         sersic_index : Int
             The concentration of the light profiles
         mass_to_light_ratio : float
@@ -938,7 +938,7 @@ class EllipticalExponentialMass(EllipticalSersicMass):
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
@@ -974,7 +974,7 @@ class EllipticalDevVaucouleursMass(EllipticalSersicMass):
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The radius containing half the light of this model
+            The radius containing half the light of this model_mapper
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """

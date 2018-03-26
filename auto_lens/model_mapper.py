@@ -3,7 +3,7 @@ from scipy.special import erfinv
 import inspect
 import configparser
 import os
-from auto_lens import multinest
+from auto_lens import non_linear
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -166,12 +166,12 @@ class ModelMapper(object):
         """
         return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
 
-    def model_instance_from_prior_medians(self):
+    def from_prior_medians(self):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
 
-        This method uses the prior median values to setup the model instance.
+        This method uses the prior median values to setup the model_mapper instance.
 
         Parameters
         ----------
@@ -181,12 +181,12 @@ class ModelMapper(object):
         Returns
         -------
         model_instance : ModelInstance
-            An object containing reconstructed model instances
+            An object containing reconstructed model_mapper instances
 
         """
-        return self.model_instance_from_unit_vector(unit_vector=[0.5]*len(self.prior_set))
+        return self.from_unit_vector(unit_vector=[0.5] * len(self.prior_set))
 
-    def model_instance_from_unit_vector(self, unit_vector):
+    def from_unit_vector(self, unit_vector):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -202,7 +202,7 @@ class ModelMapper(object):
         Returns
         -------
         model_instance : ModelInstance
-            An object containing reconstructed model instances
+            An object containing reconstructed model_mapper instances
 
         """
         arguments = dict(
@@ -210,7 +210,7 @@ class ModelMapper(object):
 
         return self.model_instance(arguments)
 
-    def model_instance_from_physical_vector(self, physical_vector):
+    def from_physical_vector(self, physical_vector):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -225,7 +225,7 @@ class ModelMapper(object):
         Returns
         -------
         model_instance : ModelInstance
-            An object containing reconstructed model instances
+            An object containing reconstructed model_mapper instances
 
         """
         arguments = dict(
@@ -247,7 +247,7 @@ class ModelMapper(object):
         Returns
         -------
         model_instance : ModelInstance
-            An object containing reconstructed model instances
+            An object containing reconstructed model_mapper instances
 
         """
 
@@ -257,32 +257,6 @@ class ModelMapper(object):
             setattr(model_instance, prior_model[0], prior_model[1].instance_for_arguments(arguments))
 
         return model_instance
-
-    def output_paramnames_file(self, results_path, subscripts=True):
-
-        paramnames = open(results_path + 'weighted_samples.paramnames', 'w')
-
-        cls_index = 0
-
-        for name, cls in self.class_dict.items():
-
-            param_labels = cls.parameter_labels.__get__(cls)
-            if subscripts == True:
-                subscript_label = cls.subscript_label.__get__(cls)
-                latex_labels = multinest.generate_parameter_latex(param_labels, subscript_label)
-            elif subscripts == False:
-                latex_labels = multinest.generate_parameter_latex(param_labels)
-
-            for param_no, param in enumerate(self.class_priors_dict[name]):
-
-                paramnames_line = str(cls_index) + '_' + name + '_' + param[0]
-                paramnames_line += ' '*(40-len(paramnames_line)) + latex_labels[param_no]
-
-                paramnames.write(paramnames_line + '\n')
-
-            cls_index += 1
-
-        paramnames.close()
 
 prior_number = 0
 
@@ -339,6 +313,11 @@ class UniformPrior(Prior):
         """
         return self.lower_limit + unit * (self.upper_limit - self.lower_limit)
 
+    @property
+    def model_info(self):
+        """The line of text describing this prior for the model_mapper.info file"""
+        return 'UniformPrior, lower_limit = ' + str(self.lower_limit) + ', upper_limit = ' + str(self.upper_limit)
+
 
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
@@ -361,6 +340,11 @@ class GaussianPrior(Prior):
             A value for the attribute biased to the gaussian distribution
         """
         return self.mean + (self.sigma * math.sqrt(2) * erfinv((unit * 2.0) - 1.0))
+
+    @property
+    def model_info(self):
+        """The line of text describing this prior for the model_mapper.info file"""
+        return 'GaussianPrior, mean = ' + str(self.mean) + ', sigma = ' + str(self.sigma)
 
 
 class PriorModel(object):

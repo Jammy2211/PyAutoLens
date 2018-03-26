@@ -5,6 +5,7 @@ from functools import wraps
 import inspect
 from matplotlib import pyplot
 import colorsys
+from itertools import count
 
 
 def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
@@ -300,10 +301,6 @@ class Profile(object):
 
     def __init__(self, centre=(0.0, 0.0)):
         self.centre = centre
-
-    @property
-    def subscript_label(self):
-        return ''
 
     @property
     def parameter_labels(self):
