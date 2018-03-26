@@ -7,10 +7,6 @@ from itertools import count
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    @property
-    def subscript(self):
-        return 'l'
-
     # noinspection PyMethodMayBeStatic
     def intensity_at_radius(self, radius):
         """
@@ -86,7 +82,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         intensity : float
             Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The circular radius containing half the light of this model
+            The circular radius containing half the light of this model_mapper
         sersic_index : Int
             The concentration of the light profiles
         """
@@ -96,13 +92,17 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         self.component_number = next(self._ids)
 
     @property
+    def subscript(self):
+        return 'l'
+
+    @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi']
 
     def luminosity_within_circle(self, radius):
         """
         Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
-        integration and is centred on the light model.
+        integration and is centred on the light model_mapper.
 
         Parameters
         ----------
@@ -119,7 +119,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     def luminosity_within_ellipse(self, major_axis):
         """
         Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
-        integration and is centred, oriented and aligned with on the light model.
+        integration and is centred, oriented and aligned with on the light model_mapper.
         Parameters
         ----------
         major_axis: float
@@ -156,7 +156,7 @@ class EllipticalSersic(EllipticalLightProfile):
         intensity : float
             Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The circular radius containing half the light of this model
+            The circular radius containing half the light of this model_mapper
         sersic_index : Int
             The concentration of the light profiles
         """
@@ -246,7 +246,7 @@ class EllipticalExponential(EllipticalSersic):
         intensity : float
             Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The circular radius containing half the light of this model
+            The circular radius containing half the light of this model_mapper
         """
         super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
 
@@ -275,7 +275,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         intensity : float
             Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The circular radius containing half the light of this model
+            The circular radius containing half the light of this model_mapper
         """
         super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
 
@@ -304,7 +304,7 @@ class EllipticalCoreSersic(EllipticalSersic):
         intensity : float
             Overall intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The circular radius containing half the light of this model
+            The circular radius containing half the light of this model_mapper
         sersic_index : Int
             The concentration of the light profiles
         radius_break : Float
