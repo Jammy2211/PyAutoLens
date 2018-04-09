@@ -91,6 +91,12 @@ class TestConstructors(object):
 
     def test_component_numbers_four_profiles(self):
 
+        # TODO : Perform Counting reset better
+
+        from itertools import count
+
+        light_profiles.EllipticalLightProfile._ids = count()
+
         sersic_0 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
                                                  sersic_index=4.0)
 

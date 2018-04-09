@@ -63,6 +63,7 @@ class LightProfile(object):
         # pyplot.show()
         geometry_profiles.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
 
+
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
@@ -223,8 +224,7 @@ class EllipticalSersic(EllipticalLightProfile):
         intensity : float
             The value of intensity at the given image_grid
         """
-        eta = np.sqrt(self.axis_ratio) * self.coordinates_to_elliptical_radius(coordinates)
-        return self.intensity_at_radius(eta)
+        return self.intensity_at_radius(self.coordinates_to_eccentric_radius(coordinates))
 
 
 class EllipticalExponential(EllipticalSersic):

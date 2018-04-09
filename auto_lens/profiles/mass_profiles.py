@@ -883,15 +883,15 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         ----------
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
-        return self.mass_to_light_ratio * self.intensity_at_coordinates(coordinates)
+        return self.surface_density_at_radius(self.coordinates_to_eccentric_radius(coordinates))
 
     @property
     def deflection_normalization(self):
-        return self.mass_to_light_ratio * self.axis_ratio
+        return self.axis_ratio
 
     def deflection_func(self, u, coordinates, npow):
         eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
-        return self.intensity_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
+        return self.surface_density_at_radius(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @geometry_profiles.transform_coordinates
     def deflection_angles_at_coordinates(self, coordinates):
@@ -910,7 +910,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
 
         def calculate_deflection_component(npow, index):
             deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-            return self.mass_to_light_ratio * self.axis_ratio * deflection * coordinates[index]
+            return self.deflection_normalization * deflection * coordinates[index]
 
         deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
@@ -988,3 +988,63 @@ class EllipticalDevVaucouleursMass(EllipticalSersicMass):
     @classmethod
     def from_dev_vaucouleurs_light_profile(cls, dev_vaucouleurs_light_profile, mass_to_light_ratio):
         return EllipticalDevVaucouleursMass.from_profile(dev_vaucouleurs_light_profile, mass_to_light_ratio=mass_to_light_ratio)
+
+
+class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 sersic_index=4.0, mass_to_light_ratio=1.0, mass_to_light_gradient=0.0):
+        """
+        Setup a Sersic mass and light profiles.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the profiles
+        axis_ratio : float
+            Ratio of profiles ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall flux intensity normalisation in the light profiles (electrons per second)
+        effective_radius : float
+            The radius containing half the light of this model_mapper
+        sersic_index : Int
+            The concentration of the light profiles
+        mass_to_light_ratio : float
+            The mass-to-light ratio of the light profiles
+        mass_to_light_gradient : float
+            The mass-to-light radial gradient.
+        """
+        super(EllipticalSersicMassRadialGradient, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
+                                                                 sersic_index, mass_to_light_ratio)
+        self.mass_to_light_gradient = mass_to_light_gradient
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Tau']
+
+    @classmethod
+    def from_sersic_light_profile(cls, sersic_light_profile, mass_to_light_ratio, mass_to_light_gradient):
+        return EllipticalSersicMassRadialGradient.from_profile(sersic_light_profile,
+                                                               mass_to_light_ratio=mass_to_light_ratio,
+                                                               mass_to_light_gradient=mass_to_light_gradient)
+
+    def surface_density_at_radius(self, radius):
+        return self.mass_to_light_ratio * (((self.axis_ratio*radius)/self.effective_radius)**-self.mass_to_light_gradient) \
+               * self.intensity_at_radius(radius)
+
+    @geometry_profiles.transform_coordinates
+    def surface_density_at_coordinates(self, coordinates):
+        """Calculate the projected surface density in dimensionless units at a given set of image_grid plane image_grid.
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The x and y image_grid of the image_grid
+
+        Returns
+        ----------
+        The surface density [kappa(eta)] (r-direction) at those image_grid
+        """
+        return self.surface_density_at_radius(self.coordinates_to_eccentric_radius(coordinates))

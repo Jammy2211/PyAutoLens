@@ -370,7 +370,9 @@ class TestEllipticalProfile(object):
             assert coordinates1[1] == coordinates2[1]
 
     class TestRotateCoordinatesThenBackToCartesian(object):
+
         def test_are_consistent(self):
+
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=315.0)
 
             coordinates_original = np.array([5.2221, 2.6565])

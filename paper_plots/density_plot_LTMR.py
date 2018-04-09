@@ -23,13 +23,15 @@ slacs = density_plot_tools.SLACS(image_dir, image_name)
 # phase_folder = 'PL_Phase_7'
 
 pipeline_folder = 'Pipeline_LTM2'
-phase_folder = 'PL_Phase_7'
+phase_folder = 'PL_5_LMDM_LTM_R_MC'
 
 if image_name == 'SLACSJ1250+0523' or image_name == 'SLACSJ1430+4105':
     center_skip = 2
 
 if pipeline_folder == 'Pipeline_LTM2':
     ltm_skip = 1
+
+ltm_r_skip = 1
 
 image_dir = image_dir + image_name + '/' + pipeline_folder + '/' + phase_folder + '/'
 
