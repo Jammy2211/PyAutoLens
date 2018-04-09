@@ -258,6 +258,27 @@ class ModelMapper(object):
 
         return model_instance
 
+    def generate_info(self):
+        """Use the priors that make up the model_mapper to information on each parameter of the overall model.
+
+        This information is extracted from each priors *model_info* property.
+        '"""
+
+        model_info = ''
+
+        for prior_name, prior_model in self.prior_models:
+
+            model_info += prior_model.cls.__name__ + '\n' + '\n'
+
+            for i, prior in enumerate(prior_model.priors):
+                param_name = str(self.class_priors_dict[prior_name][i][0])
+                model_info += param_name + ': ' + (prior[1].model_info + '\n')
+
+            model_info +='\n'
+
+        return model_info
+
+
 prior_number = 0
 
 
