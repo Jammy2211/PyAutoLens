@@ -7,7 +7,9 @@ import os
 test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 class TestData(object):
+
     class TestSetup(object):
+
         def test__init__input_data_3x3__all_attributes(self):
             test_data = image.Image(array=np.ones((3, 3)), pixel_scale=0.1)
 

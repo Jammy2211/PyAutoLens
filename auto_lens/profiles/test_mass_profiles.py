@@ -212,6 +212,12 @@ class TestConstructors(object):
 
     def test_component_numbers_four_profiles(self):
 
+        # TODO : Perform Counting reset better in code
+
+        from itertools import count
+
+        mass_profiles.EllipticalMassProfile._ids = count()
+
         power_law_0 = mass_profiles.EllipticalPowerLaw(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                      einstein_radius=1.0, slope=2.0)
 
@@ -227,6 +233,7 @@ class TestConstructors(object):
         assert power_law_1.component_number == 1
         assert power_law_2.component_number == 2
         assert power_law_3.component_number == 3
+
 
 class TestProfiles(object):
     class TestEllipticalPowerLaw(object):
@@ -507,7 +514,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
 
-            def test__identical_as_sie_compare_ratio__same_defls(self):
+            def test__identical_as_sie_compare_ratio(self):
                 isothermal = mass_profiles.EllipticalIsothermal(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                                 einstein_radius=1.0)
 
@@ -523,7 +530,7 @@ class TestProfiles(object):
 
                 assert ratio_isothermal == pytest.approx(ratio_power_law, 1e-3)
 
-            def test__identical_as_sie_compare_values__same_defls(self):
+            def test__identical_as_sie_compare_values(self):
                 isothermal = mass_profiles.EllipticalIsothermal(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                                 einstein_radius=1.0)
 
@@ -537,7 +544,7 @@ class TestProfiles(object):
                 assert defls_isothermal[0] == pytest.approx(defls_power_law[0], 1e-3)
                 assert defls_isothermal[1] == pytest.approx(defls_power_law[1], 1e-3)
 
-            def test__compare_to_fortran_slope_isothermal__same_defls(self):
+            def test__compare_to_fortran_slope_isothermal(self):
                 power_law = mass_profiles.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0, slope=2.0)
 
@@ -546,7 +553,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.50734, 1e-3)
                 assert defls[1] == pytest.approx(0.79421, 1e-3)
 
-            def test__compare_to_fortran_slope_above_isothermal__same_defls(self):
+            def test__compare_to_fortran_slope_above_isothermal(self):
                 power_law = mass_profiles.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0, slope=2.5)
 
@@ -555,7 +562,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.99629, 1e-3)
                 assert defls[1] == pytest.approx(1.29641, 1e-3)
 
-            def test__compare_to_fortran_slope_below_isothermal__same_defls(self):
+            def test__compare_to_fortran_slope_below_isothermal(self):
                 power_law = mass_profiles.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0,
                                                              einstein_radius=1.0, slope=1.5)
 
@@ -564,7 +571,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.26729, 1e-3)
                 assert defls[1] == pytest.approx(0.48036, 1e-3)
 
-            def test__compare_to_fortran_different_values__same_defls(self):
+            def test__compare_to_fortran_different_values(self):
                 power_law = mass_profiles.EllipticalPowerLaw(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
                                                              einstein_radius=1.3, slope=1.9)
 
@@ -574,7 +581,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(-0.60205, 1e-3)
                 assert defls[1] == pytest.approx(1.12841, 1e-3)
 
-            def test__compare_to_fortran_different_values_2__same_defls(self):
+            def test__compare_to_fortran_different_values_2(self):
                 power_law = mass_profiles.EllipticalPowerLaw(centre=(0.5, -0.7), axis_ratio=0.7, phi=150.0,
                                                              einstein_radius=1.3, slope=2.2)
 
@@ -739,7 +746,7 @@ class TestProfiles(object):
 
                 # TODO : Add fortran comparison
 
-            def test__compare_to_fortran_slope_isothermal__same_defls(self):
+            def test__compare_to_fortran_slope_isothermal(self):
                 power_law = mass_profiles.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0,
                                                             slope=2.0)
 
@@ -748,7 +755,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(-0.94868, 1e-3)
                 assert defls[1] == pytest.approx(-0.31622, 1e-3)
 
-            def test__compare_to_fortran_slope_above_isothermal__same_defls(self):
+            def test__compare_to_fortran_slope_above_isothermal(self):
                 power_law = mass_profiles.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0,
                                                             slope=2.5)
 
@@ -757,7 +764,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(-4.77162, 1e-3)
                 assert defls[1] == pytest.approx(-1.59054, 1e-3)
 
-            def test__compare_to_fortran_slope_below_isothermal__same_defls(self):
+            def test__compare_to_fortran_slope_below_isothermal(self):
                 power_law = mass_profiles.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0,
                                                             slope=1.5)
 
@@ -2325,7 +2332,7 @@ class TestProfiles(object):
                 assert deflections[1] == pytest.approx(-0.00559, 1e-3)
 
 
-    class TestEllipticalNFWMassProfile(object):
+    class TestEllipticalNFW(object):
         class TestCoordFuncc(object):
             def test__coord_func_x_above_1(self):
                 assert mass_profiles.EllipticalNFW.coord_func(2.0) == pytest.approx(0.60459, 1e-3)
@@ -2530,7 +2537,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
 
-            def test__compare_to_fortran_1__same_defls(self):
+            def test__compare_to_fortran_1(self):
                 nfw = mass_profiles.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                   kappa_s=1.0, scale_radius=1.0)
 
@@ -2539,7 +2546,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.56194, 1e-3)
                 assert defls[1] == pytest.approx(0.56194, 1e-3)
 
-            def test__compare_to_fortran_2__same_defls(self):
+            def test__compare_to_fortran_2(self):
                 nfw = mass_profiles.EllipticalNFW(centre=(0.2, 0.3), axis_ratio=0.7, phi=6.0,
                                                   kappa_s=2.5, scale_radius=4.0)
                 defls = nfw.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
@@ -2548,7 +2555,7 @@ class TestProfiles(object):
                 assert defls[1] == pytest.approx(-2.59480, 1e-3)
 
 
-    class TestSphericalNFWMassProfile(object):
+    class TestSphericalNFW(object):
         class TestSurfaceDensity(object):
             def test__simple_case__correct_value(self):
                 nfw = mass_profiles.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
@@ -2602,7 +2609,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
-            def test__compare_to_fortran_1__same_defls(self):
+            def test__compare_to_fortran_1(self):
                 nfw = mass_profiles.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
                 defls = nfw.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
@@ -2610,7 +2617,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.56194, 1e-3)
                 assert defls[1] == pytest.approx(0.56194, 1e-3)
 
-            def test__compare_to_fortran_2__same_defls(self):
+            def test__compare_to_fortran_2(self):
                 nfw = mass_profiles.SphericalNFW(centre=(0.2, 0.3), kappa_s=2.5, scale_radius=4.0)
                 defls = nfw.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1875]))
 
@@ -2644,7 +2651,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
 
-    class TestEllipticalGeneralizedNFWMassProfile(object):
+    class TestEllipticalGeneralizedNFW(object):
         class TestSurfaceDensity(object):
 
             def test__simple_case__correct_value(self):
@@ -2754,7 +2761,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
-            def test__compare_to_fortran_1__same_defls(self):
+            def test__compare_to_fortran_1(self):
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.3,
                                                               phi=100.0, inner_slope=0.5, scale_radius=8.0)
 
@@ -2763,7 +2770,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.58988, 1e-3)
                 assert defls[1] == pytest.approx(0.26604, 1e-3)
 
-            def test__compare_to_fortran_2__same_defls(self):
+            def test__compare_to_fortran_2(self):
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(0.2, 0.3), kappa_s=2.5, axis_ratio=0.5,
                                                               phi=100.0, inner_slope=1.5, scale_radius=4.0)
                 defls = gnfw.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1875]))
@@ -2819,7 +2826,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
 
-    class TestSphericalGeneralizedNFWMassProfile(object):
+    class TestSphericalGeneralizedNFW(object):
         class TestSurfaceDensity(object):
             def test__simple_case__correct_value(self):
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5,
@@ -2905,7 +2912,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
-            def test__compare_to_fortran_1__same_defls(self):
+            def test__compare_to_fortran_1(self):
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0,
                                                              inner_slope=0.5, scale_radius=8.0)
 
@@ -2914,7 +2921,7 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.37701, 1e-3)
                 assert defls[1] == pytest.approx(0.43501, 1e-3)
 
-            def test__compare_to_fortran_2__same_defls(self):
+            def test__compare_to_fortran_2(self):
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.2, 0.3), kappa_s=2.5,
                                                              inner_slope=1.5, scale_radius=4.0)
                 defls = gnfw.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1875]))
@@ -2951,7 +2958,8 @@ class TestProfiles(object):
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
 
 
-    class TestSersicMassProfile(object):
+    class TestSersicMass(object):
+
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -2996,6 +3004,21 @@ class TestProfiles(object):
                                                             mass_to_light_ratio=1.0)
 
                 surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                assert surface_density_1 == surface_density_2
+                
+            def test__different_rotate_phi_90_same_result(self):
+                sersic = mass_profiles.EllipticalSersicMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0)
+
+                surface_density_1 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                sersic = mass_profiles.EllipticalSersicMass(axis_ratio=0.5, phi=90.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0)
+
+                surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
                 assert surface_density_1 == surface_density_2
 
@@ -3043,21 +3066,6 @@ class TestProfiles(object):
                 surface_density = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
                 assert surface_density == pytest.approx(5.38066670129, 1e-3)
-
-            def test__different_rotate_phi_90_same_result(self):
-                sersic = mass_profiles.EllipticalSersicMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
-                                                            effective_radius=2.0, sersic_index=2.0,
-                                                            mass_to_light_ratio=1.0)
-
-                surface_density_1 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
-
-                sersic = mass_profiles.EllipticalSersicMass(axis_ratio=0.5, phi=90.0, intensity=3.0,
-                                                            effective_radius=2.0, sersic_index=2.0,
-                                                            mass_to_light_ratio=1.0)
-
-                surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
-
-                assert surface_density_1 == surface_density_2
 
         class TestDeflections(object):
 
@@ -3114,7 +3122,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
 
-            def test__compare_to_dev_vaucauleurs__same_defls(self):
+            def test__compare_to_dev_vaucauleurs(self):
                 sersic = mass_profiles.EllipticalSersicMass(centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0, intensity=2.0,
                                                             effective_radius=0.8, sersic_index=4.0,
                                                             mass_to_light_ratio=3.0)
@@ -3130,7 +3138,7 @@ class TestProfiles(object):
                 assert sersic_defls[0] == dev_vaucouleurs_defls[0] == pytest.approx(-3.37605, 1e-3)
                 assert sersic_defls[1] == dev_vaucouleurs_defls[1] == pytest.approx(-24.528, 1e-3)
 
-            def test__compare_to_exponential__same_defls(self):
+            def test__compare_to_exponential(self):
                 sersic = mass_profiles.EllipticalSersicMass(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                             effective_radius=0.2, sersic_index=1.0,
                                                             mass_to_light_ratio=1.00)
@@ -3146,7 +3154,7 @@ class TestProfiles(object):
                 assert sersic_defls[0] == exponential_defls[0] == pytest.approx(0.62569, 1e-3)
                 assert sersic_defls[1] == exponential_defls[1] == pytest.approx(0.90493, 1e-3)
 
-            def test__compare_to_fortran_sersic_index_2__same_defls(self):
+            def test__compare_to_fortran_sersic_index_2(self):
                 sersic = mass_profiles.EllipticalSersicMass(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                             effective_radius=0.2, sersic_index=2.0,
                                                             mass_to_light_ratio=1.0)
@@ -3170,7 +3178,7 @@ class TestProfiles(object):
                 assert defls[1] == pytest.approx(1.1446, 1e-3)
 
 
-    class TestExponentialMassProfile(object):
+    class TestExponentialMass(object):
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3217,6 +3225,19 @@ class TestProfiles(object):
                 surface_density_2 = exponential.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
 
                 assert surface_density_1 == surface_density_2
+                
+            def test__different_rotate_phi_90_same_result(self):
+                exponential = mass_profiles.EllipticalExponentialMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                      effective_radius=2.0, mass_to_light_ratio=1.0)
+
+                surface_density_1 = exponential.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                exponential = mass_profiles.EllipticalExponentialMass(axis_ratio=0.5, phi=90.0, intensity=3.0,
+                                                                      effective_radius=2.0, mass_to_light_ratio=1.0)
+
+                surface_density_2 = exponential.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                assert surface_density_1 == surface_density_2
 
             def test__simple_case_1__correct_value(self):
                 exponential = mass_profiles.EllipticalExponentialMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
@@ -3257,19 +3278,6 @@ class TestProfiles(object):
                 surface_density = exponential.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
                 assert surface_density == pytest.approx(4.8566, 1e-3)
-
-            def test__different_rotate_phi_90_same_result(self):
-                exponential = mass_profiles.EllipticalExponentialMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
-                                                                      effective_radius=2.0, mass_to_light_ratio=1.0)
-
-                surface_density_1 = exponential.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
-
-                exponential = mass_profiles.EllipticalExponentialMass(axis_ratio=0.5, phi=90.0, intensity=3.0,
-                                                                      effective_radius=2.0, mass_to_light_ratio=1.0)
-
-                surface_density_2 = exponential.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
-
-                assert surface_density_1 == surface_density_2
 
         class TestDeflections(object):
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3325,7 +3333,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
 
-            def test__compare_to_fortran__same_defls(self):
+            def test__compare_to_fortran(self):
                 exponential = mass_profiles.EllipticalExponentialMass(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0,
                                                                       intensity=5.0,
                                                                       effective_radius=0.2, mass_to_light_ratio=1.0)
@@ -3359,7 +3367,8 @@ class TestProfiles(object):
                 assert defls[1] == pytest.approx(0.90493, 1e-3)
 
 
-    class TestDevVaucouleursMassProfile(object):
+    class TestDevVaucouleursMass(object):
+      
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3407,6 +3416,19 @@ class TestProfiles(object):
 
                 assert surface_density_1 == surface_density_2
 
+            def test__different_rotate_phi_90_same_result(self):
+                dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                             effective_radius=2.0, mass_to_light_ratio=1.0)
+
+                surface_density_1 = dev_vaucouleurs.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(axis_ratio=0.5, phi=90.0, intensity=3.0,
+                                                                             effective_radius=2.0, mass_to_light_ratio=1.0)
+
+                surface_density_2 = dev_vaucouleurs.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                assert surface_density_1 == surface_density_2
+
             def test__simple_case_1__correct_value(self):
                 dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                              effective_radius=2.0, mass_to_light_ratio=1.0)
@@ -3438,19 +3460,6 @@ class TestProfiles(object):
                 surface_density = dev_vaucouleurs.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
                 assert surface_density == pytest.approx(2.0 * 7.4455, 1e-3)
-
-            def test__different_rotate_phi_90_same_result(self):
-                dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(axis_ratio=0.5, phi=0.0, intensity=3.0,
-                                                                             effective_radius=2.0, mass_to_light_ratio=1.0)
-
-                surface_density_1 = dev_vaucouleurs.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
-
-                dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(axis_ratio=0.5, phi=90.0, intensity=3.0,
-                                                                             effective_radius=2.0, mass_to_light_ratio=1.0)
-
-                surface_density_2 = dev_vaucouleurs.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
-
-                assert surface_density_1 == surface_density_2
 
         class TestDeflections(object):
 
@@ -3507,7 +3516,7 @@ class TestProfiles(object):
                 assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
                 assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
 
-            def test__compare_to_fortran__same_defls(self):
+            def test__compare_to_fortran(self):
                 dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0,
                                                                              intensity=2.0,
                                                                              effective_radius=0.8, mass_to_light_ratio=3.0)
@@ -3530,6 +3539,261 @@ class TestProfiles(object):
 
                 assert defls[0] == pytest.approx(-3.37605, 1e-3)
                 assert defls[1] == pytest.approx(-24.528, 1e-3)
+
+
+    class TestSersicMassRadialGradient(object):
+
+
+        class TestSurfaceDensity(object):
+
+            def test__flip_coordinates_lens_center__same_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_1 = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 1.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 0.0]))
+
+                assert surface_density_1 == surface_density_2
+
+            def test__rotation_coordinates_90_circular__same_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_1 = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                assert surface_density_1 == surface_density_2
+
+            def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_1 = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                assert surface_density_1 == surface_density_2
+
+            def test__different_rotate_phi_90_same_result(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_1 = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(axis_ratio=0.5, phi=90.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                surface_density_2 = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                assert surface_density_1 == surface_density_2
+
+            def test__simple_case__correct_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=0.6, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                # ((axis_ratio*radius/effective_radius)**-mass_to_light_gradient) = (1/0.6)**-1.0 = 0.6
+
+                surface_density = sersic.surface_density_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                assert surface_density == pytest.approx((0.6) * 0.351797, 1e-3)
+
+            def test__simple_case_2__correct_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=-1.0)
+
+                # ((axis_ratio*radius/effective_radius)**-mass_to_light_gradient) = (1.5/2.0)**1.0 = 0.75
+
+                surface_density = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.5]))
+
+                assert surface_density == pytest.approx((0.75) * 4.90657319276, 1e-3)
+
+            def test__double_intensity__doubles_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(axis_ratio=1.0, phi=0.0, intensity=6.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=-1.0)
+
+                surface_density = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.5]))
+
+                assert surface_density == pytest.approx(2.0 * (0.75) * 4.90657319276, 1e-3)
+
+            def test__double_mass_to_light_ratio__doubles_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=2.0, mass_to_light_gradient=-1.0)
+
+                surface_density = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.5]))
+
+                assert surface_density == pytest.approx(2.0 * (0.75) * 4.90657319276, 1e-3)
+
+            def test__different_axis_ratio__new_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                            effective_radius=2.0, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                # ((axis_ratio*radius/effective_radius)**-mass_to_light_gradient) = ((0.5*1.41)/2.0)**-1.0 = 2.836
+
+                surface_density = sersic.surface_density_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                assert surface_density == pytest.approx((2.836879) * 5.38066670129, 1e-2)
+
+
+        class TestDeflections(object):
+
+            def test__flip_coordinates_lens_center__same_value(self):
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                deflection_angle_1 = sersic.deflection_angles_at_coordinates(coordinates=np.array([1.0, 1.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.0, 0.0]))
+
+                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
+                deflection_angle_2 = list(map(lambda l: -1.0 * l, deflection_angle_2))
+
+                assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[0], 1e-5)
+                assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[1], 1e-5)
+
+            def test__rotation_coordinates_90_circular__same_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                deflection_angle_1 = sersic.deflection_angles_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=90.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                # Foro deflection angles, a 90 degree rtation flips the x / y image_grid
+
+                assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+                assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+            def test__rotation_90_ellpitical_cordinates_on_corners__same_value(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                deflection_angle_1 = sersic.deflection_angles_at_coordinates(coordinates=np.array([1.0, 0.0]))
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0,
+                                                            effective_radius=1.0, sersic_index=4.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                deflection_angle_2 = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.0, 1.0]))
+
+                assert deflection_angle_1[0] == pytest.approx(deflection_angle_2[1], 1e-5)
+                assert deflection_angle_1[1] == pytest.approx(deflection_angle_2[0], 1e-5)
+
+            def test__compare_to_dev_vaucauleurs_without_radial_gradient(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0, intensity=2.0,
+                                                            effective_radius=0.8, sersic_index=4.0,
+                                                            mass_to_light_ratio=3.0, mass_to_light_gradient=0.0)
+
+                sersic_defls = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass(centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0,
+                                                                             intensity=2.0,
+                                                                             effective_radius=0.8, mass_to_light_ratio=3.0)
+
+                dev_vaucouleurs_defls = dev_vaucouleurs.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert sersic_defls[0] == dev_vaucouleurs_defls[0] == pytest.approx(-3.37605, 1e-3)
+                assert sersic_defls[1] == dev_vaucouleurs_defls[1] == pytest.approx(-24.528, 1e-3)
+
+            def test__compare_to_exponential_without_radial_gradient(self):
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                                            effective_radius=0.2, sersic_index=1.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=0.0)
+
+                sersic_defls = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                exponential = mass_profiles.EllipticalExponentialMass(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0,
+                                                                      intensity=5.0,
+                                                                      effective_radius=0.2, mass_to_light_ratio=1.0)
+
+                exponential_defls = exponential.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert sersic_defls[0] == exponential_defls[0] == pytest.approx(0.62569, 1e-3)
+                assert sersic_defls[1] == exponential_defls[1] == pytest.approx(0.90493, 1e-3)
+
+            def test__compare_to_fortran_sersic_index_no_gradient(self):
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                                            effective_radius=0.2, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=0.0)
+
+                defls = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert defls[0] == pytest.approx(0.79374, 1e-3)
+                assert defls[1] == pytest.approx(1.1446, 1e-3)
+
+            def test__compare_to_fortran_with_gradient_positive(self):
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                                            effective_radius=0.2, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
+
+                defls = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert defls[0] == pytest.approx(2.3638898009652, 1e-3)
+                assert defls[1] == pytest.approx(3.60324873535244, 1e-3)
+
+            def test__compare_to_fortran_with_gradient_negative(self):
+
+                sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                                            effective_radius=0.2, sersic_index=2.0,
+                                                            mass_to_light_ratio=1.0, mass_to_light_gradient=-1.0)
+
+                defls = sersic.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert defls[0] == pytest.approx(0.725459334118341, 1e-3)
+                assert defls[1] == pytest.approx(0.97806399756448, 1e-3)
+
+            def test__from_light_profile__deflection_angles_unchanged(self):
+
+                light_sersic = mass_profiles.light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
+                                                                             phi=110.0,
+                                                                             intensity=5.0, effective_radius=0.2,
+                                                                             sersic_index=2.0)
+
+                mass_sersic = mass_profiles.EllipticalSersicMassRadialGradient.from_sersic_light_profile(light_sersic,
+                                                                                           mass_to_light_ratio=1.0,
+                                                                                           mass_to_light_gradient=0.0)
+
+                defls = mass_sersic.deflection_angles_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert defls[0] == pytest.approx(0.79374, 1e-3)
+                assert defls[1] == pytest.approx(1.1446, 1e-3)
 
 
 class TestMassIntegral(object):
