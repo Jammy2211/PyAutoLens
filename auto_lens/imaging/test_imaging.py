@@ -718,38 +718,40 @@ class TestImage(object):
             assert image.arc_second_dimensions == pytest.approx((0.4, 0.3))
 
 
-    class TestSetSky(object):
+    class TestEstimateSky(object):
 
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
 
             image = imaging.Image(data=np.ones((3, 3)), pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=1)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
 
-            assert image.sky_background_level == 1.0
-            assert image.sky_background_noise == 0.0
+            assert sky_level == 1.0
+            assert sky_noise == 0.0
 
         def test__via_edges__3x3_image_simple_gaussian__answer_ignores_central_pixel(self):
+
             image_data = np.array([[1, 1, 1],
                                    [1, 100, 1],
                                    [1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=1)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
 
-            assert image.sky_background_level == 1.0
-            assert image.sky_background_noise == 0.0
+            assert sky_level == 1.0
+            assert sky_noise == 0.0
 
         def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self):
+
             image_data = np.array([[1, 1, 1],
                                    [1, 100, 1],
                                    [1, 100, 1],
                                    [1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=1)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
 
-            assert image.sky_background_level == 1.0
-            assert image.sky_background_noise == 0.0
+            assert sky_level == 1.0
+            assert sky_noise == 0.0
 
         def test__via_edges__4x4_image_simple_gaussian__ignores_central_pixels(self):
             image_data = np.array([[1, 1, 1, 1],
@@ -758,10 +760,10 @@ class TestImage(object):
                                    [1, 1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=1)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
 
-            assert image.sky_background_level == 1.0
-            assert image.sky_background_noise == 0.0
+            assert sky_level == 1.0
+            assert sky_noise == 0.0
 
         def test__via_edges__5x5_image_simple_gaussian_two_edges__ignores_central_pixel(self):
             image_data = np.array([[1, 1, 1, 1, 1],
@@ -771,10 +773,10 @@ class TestImage(object):
                                    [1, 1, 1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=2)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=2)
 
-            assert image.sky_background_level == 1.0
-            assert image.sky_background_noise == 0.0
+            assert sky_level == 1.0
+            assert sky_noise == 0.0
 
         def test__via_edges__6x5_image_two_edges__values(self):
             image_data = np.array([[0, 1, 2, 3, 4],
@@ -785,10 +787,10 @@ class TestImage(object):
                                    [23, 24, 25, 26, 27]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=2)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=2)
 
-            assert image.sky_background_level == np.mean(np.arange(28))
-            assert image.sky_background_noise == np.std(np.arange(28))
+            assert sky_level == np.mean(np.arange(28))
+            assert sky_noise == np.std(np.arange(28))
 
         def test__via_edges__7x7_image_three_edges__values(self):
             image_data = np.array([[0, 1, 2, 3, 4, 5, 6],
@@ -800,10 +802,10 @@ class TestImage(object):
                                    [41, 42, 43, 44, 45, 46, 47]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            image.set_sky_via_edges(no_edges=3)
+            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=3)
 
-            assert image.sky_background_level == np.mean(np.arange(48))
-            assert image.sky_background_noise == np.std(np.arange(48))
+            assert sky_level == np.mean(np.arange(48))
+            assert sky_noise == np.std(np.arange(48))
 
 
     class TestImagingConstructors(object):
@@ -1183,6 +1185,186 @@ class TestExpsoureTimeMap(object):
             assert exposure_time_map.pixel_dimensions == (3, 3)
             assert exposure_time_map.central_pixels == (1.0, 1.0)
             assert exposure_time_map.arc_second_dimensions == pytest.approx((3.0, 3.0))
+
+
+class TestBackgroundSky(object):
+    
+    
+    class TestConstructors(object):
+
+        def test__init__input_background_sky_map_3x3__all_attributes_correct_including_data_inheritance(self):
+            
+            background_sky = imaging.BackgroundSky(sky_level=5.0, sky_sigma=7.0)
+
+            assert background_sky.sky_level == 5.0
+            assert background_sky.sky_sigma == 7.0
+
+        def test__from_single_background_sky__map_is_all_that_background_sky(self):
+
+            image = imaging.Image(data=np.ones((3, 3)), pixel_scale=0.1)
+
+            background_sky = imaging.BackgroundSky.from_image_via_edges(image, no_edges=1)
+
+            assert background_sky.sky_level == 1.0
+            assert background_sky.sky_sigma == 0.0
+
+class TestEstimatePoissonNoiseFromImage:
+
+    def test__image_and_exposure_times_all_1s__noise_is_all_1s(self):
+
+        test_image = np.ones((3, 3))
+
+        exposure_time_map = np.ones((3, 3))
+
+        poisson_noise_estimate = imaging.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+
+        assert (poisson_noise_estimate == np.ones((3, 3))).all()
+
+    def test__image_all_4s__exposure_time_all_1s__noise_is_all_2s(self):
+
+        test_image = 4.0 * np.ones((4, 2))
+
+        exposure_time_map = np.ones((4, 2))
+
+        poisson_noise_estimate = imaging.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+
+        assert (poisson_noise_estimate == 2.0 * np.ones((4, 2))).all()
+
+    def test__image_all_1s__exposure_time_all_4s__noise_is_all_2_divided_4_so_halves(self):
+
+        test_image = np.ones((1, 5))
+
+        exposure_time_map = 4.0 * np.ones((1, 5))
+
+        poisson_noise_estimate = imaging.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+
+        assert (poisson_noise_estimate == 0.5 * np.ones((1, 5))).all()
+
+    def test__image_and_exposure_times_range_of_values__noises_estimates_correct(self):
+
+        test_image = np.array([[5.0, 3.0],
+                               [10.0, 20.0]])
+
+        exposure_time_map = np.array([[1.0, 2.0],
+                                      [3.0, 4.0]])
+
+        poisson_noise_estimate = imaging.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+
+        assert (poisson_noise_estimate == np.array([[np.sqrt(5.0),     np.sqrt(6.0)/2.0],
+                                                   [np.sqrt(30.0)/3.0, np.sqrt(80.0)/4.0]])).all()
+
+
+class TestEstimatePoissonNoiseFromImageAndBackground:
+
+    def test__image_and_exposure_times_all_1s__no_background__noise_is_all_1s(self):
+
+        test_image = np.ones((3, 3))
+
+        exposure_time_map = np.ones((3, 3))
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=0.0, exposure_time_mean=1.0)
+
+        assert (poisson_noise_estimate == np.ones((3, 3))).all()
+
+    def test__image_and_exposure_times_all_1s__background_is_sqrt_3__noise_is_all_2s(self):
+
+        # noise is going to be sqrt(3**2.0 + 1) in every pixel, so 2.0
+
+        test_image = np.ones((3, 3))
+
+        exposure_time_map = np.ones((3, 3))
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=3.0 ** 0.5, exposure_time_mean=1.0)
+
+        assert poisson_noise_estimate == pytest.approx(2.0 * np.ones((3, 3)), 1e-2)
+
+    def test__image_and_exposure_times_all_1s__background_sigma_is_5_for_1_second_exposure__noise_all_correct(self):
+
+        test_image = np.ones((2, 3))
+
+        exposure_time_map = np.ones((2, 3))
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=5.0, exposure_time_mean=1.0)
+
+        assert poisson_noise_estimate == \
+               pytest.approx(np.array([[np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)],
+                                       [np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)]]), 1e-2)
+
+    def test__image_different_values__exposure_times_all_1s__background_is_1_for_5_seconds__noise_all_correct(self):
+
+        test_image = np.ones((2, 3))
+
+        exposure_time_map = np.ones((2, 3))
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=1.0, exposure_time_mean=5.0)
+
+        assert poisson_noise_estimate == \
+               pytest.approx(np.array([[np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)],
+                                       [np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)]]), 1e-2)
+
+    def test__same_as_above_but_different_image_values_in_each_pixel_and_new_background_values(self):
+
+        test_image = np.array([[1.0, 2.0],
+                               [3.0, 4.0],
+                               [5.0, 6.0]])
+
+        exposure_time_map = np.ones((3, 2))
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=4.0, exposure_time_mean=3.0)
+
+        assert poisson_noise_estimate == \
+               pytest.approx(np.array([[np.sqrt(144.0 + 1.0), np.sqrt(144.0 + 2.0)],
+                                       [np.sqrt(144.0 + 3.0), np.sqrt(144.0 + 4.0)],
+                                       [np.sqrt(144.0 + 5.0), np.sqrt(144.0 + 6.0)]]), 1e-2)
+
+    def test__same_as_above_but_image_values_all_1s_exposure_times_change_instead__noise_is_in_electrons_per_sec(self):
+
+        test_image = np.ones((3, 2))
+
+        exposure_time_map =  np.array([[1.0, 2.0],
+                                       [3.0, 4.0],
+                                       [5.0, 6.0]])
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=4.0, exposure_time_mean=3.0)
+
+        assert poisson_noise_estimate == \
+               pytest.approx(np.array([[np.sqrt(144.0 + 1.0)/1.0, np.sqrt(144.0 + 2.0)/2.0],
+                                       [np.sqrt(144.0 + 3.0)/3.0, np.sqrt(144.0 + 4.0)/4.0],
+                                       [np.sqrt(144.0 + 5.0)/5.0, np.sqrt(144.0 + 6.0)/6.0]]), 1e-2)
+
+    def test__image_and_exposure_times_range_of_values__no_bacground__noise_estimates_correct(self):
+
+        test_image = np.array([[5.0, 3.0],
+                               [10.0, 20.0]])
+
+        exposure_time_map = np.array([[1.0, 2.0],
+                                      [3.0, 4.0]])
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=0.0, exposure_time_mean=4.0)
+
+        assert (poisson_noise_estimate == np.array([[np.sqrt(5.0),     np.sqrt(6.0)/2.0],
+                                                   [np.sqrt(30.0)/3.0, np.sqrt(80.0)/4.0]])).all()
+
+    def test__image_and_exposure_times_range_of_values__background_has_value___noise_estimates_correct(self):
+
+        test_image = np.array([[5.0, 3.0],
+                               [10.0, 20.0]])
+
+        exposure_time_map = np.array([[1.0, 2.0],
+                                      [3.0, 4.0]])
+
+        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=3.0, exposure_time_mean=3.0)
+
+        assert (poisson_noise_estimate == np.array([[np.sqrt(81.0 + 5.0),     np.sqrt(81.0 + 6.0)/2.0],
+                                                   [np.sqrt(81.0 + 30.0)/3.0, np.sqrt(81.0 + 80.0)/4.0]])).all()
 
 
 class TestMask(object):
