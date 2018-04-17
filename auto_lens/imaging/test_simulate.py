@@ -14,7 +14,7 @@ class TestConstructor(object):
                         [1.0, 2.0, 1.0],
                         [0.0, 1.0, 0.0]))
 
-        mock_image = simulate.SimulateImage(array=image, pixel_scale=0.1, psf=psf)
+        mock_image = simulate.SimulateImage(data=image, pixel_scale=0.1, psf=psf)
 
         assert (mock_image == np.array(([1.0, 1.0, 1.0],
                                         [2.0, 2.0, 2.0],

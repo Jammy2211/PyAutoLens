@@ -276,6 +276,9 @@ class Image(Data):
         # noinspection PyAttributeOutsideInit
         self.sky_background_level, self.sky_background_noise = norm.fit(edges)
 
+    def exposure_time_map_single_exposure_time(self, exposure_time):
+        return ExposureTimeMap.from_single_exposure_time(exposure_time, self.pixel_dimensions, self.pixel_scale)
+
     def circle_mask(self, radius_mask):
         """
         Create a new circular mask for this image
@@ -325,9 +328,9 @@ class Noise(Data):
 
         Parameters
         ----------
-        data: ndarray
+        data : ndarray
             The array of noise data
-        pixel_scale: float
+        pixel_scale : float
             The arc-second to pixel conversion factor of each pixel.
         """
 
@@ -349,8 +352,8 @@ class Noise(Data):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        array = numpy_array_from_fits(path + filename, hdu)
-        return Noise(array, pixel_scale)
+        data = numpy_array_from_fits(path + filename, hdu)
+        return Noise(data, pixel_scale)
 
 
 class PSF(Data):
@@ -361,9 +364,9 @@ class PSF(Data):
 
         Parameters
         ----------
-        ndarray: ndarray
-            The data of data
-        pixel_scale: float
+        data : ndarray
+            The psf data.
+        pixel_scale : float
             The arc-second to pixel conversion factor of each pixel.
         renormalize : bool
             Renormalize the PSF such that its value added up to 1.0?
@@ -392,8 +395,8 @@ class PSF(Data):
         renormalize : bool
             Renormalize the PSF such that its value added up to 1.0?
         """
-        array = numpy_array_from_fits(path + filename, hdu)
-        return PSF(array, pixel_scale, renormalize)
+        data = numpy_array_from_fits(path + filename, hdu)
+        return PSF(data, pixel_scale, renormalize)
 
     def convolve_with_image(self, image):
         """
@@ -418,6 +421,49 @@ class PSF(Data):
     def renormalize(self):
         """Renormalize the PSF such that its data values sum to unity."""
         return np.divide(self.data, np.sum(self.data))
+
+
+class ExposureTimeMap(Data):
+
+    def __init__(self, data, pixel_scale):
+        """
+        Class storing a 2D exposure time map, including its data and coordinate grid.
+
+        Parameters
+        ----------
+        ndarray: ndarray
+            The exposure time map data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+
+        super(ExposureTimeMap, self).__init__(data, pixel_scale)
+
+    @classmethod
+    def from_fits(cls, path, filename, hdu, pixel_scale):
+        """
+        Load the PSF data from a .fits file.
+
+        Parameters
+        ----------
+        path : str
+            The directory path to the fits file
+        filename : str
+            The file name of the fits file
+        hdu : int
+            The HDU number in the fits file containing the data
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        renormalize : bool
+            Renormalize the PSF such that its value added up to 1.0?
+        """
+        data = numpy_array_from_fits(path + filename, hdu)
+        return ExposureTimeMap(data, pixel_scale)
+
+    @classmethod
+    def from_single_exposure_time(cls, exposure_time, pixel_dimensions, pixel_scale):
+        data = np.ones(pixel_dimensions)*exposure_time
+        return ExposureTimeMap(data, pixel_scale)
 
 
 class Mask(DataGrid):
