@@ -39,7 +39,7 @@ def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, 
     The mapping matrix is the matrix denoted 'f_ij' in Warren & Dye 2003, Nightingale & Dye 2015 and Nightingale, \
     Dye & Massey 2018.
 
-    It is a matrix of dimensions [source_pixels x image_pixels], wherein a non-zero entry represents an \
+    It is a matrix of pixel_dimensions [source_pixels x image_pixels], wherein a non-zero entry represents an \
     image_grid-pixel to source-pixel mapping. For example, if image_grid-pixel 4 maps to source-pixel 2, then element (2,4) \
     of the mapping matrix will = 1.
 

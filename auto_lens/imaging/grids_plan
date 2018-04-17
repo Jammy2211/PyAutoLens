@@ -28,12 +28,12 @@ class CoordinateGrids
         if self.sub != None:
             sub = self.new_grid_via_galaxy_deflection(sub)
 
-class ImageGrid(Grid):
+class ImageGrid(DataGrid):
 
     def new_grid_via_galaxy_deflection(self, galaxies)
         return (self -  sum(map(lambda lens : lens.deflection_angles_array(self), galaxies)))
 
-class CoordinateImageGrid(Grid):
+class CoordinateImageGrid(DataGrid):
 
     def __new__(self, grid):
 
@@ -41,19 +41,19 @@ class CoordinateImageGrid(Grid):
 
     @classmethod
     def from_mask(cls, mask):
-        grid = compute_grid_from_mask(mask)
+        grid = compute_image_grid(mask)
 
     @classmethod
     def from_sub_grid(cls):
         grid =
 
     @staticmethod
-    def compute_grid_from_mask(mask):
+    def compute_image_grid(mask):
 
     def new_grid(self, galaxies)
         return ImageGrid(self.new_grid_via_galaxy_deflection)
 
-class DeflectionImageGrid(Grid):
+class DeflectionImageGrid(DataGrid):
 
     def __new__(self, grid):
         new = grid
@@ -66,7 +66,7 @@ class DeflectionImageGrid(Grid):
         routine...taking...averages
 
 
-class SubGrid(Grid):
+class SubGrid(DataGrid):
 
      def __init__(self):
 
