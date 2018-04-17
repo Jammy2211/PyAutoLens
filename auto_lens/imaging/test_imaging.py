@@ -806,7 +806,21 @@ class TestImage(object):
             assert image.sky_background_noise == np.std(np.arange(48))
 
 
-    class TestMaskConstructors(object):
+    class TestImagingConstructors(object):
+
+        def test__exposure_time_map_single_exposure(self):
+
+            image = imaging.Image(data=np.ones((3, 3)), pixel_scale=1.0)
+
+            exposure_time_map = image.exposure_time_map_single_exposure_time(exposure_time=3.0)
+
+            assert (exposure_time_map.data == np.array([[3.0, 3.0, 3.0],
+                                                        [3.0, 3.0, 3.0],
+                                                        [3.0, 3.0, 3.0]])).all()
+            assert exposure_time_map.pixel_scale == 1.0
+            assert exposure_time_map.pixel_dimensions == (3, 3)
+            assert exposure_time_map.central_pixels == (1.0, 1.0)
+            assert exposure_time_map.arc_second_dimensions == pytest.approx((3.0, 3.0))
 
         def test__circular_mask(self):
 
@@ -1108,6 +1122,67 @@ class TestPSF(object):
                                                [3.0, 3.0, 0.0, 0.0],
                                                [0.0, 0.0, 1.0, 1.0],
                                                [0.0, 0.0, 2.0, 2.0]])).all()
+
+
+class TestExpsoureTimeMap(object):
+
+
+    class TestConstructors(object):
+
+        def test__init__input_exposure_time_map_3x3__all_attributes_correct_including_data_inheritance(self):
+            
+            exposure_time_map = imaging.ExposureTimeMap(data=np.ones((3, 3)), pixel_scale=1.0)
+
+            assert exposure_time_map.pixel_scale == 1.0
+            assert exposure_time_map.pixel_dimensions == (3, 3)
+            assert exposure_time_map.central_pixels == (1.0, 1.0)
+            assert exposure_time_map.arc_second_dimensions == pytest.approx((3.0, 3.0))
+            assert (exposure_time_map.data == np.ones((3, 3))).all()
+
+        def test__init__input_exposure_time_map_4x3__all_attributes_correct_including_data_inheritance(self):
+            
+            exposure_time_map = imaging.ExposureTimeMap(data=np.ones((4, 3)), pixel_scale=0.1)
+
+            assert (exposure_time_map.data == np.ones((4, 3))).all()
+            assert exposure_time_map.pixel_scale == 0.1
+            assert exposure_time_map.pixel_dimensions == (4, 3)
+            assert exposure_time_map.central_pixels == (1.5, 1.0)
+            assert exposure_time_map.arc_second_dimensions == pytest.approx((0.4, 0.3))
+
+        def test__from_fits__input_exposure_time_map_3x3__all_attributes_correct_including_data_inheritance(self):
+
+            exposure_time_map = imaging.ExposureTimeMap.from_fits(path=test_data_dir, filename='3x3_ones.fits', hdu=0,
+                                                                  pixel_scale=1.0)
+
+            assert (exposure_time_map.data == np.ones((3, 3))).all()
+            assert exposure_time_map.pixel_scale == 1.0
+            assert exposure_time_map.pixel_dimensions == (3, 3)
+            assert exposure_time_map.central_pixels == (1.0, 1.0)
+            assert exposure_time_map.arc_second_dimensions == pytest.approx((3.0, 3.0))
+
+        def test__from_fits__input_exposure_time_map_4x3__all_attributes_correct_including_data_inheritance(self):
+
+            exposure_time_map = imaging.ExposureTimeMap.from_fits(path=test_data_dir, filename='4x3_ones.fits', hdu=0,
+                                                                  pixel_scale=0.1)
+
+            assert (exposure_time_map.data == np.ones((4, 3))).all()
+            assert exposure_time_map.pixel_scale == 0.1
+            assert exposure_time_map.pixel_dimensions == (4, 3)
+            assert exposure_time_map.central_pixels == (1.5, 1.0)
+            assert exposure_time_map.arc_second_dimensions == pytest.approx((0.4, 0.3))
+
+        def test__from_single_exposure_time__map_is_all_that_exposure_time(self):
+
+            exposure_time_map = imaging.ExposureTimeMap.from_single_exposure_time(exposure_time=3.0,
+                                                              pixel_dimensions=(3,3), pixel_scale=1.0)
+
+            assert (exposure_time_map.data == np.array([[3.0, 3.0, 3.0],
+                                                        [3.0, 3.0, 3.0],
+                                                        [3.0, 3.0, 3.0]])).all()
+            assert exposure_time_map.pixel_scale == 1.0
+            assert exposure_time_map.pixel_dimensions == (3, 3)
+            assert exposure_time_map.central_pixels == (1.0, 1.0)
+            assert exposure_time_map.arc_second_dimensions == pytest.approx((3.0, 3.0))
 
 
 class TestMask(object):
