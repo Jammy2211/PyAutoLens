@@ -15,7 +15,7 @@ The Poisson noise in a pixel is computed simply as its total counts squared root
 
 To compute the total noise in a pixel, we thus add sources in quadraturee as:
 
-def estimate_noise_std_in_quadrature(sigma_std_counts, image_counts):
+def estimate_noise_in_quadrature(sigma_std_counts, image_counts):
     return np.sqrt(np.square(sigma_std_counts) + image_counts)
 
 ACTUAL NOISE VALUES:
