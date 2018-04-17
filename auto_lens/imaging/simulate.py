@@ -3,7 +3,7 @@ import numpy as np
 
 class SimulateImage(object):
 
-    def __init__(self, array, pixel_scale, psf):
+    def __init__(self, data, pixel_scale, psf):
         """
         Creates a new simulated image.
 
@@ -16,8 +16,8 @@ class SimulateImage(object):
         psf : imaging.PSF
             The image of the simulated image.
         """
-        self.image = array
-        self.image_original = array
+        self.image = data
+        self.image_original = data
         self.pixel_scale = pixel_scale
         self.psf = psf
 
