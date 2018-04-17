@@ -1,6 +1,33 @@
-from auto_lens.tools import image
+from auto_lens.tools import array
 import numpy as np
 import pytest
+
+class TestVariancesFromNoise:
+
+    def test__noise_all_1s__variances_all_1s(self):
+
+        noise = np.array([[1.0, 1.0],
+                          [1.0, 1.0]])
+
+        assert (array.compute_variances_from_noise(noise) == np.array([[1.0, 1.0],
+                                                                                  [1.0, 1.0]])).all()
+
+    def test__noise_all_2s__variances_all_4s(self):
+
+        noise = np.array([[2.0, 2.0],
+                          [2.0, 2.0]])
+
+        assert (array.compute_variances_from_noise(noise) == np.array([[4.0, 4.0],
+                                                                                   [4.0, 4.0]])).all()
+
+    def test__noise_all_05s__variances_all_025s(self):
+
+        noise = np.array([[0.5, 0.5],
+                          [0.5, 0.5]])
+
+        assert (array.compute_variances_from_noise(noise) == np.array([[0.25, 0.25],
+                                                                                   [0.25, 0.25]])).all()
+
 
 class TestComputeResiduals:
 
@@ -12,7 +39,7 @@ class TestComputeResiduals:
         model = np.array([[10, 10],
                           [10, 10]])
 
-        result = image.compute_residuals(data, model)
+        result = array.compute_residuals(data, model)
 
         assert result[0, 0] == 0
         assert result[0, 1] == 0
@@ -27,7 +54,7 @@ class TestComputeResiduals:
         model = np.array([[10, 10],
                           [10, -5]])
 
-        result = image.compute_residuals(test_image, model)
+        result = array.compute_residuals(test_image, model)
 
         assert result[0, 0] == 0  # (10 - 10 = 0)
         assert result[0, 1] == -5  # (5 - 10 = -5)
@@ -48,7 +75,7 @@ class TestComputeChiSquared:
         noise = np.array([[1, 1],
                           [1, 1]])
 
-        result = image.compute_chi_sq_image(data, model, noise)
+        result = array.compute_chi_sq_image(data, model, noise)
 
         assert result[0, 0] == 0
         assert result[0, 1] == 0
@@ -65,7 +92,7 @@ class TestComputeChiSquared:
         noise = np.array([[1, 5],
                           [-1, -2]])
 
-        result = image.compute_chi_sq_image(test_image, model, noise)
+        result = array.compute_chi_sq_image(test_image, model, noise)
 
         assert result[0, 0] == 0  # ( (10 - 10)/1 )^2 = 0
         assert result[0, 1] == 1  # ( (5 - 10)/5 )^2 = ((-)2.5)^2
@@ -83,10 +110,8 @@ class TestComputeLikelihood:
                           [10, 10]])
         noise = np.array([[1, 1],
                           [1, 1]])
-        mask = np.array([[False, False],
-                        [False, False]])
 
-        result = image.compute_likelihood(data, model, noise, mask)
+        result = array.compute_likelihood(data, model, noise)
 
         assert result == 0
 
@@ -101,10 +126,7 @@ class TestComputeLikelihood:
         noise = np.array([[1, 5],
                           [-1, -2]])
 
-        mask = np.array([[False, False],
-                        [False, False]])
-
-        result = image.compute_likelihood(test_image, model, noise, mask)
+        result = array.compute_likelihood(test_image, model, noise)
 
         assert result == -72.53125  # -0.5*(0 + 1 + 144 + 0.0625)
 
@@ -117,7 +139,7 @@ class TestEstimatePoissonNoiseFromImage:
 
         exposure_time_map = np.ones((3, 3))
 
-        poisson_noise_estimate = image.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+        poisson_noise_estimate = array.estimate_poisson_noise_std_from_image(test_image, exposure_time_map)
 
         assert (poisson_noise_estimate == np.ones((3, 3))).all()
 
@@ -127,7 +149,7 @@ class TestEstimatePoissonNoiseFromImage:
 
         exposure_time_map = np.ones((4, 2))
 
-        poisson_noise_estimate = image.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+        poisson_noise_estimate = array.estimate_poisson_noise_std_from_image(test_image, exposure_time_map)
 
         assert (poisson_noise_estimate == 2.0 * np.ones((4, 2))).all()
 
@@ -137,7 +159,7 @@ class TestEstimatePoissonNoiseFromImage:
 
         exposure_time_map = 4.0 * np.ones((1, 5))
 
-        poisson_noise_estimate = image.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+        poisson_noise_estimate = array.estimate_poisson_noise_std_from_image(test_image, exposure_time_map)
 
         assert (poisson_noise_estimate == 0.5 * np.ones((1, 5))).all()
 
@@ -149,7 +171,7 @@ class TestEstimatePoissonNoiseFromImage:
         exposure_time_map = np.array([[1.0, 2.0],
                                       [3.0, 4.0]])
 
-        poisson_noise_estimate = image.estimate_poisson_noise_from_image(test_image, exposure_time_map)
+        poisson_noise_estimate = array.estimate_poisson_noise_std_from_image(test_image, exposure_time_map)
 
         assert (poisson_noise_estimate == np.array([[np.sqrt(5.0),     np.sqrt(6.0)/2.0],
                                                    [np.sqrt(30.0)/3.0, np.sqrt(80.0)/4.0]])).all()
@@ -163,8 +185,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
 
         exposure_time_map = np.ones((3, 3))
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=0.0, exposure_time_mean=1.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=0.0, exposure_time_mean=1.0)
 
         assert (poisson_noise_estimate == np.ones((3, 3))).all()
 
@@ -176,8 +198,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
 
         exposure_time_map = np.ones((3, 3))
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                sigma_background=3.0 ** 0.5, exposure_time_mean=1.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=3.0 ** 0.5, exposure_time_mean=1.0)
 
         assert poisson_noise_estimate == pytest.approx(2.0 * np.ones((3, 3)), 1e-2)
 
@@ -187,8 +209,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
 
         exposure_time_map = np.ones((2, 3))
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=5.0, exposure_time_mean=1.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=5.0, exposure_time_mean=1.0)
 
         assert poisson_noise_estimate == \
                pytest.approx(np.array([[np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)],
@@ -200,8 +222,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
 
         exposure_time_map = np.ones((2, 3))
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=1.0, exposure_time_mean=5.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=1.0, exposure_time_mean=5.0)
 
         assert poisson_noise_estimate == \
                pytest.approx(np.array([[np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)],
@@ -215,8 +237,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
 
         exposure_time_map = np.ones((3, 2))
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=4.0, exposure_time_mean=3.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=4.0, exposure_time_mean=3.0)
 
         assert poisson_noise_estimate == \
                pytest.approx(np.array([[np.sqrt(144.0 + 1.0), np.sqrt(144.0 + 2.0)],
@@ -231,8 +253,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
                                        [3.0, 4.0],
                                        [5.0, 6.0]])
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=4.0, exposure_time_mean=3.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=4.0, exposure_time_mean=3.0)
 
         assert poisson_noise_estimate == \
                pytest.approx(np.array([[np.sqrt(144.0 + 1.0)/1.0, np.sqrt(144.0 + 2.0)/2.0],
@@ -247,8 +269,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
         exposure_time_map = np.array([[1.0, 2.0],
                                       [3.0, 4.0]])
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=0.0, exposure_time_mean=4.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=0.0, exposure_time_mean=4.0)
 
         assert (poisson_noise_estimate == np.array([[np.sqrt(5.0),     np.sqrt(6.0)/2.0],
                                                    [np.sqrt(30.0)/3.0, np.sqrt(80.0)/4.0]])).all()
@@ -261,8 +283,8 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
         exposure_time_map = np.array([[1.0, 2.0],
                                       [3.0, 4.0]])
 
-        poisson_noise_estimate = image.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                    sigma_background=3.0, exposure_time_mean=3.0)
+        poisson_noise_estimate = array.estimate_noise_from_image_and_background(test_image, exposure_time_map,
+                                                                                sigma_background=3.0, exposure_time_mean=3.0)
 
         assert (poisson_noise_estimate == np.array([[np.sqrt(81.0 + 5.0),     np.sqrt(81.0 + 6.0)/2.0],
                                                    [np.sqrt(81.0 + 30.0)/3.0, np.sqrt(81.0 + 80.0)/4.0]])).all()
@@ -272,35 +294,35 @@ class TestGenerateGaussianNoiseMap:
 
     def test__input_mean_is_0__mean_of_image_values_consistent_with_0(self):
 
-        gaussian_noise_map = image.generate_gaussian_noise_map(dimensions=(5, 5), mean=0.0, sigma=1.0,
+        gaussian_noise_map = array.generate_gaussian_noise_map(dimensions=(5, 5), mean=0.0, sigma=1.0,
                                                                seed=1)
 
         assert gaussian_noise_map.shape == (5, 5)
         assert -0.1 <= np.mean(gaussian_noise_map) <= 0.1
 
     def test__input_mean_is_10__mean_of_image_values_consistent_with_10(self):
-        gaussian_noise_map = image.generate_gaussian_noise_map(dimensions=(5, 5), mean=10.0,
+        gaussian_noise_map = array.generate_gaussian_noise_map(dimensions=(5, 5), mean=10.0,
                                                                sigma=1.0, seed=1)
 
         assert gaussian_noise_map.shape == (5, 5)
         assert 9.9 <= np.mean(gaussian_noise_map) <= 10.1
 
     def test__input_sigma_is_1__standard_deviation_of_image_values_consistent_with_1(self):
-        gaussian_noise_map = image.generate_gaussian_noise_map(dimensions=(5, 5), mean=10.0,
+        gaussian_noise_map = array.generate_gaussian_noise_map(dimensions=(5, 5), mean=10.0,
                                                                sigma=1.0, seed=1)
 
         assert gaussian_noise_map.shape == (5, 5)
         assert 0.9 <= np.std(gaussian_noise_map) <= 1.1
 
     def test__input_sigma_is_10__standard_deviation_of_image_values_consistent_with_10(self):
-        gaussian_noise_map = image.generate_gaussian_noise_map(dimensions=(5, 5), mean=100.0,
+        gaussian_noise_map = array.generate_gaussian_noise_map(dimensions=(5, 5), mean=100.0,
                                                                sigma=10.0, seed=1)
 
         assert gaussian_noise_map.shape == (5, 5)
         assert 9.0 <= np.std(gaussian_noise_map) <= 11.0
 
     def test__known_noise_map_for_mean_0_sigma_1_seed_1(self):
-        gaussian_noise_map = image.generate_gaussian_noise_map(dimensions=(5, 5), mean=0.0, sigma=1.0,
+        gaussian_noise_map = array.generate_gaussian_noise_map(dimensions=(5, 5), mean=0.0, sigma=1.0,
                                                                seed=1)
 
         assert gaussian_noise_map == pytest.approx(
@@ -319,7 +341,7 @@ class TestGeneratePoissonNoiseMap:
 
         exposure_time_map = np.ones((2, 2))
 
-        poisson_noise_map = image.generate_poisson_noise_map(test_image, exposure_time_map, seed=1)
+        poisson_noise_map = array.generate_poisson_noise_map(test_image, exposure_time_map, seed=1)
 
         assert poisson_noise_map.shape == (2, 2)
         assert (poisson_noise_map == np.zeros((2, 2))).all()
@@ -331,7 +353,7 @@ class TestGeneratePoissonNoiseMap:
 
         exposure_time_map = np.ones((2, 2))
 
-        poisson_noise_map = image.generate_poisson_noise_map(test_image, exposure_time_map, seed=1)
+        poisson_noise_map = array.generate_poisson_noise_map(test_image, exposure_time_map, seed=1)
 
         assert poisson_noise_map.shape == (2, 2)
         assert (poisson_noise_map == np.array([[1, 0],  # Use known noise map for given seed.
@@ -344,7 +366,7 @@ class TestGeneratePoissonNoiseMap:
 
         exposure_time_map = np.ones((2, 2))
 
-        poisson_noise_map = image.generate_poisson_noise_map(test_image, exposure_time_map, seed=2)
+        poisson_noise_map = array.generate_poisson_noise_map(test_image, exposure_time_map, seed=2)
 
         assert poisson_noise_map.shape == (2, 2)
         assert (poisson_noise_map == np.array([[571, 0],  # Use known noise map for given seed.
@@ -362,8 +384,8 @@ class TestGeneratePoissonNoiseMap:
 
         exposure_time_map_1 = 2.0 * np.ones((2, 2))
 
-        poisson_noise_map_0 = image.generate_poisson_noise_map(test_image_0, exposure_time_map_0, seed=1)
-        poisson_noise_map_1 = image.generate_poisson_noise_map(test_image_1, exposure_time_map_1, seed=1)
+        poisson_noise_map_0 = array.generate_poisson_noise_map(test_image_0, exposure_time_map_0, seed=1)
+        poisson_noise_map_1 = array.generate_poisson_noise_map(test_image_1, exposure_time_map_1, seed=1)
 
         assert (poisson_noise_map_0/2.0 == poisson_noise_map_1 ).all()
 
@@ -381,137 +403,10 @@ class TestGeneratePoissonNoiseMap:
         exposure_time_map_1 =  np.array([[1., 2.],
                                          [2., 8.]])
 
-        poisson_noise_map_0 = image.generate_poisson_noise_map(test_image_0, exposure_time_map_0, seed=1)
-        poisson_noise_map_1 = image.generate_poisson_noise_map(test_image_1, exposure_time_map_1, seed=1)
+        poisson_noise_map_0 = array.generate_poisson_noise_map(test_image_0, exposure_time_map_0, seed=1)
+        poisson_noise_map_1 = array.generate_poisson_noise_map(test_image_1, exposure_time_map_1, seed=1)
 
         assert (poisson_noise_map_0[0,0] == poisson_noise_map_1[0,0]/2.0 ).all()
         assert (poisson_noise_map_0[0,1] == poisson_noise_map_1[0,1]).all()
         assert (poisson_noise_map_0[1,0]*1.5 == pytest.approx(poisson_noise_map_1[1,0], 1e-2) ).all()
         assert (poisson_noise_map_0[1,1]/2.0 == poisson_noise_map_1[1,1] ).all()
-
-
-class TestConvolveImageWithKernal:
-
-    def test__image_is_central_value_of_one__kernel_is_cross__both_3x3(self):
-        test_image = np.array([[0.0, 0.0, 0.0],
-                          [0.0, 1.0, 0.0],
-                          [0.0, 0.0, 0.0]])
-
-        kernel = np.array([[0.0, 1.0, 0.0],
-                           [1.0, 2.0, 1.0],
-                           [0.0, 1.0, 0.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == kernel).all()
-
-    def test__image_is_central_value_of_one__kernel_is_not_odd_x_odd__raises_error(self):
-        test_image = np.array([[0.0, 0.0, 0.0],
-                          [0.0, 1.0, 0.0],
-                          [0.0, 0.0, 0.0]])
-
-        kernel = np.array([[0.0, 1.0],
-                           [1.0, 2.0]])
-
-        with pytest.raises(image.KernelException):
-            image.convolve_image_with_kernel(test_image, kernel)
-
-    def test__image_is_central_value_of_one__kernel_is_cross__image_4x4_kernel_3x3(self):
-        test_image = np.array([[0.0, 0.0, 0.0, 0.0],
-                          [0.0, 1.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0]])
-
-        kernel = np.array([[0.0, 1.0, 0.0],
-                           [1.0, 2.0, 1.0],
-                           [0.0, 1.0, 0.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == np.array([[0.0, 1.0, 0.0, 0.0],
-                                           [1.0, 2.0, 1.0, 0.0],
-                                           [0.0, 1.0, 0.0, 0.0],
-                                           [0.0, 0.0, 0.0, 0.0]])).all()
-
-    def test__image_is_central_value_of_one__kernel_is_cross__image_4x3_kernel_3x3(self):
-        test_image = np.array([[0.0, 0.0, 0.0],
-                          [0.0, 1.0, 0.0],
-                          [0.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0]])
-
-        kernel = np.array([[0.0, 1.0, 0.0],
-                           [1.0, 2.0, 1.0],
-                           [0.0, 1.0, 0.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == np.array([[0.0, 1.0, 0.0],
-                                           [1.0, 2.0, 1.0],
-                                           [0.0, 1.0, 0.0],
-                                           [0.0, 0.0, 0.0]])).all()
-
-    def test__image_is_central_value_of_one__kernel_is_cross__image_3x4_kernel_3x3(self):
-        test_image = np.array([[0.0, 0.0, 0.0, 0.0],
-                          [0.0, 1.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0]])
-
-        kernel = np.array([[0.0, 1.0, 0.0],
-                           [1.0, 2.0, 1.0],
-                           [0.0, 1.0, 0.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == np.array([[0.0, 1.0, 0.0, 0.0],
-                                           [1.0, 2.0, 1.0, 0.0],
-                                           [0.0, 1.0, 0.0, 0.0]])).all()
-
-    def test__image_has_two_central_values__kernel_is_asymmetric__image_follows_convolution(self):
-        test_image = np.array([[0.0, 0.0, 0.0, 0.0],
-                          [0.0, 1.0, 0.0, 0.0],
-                          [0.0, 0.0, 1.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0]])
-
-        kernel = np.array([[1.0, 1.0, 1.0],
-                           [2.0, 2.0, 1.0],
-                           [1.0, 3.0, 3.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == np.array([[1.0, 1.0, 1.0, 0.0],
-                                           [2.0, 3.0, 2.0, 1.0],
-                                           [1.0, 5.0, 5.0, 1.0],
-                                           [0.0, 1.0, 3.0, 3.0]])).all()
-
-    def test__image_values_are_on_edge__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(self):
-        test_image = np.array([[0.0, 0.0, 0.0, 0.0],
-                          [1.0, 0.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 1.0],
-                          [0.0, 0.0, 0.0, 0.0]])
-
-        kernel = np.array([[1.0, 1.0, 1.0],
-                           [2.0, 2.0, 1.0],
-                           [1.0, 3.0, 3.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == np.array([[1.0, 1.0, 0.0, 0.0],
-                                           [2.0, 1.0, 1.0, 1.0],
-                                           [3.0, 3.0, 2.0, 2.0],
-                                           [0.0, 0.0, 1.0, 3.0]])).all()
-
-    def test__image_values_are_on_corner__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(self):
-        test_image = np.array([[1.0, 0.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0],
-                          [0.0, 0.0, 0.0, 1.0]])
-
-        kernel = np.array([[1.0, 1.0, 1.0],
-                           [2.0, 2.0, 1.0],
-                           [1.0, 3.0, 3.0]])
-
-        blurred_test_image = image.convolve_image_with_kernel(test_image, kernel)
-
-        assert (blurred_test_image == np.array([[2.0, 1.0, 0.0, 0.0],
-                                           [3.0, 3.0, 0.0, 0.0],
-                                           [0.0, 0.0, 1.0, 1.0],
-                                           [0.0, 0.0, 2.0, 2.0]])).all()
