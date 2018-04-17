@@ -13,6 +13,64 @@ logger = logging.getLogger(__name__)
 
 data_path = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
+def convert_array_to_counts(array, exposure_time_array):
+    """For an array (in electrons per second) and exposure time array, return an array in units counts.
+
+    Parameters
+    ----------
+    array : ndarray
+        The image from which the Poisson noise map is estimated.
+    exposure_time_array : ndarray
+        The exposure time in each image pixel."""
+    return np.multiply(array, exposure_time_array)
+
+def convert_array_to_electrons_per_second(array, exposure_time_array):
+    """For an array (in counts) and exposure time array, convert the array to units electrons per second
+    Parameters
+    ----------
+    array : ndarray
+        The image from which the Poisson noise map is estimated.
+    exposure_time_array : ndarray
+        The exposure time in each image pixel.
+    """
+    return np.divide(array, exposure_time_array)
+
+def estimate_noise_in_quadrature(sigma_counts, image_counts):
+    return np.sqrt(np.square(sigma_counts) + image_counts)
+
+def estimate_poisson_noise_from_image(image, exposure_time_map):
+    """Estimate a Poisson two-dimensional noise map from an input image.
+
+    Parameters
+    ----------
+    image : ndarray
+        The image in electrons per second, used to estimate the Poisson noise map.
+    exposure_time_map : ndarray
+        The exposure time in each image pixel, used to convert the image from electrons per second to counts.
+    """
+    image_counts = convert_array_to_counts(image, exposure_time_map)
+    noise_counts = estimate_noise_in_quadrature(sigma_counts=0.0, image_counts=image_counts)
+    return convert_array_to_electrons_per_second(noise_counts, exposure_time_map)
+
+def estimate_noise_from_image_and_background(image, exposure_time_map, sigma_background, exposure_time_mean):
+    """Estimate a Poisson two-dimensional noise map from an input image.
+
+    Parameters
+    ----------
+    image : ndarray
+        The image in electrons per second, used to estimate the Poisson noise map.
+    exposure_time_map : ndarray
+        The exposure time in each image pixel, used to convert the image from electrons per second to counts.
+    sigma_background : float
+        The estimate standard deviation of the 1D Gaussian level of noise in the background.
+    exposure_time_mean : float
+        The mean exposure time of the image and therefore background.
+    """
+    sigma_counts = np.multiply(sigma_background, exposure_time_mean)
+    image_counts = convert_array_to_counts(image, exposure_time_map)
+    noise_counts = estimate_noise_in_quadrature(sigma_counts, image_counts)
+    return convert_array_to_electrons_per_second(noise_counts, exposure_time_map)
+
 def numpy_array_from_fits(file_path, hdu):
     hdu_list = fits.open(file_path)  # Open the fits file
     return np.array(hdu_list[hdu].data)
@@ -46,6 +104,7 @@ def output_for_fortran(array, image_name, path=data_path):
                 line += ' ' * (16 - len(line))
                 line += str(float(array.data[ix][iy])) + '\n'
                 f.write(line)
+
 
 class DataGrid(object):
 
@@ -251,7 +310,7 @@ class Image(Data):
         data = numpy_array_from_fits(path + filename, hdu)
         return Image(data, pixel_scale, sky_background_level, sky_background_noise)
 
-    def set_sky_via_edges(self, no_edges):
+    def estimate_sky_via_edges(self, no_edges):
         """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
         histogram and fitting a Gaussian profiles to this histogram. The mean (mu) of this Gaussian gives the background
         sky level, whereas the FWHM (sigma) gives the noise estimate.
@@ -267,14 +326,16 @@ class Image(Data):
 
         for edge_no in range(no_edges):
             top_edge = self.data[edge_no, edge_no:self.pixel_dimensions[1] - edge_no]
-            bottom_edge = self.data[self.pixel_dimensions[0] - 1 - edge_no, edge_no:self.pixel_dimensions[1] - edge_no]
+            bottom_edge = self.data[self.pixel_dimensions[0] - 1 - edge_no,
+                          edge_no:self.pixel_dimensions[1] - edge_no]
             left_edge = self.data[edge_no + 1:self.pixel_dimensions[0] - 1 - edge_no, edge_no]
-            right_edge = self.data[edge_no + 1:self.pixel_dimensions[0] - 1 - edge_no, self.pixel_dimensions[1] - 1 - edge_no]
+            right_edge = self.data[edge_no + 1:self.pixel_dimensions[0] - 1 - edge_no,
+                         self.pixel_dimensions[1] - 1 - edge_no]
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-        # noinspection PyAttributeOutsideInit
-        self.sky_background_level, self.sky_background_noise = norm.fit(edges)
+        return norm.fit(edges)
+
 
     def exposure_time_map_single_exposure_time(self, exposure_time):
         return ExposureTimeMap.from_single_exposure_time(exposure_time, self.pixel_dimensions, self.pixel_scale)
@@ -431,7 +492,7 @@ class ExposureTimeMap(Data):
 
         Parameters
         ----------
-        ndarray: ndarray
+        data : ndarray
             The exposure time map data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
@@ -442,7 +503,7 @@ class ExposureTimeMap(Data):
     @classmethod
     def from_fits(cls, path, filename, hdu, pixel_scale):
         """
-        Load the PSF data from a .fits file.
+        Load the exposure time map data from a .fits file.
 
         Parameters
         ----------
@@ -465,6 +526,27 @@ class ExposureTimeMap(Data):
         data = np.ones(pixel_dimensions)*exposure_time
         return ExposureTimeMap(data, pixel_scale)
 
+
+class BackgroundSky(object):
+
+    def __init__(self, sky_level, sky_sigma):
+        """
+        Class storing a 2D exposure time map, including its data and coordinate grid.
+
+        Parameters
+        ----------
+        data : ndarray
+            The background sky map data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        self.sky_level = sky_level
+        self.sky_sigma = sky_sigma
+
+    @classmethod
+    def from_image_via_edges(cls, image, no_edges):
+        sky_level, sky_sigma = image.estimate_sky_via_edges(no_edges)
+        return BackgroundSky(sky_level, sky_sigma)
 
 class Mask(DataGrid):
 
