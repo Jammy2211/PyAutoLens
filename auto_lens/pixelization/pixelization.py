@@ -10,7 +10,7 @@ def setup_regularization_matrix_via_pixel_pairs(dimension, regularization_weight
     Parameters
     ----------
     dimension : int
-        The dimensions of the square regularization matrix
+        The pixel_dimensions of the square regularization matrix
     regularization_weights : list(float)
         The regularization weight of each source-pixel
     no_pairs : list(int)

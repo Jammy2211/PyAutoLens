@@ -1,0 +1,35 @@
+ESTIMATED NOISES:
+
+If an array is defined as 'noise', this means it estimates the standard deviation value in each pixel:
+
+- A standard deviation in function is referred to as 'sigma' throughout the code (e.g.
+estimate_noise_in_quadrature(sigma_counts, image_counts).
+
+A variance corresponds to a standard deviation and therefore noise value squared (or sigma squared).
+
+- Because a chi squared is divided by noise values squared, the residuals are divided by variances to compute chi
+squared.
+- The routine compute_variances_from_noise(noise) performs this conversion.
+
+The Poisson noise in a pixel is computed simply as its total counts squared rooted.
+
+To compute the total noise in a pixel, we thus add sources in quadraturee as:
+
+def estimate_noise_std_in_quadrature(sigma_std_counts, image_counts):
+    return np.sqrt(np.square(sigma_std_counts) + image_counts)
+
+ACTUAL NOISE VALUES:
+
+If an array is defined as 'noise_map', or some variant of (e.g. read_noise_map, poisson_noise_map), this means that is
+the actual noise values in each pixel that are known. This is only possible for simulated images. E.g the functions
+below return a 'noise_map':
+
+def generate_gaussian_noise_map(dimensions, mean, sigma, seed=-1):
+    setup_random_seed(seed)
+    return np.random.normal(mean, sigma, dimensions)
+
+def generate_poisson_noise_map(image, exposure_time_map, seed=-1):
+    setup_random_seed(seed)
+    image_counts = convert_array_to_counts(image, exposure_time_map)
+    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map)
+
