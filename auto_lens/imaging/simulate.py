@@ -51,10 +51,11 @@ def setup_random_seed(seed):
         seed = np.random.randint(0, 1e9)  # Use one seed, so all regions have identical column non-uniformity.
     np.random.seed(seed)
 
+# TODO : exposure_time and background noise are currently just floats and dont use the classes in the imaging module.
 
 class SimulateImage(imaging.Data):
 
-    def __init__(self, data, pixel_scale, psf=None, exposure_time=None, background_noise=None, noise_seed=-1):
+    def __init__(self, data, pixel_scale, psf=None, exposure_time=0.0, background_noise=0.0, noise_seed=-1):
         """
         Creates a new simulated image.
 
@@ -84,17 +85,17 @@ class SimulateImage(imaging.Data):
         if self.psf is not None:
             self.simulate_optics()
 
-        if self.exposure_time is not None:
+        if self.exposure_time > 0.0:
             self.simulate_poisson_noise()
 
-        if self.background_noise is not None:
+        if self.background_noise > 0.0:
             self.simulate_background_noise()
 
         self.estimate_noise_in_simulated_image()
         self.estimate_signal_to_noise_ratio_in_simulated_image()
 
     @classmethod
-    def from_fits(cls, path, filename, hdu, pixel_scale, psf=None, exposure_time=None, background_noise=None,
+    def from_fits(cls, path, filename, hdu, pixel_scale, psf=None, exposure_time=0.0, background_noise=0.0,
                   noise_seed=-1):
         """
         Loads the image data from a .fits file.
@@ -125,20 +126,19 @@ class SimulateImage(imaging.Data):
 
     def simulate_poisson_noise(self):
         """Simulate Poisson signal_to_noise_ratio in image"""
-        self.poisson_noise_map = generate_poisson_noise_map(self.data, self.exposure_time.data, self.noise_seed)
-
-        self.data += self.poisson_noise_map
+        self.poisson_noise_map = generate_poisson_noise_map(self.data, self.exposure_time, self.noise_seed)
+        self.data = self.data + self.poisson_noise_map
 
     def simulate_background_noise(self):
         """Simulate the background signal_to_noise_ratio"""
-        self.background_noise_map = generate_background_noise_map(self.pixel_dimensions, self.background_noise.data,
+        self.background_noise_map = generate_background_noise_map(self.pixel_dimensions, self.background_noise,
                                                                   self.noise_seed)
 
-        self.data += self.background_noise_map
+        self.data = self.data + self.background_noise_map
 
     def estimate_noise_in_simulated_image(self):
         """Estimate the signal_to_noise_ratio in the simulated image, using the exposure time and background signal_to_noise_ratio"""
-        self.noise = imaging.estimate_noise_from_image(self.data, self.exposure_time.data, self.background_noise.data)
+        self.noise = imaging.estimate_noise_from_image(self.data, self.exposure_time, self.background_noise)
 
     def estimate_signal_to_noise_ratio_in_simulated_image(self):
         """Estimate the signal_to_noise_ratio in the simulated image, using the exposure time and background signal_to_noise_ratio"""
