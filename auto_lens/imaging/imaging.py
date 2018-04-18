@@ -296,15 +296,15 @@ class Image(Data):
         data = numpy_array_from_fits(path + filename, hdu)
         return Image(data, pixel_scale)
 
-    def estimate_sky_via_edges(self, no_edges):
-        """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
-        histogram and fitting a Gaussian profiles to this histogram. The mean (mu) of this Gaussian gives the background
-        sky level, whereas the FWHM (sigma) gives the noise estimate.
+    def estimate_background_noise_from_edges(self, no_edges):
+        """Estimate the background noise by binning pixels located at the edge(s) of an image into a histogram and \
+        fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this Gaussian gives a noise \
+        estimate.
 
         Parameters
         ----------
         no_edges : int
-            Number of edges used to estimate the backgroundd sky properties
+            Number of edges used to estimate the background noise.
 
         """
 
@@ -320,10 +320,10 @@ class Image(Data):
 
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-        return norm.fit(edges)
+        return norm.fit(edges)[1]
 
     def exposure_time_map_single_exposure_time(self, exposure_time):
-        return ExposureTimeMap.from_single_exposure_time(exposure_time, self.pixel_dimensions, self.pixel_scale)
+        return ExposureTime.from_single_exposure_time(exposure_time, self.pixel_dimensions, self.pixel_scale)
 
     def circle_mask(self, radius_mask):
         """
@@ -402,6 +402,71 @@ class Noise(Data):
         return Noise(data, pixel_scale)
 
 
+class NoiseBackground(object):
+
+    def __init__(self, background_noise):
+        """
+        Class storing the standard deivation of the background noise, or 2D array of the noise estimate in every pixel.
+
+        Parameters
+        ----------
+        data : float or ndarray
+            The background sky map data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        self.background_noise = background_noise
+
+    @classmethod
+    def from_image_via_edges(cls, image, no_edges):
+        background_noise = image.estimate_background_noise_from_edges(no_edges)
+        return NoiseBackground(background_noise)
+
+
+class ExposureTime(Data):
+
+    def __init__(self, data, pixel_scale):
+        """
+        Class storing a 2D exposure time map, including its data and coordinate grid.
+
+        Parameters
+        ----------
+        data : float or ndarray
+            The exposure time map data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+
+        super(ExposureTime, self).__init__(data, pixel_scale)
+
+    @classmethod
+    def from_fits(cls, path, filename, hdu, pixel_scale):
+        """
+        Load the exposure time map data from a .fits file.
+
+        Parameters
+        ----------
+        path : str
+            The directory path to the fits file
+        filename : str
+            The file name of the fits file
+        hdu : int
+            The HDU number in the fits file containing the data
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        renormalize : bool
+            Renormalize the PSF such that its value added up to 1.0?
+        """
+        data = numpy_array_from_fits(path + filename, hdu)
+        return ExposureTime(data, pixel_scale)
+
+    @classmethod
+    def from_single_exposure_time(cls, exposure_time, pixel_dimensions, pixel_scale):
+        data = np.ones(pixel_dimensions)*exposure_time
+        return ExposureTime(data, pixel_scale)
+
+
+
 class PSF(Data):
 
     def __init__(self, data, pixel_scale, renormalize=True):
@@ -467,71 +532,6 @@ class PSF(Data):
     def renormalize(self):
         """Renormalize the PSF such that its data values sum to unity."""
         return np.divide(self.data, np.sum(self.data))
-
-
-class ExposureTimeMap(Data):
-
-    def __init__(self, data, pixel_scale):
-        """
-        Class storing a 2D exposure time map, including its data and coordinate grid.
-
-        Parameters
-        ----------
-        data : ndarray
-            The exposure time map data.
-        pixel_scale: float
-            The arc-second to pixel conversion factor of each pixel.
-        """
-
-        super(ExposureTimeMap, self).__init__(data, pixel_scale)
-
-    @classmethod
-    def from_fits(cls, path, filename, hdu, pixel_scale):
-        """
-        Load the exposure time map data from a .fits file.
-
-        Parameters
-        ----------
-        path : str
-            The directory path to the fits file
-        filename : str
-            The file name of the fits file
-        hdu : int
-            The HDU number in the fits file containing the data
-        pixel_scale: float
-            The arc-second to pixel conversion factor of each pixel.
-        renormalize : bool
-            Renormalize the PSF such that its value added up to 1.0?
-        """
-        data = numpy_array_from_fits(path + filename, hdu)
-        return ExposureTimeMap(data, pixel_scale)
-
-    @classmethod
-    def from_single_exposure_time(cls, exposure_time, pixel_dimensions, pixel_scale):
-        data = np.ones(pixel_dimensions)*exposure_time
-        return ExposureTimeMap(data, pixel_scale)
-
-
-class BackgroundSky(object):
-
-    def __init__(self, sky_level, sky_sigma):
-        """
-        Class storing a 2D exposure time map, including its data and coordinate grid.
-
-        Parameters
-        ----------
-        data : ndarray
-            The background sky map data.
-        pixel_scale: float
-            The arc-second to pixel conversion factor of each pixel.
-        """
-        self.sky_level = sky_level
-        self.sky_sigma = sky_sigma
-
-    @classmethod
-    def from_image_via_edges(cls, image, no_edges):
-        sky_level, sky_sigma = image.estimate_sky_via_edges(no_edges)
-        return BackgroundSky(sky_level, sky_sigma)
 
 
 class Mask(DataGrid):

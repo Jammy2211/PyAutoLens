@@ -12,8 +12,8 @@ pixel_scale = 0.05
 psf = imaging.PSF.from_fits(path=data_path+'slacs/', filename='slacs_1_post.fits', hdu=3, pixel_scale=pixel_scale)
 psf.trim(new_dimensions=(15,15))
 
-exposure_time = imaging.ExposureTimeMap.from_single_exposure_time(exposure_time=1e7, pixel_dimensions=(602, 602),
-                                                                  pixel_scale=pixel_scale)
+exposure_time = imaging.ExposureTime.from_single_exposure_time(exposure_time=1e7, pixel_dimensions=(602, 602),
+                                                               pixel_scale=pixel_scale)
 
 image = simulate.SimulateImage.from_fits(path=data_path, filename='SimLens.fits', hdu=0, pixel_scale=pixel_scale,
                                          psf=psf, exposure_time_map=exposure_time, sky_level=0.001)
