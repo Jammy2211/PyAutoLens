@@ -718,14 +718,13 @@ class TestImage(object):
             assert image.arc_second_dimensions == pytest.approx((0.4, 0.3))
 
 
-    class TestEstimateSky(object):
+    class TestEstimateBackgroundNoise(object):
 
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
 
             image = imaging.Image(data=np.ones((3, 3)), pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=1)
 
-            assert sky_level == 1.0
             assert sky_noise == 0.0
 
         def test__via_edges__3x3_image_simple_gaussian__answer_ignores_central_pixel(self):
@@ -735,9 +734,8 @@ class TestImage(object):
                                    [1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=1)
 
-            assert sky_level == 1.0
             assert sky_noise == 0.0
 
         def test__via_edges__4x3_image_simple_gaussian__ignores_central_pixels(self):
@@ -748,9 +746,8 @@ class TestImage(object):
                                    [1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=1)
 
-            assert sky_level == 1.0
             assert sky_noise == 0.0
 
         def test__via_edges__4x4_image_simple_gaussian__ignores_central_pixels(self):
@@ -760,9 +757,8 @@ class TestImage(object):
                                    [1, 1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=1)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=1)
 
-            assert sky_level == 1.0
             assert sky_noise == 0.0
 
         def test__via_edges__5x5_image_simple_gaussian_two_edges__ignores_central_pixel(self):
@@ -773,9 +769,8 @@ class TestImage(object):
                                    [1, 1, 1, 1, 1]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=2)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=2)
 
-            assert sky_level == 1.0
             assert sky_noise == 0.0
 
         def test__via_edges__6x5_image_two_edges__values(self):
@@ -787,9 +782,8 @@ class TestImage(object):
                                    [23, 24, 25, 26, 27]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=2)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=2)
 
-            assert sky_level == np.mean(np.arange(28))
             assert sky_noise == np.std(np.arange(28))
 
         def test__via_edges__7x7_image_three_edges__values(self):
@@ -802,9 +796,8 @@ class TestImage(object):
                                    [41, 42, 43, 44, 45, 46, 47]])
 
             image = imaging.Image(data=image_data, pixel_scale=0.1)
-            sky_level, sky_noise = image.estimate_sky_via_edges(no_edges=3)
+            sky_noise = image.estimate_background_noise_from_edges(no_edges=3)
 
-            assert sky_level == np.mean(np.arange(48))
             assert sky_noise == np.std(np.arange(48))
 
 
@@ -901,6 +894,26 @@ class TestNoise(object):
             assert noise.pixel_dimensions == (4, 3)
             assert noise.central_pixels == (1.5, 1.0)
             assert noise.arc_second_dimensions == pytest.approx((0.4, 0.3))
+
+
+class TestNoiseBackground(object):
+
+
+    class TestConstructors(object):
+
+        def test__init__input_background_noise_map_3x3__all_attributes_correct_including_data_inheritance(self):
+
+            background_noise = imaging.NoiseBackground(background_noise=7.0)
+
+            assert background_noise.background_noise == 7.0
+
+        def test__from_single_background_noise__map_is_all_that_background_noise(self):
+            
+            image = imaging.Image(data=np.ones((3, 3)), pixel_scale=0.1)
+
+            background_noise = imaging.NoiseBackground.from_image_via_edges(image, no_edges=1)
+
+            assert background_noise.background_noise == 0.0
 
 
 class TestPSF(object):
@@ -1126,14 +1139,14 @@ class TestPSF(object):
                                                [0.0, 0.0, 2.0, 2.0]])).all()
 
 
-class TestExpsoureTimeMap(object):
+class TestExpsoureTime(object):
 
 
     class TestConstructors(object):
 
         def test__init__input_exposure_time_3x3__all_attributes_correct_including_data_inheritance(self):
             
-            exposure_time = imaging.ExposureTimeMap(data=np.ones((3, 3)), pixel_scale=1.0)
+            exposure_time = imaging.ExposureTime(data=np.ones((3, 3)), pixel_scale=1.0)
 
             assert exposure_time.pixel_scale == 1.0
             assert exposure_time.pixel_dimensions == (3, 3)
@@ -1143,7 +1156,7 @@ class TestExpsoureTimeMap(object):
 
         def test__init__input_exposure_time_4x3__all_attributes_correct_including_data_inheritance(self):
             
-            exposure_time = imaging.ExposureTimeMap(data=np.ones((4, 3)), pixel_scale=0.1)
+            exposure_time = imaging.ExposureTime(data=np.ones((4, 3)), pixel_scale=0.1)
 
             assert (exposure_time.data == np.ones((4, 3))).all()
             assert exposure_time.pixel_scale == 0.1
@@ -1153,8 +1166,8 @@ class TestExpsoureTimeMap(object):
 
         def test__from_fits__input_exposure_time_3x3__all_attributes_correct_including_data_inheritance(self):
 
-            exposure_time = imaging.ExposureTimeMap.from_fits(path=test_data_dir, filename='3x3_ones.fits', hdu=0,
-                                                                  pixel_scale=1.0)
+            exposure_time = imaging.ExposureTime.from_fits(path=test_data_dir, filename='3x3_ones.fits', hdu=0,
+                                                           pixel_scale=1.0)
 
             assert (exposure_time.data == np.ones((3, 3))).all()
             assert exposure_time.pixel_scale == 1.0
@@ -1164,8 +1177,8 @@ class TestExpsoureTimeMap(object):
 
         def test__from_fits__input_exposure_time_4x3__all_attributes_correct_including_data_inheritance(self):
 
-            exposure_time = imaging.ExposureTimeMap.from_fits(path=test_data_dir, filename='4x3_ones.fits', hdu=0,
-                                                                  pixel_scale=0.1)
+            exposure_time = imaging.ExposureTime.from_fits(path=test_data_dir, filename='4x3_ones.fits', hdu=0,
+                                                           pixel_scale=0.1)
 
             assert (exposure_time.data == np.ones((4, 3))).all()
             assert exposure_time.pixel_scale == 0.1
@@ -1175,8 +1188,8 @@ class TestExpsoureTimeMap(object):
 
         def test__from_single_exposure_time__map_is_all_that_exposure_time(self):
 
-            exposure_time = imaging.ExposureTimeMap.from_single_exposure_time(exposure_time=3.0,
-                                                              pixel_dimensions=(3,3), pixel_scale=1.0)
+            exposure_time = imaging.ExposureTime.from_single_exposure_time(exposure_time=3.0,
+                                                                           pixel_dimensions=(3,3), pixel_scale=1.0)
 
             assert (exposure_time.data == np.array([[3.0, 3.0, 3.0],
                                                         [3.0, 3.0, 3.0],
@@ -1185,28 +1198,6 @@ class TestExpsoureTimeMap(object):
             assert exposure_time.pixel_dimensions == (3, 3)
             assert exposure_time.central_pixels == (1.0, 1.0)
             assert exposure_time.arc_second_dimensions == pytest.approx((3.0, 3.0))
-
-
-class TestBackgroundSky(object):
-    
-    
-    class TestConstructors(object):
-
-        def test__init__input_background_sky_map_3x3__all_attributes_correct_including_data_inheritance(self):
-            
-            background_sky = imaging.BackgroundSky(sky_level=5.0, sky_sigma=7.0)
-
-            assert background_sky.sky_level == 5.0
-            assert background_sky.sky_sigma == 7.0
-
-        def test__from_single_background_sky__map_is_all_that_background_sky(self):
-
-            image = imaging.Image(data=np.ones((3, 3)), pixel_scale=0.1)
-
-            background_sky = imaging.BackgroundSky.from_image_via_edges(image, no_edges=1)
-
-            assert background_sky.sky_level == 1.0
-            assert background_sky.sky_sigma == 0.0
 
 
 class TestEstimateNoiseFromImage:
