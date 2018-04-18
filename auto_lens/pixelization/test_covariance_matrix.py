@@ -363,7 +363,7 @@ class TestCalculateCovariance(object):
         assert generator.calculate_covariance(0, 1) == 0
 
     def test_variable_noise(self):
-        """Is the result correct when noise is taken into account?"""
+        """Is the result correct when signal_to_noise_ratio is taken into account?"""
         generator = covariance_matrix.CovarianceMatrixGenerator([{0: 2, 1: 3}, {0: 1, 1: 1}], [2, 3], None)
 
         assert generator.calculate_covariance(0, 1) == 2
