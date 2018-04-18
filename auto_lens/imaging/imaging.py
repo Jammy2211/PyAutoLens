@@ -6,7 +6,7 @@ import scipy.signal
 import os
 import logging
 
-from auto_lens.imaging import analysis_grids
+from auto_lens.imaging import grids
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ def convert_array_to_counts(array, exposure_time_array):
     Parameters
     ----------
     array : ndarray
-        The image from which the Poisson noise map is estimated.
+        The image from which the Poisson signal_to_noise_ratio map is estimated.
     exposure_time_array : ndarray
         The exposure time in each image pixel."""
     return np.multiply(array, exposure_time_array)
@@ -29,7 +29,7 @@ def convert_array_to_electrons_per_second(array, exposure_time_array):
     Parameters
     ----------
     array : ndarray
-        The image from which the Poisson noise map is estimated.
+        The image from which the Poisson signal_to_noise_ratio map is estimated.
     exposure_time_array : ndarray
         The exposure time in each image pixel.
     """
@@ -39,17 +39,17 @@ def estimate_noise_in_quadrature(image_counts, sigma_counts):
     return np.sqrt(image_counts + np.square(sigma_counts))
 
 def estimate_noise_from_image(image, exposure_time, background_noise):
-    """Estimate the two-dimensional noise of an input image, including noise due to Poisson counting statistics and \
+    """Estimate the two-dimensional signal_to_noise_ratio of an input image, including signal_to_noise_ratio due to Poisson counting statistics and \
     a background component.
 
     Parameters
     ----------
     image : ndarray
-        The image in electrons per second, used to estimate the Poisson noise map.
+        The image in electrons per second, used to estimate the Poisson signal_to_noise_ratio map.
     exposure_time : float or ndarray
         The exposure time in each image pixel, used to convert the image from electrons per second to counts.
     background_noise : float or ndarray
-        The standard deviation estimate of the 1D Gaussian level of noise in each pixxel due to background noise \
+        The standard deviation estimate of the 1D Gaussian level of signal_to_noise_ratio in each pixxel due to background signal_to_noise_ratio \
         sources, in electrns per second
     exposure_time_mean : float
         The mean exposure time of the image and therefore background.
@@ -78,7 +78,7 @@ def output_for_fortran(path, array, image_name):
     if isinstance(array, PSF):
         file_path = path + image_name + "PSF.dat"
     elif isinstance(array, Noise):
-        file_path = path + image_name + "BaselineNoise.dat"
+        file_path = path + image_name + "Noise.dat"
     else:
         file_path = path + image_name + ".dat"
 
@@ -99,7 +99,7 @@ class DataGrid(object):
 
     def __init__(self, pixel_dimensions, pixel_scale):
         """
-        Class storing the coordinates for 2D pixel grids (e.g. image, PSF, noise).
+        Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class DataGrid(object):
 
     def grid_coordinates(self):
         """
-        Computes the arc second coordinates of every pixel on the data-grid.
+        Computes the arc second grids of every pixel on the data-grid.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value and positive y value in arc seconds.
@@ -181,7 +181,7 @@ class Data(DataGrid):
 
     def __init__(self, data, pixel_scale):
         """
-        Class storing the data of a 2D pixel grid (e.g. image, PSF, noise)
+        Class storing the data of a 2D pixel grid (e.g. image, PSF, signal_to_noise_ratio)
 
         Parameters
         ----------
@@ -268,7 +268,7 @@ class Image(Data):
         sky_background_level : float
             The level of sky background in the image.
         sky_background_noise : float
-            An estimate of the noise in the sky background.
+            An estimate of the signal_to_noise_ratio in the sky background.
         """
 
         super(Image, self).__init__(data, pixel_scale)
@@ -291,20 +291,20 @@ class Image(Data):
         sky_background_level : float
             An estimate of the level of background sky in the image (electrons per second).
         sky_background_noise : float
-            An estimate of the noise level in the background sky (electrons per second).
+            An estimate of the signal_to_noise_ratio level in the background sky (electrons per second).
         """
         data = numpy_array_from_fits(path + filename, hdu)
         return Image(data, pixel_scale)
 
     def estimate_background_noise_from_edges(self, no_edges):
-        """Estimate the background noise by binning pixels located at the edge(s) of an image into a histogram and \
-        fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this Gaussian gives a noise \
+        """Estimate the background signal_to_noise_ratio by binning pixels located at the edge(s) of an image into a histogram and \
+        fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this Gaussian gives a signal_to_noise_ratio \
         estimate.
 
         Parameters
         ----------
         no_edges : int
-            Number of edges used to estimate the background noise.
+            Number of edges used to estimate the background signal_to_noise_ratio.
 
         """
 
@@ -321,9 +321,6 @@ class Image(Data):
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         return norm.fit(edges)[1]
-
-    def exposure_time_map_single_exposure_time(self, exposure_time):
-        return ExposureTime.from_single_exposure_time(exposure_time, self.pixel_dimensions, self.pixel_scale)
 
     def circle_mask(self, radius_mask):
         """
@@ -370,12 +367,12 @@ class Noise(Data):
 
     def __init__(self, data, pixel_scale):
         """
-        Class storing a 2D noise image, including its data and coordinate grid.
+        Class storing a 2D signal_to_noise_ratio image, including its data and coordinate grid.
 
         Parameters
         ----------
         data : ndarray
-            The array of noise data
+            The array of signal_to_noise_ratio data
         pixel_scale : float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -385,7 +382,7 @@ class Noise(Data):
     @classmethod
     def from_fits(cls, path, filename, hdu, pixel_scale):
         """
-        Loads the noise data from a .fits file.
+        Loads the signal_to_noise_ratio data from a .fits file.
 
         Parameters
         ----------
@@ -402,11 +399,11 @@ class Noise(Data):
         return Noise(data, pixel_scale)
 
 
-class NoiseBackground(object):
+class NoiseBackground(Data):
 
-    def __init__(self, background_noise):
+    def __init__(self, data, pixel_scale):
         """
-        Class storing the standard deivation of the background noise, or 2D array of the noise estimate in every pixel.
+        Class storing the standard deivation of the background signal_to_noise_ratio, or 2D array of the signal_to_noise_ratio estimate in every pixel.
 
         Parameters
         ----------
@@ -415,12 +412,39 @@ class NoiseBackground(object):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        self.background_noise = background_noise
+
+        super(NoiseBackground, self).__init__(data, pixel_scale)
+
+    @classmethod
+    def from_fits(cls, path, filename, hdu, pixel_scale):
+        """
+        Load the exposure time map data from a .fits file.
+
+        Parameters
+        ----------
+        path : str
+            The directory path to the fits file
+        filename : str
+            The file name of the fits file
+        hdu : int
+            The HDU number in the fits file containing the data
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        renormalize : bool
+            Renormalize the PSF such that its value added up to 1.0?
+        """
+        data = numpy_array_from_fits(path + filename, hdu)
+        return NoiseBackground(data, pixel_scale)
 
     @classmethod
     def from_image_via_edges(cls, image, no_edges):
         background_noise = image.estimate_background_noise_from_edges(no_edges)
         return NoiseBackground(background_noise)
+
+    @classmethod
+    def from_one_value(cls, background_noise, pixel_dimensions, pixel_scale):
+        data = np.ones(pixel_dimensions) * background_noise
+        return NoiseBackground(data, pixel_scale)
 
 
 class ExposureTime(Data):
@@ -461,10 +485,9 @@ class ExposureTime(Data):
         return ExposureTime(data, pixel_scale)
 
     @classmethod
-    def from_single_exposure_time(cls, exposure_time, pixel_dimensions, pixel_scale):
+    def from_one_value(cls, exposure_time, pixel_dimensions, pixel_scale):
         data = np.ones(pixel_dimensions)*exposure_time
         return ExposureTime(data, pixel_scale)
-
 
 
 class PSF(Data):
@@ -639,7 +662,7 @@ class Mask(DataGrid):
 
     def compute_image_grid(self):
         """
-        Compute the image grid coordinates from a mask, using the center of every unmasked pixel.
+        Compute the image grid grids from a mask, using the center of every unmasked pixel.
         """
         coordinates = self.grid_coordinates()
 
@@ -657,7 +680,7 @@ class Mask(DataGrid):
         return grid
 
     def compute_image_sub_grid(self, sub_grid_size):
-        """ Compute the image sub-grid coordinates from a mask, using the center of every unmasked pixel.
+        """ Compute the image sub-grid grids from a mask, using the center of every unmasked pixel.
 
         Parameters
         ----------
@@ -695,7 +718,7 @@ class Mask(DataGrid):
         return grid
 
     def compute_blurring_grid(self, psf_size):
-        """ Compute the blurring grid coordinates from a mask, using the center of every unmasked pixel.
+        """ Compute the blurring grid grids from a mask, using the center of every unmasked pixel.
 
         The blurring grid contains all pixels which are not in the mask, but close enough to it that a fraction of \
         their will be blurred into the mask region (and therefore they are needed for the analysis). They are located \

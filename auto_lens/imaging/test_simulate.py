@@ -158,7 +158,7 @@ class TestGeneratePoissonNoiseMap:
         poisson_noise_map = simulate.generate_poisson_noise_map(image, exposure_time, seed=1)
 
         assert poisson_noise_map.shape == (2, 2)
-        assert (poisson_noise_map == np.array([[1, 0],  # Use known noise map for given seed.
+        assert (poisson_noise_map == np.array([[1, 0],  # Use known signal_to_noise_ratio map for given seed.
                                                [0, 4]])).all()
 
     def test__input_image_includes_10s__exposure_time_is_ndarray_of_1s__gives_same_noise_values_as_above(self):
@@ -171,7 +171,7 @@ class TestGeneratePoissonNoiseMap:
         poisson_noise_map = simulate.generate_poisson_noise_map(image, exposure_time, seed=1)
 
         assert poisson_noise_map.shape == (2, 2)
-        assert (poisson_noise_map == np.array([[1, 0],  # Use known noise map for given seed.
+        assert (poisson_noise_map == np.array([[1, 0],  # Use known signal_to_noise_ratio map for given seed.
                                                [0, 4]])).all()
 
     def test__input_image_is_all_10s__exposure_time_is_float_of_1s__gives_noise_values_near_1_to_5(self):
@@ -184,7 +184,7 @@ class TestGeneratePoissonNoiseMap:
         poisson_noise_map = simulate.generate_poisson_noise_map(image, exposure_time, seed=1)
 
         assert poisson_noise_map.shape == (2, 2)
-        assert (poisson_noise_map == np.array([[1, 4],  # Use known noise map for given seed.
+        assert (poisson_noise_map == np.array([[1, 4],  # Use known signal_to_noise_ratio map for given seed.
                                                [3, 1]])).all()
 
     def test__input_image_is_all_10s__exposure_time_is_ndarray_of_1s__gives_noise_values_near_1_to_5(self):
@@ -197,7 +197,7 @@ class TestGeneratePoissonNoiseMap:
         poisson_noise_map = simulate.generate_poisson_noise_map(image, exposure_time, seed=1)
 
         assert poisson_noise_map.shape == (2, 2)
-        assert (poisson_noise_map == np.array([[1, 4],  # Use known noise map for given seed.
+        assert (poisson_noise_map == np.array([[1, 4],  # Use known signal_to_noise_ratio map for given seed.
                                                [3, 1]])).all()
 
     def test__input_image_has_1000000s__exposure_times_all_1s__these_give_positive_noise_values_near_1000(self):
@@ -210,7 +210,7 @@ class TestGeneratePoissonNoiseMap:
         poisson_noise_map = simulate.generate_poisson_noise_map(image, exposure_time, seed=2)
 
         assert poisson_noise_map.shape == (2, 2)
-        assert (poisson_noise_map == np.array([[571, 0],  # Use known noise map for given seed.
+        assert (poisson_noise_map == np.array([[571, 0],  # Use known signal_to_noise_ratio map for given seed.
                                                [0, -441]])).all()
 
     def test__two_images_same_in_counts_but_different_in_electrons_per_sec__noise_related_by_exposure_times(self):
