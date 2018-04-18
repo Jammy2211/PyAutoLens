@@ -7,7 +7,7 @@ It is assumed that the f matrix is sparse_grid. It is also assumed that covarian
 between a pixel and pixels in a contiguous patch about that pixel in the source plane, except for the case that overlap
 occurs between convolution kernels. See https://github.com/Jammy2211/AutoLens/issues/6 for a thorough discussion.
 
-Given a convolved list of pixel maps pixel_maps of type [{int: float}], a noise vector noise_vector of type [float] and
+Given a convolved list of pixel maps pixel_maps of type [{int: float}], a signal_to_noise_ratio vector noise_vector of type [float] and
 a graph describing neighbours on the source plane [[int]] this module will return a covariance matrix matrix of type
 {(int, int): float} where the tuple is a pair of indices of the matrix and only non-zero entries are included.
 
@@ -92,7 +92,7 @@ def create_d_matrix(pixel_maps, noise_vector, image_vector):
     pixel_maps: [{int: float}]
         List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
     noise_vector: [float]
-        A list of noise values of length image_grid pixels
+        A list of signal_to_noise_ratio values of length image_grid pixels
     image_vector: [float]
         A vector describing the image_grid
 
@@ -120,7 +120,7 @@ def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_l
     pixel_maps: [{int: float}]
         List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
     noise_vector: [float]
-        A list of noise values of length image_grid pixels
+        A list of signal_to_noise_ratio values of length image_grid pixels
     graph: [[int]]
         A graph representing source pixel neighbouring
     neighbour_search_limit: float
@@ -149,7 +149,7 @@ class CovarianceMatrixGenerator(object):
         pixel_maps: [{int: float}]
             List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
         noise_vector: [float]
-            A list of noise values of length image_grid pixels
+            A list of signal_to_noise_ratio values of length image_grid pixels
         graph: [[int]]
             A graph representing source pixel neighbouring
         neighbour_search_limit: float
