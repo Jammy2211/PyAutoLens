@@ -26,10 +26,8 @@ class TestConstructor(object):
                                             [0.0, 0.0, 0.0]))).all()
 
         assert sim_image.pixel_scale == 0.1
-
-        assert sim_image.sky_level == 0.0
         assert sim_image.psf == None
-        assert sim_image.exposure_time == None
+        assert sim_image.exposure_time == 0.0
 
     def test__setup_with_psf_blurring_on(self):
 
@@ -64,10 +62,12 @@ class TestConstructor(object):
                           [0.0, 1.0, 0.0],
                           [0.0, 0.0, 0.0]))
 
-        exposure_time = 20.0*np.ones((3,3))
+     #   exposure_time = 20.0*np.ones((3,3))
 
-        sim_image = simulate.SimulateImage(data=image, pixel_scale=0.1, exposure_time=exposure_time,
+
+        sim_image = simulate.SimulateImage(data=image, pixel_scale=0.1, exposure_time=20.0,
                                            noise_seed=1)
+
 
         assert (sim_image.data_original == np.array(([0.0, 0.0, 0.0],
                                                      [0.0, 1.0, 0.0],
@@ -79,29 +79,12 @@ class TestConstructor(object):
 
         assert sim_image.pixel_scale == 0.1
 
-        assert (sim_image.exposure_time == 20.0*np.ones((3,3))).all()
+      #  assert (sim_image.exposure_time == 20.0*np.ones((3,3))).all()
+
+        assert sim_image.exposure_time == 20.0
 
         assert sim_image.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                       [0.0, 0.05, 0.0],
-                                                                      [0.0, 0.0, 0.0]]), 1e-2)
-
-    def test__setup_with_exposure_time_and_sky_level__adds_poisson_noise(self):
-
-        image = np.array(([-20.0, -20.0, -20.0],
-                          [-20.0,   0.0, -20.0],
-                          [-20.0, -20.0, -20.0]))
-
-        exposure_time = np.ones((3,3))
-
-        sim_image = simulate.SimulateImage(data=image, pixel_scale=0.1, sky_level=20.0,
-                                           exposure_time=exposure_time, noise_seed=1)
-
-        assert (sim_image.data_original == np.array(([-20.0, -20.0, -20.0],
-                                                     [-20.0, 0.0, -20.0],
-                                                     [-20.0, -20.0, -20.0]))).all()
-
-        assert sim_image.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
-                                                                      [0.0, 20*0.05, 0.0],
                                                                       [0.0, 0.0, 0.0]]), 1e-2)
 
     def test__setup_all_features_off__from_fits(self):
@@ -119,9 +102,9 @@ class TestConstructor(object):
 
         assert sim_image.pixel_scale == 0.1
 
-        assert sim_image.sky_level == 0.0
         assert sim_image.psf == None
-        assert sim_image.exposure_time == None
+        assert sim_image.exposure_time == 0.0
+        assert sim_image.background_noise == 0.0
 
 
 class TestGeneratePoissonNoiseMap:
