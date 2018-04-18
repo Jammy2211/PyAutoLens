@@ -24,12 +24,17 @@ If an array is defined as 'noise_map', or some variant of (e.g. read_noise_map, 
 the actual noise values in each pixel that are known. This is only possible for simulated images. E.g the functions
 below return a 'noise_map':
 
-def generate_gaussian_noise_map(dimensions, mean, sigma, seed=-1):
+def generate_background_noise_map(dimensions, background_noise, seed=-1):
     setup_random_seed(seed)
-    return np.random.normal(mean, sigma, dimensions)
+    return np.random.normal(0.0, background_noise, dimensions)
 
 def generate_poisson_noise_map(image, exposure_time_map, seed=-1):
     setup_random_seed(seed)
     image_counts = convert_array_to_counts(image, exposure_time_map)
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map)
 
+BACKGROUND SKY:
+
+Because we define all images to be in electrons per second, we do not require knowledge of the background sky level to \
+simulate or measure noise. We only need to know the background noise values, which are what is typically estimated \
+by data reduction piplines.

@@ -52,7 +52,11 @@ def estimate_poisson_noise_from_image(image, exposure_time_map):
     noise_counts = estimate_noise_in_quadrature(sigma_counts=0.0, image_counts=image_counts)
     return convert_array_to_electrons_per_second(noise_counts, exposure_time_map)
 
-def estimate_noise_from_image_and_background(image, exposure_time_map, sigma_background, exposure_time_mean):
+# TODO : These routines currently assume a constant background noise map represent by a single value sigma_counts.
+# TODO : Even if we assume a uniform background sky, a changing exposure time map breaks this assumption and should be
+# TODO : relaxed in the future.
+
+def estimate_noise_from_image_and_background(image, exposure_time_map, sigma_background_counts):
     """Estimate a Poisson two-dimensional noise map from an input image.
 
     Parameters
@@ -61,21 +65,20 @@ def estimate_noise_from_image_and_background(image, exposure_time_map, sigma_bac
         The image in electrons per second, used to estimate the Poisson noise map.
     exposure_time_map : ndarray
         The exposure time in each image pixel, used to convert the image from electrons per second to counts.
-    sigma_background : float
+    sigma_background_counts : float
         The estimate standard deviation of the 1D Gaussian level of noise in the background.
     exposure_time_mean : float
         The mean exposure time of the image and therefore background.
     """
-    sigma_counts = np.multiply(sigma_background, exposure_time_mean)
     image_counts = convert_array_to_counts(image, exposure_time_map)
-    noise_counts = estimate_noise_in_quadrature(sigma_counts, image_counts)
+    noise_counts = estimate_noise_in_quadrature(sigma_background_counts, image_counts)
     return convert_array_to_electrons_per_second(noise_counts, exposure_time_map)
 
 def numpy_array_from_fits(file_path, hdu):
     hdu_list = fits.open(file_path)  # Open the fits file
     return np.array(hdu_list[hdu].data)
 
-def output_for_fortran(array, image_name, path=data_path):
+def output_for_fortran(path, array, image_name):
     """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
     and I've not bothered with unit-tests.
     Parameters
@@ -93,7 +96,8 @@ def output_for_fortran(array, image_name, path=data_path):
         file_path = path + image_name + "BaselineNoise.dat"
     else:
         file_path = path + image_name + ".dat"
-    shape = array.shape
+
+    shape = array.data.shape
 
     with open(file_path, "w+") as f:
         for ix, x in enumerate(range(shape[0])):
@@ -102,7 +106,7 @@ def output_for_fortran(array, image_name, path=data_path):
                 line += ' ' * (8 - len(line))
                 line += str(round(float(iy + 1), 2))
                 line += ' ' * (16 - len(line))
-                line += str(float(array.data[ix][iy])) + '\n'
+                line += str(float(array.data[ix,iy])) + '\n'
                 f.write(line)
 
 
@@ -266,7 +270,7 @@ class Data(DataGrid):
 
 class Image(Data):
 
-    def __init__(self, data, pixel_scale, sky_background_level=None, sky_background_noise=None):
+    def __init__(self, data, pixel_scale):
         """
         Class storing a 2D image, including its data and coordinate grid.
 
@@ -284,11 +288,8 @@ class Image(Data):
 
         super(Image, self).__init__(data, pixel_scale)
 
-        self.sky_background_level = sky_background_level
-        self.sky_background_noise = sky_background_noise
-
     @classmethod
-    def from_fits(cls, path, filename, hdu, pixel_scale, sky_background_level=None, sky_background_noise=None):
+    def from_fits(cls, path, filename, hdu, pixel_scale):
         """
         Loads the image data from a .fits file.
 
@@ -308,7 +309,7 @@ class Image(Data):
             An estimate of the noise level in the background sky (electrons per second).
         """
         data = numpy_array_from_fits(path + filename, hdu)
-        return Image(data, pixel_scale, sky_background_level, sky_background_noise)
+        return Image(data, pixel_scale)
 
     def estimate_sky_via_edges(self, no_edges):
         """Estimate the background sky level and noise by binning pixels located at the edge(s) of an image into a
@@ -335,7 +336,6 @@ class Image(Data):
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         return norm.fit(edges)
-
 
     def exposure_time_map_single_exposure_time(self, exposure_time):
         return ExposureTimeMap.from_single_exposure_time(exposure_time, self.pixel_dimensions, self.pixel_scale)
@@ -377,7 +377,7 @@ class Image(Data):
         return Mask.unmasked(self.arc_second_dimensions, self.pixel_scale)
 
     def plot(self):
-        pyplot.imshow(self)
+        pyplot.imshow(self.data)
         pyplot.show()
 
 
@@ -547,6 +547,7 @@ class BackgroundSky(object):
     def from_image_via_edges(cls, image, no_edges):
         sky_level, sky_sigma = image.estimate_sky_via_edges(no_edges)
         return BackgroundSky(sky_level, sky_sigma)
+
 
 class Mask(DataGrid):
 
