@@ -1208,6 +1208,7 @@ class TestBackgroundSky(object):
             assert background_sky.sky_level == 1.0
             assert background_sky.sky_sigma == 0.0
 
+
 class TestEstimatePoissonNoiseFromImage:
 
     def test__image_and_exposure_times_all_1s__noise_is_all_1s(self):
@@ -1263,7 +1264,7 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
         exposure_time_map = np.ones((3, 3))
 
         poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=0.0, exposure_time_mean=1.0)
+                                                                                  sigma_background_counts=0.0)
 
         assert (poisson_noise_estimate == np.ones((3, 3))).all()
 
@@ -1276,7 +1277,7 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
         exposure_time_map = np.ones((3, 3))
 
         poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=3.0 ** 0.5, exposure_time_mean=1.0)
+                                                                                  sigma_background_counts=3.0 ** 0.5)
 
         assert poisson_noise_estimate == pytest.approx(2.0 * np.ones((3, 3)), 1e-2)
 
@@ -1287,20 +1288,7 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
         exposure_time_map = np.ones((2, 3))
 
         poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=5.0, exposure_time_mean=1.0)
-
-        assert poisson_noise_estimate == \
-               pytest.approx(np.array([[np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)],
-                                       [np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)]]), 1e-2)
-
-    def test__image_different_values__exposure_times_all_1s__background_is_1_for_5_seconds__noise_all_correct(self):
-
-        test_image = np.ones((2, 3))
-
-        exposure_time_map = np.ones((2, 3))
-
-        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=1.0, exposure_time_mean=5.0)
+                                                                                  sigma_background_counts=5.0)
 
         assert poisson_noise_estimate == \
                pytest.approx(np.array([[np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0), np.sqrt(25.0 + 1.0)],
@@ -1315,28 +1303,12 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
         exposure_time_map = np.ones((3, 2))
 
         poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=4.0, exposure_time_mean=3.0)
+                                                                                  sigma_background_counts=12.0)
 
         assert poisson_noise_estimate == \
                pytest.approx(np.array([[np.sqrt(144.0 + 1.0), np.sqrt(144.0 + 2.0)],
                                        [np.sqrt(144.0 + 3.0), np.sqrt(144.0 + 4.0)],
                                        [np.sqrt(144.0 + 5.0), np.sqrt(144.0 + 6.0)]]), 1e-2)
-
-    def test__same_as_above_but_image_values_all_1s_exposure_times_change_instead__noise_is_in_electrons_per_sec(self):
-
-        test_image = np.ones((3, 2))
-
-        exposure_time_map =  np.array([[1.0, 2.0],
-                                       [3.0, 4.0],
-                                       [5.0, 6.0]])
-
-        poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=4.0, exposure_time_mean=3.0)
-
-        assert poisson_noise_estimate == \
-               pytest.approx(np.array([[np.sqrt(144.0 + 1.0)/1.0, np.sqrt(144.0 + 2.0)/2.0],
-                                       [np.sqrt(144.0 + 3.0)/3.0, np.sqrt(144.0 + 4.0)/4.0],
-                                       [np.sqrt(144.0 + 5.0)/5.0, np.sqrt(144.0 + 6.0)/6.0]]), 1e-2)
 
     def test__image_and_exposure_times_range_of_values__no_bacground__noise_estimates_correct(self):
 
@@ -1347,7 +1319,7 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
                                       [3.0, 4.0]])
 
         poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=0.0, exposure_time_mean=4.0)
+                                                                                  sigma_background_counts=0.0)
 
         assert (poisson_noise_estimate == np.array([[np.sqrt(5.0),     np.sqrt(6.0)/2.0],
                                                    [np.sqrt(30.0)/3.0, np.sqrt(80.0)/4.0]])).all()
@@ -1361,7 +1333,7 @@ class TestEstimatePoissonNoiseFromImageAndBackground:
                                       [3.0, 4.0]])
 
         poisson_noise_estimate = imaging.estimate_noise_from_image_and_background(test_image, exposure_time_map,
-                                                                                sigma_background=3.0, exposure_time_mean=3.0)
+                                                                                  sigma_background_counts=9.0)
 
         assert (poisson_noise_estimate == np.array([[np.sqrt(81.0 + 5.0),     np.sqrt(81.0 + 6.0)/2.0],
                                                    [np.sqrt(81.0 + 30.0)/3.0, np.sqrt(81.0 + 80.0)/4.0]])).all()
