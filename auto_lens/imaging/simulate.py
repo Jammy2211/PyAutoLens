@@ -75,8 +75,8 @@ class SimulateImage(imaging.Data):
         if self.exposure_time_map is not None:
             self.simulate_poisson_noise()
 
-        self.noise = imaging.estimate_noise_from_image_and_background(self.data, self.exposure_time_map.data,
-                                                                      self.sky_noise_counts)
+        self.noise = imaging.estimate_noise_from_image(self.data, self.exposure_time_map.data,
+                                                       self.sky_noise_counts)
 
     @classmethod
     def from_fits(cls, path, filename, hdu, pixel_scale, sky_level=0.0, psf=None, exposure_time_map=None,
