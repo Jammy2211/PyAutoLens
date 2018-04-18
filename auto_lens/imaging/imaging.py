@@ -35,44 +35,29 @@ def convert_array_to_electrons_per_second(array, exposure_time_array):
     """
     return np.divide(array, exposure_time_array)
 
-def estimate_noise_in_quadrature(sigma_counts, image_counts):
-    return np.sqrt(np.square(sigma_counts) + image_counts)
+def estimate_noise_in_quadrature(image_counts, sigma_counts):
+    return np.sqrt(image_counts + np.square(sigma_counts))
 
-def estimate_poisson_noise_from_image(image, exposure_time_map):
-    """Estimate a Poisson two-dimensional noise map from an input image.
-
-    Parameters
-    ----------
-    image : ndarray
-        The image in electrons per second, used to estimate the Poisson noise map.
-    exposure_time_map : ndarray
-        The exposure time in each image pixel, used to convert the image from electrons per second to counts.
-    """
-    image_counts = convert_array_to_counts(image, exposure_time_map)
-    noise_counts = estimate_noise_in_quadrature(sigma_counts=0.0, image_counts=image_counts)
-    return convert_array_to_electrons_per_second(noise_counts, exposure_time_map)
-
-# TODO : These routines currently assume a constant background noise map represent by a single value sigma_counts.
-# TODO : Even if we assume a uniform background sky, a changing exposure time map breaks this assumption and should be
-# TODO : relaxed in the future.
-
-def estimate_noise_from_image_and_background(image, exposure_time_map, sigma_background_counts):
-    """Estimate a Poisson two-dimensional noise map from an input image.
+def estimate_noise_from_image(image, exposure_time, background_noise):
+    """Estimate the two-dimensional noise of an input image, including noise due to Poisson counting statistics and \
+    a background component.
 
     Parameters
     ----------
     image : ndarray
         The image in electrons per second, used to estimate the Poisson noise map.
-    exposure_time_map : ndarray
+    exposure_time : float or ndarray
         The exposure time in each image pixel, used to convert the image from electrons per second to counts.
-    sigma_background_counts : float
-        The estimate standard deviation of the 1D Gaussian level of noise in the background.
+    background_noise : float or ndarray
+        The standard deviation estimate of the 1D Gaussian level of noise in each pixxel due to background noise \
+        sources, in electrns per second
     exposure_time_mean : float
         The mean exposure time of the image and therefore background.
     """
-    image_counts = convert_array_to_counts(image, exposure_time_map)
-    noise_counts = estimate_noise_in_quadrature(sigma_background_counts, image_counts)
-    return convert_array_to_electrons_per_second(noise_counts, exposure_time_map)
+    image_counts = convert_array_to_counts(image, exposure_time)
+    background_noise_counts = convert_array_to_counts(background_noise, exposure_time)
+    noise_counts = estimate_noise_in_quadrature(image_counts, background_noise_counts)
+    return convert_array_to_electrons_per_second(noise_counts, exposure_time)
 
 def numpy_array_from_fits(file_path, hdu):
     hdu_list = fits.open(file_path)  # Open the fits file
