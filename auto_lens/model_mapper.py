@@ -3,7 +3,6 @@ from scipy.special import erfinv
 import inspect
 import configparser
 import os
-from auto_lens import non_linear
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -173,11 +172,6 @@ class ModelMapper(object):
 
         This method uses the prior median values to setup the model_mapper instance.
 
-        Parameters
-        ----------
-        physical_vector: [float]
-            A vector of physical parameter values.
-
         Returns
         -------
         model_instance : ModelInstance
@@ -196,7 +190,7 @@ class ModelMapper(object):
 
         Parameters
         ----------
-        physical_vector: [float]
+        unit_vector: [float]
             A vector of physical parameter values.
 
         Returns
@@ -240,7 +234,7 @@ class ModelMapper(object):
 
         Parameters
         ----------
-        argument : dict
+        arguments : dict
             The dictionary representation of prior and parameter values. This is created in the model_instance_from_* \
             routines.
 
@@ -274,7 +268,7 @@ class ModelMapper(object):
                 param_name = str(self.class_priors_dict[prior_name][i][0])
                 model_info += param_name + ': ' + (prior[1].model_info + '\n')
 
-            model_info +='\n'
+            model_info += '\n'
 
         return model_info
 
@@ -394,7 +388,7 @@ class PriorModel(object):
     @property
     def priors(self):
         return [prior for tuple_prior in self.tuple_priors for prior in
-                                     tuple_prior[1].priors] + self.direct_priors
+                tuple_prior[1].priors] + self.direct_priors
 
     def instance_for_arguments(self, arguments):
         """
