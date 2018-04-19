@@ -4,6 +4,7 @@ from scipy.integrate import quad
 import numpy as np
 from itertools import count
 
+
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
@@ -80,12 +81,6 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
-        intensity : float
-            Overall intensity normalisation in the light profiles (electrons per second)
-        effective_radius : float
-            The circular radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
         """
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
@@ -348,5 +343,5 @@ class EllipticalCoreSersic(EllipticalSersic):
         return self.intensity_prime * (
                 (1 + ((self.radius_break / radius) ** self.alpha)) ** (self.gamma / self.alpha)) * np.exp(
             -self.sersic_constant * ((((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
-                            self.effective_radius ** self.alpha)) ** (
-    1.0 / (self.alpha * self.sersic_index))))
+                    self.effective_radius ** self.alpha)) ** (
+                                             1.0 / (self.alpha * self.sersic_index))))
