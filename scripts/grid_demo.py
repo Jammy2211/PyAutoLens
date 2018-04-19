@@ -1,13 +1,12 @@
 import numpy as np
-import os
 import sys
+
 sys.path.append("../")
 
 from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens import galaxy
 from auto_lens.imaging import grids
 from auto_lens import ray_tracing
-
 
 # Simple coordinates to show behaviour
 
@@ -16,7 +15,8 @@ coordinates = np.array([[1.0, 1.0],
 
 # Setup a simple sersic light and sis mass profile
 
-sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=1.0,
+sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1,
+                                         effective_radius=1.0,
                                          sersic_index=4.0)
 sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
@@ -30,11 +30,11 @@ lens_galaxy = galaxy.Galaxy(light_profiles=[sersic], mass_profiles=[sis])
 
 # Lets check its the light and mass profile values are the same as above.
 print('intensity of lens galaxy = ', lens_galaxy.intensity_at_coordinates(coordinates))
-print('deflecton angle of lens galaxy = ', lens_galaxy.deflection_angles_at_coordinates(coordinates),  '\n')
+print('deflecton angle of lens galaxy = ', lens_galaxy.deflection_angles_at_coordinates(coordinates), '\n')
 
 # And now make a source galaxy, which is just a light profile, and check it values are the same as above als.
 source_galaxy = galaxy.Galaxy(light_profiles=[sersic])
-print('intensity of source galaxy = ', source_galaxy.intensity_at_coordinates(coordinates),  '\n')
+print('intensity of source galaxy = ', source_galaxy.intensity_at_coordinates(coordinates), '\n')
 
 # Lets set up the coordinates as a grid, which is an abstract object for the coordinates we pass through the ray-tracing
 # module (checkout the module for more info, basically there are lots of different grids we want to ray-trace for
@@ -53,21 +53,21 @@ ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy], source_
                                             image_plane_grids=ray_trace_grids)
 
 # The ray tracing sets up an image plane, whose coordinates are our original coordinates.
-print('image plane grid coordinates = ', ray_trace.image_plane.grids.image.grid,  '\n')
+print('image plane grid coordinates = ', ray_trace.image_plane.grids.image.grid, '\n')
 
 # The image plane is also automatically set up with deflection angles, using the lens galaxy mass profile:
-print('image plane deflection angles = ', ray_trace.image_plane.deflection_angles.image.grid,  '\n')
+print('image plane deflection angles = ', ray_trace.image_plane.deflection_angles.image.grid, '\n')
 
 # And a source plane is set up too, which is the image plane coordinates - the image plane deflection angles
-print('source plane grid coordinates =', ray_trace.source_plane.grids.image.grid,  '\n')
+print('source plane grid coordinates =', ray_trace.source_plane.grids.image.grid, '\n')
 
 # If we pass the same lens galaxy to the image plane 3 times, notice that the deflection angles triple (as we are
 # basically including the same mass profile 3 times)
 ray_trace_x3 = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy, lens_galaxy, lens_galaxy],
-                                            source_galaxies=[source_galaxy], image_plane_grids=ray_trace_grids)
-print('image plane x3 grid coordinates = ', ray_trace_x3.image_plane.grids.image.grid,  '\n')
-print('image plane x3 deflection angles = ', ray_trace_x3.image_plane.deflection_angles.image.grid,  '\n')
-print('source plane x3 grid coordinates =', ray_trace_x3.source_plane.grids.image.grid,  '\n')
+                                               source_galaxies=[source_galaxy], image_plane_grids=ray_trace_grids)
+print('image plane x3 grid coordinates = ', ray_trace_x3.image_plane.grids.image.grid, '\n')
+print('image plane x3 deflection angles = ', ray_trace_x3.image_plane.deflection_angles.image.grid, '\n')
+print('source plane x3 grid coordinates =', ray_trace_x3.source_plane.grids.image.grid, '\n')
 
 # NOT IMPLEMENTED - BUT TO SHOW YOU THE DESIGN
 
