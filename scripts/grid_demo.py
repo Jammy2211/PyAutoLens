@@ -78,8 +78,8 @@ print('source plane x3 grid coordinates =', ray_trace_x3.source_plane.grids.imag
 
 # e.g. ray_trace.source_plane.compute_model_image()  -  as above, but for the source plane coordinates and galaxy.
 
-# e.g. ray_trace.compute_model_image()
 # We could also return the model image of the whole ray tracing plane:
+# e.g. ray_trace.compute_model_image()
 
 
 # We will also be able to attach a pixelization to a galaxy, which is used to reconstruct the image via a pixel grid.
