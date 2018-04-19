@@ -51,11 +51,11 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates : (float, float)
             The image_grid in image_grid space
         Returns
         -------
-        intensity : float
+        intensity : [float]
             The summed values of intensity at the given image_grid
         """
         return list(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
@@ -92,7 +92,7 @@ class Galaxy(object):
 
         Returns
         -------
-        luminosity : float
+        luminosity : [float]
             The total combined luminosity within the specified circle.
         """
         return list(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
