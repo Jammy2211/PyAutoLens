@@ -70,20 +70,20 @@ class RayTracingGrids(object):
 
         return RayTracingGrids(image, sub, blurring)
 
-    def trace_to_next_grid(self, deflections):
-        """Setup new grids of all ray-tracing coordinates, by tracing their coordinates with a set of deflecton \
+    def new_grids_from_deflections(self, deflections):
+        """Setup new grids of all ray-tracing coordinates, by tracing their coordinates with a set of deflection \
          angles."""
-        image = self.image.trace_to_next_grid(deflections.image)
+        image = self.image.new_grid_from_deflections(deflections.image)
 
         if self.sub is None:
             sub = None
         elif self.sub is not None:
-            sub = self.sub.trace_to_next_grid(deflections.sub)
+            sub = self.sub.new_grid_from_deflections(deflections.sub)
 
         if self.blurring is None:
             blurring = None
         elif self.blurring is not None:
-            blurring = self.blurring.trace_to_next_grid(deflections.blurring)
+            blurring = self.blurring.new_grid_from_deflections(deflections.blurring)
 
         return RayTracingGrids(image, sub, blurring)
 
@@ -136,7 +136,7 @@ class GridImage(Grid):
         galaxies."""
         return GridImage(sum(map(lambda lens : lens.deflection_angles_array(self.grid), galaxies)))
 
-    def trace_to_next_grid(self, deflection_grid):
+    def new_grid_from_deflections(self, deflection_grid):
         """Setup a new image grid of coordinates, by tracing its coordinates by a set of deflecton angles."""
         return GridImage(np.subtract(self.grid, deflection_grid.grid))
 
@@ -179,7 +179,7 @@ class GridImageSub(Grid):
         return GridImageSub(sum(map(lambda lens: lens.deflection_angles_sub_array(self.grid), galaxies)),
                             self.sub_grid_size)
 
-    def trace_to_next_grid(self, deflection_grid):
+    def new_grid_from_deflections(self, deflection_grid):
         """Setup a new image grid of sub-coordinates, by tracing its sub-coordinates by a set of deflection angles."""
         return GridImageSub(np.subtract(self.grid, deflection_grid.grid), self.sub_grid_size)
 
@@ -221,7 +221,7 @@ class GridBlurring(Grid):
         galaxies."""
         return GridImage(sum(map(lambda lens : lens.deflection_angles_array(self.grid), galaxies)))
 
-    def trace_to_next_grid(self, deflection_grid):
+    def new_grid_from_deflections(self, deflection_grid):
         """Setup a new blurring grid of coordinates, by tracing its coordinates by a set of deflecton angles."""
         return GridBlurring(np.subtract(self.grid, deflection_grid.grid))
 
