@@ -60,6 +60,31 @@ class Galaxy(object):
         """
         return list(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
 
+    # TODO : I don't expect these to be the best way to do this - I'm just getting them up so I can develop the \
+    # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
+    # TODO : mass profiles given a genertic NumPy array, in particular those in our grids module.
+
+    def intensity_grid(self, coordinates):
+        """Compute the intensities for a galaxy's light profiles at a set of grid coordinates.
+        """
+        intensity = np.zeros(coordinates.shape)
+
+        for defl_count, coordinate in enumerate(coordinates):
+            intensity[defl_count, :] = self.intensity_at_coordinates(coordinates=coordinate)
+
+        return intensity
+
+    def intensity_sub_grid(self, sub_coordinates):
+        """Compute the intensities for a galaxy's light profiles at a set of sub-grid coordinates.
+        """
+        intensity = np.zeros(sub_coordinates.shape)
+
+        for sub_count, image_pixel in enumerate(sub_coordinates):
+            for defl_count, sub_coordinate in enumerate(image_pixel):
+                intensity[sub_count, defl_count, :] = self.intensity_at_coordinates(coordinates=sub_coordinate)
+
+        return intensity
+
     def luminosity_within_circle(self, radius):
         """
         Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
@@ -241,17 +266,9 @@ class Galaxy(object):
         """
         return np.asarray(list(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
 
-    # TODO : I don't expect these to be the best way to do this - I'm just getting them up so I can develop the \
-    # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
-    # TODO : mass profiles given a NumPy array.
+    # TODO : Like the intensity calculations above, we need to replace these with a more generic profile.
 
-    # TODO : I'm expecting there'll be a general solution to performing the calculations below, which can go somewhere \
-    # TODO : in the profiles module
-
-    # TODO : If we require bespoke routines for each structure, we could make them class methods in the analysis_data \
-    # TODO : module, e.g. AnalysisCoordinates.compute_deflection_angles(galaxy) and AnalysisSubCoordinates.compute_defl...
-
-    def deflection_angles_array(self, coordinates):
+    def deflection_angles_grid(self, coordinates):
         """Compute the deflections angles for a mass profile, at a set of image_grid using the analysis_data structure.
         """
         deflection_angles = np.zeros(coordinates.shape)
@@ -261,7 +278,7 @@ class Galaxy(object):
 
         return deflection_angles
 
-    def deflection_angles_sub_array(self, sub_coordinates):
+    def deflection_angles_sub_grid(self, sub_coordinates):
         """Compute the deflections angles for a mass profile, at a set of sub_grid image_grid using the analysis_data \
         structure
         """
@@ -269,8 +286,8 @@ class Galaxy(object):
 
         for sub_count, image_pixel in enumerate(sub_coordinates):
             for defl_count, sub_coordinate in enumerate(image_pixel):
-                deflection_angles[sub_count, defl_count, :] = self.deflection_angles_at_coordinates(
-                    coordinates=sub_coordinate)
+                deflection_angles[sub_count, defl_count, :] = self.deflection_angles_at_coordinates(coordinates=
+                                                                                                    sub_coordinate)
 
         return deflection_angles
 
