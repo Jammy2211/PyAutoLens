@@ -134,7 +134,7 @@ class GridImage(Grid):
     def deflection_grid_from_galaxies(self, galaxies):
         """Setup a new image grid of deflection angle coordinates, by integrating the mass profiles of a set of \
         galaxies."""
-        return GridImage(sum(map(lambda lens : lens.deflection_angles_array(self.grid), galaxies)))
+        return GridImage(sum(map(lambda lens : lens.deflection_angles_grid(self.grid), galaxies)))
 
     def new_grid_from_deflections(self, deflection_grid):
         """Setup a new image grid of coordinates, by tracing its coordinates by a set of deflecton angles."""
@@ -176,7 +176,7 @@ class GridImageSub(Grid):
     def deflection_grid_from_galaxies(self, galaxies):
         """Setup a new sub grid of deflection angle coordinates, by integrating the mass profiles of a set of \
         galaxies."""
-        return GridImageSub(sum(map(lambda lens: lens.deflection_angles_sub_array(self.grid), galaxies)),
+        return GridImageSub(sum(map(lambda lens: lens.deflection_angles_sub_grid(self.grid), galaxies)),
                             self.sub_grid_size)
 
     def new_grid_from_deflections(self, deflection_grid):
@@ -219,7 +219,7 @@ class GridBlurring(Grid):
     def deflection_grid_from_galaxies(self, galaxies):
         """Setup a new blurring grid of deflection angle coordinates, by integrating the mass profiles of a set of \
         galaxies."""
-        return GridImage(sum(map(lambda lens : lens.deflection_angles_array(self.grid), galaxies)))
+        return GridImage(sum(map(lambda lens : lens.deflection_angles_grid(self.grid), galaxies)))
 
     def new_grid_from_deflections(self, deflection_grid):
         """Setup a new blurring grid of coordinates, by tracing its coordinates by a set of deflecton angles."""

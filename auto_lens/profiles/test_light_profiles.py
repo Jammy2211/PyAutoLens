@@ -115,8 +115,9 @@ class TestConstructors(object):
         assert sersic_3.component_number == 3
 
 
-
 class TestProfiles(object):
+
+
     class TestSersic:
 
         def test__intensity_at_radius__correct_value(self):
@@ -153,6 +154,7 @@ class TestProfiles(object):
             intensity_2 = sersic.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity_1 == intensity_2
+
 
     class TestExponential:
 
@@ -206,6 +208,7 @@ class TestProfiles(object):
 
             assert intensity_1 == intensity_2
 
+
     class TestDevVaucouleurs:
 
         def test__intensity_at_radius__correct_value(self):
@@ -257,6 +260,7 @@ class TestProfiles(object):
             intensity_2 = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity_1 == intensity_2
+
 
     class TestCoreSersic(object):
 
