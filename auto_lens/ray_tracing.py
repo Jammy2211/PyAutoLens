@@ -44,9 +44,9 @@ class TraceImageAndSource(object):
         """
         self.image_plane = ImagePlane(lens_galaxies, image_plane_grids)
 
-        source_plane_coordinates = self.image_plane.trace_to_next_plane()
+        source_plane_grids = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = SourcePlane(source_galaxies, source_plane_coordinates)
+        self.source_plane = SourcePlane(source_galaxies, source_plane_grids)
 
 
 class Plane(object):
@@ -84,7 +84,11 @@ class LensPlane(Plane):
 
         super(LensPlane, self).__init__(galaxies, grids)
 
-        self.deflection_angles = self.grids.deflection_grids_from_galaxies(galaxies)
+        self.deflection_angles = self.deflection_angles_on_grids()
+
+    def deflection_angles_on_grids(self):
+        """Compute the deflection angles on the grids"""
+        return self.grids.deflection_grids_from_galaxies(self.galaxies)
 
     def trace_to_next_plane(self):
         """Trace the grids to the next plane.
@@ -126,6 +130,21 @@ class ImagePlane(LensPlane):
         """
 
         super(ImagePlane, self).__init__(galaxies, grids)
+
+    # TODO : Add iterative sub-grid to this routine / class. Can we use the iterative sub-grid you made in
+    # TODO : geometry profiles?
+
+    def generate_light_profile_image(self, iterative_sub_grid=True, iterative_sub_grid_accuracy=1e-4):
+        """Generate the image-plane image of this ray-tracing instance.
+
+        This uses the image-plane grid coordinates and galaxy light profiles. By default, an iterative sub-grid is \
+        used, which computes all intensity values to a specified degree of accuracy by computing them on finer and \
+        finer sub-grids until a threshold relative accuracy is reached.
+        """
+
+        if iterative_sub_grid is False:
+
+            return sum(map(lambda galaxy : galaxy.intensity_grid(self.grids.image.grid), self.galaxies))
 
 
 class SourcePlane(Plane):
