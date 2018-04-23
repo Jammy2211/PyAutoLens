@@ -12,10 +12,15 @@ def no_galaxies():
     return [galaxy.Galaxy()]
 
 @pytest.fixture(scope='function')
+def light_sersic():
+    sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                             sersic_index=4.0)
+    return galaxy.Galaxy(light_profiles=[sersic])
+
+@pytest.fixture(scope='function')
 def lens_sis():
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
-    lens_sis = galaxy.Galaxy(mass_profiles=[sis])
-    return lens_sis
+    return galaxy.Galaxy(mass_profiles=[sis])
 
 @pytest.fixture(scope='function')
 def image_grid():
@@ -206,6 +211,54 @@ class TestImagePlane(object):
             assert (lens_plane.deflection_angles.sub.grid[0,0] == image_plane.deflection_angles.sub.grid[0,0]).all()
             assert (lens_plane.deflection_angles.sub.grid[1,0] == image_plane.deflection_angles.sub.grid[1,0]).all()
             assert (lens_plane.deflection_angles.blurring.grid[0] == image_plane.deflection_angles.blurring.grid[0]).all()
+
+
+    class TestModelImages:
+
+        def test__no_sub_grid__sersic_light_profile__image_intensities_equal_to_individual_profile(self, light_sersic):
+
+            grid = np.array([[1.0, 1.0]])
+            intensity_value = light_sersic.intensity_grid(grid)
+
+            image_grid = grids.GridImage(grid)
+            ray_grids = grids.RayTracingGrids(image_grid)
+
+            image_plane = ray_tracing.ImagePlane(galaxies=[light_sersic], grids=ray_grids)
+            image = image_plane.generate_light_profile_image(iterative_sub_grid=False)
+
+            assert (image[0] == intensity_value).all()
+
+        def test__same_as_above___but_with_multiple_sets_of_coordinates(self, light_sersic):
+
+            grid = np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]])
+            intensity_values = light_sersic.intensity_grid(grid)
+
+            image_grid = grids.GridImage(grid)
+            ray_grids = grids.RayTracingGrids(image_grid)
+
+            image_plane = ray_tracing.ImagePlane(galaxies=[light_sersic], grids=ray_grids)
+            image = image_plane.generate_light_profile_image(iterative_sub_grid=False)
+
+            assert (image[0] == intensity_values[0]).all()
+            assert (image[1] == intensity_values[1]).all()
+            assert (image[2] == intensity_values[2]).all()
+            assert (image[3] == intensity_values[3]).all()
+
+        def test__same_as_above__but_galaxy_entered_3_times__intensities_triple(self, light_sersic):
+
+            grid = np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]])
+            intensity_values = light_sersic.intensity_grid(grid)
+
+            image_grid = grids.GridImage(grid)
+            ray_grids = grids.RayTracingGrids(image_grid)
+
+            image_plane = ray_tracing.ImagePlane(galaxies=[light_sersic, light_sersic, light_sersic], grids=ray_grids)
+            image = image_plane.generate_light_profile_image(iterative_sub_grid=False)
+
+            assert (image[0] == intensity_values[0]*3.0).all()
+            assert (image[1] == intensity_values[1]*3.0).all()
+            assert (image[2] == intensity_values[2]*3.0).all()
+            assert (image[3] == intensity_values[3]*3.0).all()
 
 
 class TestSourcePlane(object):
