@@ -44,7 +44,7 @@ class Galaxy(object):
         if self.light_profiles is not None:
             return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
         else:
-            return np.array([0.0, 0.0])
+            return 0.0
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
@@ -62,20 +62,6 @@ class Galaxy(object):
             The summed values of intensity at the given image_grid
         """
         return list(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
-
-    # TODO : I don't expect these to be the best way to do this - I'm just getting them up so I can develop the \
-    # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
-    # TODO : mass profiles given a genertic NumPy array, in particular those in our grids module.
-
-    def intensity_on_grid(self, grid):
-        """Compute the intensities for a galaxy's light profiles on a grid.
-        """
-        intensity = np.zeros(grid.shape)
-
-        for defl_count, coordinate in enumerate(grid):
-            intensity[defl_count, :] = self.intensity_at_coordinates(coordinates=coordinate)
-
-        return intensity
 
     def luminosity_within_circle(self, radius):
         """
@@ -257,8 +243,6 @@ class Galaxy(object):
         The summed values of deflection angles at the given image_grid.
         """
         return np.asarray(list(map(lambda p: p.deflections_at_coordinates(coordinates), self.mass_profiles)))
-
-    # TODO : Like the intensity calculations above, we need to replace these with a more generic profile.
 
     def dimensionless_mass_within_circles(self, radius):
         """
