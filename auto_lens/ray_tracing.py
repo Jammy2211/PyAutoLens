@@ -72,7 +72,7 @@ class Plane(object):
 
     def generate_image_of_galaxies(self):
         """Generate the image of the galaxies in this plane."""
-        return sum(map(lambda galaxy : galaxy.intensity_on_grid(self.grids.image.grid), self.galaxies))
+        return self.grids.image.intensities_via_grid(self.galaxies)
 
 
 class LensPlane(Plane):
