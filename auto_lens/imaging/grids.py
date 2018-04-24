@@ -121,14 +121,21 @@ class GridRegular(Grid):
 
         super(GridRegular, self).__init__(grid)
 
-    def deflections_on_grid(self, galaxies):
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(galaxy.deflections_at_coordinates), galaxies))
+    def intensities_via_grid(self, galaxies):
+        """Compute the intensity in each pixel using the coordinates of the regular grid"""
+        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                  output_shape=self.grid.shape[0]), galaxies))
 
-    def evaluate_func_on_grid(self, func):
+    def deflections_on_grid(self, galaxies):
+        """Compute the deflection angles of each coordinate of the regular grid"""
+        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                  output_shape=self.grid.shape), galaxies))
+
+    def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
         coordinates defined by the regular grid.
         """
-        grid_values = np.zeros(self.grid.shape)
+        grid_values = np.zeros(output_shape)
 
         for pixel_no, coordinate in enumerate(self.grid):
             grid_values[pixel_no] = func(coordinates=coordinate)
@@ -159,22 +166,40 @@ class GridSub(Grid):
             The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
         """
         self.sub_grid_size = sub_grid_size
+        self.sub_grid_size_squared = sub_grid_size ** 2.0
         super(GridSub, self).__init__(grid)
 
-    def deflections_on_grid(self, galaxies):
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(galaxy.deflections_at_coordinates), galaxies))
+    def intensities_via_grid(self, galaxies):
+        """Compute the intensity in each pixel using the coordinates of the sub grid. This routine takes the mean \
+         value of the intensities at sub grid coordinates to compute the final intensity."""
 
-    def evaluate_func_on_grid(self, func):
+        sub_intensitites = sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                  output_shape=self.grid.shape[0:2]), galaxies))
+
+        intensitites = np.zeros(self.grid.shape[0])
+
+        for pixel_no, intensities_sub_pixel in enumerate(sub_intensitites):
+            intensitites[pixel_no] = np.sum(intensities_sub_pixel) / self.sub_grid_size_squared
+
+        return intensitites
+
+    def deflections_on_grid(self, galaxies):
+        """Compute the deflection angles of each coordinate of the sub grid"""
+        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                  output_shape=self.grid.shape), galaxies))
+
+    def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
         coordinates defined by a sub-grid.
         """
-        grid_values = np.zeros(self.grid.shape)
+
+        sub_grid_values = np.zeros(output_shape)
 
         for pixel_no, pixel_sub_grid in enumerate(self.grid):
             for sub_pixel_no, sub_coordinate in enumerate(pixel_sub_grid):
-                grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
+                sub_grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
 
-        return grid_values
+        return sub_grid_values
 
 
 class GridImage(GridRegular):

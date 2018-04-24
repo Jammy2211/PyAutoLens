@@ -4,7 +4,7 @@ import numpy as np
 from auto_lens.imaging import grids
 from auto_lens.imaging import imaging
 from auto_lens import galaxy
-from auto_lens.profiles import mass_profiles
+from auto_lens.profiles import light_profiles, mass_profiles
 import os
 
 test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -18,6 +18,11 @@ def galaxy_mass_sis():
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profiles=[sis])
 
+@pytest.fixture(scope='function')
+def galaxy_light_sersic():
+    sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                             sersic_index=4.0)
+    return galaxy.Galaxy(light_profiles=[sersic])
 
 class TestGridCollection(object):
     
@@ -320,6 +325,59 @@ class TestGridRegular(object):
             assert (grid_regular.grid[2] == np.array([3.0, 3.0])).all()
 
 
+    class TestIntensityViaGrid:
+
+        def test__no_galaxies__intensities_returned_as_0s(self, galaxy_no_profiles):
+
+            regular_grid_coords = np.array([[1.0, 1.0],
+                                            [2.0, 2.0],
+                                            [3.0, 3.0]])
+
+            grid_regular = grids.GridRegular(regular_grid_coords)
+
+            intensities = grid_regular.intensities_via_grid(galaxies=[galaxy_no_profiles])
+
+            assert (intensities[0] == np.array([0.0, 0.0])).all()
+            assert (intensities[1] == np.array([0.0, 0.0])).all()
+            assert (intensities[2] == np.array([0.0, 0.0])).all()
+
+        def test__galaxy_sersic_light__intensities_returned_as_correct_values(self, galaxy_light_sersic):
+
+            regular_grid_coords = np.array([[1.0, 1.0],
+                                            [1.0, 0.0],
+                                            [-1.0, 0.0]])
+
+            intensity_0 = galaxy_light_sersic.intensity_at_coordinates(regular_grid_coords[0])
+            intensity_1 = galaxy_light_sersic.intensity_at_coordinates(regular_grid_coords[1])
+            intensity_2 = galaxy_light_sersic.intensity_at_coordinates(regular_grid_coords[2])
+
+            grid_regular = grids.GridRegular(regular_grid_coords)
+
+            intensities = grid_regular.intensities_via_grid(galaxies=[galaxy_light_sersic])
+
+            assert intensities[0] == intensity_0
+            assert intensities[1] == intensity_1
+            assert intensities[2] == intensity_2
+
+        def test__galaxy_sis_mass_x3__intensities_tripled_from_above(self, galaxy_light_sersic):
+
+            regular_grid_coords = np.array([[1.0, 1.0],
+                                            [1.0, 0.0],
+                                            [-1.0, 0.0]])
+
+            intensity_0 = galaxy_light_sersic.intensity_at_coordinates(regular_grid_coords[0])
+            intensity_1 = galaxy_light_sersic.intensity_at_coordinates(regular_grid_coords[1])
+            intensity_2 = galaxy_light_sersic.intensity_at_coordinates(regular_grid_coords[2])
+
+            grid_regular = grids.GridRegular(regular_grid_coords)
+
+            intensities = grid_regular.intensities_via_grid(galaxies=[galaxy_light_sersic, galaxy_light_sersic, galaxy_light_sersic])
+
+            assert intensities[0] == 3.0*intensity_0
+            assert intensities[1] == 3.0*intensity_1
+            assert intensities[2] == 3.0*intensity_2
+
+
     class TestDeflectionsOnGrid:
 
         def test__no_galaxies__deflections_returned_as_0s(self, galaxy_no_profiles):
@@ -377,6 +435,9 @@ class TestGridSub(object):
 
             grid_sub = grids.GridSub(grid=sub_grid_coords, sub_grid_size=2)
 
+            assert grid_sub.sub_grid_size == 2
+            assert grid_sub.sub_grid_size_squared == 4
+
             assert grid_sub.grid[0,0] == pytest.approx(np.array([1.0, 1.0]), 1e-2)
             assert grid_sub.grid[0,1] == pytest.approx(np.array([1.0, 1.0]), 1e-2)
             assert grid_sub.grid[0,2] == pytest.approx(np.array([1.0, 1.0]), 1e-2)
@@ -386,6 +447,69 @@ class TestGridSub(object):
             assert grid_sub.grid[1,2] == pytest.approx(np.array([2.0, 2.0]), 1e-2)
             assert grid_sub.grid[1,3] == pytest.approx(np.array([2.0, 2.0]), 1e-2)
 
+
+    class TestIntensitiesViaGrid:
+
+        def test__no_galaxies__intensities_returned_as_0s(self, galaxy_no_profiles):
+
+            sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, 0.0], [0.0, 0.0]],
+                                        [[1.0, 1.0], [-1.0, 0.0], [0.0, 0.0], [0.0, 0.0]]])
+
+            grid_sub = grids.GridSub(sub_grid_coords, sub_grid_size=2)
+
+            intensities = grid_sub.intensities_via_grid(galaxies=[galaxy_no_profiles])
+
+            assert intensities[0] == 0.0
+            assert intensities[1] == 0.0
+
+        def test__galaxy_light_sersic__deflections_returned_as_correct_values(self, galaxy_light_sersic):
+
+            sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, -1.0], [0.0, -1.0]],
+                                        [[1.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [0.0, -1.0]]])
+
+            intensity_00 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,0])
+            intensity_01 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,1])
+            intensity_02 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,2])
+            intensity_03 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,3])
+            intensity_10 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,0])
+            intensity_11 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,1])
+            intensity_12 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,2])
+            intensity_13 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,3])
+
+            intensity_0 = (intensity_00 + intensity_01 + intensity_02 + intensity_03) / 4.0
+            intensity_1 = (intensity_10 + intensity_11 + intensity_12 + intensity_13) / 4.0
+
+            grid_sub = grids.GridSub(sub_grid_coords, sub_grid_size=2)
+
+            intensities = grid_sub.intensities_via_grid(galaxies=[galaxy_light_sersic])
+
+            assert intensities[0] == intensity_0
+            assert intensities[1] == intensity_1
+
+        def test__galaxy_light_sersic_x3__deflections_tripled_from_above(self, galaxy_light_sersic):
+
+            sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, -1.0], [0.0, -1.0]],
+                                        [[1.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [0.0, -1.0]]])
+
+            intensity_00 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,0])
+            intensity_01 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,1])
+            intensity_02 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,2])
+            intensity_03 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[0,3])
+            intensity_10 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,0])
+            intensity_11 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,1])
+            intensity_12 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,2])
+            intensity_13 = galaxy_light_sersic.intensity_at_coordinates(sub_grid_coords[1,3])
+
+            intensity_0 = (intensity_00 + intensity_01 + intensity_02 + intensity_03) / 4.0
+            intensity_1 = (intensity_10 + intensity_11 + intensity_12 + intensity_13) / 4.0
+
+            grid_sub = grids.GridSub(sub_grid_coords, sub_grid_size=2)
+
+            intensities = grid_sub.intensities_via_grid(galaxies=[galaxy_light_sersic, galaxy_light_sersic,
+                                                                  galaxy_light_sersic])
+
+            assert intensities[0] == pytest.approx(3.0*intensity_0, 1e-3)
+            assert intensities[1] == pytest.approx(3.0*intensity_1, 1e-3)
 
     class TestDeflectionsOnGrid:
 
