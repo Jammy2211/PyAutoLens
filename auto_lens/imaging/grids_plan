@@ -31,7 +31,7 @@ class CoordinateGrids
 class GridImage(CCDGrid):
 
     def new_grid_via_galaxy_deflection(self, galaxies)
-        return (self -  sum(map(lambda lens : lens.deflection_angles_grid(self), galaxies)))
+        return (self -  sum(map(lambda lens : lens.deflections_on_grid(self), galaxies)))
 
 class CoordinateImageGrid(CCDGrid):
 
