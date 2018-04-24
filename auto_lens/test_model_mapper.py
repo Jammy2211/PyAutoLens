@@ -102,6 +102,7 @@ class TestModelpingCollection(object):
 
 
 class TestModelInstance(object):
+
     def test_simple_model(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
@@ -245,10 +246,11 @@ class TestConfigFunctions:
 
         config = model_mapper.Config(config_folder_path=data_path + "test_files/config")
 
-        collection = model_mapper.ModelMapper(config=config, elliptical_profile_1=geometry_profiles.EllipticalProfile,
+        collection = model_mapper.ModelMapper(config=config,
+                                              sersic_light_profile=light_profiles.EllipticalSersic,
+                                              elliptical_profile_1=geometry_profiles.EllipticalProfile,
                                               elliptical_profile_2=geometry_profiles.EllipticalProfile,
                                               spherical_profile=geometry_profiles.SphericalProfile,
-                                              sersic_light_profile=light_profiles.EllipticalSersic,
                                               exponential_light_profile=light_profiles.EllipticalExponential)
 
         model_map = collection.from_unit_vector(
@@ -528,6 +530,7 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_1.centre == model_2.profile_1.centre == (0.5, 0.5)
         assert model_map.profile_1.axis_ratio == model_2.profile_1.axis_ratio == 1.0
         assert model_map.profile_1.phi == model_2.profile_1.phi == 1.0
+
 
 class TestUtility(object):
 

@@ -38,7 +38,7 @@ class TraceImageAndSource(object):
             The list of lens galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_plane_grids : RayTracingGrids
+        image_plane_grids : GridCollection
             The image-plane grids of coordinates where ray-tracing calculation are performed, (this includes the image.grid, \
             sub_grid, blurring.grid etc.).
         """
@@ -48,21 +48,31 @@ class TraceImageAndSource(object):
 
         self.source_plane = SourcePlane(source_galaxies, source_plane_grids)
 
+    def generate_image_of_galaxies(self):
+        """Generate the image of the galaxies over the entire ray trace.
+        """
+        return self.image_plane.generate_image_of_galaxies() + self.source_plane.generate_image_of_galaxies()
+
 
 class Plane(object):
-    """Represents a plane of galaxies and grids.
 
-    Parameters
-    ----------
-    galaxies : [Galaxy]
-        The galaxies in the plane.
-    grids : grids.RayTracingGrids
-        The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
-    """
     def __init__(self, galaxies, grids):
+        """Represents a plane of galaxies and grids.
+
+        Parameters
+        ----------
+        galaxies : [Galaxy]
+            The galaxies in the plane.
+        grids : grids.GridCollection
+            The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
+        """
 
         self.galaxies = galaxies
         self.grids = grids
+
+    def generate_image_of_galaxies(self):
+        """Generate the image of the galaxies in this plane."""
+        return sum(map(lambda galaxy : galaxy.intensity_on_grid(self.grids.image.grid), self.galaxies))
 
 
 class LensPlane(Plane):
@@ -78,17 +88,17 @@ class LensPlane(Plane):
         ----------
         galaxies : [Galaxy]
             The galaxies in the image_grid-plane.
-        grids : grids.RayTracingGrids
+        grids : grids.GridCollection
             The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
         """
 
         super(LensPlane, self).__init__(galaxies, grids)
 
-        self.deflection_angles = self.deflection_angles_on_grids()
+        self.deflections = self.deflections_on_all_grids()
 
-    def deflection_angles_on_grids(self):
+    def deflections_on_all_grids(self):
         """Compute the deflection angles on the grids"""
-        return self.grids.deflection_grids_from_galaxies(self.galaxies)
+        return self.grids.setup_all_deflections_grids(self.galaxies)
 
     def trace_to_next_plane(self):
         """Trace the grids to the next plane.
@@ -96,7 +106,7 @@ class LensPlane(Plane):
         NOTE : This does not work for multiplane lensing, which requires one to use the previous plane's deflection \
         angles to perform the tracing. I guess we'll ultimately call this class 'LensPlanes' and have it as a list.
         """
-        return self.grids.new_grids_from_deflections(self.deflection_angles)
+        return self.grids.setup_all_traced_grids(self.deflections)
 
 
 class ImagePlane(LensPlane):
@@ -125,26 +135,11 @@ class ImagePlane(LensPlane):
         ----------
         galaxies : [Galaxy]
             The galaxies in the image_grid-plane.
-        grids : grids.RayTracingGrids
+        grids : grids.GridCollection
             The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
         """
 
         super(ImagePlane, self).__init__(galaxies, grids)
-
-    # TODO : Add iterative sub-grid to this routine / class. Can we use the iterative sub-grid you made in
-    # TODO : geometry profiles?
-
-    def generate_light_profile_image(self, iterative_sub_grid=True, iterative_sub_grid_accuracy=1e-4):
-        """Generate the image-plane image of this ray-tracing instance.
-
-        This uses the image-plane grid coordinates and galaxy light profiles. By default, an iterative sub-grid is \
-        used, which computes all intensity values to a specified degree of accuracy by computing them on finer and \
-        finer sub-grids until a threshold relative accuracy is reached.
-        """
-
-        if iterative_sub_grid is False:
-
-            return sum(map(lambda galaxy : galaxy.intensity_grid(self.grids.image.grid), self.galaxies))
 
 
 class SourcePlane(Plane):
@@ -160,7 +155,7 @@ class SourcePlane(Plane):
         ----------
         galaxies : [Galaxy]
             The galaxies in the source-plane.
-        grids : grids.RayTracingGrids
+        grids : grids.GridCollection
             The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
         """
         super(SourcePlane, self).__init__(galaxies, grids)

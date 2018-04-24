@@ -41,7 +41,10 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given image_grid
         """
-        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
+        if self.light_profiles is not None:
+            return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
+        else:
+            return np.array([0.0, 0.0])
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
@@ -64,24 +67,13 @@ class Galaxy(object):
     # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
     # TODO : mass profiles given a genertic NumPy array, in particular those in our grids module.
 
-    def intensity_grid(self, coordinates):
-        """Compute the intensities for a galaxy's light profiles at a set of grid coordinates.
+    def intensity_on_grid(self, grid):
+        """Compute the intensities for a galaxy's light profiles on a grid.
         """
-        intensity = np.zeros(coordinates.shape)
+        intensity = np.zeros(grid.shape)
 
-        for defl_count, coordinate in enumerate(coordinates):
+        for defl_count, coordinate in enumerate(grid):
             intensity[defl_count, :] = self.intensity_at_coordinates(coordinates=coordinate)
-
-        return intensity
-
-    def intensity_sub_grid(self, sub_coordinates):
-        """Compute the intensities for a galaxy's light profiles at a set of sub-grid coordinates.
-        """
-        intensity = np.zeros(sub_coordinates.shape)
-
-        for sub_count, image_pixel in enumerate(sub_coordinates):
-            for defl_count, sub_coordinate in enumerate(image_pixel):
-                intensity[sub_count, defl_count, :] = self.intensity_at_coordinates(coordinates=sub_coordinate)
 
         return intensity
 
@@ -229,7 +221,7 @@ class Galaxy(object):
         """
         return list(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
 
-    def deflection_angles_at_coordinates(self, coordinates):
+    def deflections_at_coordinates(self, coordinates):
         """
         Compute the summed deflection angles of the galaxy's mass profiles at a given set of image_grid.
 
@@ -245,7 +237,7 @@ class Galaxy(object):
         The summed values of deflection angles at the given image_grid.
         """
         if self.mass_profiles is not None:
-            return sum(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
+            return sum(map(lambda p: p.deflections_at_coordinates(coordinates), self.mass_profiles))
         else:
             return np.array([0.0, 0.0])
 
@@ -264,32 +256,9 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given image_grid.
         """
-        return np.asarray(list(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
+        return np.asarray(list(map(lambda p: p.deflections_at_coordinates(coordinates), self.mass_profiles)))
 
     # TODO : Like the intensity calculations above, we need to replace these with a more generic profile.
-
-    def deflection_angles_grid(self, coordinates):
-        """Compute the deflections angles for a mass profile, at a set of image_grid using the analysis_data structure.
-        """
-        deflection_angles = np.zeros(coordinates.shape)
-
-        for defl_count, coordinate in enumerate(coordinates):
-            deflection_angles[defl_count, :] = self.deflection_angles_at_coordinates(coordinates=coordinate)
-
-        return deflection_angles
-
-    def deflection_angles_sub_grid(self, sub_coordinates):
-        """Compute the deflections angles for a mass profile, at a set of sub_grid image_grid using the analysis_data \
-        structure
-        """
-        deflection_angles = np.zeros(sub_coordinates.shape)
-
-        for sub_count, image_pixel in enumerate(sub_coordinates):
-            for defl_count, sub_coordinate in enumerate(image_pixel):
-                deflection_angles[sub_count, defl_count, :] = self.deflection_angles_at_coordinates(coordinates=
-                                                                                                    sub_coordinate)
-
-        return deflection_angles
 
     def dimensionless_mass_within_circles(self, radius):
         """

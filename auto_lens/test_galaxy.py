@@ -7,6 +7,8 @@ import numpy as np
 
 
 class TestLightProfiles(object):
+
+
     class TestIntensity:
 
         def test__one_profile_galaxy__intensity_is_same_individual_profile(self):
@@ -104,6 +106,7 @@ class TestLightProfiles(object):
             assert intensity_1 == galaxy_intensity[0]
             assert intensity_2 == galaxy_intensity[1]
             assert intensity_3 == galaxy_intensity[2]
+
 
     class TestLuminosityWithinCircle:
 
@@ -213,6 +216,7 @@ class TestLightProfiles(object):
             assert intensity_integral_2 == galaxy_intensity_integral[1]
             assert intensity_integral_3 == galaxy_intensity_integral[2]
 
+
     class TestLuminosityWithinEllipse:
 
         def test__one_profile_galaxy__integral_is_same_as_individual_profile(self):
@@ -321,6 +325,7 @@ class TestLightProfiles(object):
             assert intensity_integral_1 == galaxy_intensity_integral[0]
             assert intensity_integral_2 == galaxy_intensity_integral[1]
             assert intensity_integral_3 == galaxy_intensity_integral[2]
+
 
     class TestSymmetricProfiles(object):
 
@@ -519,12 +524,12 @@ class TestMassProfiles(object):
         def test__one_profile_galaxy__deflection_angles_is_same_individual_profile(self):
             sie = mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
 
-            sie_deflection_angles = sie.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            sie_deflection_angles = sie.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)])
 
-            galaxy_sie_deflection_angles = galaxy_sie.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            galaxy_sie_deflection_angles = galaxy_sie.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             assert sie_deflection_angles[0] == galaxy_sie_deflection_angles[0]
             assert sie_deflection_angles[1] == galaxy_sie_deflection_angles[1]
@@ -533,8 +538,8 @@ class TestMassProfiles(object):
             sie_1 = mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
             sie_2 = mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
 
-            deflection_angles_1 = sie_1.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
-            deflection_angles_2 = sie_2.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_1 = sie_1.deflections_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_2 = sie_2.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             deflection_angles = (deflection_angles_1[0] + deflection_angles_2[0],
                                  deflection_angles_1[1] + deflection_angles_2[1])
@@ -543,7 +548,7 @@ class TestMassProfiles(object):
                 mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0),
                 mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)])
 
-            galaxy_deflection_angles = galaxy_sie.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            galaxy_deflection_angles = galaxy_sie.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             assert deflection_angles[0] == galaxy_deflection_angles[0]
             assert deflection_angles[1] == galaxy_deflection_angles[1]
@@ -553,9 +558,9 @@ class TestMassProfiles(object):
             sie_2 = mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
             sie_3 = mass_profiles.EllipticalIsothermal(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)
 
-            deflection_angles_1 = sie_1.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
-            deflection_angles_2 = sie_2.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
-            deflection_angles_3 = sie_3.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_1 = sie_1.deflections_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_2 = sie_2.deflections_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_3 = sie_3.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             deflection_angles = (deflection_angles_1[0] + deflection_angles_2[0] + deflection_angles_3[0],
                                  deflection_angles_1[1] + deflection_angles_2[1] + deflection_angles_3[1])
@@ -565,7 +570,7 @@ class TestMassProfiles(object):
                 mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2),
                 mass_profiles.EllipticalIsothermal(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)])
 
-            galaxy_deflection_angles = galaxy_sie.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            galaxy_deflection_angles = galaxy_sie.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             assert deflection_angles[0] == galaxy_deflection_angles[0]
             assert deflection_angles[1] == galaxy_deflection_angles[1]
@@ -575,9 +580,9 @@ class TestMassProfiles(object):
             sie_2 = mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
             sie_3 = mass_profiles.EllipticalIsothermal(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)
 
-            deflection_angles_1 = sie_1.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
-            deflection_angles_2 = sie_2.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
-            deflection_angles_3 = sie_3.deflection_angles_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_1 = sie_1.deflections_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_2 = sie_2.deflections_at_coordinates(np.array([1.05, -0.55]))
+            deflection_angles_3 = sie_3.deflections_at_coordinates(np.array([1.05, -0.55]))
 
             galaxy_sie = galaxy.Galaxy(redshift=0.5, mass_profiles=[
                 mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0),
@@ -768,11 +773,11 @@ class TestMassProfiles(object):
             assert galaxy_isothermal.potential_at_coordinates(np.array([49.0, 0.0])) == \
                    pytest.approx(galaxy_isothermal.potential_at_coordinates(np.array([51.0, 0.0])), 1e-6)
 
-            assert galaxy_isothermal.deflection_angles_at_coordinates(np.array([1.0, 0.0])) == \
-                   pytest.approx(galaxy_isothermal.deflection_angles_at_coordinates(np.array([99.0, 0.0])), 1e-6)
+            assert galaxy_isothermal.deflections_at_coordinates(np.array([1.0, 0.0])) == \
+                   pytest.approx(galaxy_isothermal.deflections_at_coordinates(np.array([99.0, 0.0])), 1e-6)
 
-            assert galaxy_isothermal.deflection_angles_at_coordinates(np.array([49.0, 0.0])) == \
-                   pytest.approx(galaxy_isothermal.deflection_angles_at_coordinates(np.array([51.0, 0.0])), 1e-6)
+            assert galaxy_isothermal.deflections_at_coordinates(np.array([49.0, 0.0])) == \
+                   pytest.approx(galaxy_isothermal.deflections_at_coordinates(np.array([51.0, 0.0])), 1e-6)
 
         def test_2d_symmetry(self):
             isothermal_1 = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
@@ -810,30 +815,30 @@ class TestMassProfiles(object):
             assert galaxy_isothermal.potential_at_coordinates(np.array([49.0, 49.0])) == pytest.approx(
                 galaxy_isothermal.potential_at_coordinates(np.array([51.0, 51.0])), 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([49.0, 0.0]))[0] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([51.0, 0.0]))[0], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([49.0, 0.0]))[0] == pytest.approx(
+                galaxy_isothermal.deflections_at_coordinates(np.array([51.0, 0.0]))[0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([0.0, 49.0]))[0] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([0.0, 51.0]))[0], 1e-5)
+            assert 1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([0.0, 49.0]))[0] == pytest.approx(
+                galaxy_isothermal.deflections_at_coordinates(np.array([0.0, 51.0]))[0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([100.0, 49.0]))[
+            assert 1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([100.0, 49.0]))[
                 0] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([100.0, 51.0]))[0], 1e-5)
+                galaxy_isothermal.deflections_at_coordinates(np.array([100.0, 51.0]))[0], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([49.0, 49.0]))[
+            assert -1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([49.0, 49.0]))[
                 0] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([51.0, 51.0]))[0], 1e-5)
+                galaxy_isothermal.deflections_at_coordinates(np.array([51.0, 51.0]))[0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([49.0, 0.0]))[1] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([51.0, 0.0]))[1], 1e-5)
+            assert 1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([49.0, 0.0]))[1] == pytest.approx(
+                galaxy_isothermal.deflections_at_coordinates(np.array([51.0, 0.0]))[1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([0.0, 49.0]))[1] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([0.0, 51.0]))[1], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([0.0, 49.0]))[1] == pytest.approx(
+                galaxy_isothermal.deflections_at_coordinates(np.array([0.0, 51.0]))[1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([100.0, 49.0]))[
+            assert -1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([100.0, 49.0]))[
                 1] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([100.0, 51.0]))[1], 1e-5)
+                galaxy_isothermal.deflections_at_coordinates(np.array([100.0, 51.0]))[1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflection_angles_at_coordinates(np.array([49.0, 49.0]))[
+            assert -1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([49.0, 49.0]))[
                 1] == pytest.approx(
-                galaxy_isothermal.deflection_angles_at_coordinates(np.array([51.0, 51.0]))[1], 1e-5)
+                galaxy_isothermal.deflections_at_coordinates(np.array([51.0, 51.0]))[1], 1e-5)
