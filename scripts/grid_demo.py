@@ -23,14 +23,14 @@ sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 # Check their values at the coordinates
 print('intensity of light profile = ', sersic.intensity_at_coordinates(coordinates))
 print('potential of mass profile = ', sis.potential_at_coordinates(coordinates), '\n')
-print('deflection angle of mass profile = ', sis.deflection_angles_at_coordinates(coordinates), '\n')
+print('deflection angle of mass profile = ', sis.deflections_at_coordinates(coordinates), '\n')
 
 # Associate these values with a lens galaxy
 lens_galaxy = galaxy.Galaxy(light_profiles=[sersic], mass_profiles=[sis])
 
 # Lets check its the light and mass profile values are the same as above.
 print('intensity of lens galaxy = ', lens_galaxy.intensity_at_coordinates(coordinates))
-print('deflecton angle of lens galaxy = ', lens_galaxy.deflection_angles_at_coordinates(coordinates), '\n')
+print('deflecton angle of lens galaxy = ', lens_galaxy.deflections_at_coordinates(coordinates), '\n')
 
 # And now make a source galaxy, which is just a light profile, and check it values are the same as above als.
 source_galaxy = galaxy.Galaxy(light_profiles=[sersic])
@@ -44,7 +44,7 @@ print('grid coordinates = ', image_grid.grid, '\n')
 
 # Because can have multiple grids (which are different to the image grid we're using here), we need to combine this
 # grid into a ray-tracing grids module.
-ray_trace_grids = grids.RayTracingGrids(image=image_grid)
+ray_trace_grids = grids.GridCollection(image=image_grid)
 print('ray trace grid coordinates = ', ray_trace_grids.image.grid, '\n')
 
 # Now lets pass our lens galaxy, source galaxy and grid through the ray tracing module (This currently assumes just one
@@ -97,7 +97,7 @@ print('source plane x3 grid coordinates =', ray_trace_x3.source_plane.grids.imag
 ### POTENTIAL GRID ###
 
 # The potential grid is basically a rectangular grid of coordinates (e.g. of size (20, 20)). We could store these
-# coordinates as another attribute of the RayTracingGrids class, such that when we call TraceImageAndSource, the
+# coordinates as another attribute of the GridCollection class, such that when we call TraceImageAndSource, the
 # image_plane has an additional set of coordinates ray_trace.image.plane.grids.potential_grid. In the image plane, the
 # galaxy potential at these coordinates will be automatically computed.
 
