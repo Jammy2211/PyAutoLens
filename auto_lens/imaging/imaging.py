@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 data_path = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
+# TODO : These will ultimately be performed in the ExposureTime class, once the module takes shape :)
+
 def convert_array_to_counts(array, exposure_time_array):
     """For an array (in electrons per second) and exposure time array, return an array in units counts.
 
@@ -34,6 +36,8 @@ def convert_array_to_electrons_per_second(array, exposure_time_array):
         The exposure time in each image pixel.
     """
     return np.divide(array, exposure_time_array)
+
+# TODO : and these two in the noise class(es)
 
 def estimate_noise_in_quadrature(image_counts, sigma_counts):
     return np.sqrt(image_counts + np.square(sigma_counts))
