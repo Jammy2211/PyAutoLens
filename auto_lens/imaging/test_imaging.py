@@ -2729,7 +2729,73 @@ class TestMask(object):
             ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
 
 
-    class TestSparsePixels(object):
+    class TestComputeGridMapperTo2D(object):
+
+        def test__setup_3x3_image_one_pixel(self):
+            
+            mask = np.array([[True, True, True],
+                             [True, False, True],
+                             [True, True, True]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            mapper_data_to_2d = mask.compute_grid_mapper_data_to_2d()
+
+            assert (mapper_data_to_2d[0] == np.array([1, 1])).all()
+
+        def test__setup_3x3_image__five_pixels(self):
+
+            mask = np.array([[True, False, True],
+                             [False, False, False],
+                             [True, False, True]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            mapper_data_to_2d = mask.compute_grid_mapper_data_to_2d()
+
+            assert (mapper_data_to_2d[0] == np.array([0, 1])).all()
+            assert (mapper_data_to_2d[1] == np.array([1, 0])).all()
+            assert (mapper_data_to_2d[2] == np.array([1, 1])).all()
+            assert (mapper_data_to_2d[3] == np.array([1, 2])).all()
+            assert (mapper_data_to_2d[4] == np.array([2, 1])).all()
+
+        def test__setup_3x4_image__six_pixels(self):
+
+            mask = np.array([[True, False, True, True],
+                             [False, False, False, True],
+                             [True, False, True, False]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            mapper_data_to_2d = mask.compute_grid_mapper_data_to_2d()
+
+            assert (mapper_data_to_2d[0] == np.array([0, 1])).all()
+            assert (mapper_data_to_2d[1] == np.array([1, 0])).all()
+            assert (mapper_data_to_2d[2] == np.array([1, 1])).all()
+            assert (mapper_data_to_2d[3] == np.array([1, 2])).all()
+            assert (mapper_data_to_2d[4] == np.array([2, 1])).all()
+            assert (mapper_data_to_2d[5] == np.array([2, 3])).all()
+
+        def test__setup_4x3_image__six_pixels(self):
+
+            mask = np.array([[True, False, True],
+                             [False, False, False],
+                             [True, False, True],
+                             [True, True, False]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            mapper_data_to_2d = mask.compute_grid_mapper_data_to_2d()
+
+            assert (mapper_data_to_2d[0] == np.array([0, 1])).all()
+            assert (mapper_data_to_2d[1] == np.array([1, 0])).all()
+            assert (mapper_data_to_2d[2] == np.array([1, 1])).all()
+            assert (mapper_data_to_2d[3] == np.array([1, 2])).all()
+            assert (mapper_data_to_2d[4] == np.array([2, 1])).all()
+            assert (mapper_data_to_2d[5] == np.array([3, 2])).all()
+
+
+    class TestMapperSparsePixels(object):
 
         # TODO : These tests are over crowded, should break up into more self contained things.
 

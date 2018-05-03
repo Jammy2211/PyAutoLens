@@ -151,10 +151,6 @@ class GridCoordsSub(GridCoords):
         """Abstract class for a sub grid_coords, where pixel coordinates are represented by a uniform grid_coords of coordinates \
         within the pixel.
 
-        A regular grid_coords is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps to the \
-        image pixel index, and second element to its central (x,y) arc second coordinates. For example, the value [3,1]
-        gives the 4th image pixel's y coordinate.
-
         A sub grid_coords is a NumPy array of dimensions [image_pixels, sub_grid_pixels, 2]. Therefore, the first element \
         maps to the image pixel index, the second element to the sub-pixel index and third element to that sub pixel's \
         (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's 7th sub-pixel's \
@@ -320,7 +316,7 @@ class GridCoordsBlurring(GridCoordsRegular):
 class GridData(object):
 
     def __init__(self, grid_data):
-        """Abstract base class for the grid of a data-set (e.g. the image, noise, exposure times).
+        """The grid of a data-set (e.g. the image, noise, exposure times).
 
         Each grid is stored as a 1D array of the data values, which ensures efficient calculations during lens \
         analysis.
@@ -338,8 +334,33 @@ class GridData(object):
         """
         return GridData(mask.compute_grid_data(data))
 
+
+class GridMapperDataTo2D(object):
+
+    def __init__(self, data_to_2d):
+        """Grid mapper which maps each grid data pixel to its 2D pixel.
+
+        A grid mapper 2d is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps to the \
+        image pixel index, and second element to its (x,y) pixel coordinates. For example, the value [3,1] gives \
+        the 4th image pixel's y pixel.
+        """
+        self.data_to_2d = data_to_2d
+
+    @classmethod
+    def from_mask(cls, mask):
+        """ Given an image.Mask, setup the mapping between each pixel in the mask and its 2D pixel.
+
+        Parameters
+        ----------
+        mask : imaging.Mask
+            The image mask containing the pixels the image grid_coords is computed for and the image's data grid_coords.
+        """
+        return GridMapperDataTo2D(mask.compute_grid_mapper_data_to_2d())
+
+
+
 class GridMapperSparse(object):
-    """GridCoords mappings between the sparse grid_coords and image grid_coords."""
+    """Grid mapper which maps the sparse grid pixels to image grid pixels and visa versa."""
 
     def __init__(self, sparse_to_image, image_to_sparse):
 
