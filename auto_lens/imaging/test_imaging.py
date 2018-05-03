@@ -1697,7 +1697,7 @@ class TestMask(object):
                                       [False, False, False, False, False]])).all()
 
 
-    class TestComputeImageGrid(object):
+    class TestComputeGridCoordsImage(object):
 
         def test__setup_3x3_image_one_coordinate(self):
 
@@ -1707,7 +1707,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_grid = mask.compute_image_grid()
+            image_grid = mask.compute_grid_coords_image()
 
             assert (image_grid[0] == np.array([0.0, 0.0])).all()
 
@@ -1719,7 +1719,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_grid = mask.compute_image_grid()
+            image_grid = mask.compute_grid_coords_image()
             
             assert (image_grid[0] == np.array([0.0, 3.0])).all()
             assert (image_grid[1] == np.array([-3.0, 0.0])).all()
@@ -1735,7 +1735,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=1.0)
 
-            image_grid = mask.compute_image_grid()
+            image_grid = mask.compute_grid_coords_image()
 
             assert (image_grid[0] == np.array([-0.5, 1.5])).all()
             assert (image_grid[1] == np.array([0.5, 1.5])).all()
@@ -1755,7 +1755,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_grid = mask.compute_image_grid()
+            image_grid = mask.compute_grid_coords_image()
 
             assert (image_grid[0] == np.array([-1.5, 3.0])).all()
             assert (image_grid[1] == np.array([-4.5, 0.0])).all()
@@ -1765,7 +1765,7 @@ class TestMask(object):
             assert (image_grid[5] == np.array([4.5, -3.0])).all()
 
 
-    class TestComputeImageSubGrid(object):
+    class TestComputeGridCoordsImageSub(object):
 
         def test__3x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
 
@@ -1775,7 +1775,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
 
             assert (image_sub_grid == np.array
             ([[[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]]])).all()
@@ -1792,7 +1792,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
 
             assert (image_sub_grid == np.array([[[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
                                                     [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]],
@@ -1820,7 +1820,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
 
             assert (image_sub_grid == np.array([[[2.5, 3.5], [3.5, 3.5], [2.5, 2.5], [3.5, 2.5]],
                                                     [[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
@@ -1860,7 +1860,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=0.3)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
 
             image_sub_grid = np.round(image_sub_grid, decimals=2)
 
@@ -1903,7 +1903,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=3)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=3)
 
             assert (image_sub_grid == np.array([[[-0.75, 0.75], [0.0, 0.75], [0.75, 0.75],
                                                      [-0.75, 0.0], [0.0, 0.0], [0.75, 0.0],
@@ -1926,7 +1926,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=2.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=3)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=3)
 
             assert (image_sub_grid[0, 0] == np.array([1.5, 2.5])).all()
             assert (image_sub_grid[0, 1] == np.array([2.0, 2.5])).all()
@@ -1966,7 +1966,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=2.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=4)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=4)
 
             image_sub_grid = np.round(image_sub_grid, decimals=1)
 
@@ -2063,7 +2063,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
 
             assert (image_sub_grid[0, 0] == np.array([-0.5, 2.0])).all()
             assert (image_sub_grid[0, 1] == np.array([0.5, 2.0])).all()
@@ -2093,7 +2093,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_image_sub_grid(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
 
             assert (image_sub_grid[0, 0] == np.array([4.0, 3.5])).all()
             assert (image_sub_grid[0, 1] == np.array([5.0, 3.5])).all()
@@ -2121,7 +2121,7 @@ class TestMask(object):
             assert (image_sub_grid[4, 3] == np.array([2.0, -3.5])).all()
 
 
-    class TestComputeBlurringGrid(object):
+    class TestComputeGridCoordsBlurring(object):
         
         def test__3x3_blurring_mask_correct_coordinates(self):
 
@@ -2131,7 +2131,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            blurring_grid = mask.compute_blurring_grid(psf_size=(3, 3))
+            blurring_grid = mask.compute_grid_coords_blurring(psf_size=(3, 3))
 
             assert (blurring_grid[0] == np.array([-3.0, 3.0])).all()
             assert (blurring_grid[1] == np.array([0.0, 3.0])).all()
@@ -2164,7 +2164,7 @@ class TestMask(object):
             # [True, True, False, False, False, True, True],
             # [True, True, True, True, True, True, True]])
 
-            blurring_grid = mask.compute_blurring_grid(psf_size=(3, 5))
+            blurring_grid = mask.compute_grid_coords_blurring(psf_size=(3, 5))
 
             assert (blurring_grid[0] == np.array([-3.0, 6.0])).all()
             assert (blurring_grid[1] == np.array([0.0, 6.0])).all()
@@ -2203,7 +2203,7 @@ class TestMask(object):
             #  [True, True, True, True, True, True, True],
             #  [True, True, True, True, True, True, True]]
 
-            blurring_grid = mask.compute_blurring_grid(psf_size=(5, 3))
+            blurring_grid = mask.compute_grid_coords_blurring(psf_size=(5, 3))
 
             assert (blurring_grid[0] == np.array([-6.0, 3.0])).all()
             assert (blurring_grid[1] == np.array([-3.0, 3.0])).all()
@@ -2219,6 +2219,87 @@ class TestMask(object):
             assert (blurring_grid[11] == np.array([0.0, -3.0])).all()
             assert (blurring_grid[12] == np.array([3.0, -3.0])).all()
             assert (blurring_grid[13] == np.array([6.0, -3.0])).all()
+
+
+    class TestComputeGridData(object):
+
+        def test__setup_3x3_data(self):
+
+            data = np.array([[1, 2, 3],
+                             [4, 5, 6],
+                             [7, 8, 9]])
+
+            mask = np.array([[True, True, True],
+                             [True, False, True],
+                             [True, True, True]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            grid_data = mask.compute_grid_data(data)
+
+            assert (grid_data[0] == np.array([5])).all()
+
+        def test__setup_3x3_data__five_now_in_mask(self):
+
+            data = np.array([[1, 2, 3],
+                             [4, 5, 6],
+                             [7, 8, 9]])
+
+            mask = np.array([[True,  False, True],
+                             [False, False, False],
+                             [True,  False, True]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            grid_data = mask.compute_grid_data(data)
+
+            assert (grid_data[0] == np.array([2])).all()
+            assert (grid_data[1] == np.array([4])).all()
+            assert (grid_data[2] == np.array([5])).all()
+            assert (grid_data[3] == np.array([6])).all()
+            assert (grid_data[4] == np.array([8])).all()
+
+        def test__setup_3x4_data(self):
+
+            data = np.array([[1, 2, 3, 4],
+                             [5, 6, 7, 8],
+                             [9, 10, 11, 12]])
+
+            mask = np.array([[True, False, True, True],
+                             [False, False, False, True],
+                             [True, False, True, False]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            grid_data = mask.compute_grid_data(data)
+
+            assert (grid_data[0] == np.array([2])).all()
+            assert (grid_data[1] == np.array([5])).all()
+            assert (grid_data[2] == np.array([6])).all()
+            assert (grid_data[3] == np.array([7])).all()
+            assert (grid_data[4] == np.array([10])).all()
+
+        def test__setup_4x3_data__five_now_in_mask(self):
+
+            data = np.array([[1, 2, 3],
+                             [4, 5, 6],
+                             [7, 8, 9],
+                             [10, 11, 12]])
+
+            mask = np.array([[True,  False, True],
+                             [False, False, False],
+                             [True,  False, True],
+                             [True, True, True]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            grid_data = mask.compute_grid_data(data)
+
+            assert (grid_data[0] == np.array([2])).all()
+            assert (grid_data[1] == np.array([4])).all()
+            assert (grid_data[2] == np.array([5])).all()
+            assert (grid_data[3] == np.array([6])).all()
+            assert (grid_data[4] == np.array([8])).all()
 
 
     class TestComputeBlurringMask(object):
@@ -2549,7 +2630,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array([0])).all()
 
@@ -2564,7 +2645,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -2579,7 +2660,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
@@ -2595,7 +2676,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17])).all()
 
@@ -2611,7 +2692,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array
             ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 26, 27, 28, 29])).all()
@@ -2627,7 +2708,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14])).all()
 
@@ -2642,7 +2723,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            border_pixels = mask.compute_border_pixels()
+            border_pixels = mask.compute_grid_border()
 
             assert (border_pixels == np.array
             ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
@@ -2664,7 +2745,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -2681,7 +2762,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
             assert (sparse_to_image == np.arange(21)).all()
             assert (image_to_sparse == np.arange(21)).all()
@@ -2698,7 +2779,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
             assert (sparse_to_image == np.arange(49)).all()
             assert (image_to_sparse == np.arange(49)).all()
@@ -2715,7 +2796,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([4, 6, 14, 16])).all()
             assert (image_to_sparse == np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
@@ -2734,7 +2815,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
             assert (image_to_sparse == np.array([0, 0, 1, 1, 2, 0, 0, 1, 1, 1, 2, 2, 3, 3,
@@ -2753,7 +2834,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=2)
 
             assert (sparse_to_image == np.arange(16)).all()
             assert (image_to_sparse == np.arange(16)).all()
@@ -2770,7 +2851,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=3)
 
             assert (sparse_to_image == np.array([10])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
@@ -2787,7 +2868,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=3)
 
             assert (sparse_to_image == np.array([0, 1, 3, 14, 17, 26])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
@@ -2805,7 +2886,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=3)
 
             assert (sparse_to_image == np.arange(9)).all()
             assert (image_to_sparse == np.arange(9)).all()
@@ -2822,7 +2903,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=3)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=3)
 
             assert (sparse_to_image == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
             assert (image_to_sparse == np.array([0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
@@ -2840,7 +2921,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -2858,7 +2939,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -2876,7 +2957,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([1, 3])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
@@ -2893,7 +2974,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=1)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -2910,7 +2991,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([1, 3])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
@@ -2927,7 +3008,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size=2)
+            sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=2)
 
             assert (sparse_to_image == np.array([1, 3, 11, 13])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
