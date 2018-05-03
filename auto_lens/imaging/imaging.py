@@ -763,6 +763,23 @@ class Mask(DataGrid):
 
         return grid
 
+    def compute_grid_mapper_data_to_2d(self):
+        """
+        Compute the mapping of every pixel in the mask to its 2D pixel coordinates.
+        """
+        pixels = self.pixels_in_mask
+
+        grid = np.zeros(shape=(pixels, 2))
+        pixel_count = 0
+
+        for y in range(self.pixel_dimensions[0]):
+            for x in range(self.pixel_dimensions[1]):
+                if self.mask[y, x] == False:
+                    grid[pixel_count, :] = y,x
+                    pixel_count += 1
+
+        return grid
+
     def compute_grid_mapper_sparse(self, sparse_grid_size):
         """Given an image.Mask, compute the sparse cluster image pixels, defined as the sub-set of image-pixels used \
         to perform KMeans clustering (this is used purely for speeding up the KMeans clustering algorithim).
@@ -951,6 +968,7 @@ class Mask(DataGrid):
                             raise MaskException('compute_image_to_sparse - Stuck in infinite loop')
     
         return image_to_sparse
+
 
 class MaskException(Exception):
     pass
