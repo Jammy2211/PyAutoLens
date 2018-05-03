@@ -4,20 +4,20 @@ from auto_lens.imaging import imaging
 from auto_lens.profiles import geometry_profiles
 
 
-class GridCollection(object):
+class GridCoordsCollection(object):
 
     def __init__(self, image, sub=None, blurring=None):
-        """A collection of grids which contain the coordinates of the image, image sub-grid, blurring regions etc. \
-         These grids are all passed through the ray-tracing module to set up the image, lens and source planes.
+        """A collection of grids which contain the coordinates of the image_coords, image_coords sub-grid_coords, blurring regions etc. \
+         These grids are all passed through the ray-tracing module to set up the image_coords, lens and source planes.
          
         Parameters
         -----------
-        image : GridImage
-            A grid containing the image coordinates.
-        sub : GridImageSub
-            A grid containing the image sub-coordinates.
-        blurring : GridBlurring
-            A grid containing the blurring region coordinates.
+        image : GridCoordsImage
+            A grid_coords containing the image_coords coordinates.
+        sub : GridCoordsImageSub
+            A grid_coords containing the image_coords sub-coordinates.
+        blurring : GridCoordsBlurring
+            A grid_coords containing the blurring region coordinates.
         """
 
         self.image = image
@@ -30,27 +30,27 @@ class GridCollection(object):
 
         Parameters
         -----------
-        image : GridImage
-            A grid containing the image coordinates.
-        sub : GridImageSub
-            A grid containing the image sub-coordinates.
-        blurring : GridBlurring
-            A grid containing the blurring region coordinates.
+        image : GridCoordsImage
+            A grid_coords containing the image coordinates.
+        sub : GridCoordsImageSub
+            A grid_coords containing the image sub-coordinates.
+        blurring : GridCoordsBlurring
+            A grid_coords containing the blurring region coordinates.
         """
 
-        image = GridImage.from_mask(mask)
+        image = GridCoordsImage.from_mask(mask)
 
         if sub_grid_size is None:
             sub = None
         elif sub_grid_size is not None:
-            sub = GridImageSub.from_mask(mask, sub_grid_size)
+            sub = GridCoordsImageSub.from_mask(mask, sub_grid_size)
 
         if blurring_size is None:
             blurring = None
         elif blurring_size is not None:
-            blurring = GridBlurring.from_mask(mask, blurring_size)
+            blurring = GridCoordsBlurring.from_mask(mask, blurring_size)
 
-        return GridCollection(image, sub, blurring)
+        return GridCoordsCollection(image, sub, blurring)
 
     def setup_all_deflections_grids(self, galaxies):
         """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies) \
@@ -68,7 +68,7 @@ class GridCollection(object):
         elif self.blurring is not None:
             blurring = self.blurring.setup_deflections_grid(galaxies)
 
-        return GridCollection(image, sub, blurring)
+        return GridCoordsCollection(image, sub, blurring)
 
     def setup_all_traced_grids(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
@@ -84,99 +84,101 @@ class GridCollection(object):
         elif self.blurring is not None:
             blurring = self.blurring.setup_traced_grid(deflections.blurring)
 
-        return GridCollection(image, sub, blurring)
+        return GridCoordsCollection(image, sub, blurring)
 
 
-class Grid(object):
+class GridCoords(object):
 
-    def __init__(self, grid):
-        """Abstract base class for a grid, which store the pixel coordinates of different regions of an \
-        image and where the ray-tracing and lensing analysis are performed.
+    def __init__(self, grid_coords):
+        """Abstract base class for a set of grid coordinates, which store the arc-second coordinates of different \
+        regions of an image. These are the coordinates where ray-tracing and lensing analysis are performed.
 
-        The different regions represented by each grid are used for controlling different aspects of the \
-        analysis (e.g. the image, the image sub-grid, the clustering grid, etc.)
+        The different regions each set of grid coordinates correspond to controll different aspects of the \
+        analysis. For example, the image-sub coordinates are used to compute images on a sub-gridded uniform grid and \
+        the blurring coordinates include areas outside the image mask but close enough their light is blurred in by \
+        the PSF.
 
-        The grids are stored as a structured array of coordinates, chosen for efficient ray-tracing \
+        Each grid is stored as a structured array of coordinates, chosen for efficient ray-tracing \
         calculations. Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an \
         image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds.
         """
-        self.grid = grid
+        self.grid_coords = grid_coords
 
 
-class GridRegular(Grid):
+class GridCoordsRegular(GridCoords):
 
-    def __init__(self, grid):
-        """Abstract class for a regular grid, where pixel coordinates are represented by just one coordinate at \
+    def __init__(self, grid_coords):
+        """Abstract class for a regular grid_coords, where pixel coordinates are represented by just one coordinate at \
         the centre of its respective pixel.
 
-        A regular grid is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps to the \
+        A regular grid_coords is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps to the \
         image pixel index, and second element to its (x,y) arc second coordinates. For example, the value [3,1] gives \
         the 4th image pixel's y coordinate.
 
         Parameters
         -----------
-        grid : np.ndarray
-            The regular grid coordinates.
+        grid_coords : np.ndarray
+            The regular grid_coords coordinates.
         """
 
-        super(GridRegular, self).__init__(grid)
+        super(GridCoordsRegular, self).__init__(grid_coords)
 
     def intensities_via_grid(self, galaxies):
-        """Compute the intensity in each pixel using the coordinates of the regular grid"""
+        """Compute the intensity in each pixel using the coordinates of the regular grid_coords"""
         return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                  output_shape=self.grid.shape[0]), galaxies))
+                                                                  output_shape=self.grid_coords.shape[0]), galaxies))
 
     def deflections_on_grid(self, galaxies):
-        """Compute the deflection angles of each coordinate of the regular grid"""
+        """Compute the deflection angles of each coordinate of the regular grid_coords"""
         return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                  output_shape=self.grid.shape), galaxies))
+                                                                  output_shape=self.grid_coords.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
-        coordinates defined by the regular grid.
+        coordinates defined by the regular grid_coords.
         """
         grid_values = np.zeros(output_shape)
 
-        for pixel_no, coordinate in enumerate(self.grid):
+        for pixel_no, coordinate in enumerate(self.grid_coords):
             grid_values[pixel_no] = func(coordinates=coordinate)
 
         return grid_values
 
 
-class GridSub(Grid):
+class GridCoordsSub(GridCoords):
 
-    def __init__(self, grid, sub_grid_size):
-        """Abstract class for a sub grid, where pixel coordinates are represented by a uniform grid of coordinates \
+    def __init__(self, grid_coords, grid_sub_size):
+        """Abstract class for a sub grid_coords, where pixel coordinates are represented by a uniform grid_coords of coordinates \
         within the pixel.
 
-        A regular grid is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps to the \
+        A regular grid_coords is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps to the \
         image pixel index, and second element to its central (x,y) arc second coordinates. For example, the value [3,1]
         gives the 4th image pixel's y coordinate.
 
-        A sub grid is a NumPy array of dimensions [image_pixels, sub_grid_pixels, 2]. Therefore, the first element \
+        A sub grid_coords is a NumPy array of dimensions [image_pixels, sub_grid_pixels, 2]. Therefore, the first element \
         maps to the image pixel index, the second element to the sub-pixel index and third element to that sub pixel's \
         (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's 7th sub-pixel's \
         y coordinate.
 
         Parameters
         -----------
-        grid : np.ndarray
-            The sub-grid coordinates.
-        sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
+        grid_coords : np.ndarray
+            The sub-grid_coords coordinates.
+        grid_sub_size : int
+            The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
         """
-        self.sub_grid_size = sub_grid_size
-        self.sub_grid_size_squared = sub_grid_size ** 2.0
-        super(GridSub, self).__init__(grid)
+        self.sub_grid_size = grid_sub_size
+        self.sub_grid_size_squared = grid_sub_size ** 2.0
+        super(GridCoordsSub, self).__init__(grid_coords)
 
     def intensities_via_grid(self, galaxies):
-        """Compute the intensity in each pixel using the coordinates of the sub grid. This routine takes the mean \
-         value of the intensities at sub grid coordinates to compute the final intensity."""
+        """Compute the intensity in each pixel using the coordinates of the sub grid_coords. This routine takes the mean \
+         value of the intensities at sub grid_coords coordinates to compute the final intensity."""
 
         sub_intensitites = sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                  output_shape=self.grid.shape[0:2]), galaxies))
+                                                                              output_shape=self.grid_coords.shape[0:2]), galaxies))
 
-        intensitites = np.zeros(self.grid.shape[0])
+        intensitites = np.zeros(self.grid_coords.shape[0])
 
         for pixel_no, intensities_sub_pixel in enumerate(sub_intensitites):
             intensitites[pixel_no] = np.sum(intensities_sub_pixel) / self.sub_grid_size_squared
@@ -184,139 +186,160 @@ class GridSub(Grid):
         return intensitites
 
     def deflections_on_grid(self, galaxies):
-        """Compute the deflection angles of each coordinate of the sub grid"""
+        """Compute the deflection angles of each coordinate of the sub grid_coords"""
         return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                  output_shape=self.grid.shape), galaxies))
+                                                                  output_shape=self.grid_coords.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
-        coordinates defined by a sub-grid.
+        coordinates defined by a sub-grid_coords.
         """
 
         sub_grid_values = np.zeros(output_shape)
 
-        for pixel_no, pixel_sub_grid in enumerate(self.grid):
+        for pixel_no, pixel_sub_grid in enumerate(self.grid_coords):
             for sub_pixel_no, sub_coordinate in enumerate(pixel_sub_grid):
                 sub_grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
 
         return sub_grid_values
 
 
-class GridImage(GridRegular):
+class GridCoordsImage(GridCoordsRegular):
 
-    def __init__(self, grid):
-        """The image grid, representing all pixel coordinates in an image.
+    def __init__(self, grid_coords):
+        """The image grid_coords, representing all pixel coordinates in an image.
 
         Parameters
         -----------
-        grid : np.ndarray
-            The regular grid of image coordinates.
+        grid_coords : np.ndarray
+            The regular grid_coords of image coordinates.
         """
 
-        super(GridImage, self).__init__(grid)
+        super(GridCoordsImage, self).__init__(grid_coords)
 
     @classmethod
     def from_mask(cls, mask):
-        """ Given an image.Mask, setup the image grid using the center of every unmasked pixel.
+        """ Given an image.Mask, setup the image grid_coords using the center of every unmasked pixel.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the pixels the image grid is computed for and the image's data grid.
+            The image mask containing the pixels the image grid_coords is computed for and the image's data grid_coords.
         """
-        return GridImage(mask.compute_image_grid())
+        return GridCoordsImage(mask.compute_grid_coords_image())
 
     def setup_deflections_grid(self, galaxies):
-        """Setup a new image grid of deflection angle coordinates, by integrating the mass profiles of a set of \
+        """Setup a new image grid_coords of deflection angle coordinates, by integrating the mass profiles of a set of \
         galaxies."""
-        return GridImage(self.deflections_on_grid(galaxies))
+        return GridCoordsImage(self.deflections_on_grid(galaxies))
 
     def setup_traced_grid(self, grid_deflections):
-        """Setup a new image grid of coordinates, by tracing its coordinates by a set of deflection angles."""
-        return GridImage(np.subtract(self.grid, grid_deflections.grid))
+        """Setup a new image grid_coords of coordinates, by tracing its coordinates by a set of deflection angles."""
+        return GridCoordsImage(np.subtract(self.grid_coords, grid_deflections.grid_coords))
 
 
-class GridImageSub(GridSub):
+class GridCoordsImageSub(GridCoordsSub):
 
-    def __init__(self, grid, sub_grid_size):
-        """The image sub-grid, representing all sub-pixel coordinates in an image.
+    def __init__(self, grid_coords, grid_sub_size):
+        """The image sub-grid_coords, representing all sub-pixel coordinates in an image.
 
         Parameters
         -----------
-        grid : np.ndarray
-            The sub-grid of image coordinates.
-        sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
+        grid_coords : np.ndarray
+            The sub-grid_coords of image coordinates.
+        grid_sub_size : int
+            The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
         """
-        super(GridImageSub, self).__init__(grid, sub_grid_size)
+        super(GridCoordsImageSub, self).__init__(grid_coords, grid_sub_size)
 
     @classmethod
     def from_mask(cls, mask, sub_grid_size):
-        """ Given an image.Mask, compute the image sub-grid using the center of every unmasked pixel and an input \
-        sub-grid size.
+        """ Given an image.Mask, compute the image sub-grid_coords using the center of every unmasked pixel and an input \
+        sub-grid_coords size.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the pixels the image sub-grid is computed for and the image's data grid.
+            The image mask containing the pixels the image sub-grid_coords is computed for and the image's data grid_coords.
         sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) of the sub-grid of each image pixel.
+            The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
         """
-        return GridImageSub(mask.compute_image_sub_grid(sub_grid_size), sub_grid_size)
+        return GridCoordsImageSub(mask.compute_grid_coords_image_sub(sub_grid_size), sub_grid_size)
 
     def setup_deflections_grid(self, galaxies):
-        """Setup a new sub grid of deflection angle coordinates, by integrating the mass profiles of a set of \
+        """Setup a new sub grid_coords of deflection angle coordinates, by integrating the mass profiles of a set of \
         galaxies."""
-        return GridImageSub(self.deflections_on_grid(galaxies), self.sub_grid_size)
+        return GridCoordsImageSub(self.deflections_on_grid(galaxies), self.sub_grid_size)
 
     def setup_traced_grid(self, deflection_grid):
-        """Setup a new image grid of sub-coordinates, by tracing its sub-coordinates by a set of deflection angles."""
-        return GridImageSub(np.subtract(self.grid, deflection_grid.grid), self.sub_grid_size)
+        """Setup a new image grid_coords of sub-coordinates, by tracing its sub-coordinates by a set of deflection angles."""
+        return GridCoordsImageSub(np.subtract(self.grid_coords, deflection_grid.grid_coords), self.sub_grid_size)
 
 
-class GridBlurring(GridRegular):
+class GridCoordsBlurring(GridCoordsRegular):
 
-    def __init__(self, grid):
-        """The blurring grid, representing all pixel coordinates in the regions of an image which are outside of the \
+    def __init__(self, grid_coords):
+        """The blurring grid_coords, representing all pixel coordinates in the regions of an image which are outside of the \
          mask but will have a fraction of their light blurred into the mask via PSF convolution.
 
         Parameters
         -----------
-        grid : np.ndarray
-            The regular grid of blurring pixel coordinates.
+        grid_coords : np.ndarray
+            The regular grid_coords of blurring pixel coordinates.
         """
 
-        super(GridBlurring, self).__init__(grid)
+        super(GridCoordsBlurring, self).__init__(grid_coords)
 
     @classmethod
     def from_mask(cls, mask, psf_size):
-        """ Given an image.Mask, compute the blurring analysis grid by locating all pixels which are within the \
+        """ Given an image.Mask, compute the blurring analysis grid_coords by locating all pixels which are within the \
         psf size of the mask.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the pixels the blurring grid is computed for and the image's data grid.
+            The image mask containing the pixels the blurring grid_coords is computed for and the image's data grid_coords.
         psf_size : (int, int)
            The size of the psf which defines the blurring region (e.g. the pixel_dimensions of the PSF)
         """
         if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
             raise imaging.MaskException("psf_size of exterior region must be odd")
 
-        return GridBlurring(mask.compute_blurring_grid(psf_size))
+        return GridCoordsBlurring(mask.compute_grid_coords_blurring(psf_size))
 
     def setup_deflections_grid(self, galaxies):
-        """Setup a new blurring grid of deflection angle coordinates, by integrating the mass profiles of a set of \
+        """Setup a new blurring grid_coords of deflection angle coordinates, by integrating the mass profiles of a set of \
         galaxies."""
-        return GridBlurring(self.deflections_on_grid(galaxies))
+        return GridCoordsBlurring(self.deflections_on_grid(galaxies))
 
     def setup_traced_grid(self, deflection_grid):
-        """Setup a new blurring grid of coordinates, by tracing its coordinates by a set of deflecton angles."""
-        return GridBlurring(np.subtract(self.grid, deflection_grid.grid))
+        """Setup a new blurring grid_coords of coordinates, by tracing its coordinates by a set of deflecton angles."""
+        return GridCoordsBlurring(np.subtract(self.grid_coords, deflection_grid.grid_coords))
 
+
+class GridData(object):
+
+    def __init__(self, grid_data):
+        """Abstract base class for the grid of a data-set (e.g. the image, noise, exposure times).
+
+        Each grid is stored as a 1D array of the data values, which ensures efficient calculations during lens \
+        analysis.
+        """
+        self.grid_data = grid_data
+
+    @classmethod
+    def from_mask(cls, data, mask):
+        """ Given an image.Mask, setup the data grid using the every unmasked pixel.
+
+        Parameters
+        ----------
+        mask : imaging.Mask
+            The image mask containing the pixels the image grid_coords is computed for and the image's data grid_coords.
+        """
+        return GridData(mask.compute_grid_data(data))
 
 class GridMapperSparse(object):
-    """Grid mappings between the sparse grid and image grid."""
+    """GridCoords mappings between the sparse grid_coords and image grid_coords."""
 
     def __init__(self, sparse_to_image, image_to_sparse):
 
@@ -325,15 +348,15 @@ class GridMapperSparse(object):
 
     @classmethod
     def from_mask(cls, mask, sparse_grid_size):
-        """ Given an image.Mask, compute the sparse mapper of the image by inputting the sparse grid size and finding \
-        all image pixels which are on the sparse grid.
+        """ Given an image.Mask, compute the sparse mapper of the image by inputting the sparse grid_coords size and finding \
+        all image pixels which are on the sparse grid_coords.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the pixels the blurring grid is computed for and the image's data grid.
+            The image mask containing the pixels the blurring grid_coords is computed for and the image's data grid_coords.
         """
-        sparse_to_image, image_to_sparse = mask.compute_sparse_mappers(sparse_grid_size)
+        sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size)
         return GridMapperSparse(sparse_to_image, image_to_sparse)
 
 
@@ -343,7 +366,7 @@ class GridBorder(geometry_profiles.Profile):
     # TODO : centre. This would add a central_pixels lists to the input.
 
     def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
-        """ The border of a grid, which can be used to relocate coordinates outside of the border to its edge.
+        """ The border of a grid_coords, which can be used to relocate coordinates outside of the border to its edge.
 
         This is required to ensure highly demagnified pixels in the centre of the image_grid do not bias a source \
         pixelization.
@@ -378,7 +401,7 @@ class GridBorder(geometry_profiles.Profile):
         """For an input sub-coordinates, return a coordinates where all sub-coordinates outside the border are relocated to its edge.
         """
 
-        # TODO : integrate these as functions into Grid and SubGrid, or pass in a Grid / SubGrid?
+        # TODO : integrate these as functions into GridCoords and SubGrid, or pass in a GridCoords / SubGrid?
 
         self.polynomial_fit_to_border(coordinates)
 
