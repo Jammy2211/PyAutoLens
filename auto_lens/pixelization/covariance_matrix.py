@@ -44,7 +44,7 @@ def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, 
     of the mapping matrix will = 1.
 
     The mapping matrix supports sub_grid-gridding.  Here, each image_grid-pixel in the observed image_grid is divided into a \
-    finer sub_grid-grid. For example, if sub_grid_size = 4, each image_grid-pixel is split into a 4 x 4 sub_grid-grid, giving a \
+    finer sub_grid-grid_coords. For example, if sub_grid_size = 4, each image_grid-pixel is split into a 4 x 4 sub_grid-grid_coords, giving a \
     total of 16 sub_grid image_grid-pixels. All 16 sub_grid image_grid-pixels are individually mapped to the source-plane and each is
     paired with a source-pixel.
 

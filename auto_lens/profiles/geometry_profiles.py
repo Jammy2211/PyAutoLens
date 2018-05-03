@@ -133,14 +133,14 @@ def subgrid(func):
 
 def iterative_subgrid(subgrid_func):
     """
-    Decorator to iteratively increase the grid size until the difference between results reaches a defined threshold
+    Decorator to iteratively increase the grid_coords size until the difference between results reaches a defined threshold
     Parameters
     ----------
     subgrid_func : function(coordinates, pixel_scale, grid_size) -> value
         A function decorated with subgrid and average
     Returns
     -------
-        A function that will iteratively increase grid size until a desired accuracy is reached
+        A function that will iteratively increase grid_coords size until a desired accuracy is reached
     """
 
     @wraps(subgrid_func)
@@ -154,7 +154,7 @@ def iterative_subgrid(subgrid_func):
         pixel_scale : float
             The size of a pixel
         threshold : float
-            The minimum difference between the result at two different grid sizes
+            The minimum difference between the result at two different grid_coords sizes
         Returns
         -------
             The last result calculated once the difference between two results becomes lower than the threshold
@@ -359,7 +359,7 @@ class Profile(object):
 
     # noinspection PyMethodMayBeStatic
     def transform_from_reference_frame(self, coordinates):
-        """ Transform coordinates from a profile's reference frame to the original Cartesian grid.
+        """ Transform coordinates from a profile's reference frame to the original Cartesian grid_coords.
 
         Parameters
         ----------
@@ -510,7 +510,7 @@ class EllipticalProfile(Profile):
 
     def rotate_coordinates_from_profile(self, coordinates_elliptical):
         """ Rotate elliptical coordinates from the reference frame of the profile back to the coordinates original \
-         Cartsian grid (coordinates are not shifted back to their original centre).
+         Cartsian grid_coords (coordinates are not shifted back to their original centre).
 
         Parameters
         ----------
@@ -519,7 +519,7 @@ class EllipticalProfile(Profile):
 
         Returns
         ----------
-        The coordinaates rotated back to their original Cartesian grid.
+        The coordinaates rotated back to their original Cartesian grid_coords.
          """
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
@@ -586,7 +586,7 @@ class EllipticalProfile(Profile):
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """ Transform elliptical coordinates from their profile's reference frame back to the original Cartesian \
-        grid.
+        grid_coords.
 
         This routine checks the coordinates are an instance of the TransformedCoordinates class, thus ensuring they \
         have already been translated to the profile's reference frame.
@@ -598,7 +598,7 @@ class EllipticalProfile(Profile):
 
         Returns
         ----------
-        The coordinates (typically deflection angles) on a regular Cartesian grid
+        The coordinates (typically deflection angles) on a regular Cartesian grid_coords
         """
 
         if not isinstance(coordinates_elliptical, TransformedCoordinates):
@@ -616,7 +616,7 @@ class EllipticalProfile(Profile):
         Parameters
         ----------
         coordinates : ndarray
-            The (x, y) coordinates on the Cartesian grid..
+            The (x, y) coordinates on the Cartesian grid_coords..
 
         Returns
         ----------
