@@ -588,14 +588,32 @@ class TestGridCoordsImage(object):
 
 
     class TestFromMask:
+        
+        def test__calcalate_from_simple_mask__check_coordinates_are_correct(self):
 
-        def test__simple_constructor__compare_to_manual_setup_via_mask(self):
-
-            mask = np.array([[True, True, True],
-                             [True, False, True],
-                             [True, True, True]])
+            mask = np.array([[True, False, True],
+                             [False, False, False],
+                             [True, False, True]])
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            regular_grid_coords = mask.compute_grid_coords_image()
+
+            grid_image = grids.GridCoordsImage.from_mask(mask)
+
+            assert (grid_image.grid_coords[0] == np.array([0.0, 3.0])).all()
+            assert (grid_image.grid_coords[1] == np.array([-3.0, 0.0])).all()
+            assert (grid_image.grid_coords[2] == np.array([0.0, 0.0])).all()
+            assert (grid_image.grid_coords[3] == np.array([3.0, 0.0])).all()
+            assert (grid_image.grid_coords[4] == np.array([0.0, -3.0])).all()
+
+        def test__manually_compare_to_setting_up_directly_via_mask(self):
+
+            mask = np.array([[True, True, False, False],
+                             [True, False, True, True],
+                             [True, True, True, False]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=6.0)
 
             regular_grid_coords = mask.compute_grid_coords_image()
 
@@ -992,7 +1010,58 @@ class TestGridData(object):
             assert (grid_data.grid_data[4] == np.array([8])).all()
 
 
+class TestGridMapperDataTo2D(object):
+
+
+    class TestConstructor:
+
+        def test__simple_mapper_input__sets_up_grid_in_attributes(self):
+
+            data_to_2d = np.array([[0,0],
+                                   [0,1],
+                                   [0,2]])
+
+            mapper = grids.GridMapperDataTo2D(data_to_2d)
+
+            assert (mapper.data_to_2d[0] == np.array([0,0])).all()
+            assert (mapper.data_to_2d[1] == np.array([0,1])).all()
+            assert (mapper.data_to_2d[2] == np.array([0,2])).all()
+
+
+    class TestFromMask:
+         
+        def test__calcalate_from_simple_mask__mappings_are_correct(self):
+
+            mask = np.array([[True, False, True],
+                             [False, False, False],
+                             [True, False, True]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+
+            mapper = grids.GridMapperDataTo2D.from_mask(mask)
+
+            assert (mapper.data_to_2d[0] == np.array([0, 1])).all()
+            assert (mapper.data_to_2d[1] == np.array([1, 0])).all()
+            assert (mapper.data_to_2d[2] == np.array([1, 1])).all()
+            assert (mapper.data_to_2d[3] == np.array([1, 2])).all()
+            assert (mapper.data_to_2d[4] == np.array([2, 1])).all()
+
+        def test__manually_compare_to_setting_up_directly_via_mask(self):
+
+            mask = np.array([[True, True, False, False],
+                             [True, False, True, True],
+                             [True, True, True, False]])
+
+            mask = imaging.Mask(mask=mask, pixel_scale=6.0)
+
+            mapper = mask.compute_grid_mapper_data_to_2d()
+            mapper_from_mask = grids.GridMapperDataTo2D.from_mask(mask)
+
+            assert (mapper == mapper_from_mask.data_to_2d).all()
+        
+
 class TestGridMapperSparse(object):
+
 
     class TestConstructor:
 
@@ -1005,6 +1074,7 @@ class TestGridMapperSparse(object):
 
             assert (analysis_mapper.sparse_to_image == np.array([1, 2, 3, 5])).all()
             assert (analysis_mapper.image_to_sparse == np.array([6, 7, 2, 3])).all()
+
 
     class TestFromMask:
 
