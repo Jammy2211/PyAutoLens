@@ -38,9 +38,9 @@ class TraceImageAndSource(object):
             The list of lens galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_plane_grids : GridCollection
-            The image-plane grids of coordinates where ray-tracing calculation are performed, (this includes the image.grid, \
-            sub_grid, blurring.grid etc.).
+        image_plane_grids : GridCoordsCollection
+            The image-plane grids of coordinates where ray-tracing calculation are performed, (this includes the image.grid_coords, \
+            sub_grid, blurring.grid_coords etc.).
         """
         self.image_plane = ImagePlane(lens_galaxies, image_plane_grids)
 
@@ -63,8 +63,8 @@ class Plane(object):
         ----------
         galaxies : [Galaxy]
             The galaxies in the plane.
-        grids : grids.GridCollection
-            The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
+        grids : grids.GridCoordsCollection
+            The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring grid_coords, etc.
         """
 
         self.galaxies = galaxies
@@ -88,8 +88,8 @@ class LensPlane(Plane):
         ----------
         galaxies : [Galaxy]
             The galaxies in the image_grid-plane.
-        grids : grids.GridCollection
-            The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
+        grids : grids.GridCoordsCollection
+            The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring grid_coords, etc.
         """
 
         super(LensPlane, self).__init__(galaxies, grids)
@@ -115,16 +115,16 @@ class ImagePlane(LensPlane):
         """Represents an image-plane, a set of galaxies and grids at the lowest redshift in the lens ray-tracing \
         calculation.
 
-        The image-plane is, by definition, a lens-plane, thus the deflection angles for each grid are computed.
+        The image-plane is, by definition, a lens-plane, thus the deflection angles for each grid_coords are computed.
 
-        The image-plane coodinates are defined on the observed image's uniform regular grid. Calculating its model \
+        The image-plane coodinates are defined on the observed image's uniform regular grid_coords. Calculating its model \
         images from its light profiles exploits this uniformity to perform more efficient and precise calculations via \
         an iterative sub-gridding approach.
 
         The light profiles of galaxies at higher redshifts (and therefore in different lens-planes) can be assigned to \
         the ImagePlane. This occurs when:
 
-        1) The efficiency and precision offered by computing the light profile on a uniform grid is preferred and \
+        1) The efficiency and precision offered by computing the light profile on a uniform grid_coords is preferred and \
         won't lead noticeable inaccuracy. For example, computing the light profile of the main lens galaxy, ignoring \
         minor lensing effects due to a low mass foreground substructure.
 
@@ -135,8 +135,8 @@ class ImagePlane(LensPlane):
         ----------
         galaxies : [Galaxy]
             The galaxies in the image_grid-plane.
-        grids : grids.GridCollection
-            The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
+        grids : grids.GridCoordsCollection
+            The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring grid_coords, etc.
         """
 
         super(ImagePlane, self).__init__(galaxies, grids)
@@ -155,7 +155,7 @@ class SourcePlane(Plane):
         ----------
         galaxies : [Galaxy]
             The galaxies in the source-plane.
-        grids : grids.GridCollection
-            The grids of (x,y) coordinates in the plane, including the image grid, sub-grid, blurring grid, etc.
+        grids : grids.GridCoordsCollection
+            The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring grid_coords, etc.
         """
         super(SourcePlane, self).__init__(galaxies, grids)
