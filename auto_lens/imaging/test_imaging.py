@@ -1775,7 +1775,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             assert (image_sub_grid == np.array
             ([[[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]]])).all()
@@ -1792,7 +1792,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             assert (image_sub_grid == np.array([[[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
                                                     [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]],
@@ -1820,7 +1820,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             assert (image_sub_grid == np.array([[[2.5, 3.5], [3.5, 3.5], [2.5, 2.5], [3.5, 2.5]],
                                                     [[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
@@ -1860,7 +1860,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=0.3)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             image_sub_grid = np.round(image_sub_grid, decimals=2)
 
@@ -1903,7 +1903,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=3)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=3)
 
             assert (image_sub_grid == np.array([[[-0.75, 0.75], [0.0, 0.75], [0.75, 0.75],
                                                      [-0.75, 0.0], [0.0, 0.0], [0.75, 0.0],
@@ -1926,7 +1926,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=2.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=3)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=3)
 
             assert (image_sub_grid[0, 0] == np.array([1.5, 2.5])).all()
             assert (image_sub_grid[0, 1] == np.array([2.0, 2.5])).all()
@@ -1966,7 +1966,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=2.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=4)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=4)
 
             image_sub_grid = np.round(image_sub_grid, decimals=1)
 
@@ -2063,7 +2063,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             assert (image_sub_grid[0, 0] == np.array([-0.5, 2.0])).all()
             assert (image_sub_grid[0, 1] == np.array([0.5, 2.0])).all()
@@ -2093,7 +2093,7 @@ class TestMask(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            image_sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            image_sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             assert (image_sub_grid[0, 0] == np.array([4.0, 3.5])).all()
             assert (image_sub_grid[0, 1] == np.array([5.0, 3.5])).all()
