@@ -683,21 +683,21 @@ class Mask(DataGrid):
 
         return grid
 
-    def compute_grid_coords_image_sub(self, sub_grid_size):
+    def compute_grid_coords_image_sub(self, grid_size_sub):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
 
         Parameters
         ----------
         mask : imaging.Mask
             The image mask containing the pixels the image sub-grid_coords is computed for and the image's data grid_coords.
-        sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
+        grid_size_sub : int
+            The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
 
         image_pixels = self.pixels_in_mask
         image_pixel_count = 0
 
-        grid = np.zeros(shape=(image_pixels, sub_grid_size ** 2, 2))
+        grid = np.zeros(shape=(image_pixels, grid_size_sub ** 2, 2))
 
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
@@ -707,13 +707,13 @@ class Mask(DataGrid):
                     y_arcsec = self.y_pixel_to_arc_seconds(y)
                     sub_pixel_count = 0
 
-                    for y1 in range(sub_grid_size):
-                        for x1 in range(sub_grid_size):
+                    for y1 in range(grid_size_sub):
+                        for x1 in range(grid_size_sub):
                             grid[image_pixel_count, sub_pixel_count, 0] = \
-                                self.x_sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
+                                self.x_sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
 
                             grid[image_pixel_count, sub_pixel_count, 1] = \
-                                self.y_sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
+                                self.y_sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
 
                             sub_pixel_count += 1
 
