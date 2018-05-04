@@ -39,8 +39,8 @@ class TraceImageAndSource(object):
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
         image_plane_grids : GridCoordsCollection
-            The image-plane grids of coordinates where ray-tracing calculation are performed, (this includes the image.grid_coords, \
-            sub_grid, blurring.grid_coords etc.).
+            The image-plane grids of coordinates where ray-tracing calculation are performed, (this includes the
+            image.grid_coords, sub_grid, blurring.grid_coords etc.).
         """
         self.image_plane = ImagePlane(lens_galaxies, image_plane_grids)
 
