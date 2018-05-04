@@ -37,7 +37,7 @@ class TestGridCoordsCollection(object):
 
             sub_grid = grids.GridCoordsImageSub(np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
                                                           [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]]),
-                                                grid_sub_size=2)
+                                                grid_size_sub=2)
 
             blurring_grid = grids.GridCoordsBlurring(np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
                                                                [1.0, 1.0]]))
@@ -90,10 +90,10 @@ class TestGridCoordsCollection(object):
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
             image_grid = mask.compute_grid_coords_image()
-            sub_grid = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
             blurring_grid = mask.compute_grid_coords_blurring(psf_size=(3, 3))
 
-            grid_collection = grids.GridCoordsCollection.from_mask(mask, sub_grid_size=2, blurring_size=(3, 3))
+            grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=2, blurring_size=(3, 3))
 
             assert (grid_collection.image.grid_coords == image_grid).all()
             assert (grid_collection.sub.grid_coords == sub_grid).all()
@@ -137,7 +137,7 @@ class TestGridCoordsCollection(object):
             sub_grid = np.array([[[1.0, 1.0], [1.0, 0.0]]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_sub_size=2)
+            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
 
             ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid)
             deflections = ray_trace_grid.setup_all_deflections_grids([galaxy_mass_sis])
@@ -145,7 +145,7 @@ class TestGridCoordsCollection(object):
             assert deflections.image.grid_coords == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
             assert deflections.sub.grid_coords[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert deflections.sub.grid_coords[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert deflections.sub.sub_grid_size == 2
+            assert deflections.sub.grid_size_sub == 2
             assert deflections.blurring == None
 
         def test__image_and_blurring_grid(self, galaxy_mass_sis):
@@ -170,7 +170,7 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_sub_size=2)
+            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
             ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
@@ -180,7 +180,7 @@ class TestGridCoordsCollection(object):
             assert deflections.image.grid_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert deflections.sub.grid_coords[0,0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert deflections.sub.grid_coords[0,1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert deflections.sub.sub_grid_size == 2
+            assert deflections.sub.grid_size_sub == 2
             assert deflections.blurring.grid_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
         def test_three_identical_lenses__deflection_angles_triple(self, galaxy_mass_sis):
@@ -190,7 +190,7 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_sub_size=2)
+            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
             ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
@@ -200,7 +200,7 @@ class TestGridCoordsCollection(object):
             assert deflections.image.grid_coords == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
             assert deflections.sub.grid_coords[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
             assert deflections.sub.grid_coords[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert deflections.sub.sub_grid_size == 2
+            assert deflections.sub.grid_size_sub == 2
             assert deflections.blurring.grid_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
@@ -210,7 +210,7 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_sub_size=4)
+            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
             lens_sis_x3 = galaxy.Galaxy(mass_profiles=3*[mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
@@ -222,7 +222,7 @@ class TestGridCoordsCollection(object):
             assert deflections.image.grid_coords == pytest.approx(np.array([[3.0*0.707, 3.0*0.707]]), 1e-3)
             assert deflections.sub.grid_coords[0,0] == pytest.approx(np.array([3.0*0.707, 3.0*0.707]), 1e-3)
             assert deflections.sub.grid_coords[0,1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert deflections.sub.sub_grid_size == 4
+            assert deflections.sub.grid_size_sub == 4
             assert deflections.blurring.grid_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         def test__complex_mass_model(self):
@@ -232,7 +232,7 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_sub_size=4)
+            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
             power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
@@ -262,7 +262,7 @@ class TestGridCoordsCollection(object):
             assert deflections.image.grid_coords[0] == pytest.approx(defls, 1e-3)
             assert deflections.sub.grid_coords[0,0] == pytest.approx(sub_defls_0, 1e-3)
             assert deflections.sub.grid_coords[0,1] == pytest.approx(sub_defls_1, 1e-3)
-            assert deflections.sub.sub_grid_size == 4
+            assert deflections.sub.grid_size_sub == 4
             assert deflections.blurring.grid_coords[0] == pytest.approx(blurring_defls, 1e-3)
 
 
@@ -291,7 +291,7 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_sub_size=2)
+            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
             ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
@@ -303,7 +303,7 @@ class TestGridCoordsCollection(object):
             assert traced.image.grid_coords[0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
             assert traced.sub.grid_coords[0,0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
             assert traced.sub.grid_coords[0,1] == pytest.approx(np.array([1.0 - 1.0, 0.0 - 0.0]), 1e-3)
-            assert traced.sub.sub_grid_size == 2
+            assert traced.sub.grid_size_sub == 2
             assert traced.blurring.grid_coords[0] == pytest.approx(np.array([1.0 - 1.0, 0.0 - 0.0]), 1e-3)
 
 
@@ -433,10 +433,10 @@ class TestGridCoordsSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
                                         [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])
 
-            grid_sub = grids.GridCoordsSub(grid_coords=sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(grid_coords=sub_grid_coords, grid_size_sub=2)
 
-            assert grid_sub.sub_grid_size == 2
-            assert grid_sub.sub_grid_size_squared == 4
+            assert grid_sub.grid_size_sub == 2
+            assert grid_sub.grid_size_sub_squared == 4
 
             assert grid_sub.grid_coords[0, 0] == pytest.approx(np.array([1.0, 1.0]), 1e-2)
             assert grid_sub.grid_coords[0, 1] == pytest.approx(np.array([1.0, 1.0]), 1e-2)
@@ -455,7 +455,7 @@ class TestGridCoordsSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, 0.0], [0.0, 0.0]],
                                         [[1.0, 1.0], [-1.0, 0.0], [0.0, 0.0], [0.0, 0.0]]])
 
-            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
             intensities = grid_sub.intensities_via_grid(galaxies=[galaxy_no_profiles])
 
@@ -479,7 +479,7 @@ class TestGridCoordsSub(object):
             intensity_0 = (intensity_00 + intensity_01 + intensity_02 + intensity_03) / 4.0
             intensity_1 = (intensity_10 + intensity_11 + intensity_12 + intensity_13) / 4.0
 
-            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
             intensities = grid_sub.intensities_via_grid(galaxies=[galaxy_light_sersic])
 
@@ -503,7 +503,7 @@ class TestGridCoordsSub(object):
             intensity_0 = (intensity_00 + intensity_01 + intensity_02 + intensity_03) / 4.0
             intensity_1 = (intensity_10 + intensity_11 + intensity_12 + intensity_13) / 4.0
 
-            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
             intensities = grid_sub.intensities_via_grid(galaxies=[galaxy_light_sersic, galaxy_light_sersic,
                                                                   galaxy_light_sersic])
@@ -519,7 +519,7 @@ class TestGridCoordsSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, 0.0], [0.0, 0.0]],
                                         [[1.0, 1.0], [-1.0, 0.0], [0.0, 0.0], [0.0, 0.0]]])
 
-            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_sub.deflections_on_grid(galaxies=[galaxy_no_profiles])
 
@@ -537,7 +537,7 @@ class TestGridCoordsSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, -1.0], [0.0, -1.0]],
                                         [[1.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [0.0, -1.0]]])
 
-            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_sub.deflections_on_grid(galaxies=[galaxy_mass_sis])
 
@@ -555,7 +555,7 @@ class TestGridCoordsSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, -1.0], [0.0, -1.0]],
                                         [[1.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [0.0, -1.0]]])
 
-            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_sub_size=2)
+            grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_sub.deflections_on_grid(galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
 
@@ -713,7 +713,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
                              [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(grid_coords=sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(grid_coords=sub_grid_coords, grid_size_sub=2)
 
             assert (grid_image_sub.grid_coords[0, 0] == np.array([1.0, 1.0])).all()
             assert (grid_image_sub.grid_coords[0, 1] == np.array([1.0, 1.0])).all()
@@ -735,11 +735,11 @@ class TestGridCoordsImageSub(object):
 
             mask = imaging.Mask(mask=mask, pixel_scale=3.0)
 
-            sub_grid_coords = mask.compute_grid_coords_image_sub(sub_grid_size=2)
+            sub_grid_coords = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
-            grid_from_mask = grids.GridCoordsImageSub.from_mask(mask, sub_grid_size=2)
+            grid_from_mask = grids.GridCoordsImageSub.from_mask(mask, grid_size_sub=2)
 
             assert (grid_image_sub.grid_coords == grid_from_mask.grid_coords).all()
 
@@ -751,7 +751,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                              [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.setup_deflections_grid(galaxies=[galaxy_mass_sis])
 
@@ -760,14 +760,14 @@ class TestGridCoordsImageSub(object):
             assert deflections.grid_coords[1,0] == pytest.approx(np.array([-0.707, -0.707]), 1e-2)
             assert deflections.grid_coords[1,1] == pytest.approx(np.array([-0.707, -0.707]), 1e-2)
 
-            assert  deflections.sub_grid_size == 2
+            assert  deflections.grid_size_sub == 2
 
         def test_three_identical_lenses__deflection_angles_triple(self, galaxy_mass_sis):
 
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                 [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.setup_deflections_grid(galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
 
@@ -776,14 +776,14 @@ class TestGridCoordsImageSub(object):
             assert deflections.grid_coords[1,0] == pytest.approx(np.array([-3.0*0.707, -3.0*0.707]), 1e-2)
             assert deflections.grid_coords[1,1] == pytest.approx(np.array([-3.0*0.707, -3.0*0.707]), 1e-2)
 
-            assert  deflections.sub_grid_size == 2
+            assert  deflections.grid_size_sub == 2
 
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
 
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                              [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
             lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
@@ -794,7 +794,7 @@ class TestGridCoordsImageSub(object):
             assert deflections.grid_coords[1, 0] == pytest.approx(np.array([-3.0 * 0.707, -3.0 * 0.707]), 1e-2)
             assert deflections.grid_coords[1, 1] == pytest.approx(np.array([-3.0 * 0.707, -3.0 * 0.707]), 1e-2)
 
-            assert deflections.sub_grid_size == 2
+            assert deflections.grid_size_sub == 2
 
 
     class TestSetupTracedGrid:
@@ -804,7 +804,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                              [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.setup_deflections_grid(galaxies=[galaxy_mass_sis])
 
@@ -815,14 +815,14 @@ class TestGridCoordsImageSub(object):
             assert grid_traced.grid_coords[1,0] == pytest.approx(np.array([-1.0+0.707, -1.0+0.707]), 1e-2)
             assert grid_traced.grid_coords[1,1] == pytest.approx(np.array([-1.0+0.707, -1.0+0.707]), 1e-2)
 
-            assert grid_traced.sub_grid_size == 2
+            assert grid_traced.grid_size_sub == 2
 
         def test_three_identical_lenses__deflection_angles_triple(self, galaxy_mass_sis):
 
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                              [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.setup_deflections_grid(galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
 
@@ -833,14 +833,14 @@ class TestGridCoordsImageSub(object):
             assert grid_traced.grid_coords[1,0] == pytest.approx(np.array([-1.0 + 3.0*0.707, -1.0 + 3.0*0.707]), 1e-2)
             assert grid_traced.grid_coords[1,1] == pytest.approx(np.array([-1.0 + 3.0*0.707, -1.0 + 3.0*0.707]), 1e-2)
 
-            assert  grid_traced.sub_grid_size == 2
+            assert  grid_traced.grid_size_sub == 2
 
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
 
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                              [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
 
             lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
@@ -853,7 +853,7 @@ class TestGridCoordsImageSub(object):
             assert grid_traced.grid_coords[1, 0] == pytest.approx(np.array([-1.0 + 3.0 * 0.707, -1.0 + 3.0 * 0.707]), 1e-2)
             assert grid_traced.grid_coords[1, 1] == pytest.approx(np.array([-1.0 + 3.0 * 0.707, -1.0 + 3.0 * 0.707]), 1e-2)
 
-            assert deflections.sub_grid_size == 2
+            assert deflections.grid_size_sub == 2
 
 
 class TestGridCoordsBlurring(object):
@@ -1060,17 +1060,17 @@ class TestGridMapperDataTo2D(object):
             assert (mapper == mapper_from_mask.data_to_2d).all()
         
 
-class TestGridMapperSparse(object):
+class TestGridMapperCluster(object):
 
 
     class TestConstructor:
 
-        def test__simple_mappeer_input__sets_up_grid_in_attributes(self):
+        def test__simple_mapper_input__sets_up_grid_in_attributes(self):
 
             sparse_to_image = np.array([1, 2, 3, 5])
             image_to_sparse = np.array([6, 7, 2, 3])
 
-            analysis_mapper = grids.GridMapperSparse(sparse_to_image, image_to_sparse)
+            analysis_mapper = grids.GridMapperClustering(sparse_to_image, image_to_sparse)
 
             assert (analysis_mapper.sparse_to_image == np.array([1, 2, 3, 5])).all()
             assert (analysis_mapper.image_to_sparse == np.array([6, 7, 2, 3])).all()
@@ -1088,9 +1088,9 @@ class TestGridMapperSparse(object):
 
             sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
-            analysis_mapper = grids.GridMapperSparse(sparse_to_image, image_to_sparse)
+            analysis_mapper = grids.GridMapperClustering(sparse_to_image, image_to_sparse)
 
-            analysis_mapper_from_mask = grids.GridMapperSparse.from_mask(mask, sparse_grid_size=1)
+            analysis_mapper_from_mask = grids.GridMapperClustering.from_mask(mask, cluster_grid_size=1)
 
             assert (analysis_mapper.sparse_to_image == analysis_mapper_from_mask.sparse_to_image).all()
 

@@ -37,7 +37,7 @@ def all_grids():
     blurring_grid_coords = np.array([[1.0, 0.0]])
 
     grid = grids.GridCoordsImage(regular_grid_coords)
-    sub_grid = grids.GridCoordsImageSub(sub_grid_coords, grid_sub_size=2)
+    sub_grid = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
     blurring_grid = grids.GridCoordsBlurring(blurring_grid_coords)
 
     all_grids = grids.GridCoordsCollection(grid, sub_grid, blurring_grid)
