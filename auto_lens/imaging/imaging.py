@@ -769,7 +769,7 @@ class Mask(DataGrid):
         """
         pixels = self.pixels_in_mask
 
-        grid = np.zeros(shape=(pixels, 2))
+        grid = np.zeros(shape=(pixels, 2), dtype='int')
         pixel_count = 0
 
         for y in range(self.pixel_dimensions[0]):
@@ -797,10 +797,10 @@ class Mask(DataGrid):
 
         Returns
         -------
-        sparse_to_image : ndarray
+        clustering_to_image : ndarray
             The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
             of the image pixel in the mask.
-        image_to_sparse : ndarray
+        image_to_clustering : ndarray
             The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D \
             index of the sparse pixel in sparse_pixel arrays.
         """
@@ -881,7 +881,7 @@ class Mask(DataGrid):
     def compute_sparse_index_image(self, sparse_mask):
         """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
     
-         This is used for computing the image_to_sparse vector, whereby each image pixel is paired to the sparse pixel \
+         This is used for computing the image_to_clustering vector, whereby each image pixel is paired to the sparse pixel \
          in this image via a neighbor search."""
     
         sparse_index_2d = np.zeros(self.pixel_dimensions)
@@ -908,7 +908,7 @@ class Mask(DataGrid):
     
         Returns
         -------
-        sparse_to_image : ndarray
+        clustering_to_image : ndarray
             The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
             of the image pixel in the self.
         """
@@ -943,7 +943,7 @@ class Mask(DataGrid):
     
         Returns
         -------
-        image_to_sparse : ndarray
+        image_to_clustering : ndarray
             The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D \
             index of the sparse pixel in sparse_pixel arrays.
     
