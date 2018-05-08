@@ -67,8 +67,8 @@ class SimulateImage(imaging.Image):
     #    self.estimate_signal_to_noise_ratio_in_simulated_image()
 
     @classmethod
-    def from_fits(cls, path, filename, hdu, pixel_scale, psf=None, exposure_time=0.0, background_noise=0.0,
-                  noise_seed=-1):
+    def from_fits(cls, path, filename, hdu, pixel_scale, exposure_time, sim_optics=None, sim_poisson_noise=None,
+                 sim_background_noise=None, noise_seed=-1):
         """
         Loads the image data from a .fits file.
 
@@ -88,7 +88,8 @@ class SimulateImage(imaging.Image):
             An estimate of the signal_to_noise_ratio level in the background sky (electrons per second).
         """
         data = imaging.numpy_array_from_fits(path + filename, hdu)
-        return SimulateImage(data, pixel_scale, psf, exposure_time, background_noise, noise_seed)
+        return SimulateImage(data, pixel_scale, exposure_time, sim_optics, sim_poisson_noise, sim_background_noise,
+                             noise_seed)
 
     # TODO : These will ultimately removed to the Data classed, which this routine inherites from
 
