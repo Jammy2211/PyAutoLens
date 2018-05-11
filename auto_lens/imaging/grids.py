@@ -47,7 +47,7 @@ class GridCoordsCollection(object):
         return GridCoordsCollection(image, sub, blurring)
 
     def setup_all_deflections_grids(self, galaxies):
-        """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies) \
+        """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies)
         and set these up as a new collection of grids."""
 
         image = self.image.setup_deflections_grid(galaxies)
@@ -58,7 +58,7 @@ class GridCoordsCollection(object):
 
     def setup_all_traced_grids(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
-        
+
         image = self.image.setup_traced_grid(deflections.image)
         sub = self.sub.setup_traced_grid(deflections.sub) if self.sub is not None else None
         blurring = self.blurring.setup_traced_grid(deflections.blurring) if self.blurring is not None else None
@@ -69,17 +69,17 @@ class GridCoordsCollection(object):
 class GridCoords(np.ndarray):
 
     def __new__(cls, grid_coords):
-        """Abstract base class for a set of grid coordinates, which store the arc-second coordinates of different \
+        """Abstract base class for a set of grid coordinates, which store the arc-second coordinates of different
         regions of an image. These are the coordinates used to perform ray-tracing and lensing analysis.
 
-        Different grids are used to represent different regions of an image, thus controlling different aspects of the \
-        analysis. For example, the image-sub coordinates are used to compute images on a uniform sub-grid, whereas \
-        the blurring coordinates compute images in the areas which are outside the image-mask but close enough that \
+        Different grids are used to represent different regions of an image, thus controlling different aspects of the
+        analysis. For example, the image-sub coordinates are used to compute images on a uniform sub-grid, whereas
+        the blurring coordinates compute images in the areas which are outside the image-mask but close enough that
         a fraction of their light is blurred into the masked region by the PSF.
 
-        Each grid is stored as a structured array of coordinates, chosen for efficient ray-tracing \
-        calculations. Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an \
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+        Each grid is stored as a structured array of coordinates, chosen for efficient ray-tracing
+        calculations. Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an
+        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
         also counted from the top-left.
 
         See *GridCoordsRegular* and *GridCoordsSub* for an illustration of each grid.
@@ -90,18 +90,18 @@ class GridCoords(np.ndarray):
 class GridCoordsRegular(GridCoords):
 
     def __new__(cls, grid_coords):
-        """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
+        """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates
         are represented by the value at the centre of the pixel.
 
-        Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an \
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+        Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an
+        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
         also counted from the top-left.
 
-        A regular *grid_coords* is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps \
-        to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
+        A regular *grid_coords* is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps
+        to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value
         [3,1] gives the 4th image pixel's y coordinate.
 
-        Below is a visual illustration of a regular grid, where a total of 10 pixels are unmasked and therefore \
+        Below is a visual illustration of a regular grid, where a total of 10 pixels are unmasked and therefore
         included in the grid.
 
         |x|x|x|x|x|x|x|x|x|x|
