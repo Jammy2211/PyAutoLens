@@ -41,7 +41,10 @@ class Galaxy(object):
         intensity : float
             The summed values of intensity at the given image_grid
         """
-        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
+        if self.light_profiles is not None:
+            return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
+        else:
+            return 0.0
 
     def intensity_at_coordinates_individual(self, coordinates):
         """
@@ -204,7 +207,7 @@ class Galaxy(object):
         """
         return list(map(lambda p: p.potential_at_coordinates(coordinates), self.mass_profiles))
 
-    def deflection_angles_at_coordinates(self, coordinates):
+    def deflections_at_coordinates(self, coordinates):
         """
         Compute the summed deflection angles of the galaxy's mass profiles at a given set of image_grid.
 
@@ -220,7 +223,7 @@ class Galaxy(object):
         The summed values of deflection angles at the given image_grid.
         """
         if self.mass_profiles is not None:
-            return sum(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles))
+            return sum(map(lambda p: p.deflections_at_coordinates(coordinates), self.mass_profiles))
         else:
             return np.array([0.0, 0.0])
 
@@ -239,40 +242,7 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given image_grid.
         """
-        return np.asarray(list(map(lambda p: p.deflection_angles_at_coordinates(coordinates), self.mass_profiles)))
-
-    # TODO : I don't expect these to be the best way to do this - I'm just getting them up so I can develop the \
-    # TODO : ray_tracing module. I'm relying on your coding trickery to come up with a neat way of computing light and \
-    # TODO : mass profiles given a NumPy array.
-
-    # TODO : I'm expecting there'll be a general solution to performing the calculations below, which can go somewhere \
-    # TODO : in the profiles module
-
-    # TODO : If we require bespoke routines for each structure, we could make them class methods in the analysis_data \
-    # TODO : module, e.g. AnalysisCoordinates.compute_deflection_angles(galaxy) and AnalysisSubCoordinates.compute_defl...
-
-    def deflection_angles_array(self, coordinates):
-        """Compute the deflections angles for a mass profile, at a set of image_grid using the analysis_data structure.
-        """
-        deflection_angles = np.zeros(coordinates.shape)
-
-        for defl_count, coordinate in enumerate(coordinates):
-            deflection_angles[defl_count, :] = self.deflection_angles_at_coordinates(coordinates=coordinate)
-
-        return deflection_angles
-
-    def deflection_angles_sub_array(self, sub_coordinates):
-        """Compute the deflections angles for a mass profile, at a set of sub_grid image_grid using the analysis_data \
-        structure
-        """
-        deflection_angles = np.zeros(sub_coordinates.shape)
-
-        for sub_count, image_pixel in enumerate(sub_coordinates):
-            for defl_count, sub_coordinate in enumerate(image_pixel):
-                deflection_angles[sub_count, defl_count, :] = self.deflection_angles_at_coordinates(
-                    coordinates=sub_coordinate)
-
-        return deflection_angles
+        return np.asarray(list(map(lambda p: p.deflections_at_coordinates(coordinates), self.mass_profiles)))
 
     def dimensionless_mass_within_circles(self, radius):
         """
