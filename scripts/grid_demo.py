@@ -43,13 +43,13 @@ coordinates = np.array([[1.0, 1.0],
                         [2.0, 2.0]])
 image_grid = grids.GridCoordsImage(grid_coords=coordinates)
 print('--- VALUES OF GRID COORDINATES [(1.0, 1.0), (2.0, 2.0)] ---')
-print('grid_coords coordinates = ', image_grid.grid_coords, '\n')
+print('grid_coords coordinates = ', image_grid, '\n')
 
 # We can have multiple grids (which are different to the image grid_coords we're using here). Thus, before ray-tracing, we
 # combine all of our grids into a grid_coords collection. This doesn't change any of aspect of this tutorial.
 grid_collection = grids.GridCoordsCollection(image=image_grid)
 print('--- VALUES OF GRID COLLECTION COORDINATES [(1.0, 1.0), (2.0, 2.0)] ---')
-print('grid_coords collection coordinates = ', grid_collection.image.grid, '\n')
+print('grid_coords collection coordinates = ', grid_collection.image, '\n')
 
 # Now lets pass our lens galaxy, source galaxy and grid_coords collection through the ray tracing module.
 # We'll assume only one image-plane and one source-plane (multiple planes will be added to the code in the future).
@@ -58,22 +58,22 @@ ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy], source_
 
 # The ray tracing sets up an image plane, whose coordinates are our original coordinates.
 print('--- VALUES OF IMAGE COORDINATES, DEFLS AND SOURCE COORDINATES ---')
-print('image plane grid_coords coordinates = ', ray_trace.image_plane.grids.image.grid)
+print('image plane grid_coords coordinates = ', ray_trace.image_plane.grids.image)
 
 # The image plane is also automatically set up with deflection angles, using the lens galaxy mass profile:
-print('image plane deflection angles = ', ray_trace.image_plane.deflections.image.grid)
+print('image plane deflection angles = ', ray_trace.image_plane.deflections.image)
 
 # And a source plane is set up too, which is the image plane coordinates - the image plane deflection angles
-print('source plane grid_coords coordinates =', ray_trace.source_plane.grids.image.grid, '\n')
+print('source plane grid_coords coordinates =', ray_trace.source_plane.grids.image, '\n')
 
 # If we pass the same lens galaxy to the image plane 3 times, notice that the deflection angles triple (as we are
 # basically including the same mass profile 3 times)
 print('--- VALUES OF IMAGE COORDINATES, DEFLS AND SOURCE COORDINATES FOR X3 LENS GALAXY ---')
 ray_trace_x3 = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy, lens_galaxy, lens_galaxy],
                                                source_galaxies=[source_galaxy], image_plane_grids=grid_collection)
-print('image plane x3 grid_coords coordinates = ', ray_trace_x3.image_plane.grids.image.grid)
-print('image plane x3 deflection angles = ', ray_trace_x3.image_plane.deflections.image.grid)
-print('source plane x3 grid_coords coordinates =', ray_trace_x3.source_plane.grids.image.grid, '\n')
+print('image plane x3 grid_coords coordinates = ', ray_trace_x3.image_plane.grids.image)
+print('image plane x3 deflection angles = ', ray_trace_x3.image_plane.deflections.image)
+print('source plane x3 grid_coords coordinates =', ray_trace_x3.source_plane.grids.image, '\n')
 
 # We can now go to any plane, and compute a model image of the galaxy(s) in that plane using their light profiles.
 galaxy_image_plane = ray_trace.image_plane.generate_image_of_galaxies()
