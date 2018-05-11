@@ -5,6 +5,34 @@ import numpy as np
 from itertools import count
 
 
+class LightProfileSettings(object):
+
+    def __init__(self, iterative_image_plane=True, iterative_precision=1e-4, sub_grid_plane=True,
+                 image_plane_override=False):
+        """The settings of a light profile, controlling the precision to which it is calculated and its behaviour in
+         the ray-tracing calculation.
+
+         Parameters
+         -----------
+         iterative_image_plane : bool
+            *True* - If the light profile is in the image-plane, it is evaluated using an iterative sub-grid_coords.
+            *False* - Evaluate the light profile on the grid_coords defined by the variable *sub_grid_plane*.
+         iterative_precision : float
+            The precision the light profile intensities are calculated too on the iterative grid_coords (image-plane only).
+         sub_grid_plane : bool
+            *True* - Evaluate the light profile using a sub-grid_coords.
+            *False* - Evaluate the light profile using an image-grid_coords.
+        image_plane_override : bool
+            *True* - Evaluate the light profile in the image-plane, irrespective of it's true plane (e.g. lensed \
+            quasar evaluation in the image-plane).
+            *False* - Evaluate the light profile in its true plane.
+        """
+        self.iterative_image_plane = iterative_image_plane
+        self.iterative_precision = iterative_precision
+        self.sub_grid_plane = sub_grid_plane
+        self.image_plane_override = image_plane_override
+
+
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
@@ -70,7 +98,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     _ids = count()
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, settings=LightProfileSettings()):
         """
 
         Parameters
@@ -85,6 +113,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+        self.settings = settings
         self.component_number = next(self._ids)
 
     @property
@@ -138,7 +167,7 @@ class EllipticalSersic(EllipticalLightProfile):
     """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0):
+                 sersic_index=4.0, settings=LightProfileSettings()):
         """
 
         Parameters
@@ -156,7 +185,7 @@ class EllipticalSersic(EllipticalLightProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, settings)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
@@ -227,7 +256,8 @@ class EllipticalExponential(EllipticalSersic):
 
     It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 1"""
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 settings=LightProfileSettings()):
         """
 
         Parameters
@@ -243,7 +273,7 @@ class EllipticalExponential(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this model_mapper
         """
-        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
+        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0, settings)
 
     @property
     def parameter_labels(self):
@@ -256,7 +286,8 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 
     It is a subset of the Sersic profiles, corresponding exactly to the solution sersic_index = 4."""
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 settings=LightProfileSettings()):
         """
 
         Parameters
@@ -272,7 +303,8 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this model_mapper
         """
-        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
+        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0,
+                                                       settings)
 
     @property
     def parameter_labels(self):
@@ -285,7 +317,8 @@ class EllipticalCoreSersic(EllipticalSersic):
     these central regions to behave instead as a power-law."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
+                 sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0,
+                 settings=LightProfileSettings()):
         """
 
         Parameters
@@ -311,7 +344,8 @@ class EllipticalCoreSersic(EllipticalSersic):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
+        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index,
+                                                   settings)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha
