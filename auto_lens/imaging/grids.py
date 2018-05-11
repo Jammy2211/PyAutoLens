@@ -787,8 +787,7 @@ class GridBorder(geometry_profiles.Profile):
 
         if radius > border_radius:
             return border_radius / radius
-        else:
-            return 1.0
+        return 1.0
 
     def relocated_coordinate(self, coordinate):
         """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
