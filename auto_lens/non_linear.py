@@ -175,10 +175,10 @@ class MultiNestResults(NonLinearDirectory):
         self.files = MultiNestFiles(self.obj_name, self.results_path)
         self.pdf = getdist.mcsamples.loadMCSamples(self.files.weighted_samples)
 
-        self.setup_most_likely_and_probable()
+        self.setup_most_likely_and_probable_models()
         self.setup_1d_upper_and_lower_limits(limit)
 
-    def setup_most_likely_and_probable(self):
+    def setup_most_likely_and_probable_models(self):
         """Setup the most likely and probable models. This is performed as both 1D vectors of all parameters and a \
         model_mapper instance of each model.
 
@@ -188,16 +188,50 @@ class MultiNestResults(NonLinearDirectory):
         The most likely model is defined as the model which gives the highest likelihood, regardless of the inferred
         posterior distribution.
         """
-        self._most_probable = self.read_most_probable()
-        self._most_likely = self.read_most_likely()
+        self._most_probable_model = self.read_most_probable_model()
+        self._most_likely_model = self.read_most_likely_model()
 
-        self.most_probable = self.model_mapper.from_physical_vector(self._most_probable)
-        self.most_likely = self.model_mapper.from_physical_vector(self._most_likely)
+        self.most_probable_model = self.model_mapper.from_physical_vector(self._most_probable_model)
+        self.most_likely_model = self.model_mapper.from_physical_vector(self._most_likely_model)
 
-    def read_most_probable(self):
+    def setup_1d_upper_and_lower_limits(self, limit):
+        """Setup 1D vectors of the upper and lower limits of the multinest results.
+
+        These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
+        each parameter estimate
+
+        Parameters
+        -----------
+        limit : float
+            The limit on the sample to calculate.
+        """
+        self.densities_1d = list(map(lambda p : self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
+
+        limits = list(map(lambda p : p.getLimits(limit), self.densities_1d))
+
+        self._lower_limits_1d = list(map(lambda p : p[0], limits))
+        self._upper_limits_1d = list(map(lambda p : p[1], limits))
+
+    def setup_weighted_sample_model(self, index):
+        """Setup a model instance of a weighted sample, including its weight and likelihood.
+
+        Parameters
+        -----------
+        index : int
+            The index of the weighted sample to return.
+        """
+        model, weight, likelihood = self.read_weighted_sample_model(index)
+
+        self._weighted_sample_model = model
+
+        self.weighted_sample_model = self.model_mapper.from_physical_vector(model)
+        self.weighted_sample_weight = weight
+        self.weighted_sample_likelihood = likelihood
+
+    def read_most_probable_model(self):
         return self.read_vector_from_summary(self.files.summary, self.total_parameters, 0)
 
-    def read_most_likely(self):
+    def read_most_likely_model(self):
         return self.read_vector_from_summary(self.files.summary, self.total_parameters, 28)
 
     @staticmethod
@@ -232,23 +266,18 @@ class MultiNestResults(NonLinearDirectory):
 
         return vector
 
-    def setup_1d_upper_and_lower_limits(self, limit):
-        """Setup 1D vectors of the upper and lower limits of the multinest results.
+    def read_weighted_sample_model(self, index):
+        """From a weighted sample return the model, weight and likelihood hood.
 
-        These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
-        each parameter estimate
+        NOTE: GetDist reads the log likelihood from the weighted_sample.txt file (column 2), which are defined as \
+        -2.0*likelihood. This routine converts these back to likelihood.
 
         Parameters
         -----------
-        limit : float
-            The limit on the sample to calculate.
+        index : int
+            The index of the weighted sample to return.
         """
-        self.densities_1d = list(map(lambda p : self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
-
-        limits = list(map(lambda p : p.getLimits(limit), self.densities_1d))
-
-        self._lower_limits_1d = list(map(lambda p : p[0], limits))
-        self._upper_limits_1d = list(map(lambda p : p[1], limits))
+        return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5*self.pdf.loglikes[index]
 
 
 class MultiNestException(Exception):
