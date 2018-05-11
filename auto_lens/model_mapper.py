@@ -96,11 +96,18 @@ class ModelMapper(object):
         """
 
         arg_spec = inspect.getargspec(cls.__init__)
+
         try:
             defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
         except TypeError:
             defaults = {}
+
         args = arg_spec.args[1:]
+
+        # TODO : Better way to filter defaults / args?
+
+        if 'settings' in defaults: del defaults['settings']
+        if 'settings' in args: args.remove('settings')
 
         prior_model = PriorModel(cls)
 

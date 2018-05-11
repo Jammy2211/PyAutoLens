@@ -52,15 +52,15 @@ def kmeans_cluster(coordinates, n_clusters):
     return kmeans.fit(coordinates)
 
 def setup_voronoi(coordinates):
-    """Setup a Voronoi grid for a given set of image_grid, as well as a list of each Voronoi cell's neighboring \
+    """Setup a Voronoi grid_coords for a given set of image_grid, as well as a list of each Voronoi cell's neighboring \
      Voronoi cells.
 
-    This is used to compute the Voronoi grid of the source-pixel centers of the *AmorphousPixelization*.
+    This is used to compute the Voronoi grid_coords of the source-pixel centers of the *AmorphousPixelization*.
 
     Parameters
     ----------
     coordinates : ndarray
-        The x and y image_grid to derive the Voronoi grid.
+        The x and y image_grid to derive the Voronoi grid_coords.
     """
     voronoi = scipy.spatial.Voronoi(coordinates, qhull_options='Qbb Qc Qx Qm')
 
@@ -87,7 +87,7 @@ def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, imag
         image_total : int
             The total number of image_grid pixels in the image_grid.
         sub_total : int
-            The total number of sub_grid pixels in the image_grid sub_grid-grid.
+            The total number of sub_grid pixels in the image_grid sub_grid-grid_coords.
         source_centers: [(float, float)
             The source-pixels centers the sub_grid image_grid-pixel image_grid are matched with.
 
@@ -116,19 +116,19 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
                                                       source_neighbors, image_to_sparse, sparse_to_source):
     """ Match a set of sub_grid image_grid-pixel image_grid to their closest source-pixel, using the source-pixel centers (x,y).
 
-        This method uses a sparsely sampled grid of sub_grid image_grid-pixel image_grid with known image_grid-pixel to source-pixel \
+        This method uses a sparsely sampled grid_coords of sub_grid image_grid-pixel image_grid with known image_grid-pixel to source-pixel \
         pairings and the source-pixels neighbors to speed up the function. This is optimal when the number of sub_grid \
-        image_grid-pixels or source-pixels is large. Thus, the sparse_grid grid of sub_grid must have had a source \
+        image_grid-pixels or source-pixels is large. Thus, the sparse_grid grid_coords of sub_grid must have had a source \
         pixelization derived (e.g. using the KMeans class) and the neighbors of each source-pixel must be known \
         (e.g. using the Voronoi class). Both must have been performed prior to this function call.
 
         In a realistic lens pixelization, the sparse_grid image_grid will correspond to the center of each image_grid pixel \
-        (traced to the source-plane) or a sparser grid of image_grid-pixels. The sub_grid will be the sub_grid \
+        (traced to the source-plane) or a sparser grid_coords of image_grid-pixels. The sub_grid will be the sub_grid \
         image_grid-pixels (again, traced to the source-plane). A benefit of this is the source-pixelization (e.g. using \
         KMeans) will be dervied using significantly fewer sub_grid, offering run-time speedup.
 
         In the routine below, some variables and function names refer to a 'sparse_source_'. This term describes a \
-        source-pixel that we have paired to a sub_coordinate using the sparse_grid grid of image_grid pixels. Thus, it may not \
+        source-pixel that we have paired to a sub_coordinate using the sparse_grid grid_coords of image_grid pixels. Thus, it may not \
         actually be that sub_coordinate's closest source-pixel (the routine will eventually determine this).
 
         Parameters
@@ -138,11 +138,11 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
         image_total : int
             The total number of image_grid pixels in the image_grid.
         sub_total : int
-            The total number of sub_grid pixels in the image_grid sub_grid-grid.
+            The total number of sub_grid pixels in the image_grid sub_grid-grid_coords.
         source_centers: [(float, float)]
             The source_pixel centers the sub_grid are matched with.
         source_neighbors : [[]]
-            The neighboring source_pixels of each source_pixel, computed via the Voronoi grid (e.g. if the fifth source_pixel \
+            The neighboring source_pixels of each source_pixel, computed via the Voronoi grid_coords (e.g. if the fifth source_pixel \
             neighbors source_pixels 7, 9 and 44, source_neighbors[4] = [6, 8, 43])
         sub_to_sparse : [int]
             The index in sub_grid each sparse_grid sub_coordinate is closest too (e.g. if the fifth sparse_grid sub_coordinate \
