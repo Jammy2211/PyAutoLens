@@ -88,57 +88,49 @@ class GridCoords(np.ndarray):
 
 
 class GridCoordsRegular(GridCoords):
+    """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates
+       are represented by the value at the centre of the pixel.
 
-    def __new__(cls, grid_coords):
-        """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates
-        are represented by the value at the centre of the pixel.
+       Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an
+       image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
+       also counted from the top-left.
 
-        Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
-        also counted from the top-left.
+       A regular *grid_coords* is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps
+       to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value
+       [3,1] gives the 4th image pixel's y coordinate.
 
-        A regular *grid_coords* is a NumPy array of dimensions [image_pixels, 2]. Therefore, the first element maps
-        to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value
-        [3,1] gives the 4th image pixel's y coordinate.
+       Below is a visual illustration of a regular grid, where a total of 10 pixels are unmasked and therefore
+       included in the grid.
 
-        Below is a visual illustration of a regular grid, where a total of 10 pixels are unmasked and therefore
-        included in the grid.
+       |x|x|x|x|x|x|x|x|x|x|
+       |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+       |x|x|x|x|x|x|x|x|x|x|
+       |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
+       |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
+       |x|x|x|o|o|o|o|x|x|x|
+       |x|x|x|x|x|x|x|x|x|x|
+       |x|x|x|x|x|x|x|x|x|x|
+       |x|x|x|x|x|x|x|x|x|x|
+       |x|x|x|x|x|x|x|x|x|x|
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
-        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
-        |x|x|x|o|o|o|o|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+       This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted \
+       around the image.
 
-        This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted \
-        around the image.
+       pixel_scale = 1.0"
 
-        pixel_scale = 1.0"
+       <--- -ve  x  +ve -->
 
-        <--- -ve  x  +ve -->
-
-        |x|x|x|x|x|x|x|x|x|x|  ^   grid_coords[0] = [-0.5,  1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[1] = [ 0.5,  1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[2] = [-1.5,  0.5]
-        |x|x|x|x|0|1|x|x|x|x| +ve  grid_coords[3] = [-0.5,  0.5]
-        |x|x|x|2|3|4|5|x|x|x|  y   grid_coords[4] = [ 0.5,  0.5]
-        |x|x|x|6|7|8|9|x|x|x| -ve  grid_coords[5] = [ 1.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[6] = [-1.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[7] = [-0.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the regular grid.
-        """
-        return super(GridCoordsRegular, cls).__new__(cls, grid_coords)
+       |x|x|x|x|x|x|x|x|x|x|  ^   grid_coords[0] = [-0.5,  1.5]
+       |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[1] = [ 0.5,  1.5]
+       |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[2] = [-1.5,  0.5]
+       |x|x|x|x|0|1|x|x|x|x| +ve  grid_coords[3] = [-0.5,  0.5]
+       |x|x|x|2|3|4|5|x|x|x|  y   grid_coords[4] = [ 0.5,  0.5]
+       |x|x|x|6|7|8|9|x|x|x| -ve  grid_coords[5] = [ 1.5,  0.5]
+       |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[6] = [-1.5, -0.5]
+       |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[7] = [-0.5, -0.5]
+       |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
+       |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
+       """
 
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
@@ -327,18 +319,10 @@ class GridCoordsSub(GridCoords):
 
 
 class GridCoordsImage(GridCoordsRegular):
-
-    def __new__(cls, grid_coords):
-        """The coordinates of each pixel in an image, stored using a regular grid.
-
-        See *GridCoordsRegular* for more details.
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the image, on a regular grid.
-        """
-        return super(GridCoordsImage, cls).__new__(cls, grid_coords)
+    """
+    The coordinates of each pixel in an image, stored using a regular grid.
+    See *GridCoordsRegular* for more details.
+    """
 
     @classmethod
     def from_mask(cls, mask):
@@ -373,18 +357,7 @@ class GridCoordsImage(GridCoordsRegular):
 
 
 class GridCoordsImageSub(GridCoordsSub):
-
-    def __new__(cls, grid_coords, grid_size_sub):
-        """The sub-coordinates of each pixel in an image, stored using a sub-grid.
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the image sub-grid, on a sub-grid.
-        grid_size_sub : int
-            The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
-        """
-        return super(GridCoordsImageSub, cls).__new__(cls, grid_coords, grid_size_sub)
+    """The sub-coordinates of each pixel in an image, stored using a sub-grid."""
 
     @classmethod
     def from_mask(cls, mask, grid_size_sub):
@@ -422,18 +395,9 @@ class GridCoordsImageSub(GridCoordsSub):
 
 
 class GridCoordsBlurring(GridCoordsRegular):
-
-    def __new__(cls, grid_coords):
-        """ The coordinates of each blurring pixel in an image, stored using a regular-grid. The blurring grid \
-        contains all pixels which are outside the mask have a fraction of their light blurred into the mask via \
-        PSF convolution.
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the blurring regions, on a regular grid.
-        """
-        return super(GridCoordsBlurring, cls).__new__(cls, grid_coords)
+    """ The coordinates of each blurring pixel in an image, stored using a regular-grid. The blurring grid \
+    contains all pixels which are outside the mask have a fraction of their light blurred into the mask via \
+    PSF convolution."""
 
     @classmethod
     def from_mask(cls, mask, psf_size):
