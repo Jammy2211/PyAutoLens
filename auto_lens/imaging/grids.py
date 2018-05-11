@@ -41,16 +41,8 @@ class GridCoordsCollection(object):
         """
 
         image = GridCoordsImage.from_mask(mask)
-
-        if grid_size_sub is None:
-            sub = None
-        elif grid_size_sub is not None:
-            sub = GridCoordsImageSub.from_mask(mask, grid_size_sub)
-
-        if blurring_size is None:
-            blurring = None
-        elif blurring_size is not None:
-            blurring = GridCoordsBlurring.from_mask(mask, blurring_size)
+        sub = GridCoordsImageSub.from_mask(mask, grid_size_sub) if grid_size_sub is not None else None
+        blurring = GridCoordsBlurring.from_mask(mask, blurring_size) if blurring_size is not None else None
 
         return GridCoordsCollection(image, sub, blurring)
 
@@ -59,32 +51,17 @@ class GridCoordsCollection(object):
         and set these up as a new collection of grids."""
 
         image = self.image.setup_deflections_grid(galaxies)
-
-        if self.sub is None:
-            sub = None
-        elif self.sub is not None:
-            sub = self.sub.setup_deflections_grid(galaxies)
-
-        if self.blurring is None:
-            blurring = None
-        elif self.blurring is not None:
-            blurring = self.blurring.setup_deflections_grid(galaxies)
+        sub = self.sub.setup_deflections_grid(galaxies) if self.sub is not None else None
+        blurring = self.blurring.setup_deflections_grid(galaxies) if self.blurring is not None else None
 
         return GridCoordsCollection(image, sub, blurring)
 
     def setup_all_traced_grids(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
+        
         image = self.image.setup_traced_grid(deflections.image)
-
-        if self.sub is None:
-            sub = None
-        elif self.sub is not None:
-            sub = self.sub.setup_traced_grid(deflections.sub)
-
-        if self.blurring is None:
-            blurring = None
-        elif self.blurring is not None:
-            blurring = self.blurring.setup_traced_grid(deflections.blurring)
+        sub = self.sub.setup_traced_grid(deflections.sub) if self.sub is not None else None
+        blurring = self.blurring.setup_traced_grid(deflections.blurring) if self.blurring is not None else None
 
         return GridCoordsCollection(image, sub, blurring)
 
@@ -171,8 +148,8 @@ class GridCoordsRegular(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                  output_shape=self.shape[0]), galaxies))
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                 output_shape=self.shape[0]), galaxies))
 
     def deflections_on_grid(self, galaxies):
         """Compute the deflection angle for each coordinate on the grid, using the mass-profile(s) of a set of \
@@ -183,8 +160,8 @@ class GridCoordsRegular(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                  output_shape=self.shape), galaxies))
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                 output_shape=self.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
@@ -311,8 +288,8 @@ class GridCoordsSub(GridCoords):
             The list of galaxies whose light profiles are used to compute the intensity at the grid coordinates.
         """
 
-        sub_intensities = sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                               output_shape=self.shape[0:2]), galaxies))
+        sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                            output_shape=self.shape[0:2]), galaxies))
 
         intensities = np.zeros(self.shape[0])
 
@@ -332,8 +309,8 @@ class GridCoordsSub(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
         """
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                  output_shape=self.shape), galaxies))
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                 output_shape=self.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
@@ -665,7 +642,7 @@ class GridMapperDataTo2D(np.ndarray):
         data_to_2d : ndarray
             Numpy array containing the pixel coordinates of each data point.
         """
-        mapper =  np.array(data_to_2d).view(cls)
+        mapper = np.array(data_to_2d).view(cls)
         mapper.dimensions = dimensions
         return mapper
 
