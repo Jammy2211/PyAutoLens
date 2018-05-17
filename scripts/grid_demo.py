@@ -32,7 +32,7 @@ print('deflecton angle of lens galaxy = ', lens_galaxy.deflections_at_coordinate
 
 # Now we'll make a source galaxy, which is just a light profile, and check it values are the same as above als.
 source_galaxy = galaxy.Galaxy(light_profiles=[sersic])
-print('--- VALUES OF SOURCE GALXY AT COORDINATES (1.0, 1.0) ---')
+print('--- VALUES OF SOURCE GALAXY AT COORDINATES (1.0, 1.0) ---')
 print('intensity of source galaxy = ', source_galaxy.intensity_at_coordinates(coordinates[0]), '\n')
 
 # Using just one set of coordinates and having to specify their index isn't ideal. Lets set up the coordinates as a
