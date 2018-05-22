@@ -4,7 +4,7 @@ import pytest
 from itertools import count
 from auto_lens import non_linear
 from auto_lens import model_mapper
-from auto_lens.profiles import geometry_profiles, light_profiles, mass_profiles
+from auto_lens.profiles import light_profiles, mass_profiles
 
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
