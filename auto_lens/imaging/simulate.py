@@ -108,6 +108,22 @@ class SimulateImage(imaging.Image):
         pyplot.show()
 
 
+# class SimulateOptics(object):
+#
+#     def __init__(self, psf):
+#         """Class to blur simulated image with a psf.
+#
+#         Parameters
+#         -----------
+#         psf : imaging.PSF
+#             The PSF.
+#         """
+#         self.psf = psf
+#
+#     def simulate_for_image(self, image):
+#         return self.psf.convolve_with_image(image)
+
+
 def poisson_noise(image, exposure_time, seed=-1):
     """
     Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
