@@ -154,6 +154,30 @@ class SimulatePoissonNoise(object):
         return image + self.poisson_noise_map
 
 
+def poisson_noise(image, exposure_time, seed=-1):
+    """
+    Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
+    distribution with mean 0.0.
+
+    Parameters
+    ----------
+    image : ndarray
+        The 2D image background noise is added to.
+    exposure_time : ndarray
+        The 2D array of pixel exposure times.
+    seed : int
+        The seed of the random number generator, used for the random noise maps.
+
+    Returns
+    -------
+    poisson_noise: ndarray
+        An array describing simulated poisson noise 
+    """
+    setup_random_seed(seed)
+    image_counts = imaging.electrons_per_second_to_counts(image, exposure_time)
+    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
+
+
 def background_noise(image, sigma, seed=-1):
     setup_random_seed(seed)
     background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
