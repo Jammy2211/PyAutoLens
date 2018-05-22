@@ -95,25 +95,25 @@ class TestSimulateImage(object):
             assert sim_image.sim_background_noise is None
 
 
-class TestSimulateOptics(object):
-    class TestSimulateForImage:
-
-        def test__simple_case__blurred_image_is_correct(self):
-            image = np.array(([0.0, 0.0, 0.0],
-                              [0.0, 1.0, 0.0],
-                              [0.0, 0.0, 0.0]))
-
-            psf = np.array(([0.0, 1.0, 0.0],
-                            [1.0, 2.0, 1.0],
-                            [0.0, 1.0, 0.0]))
-
-            sim_optics = simulate.SimulateOptics(psf=imaging.PSF(data=psf, pixel_scale=0.1))
-
-            sim_image_blurred = sim_optics.simulate_for_image(image)
-
-            assert (sim_image_blurred == np.array(([0.0, 1.0, 0.0],
-                                                   [1.0, 2.0, 1.0],
-                                                   [0.0, 1.0, 0.0]))).all()
+# class TestSimulateOptics(object):
+#     class TestSimulateForImage:
+#
+#         def test__simple_case__blurred_image_is_correct(self):
+#             image = np.array(([0.0, 0.0, 0.0],
+#                               [0.0, 1.0, 0.0],
+#                               [0.0, 0.0, 0.0]))
+#
+#             psf = np.array(([0.0, 1.0, 0.0],
+#                             [1.0, 2.0, 1.0],
+#                             [0.0, 1.0, 0.0]))
+#
+#             sim_optics = simulate.SimulateOptics(psf=imaging.PSF(data=psf, pixel_scale=0.1))
+#
+#             sim_image_blurred = simulate.(image)
+#
+#             assert (sim_image_blurred == np.array(([0.0, 1.0, 0.0],
+#                                                    [1.0, 2.0, 1.0],
+#                                                    [0.0, 1.0, 0.0]))).all()
 
 
 class TestSimulatePoissonNoise(object):
@@ -136,17 +136,18 @@ class TestSimulatePoissonNoise(object):
 
             exposure_time = imaging.ExposureTime.from_one_value(exposure_time=1.0, pixel_dimensions=image.shape,
                                                                 pixel_scale=0.1)
-            sim_poisson_image = image + simulate.poisson_noise(image, exposure_time.data, seed=1)
+            poisson_noise_map = simulate.poisson_noise(image, exposure_time.data, seed=1)
+            sim_poisson_image = image + poisson_noise_map
 
             assert sim_poisson_image.shape == (2, 2)
 
             # Use known noise map for given seed.
-            assert (sim_poisson.poisson_noise_map == np.array([[1, 0],
+            assert (poisson_noise_map == np.array([[1, 0],
                                                                [0, 4]])).all()
             assert (sim_poisson_image == np.array([[11, 0],
                                                    [0, 14]])).all()
 
-            assert (sim_poisson_image - sim_poisson.poisson_noise_map == image).all()
+            assert (sim_poisson_image - poisson_noise_map == image).all()
 
         def test__input_image_is_all_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(self):
 
@@ -155,19 +156,19 @@ class TestSimulatePoissonNoise(object):
 
             exposure_time = imaging.ExposureTime.from_one_value(exposure_time=1.0, pixel_dimensions=image.shape,
                                                                 pixel_scale=0.1)
-
-            sim_poisson_image = image + simulate.poisson_noise(image, exposure_time.data, seed=1)
+            poisson_noise_map = simulate.poisson_noise(image, exposure_time.data, seed=1)
+            sim_poisson_image = image + poisson_noise_map
 
             assert sim_poisson_image.shape == (2, 2)
 
             # Use known noise map for given seed.
-            assert (sim_poisson.poisson_noise_map == np.array([[1, 4],
+            assert (poisson_noise_map == np.array([[1, 4],
                                                                [3, 1]])).all()
 
             assert (sim_poisson_image == np.array([[11, 14],
                                                    [13, 11]])).all()
 
-            assert (sim_poisson_image - sim_poisson.poisson_noise_map == image).all()
+            assert (sim_poisson_image - poisson_noise_map == image).all()
 
         def test__input_image_has_1000000s__exposure_times_is_1s__these_give_positive_noise_values_near_1000(self):
 
@@ -176,18 +177,20 @@ class TestSimulatePoissonNoise(object):
 
             exposure_time = imaging.ExposureTime(data=np.ones((2, 2)), pixel_scale=0.1)
 
-            sim_poisson_image = image + simulate.poisson_noise(image, exposure_time.data, seed=2)
+            poisson_noise_map = simulate.poisson_noise(image, exposure_time.data, seed=2)
+
+            sim_poisson_image = image + poisson_noise_map
 
             assert sim_poisson_image.shape == (2, 2)
 
             # Use known noise map for given seed.
-            assert (sim_poisson.poisson_noise_map == np.array([[571, 0],
+            assert (poisson_noise_map == np.array([[571, 0],
                                                                [0, -441]])).all()
 
             assert (sim_poisson_image == np.array([[10000000.0 + 571, 0.],
                                                    [0., 10000000.0 - 441]])).all()
 
-            assert (sim_poisson_image - sim_poisson.poisson_noise_map == image).all()
+            assert (sim_poisson_image - poisson_noise_map == image).all()
 
         def test__two_images_same_in_counts_but_different_in_electrons_per_sec__noise_related_by_exposure_times(self):
             image_0 = np.array([[10., 0.],
