@@ -23,9 +23,10 @@ class TraceImageAndSource(object):
 
         self.source_plane = SourcePlane(source_galaxies, source_plane_grids)
 
-    def generate_image_of_galaxies(self):
+    def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies over the entire ray trace."""
-        return self.image_plane.generate_image_of_galaxies() + self.source_plane.generate_image_of_galaxies()
+        return self.image_plane.generate_image_of_galaxy_light_profiles() + \
+               self.source_plane.generate_image_of_galaxy_light_profiles()
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
