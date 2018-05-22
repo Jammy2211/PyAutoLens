@@ -333,11 +333,14 @@ class Galaxy(object):
             The number of bins used to compute and plot the mass.
         """
 
+        # TODO: This function seems to be broken
+
         radii = list(np.linspace(1e-4, maximum_radius, number_bins + 1))
 
         for i in range(number_bins):
             annuli_area = (math.pi * radii[i + 1] ** 2 - math.pi * radii[i] ** 2)
 
+            # TODO: Densities is being replaced each iteration of the loop??
             densities = ((self.mass_within_circles_individual(radii[i + 1]) -
                           self.mass_within_circles_individual(radii[i])) /
                          annuli_area)
