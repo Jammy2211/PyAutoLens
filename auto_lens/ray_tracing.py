@@ -3,8 +3,8 @@ class TraceImageAndSource(object):
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
 
-        This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need \
-        known redshift measurements. For computational efficiency, it is recommend this ray-tracing class is used for \
+        This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
+        known redshift measurements. For computational efficiency, it is recommend this ray-tracing class is used for
         lens modeling, provided cosmological information is not necessary.
 
         Parameters
@@ -24,15 +24,15 @@ class TraceImageAndSource(object):
         self.source_plane = SourcePlane(source_galaxies, source_plane_grids)
 
     def generate_image_of_galaxies(self):
-        """Generate the image of the galaxies over the entire ray trace.
-        """
+        """Generate the image of the galaxies over the entire ray trace."""
         return self.image_plane.generate_image_of_galaxies() + self.source_plane.generate_image_of_galaxies()
 
 
 class Plane(object):
 
     def __init__(self, galaxies, grids):
-        """Represents a plane of galaxies and grids.
+        """
+        Represents a plane of galaxies and grids.
 
         Parameters
         ----------
