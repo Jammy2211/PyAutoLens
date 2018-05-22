@@ -685,8 +685,6 @@ class Mask(DataGrid):
 
         Parameters
         ----------
-        mask : imaging.Mask
-            The image mask containing the data_to_pixels the image sub-grid_coords is computed for and the image's data grid_coords.
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """

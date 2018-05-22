@@ -41,16 +41,8 @@ class GridCoordsCollection(object):
         """
 
         image = GridCoordsImage.from_mask(mask)
-
-        if grid_size_sub is None:
-            sub = None
-        elif grid_size_sub is not None:
-            sub = GridCoordsImageSub.from_mask(mask, grid_size_sub)
-
-        if blurring_size is None:
-            blurring = None
-        elif blurring_size is not None:
-            blurring = GridCoordsBlurring.from_mask(mask, blurring_size)
+        sub = GridCoordsImageSub.from_mask(mask, grid_size_sub) if grid_size_sub is not None else None
+        blurring = GridCoordsBlurring.from_mask(mask, blurring_size) if blurring_size is not None else None
 
         return GridCoordsCollection(image, sub, blurring)
 
@@ -59,32 +51,17 @@ class GridCoordsCollection(object):
         and set these up as a new collection of grids."""
 
         image = self.image.setup_deflections_grid(galaxies)
+        sub = self.sub.setup_deflections_grid(galaxies) if self.sub is not None else None
 
-        if self.sub is None:
-            sub = None
-        elif self.sub is not None:
-            sub = self.sub.setup_deflections_grid(galaxies)
-
-        if self.blurring is None:
-            blurring = None
-        elif self.blurring is not None:
-            blurring = self.blurring.setup_deflections_grid(galaxies)
+        blurring = self.blurring.setup_deflections_grid(galaxies) if self.blurring is not None else None
 
         return GridCoordsCollection(image, sub, blurring)
 
     def setup_all_traced_grids(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
         image = self.image.setup_traced_grid(deflections.image)
-
-        if self.sub is None:
-            sub = None
-        elif self.sub is not None:
-            sub = self.sub.setup_traced_grid(deflections.sub)
-
-        if self.blurring is None:
-            blurring = None
-        elif self.blurring is not None:
-            blurring = self.blurring.setup_traced_grid(deflections.blurring)
+        sub = self.sub.setup_traced_grid(deflections.sub) if self.sub is not None else None
+        blurring = self.blurring.setup_traced_grid(deflections.blurring) if self.blurring is not None else None
 
         return GridCoordsCollection(image, sub, blurring)
 
@@ -111,57 +88,54 @@ class GridCoords(np.ndarray):
 
 
 class GridCoordsRegular(GridCoords):
+    """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
+    are represented by the value at the centre of the pixel.
 
-    def __new__(cls, grid_coords):
-        """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
-        are represented by the value at the centre of the pixel.
+    Coordinates are defined from the top-left corner, such that data_to_pixels in the top-left corner of an \
+    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+    also counted from the top-left.
 
-        Coordinates are defined from the top-left corner, such that data_to_pixels in the top-left corner of an \
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
-        also counted from the top-left.
+    A regular *grid_coords* is a NumPy array of dimensions_2d [image_pixels, 2]. Therefore, the first element maps \
+    to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
+    [3,1] gives the 4th image pixel's y coordinate.
 
-        A regular *grid_coords* is a NumPy array of dimensions_2d [image_pixels, 2]. Therefore, the first element maps \
-        to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
-        [3,1] gives the 4th image pixel's y coordinate.
+    Below is a visual illustration of a regular grid, where a total of 10 data_to_pixels are unmasked and therefore \
+    included in the grid.
 
-        Below is a visual illustration of a regular grid, where a total of 10 data_to_pixels are unmasked and therefore \
-        included in the grid.
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
+    |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
+    |x|x|x|o|o|o|o|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
-        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
-        |x|x|x|o|o|o|o|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted \
+    around the image.
 
-        This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted \
-        around the image.
+    pixel_scale = 1.0"
 
-        pixel_scale = 1.0"
+    <--- -ve  x  +ve -->
 
-        <--- -ve  x  +ve -->
+    |x|x|x|x|x|x|x|x|x|x|  ^   grid_coords[0] = [-0.5,  1.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[1] = [ 0.5,  1.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[2] = [-1.5,  0.5]
+    |x|x|x|x|0|1|x|x|x|x| +ve  grid_coords[3] = [-0.5,  0.5]
+    |x|x|x|2|3|4|5|x|x|x|  y   grid_coords[4] = [ 0.5,  0.5]
+    |x|x|x|6|7|8|9|x|x|x| -ve  grid_coords[5] = [ 1.5,  0.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[6] = [-1.5, -0.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[7] = [-0.5, -0.5]
+    |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
+    |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
 
-        |x|x|x|x|x|x|x|x|x|x|  ^   grid_coords[0] = [-0.5,  1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[1] = [ 0.5,  1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[2] = [-1.5,  0.5]
-        |x|x|x|x|0|1|x|x|x|x| +ve  grid_coords[3] = [-0.5,  0.5]
-        |x|x|x|2|3|4|5|x|x|x|  y   grid_coords[4] = [ 0.5,  0.5]
-        |x|x|x|6|7|8|9|x|x|x| -ve  grid_coords[5] = [ 1.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[6] = [-1.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[7] = [-0.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the regular grid.
-        """
-        return super(GridCoordsRegular, cls).__new__(cls, grid_coords)
+    Parameters
+    -----------
+    grid_coords : np.ndarray
+        The coordinates of the regular grid.
+    """
 
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
@@ -171,8 +145,8 @@ class GridCoordsRegular(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                  output_shape=self.shape[0]), galaxies))
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                 output_shape=self.shape[0]), galaxies))
 
     def deflections_on_grid(self, galaxies):
         """Compute the deflection angle for each coordinate on the grid, using the mass-profile(s) of a set of \
@@ -183,8 +157,8 @@ class GridCoordsRegular(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                  output_shape=self.shape), galaxies))
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                 output_shape=self.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
@@ -311,8 +285,8 @@ class GridCoordsSub(GridCoords):
             The list of galaxies whose light profiles are used to compute the intensity at the grid coordinates.
         """
 
-        sub_intensities = sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                               output_shape=self.shape[0:2]), galaxies))
+        sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                            output_shape=self.shape[0:2]), galaxies))
 
         intensities = np.zeros(self.shape[0])
 
@@ -332,8 +306,8 @@ class GridCoordsSub(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
         """
-        return sum(map(lambda galaxy : self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                  output_shape=self.shape), galaxies))
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                 output_shape=self.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
@@ -665,7 +639,7 @@ class GridMapperDataToPixel(np.ndarray):
         data_to_pixel : ndarray
             Numpy array containing the pixel coordinates of each data point.
         """
-        mapper =  np.array(data_to_pixel).view(cls)
+        mapper = np.array(data_to_pixel).view(cls)
         mapper.dimensions_2d = dimensions_2d
         mapper.dimensions_1d = data_to_pixel.shape[0]
         return mapper
