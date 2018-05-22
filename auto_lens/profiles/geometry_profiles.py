@@ -5,7 +5,6 @@ from functools import wraps
 import inspect
 from matplotlib import pyplot
 import colorsys
-from itertools import count
 
 
 def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
@@ -353,7 +352,7 @@ class Profile(object):
         """
         arguments = vars(profile)
         arguments.update(kwargs)
-        init_args = inspect.getargspec(cls.__init__).args
+        init_args = inspect.getfullargspec(cls.__init__).args
         arguments = {argument[0]: argument[1] for argument in arguments.items() if argument[0] in init_args}
         return cls(**arguments)
 
@@ -510,7 +509,7 @@ class EllipticalProfile(Profile):
 
     def rotate_coordinates_from_profile(self, coordinates_elliptical):
         """ Rotate elliptical coordinates from the reference frame of the profile back to the coordinates original \
-         Cartsian grid_coords (coordinates are not shifted back to their original centre).
+         Cartesian grid_coords (coordinates are not shifted back to their original centre).
 
         Parameters
         ----------
@@ -519,7 +518,7 @@ class EllipticalProfile(Profile):
 
         Returns
         ----------
-        The coordinaates rotated back to their original Cartesian grid_coords.
+        The coordinates rotated back to their original Cartesian grid_coords.
          """
         x_elliptical = coordinates_elliptical[0]
         x = (x_elliptical * self.cos_phi - coordinates_elliptical[1] * self.sin_phi)
