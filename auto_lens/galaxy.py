@@ -170,7 +170,7 @@ class Galaxy(object):
 
     def potential_at_coordinates(self, coordinates):
         """
-        Compute the summed gravitional potential of the galaxy's mass profiles at a given set of image_grid.
+        Compute the summed gravitational potential of the galaxy's mass profiles at a given set of image_grid.
 
         See *mass_profiles* module for details of how this is performed.
 
@@ -187,7 +187,7 @@ class Galaxy(object):
 
     def potential_at_coordinates_individual(self, coordinates):
         """
-        Compute the individual gravitional potentials of the galaxy's mass profiles at a given set of image_grid.
+        Compute the individual gravitational potentials of the galaxy's mass profiles at a given set of image_grid.
 
         See *mass_profiles* module for details of how this is performed.
 
@@ -285,8 +285,8 @@ class Galaxy(object):
 
         Parameters
         ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
+        major_axis : float
+            The major axis of the ellipse
 
         Returns
         -------
@@ -304,8 +304,8 @@ class Galaxy(object):
 
         Parameters
         ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
+        major_axis : float
+            The major axis of the ellipse
 
         Returns
         -------
