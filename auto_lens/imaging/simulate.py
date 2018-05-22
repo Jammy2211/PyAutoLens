@@ -68,6 +68,7 @@ class SimulateImage(imaging.Image):
     #    self.estimate_noise_in_simulated_image()
     #    self.estimate_signal_to_noise_ratio_in_simulated_image()
 
+    # TODO: This should match the super
     @classmethod
     def from_fits(cls, path, filename, hdu, pixel_scale, exposure_time, sim_optics=None, sim_poisson_noise=None,
                   sim_background_noise=None, noise_seed=-1):
@@ -94,6 +95,7 @@ class SimulateImage(imaging.Image):
     def estimate_noise_in_simulated_image(self):
         """Estimate the signal_to_noise_ratio in the simulated image, using the exposure time and background
         signal_to_noise_ratio"""
+        # TODO: These should be defined in the constructor or converted into properties
         self.noise = imaging.estimate_noise_from_image(self.data, self.exposure_time, self.background_noise)
 
     def estimate_signal_to_noise_ratio_in_simulated_image(self):
