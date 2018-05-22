@@ -133,8 +133,8 @@ class TestTraceImageAndSoure(object):
                                     mass_profiles=[mass_profiles.SphericalIsothermal()])
 
             image_plane = ray_tracing.ImagePlane(galaxies=[galaxy_light_and_mass], grids=grid_image)
-            deflections_grid = grid_image.setup_all_deflections_grids(galaxies=[galaxy_light_and_mass])
-            source_grid = grid_image.setup_all_traced_grids(deflections_grid)
+            deflections_grid = grid_image.deflection_grids_for_galaxies(galaxies=[galaxy_light_and_mass])
+            source_grid = grid_image.traced_grids_for_deflections(deflections_grid)
             source_plane = ray_tracing.SourcePlane(galaxies=[galaxy_light_and_mass], grids=source_grid)
             plane_image = image_plane.generate_image_of_galaxies() + source_plane.generate_image_of_galaxies()
 
