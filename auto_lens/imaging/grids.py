@@ -113,7 +113,7 @@ class GridCoordsRegular(GridCoords):
        |x|x|x|x|x|x|x|x|x|x|
        |x|x|x|x|x|x|x|x|x|x|
 
-       This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted \
+       This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
        around the image.
 
        pixel_scale = 1.0"
@@ -131,6 +131,9 @@ class GridCoordsRegular(GridCoords):
        |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
        |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
        """
+
+    # TODO: Is 'False is masked' a better convention? If we were using a bitwise mask then 0 would be masked such that
+    # TODO: a bitwise 'and' operation eliminates any data that is masked.
 
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
@@ -180,6 +183,10 @@ class GridCoordsRegular(GridCoords):
         """
         grid_values = np.zeros(output_shape)  # TODO: Surely pixel_no is always an integer so the second dimension of
         # TODO: output shape is redundant?
+
+        # TODO: It feels like grids should be passed into other functions for evaluation, rather than the other way
+        # TODO: around. Imagine we wrote lots of different classes that had functions with grid calculations. Every
+        # TODO: time we add a new calculation the grids module has to know about it. Suddenly this module is huge.
 
         for pixel_no, coordinate in enumerate(self):
             grid_values[pixel_no] = func(coordinates=coordinate)
@@ -272,7 +279,7 @@ class GridCoordsSub(GridCoords):
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the sub-grid, using the light-profile(s) of a set of galaxies.
 
-        For each sub-pixel, after computing the intensities at each sub coordinate, the mean is taken to compute \
+        For each sub-pixel, after computing the intensities at each sub coordinate, the mean is taken to compute
         the overall intensity of that pixel.
 
         Parameters
@@ -294,7 +301,7 @@ class GridCoordsSub(GridCoords):
     def deflections_on_grid(self, galaxies):
         """Compute the intensity for each coordinate on the sub-grid, using the mass-profile(s) of a set of galaxies.
 
-        Deflection angles are not averaged over a sub-pixel. Instead, the individual coordinates at each sub-pixel \
+        Deflection angles are not averaged over a sub-pixel. Instead, the individual coordinates at each sub-pixel
         are used to trace coordinates to the next plane.
 
         Parameters
@@ -306,7 +313,7 @@ class GridCoordsSub(GridCoords):
                                                                  output_shape=self.shape), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
-        """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
+        """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of
         coordinates defined by a sub-grid_coords.
         """
 
