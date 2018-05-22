@@ -236,43 +236,18 @@ class TestSimulatePoissonNoise(object):
 
 
 class TestSimulateBackgroundNoise(object):
-    class TestConstructor:
+    def test__background_noise_sigma_0__background_noise_map_all_0__image_is_identical_to_input(self):
+        image = np.zeros((3, 3))
+        background_noise = simulate.background_noise(image, sigma=0.0, seed=1)
 
-        def test__simple_case__sets_up_correctly(self):
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=1.0, noise_seed=1)
+        assert (background_noise == np.zeros((3, 3))).all()
 
-            assert sim_background_noise.background_noise_sigma == 1.0
-            assert sim_background_noise.background_noise_map == None
-            assert sim_background_noise.noise_seed == 1
+    def test__background_noise_sigma_1__background_noise_map_all_non_0__image_has_noise_added(self):
+        image = np.zeros((3, 3))
+        background_noise = simulate.background_noise(image, sigma=1.0, seed=1)
 
-    class TestSimulateForImage:
+        # Use seed to give us a known read noise map we'll test for
 
-        def test__background_noise_sigma_0__background_noise_map_all_0__image_is_identical_to_input(self):
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=0.0, noise_seed=1)
-
-            image = np.zeros((3, 3))
-            image_background = sim_background_noise.simulate_for_image(image)
-
-            assert (sim_background_noise.background_noise_map == np.zeros((3, 3))).all()
-            assert (image_background == np.zeros((3, 3))).all()
-
-        def test__background_noise_sigma_1__background_noise_map_all_non_0__image_has_noise_added(self):
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=1.0, noise_seed=1)
-
-            image = np.zeros((3, 3))
-            image_background = sim_background_noise.simulate_for_image(image)
-
-            # Use seed to give us a known read noise map we'll test for
-
-            assert sim_background_noise.background_noise_map == pytest.approx(np.array([[1.62, -0.61, -0.53],
-                                                                                        [-1.07, 0.87, -2.30],
-                                                                                        [1.74, -0.76, 0.32]]), 1e-2)
-            assert (image_background - sim_background_noise.background_noise_map == image).all()
-
-        def test__same_as_above__different_values__no_noise_seed_so_just_test_noise_subtraction(self):
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=6.0)
-
-            image = np.zeros((7, 4))
-            image_background = sim_background_noise.simulate_for_image(image)
-
-            assert (image_background - sim_background_noise.background_noise_map == image).all()
+        assert background_noise == pytest.approx(np.array([[1.62, -0.61, -0.53],
+                                                           [-1.07, 0.87, -2.30],
+                                                           [1.74, -0.76, 0.32]]), 1e-2)
