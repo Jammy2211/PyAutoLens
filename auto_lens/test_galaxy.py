@@ -7,8 +7,6 @@ import numpy as np
 
 
 class TestLightProfiles(object):
-
-
     class TestIntensity:
 
         def test__one_profile_galaxy__intensity_is_same_individual_profile(self):
@@ -106,7 +104,6 @@ class TestLightProfiles(object):
             assert intensity_1 == galaxy_intensity[0]
             assert intensity_2 == galaxy_intensity[1]
             assert intensity_3 == galaxy_intensity[2]
-
 
     class TestLuminosityWithinCircle:
 
@@ -215,7 +212,6 @@ class TestLightProfiles(object):
             assert intensity_integral_1 == galaxy_intensity_integral[0]
             assert intensity_integral_2 == galaxy_intensity_integral[1]
             assert intensity_integral_3 == galaxy_intensity_integral[2]
-
 
     class TestLuminosityWithinEllipse:
 
@@ -326,7 +322,6 @@ class TestLightProfiles(object):
             assert intensity_integral_2 == galaxy_intensity_integral[1]
             assert intensity_integral_3 == galaxy_intensity_integral[2]
 
-
     class TestSymmetricProfiles(object):
 
         def test_1d_symmetry(self):
@@ -358,17 +353,17 @@ class TestLightProfiles(object):
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profiles=[sersic_1, sersic_2, sersic_3, sersic_4])
 
-            assert galaxy_sersic.intensity_at_coordinates(np.array([49.0, 0.0])) == \
-                   pytest.approx(galaxy_sersic.intensity_at_coordinates(np.array([51.0, 0.0])), 1e-5)
+            assert galaxy_sersic.intensity_at_coordinates(np.array([49.0, 0.0])) == pytest.approx(
+                galaxy_sersic.intensity_at_coordinates(np.array([51.0, 0.0])), 1e-5)
 
-            assert galaxy_sersic.intensity_at_coordinates(np.array([0.0, 49.0])) == \
-                   pytest.approx(galaxy_sersic.intensity_at_coordinates(np.array([0.0, 51.0])), 1e-5)
+            assert galaxy_sersic.intensity_at_coordinates(np.array([0.0, 49.0])) == pytest.approx(
+                galaxy_sersic.intensity_at_coordinates(np.array([0.0, 51.0])), 1e-5)
 
-            assert galaxy_sersic.intensity_at_coordinates(np.array([100.0, 49.0])) == \
-                   pytest.approx(galaxy_sersic.intensity_at_coordinates(np.array([100.0, 51.0])), 1e-5)
+            assert galaxy_sersic.intensity_at_coordinates(np.array([100.0, 49.0])) == pytest.approx(
+                galaxy_sersic.intensity_at_coordinates(np.array([100.0, 51.0])), 1e-5)
 
-            assert galaxy_sersic.intensity_at_coordinates(np.array([49.0, 49.0])) == \
-                   pytest.approx(galaxy_sersic.intensity_at_coordinates(np.array([51.0, 51.0])), 1e-5)
+            assert galaxy_sersic.intensity_at_coordinates(np.array([49.0, 49.0])) == pytest.approx(
+                galaxy_sersic.intensity_at_coordinates(np.array([51.0, 51.0])), 1e-5)
 
         def test_combined_array(self):
             sersic_1 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
