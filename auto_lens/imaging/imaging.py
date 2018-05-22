@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 data_path = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
+
 # TODO : These will ultimately be performed in the ExposureTime class, once the module takes shape :)
 
 def convert_array_to_counts(array, exposure_time_array):
@@ -26,6 +27,7 @@ def convert_array_to_counts(array, exposure_time_array):
         The exposure time in each image pixel."""
     return np.multiply(array, exposure_time_array)
 
+
 def convert_array_to_electrons_per_second(array, exposure_time_array):
     """For an array (in counts) and exposure time array, convert the array to units electrons per second
     Parameters
@@ -37,14 +39,16 @@ def convert_array_to_electrons_per_second(array, exposure_time_array):
     """
     return np.divide(array, exposure_time_array)
 
+
 # TODO : and these two in the noise class(es)
 
 def estimate_noise_in_quadrature(image_counts, sigma_counts):
     return np.sqrt(image_counts + np.square(sigma_counts))
 
+
 def estimate_noise_from_image(image, exposure_time, background_noise):
-    """Estimate the two-dimensional signal_to_noise_ratio of an input image, including signal_to_noise_ratio due to Poisson counting statistics and \
-    a background component.
+    """Estimate the two-dimensional signal_to_noise_ratio of an input image, including signal_to_noise_ratio due to
+    Poisson counting statistics and a background component.
 
     Parameters
     ----------
@@ -53,19 +57,19 @@ def estimate_noise_from_image(image, exposure_time, background_noise):
     exposure_time : float or ndarray
         The exposure time in each image pixel, used to convert the image from electrons per second to counts.
     background_noise : float or ndarray
-        The standard deviation estimate of the 1D Gaussian level of signal_to_noise_ratio in each pixxel due to background signal_to_noise_ratio \
-        sources, in electrns per second
-    exposure_time_mean : float
-        The mean exposure time of the image and therefore background.
+        The standard deviation estimate of the 1D Gaussian level of signal_to_noise_ratio in each pixel due to
+        background signal_to_noise_ratio sources, in electrons per second
     """
     image_counts = convert_array_to_counts(image, exposure_time)
     background_noise_counts = convert_array_to_counts(background_noise, exposure_time)
     noise_counts = estimate_noise_in_quadrature(image_counts, background_noise_counts)
     return convert_array_to_electrons_per_second(noise_counts, exposure_time)
 
+
 def numpy_array_from_fits(file_path, hdu):
     hdu_list = fits.open(file_path)  # Open the fits file
     return np.array(hdu_list[hdu].data)
+
 
 def output_for_fortran(path, array, image_name):
     """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
@@ -95,7 +99,7 @@ def output_for_fortran(path, array, image_name):
                 line += ' ' * (8 - len(line))
                 line += str(round(float(iy + 1), 2))
                 line += ' ' * (16 - len(line))
-                line += str(float(array.data[ix,iy])) + '\n'
+                line += str(float(array.data[ix, iy])) + '\n'
                 f.write(line)
 
 
@@ -269,10 +273,6 @@ class Image(Data):
             The array of data of the image.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
-        sky_background_level : float
-            The level of sky background in the image.
-        sky_background_noise : float
-            An estimate of the signal_to_noise_ratio in the sky background.
         """
 
         super(Image, self).__init__(data, pixel_scale)
@@ -490,7 +490,7 @@ class ExposureTime(Data):
 
     @classmethod
     def from_one_value(cls, exposure_time, pixel_dimensions, pixel_scale):
-        data = np.ones(pixel_dimensions)*exposure_time
+        data = np.ones(pixel_dimensions) * exposure_time
         return ExposureTime(data, pixel_scale)
 
 
@@ -678,7 +678,7 @@ class Mask(DataGrid):
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
                 if self.mask[y, x] == False:
-                    grid[pixel_count, :] = coordinates[y,x]
+                    grid[pixel_count, :] = coordinates[y, x]
                     pixel_count += 1
 
         return grid
@@ -775,7 +775,7 @@ class Mask(DataGrid):
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
                 if self.mask[y, x] == False:
-                    grid[pixel_count, :] = y,x
+                    grid[pixel_count, :] = y, x
                     pixel_count += 1
 
         return grid
@@ -864,37 +864,37 @@ class Mask(DataGrid):
                                     "before masking")
 
         return Mask(blurring_mask, self.pixel_scale)
-    
+
     def compute_sparse_uniform_mask(self, sparse_grid_size):
         """Setup a two-dimensional sparse mask of image pixels, by keeping all image pixels which do not give a remainder \
         when divided by the sub-grid_coords size. """
         sparse_mask = np.ones(self.pixel_dimensions)
-    
+
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
                 if self.mask[y, x] == False:
                     if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
                         sparse_mask[y, x] = False
-    
+
         return Mask(sparse_mask, self.pixel_scale)
-    
+
     def compute_sparse_index_image(self, sparse_mask):
         """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
     
          This is used for computing the image_to_clustering vector, whereby each image pixel is paired to the sparse pixel \
          in this image via a neighbor search."""
-    
+
         sparse_index_2d = np.zeros(self.pixel_dimensions)
         sparse_pixel_index = 0
-    
+
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
-                if sparse_mask.mask[y,x] == False:
+                if sparse_mask.mask[y, x] == False:
                     sparse_pixel_index += 1
-                    sparse_index_2d[y,x] = sparse_pixel_index
-    
+                    sparse_index_2d[y, x] = sparse_pixel_index
+
         return sparse_index_2d
-    
+
     def compute_sparse_to_image(self, sparse_mask):
         """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
         pixels.
@@ -914,18 +914,18 @@ class Mask(DataGrid):
         """
         sparse_to_image = np.empty(0)
         image_pixel_index = 0
-    
+
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
-    
+
                 if sparse_mask.mask[y, x] == False:
                     sparse_to_image = np.append(sparse_to_image, image_pixel_index)
-    
+
                 if self.mask[y, x] == False:
                     image_pixel_index += 1
-    
+
         return sparse_to_image
-    
+
     def compute_image_to_sparse(self, sparse_mask, sparse_index_image):
         """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
     
@@ -949,24 +949,25 @@ class Mask(DataGrid):
     
         """
         image_to_sparse = np.empty(0)
-    
+
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
                 if self.mask[y, x] == False:
                     iboarder = 0
                     pixel_match = False
                     while pixel_match == False:
-                        for y1 in range(y-iboarder, y+iboarder+1):
-                            for x1 in range(x-iboarder, x+iboarder+1):
-                                if y1 >= 0 and y1 < self.pixel_dimensions[0] and x1 >= 0 and x1 < self.pixel_dimensions[1]:
+                        for y1 in range(y - iboarder, y + iboarder + 1):
+                            for x1 in range(x - iboarder, x + iboarder + 1):
+                                if y1 >= 0 and y1 < self.pixel_dimensions[0] and x1 >= 0 and x1 < self.pixel_dimensions[
+                                    1]:
                                     if sparse_mask.mask[y1, x1] == False and pixel_match == False:
-                                        image_to_sparse = np.append(image_to_sparse, sparse_index_image[y1,x1]-1)
+                                        image_to_sparse = np.append(image_to_sparse, sparse_index_image[y1, x1] - 1)
                                         pixel_match = True
-    
+
                         iboarder += 1
                         if iboarder == 100:
                             raise MaskException('compute_image_to_sparse - Stuck in infinite loop')
-    
+
         return image_to_sparse
 
 
