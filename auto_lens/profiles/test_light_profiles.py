@@ -35,7 +35,7 @@ class TestLightProfileSettings(object):
         assert settings.sub_grid_plane is True
         assert settings.image_plane_override is False
 
-    def test__setup_using_overriden_values__all_are_correct(self):
+    def test__setup_using_overridden_values__all_are_correct(self):
         settings = light_profiles.LightProfileSettings(iterative_image_plane=False, iterative_precision=1e-5,
                                                        sub_grid_plane=False, image_plane_override=True)
 
@@ -323,14 +323,14 @@ class TestLuminosityIntegral(object):
 
             integral_radius = 5.5
 
-            # Use gamma functioon for analytic computation of the intensity within a radius=0.5
+            # Use gamma function for analytic computation of the intensity within a radius=0.5
 
             x = sersic.sersic_constant * (integral_radius / sersic.effective_radius) ** (1.0 / sersic.sersic_index)
 
-            intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * \
-                                 (math.e ** sersic.sersic_constant / (
-                                         sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
-                                 scipy.special.gamma(2 * sersic.sersic_index) * scipy.special.gammainc(
+            intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * (
+                    math.e ** sersic.sersic_constant / (
+                        sersic.sersic_constant ** (2 * sersic.sersic_index))) * scipy.special.gamma(
+                2 * sersic.sersic_index) * scipy.special.gammainc(
                 2 * sersic.sersic_index, x)
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
@@ -347,7 +347,7 @@ class TestLuminosityIntegral(object):
 
             integral_radius = 0.5
 
-            # Use gamma functioon for analytic computation of the intensity within a radius=0.5
+            # Use gamma function for analytic computation of the intensity within a radius=0.5
 
             x = sersic.sersic_constant * ((integral_radius / sersic.effective_radius) ** (1.0 / sersic.sersic_index))
 
