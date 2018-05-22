@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-from auto_lens import analysis
 from auto_lens.imaging import grids
 from auto_lens.imaging import imaging
 from auto_lens import galaxy
@@ -53,30 +52,35 @@ def ray_tracing():
                                                 image_plane_grids=grid_image)
 
 
-class TestComputeBlurredImages:
 
-    def test__simple_image_and_psf_in__correct_blurred_image_generated(self):
-        mask = np.array([[False, False, False],
-                         [False, False, False],
-                         [False, False, False]])
+# class TestComputeBlurredImages:
+#
+#     def test__simple_image_and_psf_in__correct_blurred_image_generated(self):
+#
+#         mask = np.array([[False, False, False],
+#                          [False, False, False],
+#                          [False, False, False]])
+#
+#         mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+#
+#         image = grids.GridData.from_mask(data=np.array([[0.0, 0.0, 0.0],
+#                                                         [0.0, 1.0, 0.0],
+#                                                         [0.0, 0.0, 0.0]]), mask=mask)
+#
+#         psf = imaging.PSF(data=np.array([[0.0, 1.0, 0.0],
+#                                          [1.0, 2.0, 1.0],
+#                                          [0.0, 1.0, 0.0]]), pixel_scale=1.0)
+#
+#         pixel_mapper = grids.GridMapperDataToPixel.from_mask(mask)
+#
+#         blurred_image = analysis.compute_blurred_light_profile_image(image, psf, pixel_mapper)
+#
+#         # In 2D the blurred image should be
+#         # [[0.0, 1.0, 0.0],
+#         #  [1.0, 2.0, 1.0],
+#         #  [0.0, 1.0, 0.0]])
+#
+#         assert (blurred_image == np.array([0.0, 1.0, 0.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.0])).all()
 
-        mask = imaging.Mask(mask=mask, pixel_scale=1.0)
 
-        image = grids.GridData.from_mask(data=np.array([[0.0, 0.0, 0.0],
-                                                        [0.0, 1.0, 0.0],
-                                                        [0.0, 0.0, 0.0]]), mask=mask)
 
-        psf = imaging.PSF(data=np.array([[0.0, 1.0, 0.0],
-                                         [1.0, 2.0, 1.0],
-                                         [0.0, 1.0, 0.0]]), pixel_scale=1.0)
-
-        pixel_mapper = grids.GridMapperDataToPixel.from_mask(mask)
-
-        blurred_image = analysis.compute_blurred_light_profile_image(image, psf, pixel_mapper)
-
-        # In 2D the blurred image should be
-        # [[0.0, 1.0, 0.0],
-        #  [1.0, 2.0, 1.0],
-        #  [0.0, 1.0, 0.0]])
-
-        assert (blurred_image == np.array([0.0, 1.0, 0.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.0])).all()
