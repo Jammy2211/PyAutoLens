@@ -108,52 +108,6 @@ class SimulateImage(imaging.Image):
         pyplot.show()
 
 
-class SimulateOptics(object):
-
-    def __init__(self, psf):
-        """Class to blur simulated image with a psf.
-
-        Parameters
-        -----------
-        psf : imaging.PSF
-            The PSF.
-        """
-        self.psf = psf
-
-    def simulate_for_image(self, image):
-        return self.psf.convolve_with_image(image)
-
-
-class SimulatePoissonNoise(object):
-
-    def __init__(self, noise_seed=-1):
-        """Class to add Poisson noise (e.g. count statistics in an image) to a simulated image.
-
-        Parameters
-        ----------
-        noise_seed : int
-            The seed of the random number generator, used for the random noise maps.
-        """
-        self.noise_seed = noise_seed
-
-    def simulate_for_image(self, image, exposure_time):
-        """Generate a two-dimensional background noise-map for an image, generating values from a Gaussian \
-        distribution with mean 0.0.
-
-        Parameters
-        ----------
-        image : ndarray
-            The 2D image background noise is added to.
-        exposure_time : ndarray
-            The 2D array of pixel exposure times.
-        """
-        setup_random_seed(self.noise_seed)
-        image_counts = imaging.electrons_per_second_to_counts(image, exposure_time)
-        # TODO: Should be __init__ or property
-        self.poisson_noise_map = image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
-        return image + self.poisson_noise_map
-
-
 def poisson_noise(image, exposure_time, seed=-1):
     """
     Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
@@ -171,7 +125,7 @@ def poisson_noise(image, exposure_time, seed=-1):
     Returns
     -------
     poisson_noise: ndarray
-        An array describing simulated poisson noise 
+        An array describing simulated poisson noise
     """
     setup_random_seed(seed)
     image_counts = imaging.electrons_per_second_to_counts(image, exposure_time)
