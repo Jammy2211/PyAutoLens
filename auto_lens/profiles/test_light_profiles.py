@@ -6,6 +6,7 @@ from auto_lens.profiles import geometry_profiles
 import math
 import numpy as np
 
+
 @pytest.fixture(name='circular')
 def circular_sersic():
     return light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
@@ -24,11 +25,9 @@ def vertical_sersic():
                                            sersic_index=4.0)
 
 
-
 class TestLightProfileSettings(object):
 
     def test__setup_using_default_values__all_are_correct(self):
-
         settings = light_profiles.LightProfileSettings()
 
         assert settings.iterative_image_plane is True
@@ -37,7 +36,6 @@ class TestLightProfileSettings(object):
         assert settings.image_plane_override is False
 
     def test__setup_using_overriden_values__all_are_correct(self):
-
         settings = light_profiles.LightProfileSettings(iterative_image_plane=False, iterative_precision=1e-5,
                                                        sub_grid_plane=False, image_plane_override=True)
 
@@ -50,10 +48,9 @@ class TestLightProfileSettings(object):
 class TestConstructors(object):
 
     def test__setup_sersic(self):
-        
         sersic = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
                                                  sersic_index=4.0)
-        
+
         assert sersic.x_cen == 0.0
         assert sersic.y_cen == 0.0
         assert sersic.axis_ratio == 1.0
@@ -70,10 +67,10 @@ class TestConstructors(object):
         assert sersic.settings.image_plane_override is False
 
     def test__setup_exponential(self):
-        
         exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                    settings=light_profiles.LightProfileSettings(sub_grid_plane=False))
-        
+                                                           settings=light_profiles.LightProfileSettings(
+                                                               sub_grid_plane=False))
+
         assert exponential.x_cen == 0.0
         assert exponential.y_cen == 0.0
         assert exponential.axis_ratio == 0.5
@@ -90,10 +87,12 @@ class TestConstructors(object):
         assert exponential.settings.image_plane_override is False
 
     def test__setup_dev_vaucouleurs(self):
-        
-        dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.6, phi=10.0, intensity=2.0, effective_radius=0.9,
-                          centre=(0.0, 0.1), settings=light_profiles.LightProfileSettings(image_plane_override=True))
-        
+        dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.6, phi=10.0, intensity=2.0,
+                                                                  effective_radius=0.9,
+                                                                  centre=(0.0, 0.1),
+                                                                  settings=light_profiles.LightProfileSettings(
+                                                                      image_plane_override=True))
+
         assert dev_vaucouleurs.x_cen == 0.0
         assert dev_vaucouleurs.y_cen == 0.1
         assert dev_vaucouleurs.axis_ratio == 0.6
@@ -110,7 +109,6 @@ class TestConstructors(object):
         assert dev_vaucouleurs.settings.image_plane_override is True
 
     def test__setup_core_sersic(self):
-        
         cored_sersic = light_profiles.EllipticalCoreSersic(axis_ratio=0.5, phi=0.0, intensity=1.0,
                                                            effective_radius=5.0, sersic_index=4.0, radius_break=0.01,
                                                            intensity_break=0.1, gamma=1.0, alpha=1.0)
@@ -135,7 +133,6 @@ class TestConstructors(object):
         assert cored_sersic.settings.image_plane_override is False
 
     def test_component_numbers_four_profiles(self):
-
         # TODO : Perform Counting reset better
 
         from itertools import count
@@ -143,16 +140,16 @@ class TestConstructors(object):
         light_profiles.EllipticalLightProfile._ids = count()
 
         sersic_0 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                 sersic_index=4.0)
+                                                   sersic_index=4.0)
 
         sersic_1 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                 sersic_index=4.0)
+                                                   sersic_index=4.0)
 
         sersic_2 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                 sersic_index=4.0)
+                                                   sersic_index=4.0)
 
         sersic_3 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                 sersic_index=4.0)
+                                                   sersic_index=4.0)
 
         assert sersic_0.component_number == 0
         assert sersic_1.component_number == 1
@@ -161,8 +158,6 @@ class TestConstructors(object):
 
 
 class TestProfiles(object):
-
-
     class TestSersic:
 
         def test__intensity_at_radius__correct_value(self):
@@ -199,7 +194,6 @@ class TestProfiles(object):
             intensity_2 = sersic.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
 
             assert intensity_1 == intensity_2
-
 
     class TestExponential:
 
@@ -253,7 +247,6 @@ class TestProfiles(object):
 
             assert intensity_1 == intensity_2
 
-
     class TestDevVaucouleurs:
 
         def test__intensity_at_radius__correct_value(self):
@@ -306,7 +299,6 @@ class TestProfiles(object):
 
             assert intensity_1 == intensity_2
 
-
     class TestCoreSersic(object):
 
         def test__intensity_at_radius__correct_value(self):
@@ -319,7 +311,6 @@ class TestProfiles(object):
 
 
 class TestLuminosityIntegral(object):
-
     class TestWithinCircle(object):
 
         def test__spherical_exponential__compare_to_analytic(self):
@@ -338,7 +329,7 @@ class TestLuminosityIntegral(object):
 
             intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * \
                                  (math.e ** sersic.sersic_constant / (
-                                 sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
+                                         sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
                                  scipy.special.gamma(2 * sersic.sersic_index) * scipy.special.gammainc(
                 2 * sersic.sersic_index, x)
 
@@ -362,7 +353,7 @@ class TestLuminosityIntegral(object):
 
             intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * \
                                  ((math.e ** sersic.sersic_constant) / (
-                                 sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
+                                         sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
                                  scipy.special.gamma(2 * sersic.sersic_index) * scipy.special.gammainc(
                 2 * sersic.sersic_index, x)
 
@@ -386,7 +377,7 @@ class TestLuminosityIntegral(object):
 
             intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * \
                                  ((math.e ** sersic.sersic_constant) / (
-                                 sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
+                                         sersic.sersic_constant ** (2 * sersic.sersic_index))) * \
                                  scipy.special.gamma(2 * sersic.sersic_index) * scipy.special.gammainc(
                 2 * sersic.sersic_index, x)
 
@@ -620,36 +611,43 @@ class TestCoordinates(object):
 
 class TestArray(object):
     def test__simple_assumptions(self, circular):
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0,
+                                                                                    y_max=101,
                                                                                     pixel_scale=1)
         assert array.shape == (101, 101)
         assert array[51][51] > array[51][52]
         assert array[51][51] > array[52][51]
         assert all(map(lambda i: i > 0, array[0]))
 
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                    y_max=100,
                                                                                     pixel_scale=0.5)
         assert array.shape == (200, 200)
 
     def test__ellipticity(self, circular, elliptical, vertical):
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0, y_max=101,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0,
+                                                                                    y_max=101,
                                                                                     pixel_scale=1)
         assert array[60][0] == array[0][60]
 
-        array = geometry_profiles.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profiles.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                      y_max=100,
                                                                                       pixel_scale=1)
 
         assert array[60][51] > array[51][60]
 
-        array = geometry_profiles.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profiles.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                    y_max=100,
                                                                                     pixel_scale=1)
         assert array[60][51] < array[51][60]
 
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                    y_max=100,
                                                                                     pixel_scale=1)
-        flat_array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        flat_array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                         y_max=100,
                                                                                          pixel_scale=1).flatten()
 
         assert all(array[0] == flat_array[:100])
@@ -657,7 +655,8 @@ class TestArray(object):
 
     def test_symmetric_profile(self, circular):
         circular.centre = (50, 50)
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                    y_max=100,
                                                                                     pixel_scale=1.0)
 
         assert array[50][50] > array[50][51]
@@ -666,7 +665,8 @@ class TestArray(object):
         assert array[50][51] == array[50][49]
         assert array[50][49] == array[51][50]
 
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0, y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
+                                                                                    y_max=100,
                                                                                     pixel_scale=0.5)
 
         assert array[100][100] > array[100][101]
