@@ -111,7 +111,7 @@ def subgrid(func):
         pixel_scale : float
             The scale of a pixel
         grid_size : int
-            The side length of the subgrid (i.e. there will be grid_size^2 pixels)
+            The side length of the subgrid (i.e. there will be grid_size^2 data_to_pixels)
         Returns
         -------
         result : [value] or [(value, value)]

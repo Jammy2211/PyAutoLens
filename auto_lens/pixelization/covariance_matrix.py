@@ -3,8 +3,8 @@ import sys
 """
 Find an F matrix from an f matrix efficiently.
 
-It is assumed that the f matrix is sparse_grid. It is also assumed that covariance of source pixels will principally be found
-between a pixel and pixels in a contiguous patch about that pixel in the source plane, except for the case that overlap
+It is assumed that the f matrix is sparse_grid. It is also assumed that covariance of source data_to_pixels will principally be found
+between a pixel and data_to_pixels in a contiguous patch about that pixel in the source plane, except for the case that overlap
 occurs between convolution kernels. See https://github.com/Jammy2211/AutoLens/issues/6 for a thorough discussion.
 
 Given a convolved list of pixel maps pixel_maps of type [{int: float}], a signal_to_noise_ratio vector noise_vector of type [float] and
@@ -45,20 +45,20 @@ def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, 
 
     The mapping matrix supports sub_grid-gridding.  Here, each image_grid-pixel in the observed image_grid is divided into a \
     finer sub_grid-grid_coords. For example, if grid_size_sub = 4, each image_grid-pixel is split into a 4 x 4 sub_grid-grid_coords, giving a \
-    total of 16 sub_grid image_grid-pixels. All 16 sub_grid image_grid-pixels are individually mapped to the source-plane and each is
+    total of 16 sub_grid image_grid-data_to_pixels. All 16 sub_grid image_grid-data_to_pixels are individually mapped to the source-plane and each is
     paired with a source-pixel.
 
-    The entries in the mapping matrix now become fractional values representing the number of sub_grid image_grid-pixels \
-    which map to each source-pixel. For example if 3 sub_grid image_grid-pixels within image_grid-pixel 4 map to source-pixel 2, \
+    The entries in the mapping matrix now become fractional values representing the number of sub_grid image_grid-data_to_pixels \
+    which map to each source-pixel. For example if 3 sub_grid image_grid-data_to_pixels within image_grid-pixel 4 map to source-pixel 2, \
     and the grid_size_sub=2, then element (2,4) of the mapping matrix \
     will = 3.0 * (1/grid_size_sub**2) = 3/16 = 0.1875.
 
     Parameters
     ----------
     source_pixel_total : int
-        The number of source-pixels in the source-plane (and first dimension of the mapping matrix)
+        The number of source-data_to_pixels in the source-plane (and first dimension of the mapping matrix)
     image_pixel_total : int
-        The number of image_grid-pixels in the masked observed image_grid (and second dimension of the mapping matrix)
+        The number of image_grid-data_to_pixels in the masked observed image_grid (and second dimension of the mapping matrix)
     sub_grid_size : int
         The size of sub_grid-gridding used on the observed image_grid.
     sub_to_source : [int]
@@ -90,9 +90,9 @@ def create_d_matrix(pixel_maps, noise_vector, image_vector):
     Parameters
     ----------
     pixel_maps: [{int: float}]
-        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
+        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid data_to_pixels.
     noise_vector: [float]
-        A list of signal_to_noise_ratio values of length image_grid pixels
+        A list of signal_to_noise_ratio values of length image_grid data_to_pixels
     image_vector: [float]
         A vector describing the image_grid
 
@@ -118,9 +118,9 @@ def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_l
     Parameters
     ----------
     pixel_maps: [{int: float}]
-        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
+        List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid data_to_pixels.
     noise_vector: [float]
-        A list of signal_to_noise_ratio values of length image_grid pixels
+        A list of signal_to_noise_ratio values of length image_grid data_to_pixels
     graph: [[int]]
         A graph representing source pixel neighbouring
     neighbour_search_limit: float
@@ -147,9 +147,9 @@ class CovarianceMatrixGenerator(object):
         Parameters
         ----------
         pixel_maps: [{int: float}]
-            List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid pixels.
+            List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid data_to_pixels.
         noise_vector: [float]
-            A list of signal_to_noise_ratio values of length image_grid pixels
+            A list of signal_to_noise_ratio values of length image_grid data_to_pixels
         graph: [[int]]
             A graph representing source pixel neighbouring
         neighbour_search_limit: float
@@ -190,7 +190,7 @@ class CovarianceMatrixGenerator(object):
     def find_contiguous_covariances(self, source_index):
         """
         Performs a breadth first search starting at the source pixel and calculating covariance with the source pixel
-        and each found pixels until no further neighbours that have non-zero covariance with the source pixel are found.
+        and each found data_to_pixels until no further neighbours that have non-zero covariance with the source pixel are found.
 
         Parameters
         ----------
