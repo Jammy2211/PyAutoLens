@@ -1,6 +1,6 @@
 import getdist
-import sys
 import os
+
 
 class NonLinearDirectory(object):
 
@@ -22,23 +22,16 @@ class NonLinearDirectory(object):
         self.obj_name = obj_name
         self.model_mapper = model_mapper
         self.total_parameters = len(self.model_mapper.priors_ordered_by_id)
-        self.setup_results_path()
-        self.resume = self.results_folder_exists()
-        if self.resume == False:
-            self.make_results_folder()
-
-    def setup_results_path(self):
-        """Use the model mapper to set up the results path of the non-linear analysis. This uses the classes that make \
-        up the model mapper.
-        """
-
         self.results_path = self.path + self.obj_name + '/'
         for prior_name, prior_model in self.model_mapper.prior_models:
             self.results_path += prior_model.cls.__name__
             self.results_path += '+'
 
-        self.results_path = self.results_path[:-1] # remove last + symbol from path name
-        self.results_path +='/'
+        self.results_path = self.results_path[:-1]  # remove last + symbol from path name
+        self.results_path += '/'
+        self.resume = self.results_folder_exists()
+        if not self.resume:
+            self.make_results_folder()
 
     def results_folder_exists(self):
         return os.path.exists(self.results_path)
@@ -46,31 +39,32 @@ class NonLinearDirectory(object):
     def make_results_folder(self):
         os.makedirs(self.results_path)
 
-    def generate_parameter_latex(self, parameters, subscript=''):
-        """Generate a latex label for a non-linear search parameter.
 
-        This is used for the paramnames file and outputting the results of a run to a latex table.
+def generate_parameter_latex(parameters, subscript=''):
+    """Generate a latex label for a non-linear search parameter.
 
-        Parameters
-        ----------
-        parameters : [str]
-            The parameter names to be converted to latex.
-        subscript : str
-            The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
-            number of the component of the model_mapper.
+    This is used for the paramnames file and outputting the results of a run to a latex table.
 
-        """
+    Parameters
+    ----------
+    parameters : [str]
+        The parameter names to be converted to latex.
+    subscript : str
+        The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
+        number of the component of the model_mapper.
 
-        latex = []
+    """
 
-        if subscript == '':
-            for param in parameters:
-                latex.append('$' + param + '$')
-        else:
-            for param in parameters:
-                latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
+    latex = []
 
-        return latex
+    if subscript == '':
+        for param in parameters:
+            latex.append('$' + param + '$')
+    else:
+        for param in parameters:
+            latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
+
+    return latex
 
 
 class MultiNestFiles(object):
@@ -111,11 +105,11 @@ class MultiNestOptimizer(NonLinearDirectory):
 
         self.files = MultiNestFiles(self.obj_name, self.results_path)
 
-        if self.resume == False:
+        if self.resume:
+            self.check_model_info()
+        else:
             self.make_param_names()
             self.output_model_info()
-        elif self.resume == True:
-            self.check_model_info()
 
     def make_param_names(self):
         """The param_names file lists every parameter's name and Latex tag, and is used for visualization.
@@ -128,9 +122,9 @@ class MultiNestOptimizer(NonLinearDirectory):
 
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number+1)
+            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
 
-            param_labels = self.generate_parameter_latex(param_labels, subscript)
+            param_labels = generate_parameter_latex(param_labels, subscript)
 
             for param_no, param in enumerate(self.model_mapper.class_priors_dict[prior_name]):
                 line = prior_name + '_' + param[0]
@@ -155,10 +149,9 @@ class MultiNestOptimizer(NonLinearDirectory):
         model_info_check = open(self.files.model_info, 'r')
 
         if str(model_info_check.read()) != model_info:
-
             raise MultiNestException(
-                'The model_mapper input to MultiNestOptimizer has a different prior for a parameter than the model_mapper existing in '
-                'the directory. Parameter = ')
+                'The model_mapper input to MultiNestOptimizer has a different prior for a parameter than the '
+                'model_mapper existing in the directory. Parameter = ')
 
         model_info_check.close()
 
@@ -169,16 +162,11 @@ class MultiNestOptimizer(NonLinearDirectory):
 class MultiNestResults(NonLinearDirectory):
 
     def __init__(self, path, obj_name, model_mapper, limit=0.9973):
-
         super(MultiNestResults, self).__init__(path, obj_name, model_mapper)
 
         self.files = MultiNestFiles(self.obj_name, self.results_path)
         self.pdf = getdist.mcsamples.loadMCSamples(self.files.weighted_samples)
 
-        self.setup_most_likely_and_probable_models()
-        self.setup_1d_upper_and_lower_limits(limit)
-
-    def setup_most_likely_and_probable_models(self):
         """Setup the most likely and probable models. This is performed as both 1D vectors of all parameters and a \
         model_mapper instance of each model.
 
@@ -194,7 +182,6 @@ class MultiNestResults(NonLinearDirectory):
         self.most_probable_model = self.model_mapper.from_physical_vector(self._most_probable_model)
         self.most_likely_model = self.model_mapper.from_physical_vector(self._most_likely_model)
 
-    def setup_1d_upper_and_lower_limits(self, limit):
         """Setup 1D vectors of the upper and lower limits of the multinest results.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
@@ -205,12 +192,12 @@ class MultiNestResults(NonLinearDirectory):
         limit : float
             The limit on the sample to calculate.
         """
-        self.densities_1d = list(map(lambda p : self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
+        self.densities_1d = list(map(lambda p: self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
 
-        limits = list(map(lambda p : p.getLimits(limit), self.densities_1d))
+        limits = list(map(lambda p: p.getLimits(limit), self.densities_1d))
 
-        self._lower_limits_1d = list(map(lambda p : p[0], limits))
-        self._upper_limits_1d = list(map(lambda p : p[1], limits))
+        self._lower_limits_1d = list(map(lambda p: p[0], limits))
+        self._upper_limits_1d = list(map(lambda p: p[1], limits))
 
     def setup_weighted_sample_model(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
@@ -255,7 +242,7 @@ class MultiNestResults(NonLinearDirectory):
         """
         summary = open(filename_summary)
 
-        skip = summary.read(2 + offset*total_parameters)  # skip the first 3 characters of the file (indentation)
+        summary.read(2 + offset * total_parameters)  # skip the first 3 characters of the file (indentation)
 
         vector = []
 
@@ -277,7 +264,7 @@ class MultiNestResults(NonLinearDirectory):
         index : int
             The index of the weighted sample to return.
         """
-        return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5*self.pdf.loglikes[index]
+        return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
 
 
 class MultiNestException(Exception):
