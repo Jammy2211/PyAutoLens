@@ -2700,17 +2700,6 @@ class TestProfiles(object):
 
                 assert potential_1 == pytest.approx(potential_2, 1e-4)
 
-                # def test__compare_to_elliptical_model__same_value(self):
-                #     gnfw = mass_profile.EllipticalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=5.0, inner_slope=1.5, scale_radius=10.0)
-                #
-                #     potential_1 = gnfw.potential_at_coordinates(image_grid=np.array([2.0, 2.0]))
-                #
-                #     gnfw = mass_profile.EllipticalGeneralizedNFW(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, inner_slope=1.5,
-                #                                                 kappa_s=5.0, scale_radius=10.0)
-                #
-                #     potential_2 = gnfw.potential_at_coordinates(image_grid=np.array([2.0, 2.0]))
-                #
-                #     assert potential_1 == pytest.approx(potential_2, 1e-4)
 
         class TestDeflections(object):
             def test__flip_coordinates_lens_center__same_value(self):
