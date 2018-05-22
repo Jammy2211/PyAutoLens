@@ -76,7 +76,7 @@ print('image plane x3 deflection angles = ', ray_trace_x3.image_plane.deflection
 print('source plane x3 grid_coords coordinates =', ray_trace_x3.source_plane.grids.image.grid, '\n')
 
 # We can now go to any plane, and compute a model image of the galaxy(s) in that plane using their light profiles.
-galaxy_image_plane = ray_trace.image_plane.generate_image_of_galaxies()
+galaxy_image_plane = ray_trace.image_plane.generate_image_of_galaxy_light_profiles()
 print('--- PLANE GALAXY IMAGES ---')
 print('galaxy image (intensities) from image plane = ', galaxy_image_plane)
 
@@ -86,8 +86,8 @@ profile_intensity_1 = lens_galaxy.intensity_at_coordinates(coordinates[1])
 print('intensity of lens galaxy light profile = ', [profile_intensity_0, profile_intensity_1])
 
 # We can also do this for the source-plane and for the entire ray-tracing plane (for the image of all galaxies):
-galaxy_source_plane = ray_trace.source_plane.generate_image_of_galaxies()
-galaxy_ray_trace = ray_trace.generate_image_of_galaxies()
+galaxy_source_plane = ray_trace.source_plane.generate_image_of_galaxy_light_profiles()
+galaxy_ray_trace = ray_trace.generate_image_of_galaxy_light_profiles()
 print('galaxy image (intensities) from source plane = ', galaxy_source_plane)
 print('galaxy image (intensities) from all of ray-tracing (e.g. image plane + source plane) = ', galaxy_ray_trace)
 

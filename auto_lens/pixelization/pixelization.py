@@ -14,7 +14,7 @@ def setup_regularization_matrix_via_pixel_pairs(dimension, regularization_weight
     regularization_weights : list(float)
         The regularization weight of each source-pixel
     no_pairs : list(int)
-        The number of pairs each source-plane pixel shares with its other pixels
+        The number of pairs each source-plane pixel shares with its other data_to_pixels
     pixel_pairs : list(float, float)
         A list of all pixel-pairs in the source-plane, as computed by the Voronoi gridding routine.
     """
@@ -74,22 +74,22 @@ def setup_voronoi(coordinates):
     return voronoi
 
 def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, image_total, sub_total, source_centers):
-    """ Match a set of sub_grid image_grid-pixel image_grid to their closest source-pixels, using the source-pixel centers (x,y).
+    """ Match a set of sub_grid image_grid-pixel image_grid to their closest source-data_to_pixels, using the source-pixel centers (x,y).
 
         This method uses a nearest neighbour search between every sub_image-pixel coordinate and set of source-pixel \
-        centers, thus it is slow when the number of sub_grid image_grid-pixel image_grid or source-pixels is large. However, it
-        is probably the fastest routine for low numbers of sub_grid image_grid-pixels and source-pixels.
+        centers, thus it is slow when the number of sub_grid image_grid-pixel image_grid or source-data_to_pixels is large. However, it
+        is probably the fastest routine for low numbers of sub_grid image_grid-data_to_pixels and source-data_to_pixels.
 
         Parameters
         ----------
         sub_coordinates : [(float, float)]
             The x and y sub_grid image_grid-pixel image_grid to be matched to the source-pixel centers.
         image_total : int
-            The total number of image_grid pixels in the image_grid.
+            The total number of image_grid data_to_pixels in the image_grid.
         sub_total : int
-            The total number of sub_grid pixels in the image_grid sub_grid-grid_coords.
+            The total number of sub_grid data_to_pixels in the image_grid sub_grid-grid_coords.
         source_centers: [(float, float)
-            The source-pixels centers the sub_grid image_grid-pixel image_grid are matched with.
+            The source-data_to_pixels centers the sub_grid image_grid-pixel image_grid are matched with.
 
         Returns
         ----------
@@ -117,18 +117,18 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
     """ Match a set of sub_grid image_grid-pixel image_grid to their closest source-pixel, using the source-pixel centers (x,y).
 
         This method uses a sparsely sampled grid_coords of sub_grid image_grid-pixel image_grid with known image_grid-pixel to source-pixel \
-        pairings and the source-pixels neighbors to speed up the function. This is optimal when the number of sub_grid \
-        image_grid-pixels or source-pixels is large. Thus, the sparse_grid grid_coords of sub_grid must have had a source \
+        pairings and the source-data_to_pixels neighbors to speed up the function. This is optimal when the number of sub_grid \
+        image_grid-data_to_pixels or source-data_to_pixels is large. Thus, the sparse_grid grid_coords of sub_grid must have had a source \
         pixelization derived (e.g. using the KMeans class) and the neighbors of each source-pixel must be known \
         (e.g. using the Voronoi class). Both must have been performed prior to this function call.
 
         In a realistic lens pixelization, the sparse_grid image_grid will correspond to the center of each image_grid pixel \
-        (traced to the source-plane) or a sparser grid_coords of image_grid-pixels. The sub_grid will be the sub_grid \
-        image_grid-pixels (again, traced to the source-plane). A benefit of this is the source-pixelization (e.g. using \
+        (traced to the source-plane) or a sparser grid_coords of image_grid-data_to_pixels. The sub_grid will be the sub_grid \
+        image_grid-data_to_pixels (again, traced to the source-plane). A benefit of this is the source-pixelization (e.g. using \
         KMeans) will be dervied using significantly fewer sub_grid, offering run-time speedup.
 
         In the routine below, some variables and function names refer to a 'sparse_source_'. This term describes a \
-        source-pixel that we have paired to a sub_coordinate using the sparse_grid grid_coords of image_grid pixels. Thus, it may not \
+        source-pixel that we have paired to a sub_coordinate using the sparse_grid grid_coords of image_grid data_to_pixels. Thus, it may not \
         actually be that sub_coordinate's closest source-pixel (the routine will eventually determine this).
 
         Parameters
@@ -136,9 +136,9 @@ def sub_coordinates_to_source_pixels_via_sparse_pairs(sub_coordinates, image_tot
         sub_coordinates : [(float, float)]
             The x and y sub_grid to be matched to the source_pixel centers.
         image_total : int
-            The total number of image_grid pixels in the image_grid.
+            The total number of image_grid data_to_pixels in the image_grid.
         sub_total : int
-            The total number of sub_grid pixels in the image_grid sub_grid-grid_coords.
+            The total number of sub_grid data_to_pixels in the image_grid sub_grid-grid_coords.
         source_centers: [(float, float)]
             The source_pixel centers the sub_grid are matched with.
         source_neighbors : [[]]

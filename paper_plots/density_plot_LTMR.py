@@ -1,8 +1,13 @@
 import sys
+import math
+import numpy as np
+import matplotlib.pyplot as plt
 
 sys.path.append("../")
 
 from paper_plots import density_plot_tools
+from auto_lens import galaxy
+from auto_lens.profiles import light_profiles, mass_profiles
 
 
 ltm_skip = 0
@@ -25,51 +30,56 @@ slacs = density_plot_tools.SLACS(image_dir, image_name)
 pipeline_folder = 'Pipeline_LTM2'
 phase_folder = 'PL_5_LMDM_LTM_R_MC'
 
-if image_name == 'SLACSJ1250+0523' or image_name == 'SLACSJ1430+4105':
-    center_skip = 2
+sersic_bulge = mass_profiles.EllipticalSersicMass(centre=(0.02, 0.008), axis_ratio=0.87,
+                                                  phi=71.1, intensity=0.09458,
+                                                  effective_radius=1.0153,
+                                                  sersic_index=4.57468,
+                                                  mass_to_light_ratio=1.55265)
 
-if pipeline_folder == 'Pipeline_LTM2':
-    ltm_skip = 1
+exponential_halo = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.043, 0.036),
+    axis_ratio=0.7861, phi=161.34, intensity=0.02475, effective_radius=2.1389, mass_to_light_ratio=1.2556,
+                                                                    mass_to_light_gradient=-0.2229)
 
-ltm_r_skip = 1
+dark_matter_halo = mass_profiles.SphericalNFW(kappa_s=0.1035, scale_radius=30.0 * slacs.arcsec_per_kpc)
 
-image_dir = image_dir + image_name + '/' + pipeline_folder + '/' + phase_folder + '/'
+lens_galaxy = galaxy.Galaxy(redshift=slacs.redshift, mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
+source_galaxy = galaxy.Galaxy(redshift=slacs.source_redshift)
 
-model_folder = density_plot_tools.getModelFolders(image_dir)
+number_bins = 30
+radius_kpc = 30
 
-pdf_file = image_dir + model_folder[0] + '/' + image_name + '.txt'
+radii = list(np.linspace(5e-3, radius_kpc * slacs.arcsec_per_kpc, number_bins + 1))
 
-slacs.load_samples(pdf_file, center_skip, ltm_skip)
+radii_plot = []
+bulge_densities = []
+halo_densities = []
+dark_densities = []
 
-model_indexes, sample_weights, total_masses, stellar_masses, dark_masses, stellar_fractions = \
-     slacs.masses_of_all_samples(radius_kpc=10.0)
+print(lens_galaxy.dimensionless_mass_within_circles_individual(radius=300.0))
+stop
 
-total_mass, total_mass_std = density_plot_tools.weighted_avg_and_std(total_masses, sample_weights)
-total_mass_lower = total_mass - total_mass_std
-total_mass_upper = total_mass + total_mass_std
+for r in range(number_bins):
 
-stellar_mass, stellar_mass_std = density_plot_tools.weighted_avg_and_std(stellar_masses, sample_weights)
-stellar_mass_lower = stellar_mass - stellar_mass_std
-stellar_mass_upper = stellar_mass + stellar_mass_std
+    annuli_area = (math.pi * radii[r + 1] ** 2 - math.pi * radii[r] ** 2)
 
-# print()
-# print('Our Mass = ', '{0:e}'.format(total_mass), '(', '{0:e}'.format(total_mass_lower), '{0:e}'.format(total_mass_upper), ')')
-# print('SLACS Mass in R_Ein= ', slacs.mass)
-# print('Our Mass / SLACS Mass = ' , total_mass / float(slacs.mass) )
-#
-# print()
-# print('Stellar Mass fraction in R_Ein = ', stellar_mass / total_mass, '(', stellar_mass_lower / total_mass, stellar_mass_upper / total_mass, ')' )
-# print('SLACS Chabrier Stellar Mass Fraction in R_Ein = ', slacs.chab_stellar_frac, ' +- ', slacs.chab_stellar_frac_error )
-# print('SLACS Salpeter Stellar Mass Fraction in R_Ein = ', slacs.sal_stellar_frac, ' +- ', slacs.sal_stellar_frac_error  )
-#
-# print()
-# print('Our Stellar Mass = ','{0:e}'.format((stellar_mass)), '(', '{0:e}'.format(stellar_mass_lower), '{0:e}'.format(stellar_mass_upper), ')' )
-# print('SLACS Chabrier stellar mass = ', '{0:e}'.format(float(slacs.chab_stellar_mass)), '(', '{0:e}'.format(float(slacs.chab_stellar_mass_lower)), '{0:e}'.format(float(slacs.chab_stellar_mass_upper)), ')'  )
-# print('SLACS Salpeter stellar mass = ', '{0:e}'.format(float(slacs.sal_stellar_mass)), '(', '{0:e}'.format(float(slacs.sal_stellar_mass_lower)), '{0:e}'.format(float(slacs.sal_stellar_mass_upper)), ')'  )
-# print('Our Stellar Mass / SLACS Chabrier Stellar Mass = ', stellar_mass / float(slacs.chab_stellar_mass))
-# print('Our Stellar Mass / SLACS Salpeter Stellar Mass = ', stellar_mass / float(slacs.sal_stellar_mass))
+    densities = ((lens_galaxy.dimensionless_mass_within_circles_individual(radii[r + 1]) -
+                  lens_galaxy.dimensionless_mass_within_circles_individual(radii[r])) / annuli_area)
 
+    bulge_densities.append(densities[0])
+    halo_densities.append(densities[1])
+    dark_densities.append(densities[2])
 
-slacs.weighted_densities_vs_radii(radius_kpc=30.0, weight_cut=1e-3, number_bins=20)
+    radii_plot.append(((radii[r + 1] + radii[r]) / 2.0) * slacs.kpc_per_arcsec)
 
-slacs.plot_density(image_name=image_name, labels=['Sersic', 'Exponential', 'NFWSph'])
+print(bulge_densities)
+
+plt.semilogy(radii_plot, bulge_densities, color='r', label='Sersic Bulge')
+plt.semilogy(radii_plot, halo_densities, color='g', label='EllipticalExponentialMass Halo')
+plt.semilogy(radii_plot, dark_densities, color='k', label='Dark Matter Halo')
+
+plt.legend()
+plt.show()
+
+#slacs.weighted_densities_vs_radii(radius_kpc=30.0, weight_cut=1e-3, number_bins=20)
+
+#slacs.plot_density(image_name=image_name, labels=['Sersic', 'Exponential', 'NFWSph'])
