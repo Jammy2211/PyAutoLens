@@ -105,7 +105,7 @@ def subgrid(func):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             A coordinate pair
         pixel_scale : float
             The scale of a pixel
@@ -148,7 +148,7 @@ def iterative_subgrid(subgrid_func):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             x, y coordinates in coordinates space
         pixel_scale : float
             The size of a pixel
@@ -170,6 +170,7 @@ def iterative_subgrid(subgrid_func):
     return wrapper
 
 
+# TODO: Has this been superseded by the grids module?
 def array_function(func):
     """
 
@@ -318,7 +319,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The x and y coordinates of the coordinates
 
         Returns
@@ -387,7 +388,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates of the profile.
 
         Returns
@@ -403,7 +404,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates of the profile.
 
         Returns
@@ -419,7 +420,7 @@ class Profile(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates 
             The (x, y) coordinates of the profile.
 
         Returns
@@ -497,7 +498,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates of the profile.
 
         Returns
@@ -554,7 +555,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates of the profile.
 
         Returns
@@ -569,7 +570,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates of the profile.
         radius : float
             The radial distance r from the centre of the coordinate reference frame.
@@ -613,7 +614,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates on the Cartesian grid_coords..
 
         Returns
