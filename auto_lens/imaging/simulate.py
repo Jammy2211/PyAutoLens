@@ -148,7 +148,7 @@ class SimulatePoissonNoise(object):
             The 2D array of pixel exposure times.
         """
         setup_random_seed(self.noise_seed)
-        image_counts = imaging.convert_array_to_counts(image, exposure_time)
+        image_counts = imaging.electrons_per_second_to_counts(image, exposure_time)
         # TODO: Should be __init__ or property
         self.poisson_noise_map = image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
         return image + self.poisson_noise_map
