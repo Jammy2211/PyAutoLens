@@ -16,7 +16,7 @@ data_path = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 # TODO : These will ultimately be performed in the ExposureTime class, once the module takes shape :)
 
-def convert_array_to_counts(array, exposure_time_array):
+def electrons_per_second_to_counts(array, exposure_time_array):
     """For an array (in electrons per second) and exposure time array, return an array in units counts.
 
     Parameters
@@ -28,7 +28,7 @@ def convert_array_to_counts(array, exposure_time_array):
     return np.multiply(array, exposure_time_array)
 
 
-def convert_array_to_electrons_per_second(array, exposure_time_array):
+def counts_to_electrons_per_second(array, exposure_time_array):
     """For an array (in counts) and exposure time array, convert the array to units electrons per second
     Parameters
     ----------
@@ -60,10 +60,10 @@ def estimate_noise_from_image(image, exposure_time, background_noise):
         The standard deviation estimate of the 1D Gaussian level of signal_to_noise_ratio in each pixel due to
         background signal_to_noise_ratio sources, in electrons per second
     """
-    image_counts = convert_array_to_counts(image, exposure_time)
-    background_noise_counts = convert_array_to_counts(background_noise, exposure_time)
+    image_counts = electrons_per_second_to_counts(image, exposure_time)
+    background_noise_counts = electrons_per_second_to_counts(background_noise, exposure_time)
     noise_counts = estimate_noise_in_quadrature(image_counts, background_noise_counts)
-    return convert_array_to_electrons_per_second(noise_counts, exposure_time)
+    return counts_to_electrons_per_second(noise_counts, exposure_time)
 
 
 def numpy_array_from_fits(file_path, hdu):
