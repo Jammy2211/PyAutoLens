@@ -54,7 +54,7 @@ class GridCoordsCollection(object):
 
         return GridCoordsCollection(image, sub, blurring)
 
-    def setup_all_deflections_grids(self, galaxies):
+    def deflection_grids_for_galaxies(self, galaxies):
         """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies) \
         and set these up as a new collection of grids."""
 
@@ -72,7 +72,7 @@ class GridCoordsCollection(object):
 
         return GridCoordsCollection(image, sub, blurring)
 
-    def setup_all_traced_grids(self, deflections):
+    def traced_grids_for_deflections(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
         image = self.image.setup_traced_grid(deflections.image)
 
