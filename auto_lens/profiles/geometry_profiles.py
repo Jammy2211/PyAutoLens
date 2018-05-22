@@ -534,7 +534,7 @@ class EllipticalProfile(Profile):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates
             The (x, y) coordinates of the profile.
 
         Returns
