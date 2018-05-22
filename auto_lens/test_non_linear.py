@@ -719,7 +719,7 @@ class TestMultiNestResultsFinal(object):
                                                        obj_name='obj', model_mapper=model_map, limit=0.9973)
 
             results_1sig = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
-                                                            obj_name='obj', model_mapper=model_map, limit=0.9973)
+                                                            obj_name='obj', model_mapper=model_map, limit=0.68)
 
             assert results_3sig._upper_limits_1d > results_1sig._upper_limits_1d
             assert results_3sig._lower_limits_1d < results_1sig._lower_limits_1d
