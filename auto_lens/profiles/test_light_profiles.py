@@ -329,7 +329,7 @@ class TestLuminosityIntegral(object):
 
             intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * (
                     math.e ** sersic.sersic_constant / (
-                        sersic.sersic_constant ** (2 * sersic.sersic_index))) * scipy.special.gamma(
+                    sersic.sersic_constant ** (2 * sersic.sersic_index))) * scipy.special.gamma(
                 2 * sersic.sersic_index) * scipy.special.gammainc(
                 2 * sersic.sersic_index, x)
 
@@ -371,7 +371,7 @@ class TestLuminosityIntegral(object):
 
             integral_radius = 0.5
 
-            # Use gamma functioon for analytic computation of the intensity within a radius=0.5
+            # Use gamma function for analytic computation of the intensity within a radius=0.5
 
             x = sersic.sersic_constant * ((integral_radius / sersic.effective_radius) ** (1.0 / sersic.sersic_index))
 
@@ -611,69 +611,69 @@ class TestCoordinates(object):
 
 class TestArray(object):
     def test__simple_assumptions(self, circular):
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0,
-                                                                                    y_max=101,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=11, y_min=0,
+                                                                                    y_max=11,
                                                                                     pixel_scale=1)
-        assert array.shape == (101, 101)
-        assert array[51][51] > array[51][52]
-        assert array[51][51] > array[52][51]
+        assert array.shape == (11, 11)
+        assert array[5][5] > array[5][6]
+        assert array[5][5] > array[6][5]
         assert all(map(lambda i: i > 0, array[0]))
 
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                    y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                    y_max=10,
                                                                                     pixel_scale=0.5)
-        assert array.shape == (200, 200)
+        assert array.shape == (20, 20)
 
     def test__ellipticity(self, circular, elliptical, vertical):
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=101, y_min=0,
-                                                                                    y_max=101,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=11, y_min=0,
+                                                                                    y_max=11,
                                                                                     pixel_scale=1)
-        assert array[60][0] == array[0][60]
+        assert array[6][0] == array[0][6]
 
-        array = geometry_profiles.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                      y_max=100,
+        array = geometry_profiles.array_function(elliptical.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                      y_max=10,
                                                                                       pixel_scale=1)
 
-        assert array[60][51] > array[51][60]
+        assert array[6][5] > array[5][6]
 
-        array = geometry_profiles.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                    y_max=100,
+        array = geometry_profiles.array_function(vertical.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                    y_max=10,
                                                                                     pixel_scale=1)
-        assert array[60][51] < array[51][60]
+        assert array[6][5] < array[5][6]
 
     # noinspection PyTypeChecker
     def test__flat_array(self, circular):
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                    y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                    y_max=10,
                                                                                     pixel_scale=1)
-        flat_array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                         y_max=100,
+        flat_array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                         y_max=10,
                                                                                          pixel_scale=1).flatten()
 
-        assert all(array[0] == flat_array[:100])
-        assert all(array[1] == flat_array[100:200])
+        assert all(array[0] == flat_array[:10])
+        assert all(array[1] == flat_array[10:20])
 
     def test_symmetric_profile(self, circular):
-        circular.centre = (50, 50)
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                    y_max=100,
+        circular.centre = (5, 5)
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                    y_max=10,
                                                                                     pixel_scale=1.0)
 
-        assert array[50][50] > array[50][51]
-        assert array[50][50] > array[49][50]
-        assert array[49][50] == array[50][51]
-        assert array[50][51] == array[50][49]
-        assert array[50][49] == array[51][50]
+        assert array[5][5] > array[5][6]
+        assert array[5][5] > array[4][5]
+        assert array[4][5] == array[5][6]
+        assert array[5][6] == array[5][4]
+        assert array[5][4] == array[6][5]
 
-        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=100, y_min=0,
-                                                                                    y_max=100,
+        array = geometry_profiles.array_function(circular.intensity_at_coordinates)(x_min=0, x_max=10, y_min=0,
+                                                                                    y_max=10,
                                                                                     pixel_scale=0.5)
 
-        assert array[100][100] > array[100][101]
-        assert array[100][100] > array[99][100]
-        assert array[99][100] == array[100][101]
-        assert array[100][101] == array[100][99]
-        assert array[100][99] == array[101][100]
+        assert array[10][10] > array[10][11]
+        assert array[10][10] > array[9][10]
+        assert array[9][10] == array[10][11]
+        assert array[10][11] == array[10][9]
+        assert array[10][9] == array[11][10]
 
     def test_origin_symmetric_profile(self, circular):
         array = geometry_profiles.array_function(circular.intensity_at_coordinates)()
