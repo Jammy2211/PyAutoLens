@@ -149,35 +149,12 @@ class SimulatePoissonNoise(object):
         """
         setup_random_seed(self.noise_seed)
         image_counts = imaging.convert_array_to_counts(image, exposure_time)
+        # TODO: Should be __init__ or property
         self.poisson_noise_map = image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
         return image + self.poisson_noise_map
 
 
-class SimulateBackgroundNoise(object):
-
-    def __init__(self, background_noise_sigma, noise_seed=-1):
-        """Class to adds Gaussian noise (representing a constant sky background) to a simulated image.
-
-        Parameters
-        ----------
-        background_noise_sigma : float
-            The background-noise level, defined as the standard deviation of a Gaussian.
-        noise_seed : int
-            The seed of the random number generator, used for the random noise maps.
-        """
-        self.background_noise_sigma = background_noise_sigma
-        self.background_noise_map = None
-        self.noise_seed = noise_seed
-
-    def simulate_for_image(self, image):
-        """Generate a two-dimensional background noise-map for an image, generating values from a Gaussian \
-        distribution with mean 0.0.
-
-        Parameters
-        ----------
-        image : ndarray
-            The 2D image background noise is added to.
-        """
-        setup_random_seed(self.noise_seed)
-        self.background_noise_map = np.random.normal(loc=0.0, scale=self.background_noise_sigma, size=image.shape)
-        return image + self.background_noise_map
+def background_noise(image, sigma, seed=-1):
+    setup_random_seed(seed)
+    background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
+    return background_noise_map
