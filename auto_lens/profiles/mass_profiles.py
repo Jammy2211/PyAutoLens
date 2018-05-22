@@ -1006,6 +1006,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Tau']
 
+
     def surface_density_at_radius(self, radius):
         return self.mass_to_light_ratio * (
                 ((self.axis_ratio * radius) / self.effective_radius) ** -self.mass_to_light_gradient) \
