@@ -2,6 +2,32 @@ import getdist
 import sys
 import os
 
+def generate_parameter_latex(parameters, subscript=''):
+    """Generate a latex label for a non-linear search parameter.
+
+    This is used for the paramnames file and outputting the results of a run to a latex table.
+
+    Parameters
+    ----------
+    parameters : [str]
+        The parameter names to be converted to latex.
+    subscript : str
+        The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
+        number of the component of the model_mapper.
+
+    """
+
+    latex = []
+
+    if subscript == '':
+        for param in parameters:
+            latex.append('$' + param + '$')
+    else:
+        for param in parameters:
+            latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
+
+    return latex
+
 class NonLinearDirectory(object):
 
     def __init__(self, path, obj_name, model_mapper):
@@ -45,32 +71,6 @@ class NonLinearDirectory(object):
 
     def make_results_folder(self):
         os.makedirs(self.results_path)
-
-    def generate_parameter_latex(self, parameters, subscript=''):
-        """Generate a latex label for a non-linear search parameter.
-
-        This is used for the paramnames file and outputting the results of a run to a latex table.
-
-        Parameters
-        ----------
-        parameters : [str]
-            The parameter names to be converted to latex.
-        subscript : str
-            The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
-            number of the component of the model_mapper.
-
-        """
-
-        latex = []
-
-        if subscript == '':
-            for param in parameters:
-                latex.append('$' + param + '$')
-        else:
-            for param in parameters:
-                latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
-
-        return latex
 
 
 class MultiNestFiles(object):
@@ -130,7 +130,7 @@ class MultiNestOptimizer(NonLinearDirectory):
             component_number = prior_model.cls().component_number
             subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number+1)
 
-            param_labels = self.generate_parameter_latex(param_labels, subscript)
+            param_labels = generate_parameter_latex(param_labels, subscript)
 
             for param_no, param in enumerate(self.model_mapper.class_priors_dict[prior_name]):
                 line = prior_name + '_' + param[0]
@@ -167,6 +167,7 @@ class MultiNestOptimizer(NonLinearDirectory):
 
     def setup_results_final(self):
         return MultiNestResultsFinal(self.path, self.obj_name, self.model_mapper)
+
 
 class MultiNestResultsIntermediate(NonLinearDirectory):
 
