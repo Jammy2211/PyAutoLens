@@ -1,4 +1,4 @@
-import sys
+import queue as queue
 
 """
 Find an F matrix from an f matrix efficiently.
@@ -20,15 +20,6 @@ neighbours of that pixel. Setting neighbour_search_limit causes the adding of ne
 limit.
 
 """
-
-# TODO: fix environment so we don't need this! *vomits*
-
-if sys.version[0] == '2':
-    # noinspection PyPep8Naming
-    import Queue as queue
-else:
-    # noinspection PyUnresolvedReferences
-    import queue as queue
 
 
 def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, sub_to_source, sub_to_image):
