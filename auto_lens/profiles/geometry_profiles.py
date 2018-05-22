@@ -428,7 +428,7 @@ class Profile(object):
         The radial distance of the coordinates from the profile centre.
         """
         shifted_coordinates = self.coordinates_to_centre(coordinates)
-        return np.sqrt(np.sum(shifted_coordinates**2.0))
+        return np.sqrt(np.sum(shifted_coordinates ** 2.0))
 
 
 class EllipticalProfile(Profile):
@@ -564,7 +564,6 @@ class EllipticalProfile(Profile):
         """
 
         return np.sqrt(self.axis_ratio) * np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
-
 
     def coordinates_radius_to_x_and_y(self, coordinates, radius):
         """Decomposed a coordinate at a given radial distance r into its x and y vectors
