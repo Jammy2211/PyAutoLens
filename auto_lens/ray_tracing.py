@@ -1,28 +1,3 @@
-from auto_lens.profiles import geometry_profiles
-
-import numpy as np
-
-
-class RayTrace(object):
-    """The ray-tracing calculations, defined by a set of grids of coordinates and planes containing every galaxy in \
-    the lensing system. These are computed in order of ascending galaxy redshift.
-
-    The ray-tracing calculations between every plane is determined using the angular diameter distances between each \
-    set of galaxies.
-
-    This is used to perform all ray-tracing calculations and for converting dimensionless measurements (e.g. \
-    arc-seconds, mass) to physical units.
-
-    Parameters
-    ----------
-    galaxies : [Galaxy]
-        The list of galaxies that form the lensing planes.
-    cosmological_model : astropy.cosmology.FLRW
-        The assumed cosmology for this ray-tracing calculation.
-    """
-    pass
-
-
 class TraceImageAndSource(object):
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids):
