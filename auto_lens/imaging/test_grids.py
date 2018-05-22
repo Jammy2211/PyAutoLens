@@ -970,48 +970,26 @@ class TestGridData(object):
 
 class TestGridMapperCollection(object):
     class TestConstructor:
+        data_to_pixel = np.array([[0, 0],
+                                  [0, 1],
+                                  [0, 2]])
 
-<<<<<<< HEAD
-            data_to_pixel = np.array([[0,0],
-                                      [0,1],
-                                      [0,2]])
+        mapper_2d = grids.GridMapperDataToPixel(dimensions_2d=(3, 3), data_to_pixel=data_to_pixel)
 
-            mapper_2d = grids.GridMapperDataToPixel(dimensions_2d=(3, 3), data_to_pixel=data_to_pixel)
-=======
-        def test__simple_mappers_input__sets_up_grid_correctly_in_attributes(self):
-            data_to_2d = np.array([[0, 0],
-                                   [0, 1],
-                                   [0, 2]])
+        clustering_to_image = np.array([1, 2, 3, 5])
+        image_to_clustering = np.array([6, 7, 2, 3])
 
-            mapper_2d = grids.GridMapperDataTo2D(dimensions=(3, 3), data_to_2d=data_to_2d)
->>>>>>> 33ff559ca9662bf55eaf6c8746e6bd5baacf0c27
+        mapper_clustering = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
 
-            clustering_to_image = np.array([1, 2, 3, 5])
-            image_to_clustering = np.array([6, 7, 2, 3])
+        mappers = grids.GridMapperCollection(data_to_pixels=mapper_2d, clustering=mapper_clustering)
 
-            mapper_clustering = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
-<<<<<<< HEAD
-            
-            mappers = grids.GridMapperCollection(data_to_pixels=mapper_2d, clustering=mapper_clustering)
-            
-            assert (mappers.data_to_pixels == mapper_2d).all()
-=======
+        assert (mappers.data_to_pixels == mapper_2d).all()
 
-            mappers = grids.GridMapperCollection(data_to_2d=mapper_2d, clustering=mapper_clustering)
-
-            assert (mappers.data_to_2d == mapper_2d).all()
->>>>>>> 33ff559ca9662bf55eaf6c8746e6bd5baacf0c27
-            assert (mappers.clustering.clustering_to_image == mapper_clustering.clustering_to_image).all()
-            assert (mappers.clustering.image_to_clustering == mapper_clustering.image_to_clustering).all()
+        assert (mappers.clustering.clustering_to_image == mapper_clustering.clustering_to_image).all()
+        assert (mappers.clustering.image_to_clustering == mapper_clustering.image_to_clustering).all()
 
 
-<<<<<<< HEAD
 class TestGridMapperDataToPixel(object):
-
-
-=======
-class TestGridMapperDataTo2D(object):
->>>>>>> 33ff559ca9662bf55eaf6c8746e6bd5baacf0c27
     class TestConstructor:
 
         def test__simple_mapper_input__sets_up_grid_in_attributes(self):
@@ -1019,24 +997,18 @@ class TestGridMapperDataTo2D(object):
                                    [0, 1],
                                    [0, 2]])
 
-<<<<<<< HEAD
-            data_to_pixel = np.array([[0,0],
-                                   [0,1],
-                                   [0,2]])
+            data_to_pixel = np.array([[0, 0],
+                                      [0, 1],
+                                      [0, 2]])
 
             mapper = grids.GridMapperDataToPixel(dimensions_2d=(3, 3), data_to_pixel=data_to_pixel)
 
             assert mapper.dimensions_2d == (3, 3)
             assert mapper.dimensions_1d == 3
 
-            assert (mapper[0] == np.array([0,0])).all()
-            assert (mapper[1] == np.array([0,1])).all()
-            assert (mapper[2] == np.array([0,2])).all()
-=======
-            mapper = grids.GridMapperDataTo2D(dimensions=(3, 3), data_to_2d=data_to_2d)
-
-            assert mapper.dimensions == (3, 3)
->>>>>>> 33ff559ca9662bf55eaf6c8746e6bd5baacf0c27
+            assert (mapper[0] == np.array([0, 0])).all()
+            assert (mapper[1] == np.array([0, 1])).all()
+            assert (mapper[2] == np.array([0, 2])).all()
 
             assert (mapper[0] == np.array([0, 0])).all()
             assert (mapper[1] == np.array([0, 1])).all()
@@ -1053,12 +1025,8 @@ class TestGridMapperDataTo2D(object):
 
             mapper = grids.GridMapperDataToPixel.from_mask(mask)
 
-<<<<<<< HEAD
-            assert mapper.dimensions_2d == (3,3)
+            assert mapper.dimensions_2d == (3, 3)
             assert mapper.dimensions_1d == 5
-=======
-            assert mapper.dimensions == (3, 3)
->>>>>>> 33ff559ca9662bf55eaf6c8746e6bd5baacf0c27
 
             assert (mapper[0] == np.array([0, 1])).all()
             assert (mapper[1] == np.array([1, 0])).all()
@@ -1076,21 +1044,12 @@ class TestGridMapperDataTo2D(object):
             mapper = mask.compute_grid_mapper_data_to_pixel()
             mapper_from_mask = grids.GridMapperDataToPixel.from_mask(mask)
 
-<<<<<<< HEAD
-            assert mapper_from_mask.dimensions_2d == (3,4)
+            assert mapper_from_mask.dimensions_2d == (3, 4)
             assert mapper_from_mask.dimensions_1d == 4
 
             assert (mapper == mapper_from_mask).all()
 
-
     class TestMapDataTo2d:
-=======
-            assert mapper_from_mask.dimensions == (3, 4)
-
-            assert (mapper == mapper_from_mask).all()
-
-    class TestMapData:
->>>>>>> 33ff559ca9662bf55eaf6c8746e6bd5baacf0c27
 
         def test__3x3_dataset_in_2d__mask_is_all_false__maps_back_to_original_data(self):
             data = np.array([[0, 1, 2],
@@ -1136,11 +1095,9 @@ class TestGridMapperDataTo2D(object):
                                                   [3, 4, 5],
                                                   [0, 7, 0]])).all()
 
-
     class TestMapDataTo1d:
 
         def test__3x3_dataset_in_2d__mask_is_all_false__maps_back_to_original_data(self):
-
             data = np.array([[0, 1, 2],
                              [3, 4, 5],
                              [6, 7, 8]])
@@ -1162,7 +1119,6 @@ class TestGridMapperDataTo2D(object):
             assert (data_from_mapper == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
         def test__3x3_dataset_in_2d__mask_has_trues_in_it__1d_map_excludes_trues(self):
-
             data = np.array([[0, 1, 2],
                              [3, 4, 5],
                              [6, 7, 8]])
