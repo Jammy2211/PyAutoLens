@@ -391,7 +391,34 @@ class TestMultiNest(object):
                                               obj_name='obj', model_mapper=model_map)
 
 
-class TestMultiNestResults(object):
+class TestMultiNestResultsIntermediate(object):
+
+
+    class TestConstructor:
+
+        def test__sets_up_object_name_and_only_most_likely_and_most_probable(self):
+
+            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
+            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/'
+                                                                          'multinest/results/summaries/',
+                                                                           obj_name='obj', model_mapper=model_map)
+
+            assert results.obj_name == 'obj'
+
+            assert results._most_probable == [1.0, 2.0, 3.0, 4.0]
+
+            assert results.most_probable.mass_profile.centre == (1.0, 2.0)
+            assert results.most_probable.mass_profile.kappa_s == 3.0
+            assert results.most_probable.mass_profile.scale_radius == 4.0
+
+            assert results._most_likely == [5.0, 6.0, 7.0, 8.0]
+
+            assert results.most_likely.mass_profile.centre == (5.0, 6.0)
+            assert results.most_likely.mass_profile.kappa_s == 7.0
+            assert results.most_likely.mass_profile.scale_radius == 8.0
+
 
     class TestMostLikely:
         
@@ -400,10 +427,10 @@ class TestMultiNestResults(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results._most_likely_model == [5.0, 6.0, 7.0, 8.0]
+            assert results._most_likely == [5.0, 6.0, 7.0, 8.0]
 
         def test__multiple_profile__read_most_likely_vector__via_summary(self):
 
@@ -412,42 +439,42 @@ class TestMultiNestResults(object):
                                                 light_profile=light_profiles.EllipticalSersic,
                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results._most_likely_model == [12.0, 13.0, 14.0, 15.0, 16.0, -17.0, -18.0, -19.0, -20.0, 21.0, 22.0]
+            assert results._most_likely == [12.0, 13.0, 14.0, 15.0, 16.0, -17.0, -18.0, -19.0, -20.0, 21.0, 22.0]
 
-        def test__one_profile__setup_most_likely_model(self):
+        def test__one_profile__setup_most_likely(self):
 
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results.most_likely_model.mass_profile.centre == (5.0, 6.0)
-            assert results.most_likely_model.mass_profile.kappa_s == 7.0
-            assert results.most_likely_model.mass_profile.scale_radius == 8.0
+            assert results.most_likely.mass_profile.centre == (5.0, 6.0)
+            assert results.most_likely.mass_profile.kappa_s == 7.0
+            assert results.most_likely.mass_profile.scale_radius == 8.0
 
-        def test__multiple_profile__setup_most_likely_model(self):
+        def test__multiple_profile__setup_most_likely(self):
 
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(
                 config=config, light_profile=light_profiles.EllipticalSersic, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results.most_likely_model.light_profile.centre == (12.0, 13.0)
-            assert results.most_likely_model.light_profile.axis_ratio == 14.0
-            assert results.most_likely_model.light_profile.phi == 15.0
-            assert results.most_likely_model.light_profile.intensity == 16.0
-            assert results.most_likely_model.light_profile.effective_radius == -17.0
-            assert results.most_likely_model.light_profile.sersic_index == -18.0
+            assert results.most_likely.light_profile.centre == (12.0, 13.0)
+            assert results.most_likely.light_profile.axis_ratio == 14.0
+            assert results.most_likely.light_profile.phi == 15.0
+            assert results.most_likely.light_profile.intensity == 16.0
+            assert results.most_likely.light_profile.effective_radius == -17.0
+            assert results.most_likely.light_profile.sersic_index == -18.0
 
-            assert results.most_likely_model.mass_profile.centre == (-19.0, -20.0)
-            assert results.most_likely_model.mass_profile.kappa_s == 21.0
-            assert results.most_likely_model.mass_profile.scale_radius == 22.0
+            assert results.most_likely.mass_profile.centre == (-19.0, -20.0)
+            assert results.most_likely.mass_profile.kappa_s == 21.0
+            assert results.most_likely.mass_profile.scale_radius == 22.0
 
     
     class TestMostProbable:
@@ -457,10 +484,10 @@ class TestMultiNestResults(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results._most_probable_model == [1.0, 2.0, 3.0, 4.0]
+            assert results._most_probable == [1.0, 2.0, 3.0, 4.0]
 
         def test__multiple_profile__read_most_probable_vector__via_summary(self):
 
@@ -469,225 +496,265 @@ class TestMultiNestResults(object):
                                                 light_profile=light_profiles.EllipticalSersic,
                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results._most_probable_model == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0, 11.0]
+            assert results._most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0, 11.0]
 
-        def test__one_profile__setup_most_probable_model(self):
+        def test__one_profile__setup_most_probable(self):
 
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results.most_probable_model.mass_profile.centre == (1.0, 2.0)
-            assert results.most_probable_model.mass_profile.kappa_s == 3.0
-            assert results.most_probable_model.mass_profile.scale_radius == 4.0
+            assert results.most_probable.mass_profile.centre == (1.0, 2.0)
+            assert results.most_probable.mass_profile.kappa_s == 3.0
+            assert results.most_probable.mass_profile.scale_radius == 4.0
 
-        def test__multiple_profiles__setup_most_probable_model(self):
+        def test__multiple_profiles__setup_most_probable(self):
 
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(
                 config=config, light_profile=light_profiles.EllipticalSersic, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            assert results.most_probable_model.light_profile.centre == (1.0, 2.0)
-            assert results.most_probable_model.light_profile.axis_ratio == 3.0
-            assert results.most_probable_model.light_profile.phi == 4.0
-            assert results.most_probable_model.light_profile.intensity == -5.0
-            assert results.most_probable_model.light_profile.effective_radius == -6.0
-            assert results.most_probable_model.light_profile.sersic_index == -7.0
+            assert results.most_probable.light_profile.centre == (1.0, 2.0)
+            assert results.most_probable.light_profile.axis_ratio == 3.0
+            assert results.most_probable.light_profile.phi == 4.0
+            assert results.most_probable.light_profile.intensity == -5.0
+            assert results.most_probable.light_profile.effective_radius == -6.0
+            assert results.most_probable.light_profile.sersic_index == -7.0
 
-            assert results.most_probable_model.mass_profile.centre == (-8.0, 9.0)
-            assert results.most_probable_model.mass_profile.kappa_s == 10.0
-            assert results.most_probable_model.mass_profile.scale_radius == 11.0
+            assert results.most_probable.mass_profile.centre == (-8.0, 9.0)
+            assert results.most_probable.mass_profile.kappa_s == 10.0
+            assert results.most_probable.mass_profile.scale_radius == 11.0
+
+
+    class TestSetupFromMultiNest(object):
+
+        def test__setup_from_multinest__identical_to_results_class(self):
+
+            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
+            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+
+            multi = non_linear.MultiNestOptimizer(path=path + 'test_files/non_linear/multinest/results/summaries/',
+                                                  obj_name='obj', model_mapper=model_map)
+
+            results_1 = multi.setup_results_intermediate()
+
+            results_2 = non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
+                                                    obj_name='obj', model_mapper=model_map)
+
+            assert results_1._most_probable == results_2._most_probable
+            assert results_1._most_likely == results_2._most_likely
+
+
+class TestMultiNestResultsFinal(object):
+
+
+    class TestConstructor:
+
+        def test__sets_up_object_name_and_only_most_likely_and_most_probable(self):
+
+            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
+            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/'
+                                                                    'multinest/results/summaries/',
+                                                                    obj_name='obj', model_mapper=model_map)
+
+            assert results.obj_name == 'obj'
+
+            assert results._most_probable == [1.0, 2.0, 3.0, 4.0]
+
+            assert results.most_probable.mass_profile.centre == (1.0, 2.0)
+            assert results.most_probable.mass_profile.kappa_s == 3.0
+            assert results.most_probable.mass_profile.scale_radius == 4.0
+
+            assert results._most_likely == [5.0, 6.0, 7.0, 8.0]
+
+            assert results.most_likely.mass_profile.centre == (5.0, 6.0)
+            assert results.most_likely.mass_profile.kappa_s == 7.0
+            assert results.most_likely.mass_profile.scale_radius == 8.0
+
+            assert results._upper_limits_1d == pytest.approx([1.12, 2.12, 3.12, 4.12], 1e-2)
+            assert results._lower_limits_1d == pytest.approx([0.88, 1.88, 2.88, 3.88], 1e-2)
 
 
     class TestWeightedSamples(object):
 
         def test__one_profile__read_first_weighted_sample__model_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             model, weight, likelihood = results.read_weighted_sample_model(index=0)
 
             assert model == [1.1, 2.1, 3.1, 4.1]
             assert weight == 0.02
-            assert likelihood == -0.5*9999999.9
+            assert likelihood == -0.5 * 9999999.9
 
         def test__one_profile__read_fifth_weighted_sample__model_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             model, weight, likelihood = results.read_weighted_sample_model(index=5)
 
             assert model == [1.0, 2.0, 3.0, 4.0]
             assert weight == 0.1
-            assert likelihood == -0.5*9999999.9
+            assert likelihood == -0.5 * 9999999.9
 
         def test__multiple_profiles__read_first_weighted_sample__model_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                light_profile=light_profiles.EllipticalSersic,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 light_profile=light_profiles.EllipticalSersic,
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             model, weight, likelihood = results.read_weighted_sample_model(index=0)
 
             assert model == [1.1, 2.1, 3.1, 4.1, -5.1, -6.1, -7.1, -8.1, 9.1, 10.1, 11.1]
             assert weight == 0.02
-            assert likelihood == -0.5*9999999.9
+            assert likelihood == -0.5 * 9999999.9
 
         def test__multiple_profiles__read_fifth_weighted_sample__model_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                light_profile=light_profiles.EllipticalSersic,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 light_profile=light_profiles.EllipticalSersic,
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             model, weight, likelihood = results.read_weighted_sample_model(index=5)
 
             assert model == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0, 11.0]
             assert weight == 0.1
-            assert likelihood == -0.5*9999999.9
+            assert likelihood == -0.5 * 9999999.9
 
         def test__one_profile__setup_first_weighted_sample_model__include_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             results.setup_weighted_sample_model(index=0)
 
             assert results._weighted_sample_model == [1.1, 2.1, 3.1, 4.1]
             assert results.weighted_sample_weight == 0.02
-            assert results.weighted_sample_likelihood == -0.5*9999999.9
+            assert results.weighted_sample_likelihood == -0.5 * 9999999.9
 
             assert results.weighted_sample_model.mass_profile.centre == (1.1, 2.1)
             assert results.weighted_sample_model.mass_profile.kappa_s == 3.1
             assert results.weighted_sample_model.mass_profile.scale_radius == 4.1
 
         def test__one_profile__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             results.setup_weighted_sample_model(index=5)
 
             assert results._weighted_sample_model == [1.0, 2.0, 3.0, 4.0]
             assert results.weighted_sample_weight == 0.1
-            assert results.weighted_sample_likelihood == -0.5*9999999.9
+            assert results.weighted_sample_likelihood == -0.5 * 9999999.9
 
             assert results.weighted_sample_model.mass_profile.centre == (1.0, 2.0)
             assert results.weighted_sample_model.mass_profile.kappa_s == 3.0
             assert results.weighted_sample_model.mass_profile.scale_radius == 4.0
 
         def test__multiple_profiles__setup_first_weighted_sample_model__include_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                light_profile=light_profiles.EllipticalSersic,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 light_profile=light_profiles.EllipticalSersic,
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             results.setup_weighted_sample_model(index=0)
 
             assert results._weighted_sample_model == [1.1, 2.1, 3.1, 4.1, -5.1, -6.1, -7.1, -8.1, 9.1, 10.1, 11.1]
             assert results.weighted_sample_weight == 0.02
-            assert results.weighted_sample_likelihood == -0.5*9999999.9
+            assert results.weighted_sample_likelihood == -0.5 * 9999999.9
 
-            assert  results.weighted_sample_model.light_profile.centre == (1.1, 2.1)
-            assert  results.weighted_sample_model.light_profile.axis_ratio == 3.1
-            assert  results.weighted_sample_model.light_profile.phi == 4.1
-            assert  results.weighted_sample_model.light_profile.intensity == -5.1
-            assert  results.weighted_sample_model.light_profile.effective_radius == -6.1
-            assert  results.weighted_sample_model.light_profile.sersic_index == -7.1
+            assert results.weighted_sample_model.light_profile.centre == (1.1, 2.1)
+            assert results.weighted_sample_model.light_profile.axis_ratio == 3.1
+            assert results.weighted_sample_model.light_profile.phi == 4.1
+            assert results.weighted_sample_model.light_profile.intensity == -5.1
+            assert results.weighted_sample_model.light_profile.effective_radius == -6.1
+            assert results.weighted_sample_model.light_profile.sersic_index == -7.1
 
-            assert  results.weighted_sample_model.mass_profile.centre == (-8.1, 9.1)
-            assert  results.weighted_sample_model.mass_profile.kappa_s == 10.1
-            assert  results.weighted_sample_model.mass_profile.scale_radius == 11.1
+            assert results.weighted_sample_model.mass_profile.centre == (-8.1, 9.1)
+            assert results.weighted_sample_model.mass_profile.kappa_s == 10.1
+            assert results.weighted_sample_model.mass_profile.scale_radius == 11.1
 
         def test__multiple_profiles__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config,
-                                                light_profile=light_profiles.EllipticalSersic,
-                                                mass_profile=mass_profiles.SphericalNFW)
+                                                 light_profile=light_profiles.EllipticalSersic,
+                                                 mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             results.setup_weighted_sample_model(index=5)
 
             assert results._weighted_sample_model == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0, 11.0]
             assert results.weighted_sample_weight == 0.1
-            assert results.weighted_sample_likelihood == -0.5*9999999.9
+            assert results.weighted_sample_likelihood == -0.5 * 9999999.9
 
-            assert  results.weighted_sample_model.light_profile.centre == (1.0, 2.0)
-            assert  results.weighted_sample_model.light_profile.axis_ratio == 3.0
-            assert  results.weighted_sample_model.light_profile.phi == 4.0
-            assert  results.weighted_sample_model.light_profile.intensity == -5.0
-            assert  results.weighted_sample_model.light_profile.effective_radius == -6.0
-            assert  results.weighted_sample_model.light_profile.sersic_index == -7.0
+            assert results.weighted_sample_model.light_profile.centre == (1.0, 2.0)
+            assert results.weighted_sample_model.light_profile.axis_ratio == 3.0
+            assert results.weighted_sample_model.light_profile.phi == 4.0
+            assert results.weighted_sample_model.light_profile.intensity == -5.0
+            assert results.weighted_sample_model.light_profile.effective_radius == -6.0
+            assert results.weighted_sample_model.light_profile.sersic_index == -7.0
 
-            assert  results.weighted_sample_model.mass_profile.centre == (-8.0, 9.0)
-            assert  results.weighted_sample_model.mass_profile.kappa_s == 10.0
-            assert  results.weighted_sample_model.mass_profile.scale_radius == 11.0
+            assert results.weighted_sample_model.mass_profile.centre == (-8.0, 9.0)
+            assert results.weighted_sample_model.mass_profile.kappa_s == 10.0
+            assert results.weighted_sample_model.mass_profile.scale_radius == 11.0
 
 
     class TestLimits(object):
 
         def test__one_profile__limits_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self):
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
             assert results._upper_limits_1d == pytest.approx([1.12, 2.12, 3.12, 4.12], 1e-2)
             assert results._lower_limits_1d == pytest.approx([0.88, 1.88, 2.88, 3.88], 1e-2)
 
         def test__compare_to_above__change_limfrac_to_1_sigma__limits_get_closer_to_mean(self):
-
-
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            results_3sig = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
-                                                  obj_name='obj', model_mapper=model_map, limit=0.9973)
+            results_3sig = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
+                                                       obj_name='obj', model_mapper=model_map, limit=0.9973)
 
-            results_1sig = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
-                                                  obj_name='obj', model_mapper=model_map, limit=0.6826)
+            results_1sig = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
+                                                       obj_name='obj', model_mapper=model_map, limit=0.6826)
 
             assert results_3sig._upper_limits_1d > results_1sig._upper_limits_1d
             assert results_3sig._lower_limits_1d < results_1sig._lower_limits_1d
@@ -706,10 +773,13 @@ class TestMultiNestResults(object):
             multi = non_linear.MultiNestOptimizer(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                   obj_name='obj', model_mapper=model_map)
 
-            results_1 = multi.setup_results()
+            results_1 = multi.setup_results_final()
 
-            results_2 = non_linear.MultiNestResults(path=path + 'test_files/non_linear/multinest/results/summaries/',
+            results_2 = non_linear.MultiNestResultsFinal(path=path + 'test_files/non_linear/multinest/results/summaries/',
                                                     obj_name='obj', model_mapper=model_map)
 
-            assert results_1._most_probable_model == results_2._most_probable_model
-            assert results_1._most_likely_model == results_2._most_likely_model
+            assert results_1._most_probable == results_2._most_probable
+            assert results_1._most_likely == results_2._most_likely
+
+            assert results_1._lower_limits_1d == results_2._lower_limits_1d
+            assert results_1._upper_limits_1d == results_2._upper_limits_1d
