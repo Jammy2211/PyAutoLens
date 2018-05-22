@@ -124,6 +124,7 @@ class DataGrid(object):
     @classmethod
     def from_arcsecond_dimensions(cls, arc_second_dimensions, pixel_scale):
         cls.pixel_scale = pixel_scale
+        # TODO: Yuck. This definitely shouldn't work!
         pixel_dimensions = cls.arc_second_dimensions_to_pixel(cls, arc_second_dimensions)
         return DataGrid(pixel_dimensions, pixel_scale)
 
@@ -141,13 +142,13 @@ class DataGrid(object):
         return (x_pixel - self.central_pixels[1]) * self.pixel_scale
 
     def x_arc_seconds_to_pixel(self, x_arcsec):
-        return (x_arcsec) / self.pixel_scale + self.central_pixels[1]
+        return x_arcsec / self.pixel_scale + self.central_pixels[1]
 
     def y_pixel_to_arc_seconds(self, y_pixel):
         return -(y_pixel - self.central_pixels[0]) * self.pixel_scale
 
     def y_arc_seconds_to_pixel(self, y_arcsec):
-        return -(y_arcsec) / self.pixel_scale + self.central_pixels[0]
+        return -y_arcsec / self.pixel_scale + self.central_pixels[0]
 
     def x_sub_pixel_to_coordinate(self, x_sub_pixel, x_arcsec, sub_grid_size):
         """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and sub-grid_coords \
@@ -292,10 +293,6 @@ class Image(Data):
             The HDU number in the fits file containing the image data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
-        sky_background_level : float
-            An estimate of the level of background sky in the image (electrons per second).
-        sky_background_noise : float
-            An estimate of the signal_to_noise_ratio level in the background sky (electrons per second).
         """
         data = numpy_array_from_fits(path + filename, hdu)
         return Image(data, pixel_scale)
@@ -701,7 +698,7 @@ class Mask(DataGrid):
 
         for y in range(self.pixel_dimensions[0]):
             for x in range(self.pixel_dimensions[1]):
-                if self.mask[y, x] == False:
+                if not self.mask[y, x]:
 
                     x_arcsec = self.x_pixel_to_arc_seconds(x)
                     y_arcsec = self.y_pixel_to_arc_seconds(y)
