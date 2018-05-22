@@ -178,7 +178,8 @@ class GridCoordsRegular(GridCoords):
             The output dimensions of the evaluated values.
 
         """
-        grid_values = np.zeros(output_shape)
+        grid_values = np.zeros(output_shape)  # TODO: Surely pixel_no is always an integer so the second dimension of
+        # TODO: output shape is redundant?
 
         for pixel_no, coordinate in enumerate(self):
             grid_values[pixel_no] = func(coordinates=coordinate)
