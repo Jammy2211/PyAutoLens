@@ -197,13 +197,15 @@ class TestTraceImageAndSoure(object):
                                     mass_profiles=[mass_profiles.SphericalIsothermal()])
 
             image_plane = ray_tracing.ImagePlane(galaxies=[galaxy_light_and_mass], grids=grid_image_and_blurring)
-            source_plane = ray_tracing.SourcePlane(galaxies=[galaxy_light_and_mass], grids=grid_image_and_blurring)
+            deflections_grid = grid_image_and_blurring.deflection_grids_for_galaxies(galaxies=[galaxy_light_and_mass])
+            source_grid = grid_image_and_blurring.traced_grids_for_deflections(deflections_grid)
+            source_plane = ray_tracing.SourcePlane(galaxies=[galaxy_light_and_mass], grids=source_grid)
             plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
                           source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_and_mass],
                                                         source_galaxies=[galaxy_light_and_mass],
-                                                      image_plane_grids=grid_image_and_blurring)
+                                                        image_plane_grids=grid_image_and_blurring)
             ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
