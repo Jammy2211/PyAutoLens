@@ -58,7 +58,7 @@ class SimulateImage(imaging.Image):
             self.data += self.sim_poisson_noise.simulate_for_image(self.data, self.exposure_time.data)
 
         if self.sim_background_noise is not None:
-            self.data += self.sim_poisson_noise.simulate_for_image(self.data)
+            self.data += self.sim_background_noise.simulate_for_image(self.data)
 
         self.background_noise = sim_background_noise
         self.noise_seed = noise_seed
@@ -95,7 +95,7 @@ class SimulateImage(imaging.Image):
 
     def estimate_noise_in_simulated_image(self):
         """Estimate the signal_to_noise_ratio in the simulated image, using the exposure time and background signal_to_noise_ratio"""
-        self.noise = imaging.estimate_noise_from_image(self.data, self.exposure_time, self.background_noise)
+        self.noise = imaging.estimate_noise_from_image(self.data, self.exposure_time.data, self.background_noise.data)
 
     def estimate_signal_to_noise_ratio_in_simulated_image(self):
         """Estimate the signal_to_noise_ratio in the simulated image, using the exposure time and background signal_to_noise_ratio"""

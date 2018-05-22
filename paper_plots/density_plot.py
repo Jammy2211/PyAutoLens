@@ -11,7 +11,7 @@ center_skip = 0
 image_dir = '/gpfs/data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidence tables from
 
 image_name = 'SLACSJ0252+0039'
-image_name = 'SLACSJ1250+0523'
+# image_name = 'SLACSJ1250+0523'
 # image_name = 'SLACSJ1430+4105'
 
 slacs = density_plot_tools.SLACS(image_dir, image_name)
