@@ -324,18 +324,15 @@ class GridCoordsSub(GridCoords):
 
 
 class GridCoordsImage(GridCoordsRegular):
+    """The coordinates of each pixel in an image, stored using a regular grid.
 
-    def __new__(cls, grid_coords):
-        """The coordinates of each pixel in an image, stored using a regular grid.
+    See *GridCoordsRegular* for more details.
 
-        See *GridCoordsRegular* for more details.
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the image, on a regular grid.
-        """
-        return super(GridCoordsImage, cls).__new__(cls, grid_coords)
+    Parameters
+    -----------
+    grid_coords : np.ndarray
+        The coordinates of the image, on a regular grid.
+    """
 
     @classmethod
     def from_mask(cls, mask):
@@ -370,18 +367,15 @@ class GridCoordsImage(GridCoordsRegular):
 
 
 class GridCoordsImageSub(GridCoordsSub):
+    """The sub-coordinates of each pixel in an image, stored using a sub-grid.
 
-    def __new__(cls, grid_coords, grid_size_sub):
-        """The sub-coordinates of each pixel in an image, stored using a sub-grid.
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the image sub-grid, on a sub-grid.
-        grid_size_sub : int
-            The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
-        """
-        return super(GridCoordsImageSub, cls).__new__(cls, grid_coords, grid_size_sub)
+    Parameters
+    -----------
+    grid_coords : np.ndarray
+        The coordinates of the image sub-grid, on a sub-grid.
+    grid_size_sub : int
+        The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
+    """
 
     @classmethod
     def from_mask(cls, mask, grid_size_sub):
