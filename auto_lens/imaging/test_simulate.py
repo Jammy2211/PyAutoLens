@@ -4,16 +4,13 @@ import os
 
 from auto_lens.imaging import imaging, simulate
 
-
 test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
+
 class TestSimulateImage(object):
-
-
     class TestConstructor(object):
 
         def test__setup_with_all_features_off(self):
-
             image = np.array(([0.0, 0.0, 0.0],
                               [0.0, 1.0, 0.0],
                               [0.0, 0.0, 0.0]))
@@ -23,7 +20,7 @@ class TestSimulateImage(object):
 
             sim_image = simulate.SimulateImage(data=image, exposure_time=exposure_time.data, pixel_scale=0.1)
 
-            assert (sim_image.exposure_time == np.ones((3,3))).all()
+            assert (sim_image.exposure_time == np.ones((3, 3))).all()
             assert sim_image.pixel_scale == 0.1
 
             assert (sim_image.data_original == np.array(([0.0, 0.0, 0.0],
@@ -38,7 +35,6 @@ class TestSimulateImage(object):
             assert sim_image.sim_background_noise == None
 
         def test__setup_with_psf_blurring_on(self):
-
             image = np.array(([0.0, 0.0, 0.0],
                               [0.0, 1.0, 0.0],
                               [0.0, 0.0, 0.0]))
@@ -51,9 +47,10 @@ class TestSimulateImage(object):
                                                                 pixel_dimensions=image.shape)
 
             sim_image = simulate.SimulateImage(data=image, exposure_time=exposure_time.data, pixel_scale=0.1,
-                                               sim_optics=simulate.SimulateOptics(imaging.PSF(data=psf, pixel_scale=0.1)))
+                                               sim_optics=simulate.SimulateOptics(
+                                                   imaging.PSF(data=psf, pixel_scale=0.1)))
 
-            assert (sim_image.exposure_time == np.ones((3,3))).all()
+            assert (sim_image.exposure_time == np.ones((3, 3))).all()
             assert sim_image.pixel_scale == 0.1
 
             assert (sim_image.data_original == np.array(([0.0, 0.0, 0.0],
@@ -69,19 +66,17 @@ class TestSimulateImage(object):
             assert sim_image.sim_background_noise == None
 
         def test__setup_with__poisson_noise_on(self):
-
             image = np.array(([0.0, 0.0, 0.0],
                               [0.0, 1.0, 0.0],
                               [0.0, 0.0, 0.0]))
 
             exposure_time = imaging.ExposureTime.from_one_value(exposure_time=20.0, pixel_scale=0.1,
-                                                            pixel_dimensions=image.shape)
-
+                                                                pixel_dimensions=image.shape)
 
             sim_image = simulate.SimulateImage(data=image, pixel_scale=0.1, exposure_time=exposure_time,
-            sim_poisson_noise=simulate.SimulatePoissonNoise(noise_seed=1))
+                                               sim_poisson_noise=simulate.SimulatePoissonNoise(noise_seed=1))
 
-            assert (sim_image.exposure_time.data == 20.0*np.ones((3,3))).all()
+            assert (sim_image.exposure_time.data == 20.0 * np.ones((3, 3))).all()
             assert sim_image.pixel_scale == 0.1
             #
             # assert (sim_image.data_original == np.array(([0.0, 0.0, 0.0],
@@ -101,12 +96,9 @@ class TestSimulateImage(object):
 
 
 class TestSimulateOptics(object):
-
-
     class TestSimulateForImage:
 
         def test__simple_case__blurred_image_is_correct(self):
-
             image = np.array(([0.0, 0.0, 0.0],
                               [0.0, 1.0, 0.0],
                               [0.0, 0.0, 0.0]))
@@ -125,12 +117,9 @@ class TestSimulateOptics(object):
 
 
 class TestSimulatePoissonNoise(object):
-
-
     class TestSimulateForImage:
 
         def test__input_image_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
-            
             sim_poisson = simulate.SimulatePoissonNoise(noise_seed=1)
 
             image = np.zeros((2, 2))
@@ -142,9 +131,8 @@ class TestSimulatePoissonNoise(object):
             assert (sim_poisson_image == np.zeros((2, 2))).all()
 
         def test__input_image_includes_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(self):
-            
             sim_poisson = simulate.SimulatePoissonNoise(noise_seed=1)
-            
+
             image = np.array([[10., 0.],
                               [0., 10.]])
 
@@ -163,9 +151,8 @@ class TestSimulatePoissonNoise(object):
             assert (sim_poisson_image - sim_poisson.poisson_noise_map == image).all()
 
         def test__input_image_is_all_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(self):
-            
             sim_poisson = simulate.SimulatePoissonNoise(noise_seed=1)
-            
+
             image = np.array([[10., 10.],
                               [10., 10.]])
 
@@ -186,9 +173,8 @@ class TestSimulatePoissonNoise(object):
             assert (sim_poisson_image - sim_poisson.poisson_noise_map == image).all()
 
         def test__input_image_has_1000000s__exposure_times_is_1s__these_give_positive_noise_values_near_1000(self):
-            
             sim_poisson = simulate.SimulatePoissonNoise(noise_seed=2)
-            
+
             image = np.array([[10000000., 0.],
                               [0., 10000000.]])
 
@@ -202,15 +188,14 @@ class TestSimulatePoissonNoise(object):
             assert (sim_poisson.poisson_noise_map == np.array([[571, 0],
                                                                [0, -441]])).all()
 
-            assert (sim_poisson_image == np.array([[10000000.0+571, 0.],
-                                                   [0., 10000000.0-441]])).all()
+            assert (sim_poisson_image == np.array([[10000000.0 + 571, 0.],
+                                                   [0., 10000000.0 - 441]])).all()
 
             assert (sim_poisson_image - sim_poisson.poisson_noise_map == image).all()
 
         def test__two_images_same_in_counts_but_different_in_electrons_per_sec__noise_related_by_exposure_times(self):
-            
             sim_poisson = simulate.SimulatePoissonNoise(noise_seed=1)
-            
+
             image_0 = np.array([[10., 0.],
                                 [0., 10.]])
 
@@ -219,7 +204,7 @@ class TestSimulatePoissonNoise(object):
             image_1 = np.array([[5., 0.],
                                 [0., 5.]])
 
-            exposure_time_1 = imaging.ExposureTime(data=2.0*np.ones((2, 2)), pixel_scale=0.1)
+            exposure_time_1 = imaging.ExposureTime(data=2.0 * np.ones((2, 2)), pixel_scale=0.1)
 
             sim_poisson_image_0 = sim_poisson.simulate_for_image(image_0, exposure_time_0.data)
             sim_poisson_image_1 = sim_poisson.simulate_for_image(image_1, exposure_time_1.data)
@@ -227,9 +212,8 @@ class TestSimulatePoissonNoise(object):
             assert (sim_poisson_image_0 / 2.0 == sim_poisson_image_1).all()
 
         def test__same_as_above_but_range_of_image_values_and_exposure_times(self):
-            
             sim_poisson = simulate.SimulatePoissonNoise(noise_seed=1)
-            
+
             image_0 = np.array([[10., 20.],
                                 [30., 40.]])
 
@@ -252,51 +236,18 @@ class TestSimulatePoissonNoise(object):
 
 
 class TestSimulateBackgroundNoise(object):
+    def test__background_noise_sigma_0__background_noise_map_all_0__image_is_identical_to_input(self):
+        image = np.zeros((3, 3))
+        background_noise = simulate.background_noise(image, sigma=0.0, seed=1)
 
+        assert (background_noise == np.zeros((3, 3))).all()
 
-    class TestConstructor:
+    def test__background_noise_sigma_1__background_noise_map_all_non_0__image_has_noise_added(self):
+        image = np.zeros((3, 3))
+        background_noise = simulate.background_noise(image, sigma=1.0, seed=1)
 
-        def test__simple_case__sets_up_correctly(self):
+        # Use seed to give us a known read noise map we'll test for
 
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=1.0, noise_seed=1)
-
-            assert sim_background_noise.background_noise_sigma == 1.0
-            assert sim_background_noise.background_noise_map == None
-            assert sim_background_noise.noise_seed == 1
-
-
-    class TestSimulateForImage:
-
-        def test__background_noise_sigma_0__background_noise_map_all_0__image_is_identical_to_input(self):
-
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=0.0, noise_seed=1)
-
-            image=np.zeros((3,3))
-            image_background = sim_background_noise.simulate_for_image(image)
-
-            assert (sim_background_noise.background_noise_map == np.zeros((3,3))).all()
-            assert (image_background == np.zeros((3,3))).all()
-
-        def test__background_noise_sigma_1__background_noise_map_all_non_0__image_has_noise_added(self):
-
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=1.0, noise_seed=1)
-
-            image=np.zeros((3,3))
-            image_background = sim_background_noise.simulate_for_image(image)
-
-            # Use seed to give us a known read noise map we'll test for
-
-            assert sim_background_noise.background_noise_map == pytest.approx(np.array([[1.62, -0.61, -0.53],
-                                                                             [-1.07, 0.87, -2.30],
-                                                                             [1.74, -0.76, 0.32]]), 1e-2)
-            assert (image_background - sim_background_noise.background_noise_map == image).all()
-
-        def test__same_as_above__different_values__no_noise_seed_so_just_test_noise_subtraction(self):
-
-
-            sim_background_noise = simulate.SimulateBackgroundNoise(background_noise_sigma=6.0)
-
-            image=np.zeros((7,4))
-            image_background = sim_background_noise.simulate_for_image(image)
-
-            assert (image_background - sim_background_noise.background_noise_map == image).all()
+        assert background_noise == pytest.approx(np.array([[1.62, -0.61, -0.53],
+                                                           [-1.07, 0.87, -2.30],
+                                                           [1.74, -0.76, 0.32]]), 1e-2)
