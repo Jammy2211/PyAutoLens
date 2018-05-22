@@ -7,9 +7,9 @@ from auto_lens.imaging import imaging
 from auto_lens import galaxy
 from auto_lens.profiles import mass_profiles, light_profiles
 
+
 @pytest.fixture(scope='function')
 def grid_datas_and_mappers():
-
     mask = np.array([[False, False, False],
                      [False, False, False],
                      [False, False, False]])
@@ -17,12 +17,12 @@ def grid_datas_and_mappers():
     mask = imaging.Mask(mask=mask, pixel_scale=1.0)
 
     image = grids.GridData.from_mask(data=np.array([[0.0, 0.0, 0.0],
-                                                   [0.0, 1.0, 0.0],
-                                                   [0.0, 0.0, 0.0]]), mask=mask)
+                                                    [0.0, 1.0, 0.0],
+                                                    [0.0, 0.0, 0.0]]), mask=mask)
 
     noise = grids.GridData.from_mask(data=np.array([[0.0, 0.0, 0.0],
-                                                   [0.0, 1.0, 0.0],
-                                                   [0.0, 0.0, 0.0]]), mask=mask)
+                                                    [0.0, 1.0, 0.0],
+                                                    [0.0, 0.0, 0.0]]), mask=mask)
 
     exposure_time = grids.GridData.from_mask(data=np.array([[1.0, 1.0, 1.0],
                                                             [1.0, 1.0, 1.0],
@@ -39,9 +39,9 @@ def grid_datas_and_mappers():
 
     return grid_datas, grid_mappers
 
+
 @pytest.fixture(scope='function')
 def ray_tracing():
-
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
@@ -56,7 +56,6 @@ def ray_tracing():
 class TestComputeBlurredImages:
 
     def test__simple_image_and_psf_in__correct_blurred_image_generated(self):
-
         mask = np.array([[False, False, False],
                          [False, False, False],
                          [False, False, False]])
@@ -81,5 +80,3 @@ class TestComputeBlurredImages:
         #  [0.0, 1.0, 0.0]])
 
         assert (blurred_image == np.array([0.0, 1.0, 0.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.0])).all()
-
-
