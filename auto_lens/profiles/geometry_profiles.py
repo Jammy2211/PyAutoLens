@@ -184,7 +184,7 @@ def array_function(func):
     """
 
     @wraps(func)
-    def wrapper(x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1, mask=None):
+    def wrapper(x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=1., mask=None):
         """
 
         Parameters
