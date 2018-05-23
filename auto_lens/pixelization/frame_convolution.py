@@ -18,7 +18,7 @@ such a more efficient representation is a dictionary:
 
 {1: 8, 3: 5, 4: 7, 5: 5, 7: 1}
 
-This module allows us to find the relationships between data_to_pixels in a mask for a kernel of a given size so that
+This module allows us to find the relationships between image_to_pixel in a mask for a kernel of a given size so that
 convolutions can be efficiently applied to reduced arrays such as the one above.
 
 A FrameMaker can be created for a given mask:
@@ -185,12 +185,12 @@ class KernelConvolver(object):
         Parameters
         ----------
         mapping_matrix: [{int: float}]
-            A matrix representing the mapping of source data_to_pixels to image_grid data_to_pixels
+            A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel
 
         Returns
         -------
         convolved_mapping_matrix: [{int: float}]
-            A matrix representing the mapping of source data_to_pixels to image_grid data_to_pixels accounting for convolution
+            A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel accounting for convolution
         """
         return map(self.convolve_vector, mapping_matrix)
 
