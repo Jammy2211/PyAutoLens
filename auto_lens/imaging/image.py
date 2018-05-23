@@ -1,6 +1,7 @@
 import numpy as np
 import logging
 from scipy.stats import norm
+from astropy.io import fits
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -11,7 +12,7 @@ class DataGrid(np.ndarray):
     Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
     """
 
-    def __new__(cls, array, pixel_scale=1):
+    def __new__(cls, array, pixel_scale=1, **kwargs):
         return np.array(array).view(cls)
 
     # noinspection PyUnusedLocal
@@ -147,9 +148,35 @@ class DataGrid(np.ndarray):
 
         return coordinates_array
 
+    @classmethod
+    def from_fits(cls, file_path, hdu, pixel_scale):
+        """
+        Loads the data from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        hdu_list = fits.open(file_path)  # Open the fits file
+        array = np.array(hdu_list[hdu].data)
+        return cls(array, pixel_scale)
+
 
 class Image(DataGrid):
-    def estimate_background_noise_from_edges(self, no_edges):
+    def __init__(self, array, pixel_scale, psf=None, background_noise=None, poisson_noise=None,
+                 effective_exposure_time=None):
+        super(Image, self).__init__(array, pixel_scale)
+        self.psf = psf
+        self.background_noise = background_noise
+        self.poisson_noise = poisson_noise
+        self.effective_exposure_time = effective_exposure_time
+
+    def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning data_to_pixels located at the edge(s) of an image into a histogram and \
         fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this Gaussian gives a signal_to_noise_ratio \
         estimate.
@@ -172,3 +199,4 @@ class Image(DataGrid):
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         return norm.fit(edges)[1]
+
