@@ -6,7 +6,7 @@ class Mask(data.DataGrid):
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
-        return cls(np.zeros(tuple(map(lambda d: int(d / pixel_scale), shape_arc_seconds))), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d / pixel_scale), shape_arc_seconds)), True), pixel_scale)
 
     @classmethod
     def circular(cls, shape_arc_seconds, pixel_scale, radius_mask, centre=(0., 0.)):
@@ -43,7 +43,7 @@ class Mask(data.DataGrid):
     @classmethod
     def annular(cls, shape_arc_seconds, pixel_scale, inner_radius_mask, outer_radius_mask, centre=(0., 0.)):
         """
-                Setup the mask as a circle, using a specified inner and outer radius in arc seconds.
+        Setup the mask as a circle, using a specified inner and outer radius in arc seconds.
 
         Parameters
         ----------
@@ -283,7 +283,7 @@ class Mask(data.DataGrid):
                                     blurring_mask[y + y1, x + x1] = False
                             else:
                                 raise MaskException(
-                                    "setup_blurring_mask extends beynod the size of the mask - pad the image"
+                                    "setup_blurring_mask extends beyond the size of the mask - pad the image"
                                     "before masking")
 
         return Mask(blurring_mask, self.pixel_scale)
