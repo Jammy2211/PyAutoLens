@@ -9,16 +9,16 @@ class TestMappingMatrix:
         image_pixel_total = 6
         sub_grid_size = 1
 
-        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5]  # For no sub_grid grid, image_grid data_to_pixels map to sub_grid-data_to_pixels.
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5]  # For no sub_grid grid, image_grid image_to_pixel map to sub_grid-image_to_pixel.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2]
 
         mapping_matrix = covariance_matrix.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
                                           sub_image_pixel_to_source_pixel_index,
                                           sub_image_pixel_to_image_pixel_index)
 
-    #    assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image data_to_pixels 0 and 3 map to source pixel 0.
-    #                                        [0, 1, 0, 0, 1, 0],  # Image data_to_pixels 1 and 4 map to source pixel 1.
-    #                                        [0, 0, 1, 0, 0, 1]])).all()  # Image data_to_pixels 2 and 5 map to source pixel 2
+    #    assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+    #                                        [0, 1, 0, 0, 1, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+    #                                        [0, 0, 1, 0, 0, 1]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
 
         assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1.0, 5:1}])
 
@@ -28,7 +28,7 @@ class TestMappingMatrix:
         sub_grid_size = 1
 
         sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                                                10]  # For no sub_grid grid, image_grid data_to_pixels map to sub_grid-data_to_pixels.
+                                                10]  # For no sub_grid grid, image_grid image_to_pixel map to sub_grid-image_to_pixel.
         sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
 
         mapping_matrix = covariance_matrix.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
@@ -36,11 +36,11 @@ class TestMappingMatrix:
                                           sub_image_pixel_to_image_pixel_index)
 
      #   assert (mapping_matrix == np.array(
-     #       [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image data_to_pixels 0 and 3 map to source pixel 0.
-     #        [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image data_to_pixels 1 and 4 map to source pixel 1.
+     #       [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+     #        [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
      #        [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
      #        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-     #        [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image data_to_pixels 2 and 5 map to source pixel 2
+     #        [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
 
         assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1, 5:1, 8:1},
                                    {7:1, 10:1}, {6:1, 9:1}])
@@ -50,7 +50,7 @@ class TestMappingMatrix:
         image_pixel_total = 6
         sub_grid_size = 2
 
-        # all sub_grid-data_to_pixels to pixel / source_pixel mappings below have been set up such that all sub_grid-data_to_pixels in an image_grid pixel
+        # all sub_grid-image_to_pixel to pixel / source_pixel mappings below have been set up such that all sub_grid-image_to_pixel in an image_grid pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
@@ -64,9 +64,9 @@ class TestMappingMatrix:
                                           sub_image_pixel_to_source_pixel_index,
                                           sub_image_pixel_to_image_pixel_index)
 
-    #    assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image data_to_pixels 0 and 3 map to source pixel 0.
-    #                                        [0, 1, 0, 0, 1, 0],  # Image data_to_pixels 1 and 4 map to source pixel 1.
-    #                                        [0, 0, 1, 0, 0, 1]])).all()  # Image data_to_pixels 2 and 5 map to source pixel 2
+    #    assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+    #                                        [0, 1, 0, 0, 1, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+    #                                        [0, 0, 1, 0, 0, 1]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
 
         assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1, 5:1}])
 
@@ -75,7 +75,7 @@ class TestMappingMatrix:
         image_pixel_total = 11
         sub_grid_size = 2
 
-        # all sub_grid-data_to_pixels to pixel / source_pixel mappings below have been set up such that all sub_grid-data_to_pixels in an image_grid pixel
+        # all sub_grid-image_to_pixel to pixel / source_pixel mappings below have been set up such that all sub_grid-image_to_pixel in an image_grid pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
@@ -90,11 +90,11 @@ class TestMappingMatrix:
                                           sub_image_pixel_to_image_pixel_index)
 
      #   assert (mapping_matrix == np.array(
-     #       [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image data_to_pixels 0 and 3 map to source pixel 0.
-     #        [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image data_to_pixels 1 and 4 map to source pixel 1.
+     #       [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+     #        [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
      #        [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
      #        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-     #       [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image data_to_pixels 2 and 5 map to source pixel 2
+     #       [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
 
 
         assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1, 5:1, 8:1},
@@ -105,7 +105,7 @@ class TestMappingMatrix:
         image_pixel_total = 6
         sub_grid_size = 2
 
-        # all sub_grid-data_to_pixels to pixel / source_pixel mappings below have been set up such that all sub_grid-data_to_pixels in an image_grid pixel
+        # all sub_grid-image_to_pixel to pixel / source_pixel mappings below have been set up such that all sub_grid-image_to_pixel in an image_grid pixel
         # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
         # values in the final matrix.
 
@@ -119,10 +119,10 @@ class TestMappingMatrix:
                                           sub_image_pixel_to_source_pixel_index,
                                           sub_image_pixel_to_image_pixel_index)
 
-     #   assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0],  # Image data_to_pixels 0 and 3 map to source pixel 0.
-     #                                       [0, 0.5, 0, 0, 1.5, 0],  # Image data_to_pixels 1 and 4 map to source pixel 1.
+     #   assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+     #                                       [0, 0.5, 0, 0, 1.5, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
      #                                       [0.25, 0, 0.75, 0, 0,
-     #                                        1]])).all()  # Image data_to_pixels 2 and 5 map to source pixel 2
+     #                                        1]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
 
 
         assert (mapping_matrix == [{0:0.5, 1:0.5, 3:1}, {1:0.5, 4:1.5}, {0:0.25, 2:0.75, 5:1}])
@@ -132,7 +132,7 @@ class TestMappingMatrix:
         image_pixel_total = 11
         sub_grid_size = 2
 
-        # Moving one of every 4 sub_grid-data_to_pixels to the right compared to the example above. This should turn each 1 in the
+        # Moving one of every 4 sub_grid-image_to_pixel to the right compared to the example above. This should turn each 1 in the
         # mapping matrix to a 0.75, and add a 0.25 to the element to its right
 
         # Note the last value retains all 4 of it's '10's, so keeps a 1 in the mapping matrix
@@ -149,11 +149,11 @@ class TestMappingMatrix:
                                           sub_image_pixel_to_image_pixel_index)
 
     #    assert (mapping_matrix == np.array(
-    #        [[0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0, 0],  # Image data_to_pixels 0 and 3 map to source pixel 0.
-    #         [0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0],  # Image data_to_pixels 1 and 4 map to source pixel 1.
+    #        [[0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+    #         [0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
     #         [0, 0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0.75, 0.25, 0],
     #         [0, 0,    0,    0, 0,    0, 0, 0.75, 0.25, 0, 1],
-    #         [0, 0, 0, 0, 0, 0, 0.75, 0.25, 0, 0.75, 0.25]])).all()  # Image data_to_pixels 2 and 5 map to source pixel 2
+    #         [0, 0, 0, 0, 0, 0, 0.75, 0.25, 0, 0.75, 0.25]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
 
         assert (mapping_matrix == [{0:0.75, 1:0.25, 3:0.75, 4:0.25},
                                    {1:0.75, 2:0.25, 4:0.75, 5:0.25},
@@ -166,14 +166,14 @@ class TestMappingMatrix:
         image_pixel_total = 3
         sub_grid_size = 4
 
-        # 4x4 sub_grid pixel, so 16 sub_grid-data_to_pixels per pixel, so 48 sub_grid-image_grid data_to_pixels,
+        # 4x4 sub_grid pixel, so 16 sub_grid-image_to_pixel per pixel, so 48 sub_grid-image_grid image_to_pixel,
 
-        # No sub_grid-data_to_pixels labelled 0 map to source_pixel 0, so f(0,0) remains 0
-        # 15 sub_grid-data_to_pixels labelled 1 map to source_pixel_index 0, so add 4 * (1/16) = 0.9375 to f(1,1)
+        # No sub_grid-image_to_pixel labelled 0 map to source_pixel 0, so f(0,0) remains 0
+        # 15 sub_grid-image_to_pixel labelled 1 map to source_pixel_index 0, so add 4 * (1/16) = 0.9375 to f(1,1)
         # 1 sub_grid-pixel labelled 2 map to source_pixel_index 0, so add (1/16) = 0.0625 to f(2,1)
-        # 4 sub_grid-data_to_pixels labelled 0 map to source_pixel_index 1, so add 4 * (1/16) = 0.25 to f(0,2)
-        # 12 sub_grid-data_to_pixels labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
-        # 16 sub_grid-data_to_pixels labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
+        # 4 sub_grid-image_to_pixel labelled 0 map to source_pixel_index 1, so add 4 * (1/16) = 0.25 to f(0,2)
+        # 12 sub_grid-image_to_pixel labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
+        # 16 sub_grid-image_to_pixel labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
 
         sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                                 # 50:50 ratio so 1 in each entry of the mapping matrix
@@ -357,7 +357,7 @@ class TestCalculateCovariance(object):
         assert generator.calculate_covariance(0, 1) == 2
 
     def test_no_covariance(self):
-        """Is covariance zero when two source data_to_pixels share no image_grid data_to_pixels?"""
+        """Is covariance zero when two source image_to_pixel share no image_grid image_to_pixel?"""
         generator = covariance_matrix.CovarianceMatrixGenerator([{1: 3}, {0: 1}], [1, 1], None)
 
         assert generator.calculate_covariance(0, 1) == 0
