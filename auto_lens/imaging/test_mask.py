@@ -848,8 +848,8 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False],
-                                                    [False, True, False],
-                                                    [False, False, False]])).all()
+                                               [False, True, False],
+                                               [False, False, False]])).all()
 
         def test__size__3x3__large_mask(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -865,12 +865,12 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 3))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True],
-                                                    [True, True, False, False, False, True, True],
-                                                    [True, True, False, True, False, True, True],
-                                                    [True, True, False, False, False, True, True],
-                                                    [True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True]])).all()
+                                               [True, True, True, True, True, True, True],
+                                               [True, True, False, False, False, True, True],
+                                               [True, True, False, True, False, True, True],
+                                               [True, True, False, False, False, True, True],
+                                               [True, True, True, True, True, True, True],
+                                               [True, True, True, True, True, True, True]])).all()
 
         def test__size__5x5__large_mask(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -886,12 +886,12 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 5))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
-                                                    [True, False, False, False, False, False, True],
-                                                    [True, False, False, False, False, False, True],
-                                                    [True, False, False, True, False, False, True],
-                                                    [True, False, False, False, False, False, True],
-                                                    [True, False, False, False, False, False, True],
-                                                    [True, True, True, True, True, True, True]])).all()
+                                               [True, False, False, False, False, False, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, False, False, True, False, False, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, True, True, True, True, True, True]])).all()
 
         def test__size__5x3__large_mask(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -907,12 +907,12 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 3))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True],
-                                                    [True, False, False, False, False, False, True],
-                                                    [True, False, False, True, False, False, True],
-                                                    [True, False, False, False, False, False, True],
-                                                    [True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True]])).all()
+                                               [True, True, True, True, True, True, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, False, False, True, False, False, True],
+                                               [True, False, False, False, False, False, True],
+                                               [True, True, True, True, True, True, True],
+                                               [True, True, True, True, True, True, True]])).all()
 
         def test__size__3x5__large_mask(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -928,12 +928,12 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 5))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
-                                                    [True, True, False, False, False, True, True],
-                                                    [True, True, False, False, False, True, True],
-                                                    [True, True, False, True, False, True, True],
-                                                    [True, True, False, False, False, True, True],
-                                                    [True, True, False, False, False, True, True],
-                                                    [True, True, True, True, True, True, True]])).all()
+                                               [True, True, False, False, False, True, True],
+                                               [True, True, False, False, False, True, True],
+                                               [True, True, False, True, False, True, True],
+                                               [True, True, False, False, False, True, True],
+                                               [True, True, False, False, False, True, True],
+                                               [True, True, True, True, True, True, True]])).all()
 
         def test__size__3x3__multiple_points(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -949,12 +949,12 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False],
-                                                    [False, True, False, True, False, True, False],
-                                                    [False, False, False, True, False, False, False],
-                                                    [True, True, True, True, True, True, True],
-                                                    [False, False, False, True, False, False, False],
-                                                    [False, True, False, True, False, True, False],
-                                                    [False, False, False, True, False, False, False]])).all()
+                                               [False, True, False, True, False, True, False],
+                                               [False, False, False, True, False, False, False],
+                                               [True, True, True, True, True, True, True],
+                                               [False, False, False, True, False, False, False],
+                                               [False, True, False, True, False, True, False],
+                                               [False, False, False, True, False, False, False]])).all()
 
         def test__size__5x5__multiple_points(self):
             msk = np.array([[True, True, True, True, True, True, True, True, True],
@@ -972,15 +972,15 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 5))
 
             assert (blurring_mask == np.array([[False, False, False, False, False, False, False, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, True, False, False, False, True, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, True, False, False, False, True, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, False, False, False, False, False, False,
-                                                     False]])).all()
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, False, False, False, False, False, False,
+                                                False]])).all()
 
         def test__size__5x3__multiple_points(self):
             msk = np.array([[True, True, True, True, True, True, True, True, True],
@@ -998,14 +998,14 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 3))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True, True, True],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, True, False, False, False, True, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [True, True, True, True, True, True, True, True, True],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [False, False, True, False, False, False, True, False, False],
-                                                    [False, False, False, False, False, False, False, False, False],
-                                                    [True, True, True, True, True, True, True, True, True]])).all()
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [True, True, True, True, True, True, True, True, True],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [False, False, True, False, False, False, True, False, False],
+                                               [False, False, False, False, False, False, False, False, False],
+                                               [True, True, True, True, True, True, True, True, True]])).all()
 
         def test__size__3x5__multiple_points(self):
             msk = np.array([[True, True, True, True, True, True, True, True, True],
@@ -1023,15 +1023,15 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 5))
 
             assert (blurring_mask == np.array([[True, False, False, False, True, False, False, False, True],
-                                                    [True, False, False, False, True, False, False, False, True],
-                                                    [True, False, True, False, True, False, True, False, True],
-                                                    [True, False, False, False, True, False, False, False, True],
-                                                    [True, False, False, False, True, False, False, False, True],
-                                                    [True, False, False, False, True, False, False, False, True],
-                                                    [True, False, True, False, True, False, True, False, True],
-                                                    [True, False, False, False, True, False, False, False, True],
-                                                    [True, False, False, False, True, False, False, False,
-                                                     True]])).all()
+                                               [True, False, False, False, True, False, False, False, True],
+                                               [True, False, True, False, True, False, True, False, True],
+                                               [True, False, False, False, True, False, False, False, True],
+                                               [True, False, False, False, True, False, False, False, True],
+                                               [True, False, False, False, True, False, False, False, True],
+                                               [True, False, True, False, True, False, True, False, True],
+                                               [True, False, False, False, True, False, False, False, True],
+                                               [True, False, False, False, True, False, False, False,
+                                                True]])).all()
 
         def test__size__3x3__even_sized_image(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
@@ -1048,13 +1048,13 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
-                                                    [False, True, False, True, False, True, False, True],
-                                                    [False, False, False, True, False, False, False, True],
-                                                    [True, True, True, True, True, True, True, True],
-                                                    [False, False, False, True, False, False, False, True],
-                                                    [False, True, False, True, False, True, False, True],
-                                                    [False, False, False, True, False, False, False, True],
-                                                    [True, True, True, True, True, True, True, True]])).all()
+                                               [False, True, False, True, False, True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True, True, True, True, True, True, True, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [False, True, False, True, False, True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True, True, True, True, True, True, True, True]])).all()
 
         def test__size__5x5__even_sized_image(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
@@ -1071,13 +1071,13 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 5))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True, True],
-                                                    [True, True, True, False, False, False, False, False],
-                                                    [True, True, True, False, False, False, False, False],
-                                                    [True, True, True, False, False, True, False, False],
-                                                    [True, True, True, False, False, False, False, False],
-                                                    [True, True, True, False, False, False, False, False]])).all()
+                                               [True, True, True, True, True, True, True, True],
+                                               [True, True, True, True, True, True, True, True],
+                                               [True, True, True, False, False, False, False, False],
+                                               [True, True, True, False, False, False, False, False],
+                                               [True, True, True, False, False, True, False, False],
+                                               [True, True, True, False, False, False, False, False],
+                                               [True, True, True, False, False, False, False, False]])).all()
 
         def test__size__3x3__rectangular_8x9_image(self):
             msk = np.array([[True, True, True, True, True, True, True, True, True],
@@ -1094,13 +1094,13 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True, True],
-                                                    [False, True, False, True, False, True, False, True, True],
-                                                    [False, False, False, True, False, False, False, True, True],
-                                                    [True, True, True, True, True, True, True, True, True],
-                                                    [False, False, False, True, False, False, False, True, True],
-                                                    [False, True, False, True, False, True, False, True, True],
-                                                    [False, False, False, True, False, False, False, True, True],
-                                                    [True, True, True, True, True, True, True, True, True]])).all()
+                                               [False, True, False, True, False, True, False, True, True],
+                                               [False, False, False, True, False, False, False, True, True],
+                                               [True, True, True, True, True, True, True, True, True],
+                                               [False, False, False, True, False, False, False, True, True],
+                                               [False, True, False, True, False, True, False, True, True],
+                                               [False, False, False, True, False, False, False, True, True],
+                                               [True, True, True, True, True, True, True, True, True]])).all()
 
         def test__size__3x3__rectangular_9x8_image(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
@@ -1118,14 +1118,14 @@ class TestMask(object):
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
-                                                    [False, True, False, True, False, True, False, True],
-                                                    [False, False, False, True, False, False, False, True],
-                                                    [True, True, True, True, True, True, True, True],
-                                                    [False, False, False, True, False, False, False, True],
-                                                    [False, True, False, True, False, True, False, True],
-                                                    [False, False, False, True, False, False, False, True],
-                                                    [True, True, True, True, True, True, True, True],
-                                                    [True, True, True, True, True, True, True, True]])).all()
+                                               [False, True, False, True, False, True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True, True, True, True, True, True, True, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [False, True, False, True, False, True, False, True],
+                                               [False, False, False, True, False, False, False, True],
+                                               [True, True, True, True, True, True, True, True],
+                                               [True, True, True, True, True, True, True, True]])).all()
 
         def test__size__5x5__multiple_points__mask_extends_beyond_border_so_raises_mask_exception(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1529,8 +1529,6 @@ class TestMask(object):
 
             sparse_to_image, image_to_sparse = msk.compute_grid_mapper_sparse(sparse_grid_size=2)
 
-            print(sparse_to_image)
-
             assert (sparse_to_image == np.array([1, 3])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
@@ -1546,8 +1544,6 @@ class TestMask(object):
             msk = mask.Mask(msk, pixel_scale=3.0)
 
             sparse_to_image, image_to_sparse = msk.compute_grid_mapper_sparse(sparse_grid_size=1)
-
-            print(sparse_to_image)
 
             assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
             assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
@@ -1565,8 +1561,6 @@ class TestMask(object):
 
             sparse_to_image, image_to_sparse = msk.compute_grid_mapper_sparse(sparse_grid_size=2)
 
-            print(sparse_to_image)
-
             assert (sparse_to_image == np.array([1, 3])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
@@ -1582,8 +1576,6 @@ class TestMask(object):
             msk = mask.Mask(msk, pixel_scale=3.0)
 
             sparse_to_image, image_to_sparse = msk.compute_grid_mapper_sparse(sparse_grid_size=2)
-
-            print(sparse_to_image)
 
             assert (sparse_to_image == np.array([1, 3, 11, 13])).all()
             assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
