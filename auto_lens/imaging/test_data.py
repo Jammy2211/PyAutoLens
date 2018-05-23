@@ -1,11 +1,11 @@
-from auto_lens.imaging import image
+from auto_lens.imaging import data
 import numpy as np
 import pytest
 
 
 @pytest.fixture(name="array_grid")
 def make_array_grid():
-    return image.DataGrid(np.zeros((5, 5)), pixel_scale=0.5)
+    return data.DataGrid(np.zeros((5, 5)), pixel_scale=0.5)
 
 
 class TestDataGrid(object):
@@ -15,20 +15,20 @@ class TestDataGrid(object):
         assert array_grid.shape == (5, 5)
         assert array_grid.pixel_scale == 0.5
         assert isinstance(array_grid, np.ndarray)
-        assert isinstance(array_grid, image.DataGrid)
+        assert isinstance(array_grid, data.DataGrid)
 
     class TestCentralPixel:
 
         def test__3x3_grid__central_pixel_is_1_and_1(self):
-            grid = image.DataGrid(np.zeros((3, 3)), pixel_scale=0.1)
+            grid = data.DataGrid(np.zeros((3, 3)), pixel_scale=0.1)
             assert grid.central_pixel_coordinates == (1, 1)
 
         def test__4x4_grid__central_pixel_is_1dot5_and_1dot5(self):
-            grid = image.DataGrid(np.zeros((4, 4)), pixel_scale=0.1)
+            grid = data.DataGrid(np.zeros((4, 4)), pixel_scale=0.1)
             assert grid.central_pixel_coordinates == (1.5, 1.5)
 
         def test__5x3_grid__central_pixel_is_2_and_1(self):
-            grid = image.DataGrid(np.zeros((5, 3)), pixel_scale=0.1)
+            grid = data.DataGrid(np.zeros((5, 3)), pixel_scale=0.1)
             assert grid.central_pixel_coordinates == (2, 1)
 
         def test__central_pixel_coordinates_5x5(self, array_grid):
@@ -56,7 +56,7 @@ class TestDataGrid(object):
             array = np.ones((3, 3))
             array[1, 1] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(5, 5))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -72,7 +72,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(9, 9))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -92,7 +92,7 @@ class TestDataGrid(object):
             array = np.ones((3, 3))
             array[1, 1] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(4, 4))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -108,7 +108,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(8, 8))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -128,7 +128,7 @@ class TestDataGrid(object):
             array = np.ones((4, 4))
             array[1:3, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(6, 6))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -145,7 +145,7 @@ class TestDataGrid(object):
             array = np.ones((4, 4))
             array[1:3, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(8, 8))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -164,7 +164,7 @@ class TestDataGrid(object):
             array = np.ones((4, 4))
             array[1:3, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(5, 5))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -181,7 +181,7 @@ class TestDataGrid(object):
             array = np.ones((4, 4))
             array[1:3, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(7, 7))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -200,7 +200,7 @@ class TestDataGrid(object):
             array = np.ones((5, 4))
             array[2, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(7, 6))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -219,7 +219,7 @@ class TestDataGrid(object):
             array[0:2, 1] = 2.0
             array[1, 2] = 9
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(6, 7))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -237,7 +237,7 @@ class TestDataGrid(object):
             array[0:2, 1] = 2.0
             array[1, 2] = 9
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
             modified = array.pad(new_dimensions=(5, 6))
 
             assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -254,7 +254,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             with pytest.raises(ValueError):
                 array.trim(new_dimensions=(3, 8))
@@ -263,7 +263,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             with pytest.raises(ValueError):
                 array.trim(new_dimensions=(8, 3))
@@ -274,7 +274,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(3, 3))
 
@@ -289,7 +289,7 @@ class TestDataGrid(object):
             array = np.ones((7, 7))
             array[3, 3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(3, 3))
 
@@ -304,7 +304,7 @@ class TestDataGrid(object):
             array = np.ones((11, 11))
             array[5, 5] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(5, 5))
 
@@ -321,7 +321,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(2, 2))
 
@@ -336,7 +336,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(4, 4))
 
@@ -353,7 +353,7 @@ class TestDataGrid(object):
             array = np.ones((11, 11))
             array[5, 5] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(4, 4))
 
@@ -370,7 +370,7 @@ class TestDataGrid(object):
             array = np.ones((4, 4))
             array[1:3, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(2, 2))
 
@@ -384,7 +384,7 @@ class TestDataGrid(object):
             array = np.ones((6, 6))
             array[2:4, 2:4] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(4, 4))
 
@@ -401,7 +401,7 @@ class TestDataGrid(object):
             array[5:7, 5:7] = 2.0
             array[4, 4] = 9.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(6, 6))
 
@@ -419,7 +419,7 @@ class TestDataGrid(object):
             array = np.ones((4, 4))
             array[1:3, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(3, 3))
 
@@ -435,7 +435,7 @@ class TestDataGrid(object):
             array = np.ones((6, 6))
             array[2:4, 2:4] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(3, 3))
 
@@ -452,7 +452,7 @@ class TestDataGrid(object):
             array[5:7, 5:7] = 2.0
             array[4, 4] = 9.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(5, 5))
 
@@ -470,7 +470,7 @@ class TestDataGrid(object):
             array = np.ones((5, 4))
             array[2, 1:3] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(3, 2))
 
@@ -485,7 +485,7 @@ class TestDataGrid(object):
             array = np.ones((4, 5))
             array[1:3, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(2, 3))
 
@@ -500,7 +500,7 @@ class TestDataGrid(object):
             array[2, 1:3] = 2.0
             array[4, 3] = 9.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             modified = array.trim(new_dimensions=(4, 3))
 
@@ -517,7 +517,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             with pytest.raises(ValueError):
                 array.trim(new_dimensions=(8, 3))
@@ -526,7 +526,7 @@ class TestDataGrid(object):
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = image.DataGrid(array, pixel_scale=1.0)
+            array = data.DataGrid(array, pixel_scale=1.0)
 
             with pytest.raises(ValueError):
                 array.trim(new_dimensions=(3, 8))
@@ -534,7 +534,7 @@ class TestDataGrid(object):
     class TestGridCoordinates:
 
         def test__array_1x1__sets_up_arcsecond_coordinates(self):
-            grid = image.DataGrid(array=np.zeros((1, 1)), pixel_scale=1.0)
+            grid = data.DataGrid(array=np.zeros((1, 1)), pixel_scale=1.0)
 
             grid_coordinates = grid.grid_coordinates
 
@@ -543,7 +543,7 @@ class TestDataGrid(object):
             assert (grid_coordinates[0, 0] == np.array([[0.0, 0.0]])).all()
 
         def test__array_2x2__sets_up_arcsecond_coordinates(self):
-            grid = image.DataGrid(array=np.zeros((2, 2)), pixel_scale=1.0)
+            grid = data.DataGrid(array=np.zeros((2, 2)), pixel_scale=1.0)
 
             grid_coordinates = grid.grid_coordinates
 
@@ -551,7 +551,7 @@ class TestDataGrid(object):
                                                   [[0.5, -0.5], [0.5, 0.5]]])).all()
 
         def test__array_3x3__sets_up_arcsecond_coordinates(self):
-            grid = image.DataGrid(array=np.zeros((3, 3)), pixel_scale=1.0)
+            grid = data.DataGrid(array=np.zeros((3, 3)), pixel_scale=1.0)
 
             grid_coordinates = grid.grid_coordinates
             print(list(grid_coordinates))
@@ -561,7 +561,7 @@ class TestDataGrid(object):
                                                   [[1., -1.], [1., 0.], [1., 1.]]])).all()
 
         def test__array_4x4__sets_up_arcsecond_coordinates(self):
-            grid = image.DataGrid(array=np.zeros((4, 4)), pixel_scale=0.5)
+            grid = data.DataGrid(array=np.zeros((4, 4)), pixel_scale=0.5)
 
             grid_coordinates = grid.grid_coordinates
             print(list(grid_coordinates))
@@ -572,7 +572,7 @@ class TestDataGrid(object):
                                                   [[0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75]]])).all()
 
         def test__array_2x3__sets_up_arcsecond_coordinates(self):
-            grid = image.DataGrid(array=np.zeros((2, 3)), pixel_scale=1.0)
+            grid = data.DataGrid(array=np.zeros((2, 3)), pixel_scale=1.0)
 
             grid_coordinates = grid.grid_coordinates
             print(list(grid_coordinates))
@@ -581,7 +581,7 @@ class TestDataGrid(object):
                                                   [[0.5, -1.], [0.5, 0.], [0.5, 1.]]])).all()
 
         def test__array_3x2__sets_up_arcsecond_coordinates(self):
-            grid = image.DataGrid(array=np.zeros((3, 2)), pixel_scale=1.0)
+            grid = data.DataGrid(array=np.zeros((3, 2)), pixel_scale=1.0)
 
             grid_coordinates = grid.grid_coordinates
 
@@ -594,7 +594,7 @@ class TestImage(object):
     class TestEstimateBackgroundNoise(object):
 
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
-            img = image.Image(array=np.ones((3, 3)), pixel_scale=0.1)
+            img = data.Image(array=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -604,7 +604,7 @@ class TestImage(object):
                                     [1, 100, 1],
                                     [1, 1, 1]])
 
-            img = image.Image(array=image_array, pixel_scale=0.1)
+            img = data.Image(array=image_array, pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -615,7 +615,7 @@ class TestImage(object):
                                     [1, 100, 1],
                                     [1, 1, 1]])
 
-            img = image.Image(array=image_array, pixel_scale=0.1)
+            img = data.Image(array=image_array, pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -626,7 +626,7 @@ class TestImage(object):
                                     [1, 100, 100, 1],
                                     [1, 1, 1, 1]])
 
-            img = image.Image(array=image_array, pixel_scale=0.1)
+            img = data.Image(array=image_array, pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -638,7 +638,7 @@ class TestImage(object):
                                     [1, 1, 1, 1, 1],
                                     [1, 1, 1, 1, 1]])
 
-            img = image.Image(array=image_array, pixel_scale=0.1)
+            img = data.Image(array=image_array, pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == 0.0
@@ -651,7 +651,7 @@ class TestImage(object):
                                     [18, 19, 20, 21, 22],
                                     [23, 24, 25, 26, 27]])
 
-            img = image.Image(array=image_array, pixel_scale=0.1)
+            img = data.Image(array=image_array, pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == np.std(np.arange(28))
@@ -665,7 +665,7 @@ class TestImage(object):
                                     [34, 35, 36, 37, 38, 39, 40],
                                     [41, 42, 43, 44, 45, 46, 47]])
 
-            img = image.Image(array=image_array, pixel_scale=0.1)
+            img = data.Image(array=image_array, pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=3)
 
             assert sky_noise == np.std(np.arange(48))
