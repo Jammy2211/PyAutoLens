@@ -133,8 +133,8 @@ class Mask(data.DataGrid):
 
                     sub_pixel_count = 0
 
-                    for y1 in range(grid_size_sub):
-                        for x1 in range(grid_size_sub):
+                    for x1 in range(grid_size_sub):
+                        for y1 in range(grid_size_sub):
                             grid[image_pixel_count, sub_pixel_count, 0] = \
                                 self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
 
@@ -270,7 +270,7 @@ class Mask(data.DataGrid):
            The size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
-        blurring_mask = np.ones(self.shape)
+        blurring_mask = np.full(self.shape, True)
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
@@ -291,7 +291,7 @@ class Mask(data.DataGrid):
     def compute_sparse_uniform_mask(self, sparse_grid_size):
         """Setup a two-dimensional sparse mask of image data_to_pixels, by keeping all image data_to_pixels which do not
         give a remainder when divided by the sub-grid_coords size. """
-        sparse_mask = np.ones(self.shape)
+        sparse_mask = np.full(self.shape, True)
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
