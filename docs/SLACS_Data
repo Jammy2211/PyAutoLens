@@ -1,0 +1,51 @@
+Hubble Space Telescope images, when reduced, often don't come with a noise-map. Instead, they come with a WHT ('weight')
+map, which depending on the data reduction:
+
+Case 1)
+- Gives the inverse standard deviation in each pixel e.g. (Noise = 1.0./WHT)
+- Contains just the WHT (and therefore noise) from the background noise sources, omitting Poisson noise (Thus, we need
+to compute the Poisson noise using the image and effective exposure time map.)
+
+Case 2)
+- Gives the inverse variance in each pixel. e.g. (Noise = (1.0./((WHT.^0.5)))
+- The WHT (and therefore noise) from the background noise sources and Poisson noise.
+
+Furthermore, to make things worse, the data I currently am sent does not include an effective exposure time map :(.
+
+However, in case 1) we can calculate it from the WHT map as the WHT map only contains background noise sources.
+Essentially, each effective exposure tiime can be calculated as:
+exposire_time_map = abs((noise./(max(noise)))*total_exposure_time)
+
+For case 2), we cannot compute the exposure time map from the data. In this case, I just use the total exposure time
+to make it (knowing that this is wrong).
+
+Example 1 : SLACS_03_WHT_Background
+
+The first example is case 1) above. Thus, the things we need to do to setup the data are:
+
+- The pixel scale is 0.03
+- Load the image from hdu=1
+- Load the WHT from hdu=2, and convert to the Noise using (Noise = 1.0./WHT)
+- Load the PSF from hdu=3
+- Calculate the effective_exposure_map using exposure_time =  abs((noise./(max(noise)))*total_exposure_time) where
+total_exposure_time = 2088 (seconds)
+- Due to an error, the PSF in this image is even x even, meaning we cant use it. But this is all just for testing anyway.
+
+Example 2 : SLACS_03_WHT_All
+
+This is case 2) above, thus we:
+
+- The pixel scale is 0.03
+- Load the image from hdu=1
+- Load the WHT from hdu=2, and convert to the Noise using (Noise = (1.0./((WHT.^0.5)))
+- Load the PSF from hdu=3
+- Calculate the effective_exposure_map with all values as 2088.
+
+Example 3 : SLACS_05_WHT_All
+
+This is the same as Example 2, but pixel_scale is 0.05 instead of 0.03 (it was reduced in a different way). The PSF is
+also odd for this one :)
+
+Example 4 : SLACS_05_WHT_Background
+
+Same as Example 2 but pixel scale 0.05
