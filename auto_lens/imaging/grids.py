@@ -607,6 +607,7 @@ class GridMapperCollection(object):
 
         return GridMapperCollection(image_to_pixel, blurring_to_pixel, clustering)
 
+
 class GridMapperDataToPixel(np.ndarray):
 
     def __new__(cls, dimensions_2d, data_to_pixel):
