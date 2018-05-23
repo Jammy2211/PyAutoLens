@@ -19,6 +19,56 @@ def galaxy_light_sersic():
     return galaxy.Galaxy(light_profiles=[sersic])
 
 
+class TestLikelihood:
+
+    def test__model_mathces_data__noise_all_2s__lh_is_noise_term(self):
+
+        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+        noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
+        model_image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+
+        likelihood = analysis.compute_likelihood(image, noise, model_image)
+
+        chi_sq_term = 0
+        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + \
+                     np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0)
+
+        assert likelihood == -0.5 * (chi_sq_term + noise_term)
+
+    def test__model_data_mismatch__chi_sq_term_contributes_to_lh(self):
+
+        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+        noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
+        model_image = grids.GridData(grid_data=np.array([11.0, 10.0, 9.0, 8.0]))
+
+        likelihood = analysis.compute_likelihood(image, noise, model_image)
+
+        # chi squared = 0.25, 0, 0.25, 1.0
+        # likelihood = -0.5*(0.25+0+0.25+1.0)
+
+        chi_sq_term = 1.5
+        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
+            2 * np.pi * 4.0)
+
+        assert likelihood == -0.5 * (chi_sq_term + noise_term)
+
+    def test__same_as_above_but_different_noise_in_each_pixel(self):
+
+        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+        noise = grids.GridData(grid_data=np.array([1.0, 2.0, 3.0, 4.0]))
+        model_image = grids.GridData(grid_data=np.array([11.0, 10.0, 9.0, 8.0]))
+
+        likelihood = analysis.compute_likelihood(image, noise, model_image)
+
+        # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
+
+        chi_sq_term = 1.0 + (1.0 / 9.0) + 0.25
+        noise_term = np.log(2 * np.pi * 1.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 9.0) + np.log(
+            2 * np.pi * 16.0)
+
+        assert likelihood == pytest.approx(-0.5 * (chi_sq_term + noise_term), 1e-4)
+
+
 class TestGenerateBlurredLightProfileImage:
     
     def test__simple_1_pixel_image__no_psf_blurring_into_mask_from_region(self, galaxy_light_sersic, no_galaxies):
