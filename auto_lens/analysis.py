@@ -2,8 +2,20 @@ import numpy as np
 
 from auto_lens.imaging import grids
 from auto_lens import ray_tracing
-
-# TODO : Do this convolution in 1D eventually..
+#
+# def fit_data_with_model(grid_datas, grid_mappers, ray_tracing):
+#     """Fit the data using the ray_tracing model
+#
+#     Parameters
+#     ----------
+#     grid_datas : grids.GridDataCollection
+#         The collection of grid data-sets (image, noise, psf, etc.)
+#     grid_mappers : grids.GridMapperCollection
+#         The collection of grid mappings, used to map images from 2d and 1d.
+#     ray_tracing : ray_tracing.TraceImageAndSource
+#         The ray-tracing configuration of the model galaxies and their profiles.
+#     """
+#
 
 def compute_likelihood(image, noise, model_image):
     """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \
@@ -48,6 +60,8 @@ def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
     blurring_image_light_profile = ray_tracing.generate_blurring_image_of_galaxy_light_profiles()
     return blur_image_including_blurring_region(image_light_profile, grid_mappers.image_to_pixel, psf,
                                                 blurring_image_light_profile, grid_mappers.blurring_to_pixel)
+
+# TODO : Do this convolution in 1D eventually..
 
 def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_image=None, blurring_to_pixel=None):
     """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
