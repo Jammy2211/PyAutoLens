@@ -4,8 +4,6 @@ import numpy as np
 
 class Mask(data.DataGrid):
 
-    # TODO : The mask class methods are a bit messy with how we use DataGrid to make them. Can this be done cleaner?
-
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
         return cls(np.zeros(tuple(map(lambda d: int(d / pixel_scale), shape_arc_seconds))), pixel_scale)
