@@ -297,7 +297,7 @@ class Image(Data):
         return Image(data, pixel_scale)
 
     def estimate_background_noise_from_edges(self, no_edges):
-        """Estimate the background signal_to_noise_ratio by binning data_to_pixels located at the edge(s) of an image into a histogram and \
+        """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image into a histogram and \
         fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this Gaussian gives a signal_to_noise_ratio \
         estimate.
 
@@ -568,7 +568,7 @@ class Mask(DataGrid):
         Parameters
         ----------
         mask : ndarray
-            The boolean array of masked data_to_pixels (False = pixel is not masked and included in analysis)
+            The boolean array of masked image_to_pixel (False = pixel is not masked and included in analysis)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -718,14 +718,14 @@ class Mask(DataGrid):
     def compute_grid_coords_blurring(self, psf_size):
         """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
 
-        The blurring grid_coords contains all data_to_pixels which are not in the mask, but close enough to it that a fraction of \
+        The blurring grid_coords contains all image_to_pixel which are not in the mask, but close enough to it that a fraction of \
         their will be blurred into the mask region (and therefore they are needed for the analysis). They are located \
-        by scanning for all data_to_pixels which are outside the mask but within the psf size.
+        by scanning for all image_to_pixel which are outside the mask but within the psf size.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the data_to_pixels the blurring grid_coords is computed for and the image's data grid_coords.
+            The image mask containing the image_to_pixel the blurring grid_coords is computed for and the image's data grid_coords.
         psf_size : (int, int)
            The size of the psf which defines the blurring region (e.g. the pixel_dimensions of the PSF)
         """
@@ -740,7 +740,7 @@ class Mask(DataGrid):
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the data_to_pixels the blurring grid_coords is computed for and the image's data grid_coords.
+            The image mask containing the image_to_pixel the blurring grid_coords is computed for and the image's data grid_coords.
         psf_size : (int, int)
            The size of the psf which defines the blurring region (e.g. the pixel_dimensions of the PSF)
         """
@@ -775,19 +775,19 @@ class Mask(DataGrid):
         return grid
 
     def compute_grid_mapper_sparse(self, sparse_grid_size):
-        """Given an image.Mask, compute the sparse cluster image data_to_pixels, defined as the sub-set of image-data_to_pixels used \
+        """Given an image.Mask, compute the sparse cluster image image_to_pixel, defined as the sub-set of image-image_to_pixel used \
         to perform KMeans clustering (this is used purely for speeding up the KMeans clustering algorithim).
 
-        This sparse grid_coords is a uniform subsample of the masked image and is computed by only including image data_to_pixels \
+        This sparse grid_coords is a uniform subsample of the masked image and is computed by only including image image_to_pixel \
         which, when divided by the sparse_grid_size, do not give a remainder.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask we are finding the sparse clustering data_to_pixels of and the image pixel_dimensions / pixel scale.
+            The image mask we are finding the sparse clustering image_to_pixel of and the image pixel_dimensions / pixel scale.
         sparse_grid_size : int
-            The spacing of the sparse image pixel grid_coords (e.g. a value of 2 will compute a sparse grid_coords of data_to_pixels which \
-            are two data_to_pixels apart)
+            The spacing of the sparse image pixel grid_coords (e.g. a value of 2 will compute a sparse grid_coords of image_to_pixel which \
+            are two image_to_pixel apart)
 
         Returns
         -------
@@ -807,11 +807,11 @@ class Mask(DataGrid):
         return sparse_to_image, image_to_sparse
 
     def compute_grid_border(self):
-        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on its \
+        """Compute the border image image_to_pixel from a mask, where a border pixel is a pixel inside the mask but on its \
         edge, therefore neighboring a pixel with a *True* value.
         """
 
-        # TODO : Border data_to_pixels for a circular mask and annulus mask are different (the inner annulus data_to_pixels should be \
+        # TODO : Border image_to_pixel for a circular mask and annulus mask are different (the inner annulus image_to_pixel should be \
         # TODO : ignored. Should we turn this to classes for Masks?
 
         border_pixels = np.empty(0)
@@ -830,13 +830,13 @@ class Mask(DataGrid):
         return border_pixels
 
     def compute_blurring_mask(self, psf_size):
-        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a \
+        """Compute the blurring mask, which represents all image_to_pixel not in the mask but close enough to it that a \
         fraction of their light will be blurring in the image.
 
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask containing the data_to_pixels the blurring grid_coords is computed for and the image's data grid_coords.
+            The image mask containing the image_to_pixel the blurring grid_coords is computed for and the image's data grid_coords.
         psf_size : (int, int)
            The size of the psf which defines the blurring region (e.g. the pixel_dimensions of the PSF)
         """
@@ -860,7 +860,7 @@ class Mask(DataGrid):
         return Mask(blurring_mask, self.pixel_scale)
 
     def compute_sparse_uniform_mask(self, sparse_grid_size):
-        """Setup a two-dimensional sparse mask of image data_to_pixels, by keeping all image data_to_pixels which do not give a remainder \
+        """Setup a two-dimensional sparse mask of image image_to_pixel, by keeping all image image_to_pixel which do not give a remainder \
         when divided by the sub-grid_coords size. """
         sparse_mask = np.ones(self.pixel_dimensions)
 
@@ -891,12 +891,12 @@ class Mask(DataGrid):
 
     def compute_sparse_to_image(self, sparse_mask):
         """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
-        data_to_pixels.
+        image_to_pixel.
     
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask we are finding the sparse clustering data_to_pixels of and the image pixel_dimensions / pixel scale.
+            The image mask we are finding the sparse clustering image_to_pixel of and the image pixel_dimensions / pixel scale.
         sparse_mask : ndarray
             The two-dimensional boolean image of the sparse grid_coords.
     
@@ -931,7 +931,7 @@ class Mask(DataGrid):
         Parameters
         ----------
         mask : imaging.Mask
-            The image mask we are finding the sparse clustering data_to_pixels of and the image pixel_dimensions / pixel scale.
+            The image mask we are finding the sparse clustering image_to_pixel of and the image pixel_dimensions / pixel scale.
         sparse_mask : ndarray
             The two-dimensional boolean image of the sparse grid_coords.
     

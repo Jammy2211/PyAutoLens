@@ -2,57 +2,54 @@ import numpy as np
 import pytest
 
 from auto_lens import analysis
+from auto_lens import ray_tracing
 from auto_lens.imaging import grids
 from auto_lens.imaging import imaging
 from auto_lens import galaxy
 from auto_lens.profiles import mass_profiles, light_profiles
 
 
-@pytest.fixture(scope='function')
-def grid_datas_and_mappers():
-    mask = np.array([[False, False, False],
-                     [False, False, False],
-                     [False, False, False]])
+class TestGenerateBlurredLightProfileImage:
+    
+    def test__image_is_1_central_pixel__psf_is_1_central_pixel_value_1__blurred_image_is_image(self):
 
-    mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+        # The PSF the light profile image is convolved with
 
-    image = grids.GridData.from_mask(data=np.array([[0.0, 0.0, 0.0],
-                                                    [0.0, 1.0, 0.0],
-                                                    [0.0, 0.0, 0.0]]), mask=mask)
+        psf = imaging.PSF(data=np.array([[0.0, 0.0, 0.0],
+                                         [0.0, 1.0, 0.0],
+                                         [0.0, 0.0, 0.0]]), pixel_scale=1.0)
 
-    noise = grids.GridData.from_mask(data=np.array([[0.0, 0.0, 0.0],
-                                                    [0.0, 1.0, 0.0],
-                                                    [0.0, 0.0, 0.0]]), mask=mask)
+        # Setup the Image and blurring masks
 
-    exposure_time = grids.GridData.from_mask(data=np.array([[1.0, 1.0, 1.0],
-                                                            [1.0, 1.0, 1.0],
-                                                            [1.0, 1.0, 1.0]]), mask=mask)
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True]])
+        mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+        blurring_mask = mask.compute_blurring_mask(psf_size=psf.pixel_dimensions)
 
-    psf = imaging.PSF(data=np.array([[0.0, 1.0, 0.0],
-                                     [1.0, 2.0, 1.0],
-                                     [0.0, 1.0, 0.0]]), pixel_scale=1.0)
+        # Setup the image and blurring coordinate grids
 
-    grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time, psf=psf)
+        grid_collection = grids.GridCoordsCollection.from_mask(mask=mask, blurring_size=psf.pixel_dimensions)
 
-    mapper_to_2d = grids.GridMapperDataToPixel.from_mask(mask)
-    grid_mappers = grids.GridMapperCollection(data_to_pixels=mapper_to_2d)
+        # Setup the GridMappers
 
-    return grid_datas, grid_mappers
+        image_to_pixel = grids.GridMapperDataToPixel.from_mask(mask)
+        blurring_to_pixel = grids.GridMapperDataToPixel.from_mask(blurring_mask)
+        grid_mappers = grids.GridMapperCollection(image_to_pixel=image_to_pixel, blurring_to_pixel=blurring_to_pixel)
 
+        #Setup the Ray Tracing as a single Sersic profile galaxy
 
-@pytest.fixture(scope='function')
-def ray_tracing():
-    sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                             sersic_index=4.0)
-    sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+        sersic = light_profiles.EllipticalSersic()
+        lens_galaxy = galaxy.Galaxy(light_profiles=[sersic])
+        
+        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy], source_galaxies=[galaxy.Galaxy()], 
+                                                    image_plane_grids=grid_collection)
 
-    lens_galaxy = galaxy.Galaxy(light_profiles=[sersic], mass_profiles=[sis])
-    source_galaxy = galaxy.Galaxy(light_profiles=[sersic])
+        non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles()
+        blurred_value = analysis.generate_blurred_light_profie_image(ray_tracing=ray_trace, psf=psf,
+                                                                     grid_mappers=grid_mappers)
 
-    ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                image_plane_grids=grid_image)
-
-
+        assert non_blurred_value == blurred_value
 
 class TestComputeBlurredImages:
 
@@ -80,7 +77,7 @@ class TestComputeBlurredImages:
 
         psf = imaging.PSF(data=psf, pixel_scale=1.0)
 
-        blurred_image = analysis.compute_blurred_light_profile_image(image, image_to_pixel, psf)
+        blurred_image = analysis.blur_image_including_blurring_region(image, image_to_pixel, psf)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -108,7 +105,7 @@ class TestComputeBlurredImages:
 
         psf = imaging.PSF(data=psf, pixel_scale=1.0)
 
-        blurred_image = analysis.compute_blurred_light_profile_image(image, image_to_pixel, psf)
+        blurred_image = analysis.blur_image_including_blurring_region(image, image_to_pixel, psf)
 
         assert (blurred_image == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
@@ -138,8 +135,8 @@ class TestComputeBlurredImages:
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         blurring_to_pixel = grids.GridMapperDataToPixel.from_mask(blurring_mask)
 
-        blurred_image = analysis.compute_blurred_light_profile_image(image, image_to_pixel, psf, blurring_image,
-                                                                     blurring_to_pixel)
+        blurred_image = analysis.blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_image,
+                                                                      blurring_to_pixel)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -169,7 +166,7 @@ class TestComputeBlurredImages:
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         blurring_to_pixel = grids.GridMapperDataToPixel.from_mask(blurring_mask)
 
-        blurred_image = analysis.compute_blurred_light_profile_image(image, image_to_pixel, psf, blurring_image,
-                                                                     blurring_to_pixel)
+        blurred_image = analysis.blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_image,
+                                                                      blurring_to_pixel)
 
         assert (blurred_image == np.array([9.0, 9.0, 9.0, 9.0])).all()
