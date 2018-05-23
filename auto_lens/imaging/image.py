@@ -1,5 +1,6 @@
 import numpy as np
 import logging
+from scipy.stats import norm
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -146,3 +147,28 @@ class DataGrid(np.ndarray):
 
         return coordinates_array
 
+
+class Image(DataGrid):
+    def estimate_background_noise_from_edges(self, no_edges):
+        """Estimate the background signal_to_noise_ratio by binning data_to_pixels located at the edge(s) of an image into a histogram and \
+        fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this Gaussian gives a signal_to_noise_ratio \
+        estimate.
+
+        Parameters
+        ----------
+        no_edges : int
+            Number of edges used to estimate the background signal_to_noise_ratio.
+
+        """
+
+        edges = []
+
+        for edge_no in range(no_edges):
+            top_edge = self[edge_no, edge_no:self.shape[1] - edge_no]
+            bottom_edge = self[self.shape[0] - 1 - edge_no, edge_no:self.shape[1] - edge_no]
+            left_edge = self[edge_no + 1:self.shape[0] - 1 - edge_no, edge_no]
+            right_edge = self[edge_no + 1:self.shape[0] - 1 - edge_no, self.shape[1] - 1 - edge_no]
+
+            edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
+
+        return norm.fit(edges)[1]
