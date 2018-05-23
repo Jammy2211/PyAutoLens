@@ -129,6 +129,47 @@ class TestGenerateBlurredLightProfileImage:
         assert blurred_value_manual_2 == pytest.approx(blurred_value[2], 1e-6)
         assert blurred_value_manual_3 == pytest.approx(blurred_value[3], 1e-6)
 
+    def test__same_as_above_blurring_region_off__blurring_only_uses_mask_pixels(self, galaxy_light_sersic, no_galaxies):
+
+        # The PSF the light profile image is convolved with
+
+        psf = imaging.PSF(data=np.array([[0.0, 3.0, 0.0],
+                                         [0.0, 2.0, 1.0],
+                                         [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+
+        # Setup the Image and blurring masks
+
+        mask = np.array([[True, True,  True,  True],
+                         [True, False, False, True],
+                         [True, False, False, True],
+                         [True, True,  True,  True]])
+        mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+
+        # Setup the image and blurring coordinate grids
+
+        grid_collection = grids.GridCoordsCollection.from_mask(mask=mask)
+        grid_mappers = grids.GridMapperCollection.from_mask(mask=mask)
+
+        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                                    image_plane_grids=grid_collection)
+
+        blurred_value = analysis.generate_blurred_light_profie_image(ray_tracing=ray_trace, psf=psf,
+                                                                     grid_mappers=grid_mappers)
+
+        # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
+
+        central_values = ray_trace.generate_image_of_galaxy_light_profiles()
+
+        blurred_value_manual_0 = 2.0*central_values[0] + 3.0*central_values[2]
+        blurred_value_manual_1 = 2.0*central_values[1] + 3.0*central_values[3] + central_values[0]
+        blurred_value_manual_2 = 2.0*central_values[2]
+        blurred_value_manual_3 = 2.0*central_values[3] + central_values[2]
+
+        assert blurred_value_manual_0 == pytest.approx(blurred_value[0], 1e-6)
+        assert blurred_value_manual_1 == pytest.approx(blurred_value[1], 1e-6)
+        assert blurred_value_manual_2 == pytest.approx(blurred_value[2], 1e-6)
+        assert blurred_value_manual_3 == pytest.approx(blurred_value[3], 1e-6)
+
 
 class TestComputeBlurredImages:
 
