@@ -9,7 +9,27 @@ class Noise(data.DataGrid):
 
 
 class ExposureTime(data.DataGrid):
-    pass
+    def electrons_per_second_to_counts(self, array):
+        """
+        For an array (in electrons per second) and exposure time array, return an array in units counts.
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.multiply(array, self)
+
+    def counts_to_electrons_per_second(self, array):
+        """
+        For an array (in counts) and exposure time array, convert the array to units electrons per second
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.divide(array, self)
 
 
 class Image(data.DataGrid):
@@ -44,6 +64,22 @@ class Image(data.DataGrid):
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         return norm.fit(edges)[1]
+
+    @property
+    def counts_array(self):
+        return self.effective_exposure_time.electrons_per_second_to_counts(self)
+
+    @property
+    def background_noise_counts_array(self):
+        return self.effective_exposure_time.electrons_per_second_to_counts(self.background_noise)
+
+    @property
+    def estimated_noise_counts(self):
+        return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
+
+    @property
+    def estimated_noise(self):
+        return self.effective_exposure_time.counts_to_electrons_per_second(self.estimated_noise_counts)
 
 
 class NoiseBackground(data.DataGrid):
