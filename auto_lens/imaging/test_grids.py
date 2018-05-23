@@ -933,6 +933,39 @@ class TestGridDataCollection(object):
             assert (grid_collection.exposure_time == np.array([7, 8, 9])).all()
             assert (grid_collection.psf.data == np.ones((3, 3))).all()
 
+    class TestFromMask:
+
+        def test__cross_mask__all_data_setup_as_mask(self):
+
+            mask = np.array([[True, False, True],
+                             [False, False, False],
+                             [True, False, True]])
+            mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+
+            image = np.array([[1, 2, 3],
+                             [4, 5, 6],
+                             [7, 8, 9]])
+            image = imaging.Image(data=image, pixel_scale=1.0)
+
+            noise = np.array([[2, 2, 2],
+                             [5, 5, 5],
+                             [8, 8, 8]])
+            noise = imaging.Noise(data=noise, pixel_scale=1.0)
+
+            exposure_time = np.array([[1, 1, 1],
+                                      [1, 1, 1],
+                                      [1, 1, 1]])
+            exposure_time = imaging.ExposureTime(data=exposure_time, pixel_scale=1.0)
+
+            psf = imaging.PSF(data=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
+
+            grid_collection = grids.GridDataCollection.from_mask(mask=mask, image=image, noise=noise,
+                                                       exposure_time=exposure_time, psf=psf)
+
+            assert (grid_collection.image == np.array([2, 4, 5, 6, 8])).all()
+            assert (grid_collection.noise == np.array([2, 5, 5, 5, 8])).all()
+            assert (grid_collection.exposure_time == np.array([1, 1, 1, 1, 1])).all()
+            assert (grid_collection.psf.data == np.ones((3, 3))).all()
 
 class TestGridData(object):
     class TestConstructor:
