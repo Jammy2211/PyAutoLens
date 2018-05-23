@@ -989,7 +989,11 @@ class TestGridMapperCollection(object):
         assert (mappers.clustering.image_to_clustering == mapper_clustering.image_to_clustering).all()
 
 
+
+
+
 class TestGridMapperDataToPixel(object):
+
     class TestConstructor:
 
         def test__simple_mapper_input__sets_up_grid_in_attributes(self):
