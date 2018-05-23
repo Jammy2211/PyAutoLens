@@ -530,3 +530,61 @@ class TestDataGrid(object):
 
             with pytest.raises(ValueError):
                 data.trim(new_dimensions=(3, 8))
+
+    class TestGridCoordinates:
+
+        def test__array_1x1__sets_up_arcsecond_coordinates(self):
+            grid = image.DataGrid(array=np.zeros((1, 1)), pixel_scale=1.0)
+
+            grid_coordinates = grid.grid_coordinates
+
+            assert (grid_coordinates == np.array([[[0.0, 0.0]]])).all()
+
+            assert (grid_coordinates[0, 0] == np.array([[0.0, 0.0]])).all()
+
+        def test__array_2x2__sets_up_arcsecond_coordinates(self):
+            grid = image.DataGrid(array=np.zeros((2, 2)), pixel_scale=1.0)
+
+            grid_coordinates = grid.grid_coordinates
+
+            assert (grid_coordinates == np.array([[[-0.5, -0.5], [-0.5, 0.5]],
+                                                  [[0.5, -0.5], [0.5, 0.5]]])).all()
+
+        def test__array_3x3__sets_up_arcsecond_coordinates(self):
+            grid = image.DataGrid(array=np.zeros((3, 3)), pixel_scale=1.0)
+
+            grid_coordinates = grid.grid_coordinates
+            print(list(grid_coordinates))
+
+            assert (grid_coordinates == np.array([[[-1., -1.], [-1., 0.], [-1., 1.]],
+                                                  [[0., -1.], [0., 0.], [0., 1.]],
+                                                  [[1., -1.], [1., 0.], [1., 1.]]])).all()
+
+        def test__array_4x4__sets_up_arcsecond_coordinates(self):
+            grid = image.DataGrid(array=np.zeros((4, 4)), pixel_scale=0.5)
+
+            grid_coordinates = grid.grid_coordinates
+            print(list(grid_coordinates))
+
+            assert (grid_coordinates == np.array([[[-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75]],
+                                                  [[-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75]],
+                                                  [[0.25, -0.75], [0.25, -0.25], [0.25, 0.25], [0.25, 0.75]],
+                                                  [[0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75]]])).all()
+
+        def test__array_2x3__sets_up_arcsecond_coordinates(self):
+            grid = image.DataGrid(array=np.zeros((2, 3)), pixel_scale=1.0)
+
+            grid_coordinates = grid.grid_coordinates
+            print(list(grid_coordinates))
+
+            assert (grid_coordinates == np.array([[[-0.5, -1.], [-0.5, 0.], [-0.5, 1.]],
+                                                  [[0.5, -1.], [0.5, 0.], [0.5, 1.]]])).all()
+
+        def test__array_3x2__sets_up_arcsecond_coordinates(self):
+            grid = image.DataGrid(array=np.zeros((3, 2)), pixel_scale=1.0)
+
+            grid_coordinates = grid.grid_coordinates
+
+            assert (grid_coordinates == np.array([[[-1., -0.5], [-1., 0.5]],
+                                                  [[0., -0.5], [0., 0.5]],
+                                                  [[1., -0.5], [1., 0.5]]])).all()
