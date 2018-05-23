@@ -131,7 +131,7 @@ class TestNoiseBackground(object):
     class TestConstructors(object):
 
         def test__init__input_background_noise_single_value__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.NoiseBackground.single_value(value=5.0, shape=(3, 3),
+            background_noise = image.BackgroundNoise.single_value(value=5.0, shape=(3, 3),
                                                                   pixel_scale=1.0)
 
             assert (background_noise == 5.0 * np.ones((3, 3))).all()
@@ -141,7 +141,7 @@ class TestNoiseBackground(object):
             assert background_noise.shape_arc_seconds == pytest.approx((3.0, 3.0))
 
         def test__init__input_background_noise_3x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.NoiseBackground(array=np.ones((3, 3)), pixel_scale=1.0)
+            background_noise = image.BackgroundNoise(array=np.ones((3, 3)), pixel_scale=1.0)
 
             assert background_noise.pixel_scale == 1.0
             assert background_noise.shape == (3, 3)
@@ -150,7 +150,7 @@ class TestNoiseBackground(object):
             assert (background_noise == np.ones((3, 3))).all()
 
         def test__init__input_background_noise_4x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.NoiseBackground(array=np.ones((4, 3)), pixel_scale=0.1)
+            background_noise = image.BackgroundNoise(array=np.ones((4, 3)), pixel_scale=0.1)
 
             assert (background_noise == np.ones((4, 3))).all()
             assert background_noise.pixel_scale == 0.1
@@ -159,7 +159,7 @@ class TestNoiseBackground(object):
             assert background_noise.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_background_noise_3x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.NoiseBackground.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
+            background_noise = image.BackgroundNoise.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
                                                                pixel_scale=1.0)
 
             assert (background_noise == np.ones((3, 3))).all()
@@ -169,7 +169,7 @@ class TestNoiseBackground(object):
             assert background_noise.shape_arc_seconds == pytest.approx((3.0, 3.0))
 
         def test__from_fits__input_background_noise_4x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.NoiseBackground.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
+            background_noise = image.BackgroundNoise.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
                                                                pixel_scale=0.1)
 
             assert (background_noise == np.ones((4, 3))).all()
@@ -450,12 +450,18 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(1.0 + 0.0**2) = 1.0
         # Noise (eps) = 1.0 / 1.0
 
-        image = np.ones((3, 3))
+        shape = (3, 3)
 
-        exposure_time = 1.0
+        array = np.ones(shape)
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time,
-                                                           background_noise=0.0)
+        exposure_time = image.ExposureTime.single_value(1, shape)
+        background_noise = image.BackgroundNoise.single_value(0, shape)
+
+        img = image.Image(array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
+
+        print(noise_estimate)
 
         assert (noise_estimate == np.ones((3, 3))).all()
 
@@ -469,12 +475,15 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(1.0 + 0.0**2) = 1.0
         # Noise (eps) = 1.0 / 1.0
 
-        image = np.ones((3, 3))
+        shape = (3, 3)
 
-        exposure_time = np.ones((3, 3))
+        array = np.ones(shape)
+        exposure_time = np.ones(shape)
+        background_noise = np.zeros(shape)
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time,
-                                                           background_noise=0.0)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert (noise_estimate == np.ones((3, 3))).all()
 
@@ -488,11 +497,14 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
         # Noise (eps) = 2.0 / 1.0
 
-        image = 4.0 * np.ones((4, 2))
+        array = 4.0 * np.ones((4, 2))
 
         exposure_time = np.ones((4, 2))
+        background_noise = np.zeros((4, 2))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time, background_noise=0.0)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert (noise_estimate == 2.0 * np.ones((4, 2))).all()
 
@@ -506,24 +518,32 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
         # Noise (eps) = 2.0 / 4.0 = 0.5
 
-        image = np.ones((1, 5))
+        array = np.ones((1, 5))
 
         exposure_time = 4.0 * np.ones((1, 5))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time, background_noise=0.0)
+        background_noise = np.zeros((1, 5))
+
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert (noise_estimate == 0.5 * np.ones((1, 5))).all()
 
     def test__image_and_exposure_times_range_of_values__no_background__noises_estimates_correct(self):
         # Noise (eps) = sqrt( image (counts) + 0.0 ) / exposure_time
 
-        image = np.array([[5.0, 3.0],
+        array = np.array([[5.0, 3.0],
                           [10.0, 20.0]])
 
-        exposure_time = np.array([[1.0, 2.0],
-                                  [3.0, 4.0]])
+        exposure_time = image.ExposureTime(np.array([[1.0, 2.0],
+                                                     [3.0, 4.0]]))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time, background_noise=0.0)
+        background_noise = np.zeros((2, 2))
+
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert (noise_estimate == np.array([[np.sqrt(5.0), np.sqrt(6.0) / 2.0],
                                             [np.sqrt(30.0) / 3.0, np.sqrt(80.0) / 4.0]])).all()
@@ -538,12 +558,15 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(1.0 + sqrt(3.0)**2) = sqrt(1.0 + 3.0) = 2.0
         # Noise (eps) = 2.0 / 1.0 = 2.0
 
-        image = np.ones((3, 3))
+        array = np.ones((3, 3))
 
         exposure_time = np.ones((3, 3))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time,
-                                                           background_noise=3.0 ** 0.5)
+        background_noise = 3.0 ** 0.5 * np.ones((3, 3))
+
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert noise_estimate == pytest.approx(2.0 * np.ones((3, 3)), 1e-2)
 
@@ -557,16 +580,19 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(1.0 + 5**2)
         # Noise (eps) = sqrt(1.0 + 5**2) / 1.0
 
-        image = np.ones((2, 3))
+        array = np.ones((2, 3))
 
         exposure_time = np.ones((2, 3))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time,
-                                                           background_noise=5.0)
+        background_noise = 5 * np.ones((2, 3))
 
-        assert noise_estimate == \
-               pytest.approx(np.array([[np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0)],
-                                       [np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0)]]), 1e-2)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
+
+        assert noise_estimate == pytest.approx(
+            np.array([[np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0)],
+                      [np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0)]]), 1e-2)
 
     def test__image_all_1s__exposure_times_all_2s__background_is_float_5__noise_all_correct(self):
         # Image (eps) = 1.0
@@ -578,30 +604,33 @@ class TestEstimateNoiseFromImage:
         # Noise (counts) = sqrt(2.0 + 10**2) = sqrt(2.0 + 100.0)
         # Noise (eps) = sqrt(2.0 + 100.0) / 2.0
 
-        image = np.ones((2, 3))
+        array = np.ones((2, 3))
 
         exposure_time = 2.0 * np.ones((2, 3))
+        background_noise = 5.0 * np.ones((2, 3))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time,
-                                                           background_noise=5.0)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
-        assert noise_estimate == \
-               pytest.approx(
-                   np.array([[np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0],
-                             [np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0]]),
-                   1e-2)
+        noise_estimate = img.estimated_noise
+
+        assert noise_estimate == pytest.approx(
+            np.array([[np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0],
+                      [np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0]]),
+            1e-2)
 
     def test__same_as_above_but_different_image_values_in_each_pixel_and_new_background_values(self):
         # Can use pattern from previous test for values
 
-        image = np.array([[1.0, 2.0],
+        array = np.array([[1.0, 2.0],
                           [3.0, 4.0],
                           [5.0, 6.0]])
 
         exposure_time = np.ones((3, 2))
+        background_noise = 12.0 * np.ones((3, 2))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time,
-                                                           background_noise=12.0)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert noise_estimate == pytest.approx(np.array([[np.sqrt(1.0 + 144.0), np.sqrt(2.0 + 144.0)],
                                                          [np.sqrt(3.0 + 144.0), np.sqrt(4.0 + 144.0)],
@@ -611,13 +640,16 @@ class TestEstimateNoiseFromImage:
         # Use same pattern as above, noting that here our background values are now being converts to counts using
         # different exposure time and then being squared.
 
-        image = np.array([[5.0, 3.0],
+        array = np.array([[5.0, 3.0],
                           [10.0, 20.0]])
 
         exposure_time = np.array([[1.0, 2.0],
                                   [3.0, 4.0]])
+        background_noise = 9.0 * np.array((2, 2))
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time, background_noise=9.0)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert noise_estimate == pytest.approx(np.array([[np.sqrt(5.0 + 81.0), np.sqrt(6.0 + 18.0 ** 2.0) / 2.0],
                                                          [np.sqrt(30.0 + 27.0 ** 2.0) / 3.0,
@@ -627,7 +659,7 @@ class TestEstimateNoiseFromImage:
     def test__image_and_exposure_times_and_background_are_all_ranges_of_values__noise_estimates_correct(self):
         # Use same pattern as above, noting that we are now also using a variable background signal_to_noise_ratio map.
 
-        image = np.array([[5.0, 3.0],
+        array = np.array([[5.0, 3.0],
                           [10.0, 20.0]])
 
         exposure_time = np.array([[1.0, 2.0],
@@ -636,7 +668,9 @@ class TestEstimateNoiseFromImage:
         background_noise = np.array([[5.0, 6.0],
                                      [7.0, 8.0]])
 
-        noise_estimate = imaging.estimate_noise_from_image(image, exposure_time, background_noise)
+        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+
+        noise_estimate = img.estimated_noise
 
         assert noise_estimate == pytest.approx(np.array([[np.sqrt(5.0 + 5.0 ** 2.0), np.sqrt(6.0 + 12.0 ** 2.0) / 2.0],
                                                          [np.sqrt(30.0 + 21.0 ** 2.0) / 3.0,
