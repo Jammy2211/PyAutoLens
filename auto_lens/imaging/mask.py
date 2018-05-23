@@ -8,7 +8,7 @@ class Mask(data.DataGrid):
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
-        return cls(np.zeros(map(lambda d: d / pixel_scale, shape_arc_seconds)), pixel_scale)
+        return cls(np.zeros(tuple(map(lambda d: int(d / pixel_scale), shape_arc_seconds))), pixel_scale)
 
     @classmethod
     def circular(cls, shape_arc_seconds, pixel_scale, radius_mask, centre=(0., 0.)):
