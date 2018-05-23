@@ -27,8 +27,8 @@ class Mask(data.DataGrid):
 
         grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
 
-        for y in range(int(grid.shape[0])):
-            for x in range(int(grid.shape[1])):
+        for x in range(int(grid.shape[0])):
+            for y in range(int(grid.shape[1])):
                 x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
 
                 x_arcsec -= centre[0]
@@ -36,7 +36,7 @@ class Mask(data.DataGrid):
 
                 radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-                grid[y, x] = radius_arcsec > radius_mask
+                grid[x, y] = radius_arcsec > radius_mask
 
         return grid
 
@@ -61,8 +61,8 @@ class Mask(data.DataGrid):
 
         grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
 
-        for y in range(int(grid.shape[0])):
-            for x in range(int(grid.shape[1])):
+        for x in range(int(grid.shape[0])):
+            for y in range(int(grid.shape[1])):
                 x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
 
                 x_arcsec -= centre[0]
@@ -70,7 +70,7 @@ class Mask(data.DataGrid):
 
                 radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-                grid[y, x] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
+                grid[x, y] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
 
         return grid
 
@@ -104,10 +104,10 @@ class Mask(data.DataGrid):
         grid = np.zeros(shape=(pixels, 2))
         pixel_count = 0
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
-                    grid[pixel_count, :] = coordinates[y, x]
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
         return grid
@@ -126,9 +126,9 @@ class Mask(data.DataGrid):
 
         grid = np.zeros(shape=(image_pixels, grid_size_sub ** 2, 2))
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
                     x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
 
                     sub_pixel_count = 0
@@ -177,10 +177,10 @@ class Mask(data.DataGrid):
         grid = np.zeros(shape=pixels)
         pixel_count = 0
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
-                    grid[pixel_count] = grid_data[y, x]
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    grid[pixel_count] = grid_data[x, y]
                     pixel_count += 1
 
         return grid
@@ -194,10 +194,10 @@ class Mask(data.DataGrid):
         grid = np.zeros(shape=(pixels, 2), dtype='int')
         pixel_count = 0
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
-                    grid[pixel_count, :] = y, x
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    grid[pixel_count, :] = x, y
                     pixel_count += 1
 
         return grid
@@ -248,12 +248,12 @@ class Mask(data.DataGrid):
         border_pixels = np.empty(0)
         image_pixel_index = 0
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
-                    if self[y + 1, x] == 1 or self[y - 1, x] == 1 or self[y, x + 1] == 1 or \
-                            self[y, x - 1] == 1 or self[y + 1, x + 1] == 1 or self[y + 1, x - 1] == 1 \
-                            or self[y - 1, x + 1] == 1 or self[y - 1, x - 1] == 1:
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    if self[x + 1, y] == 1 or self[x - 1, y] == 1 or self[x, y + 1] == 1 or \
+                            self[x, y - 1] == 1 or self[x + 1, y + 1] == 1 or self[x + 1, y - 1] == 1 \
+                            or self[x - 1, y + 1] == 1 or self[x - 1, y - 1] == 1:
                         border_pixels = np.append(border_pixels, image_pixel_index)
 
                     image_pixel_index += 1
@@ -272,15 +272,15 @@ class Mask(data.DataGrid):
 
         blurring_mask = np.ones(self.shape)
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
                     for y1 in range((-psf_size[1] + 1) // 2, (psf_size[1] + 1) // 2):
                         for x1 in range((-psf_size[0] + 1) // 2, (psf_size[0] + 1) // 2):
-                            if 0 <= y + y1 <= self.shape[0] - 1 \
-                                    and 0 <= x + x1 <= self.shape[1] - 1:
-                                if self[y + y1, x + x1]:
-                                    blurring_mask[y + y1, x + x1] = False
+                            if 0 <= x + x1 <= self.shape[0] - 1 \
+                                    and 0 <= y + y1 <= self.shape[1] - 1:
+                                if self[x + x1, y + y1]:
+                                    blurring_mask[x + x1, y + y1] = False
                             else:
                                 raise MaskException(
                                     "setup_blurring_mask extends beyond the size of the mask - pad the image"
@@ -293,11 +293,11 @@ class Mask(data.DataGrid):
         give a remainder when divided by the sub-grid_coords size. """
         sparse_mask = np.ones(self.shape)
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
                     if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
-                        sparse_mask[y, x] = False
+                        sparse_mask[x, y] = False
 
         return Mask(sparse_mask, self.pixel_scale)
 
@@ -310,11 +310,11 @@ class Mask(data.DataGrid):
         sparse_index_2d = np.zeros(self.shape)
         sparse_pixel_index = 0
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not sparse_mask[y, x]:
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not sparse_mask[x, y]:
                     sparse_pixel_index += 1
-                    sparse_index_2d[y, x] = sparse_pixel_index
+                    sparse_index_2d[x, y] = sparse_pixel_index
 
         return sparse_index_2d
 
@@ -336,14 +336,13 @@ class Mask(data.DataGrid):
         sparse_to_image = np.empty(0)
         image_pixel_index = 0
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                print("for {}:{}".format(y, x))
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
 
-                if not sparse_mask[y, x]:
+                if not sparse_mask[x, y]:
                     sparse_to_image = np.append(sparse_to_image, image_pixel_index)
 
-                if not self[y, x]:
+                if not self[x, y]:
                     image_pixel_index += 1
 
         return sparse_to_image
@@ -371,17 +370,17 @@ class Mask(data.DataGrid):
         """
         image_to_sparse = np.empty(0)
 
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                if not self[y, x]:
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
                     iboarder = 0
                     pixel_match = False
                     while not pixel_match:
-                        for y1 in range(y - iboarder, y + iboarder + 1):
-                            for x1 in range(x - iboarder, x + iboarder + 1):
-                                if 0 <= y1 < self.shape[0] and 0 <= x1 < self.shape[1]:
-                                    if not sparse_mask[y1, x1] and not pixel_match:
-                                        image_to_sparse = np.append(image_to_sparse, sparse_index_image[y1, x1] - 1)
+                        for x1 in range(x - iboarder, x + iboarder + 1):
+                            for y1 in range(y - iboarder, y + iboarder + 1):
+                                if 0 <= x1 < self.shape[0] and 0 <= y1 < self.shape[1]:
+                                    if not sparse_mask[x1, y1] and not pixel_match:
+                                        image_to_sparse = np.append(image_to_sparse, sparse_index_image[x1, y1] - 1)
                                         pixel_match = True
 
                         iboarder += 1
