@@ -595,7 +595,7 @@ class TestImage(object):
 
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
             img = image.Image(array=np.ones((3, 3)), pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=1)
+            sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
 
@@ -605,7 +605,7 @@ class TestImage(object):
                                     [1, 1, 1]])
 
             img = image.Image(array=image_array, pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=1)
+            sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
 
@@ -616,7 +616,7 @@ class TestImage(object):
                                     [1, 1, 1]])
 
             img = image.Image(array=image_array, pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=1)
+            sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
 
@@ -627,7 +627,7 @@ class TestImage(object):
                                     [1, 1, 1, 1]])
 
             img = image.Image(array=image_array, pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=1)
+            sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
 
@@ -639,7 +639,7 @@ class TestImage(object):
                                     [1, 1, 1, 1, 1]])
 
             img = image.Image(array=image_array, pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=2)
+            sky_noise = img.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == 0.0
 
@@ -652,7 +652,7 @@ class TestImage(object):
                                     [23, 24, 25, 26, 27]])
 
             img = image.Image(array=image_array, pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=2)
+            sky_noise = img.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == np.std(np.arange(28))
 
@@ -666,6 +666,6 @@ class TestImage(object):
                                     [41, 42, 43, 44, 45, 46, 47]])
 
             img = image.Image(array=image_array, pixel_scale=0.1)
-            sky_noise = img.estimate_background_noise_from_edges(no_edges=3)
+            sky_noise = img.background_noise_from_edges(no_edges=3)
 
             assert sky_noise == np.std(np.arange(48))
