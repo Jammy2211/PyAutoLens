@@ -6,7 +6,6 @@ import scipy.signal
 import os
 import logging
 
-from auto_lens.imaging import grids
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
