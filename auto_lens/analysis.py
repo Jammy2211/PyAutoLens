@@ -1,7 +1,34 @@
+import numpy as np
+
 from auto_lens.imaging import grids
 from auto_lens import ray_tracing
 
 # TODO : Do this convolution in 1D eventually..
+
+def compute_likelihood(image, noise, model_image):
+    """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \
+    image and model ray-tracing image. The likelihood consists of two terms:
+
+    Chi-squared term - The residuals (model - data) of every pixel divided by the noise in each pixel, all squared.
+    [Chi_Squared_Term] = sum(([Residuals] / [Noise]) ** 2.0)
+
+    The overall normalization of the noise is also included, by summing the log noise value in each pixel:
+    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
+
+    These are summed and multiplied by -0.5 to give the likelihood:
+
+    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term]
+
+    Parameters
+    ----------
+    image : grids.GridData
+        The image data.
+    noise : grids.GridData
+        The noise in each pixel.
+    model_image : grids.GridData
+        The model image of the data.
+    """
+    return -0.5*(np.sum(((image - model_image) / noise) ** 2.0 + np.log(2*np.pi*noise**2.0)))
 
 def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
     """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
