@@ -3,7 +3,26 @@ from auto_lens import ray_tracing
 
 # TODO : Do this convolution in 1D eventually..
 
-def compute_blurred_light_profile_image(image, image_to_pixel, psf, blurring_image=None, blurring_to_pixel=None):
+def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
+    """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
+    PSF.
+
+    Parameters
+    ----------
+    ray_tracing : ray_tracing.TraceImageAndSource
+        The ray-tracing configuration of the model galaxies and their profiles.
+    psf : imaging.PSF
+        The 2D Point Spread Function (PSF).
+    grid_mappers : grids.GridMapperCollection
+        The collection of grid mappings, used to map images from 2d and 1d.
+    """
+
+    image_light_profile = ray_tracing.generate_image_of_galaxy_light_profiles()
+    blurring_image_light_profile = ray_tracing.generate_blurring_image_of_galaxy_light_profiles()
+    return blur_image_including_blurring_region(image_light_profile, grid_mappers.image_to_pixel, psf,
+                                                blurring_image_light_profile, grid_mappers.blurring_to_pixel)
+
+def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_image=None, blurring_to_pixel=None):
     """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
 
     Parameters
