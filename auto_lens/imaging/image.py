@@ -117,3 +117,32 @@ class DataGrid(np.ndarray):
         arguments.update({"array": array})
 
         return self.__class__(**arguments)
+
+    def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
+        """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and sub-grid_coords \
+        size"""
+
+        half = self.pixel_scale / 2
+        step = self.pixel_scale / (sub_grid_size + 1)
+
+        return arcsec - half + (sub_pixel + 1) * step
+
+    @property
+    def grid_coordinates(self):
+        """
+        Computes the arc second grids of every pixel on the data-grid_coords.
+
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        value and positive y value in arc seconds.
+        """
+
+        coordinates_array = np.zeros((self.shape[0], self.shape[1], 2))
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                arc_second_coordinates = self.pixel_coordinates_to_arc_second_coordinates((x, y))
+                coordinates_array[x, y, 0] = arc_second_coordinates[0]
+                coordinates_array[x, y, 1] = arc_second_coordinates[1]
+
+        return coordinates_array
+
