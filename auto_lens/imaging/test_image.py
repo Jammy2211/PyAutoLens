@@ -645,7 +645,7 @@ class TestEstimateNoiseFromImage:
 
         exposure_time = np.array([[1.0, 2.0],
                                   [3.0, 4.0]])
-        background_noise = 9.0 * np.array((2, 2))
+        background_noise = 9.0 * np.ones((2, 2))
 
         img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
