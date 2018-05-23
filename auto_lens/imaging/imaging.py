@@ -46,7 +46,8 @@ def estimate_noise_in_quadrature(image_counts, sigma_counts):
 
 
 def estimate_noise_from_image(image, exposure_time, background_noise):
-    """Estimate the two-dimensional signal_to_noise_ratio of an input image, including signal_to_noise_ratio due to
+    """
+    Estimate the two-dimensional signal_to_noise_ratio of an input image, including signal_to_noise_ratio due to
     Poisson counting statistics and a background component.
 
     Parameters
@@ -71,7 +72,8 @@ def numpy_array_from_fits(file_path, hdu):
 
 
 def output_for_fortran(path, array, image_name):
-    """ Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
+    """
+    Outputs the data-array for the Fortran AutoLens code. This will ultimately be removed so you can ignore
     and I've not bothered with unit-tests.
     Parameters
     ----------
