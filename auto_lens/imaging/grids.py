@@ -490,6 +490,27 @@ class GridDataCollection(object):
         self.exposure_time = exposure_time
         self.psf = psf
 
+    @classmethod
+    def from_mask(cls, mask, image, noise, exposure_time, psf):
+        """Setup the collection of data grids using a mask.
+
+        Parameters
+        -----------
+        mask : imaging.Mask
+            A mask describing which image_to_pixel the coordinates are computed for and used to setup the collection of grids.
+        image : imaging.Image
+            A data-grid of the observed image fluxes (electrons per second)
+        noise : imaging.Noise
+            A data-grid of the observed image noise estimates (standard deviations, electrons per second)
+        exposure_time : imaging.ExposureTime
+            A data-grid of the exposure time in each pixel (seconds)
+        psf : imaging.PSF
+            The 2D Point Spread Function (PSF).
+        """
+        image = GridData.from_mask(image.data, mask)
+        noise = GridData.from_mask(noise.data, mask)
+        exposure_time = GridData.from_mask(exposure_time.data, mask)
+        return GridDataCollection(image, noise, exposure_time, psf)
 
 class GridData(np.ndarray):
 
@@ -588,7 +609,7 @@ class GridMapperCollection(object):
 
     @classmethod
     def from_mask(cls, mask, blurring_size=None, cluster_grid_size=None):
-        """Setup the collection of coordinate grids using an image mask.
+        """Setup the collection of grid mappers using an image mask.
 
         Parameters
         -----------
