@@ -110,6 +110,11 @@ class Mask(data.DataGrid):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
+        print(grid)
+        print("assert (image_grid == np.array({})).all()".format(
+            str(grid).replace("0. ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
+                                                                                                               ''))
+
         return grid
 
     def compute_grid_coords_image_sub(self, grid_size_sub):
