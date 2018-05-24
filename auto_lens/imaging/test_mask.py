@@ -118,9 +118,9 @@ class TestMask(object):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(-1, 0))
 
             assert msk.shape == (3, 3)
-            assert (msk == np.array([[True, True, True],
+            assert (msk == np.array([[True, False, True],
                                      [True, True, True],
-                                     [True, False, True]])).all()
+                                     [True, True, True]])).all()
 
         def test__centre_shift__simple_shift_forward(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(0, 1))
@@ -133,9 +133,9 @@ class TestMask(object):
         def test__centre_shift__diagonal_shift(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(1, 1))
 
-            assert (msk == np.array([[True, True, False],
+            assert (msk == np.array([[True, True, True],
                                      [True, True, True],
-                                     [True, True, True]])).all()
+                                     [True, True, False]])).all()
 
     class TestAnnular(object):
 
@@ -196,9 +196,9 @@ class TestMask(object):
                                     outer_radius_mask=3, centre=(-1.0, 0.0))
 
             assert msk.shape == (3, 3)
-            assert (msk == np.array([[False, False, False],
+            assert (msk == np.array([[False, True, False],
                                      [False, False, False],
-                                     [False, True, False]])).all()
+                                     [False, False, False]])).all()
 
         def test__centre_shift__simple_shift_forward(self):
             msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
@@ -214,9 +214,9 @@ class TestMask(object):
                                     outer_radius_mask=3, centre=(1.0, 1.0))
 
             assert msk.shape == (3, 3)
-            assert (msk == np.array([[False, False, True],
+            assert (msk == np.array([[False, False, False],
                                      [False, False, False],
-                                     [False, False, False]])).all()
+                                     [False, False, True]])).all()
 
     class TestUnmasked(object):
 
