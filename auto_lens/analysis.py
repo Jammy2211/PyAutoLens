@@ -2,20 +2,22 @@ import numpy as np
 
 from auto_lens.imaging import grids
 from auto_lens import ray_tracing
-#
-# def fit_data_with_model(grid_datas, grid_mappers, ray_tracing):
-#     """Fit the data using the ray_tracing model
-#
-#     Parameters
-#     ----------
-#     grid_datas : grids.GridDataCollection
-#         The collection of grid data-sets (image, noise, psf, etc.)
-#     grid_mappers : grids.GridMapperCollection
-#         The collection of grid mappings, used to map images from 2d and 1d.
-#     ray_tracing : ray_tracing.TraceImageAndSource
-#         The ray-tracing configuration of the model galaxies and their profiles.
-#     """
-#
+
+def fit_data_with_model(grid_datas, grid_mappers, ray_tracing):
+    """Fit the data using the ray_tracing model
+
+    Parameters
+    ----------
+    grid_datas : grids.GridDataCollection
+        The collection of grid data-sets (image, noise, psf, etc.)
+    grid_mappers : grids.GridMapperCollection
+        The collection of grid mappings, used to map images from 2d and 1d.
+    ray_tracing : ray_tracing.TraceImageAndSource
+        The ray-tracing configuration of the model galaxies and their profiles.
+    """
+    blurred_model_image = generate_blurred_light_profie_image(ray_tracing, grid_datas.psf, grid_mappers)
+    return compute_likelihood(grid_datas.image, grid_datas.noise, blurred_model_image)
+
 
 def compute_likelihood(image, noise, model_image):
     """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \

@@ -12,11 +12,84 @@ from auto_lens.profiles import mass_profiles, light_profiles
 def no_galaxies():
     return [galaxy.Galaxy()]
 
-@pytest.fixture(scope='function')
-def galaxy_light_sersic():
-    sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                             sersic_index=4.0)
-    return galaxy.Galaxy(light_profiles=[sersic])
+
+class MockLightProfile(object):
+
+    def __init__(self, value):
+        self.value = value
+
+    def intensity_at_radius(self, radius):
+        return self.value
+
+    def intensity_at_coordinates(self, coordinates):
+        return self.value
+
+
+class TestFitData:
+
+    def test__image_is_1__noise_is_1__galaxy_returns_1__psf_doesnt_blur__lh_is_noise_term(self, no_galaxies):
+
+        # Setup the mask, grid data and PSF
+
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True]])
+        mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+
+        image = grids.GridData(grid_data=np.array([1.0]))
+        noise = grids.GridData(grid_data=np.array([1.0]))
+        exposure_time = grids.GridData(grid_data=np.array([1.0]))
+        psf = imaging.PSF(data=np.array([[0.0, 0.0, 0.0],
+                                         [0.0, 1.0, 0.0],
+                                         [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+
+        # Setup the grids as collections
+
+        grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time, psf=psf)
+        grid_collection = grids.GridCoordsCollection.from_mask(mask=mask, blurring_size=psf.pixel_dimensions)
+        grid_mappers = grids.GridMapperCollection.from_mask(mask=mask, blurring_size=psf.pixel_dimensions)
+
+        # Setup as a ray trace instance, using a light profile for the lens
+
+        mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
+        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                                    image_plane_grids=grid_collection)
+
+        likelihood = analysis.fit_data_with_model(grid_datas, grid_mappers, ray_trace)
+
+        assert likelihood == -0.5*np.log(2*np.pi*1.0)
+
+    def test__image_is_1__noise_is_1__galaxy_returns_1__psf_blurs_model_to_5__lh_is_correct(self, no_galaxies):
+
+        # Setup the mask, grid data and PSF
+
+        mask = np.array([[True, True, True],
+                         [True, False, True],
+                         [True, True, True]])
+        mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+
+        image = grids.GridData(grid_data=np.array([1.0]))
+        noise = grids.GridData(grid_data=np.array([1.0]))
+        exposure_time = grids.GridData(grid_data=np.array([1.0]))
+        psf = imaging.PSF(data=np.array([[0.0, 1.0, 0.0],
+                                         [1.0, 1.0, 1.0],
+                                         [0.0, 1.0, 0.0]]), pixel_scale=1.0)
+
+        # Setup the grids as collections
+
+        grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time, psf=psf)
+        grid_collection = grids.GridCoordsCollection.from_mask(mask=mask, blurring_size=psf.pixel_dimensions)
+        grid_mappers = grids.GridMapperCollection.from_mask(mask=mask, blurring_size=psf.pixel_dimensions)
+
+        # Setup as a ray trace instance, using a light profile for the lens
+
+        mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
+        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                                    image_plane_grids=grid_collection)
+
+        likelihood = analysis.fit_data_with_model(grid_datas, grid_mappers, ray_trace)
+
+        assert likelihood == -0.5*(16.0 + np.log(2*np.pi*1.0))
 
 
 class TestLikelihood:
