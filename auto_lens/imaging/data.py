@@ -15,7 +15,7 @@ class DataGrid(np.ndarray):
         return np.array(array).view(cls)
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale):
+    def __init__(self, array, pixel_scale=1):
         """
         Parameters
         ----------
@@ -166,6 +166,6 @@ class DataGrid(np.ndarray):
         return cls(array, pixel_scale)
 
     @classmethod
-    def single_value(cls, value, shape, pixel_scale):
+    def single_value(cls, value, shape, pixel_scale=1):
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
