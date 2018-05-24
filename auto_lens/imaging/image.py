@@ -9,17 +9,38 @@ class Noise(data.DataGrid):
 
 
 class ExposureTime(data.DataGrid):
-    pass
+    def electrons_per_second_to_counts(self, array):
+        """
+        For an array (in electrons per second) and exposure time array, return an array in units counts.
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.multiply(array, self)
+
+    def counts_to_electrons_per_second(self, array):
+        """
+        For an array (in counts) and exposure time array, convert the array to units electrons per second
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.divide(array, self)
 
 
 class Image(data.DataGrid):
-    def __init__(self, array, pixel_scale, psf=None, background_noise=None, poisson_noise=None,
+    def __init__(self, array, pixel_scale=1, psf=None, background_noise=None, poisson_noise=None,
                  effective_exposure_time=None):
         super(Image, self).__init__(array, pixel_scale)
-        self.psf = psf
-        self.background_noise = background_noise
-        self.poisson_noise = poisson_noise
-        self.effective_exposure_time = effective_exposure_time
+        self.psf = PSF(psf, pixel_scale) if psf is not None else None
+        self.background_noise = BackgroundNoise(background_noise, pixel_scale) if background_noise is not None else None
+        self.poisson_noise = Noise(poisson_noise, pixel_scale) if poisson_noise is not None else None
+        self.effective_exposure_time = ExposureTime(effective_exposure_time,
+                                                    pixel_scale) if effective_exposure_time is not None else None
 
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
@@ -45,12 +66,28 @@ class Image(data.DataGrid):
 
         return norm.fit(edges)[1]
 
+    @property
+    def counts_array(self):
+        return self.effective_exposure_time.electrons_per_second_to_counts(self)
 
-class NoiseBackground(data.DataGrid):
+    @property
+    def background_noise_counts_array(self):
+        return self.effective_exposure_time.electrons_per_second_to_counts(self.background_noise)
+
+    @property
+    def estimated_noise_counts(self):
+        return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
+
+    @property
+    def estimated_noise(self):
+        return self.effective_exposure_time.counts_to_electrons_per_second(self.estimated_noise_counts)
+
+
+class BackgroundNoise(data.DataGrid):
     @classmethod
     def from_image_via_edges(cls, image, no_edges):
         background_noise = image.estimate_background_noise_from_edges(no_edges)
-        return NoiseBackground(background_noise, image.pixel_scale)
+        return BackgroundNoise(background_noise, image.pixel_scale)
 
 
 class PSF(data.DataGrid):
@@ -102,7 +139,7 @@ class PSF(data.DataGrid):
 
     def renormalize(self):
         """Renormalize the PSF such that its data values sum to unity."""
-        return np.divide(self.data, np.sum(self.data))
+        return np.divide(self, np.sum(self))
 
 
 class KernelException(Exception):
