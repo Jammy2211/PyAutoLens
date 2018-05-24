@@ -144,6 +144,10 @@ class Mask(data.DataGrid):
                             sub_pixel_count += 1
 
                     image_pixel_count += 1
+        print(grid)
+        print("assert (image_sub_grid == np.array({})).all()".format(
+            str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
+                                                                                                                ''))
 
         return grid
 
@@ -161,8 +165,12 @@ class Mask(data.DataGrid):
         """
 
         blurring_mask = self.compute_blurring_mask(psf_size)
+        blurring_grid = blurring_mask.compute_grid_coords_image()
 
-        return blurring_mask.compute_grid_coords_image()
+        print("assert (blurring_grid == np.array({})).all()".format(
+            str(blurring_grid).replace("  ", ",").replace(" -", ",-").replace("\n", ",")))
+
+        return blurring_grid
 
     def compute_grid_data(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
