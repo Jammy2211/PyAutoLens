@@ -7,7 +7,7 @@ test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpa
 
 
 class TestImage(object):
-    class TestEstimateBackgroundNoise(object):
+    class TestEstimateDataGrid(object):
 
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
             img = image.Image(array=np.ones((3, 3)), pixel_scale=0.1)
@@ -87,98 +87,6 @@ class TestImage(object):
             assert sky_noise == np.std(np.arange(48))
 
 
-class TestNoise(object):
-    class TestConstructors(object):
-
-        def test__init__input_noise_3x3__all_attributes_correct_including_data_inheritance(self):
-            noise = image.Noise(array=np.ones((3, 3)), pixel_scale=0.1)
-
-            assert (noise == np.ones((3, 3))).all()
-            assert noise.pixel_scale == 0.1
-            assert noise.shape == (3, 3)
-            assert noise.central_pixel_coordinates == (1.0, 1.0)
-            assert noise.shape_arc_seconds == pytest.approx((0.3, 0.3))
-
-        def test__init__input_noise_4x3__all_attributes_correct_including_data_inheritance(self):
-            noise = image.Noise(array=np.ones((4, 3)), pixel_scale=0.1)
-
-            assert (noise == np.ones((4, 3))).all()
-            assert noise.pixel_scale == 0.1
-            assert noise.shape == (4, 3)
-            assert noise.central_pixel_coordinates == (1.5, 1.0)
-            assert noise.shape_arc_seconds == pytest.approx((0.4, 0.3))
-
-        def test__from_fits__input_noise_3x3__all_attributes_correct_including_data_inheritance(self):
-            noise = image.Noise.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0, pixel_scale=1.0)
-
-            assert (noise == np.ones((3, 3))).all()
-            assert noise.pixel_scale == 1.0
-            assert noise.shape == (3, 3)
-            assert noise.central_pixel_coordinates == (1.0, 1.0)
-            assert noise.shape_arc_seconds == pytest.approx((3.0, 3.0))
-
-        def test__from_fits__input_noise_4x3__all_attributes_correct_including_data_inheritance(self):
-            noise = image.Noise.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0, pixel_scale=0.1)
-
-            assert (noise == np.ones((4, 3))).all()
-            assert noise.pixel_scale == 0.1
-            assert noise.shape == (4, 3)
-            assert noise.central_pixel_coordinates == (1.5, 1.0)
-            assert noise.shape_arc_seconds == pytest.approx((0.4, 0.3))
-
-
-class TestNoiseBackground(object):
-    class TestConstructors(object):
-
-        def test__init__input_background_noise_single_value__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.BackgroundNoise.single_value(value=5.0, shape=(3, 3),
-                                                                  pixel_scale=1.0)
-
-            assert (background_noise == 5.0 * np.ones((3, 3))).all()
-            assert background_noise.pixel_scale == 1.0
-            assert background_noise.shape == (3, 3)
-            assert background_noise.central_pixel_coordinates == (1.0, 1.0)
-            assert background_noise.shape_arc_seconds == pytest.approx((3.0, 3.0))
-
-        def test__init__input_background_noise_3x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.BackgroundNoise(array=np.ones((3, 3)), pixel_scale=1.0)
-
-            assert background_noise.pixel_scale == 1.0
-            assert background_noise.shape == (3, 3)
-            assert background_noise.central_pixel_coordinates == (1.0, 1.0)
-            assert background_noise.shape_arc_seconds == pytest.approx((3.0, 3.0))
-            assert (background_noise == np.ones((3, 3))).all()
-
-        def test__init__input_background_noise_4x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.BackgroundNoise(array=np.ones((4, 3)), pixel_scale=0.1)
-
-            assert (background_noise == np.ones((4, 3))).all()
-            assert background_noise.pixel_scale == 0.1
-            assert background_noise.shape == (4, 3)
-            assert background_noise.central_pixel_coordinates == (1.5, 1.0)
-            assert background_noise.shape_arc_seconds == pytest.approx((0.4, 0.3))
-
-        def test__from_fits__input_background_noise_3x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.BackgroundNoise.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
-                                                               pixel_scale=1.0)
-
-            assert (background_noise == np.ones((3, 3))).all()
-            assert background_noise.pixel_scale == 1.0
-            assert background_noise.shape == (3, 3)
-            assert background_noise.central_pixel_coordinates == (1.0, 1.0)
-            assert background_noise.shape_arc_seconds == pytest.approx((3.0, 3.0))
-
-        def test__from_fits__input_background_noise_4x3__all_attributes_correct_including_data_inheritance(self):
-            background_noise = image.BackgroundNoise.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
-                                                               pixel_scale=0.1)
-
-            assert (background_noise == np.ones((4, 3))).all()
-            assert background_noise.pixel_scale == 0.1
-            assert background_noise.shape == (4, 3)
-            assert background_noise.central_pixel_coordinates == (1.5, 1.0)
-            assert background_noise.shape_arc_seconds == pytest.approx((0.4, 0.3))
-
-
 class TestPSF(object):
     class TestConstructors(object):
 
@@ -244,9 +152,9 @@ class TestPSF(object):
     class TestConvolve(object):
 
         def test__kernel_is_not_odd_x_odd__raises_error(self):
-            img = np.array([[0.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0],
-                            [0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0],
+                                        [0.0, 1.0, 0.0],
+                                        [0.0, 0.0, 0.0]]))
 
             kernel = np.array([[0.0, 1.0],
                                [1.0, 2.0]])
@@ -254,12 +162,12 @@ class TestPSF(object):
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
             with pytest.raises(image.KernelException):
-                psf.convolve_with_image(img)
+                img.apply_psf(psf)
 
         def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(self):
-            img = np.array([[0.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0],
-                            [0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0],
+                                        [0.0, 1.0, 0.0],
+                                        [0.0, 0.0, 0.0]]))
 
             kernel = np.array([[0.0, 1.0, 0.0],
                                [1.0, 2.0, 1.0],
@@ -267,15 +175,15 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == kernel).all()
 
         def test__image_is_4x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(self):
-            img = np.array([[0.0, 0.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0, 0.0],
+                                        [0.0, 1.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 0.0]]))
 
             kernel = np.array([[0.0, 1.0, 0.0],
                                [1.0, 2.0, 1.0],
@@ -283,7 +191,7 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == np.array([[0.0, 1.0, 0.0, 0.0],
                                              [1.0, 2.0, 1.0, 0.0],
@@ -291,10 +199,10 @@ class TestPSF(object):
                                              [0.0, 0.0, 0.0, 0.0]])).all()
 
         def test__image_is_4x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(self):
-            img = np.array([[0.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0],
-                            [0.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0],
+                                        [0.0, 1.0, 0.0],
+                                        [0.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0]]))
 
             kernel = np.array([[0.0, 1.0, 0.0],
                                [1.0, 2.0, 1.0],
@@ -302,7 +210,7 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == np.array([[0.0, 1.0, 0.0],
                                              [1.0, 2.0, 1.0],
@@ -310,9 +218,9 @@ class TestPSF(object):
                                              [0.0, 0.0, 0.0]])).all()
 
         def test__image_is_3x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(self):
-            img = np.array([[0.0, 0.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0, 0.0],
+                                        [0.0, 1.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 0.0]]))
 
             kernel = np.array([[0.0, 1.0, 0.0],
                                [1.0, 2.0, 1.0],
@@ -320,17 +228,17 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == np.array([[0.0, 1.0, 0.0, 0.0],
                                              [1.0, 2.0, 1.0, 0.0],
                                              [0.0, 1.0, 0.0, 0.0]])).all()
 
         def test__image_is_4x4_has_two_central_values__kernel_is_asymmetric__blurred_image_follows_convolution(self):
-            img = np.array([[0.0, 0.0, 0.0, 0.0],
-                            [0.0, 1.0, 0.0, 0.0],
-                            [0.0, 0.0, 1.0, 0.0],
-                            [0.0, 0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0, 0.0],
+                                        [0.0, 1.0, 0.0, 0.0],
+                                        [0.0, 0.0, 1.0, 0.0],
+                                        [0.0, 0.0, 0.0, 0.0]]))
 
             kernel = np.array([[1.0, 1.0, 1.0],
                                [2.0, 2.0, 1.0],
@@ -338,7 +246,7 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == np.array([[1.0, 1.0, 1.0, 0.0],
                                              [2.0, 3.0, 2.0, 1.0],
@@ -347,10 +255,10 @@ class TestPSF(object):
 
         def test__image_is_4x4_values_are_on_edge__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
                 self):
-            img = np.array([[0.0, 0.0, 0.0, 0.0],
-                            [1.0, 0.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 1.0],
-                            [0.0, 0.0, 0.0, 0.0]])
+            img = image.Image(np.array([[0.0, 0.0, 0.0, 0.0],
+                                        [1.0, 0.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 1.0],
+                                        [0.0, 0.0, 0.0, 0.0]]))
 
             kernel = np.array([[1.0, 1.0, 1.0],
                                [2.0, 2.0, 1.0],
@@ -358,7 +266,7 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == np.array([[1.0, 1.0, 0.0, 0.0],
                                              [2.0, 1.0, 1.0, 1.0],
@@ -367,10 +275,10 @@ class TestPSF(object):
 
         def test__image_is_4x4_values_are_on_corner__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
                 self):
-            img = np.array([[1.0, 0.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 0.0],
-                            [0.0, 0.0, 0.0, 1.0]])
+            img = image.Image(np.array([[1.0, 0.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 0.0],
+                                        [0.0, 0.0, 0.0, 1.0]]))
 
             kernel = np.array([[1.0, 1.0, 1.0],
                                [2.0, 2.0, 1.0],
@@ -378,7 +286,7 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            blurred_img = psf.convolve_with_image(img)
+            blurred_img = img.apply_psf(psf)
 
             assert (blurred_img == np.array([[2.0, 1.0, 0.0, 0.0],
                                              [3.0, 3.0, 0.0, 0.0],
@@ -386,65 +294,13 @@ class TestPSF(object):
                                              [0.0, 0.0, 2.0, 2.0]])).all()
 
 
-class TestExposureTime(object):
-    class TestConstructors(object):
-
-        def test__init__input_exposure_time_single_value__all_attributes_correct_including_data_inheritance(self):
-            exposure_time = image.ExposureTime.single_value(value=5.0, shape=(3, 3),
-                                                            pixel_scale=1.0)
-
-            assert (exposure_time == 5.0 * np.ones((3, 3))).all()
-            assert exposure_time.pixel_scale == 1.0
-            assert exposure_time.shape == (3, 3)
-            assert exposure_time.central_pixel_coordinates == (1.0, 1.0)
-            assert exposure_time.shape_arc_seconds == pytest.approx((3.0, 3.0))
-
-        def test__init__input_exposure_time_3x3__all_attributes_correct_including_data_inheritance(self):
-            exposure_time = image.ExposureTime(array=np.ones((3, 3)), pixel_scale=1.0)
-
-            assert exposure_time.pixel_scale == 1.0
-            assert exposure_time.shape == (3, 3)
-            assert exposure_time.central_pixel_coordinates == (1.0, 1.0)
-            assert exposure_time.shape_arc_seconds == pytest.approx((3.0, 3.0))
-            assert (exposure_time == np.ones((3, 3))).all()
-
-        def test__init__input_exposure_time_4x3__all_attributes_correct_including_data_inheritance(self):
-            exposure_time = image.ExposureTime(array=np.ones((4, 3)), pixel_scale=0.1)
-
-            assert (exposure_time == np.ones((4, 3))).all()
-            assert exposure_time.pixel_scale == 0.1
-            assert exposure_time.shape == (4, 3)
-            assert exposure_time.central_pixel_coordinates == (1.5, 1.0)
-            assert exposure_time.shape_arc_seconds == pytest.approx((0.4, 0.3))
-
-        def test__from_fits__input_exposure_time_3x3__all_attributes_correct_including_data_inheritance(self):
-            exposure_time = image.ExposureTime.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
-                                                         pixel_scale=1.0)
-
-            assert (exposure_time == np.ones((3, 3))).all()
-            assert exposure_time.pixel_scale == 1.0
-            assert exposure_time.shape == (3, 3)
-            assert exposure_time.central_pixel_coordinates == (1.0, 1.0)
-            assert exposure_time.shape_arc_seconds == pytest.approx((3.0, 3.0))
-
-        def test__from_fits__input_exposure_time_4x3__all_attributes_correct_including_data_inheritance(self):
-            exposure_time = image.ExposureTime.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
-                                                         pixel_scale=0.1)
-
-            assert (exposure_time == np.ones((4, 3))).all()
-            assert exposure_time.pixel_scale == 0.1
-            assert exposure_time.shape == (4, 3)
-            assert exposure_time.central_pixel_coordinates == (1.5, 1.0)
-            assert exposure_time.shape_arc_seconds == pytest.approx((0.4, 0.3))
-
-
-class TestEstimateNoiseFromImage:
+class TestEstimateNoiseFromRealImage:
 
     def test__image_and_exposure_times_float_1__no_background__noise_is_all_1s(self):
-        # Image (eps) = 1.0
+        # RealImage (eps) = 1.0
         # Background (eps) = 0.0
         # Exposure times = 1.0 s
-        # Image (counts) = 1.0
+        # RealImage (counts) = 1.0
         # Background (counts) = 0.0
 
         # Noise (counts) = sqrt(1.0 + 0.0**2) = 1.0
@@ -454,10 +310,10 @@ class TestEstimateNoiseFromImage:
 
         array = np.ones(shape)
 
-        exposure_time = image.ExposureTime.single_value(1, shape)
-        background_noise = image.BackgroundNoise.single_value(0, shape)
+        exposure_time = image.DataGrid.single_value(1, shape)
+        background_noise = image.DataGrid.single_value(0, shape)
 
-        img = image.Image(array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -466,10 +322,10 @@ class TestEstimateNoiseFromImage:
         assert (noise_estimate == np.ones((3, 3))).all()
 
     def test__image_and_exposure_time_ndarray_all_1s__no_background__noise_is_all_1s(self):
-        # Image (eps) = 1.0
+        # RealImage (eps) = 1.0
         # Background (eps) = 0.0
         # Exposure times = 1.0 s
-        # Image (counts) = 1.0
+        # RealImage (counts) = 1.0
         # Background (counts) = 0.0
 
         # Noise (counts) = sqrt(1.0 + 0.0**2) = 1.0
@@ -481,17 +337,17 @@ class TestEstimateNoiseFromImage:
         exposure_time = np.ones(shape)
         background_noise = np.zeros(shape)
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
         assert (noise_estimate == np.ones((3, 3))).all()
 
     def test__image_all_4s__exposure_time_all_1s__no_background__noise_is_all_2s(self):
-        # Image (eps) = 4.0
+        # RealImage (eps) = 4.0
         # Background (eps) = 0.0
         # Exposure times = 1.0 s
-        # Image (counts) = 4.0
+        # RealImage (counts) = 4.0
         # Background (counts) = 0.0
 
         # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
@@ -502,17 +358,17 @@ class TestEstimateNoiseFromImage:
         exposure_time = np.ones((4, 2))
         background_noise = np.zeros((4, 2))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
         assert (noise_estimate == 2.0 * np.ones((4, 2))).all()
 
     def test__image_all_1s__exposure_time_all_4s__no_background__noise_is_all_2_divided_4_so_halves(self):
-        # Image (eps) = 1.0
+        # RealImage (eps) = 1.0
         # Background (eps) = 0.0
         # Exposure times = 4.0 s
-        # Image (counts) = 4.0
+        # RealImage (counts) = 4.0
         # Background (counts) = 0.0
 
         # Noise (counts) = sqrt(4.0 + 0.0**2) = 2.0
@@ -524,7 +380,7 @@ class TestEstimateNoiseFromImage:
 
         background_noise = np.zeros((1, 5))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -536,12 +392,12 @@ class TestEstimateNoiseFromImage:
         array = np.array([[5.0, 3.0],
                           [10.0, 20.0]])
 
-        exposure_time = image.ExposureTime(np.array([[1.0, 2.0],
+        exposure_time = image.DataGrid(np.array([[1.0, 2.0],
                                                      [3.0, 4.0]]))
 
         background_noise = np.zeros((2, 2))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -549,10 +405,10 @@ class TestEstimateNoiseFromImage:
                                             [np.sqrt(30.0) / 3.0, np.sqrt(80.0) / 4.0]])).all()
 
     def test__image_and_exposure_times_all_1s__background_is_float_sqrt_3__noise_is_all_2s(self):
-        # Image (eps) = 1.0
+        # RealImage (eps) = 1.0
         # Background (eps) = sqrt(3.0)
         # Exposure times = 1.0 s
-        # Image (counts) = 1.0
+        # RealImage (counts) = 1.0
         # Background (counts) = sqrt(3.0)
 
         # Noise (counts) = sqrt(1.0 + sqrt(3.0)**2) = sqrt(1.0 + 3.0) = 2.0
@@ -564,17 +420,17 @@ class TestEstimateNoiseFromImage:
 
         background_noise = 3.0 ** 0.5 * np.ones((3, 3))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
         assert noise_estimate == pytest.approx(2.0 * np.ones((3, 3)), 1e-2)
 
     def test__image_and_exposure_times_all_1s__background_is_float_5__noise_all_correct(self):
-        # Image (eps) = 1.0
+        # RealImage (eps) = 1.0
         # Background (eps) = 5.0
         # Exposure times = 1.0 s
-        # Image (counts) = 1.0
+        # RealImage (counts) = 1.0
         # Background (counts) = 5.0
 
         # Noise (counts) = sqrt(1.0 + 5**2)
@@ -586,7 +442,7 @@ class TestEstimateNoiseFromImage:
 
         background_noise = 5 * np.ones((2, 3))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -595,10 +451,10 @@ class TestEstimateNoiseFromImage:
                       [np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0)]]), 1e-2)
 
     def test__image_all_1s__exposure_times_all_2s__background_is_float_5__noise_all_correct(self):
-        # Image (eps) = 1.0
+        # RealImage (eps) = 1.0
         # Background (eps) = 5.0
         # Exposure times = 2.0 s
-        # Image (counts) = 2.0
+        # RealImage (counts) = 2.0
         # Background (counts) = 10.0
 
         # Noise (counts) = sqrt(2.0 + 10**2) = sqrt(2.0 + 100.0)
@@ -609,7 +465,7 @@ class TestEstimateNoiseFromImage:
         exposure_time = 2.0 * np.ones((2, 3))
         background_noise = 5.0 * np.ones((2, 3))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -628,7 +484,7 @@ class TestEstimateNoiseFromImage:
         exposure_time = np.ones((3, 2))
         background_noise = 12.0 * np.ones((3, 2))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -647,7 +503,7 @@ class TestEstimateNoiseFromImage:
                                   [3.0, 4.0]])
         background_noise = 9.0 * np.ones((2, 2))
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
@@ -668,7 +524,7 @@ class TestEstimateNoiseFromImage:
         background_noise = np.array([[5.0, 6.0],
                                      [7.0, 8.0]])
 
-        img = image.Image(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
+        img = image.RealImage(array=array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
         noise_estimate = img.estimated_noise
 
