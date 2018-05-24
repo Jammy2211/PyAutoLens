@@ -722,6 +722,7 @@ class TestMask(object):
             assert (blurring_grid[12] == np.array([0.0, -6.0])).all()
             assert (blurring_grid[13] == np.array([3.0, -6.0])).all()
 
+
         def test__5x3_blurring_mask_correct_coordinates(self):
             msk = np.array([[True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
@@ -745,20 +746,35 @@ class TestMask(object):
 
             blurring_grid = msk.compute_grid_coords_blurring(psf_size=(5, 3))
 
-            assert (blurring_grid[0] == np.array([-6.0, 3.0])).all()
-            assert (blurring_grid[1] == np.array([-3.0, 3.0])).all()
-            assert (blurring_grid[2] == np.array([0.0, 3.0])).all()
-            assert (blurring_grid[3] == np.array([3.0, 3.0])).all()
-            assert (blurring_grid[4] == np.array([6.0, 3.0])).all()
-            assert (blurring_grid[5] == np.array([-6.0, 0.0])).all()
-            assert (blurring_grid[6] == np.array([-3.0, 0.0])).all()
-            assert (blurring_grid[7] == np.array([3.0, 0.0])).all()
-            assert (blurring_grid[8] == np.array([6.0, 0.0])).all()
-            assert (blurring_grid[9] == np.array([-6.0, -3.0])).all()
-            assert (blurring_grid[10] == np.array([-3.0, -3.0])).all()
-            assert (blurring_grid[11] == np.array([0.0, -3.0])).all()
-            assert (blurring_grid[12] == np.array([3.0, -3.0])).all()
-            assert (blurring_grid[13] == np.array([6.0, -3.0])).all()
+            assert (blurring_grid[2] == np.array([-6.0, 3.0])).all()
+            assert (blurring_grid[5] == np.array([-3.0, 3.0])).all()
+            assert (blurring_grid[7] == np.array([0.0, 3.0])).all()
+            assert (blurring_grid[10] == np.array([3.0, 3.0])).all()
+            assert (blurring_grid[13] == np.array([6.0, 3.0])).all()
+            assert (blurring_grid[1] == np.array([-6.0, 0.0])).all()
+            assert (blurring_grid[4] == np.array([-3.0, 0.0])).all()
+            assert (blurring_grid[9] == np.array([3.0, 0.0])).all()
+            assert (blurring_grid[12] == np.array([6.0, 0.0])).all()
+            assert (blurring_grid[0] == np.array([-6.0, -3.0])).all()
+            assert (blurring_grid[3] == np.array([-3.0, -3.0])).all()
+            assert (blurring_grid[6] == np.array([0.0, -3.0])).all()
+            assert (blurring_grid[8] == np.array([3.0, -3.0])).all()
+            assert (blurring_grid[11] == np.array([6.0, -3.0])).all()
+
+            assert (blurring_grid[0] == np.array([-6.0, -3.0])).all()
+            assert (blurring_grid[1] == np.array([-6.0, 0.0])).all()
+            assert (blurring_grid[2] == np.array([-6.0, 3.0])).all()
+            assert (blurring_grid[3] == np.array([-3.0, -3.0])).all()
+            assert (blurring_grid[4] == np.array([-3.0, 0.0])).all()
+            assert (blurring_grid[5] == np.array([-3.0, 3.0])).all()
+            assert (blurring_grid[6] == np.array([0.0, -3.0])).all()
+            assert (blurring_grid[7] == np.array([0.0, 3.0])).all()
+            assert (blurring_grid[8] == np.array([3.0, -3.0])).all()
+            assert (blurring_grid[9] == np.array([3.0, 0.0])).all()
+            assert (blurring_grid[10] == np.array([3.0, 3.0])).all()
+            assert (blurring_grid[11] == np.array([6.0, -3.0])).all()
+            assert (blurring_grid[12] == np.array([6.0, 0.0])).all()
+            assert (blurring_grid[13] == np.array([6.0, 3.0])).all()
 
     class TestComputeGridData(object):
 
