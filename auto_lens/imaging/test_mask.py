@@ -268,11 +268,7 @@ class TestMask(object):
 
             image_grid = msk.compute_grid_coords_image()
 
-            assert (image_grid[0] == np.array([0.0, 3.0])).all()
-            assert (image_grid[1] == np.array([-3.0, 0.0])).all()
-            assert (image_grid[2] == np.array([0.0, 0.0])).all()
-            assert (image_grid[3] == np.array([3.0, 0.0])).all()
-            assert (image_grid[4] == np.array([0.0, -3.0])).all()
+            assert (image_grid == np.array([[-3., 0.], [0., -3.], [0., 0.], [0., 3.], [3., 0.]])).all()
 
         def test__setup_4x4_image__ten_coordinates__new_pixel_scale(self):
             msk = np.array([[True, False, False, True],
@@ -284,16 +280,9 @@ class TestMask(object):
 
             image_grid = msk.compute_grid_coords_image()
 
-            assert (image_grid[0] == np.array([-0.5, 1.5])).all()
-            assert (image_grid[1] == np.array([0.5, 1.5])).all()
-            assert (image_grid[2] == np.array([-1.5, 0.5])).all()
-            assert (image_grid[3] == np.array([-0.5, 0.5])).all()
-            assert (image_grid[4] == np.array([0.5, 0.5])).all()
-            assert (image_grid[5] == np.array([-0.5, -0.5])).all()
-            assert (image_grid[6] == np.array([0.5, -0.5])).all()
-            assert (image_grid[7] == np.array([-1.5, -1.5])).all()
-            assert (image_grid[8] == np.array([-0.5, -1.5])).all()
-            assert (image_grid[9] == np.array([0.5, -1.5])).all()
+            assert (image_grid == np.array(
+                [[-1.5, -0.5], [-1.5, 0.5], [-0.5, -1.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
+                 [1.5, -1.5], [1.5, -0.5], [1.5, 0.5]])).all()
 
         def test__setup_3x4_image__six_coordinates(self):
             msk = np.array([[True, False, True, True],
@@ -304,12 +293,8 @@ class TestMask(object):
 
             image_grid = msk.compute_grid_coords_image()
 
-            assert (image_grid[0] == np.array([-1.5, 3.0])).all()
-            assert (image_grid[1] == np.array([-4.5, 0.0])).all()
-            assert (image_grid[2] == np.array([-1.5, 0.0])).all()
-            assert (image_grid[3] == np.array([1.5, 0.0])).all()
-            assert (image_grid[4] == np.array([-1.5, -3.0])).all()
-            assert (image_grid[5] == np.array([4.5, -3.0])).all()
+            assert (image_grid == np.array(
+                [[-3., -1.5], [0., -4.5], [0., -1.5], [0., 1.5], [3., -1.5], [3., 4.5]])).all()
 
     class TestComputeGridCoordsImageSub(object):
 
