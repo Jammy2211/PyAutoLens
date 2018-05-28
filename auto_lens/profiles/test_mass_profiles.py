@@ -3812,6 +3812,26 @@ class TestProfiles(object):
                 assert defls[0] == pytest.approx(0.79374, 1e-3)
                 assert defls[1] == pytest.approx(1.1446, 1e-3)
 
+    class TestExternalShear(object):
+
+        class TestDeflections(object):
+
+            def test__compare_to_fortran_1(self):
+
+                shear = mass_profiles.ExternalShear(magnitude=0.1, phi=45.0)
+                defls = shear.deflections_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert defls[0] == pytest.approx(0.01625, 1e-3)
+                assert defls[1] == pytest.approx(0.01625, 1e-3)
+
+            def test__compare_to_fortran_2(self):
+
+                shear = mass_profiles.ExternalShear(magnitude=0.2, phi=75.0)
+                defls = shear.deflections_at_coordinates(coordinates=np.array([0.1625, 0.1625]))
+
+                assert defls[0] == pytest.approx(-0.011895, 1e-3)
+                assert defls[1] == pytest.approx(0.04439, 1e-3)
+
 
 class TestMassIntegral(object):
     class TestWithinCircle(object):
