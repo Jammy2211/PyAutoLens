@@ -14,6 +14,9 @@ image_name = 'SLACSJ0252+0039'
 
 mapper = model_mapper.ModelMapper(config=model_mapper.Config(config_folder_path=results_path),
                                   stellar_bulge=mp.EllipticalSersicMass, stellar_envelope=mp.EllipticalExponentialMass,
-                                  dark_matter_halo=mp.SphericalNFW)
+                                  dark_matter_halo=mp.SphericalNFW, shear=mp.ExternalShear)
 
 results = non_linear.MultiNestResultsFinal(path=results_path, obj_name=image_name, model_mapper=mapper)
+
+print(results.total_parameters)
+print(results._most_likely)
