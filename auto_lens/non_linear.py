@@ -237,7 +237,12 @@ class MultiNestResultsIntermediate(NonLinearDirectory):
         """
         summary = open(filename_summary)
 
-        skip = summary.read(2 + offset*total_parameters)  # skip the first 3 characters of the file (indentation)
+        expected_parameters = (len(summary.readline()) - 57) / 56
+        if expected_parameters != total_parameters:
+            raise MultiNestException('The summary file has a different number of parameters than the input model')
+
+        summary.seek(0) # rewind file and skip the first 3 characters of the file (indentation)
+        summary.read(2 + offset*total_parameters)
 
         vector = []
 
