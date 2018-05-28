@@ -1026,3 +1026,43 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
         return self.surface_density_at_radius(self.coordinates_to_eccentric_radius(coordinates))
+
+
+class ExternalShear(geometry_profiles.EllipticalProfile):
+    """An external shear term, to model the line-of-sight contribution of other galaxies / satellites."""
+
+    def __init__(self, magnitude, phi):
+        """ Setup an external shear.
+
+        Parameters
+        ----------
+        magnitude : float
+            The overall magnitude of the shear (gamma).
+        phi : float
+            The rotation axis of the shear.
+        """
+
+        super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
+        self.magnitude = magnitude
+
+    @property
+    def parameter_labels(self):
+        return [r'\gamma', r'\theta']
+
+    @geometry_profiles.transform_coordinates
+    def deflections_at_coordinates(self, coordinates):
+        """
+        Calculate the deflection angle at a given set of image_grid plane image_grid
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The x and y image_grid of the image_grid
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those image_grid
+        """
+        deflection_x = self.magnitude * coordinates[0]
+        deflection_y = -self.magnitude * coordinates[1]
+        return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
