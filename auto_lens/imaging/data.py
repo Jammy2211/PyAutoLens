@@ -6,7 +6,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class DataGrid(np.ndarray):
+class Array(np.ndarray):
     """
     Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
     """
@@ -25,7 +25,7 @@ class DataGrid(np.ndarray):
             The scale of one pixel in arc seconds
         """
         # noinspection PyArgumentList
-        super(DataGrid, self).__init__()
+        super(Array, self).__init__()
         self.pixel_scale = pixel_scale
 
     @property
