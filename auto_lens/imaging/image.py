@@ -18,11 +18,7 @@ class Image(DataGrid):
                  poisson_noise=None):
 
         if psf is not None:
-            if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
-                raise KernelException("PSF Kernel must be odd")
-
-            array = scipy.signal.convolve2d(array, psf, mode='same')
-
+            array = psf.convolve(array)
         if poisson_noise is not None:
             array += poisson_noise
         if background_noise is not None:
@@ -144,6 +140,12 @@ class PSF(DataGrid):
     def renormalize(self):
         """Renormalize the PSF such that its data values sum to unity."""
         return np.divide(self, np.sum(self))
+
+    def convolve(self, array):
+        if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
+            raise KernelException("PSF Kernel must be odd")
+
+        return scipy.signal.convolve2d(array, self, mode='same')
 
 
 class KernelException(Exception):
