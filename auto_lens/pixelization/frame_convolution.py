@@ -262,6 +262,8 @@ class KernelConvolver(object):
 
         for kernel_index in range(self.length):
             vector_index = frame[kernel_index]
+            if vector_index == -1:
+                continue
             result = self.result_for_value_and_index(value, kernel_index)
             if result > 0:
                 new_dict[vector_index] = result
