@@ -1,46 +1,31 @@
-from auto_lens.imaging import data
+from auto_lens.imaging.data import DataGrid
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
 
 
-class Noise(data.DataGrid):
-    pass
-
-
-class ExposureTime(data.DataGrid):
-    def electrons_per_second_to_counts(self, array):
-        """
-        For an array (in electrons per second) and exposure time array, return an array in units counts.
-
-        Parameters
-        ----------
-        array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
-        """
-        return np.multiply(array, self)
-
-    def counts_to_electrons_per_second(self, array):
-        """
-        For an array (in counts) and exposure time array, convert the array to units electrons per second
-
-        Parameters
-        ----------
-        array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
-        """
-        return np.divide(array, self)
-
-
-class Image(data.DataGrid):
-    def __init__(self, array, pixel_scale=1, psf=None, background_noise=None, poisson_noise=None,
-                 effective_exposure_time=None):
+class Image(DataGrid):
+    def __init__(self, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
+                 poisson_noise=None):
         super(Image, self).__init__(array, pixel_scale)
-        self.psf = PSF(psf, pixel_scale) if psf is not None else None
-        self.background_noise = BackgroundNoise(background_noise, pixel_scale) if background_noise is not None else None
-        self.poisson_noise = Noise(poisson_noise, pixel_scale) if poisson_noise is not None else None
-        self.effective_exposure_time = ExposureTime(effective_exposure_time,
-                                                    pixel_scale) if effective_exposure_time is not None else None
+        self.psf = psf
+        self.background_noise = background_noise
+        self.poisson_noise = poisson_noise
+        self.effective_exposure_time = effective_exposure_time
+
+    @classmethod
+    def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
+                 poisson_noise=None):
+
+        if psf is not None:
+            array = psf.convolve(array)
+        if poisson_noise is not None:
+            array += poisson_noise
+        if background_noise is not None:
+            array += background_noise
+
+        return Image(array, effective_exposure_time=effective_exposure_time, pixel_scale=pixel_scale, psf=psf,
+                     background_noise=background_noise, poisson_noise=poisson_noise)
 
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
@@ -66,13 +51,55 @@ class Image(data.DataGrid):
 
         return norm.fit(edges)[1]
 
+    def apply_psf(self, psf):
+        """
+        Convolve a two-dimensional array with a two-dimensional kernel (e.g. a PSF)
+
+        NOTE1 : The PSF kernel must be size odd x odd to avoid ambiguities with convolution offsets.
+
+        NOTE2 : SciPy has multiple 'mode' options for the size of the output array (e.g. does it include zero padding).
+        We require the output array to be the same size as the input image.
+
+        Parameters
+        ----------
+        psf : ndarray
+            A point spread function to apply to this image.
+        """
+
+        if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
+            raise KernelException("PSF Kernel must be odd")
+
+        return self.new_with_array(scipy.signal.convolve2d(self, psf, mode='same'))
+
+    def electrons_per_second_to_counts(self, array):
+        """
+        For an array (in electrons per second) and exposure time array, return an array in units counts.
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.multiply(array, self.effective_exposure_time)
+
+    def counts_to_electrons_per_second(self, array):
+        """
+        For an array (in counts) and exposure time array, convert the array to units electrons per second
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.divide(array, self.effective_exposure_time)
+
     @property
     def counts_array(self):
-        return self.effective_exposure_time.electrons_per_second_to_counts(self)
+        return self.electrons_per_second_to_counts(self)
 
     @property
     def background_noise_counts_array(self):
-        return self.effective_exposure_time.electrons_per_second_to_counts(self.background_noise)
+        return self.electrons_per_second_to_counts(self.background_noise)
 
     @property
     def estimated_noise_counts(self):
@@ -80,17 +107,10 @@ class Image(data.DataGrid):
 
     @property
     def estimated_noise(self):
-        return self.effective_exposure_time.counts_to_electrons_per_second(self.estimated_noise_counts)
+        return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
 
-class BackgroundNoise(data.DataGrid):
-    @classmethod
-    def from_image_via_edges(cls, image, no_edges):
-        background_noise = image.estimate_background_noise_from_edges(no_edges)
-        return BackgroundNoise(background_noise, image.pixel_scale)
-
-
-class PSF(data.DataGrid):
+class PSF(DataGrid):
 
     def __init__(self, array, pixel_scale, renormalize=True):
         """
@@ -117,30 +137,60 @@ class PSF(data.DataGrid):
         psf.renormalize()
         return psf
 
-    def convolve_with_image(self, image):
-        """
-        Convolve a two-dimensional array with a two-dimensional kernel (e.g. a PSF)
-
-        NOTE1 : The PSF kernel must be size odd x odd to avoid ambiguities with convolution offsets.
-
-        NOTE2 : SciPy has multiple 'mode' options for the size of the output array (e.g. does it include zero padding).
-        We require the output array to be the same size as the input image.
-
-        Parameters
-        ----------
-        image : ndarray
-            The image the PSF is convolved with.
-        """
-
-        if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise KernelException("PSF Kernel must be odd")
-
-        return scipy.signal.convolve2d(image, self.data, mode='same')
-
     def renormalize(self):
         """Renormalize the PSF such that its data values sum to unity."""
         return np.divide(self, np.sum(self))
 
+    def convolve(self, array):
+        if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
+            raise KernelException("PSF Kernel must be odd")
+
+        return scipy.signal.convolve2d(array, self, mode='same')
+
 
 class KernelException(Exception):
     pass
+
+
+def generate_poisson_noise(image, exposure_time, seed=-1):
+    """
+    Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
+    distribution with mean 0.0.
+
+    Parameters
+    ----------
+    image : ndarray
+        The 2D image background noise is added to.
+    exposure_time : ndarray
+        The 2D array of pixel exposure times.
+    seed : int
+        The seed of the random number generator, used for the random noise maps.
+
+    Returns
+    -------
+    poisson_noise: ndarray
+        An array describing simulated poisson noise
+    """
+    setup_random_seed(seed)
+    image_counts = np.multiply(image, exposure_time)
+    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
+
+
+def generate_background_noise(image, sigma, seed=-1):
+    setup_random_seed(seed)
+    background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
+    return background_noise_map
+
+
+def setup_random_seed(seed):
+    """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is positive,
+    that seed is used for all runs, thereby giving reproducible results
+
+    Parameters
+    ----------
+    seed : int
+        The seed of the random number generator, used for the random signal_to_noise_ratio maps.
+    """
+    if seed == -1:
+        seed = np.random.randint(0, int(1e9))  # Use one seed, so all regions have identical column non-uniformity.
+    np.random.seed(seed)
