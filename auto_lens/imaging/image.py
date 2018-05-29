@@ -13,6 +13,11 @@ class Image(DataGrid):
         self.poisson_noise = poisson_noise
         self.effective_exposure_time = effective_exposure_time
 
+    @classmethod
+    def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
+                 poisson_noise=None):
+        pass
+
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
@@ -132,7 +137,7 @@ class KernelException(Exception):
     pass
 
 
-def poisson_noise(image, exposure_time, seed=-1):
+def generate_poisson_noise(image, exposure_time, seed=-1):
     """
     Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
     distribution with mean 0.0.
@@ -156,7 +161,7 @@ def poisson_noise(image, exposure_time, seed=-1):
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
 
 
-def background_noise(image, sigma, seed=-1):
+def generate_background_noise(image, sigma, seed=-1):
     setup_random_seed(seed)
     background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
     return background_noise_map
