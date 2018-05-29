@@ -128,7 +128,7 @@ class FrameMaker(object):
         half_x = int(kernel_shape[0] / 2)
         half_y = int(kernel_shape[1] / 2)
 
-        frame = {}
+        frame = np.full((kernel_shape[0] * kernel_shape[1],), -1)
 
         for i in range(kernel_shape[0]):
             for j in range(kernel_shape[1]):
