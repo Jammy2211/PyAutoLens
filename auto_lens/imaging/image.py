@@ -16,9 +16,20 @@ class Image(DataGrid):
     @classmethod
     def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
                  poisson_noise=None):
-        pass
 
-        # PSF, poisson noise, background noise
+        if psf is not None:
+            if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
+                raise KernelException("PSF Kernel must be odd")
+
+            array = scipy.signal.convolve2d(array, psf, mode='same')
+
+        if poisson_noise is not None:
+            array += poisson_noise
+        if background_noise is not None:
+            array += background_noise
+
+        return Image(array, effective_exposure_time=effective_exposure_time, pixel_scale=pixel_scale, psf=psf,
+                     background_noise=background_noise, poisson_noise=poisson_noise)
 
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
