@@ -17,6 +17,11 @@ def make_uniform_half():
     return model_mapper.UniformPrior(lower_limit=0.5, upper_limit=1.)
 
 
+@pytest.fixture(name='test_config')
+def make_test_config():
+    return model_mapper.Config(config_folder_path=data_path + "test_files/config")
+
+
 class TestUniformPrior(object):
     def test__simple_assumptions(self, uniform_simple):
         assert uniform_simple.value_for(0.) == 0.
@@ -212,39 +217,38 @@ class TestRealClasses(object):
 
 class TestConfigFunctions:
 
-    def test_loading_config(self):
-        config = model_mapper.Config(config_folder_path=data_path + "test_files/config")
+    def test_loading_config(self, test_config):
+        config = test_config
 
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "Profile", "centre_0")
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "Profile", "centre_1")
 
-    def test_model_from_unit_vector(self):
-        collection = model_mapper.ModelMapper(model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+    def test_model_from_unit_vector(self, test_config):
+        collection = model_mapper.ModelMapper(test_config,
                                               geometry_profile=geometry_profiles.Profile)
 
         model_map = collection.from_unit_vector([1., 1.])
 
         assert model_map.geometry_profile.centre == (1., 1.0)
 
-    def test_model_from_physical_vector(self):
-        collection = model_mapper.ModelMapper(model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+    def test_model_from_physical_vector(self, test_config):
+        collection = model_mapper.ModelMapper(test_config,
                                               geometry_profile=geometry_profiles.Profile)
 
         model_map = collection.from_physical_vector([10., 50.])
 
         assert model_map.geometry_profile.centre == (10., 50.0)
 
-    def test_inheritance(self):
-        collection = model_mapper.ModelMapper(model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+    def test_inheritance(self, test_config):
+        collection = model_mapper.ModelMapper(test_config,
                                               geometry_profile=geometry_profiles.EllipticalProfile)
 
         model_map = collection.from_unit_vector([1., 1., 1., 1.])
 
         assert model_map.geometry_profile.centre == (1.0, 1.0)
 
-    def test_true_config(self):
-
-        config = model_mapper.Config(config_folder_path=data_path + "test_files/config")
+    def test_true_config(self, test_config):
+        config = test_config
 
         collection = model_mapper.ModelMapper(config=config,
                                               sersic_light_profile=light_profiles.EllipticalSersic,
@@ -266,52 +270,50 @@ class TestConfigFunctions:
 
 class TestHyperCube:
 
-    def test__in_order_of_class_constructor__one_profile(self):
+    def test__in_order_of_class_constructor__one_profile(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             geometry_profile=geometry_profiles.EllipticalProfile)
 
         assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5]) == [0.5, 0.5, 1.0, 1.0]
 
-    def test__in_order_of_class_constructor__multiple_profiles(self):
+    def test__in_order_of_class_constructor__multiple_profiles(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == [
             0.5, 0.5, 1.0, 1.0, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
 
-    def test__in_order_of_class_constructor__multiple_profiles_bigger_range_of_unit_values(self):
+    def test__in_order_of_class_constructor__multiple_profiles_bigger_range_of_unit_values(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        assert collection.physical_vector_from_hypercube_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) == \
-               [0.1, 0.2, 0.6, 0.8, 0.5, 0.6, 0.7, 0.8, 1.8, 2.0]
+        assert collection.physical_vector_from_hypercube_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) == [
+            0.1, 0.2, 0.6, 0.8, 0.5, 0.6, 0.7, 0.8, 1.8, 2.0]
 
     # TODO : Fix This - Also tuples and setting parameters equal to one another
 
-    # def test__order_maintained_with_prior_change(self):
-    #
-    #     collection = prior.ModelMapper(
-    #         prior.Config(config_folder_path=data_path+"test_files/config"),
-    #         profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
-    #         profile_3=geometry_profiles.EllipticalProfile)
-    #
-    #     collection.profile_1.axis_ratio = prior.UniformPrior(100, 200)
-    #
-    #     assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == \
-    #            [0.5, 0.25, 150.0, 0.8, 0.5, 0.25, 0.5, 0.25, 0.75, 0.8]
+    def test__order_maintained_with_prior_change(self, test_config):
+        collection = model_mapper.ModelMapper(
+            test_config,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_3=geometry_profiles.EllipticalProfile)
+
+        collection.profile_1.axis_ratio = model_mapper.UniformPrior(100, 200)
+
+        assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == [
+            0.5, 0.25, 150.0, 0.8, 0.5, 0.25, 0.5, 0.25, 0.75, 0.8]
 
 
 class TestModelInstancesRealClasses:
 
-    def test__in_order_of_class_constructor__one_profile(self):
-
+    def test__in_order_of_class_constructor__one_profile(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile)
 
         model_map = collection.from_unit_vector([0.25, 0.5, 0.75, 1.0])
@@ -320,9 +322,9 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_1.axis_ratio == 1.5
         assert model_map.profile_1.phi == 2.0
 
-    def test__in_order_of_class_constructor___multiple_profiles(self):
+    def test__in_order_of_class_constructor___multiple_profiles(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -394,9 +396,9 @@ class TestModelInstancesRealClasses:
 
     # TODO : This test works because we reasign each parameter in order... pretty useless.
 
-    def test__check_order_for_different_unit_values(self):
+    def test__check_order_for_different_unit_values(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -427,9 +429,9 @@ class TestModelInstancesRealClasses:
 
     # TODO : It doesnt totally make sense to me why this one works tbh...
 
-    def test__check_order_for_different_unit_values_and_set_priors_equal_to_one_another(self):
+    def test__check_order_for_different_unit_values_and_set_priors_equal_to_one_another(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -461,9 +463,9 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_3.axis_ratio == 0.8
         assert model_map.profile_3.phi == 0.9
 
-    def test__check_order_for_physical_values(self):
+    def test__check_order_for_physical_values(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -480,10 +482,9 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_3.axis_ratio == 0.9
         assert model_map.profile_3.phi == 1.0
 
-    def test__from_prior_medians__one_model(self):
-        
+    def test__from_prior_medians__one_model(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile)
 
         model_map = collection.from_prior_medians()
@@ -494,10 +495,9 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_1.axis_ratio == model_2.profile_1.axis_ratio == 1.0
         assert model_map.profile_1.phi == model_2.profile_1.phi == 1.0
 
-    def test__from_prior_medians__multiple_models(self):
-
+    def test__from_prior_medians__multiple_models(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
@@ -515,10 +515,9 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_3.axis_ratio == model_2.profile_3.axis_ratio == 1.0
         assert model_map.profile_3.phi == model_2.profile_3.phi == 1.0
 
-    def test__from_prior_medians__one_model__set_one_parameter_to_another(self):
-
+    def test__from_prior_medians__one_model__set_one_parameter_to_another(self, test_config):
         collection = model_mapper.ModelMapper(
-            model_mapper.Config(config_folder_path=data_path + "test_files/config"),
+            test_config,
             profile_1=geometry_profiles.EllipticalProfile)
 
         collection.profile_1.axis_ratio = collection.profile_1.phi
