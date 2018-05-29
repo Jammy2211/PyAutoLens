@@ -1,0 +1,80 @@
+class Mask
+
+    def setup_grids(sub_grid_size)
+        return Grids(GridCoordsImage.from_mask(mask), SubGrid(mask, sub_grid_size)
+
+class CoordinateGrids
+
+    def __init__(self, image, sub=None, blurring=None, clustering=None)
+
+        self.image = image
+        self.sub = sub
+        self.blurring = blurring
+        self.clustering = clustering
+
+    @classmethod
+    def from_mask(mask, sub=True, blurring=True, clustering=True)
+
+        image = GridCoordsImage.from_mask(mask)
+        if sub == True:
+            sub = SubGrid.from_mask(mask)
+
+        if blurring=True;
+           blurring = GridCoordsBlurring.from_mask(mask)
+
+    def new_grids_via_galaxy_deflections(self, galaxies)
+        image = self.new_grd_via_galaxy_deflection(galaxies)
+
+        if self.sub != None:
+            sub = self.new_grid_via_galaxy_deflection(sub)
+
+class GridCoordsImage(CCDGrid):
+
+    def new_grid_via_galaxy_deflection(self, galaxies)
+        return (self -  sum(map(lambda lens : lens.deflections_on_grid(self), galaxies)))
+
+class CoordinateImageGrid(CCDGrid):
+
+    def __new__(self, grid):
+
+        new = grid
+
+    @classmethod
+    def from_mask(cls, mask):
+        grid = compute_grid_coords_image(mask)
+
+    @classmethod
+    def from_sub_grid(cls):
+        grid =
+
+    @staticmethod
+    def compute_grid_coords_image(mask):
+
+    def new_grid(self, galaxies)
+        return GridCoordsImage(self.new_grid_via_galaxy_deflection)
+
+class DeflectionImageGrid(CCDGrid):
+
+    def __new__(self, grid):
+        new = grid
+
+    @classmethod
+    def from_image_grid_and_galaxies(grid, galaxies)
+
+    @classmethod
+    def from_sub_grid(sub_grid)
+        routine...taking...averages
+
+
+class SubGrid(CCDGrid):
+
+     def __init__(self):
+
+     def setup_image_grid(self):
+
+
+class DeflectionSubGrid(SubGrid):
+
+        def __new__(self, grid):
+        new = grid
+

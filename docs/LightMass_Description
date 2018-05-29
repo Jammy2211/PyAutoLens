@@ -66,7 +66,7 @@ computed indepedantly and they are then added together.
 
 Mass profiles may be specified to use the same centre, axis ratio and / or rotational angle as the previous component
 (e.g. x_2 = x_1, phi_2 = phi_1) or any component in the light model (e.g. a dark matter halo may be aligned with
-the Sersic component representing a galaxy's bulge, or the Exponential component representing its disk).
+the Sersic component representing a galaxy's bulge, or the EllipticalExponentialMass component representing its disk).
 
 ========================================================
 ============== Decomposed Mass Profiles ================
@@ -100,7 +100,7 @@ The Sersic profile is used to fit the light of a galaxy. It can produce both hig
 
 Elliptical or Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, q, phi
 
@@ -128,19 +128,19 @@ Stellar Halo). Therefore, we will want classes of Sersic profile (TOTAL, BULGE, 
 on parameters like the sersic_index.
 
 ============================
-======== Exponential =======
+======== EllipticalExponentialMass =======
 ============================
 
 --- Description ---
 
-The Exponential profile is used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is
+The EllipticalExponentialMass profile is used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is
 a subset of the Sersic profile, corresponding exactly to the solution sersic_index = 1.
 
 --- Geometry ---
 
 Elliptical or Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, q, phi
 
@@ -159,7 +159,7 @@ sersic_constant = (2*sersic_index) - (1./3.) + (4./(405.*sersic_index)) + (46./(
 
 --- Equation ---
 
-Exponential = flux*exp(-1.678388*(((radius/effective_radius)-1))
+EllipticalExponentialMass = flux*exp(-1.678388*(((radius/effective_radius)-1))
 
 ============================
 ====== Dev Vaucouleurs =====
@@ -175,7 +175,7 @@ corresponding exactly to the solution sersic_index = 4.
 
 Elliptical or Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, q, phi
 
@@ -213,7 +213,7 @@ black-hole binary scouring.
 
 Elliptical or Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, q, phi
 
@@ -268,7 +268,7 @@ The point mass represents a point of mass (duh). It is used to model unresolved 
 
 Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, einstein_radius
 
@@ -299,7 +299,7 @@ The EllipticalPowerLaw model corresponds to the SIS model for the case of circul
 
 Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, einstein_radius
 
@@ -336,7 +336,7 @@ The EllipticalPowerLaw model corresponds to the SIE model for the case of isothe
 
 Elliptcal
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, axis_ratio, phi, einstein_radius
 
@@ -372,13 +372,13 @@ The Cored Singular Isothermal Ellipsoid (SIE) profile is used for the mass of a 
 but includes an additional parameter which makes the central density go from a core (instead of rising steeply as a
 power-law)
 
-The CoredEllipticalPowerLaw model corresponds to the SIECore model for the case of isothermal (slope=2.0)
+The EllipticalCoredPowerLaw model corresponds to the SIECore model for the case of isothermal (slope=2.0)
 
 --- Geometry ---
 
 Elliptcal
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, axis_ratio, phi, einstein_radius, core_radius
 
@@ -416,7 +416,7 @@ In contrast to the SIS and SIE, the slope is a free parameter and can thus vary 
 
 Elliptical
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, axis_ratio, phi, einstein_radius, slope
 
@@ -446,7 +446,7 @@ power-law)
 
 Circular or Elliptical
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, axis_ratio, phi, einstein_radius, slope, core_radius
 
@@ -475,7 +475,7 @@ The Navarro-Frenk-White (NFW) profile is used for modeling a galaxy's dark matte
 
 Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, kappa_s
 
@@ -514,7 +514,7 @@ The Navarro-Frenk-White (NFW) profile is used for modeling a galaxy's dark matte
 
 Elliptical
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, axis_ratio, phi, kappa_s
 
@@ -554,7 +554,7 @@ an extra parameter which makes its inner slope variable.
 
 Circular
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, kappa_s, inner_slope
 
@@ -583,7 +583,7 @@ The deflection angles are an even bigger mess of integrals... lets not think abo
 Ssame as above but elliptical - even bigger mess of a deflection angle calculation...
 
 =============================================================
-========== Sersic (and Exponential / Dev Vaucoulers =========
+========== Sersic (and EllipticalExponentialMass / Dev Vaucoulers =========
 =============================================================
 
 --- Description ---
@@ -595,7 +595,7 @@ angles.
 
 Elliptical
 
---- Model Parameters ---
+--- ModelMapper Parameters ---
 
 x_cen, y_cen, q, phi, flux, effective_radius, index [Inherited from light model]
 

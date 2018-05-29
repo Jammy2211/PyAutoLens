@@ -71,7 +71,7 @@ a function in c++.
 
 In contrast to the light profile method above, for the deflection angles we only need the angle at each sub-pixel
 location. Once we've calculated them, we don't average them togehter to get the central value. This is because
-each sub-pixel is traced to the source plane and included in the source reconstruction.
+each sub-pixel is traced to the source plane and included in the source model_instance.
 
 This changes how we can efficiently compute deflection angles in 2D. It is still true that near the lens, the deflection
 angles change rapidly, and away from the lens, they don't change much at all.

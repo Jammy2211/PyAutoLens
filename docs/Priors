@@ -1,9 +1,9 @@
 ##### HOW DO PRIORS WORK WITH MULTINEST? #####
 
-MultiNest samples a non-linear parameter space, which is of dimension N, the number of parameters in our lens model that we are
+MultiNestOptimizer samples a non-linear parameter space, which is of dimension N, the number of parameters in our lens model that we are
 treating as 'free' and therefore trying to estimate the values of.
 
-To do this, MultiNest generates a unit-hypercube of values between 0.0 and 1.0, which is essentially a 1D array of
+To do this, MultiNestOptimizer generates a unit-hypercube of values between 0.0 and 1.0, which is essentially a 1D array of
 length N. E.g. if we had just two non-linear parameters, so N = 2, we'd have something like:
 
 cube[0] = 0.5
@@ -32,7 +32,7 @@ The prior modules I use for my CTI code are attached in PriorCode.
 
 ##### SO HOW DO WE SETUP PRIORS FOR PARAMETERS #####
 
-Basically, for each parameter in our lens model that we want to sample with MultiNest (note, we may have some that we
+Basically, for each parameter in our lens model that we want to sample with MultiNestOptimizer (note, we may have some that we
 keep fixed whilst sampling others) we want to simply assign it a prior before the analysis. For my CTI code, this went
 something like:
 
@@ -70,11 +70,11 @@ At the start of an analysis, parameters fall into two categories:
 
 ######## RESULTS OF AN ANALYSIS ##########
 
-At the end of the analysis in one phase of AutoLens, MultiNest has fully sampled non-linear parameter space. This means that,
+At the end of the analysis in one phase of AutoLens, MultiNestOptimizer has fully sampled non-linear parameter space. This means that,
 for each of these lens model parameters we can marginalise it in 1D to compute its posterior probably density function (PDF).
 
 A PDF basically tells us which values of that parameter corresponded to the highest likelihood regions of parameter space.
-Thus, we ought to use those values as priors for the next phases MultiNest non-linear search!
+Thus, we ought to use those values as priors for the next phases MultiNestOptimizer non-linear search!
 
 Strictly speaking, a PDF is doesn't conform to any ordinary shape and can have multiple peaks, skewness etc. However,
 due to the central limit theorem, in most cases they resample something vaguely Gaussian. So we can just summarise each
@@ -93,11 +93,11 @@ throw in a few extra new parameters with Uniform priors.
 At the end of AutoLens, we 'fix' our lens model and every single parameter will be initialised using a prior inferred from
 the previous phase.
 
-I think our class inheritance should automatically take care of a lot of linking. So, if we go from an EllipticalIsothermalMassProfile
-(5 parameters - x, y, ein_rad, phi, axis_ratio) to an EllipticalPowerLawMassProfile (6 parameters - x, y, ein_rad, phi, axis_ratio, slope),
+I think our class inheritance should automatically take care of a lot of linking. So, if we go from an EllipticalIsothermal
+(5 parameters - x, y, ein_rad, phi, axis_ratio) to an EllipticalPowerLaw (6 parameters - x, y, ein_rad, phi, axis_ratio, slope),
 it should be obvious that the first 5 parameters can inherit from the IsothermalMassProfile and only slope needs special treatment.
 
-A similar thing is true if we go from the EllipticalIsothermalMassProfile to a NFWDarkMatterMassProfile (6 - parameters,
+A similar thing is true if we go from the EllipticalIsothermal to a NFWDarkMatterMassProfile (6 - parameters,
 x,, y, kappa, phi, axis_ratio, scale_radius). The Profile class will tell the new dark matter model that it can use
 the x and y of EllipticalIsothermal. Although phi and axis_ratio are shared between these two profiles, its generally
 not wise to assume the Isothermal's axis-ratio or phi (which represent ALL the mass in the lens) correlate with the
