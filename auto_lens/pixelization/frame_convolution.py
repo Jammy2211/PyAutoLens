@@ -255,12 +255,13 @@ class KernelConvolver(object):
 
         frame = self.frame_array[pixel_index]
 
-        # if sub_shape is not None:
-        #     limits = calculate_limits(self.shape, sub_shape)
-        #
-        #     keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
+        limits = None
+        if sub_shape is not None:
+            limits = calculate_limits(self.shape, sub_shape)
 
         for kernel_index in range(self.length):
+            if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
+                continue
             vector_index = frame[kernel_index]
             if vector_index == -1:
                 continue
