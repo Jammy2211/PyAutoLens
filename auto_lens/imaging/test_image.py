@@ -563,7 +563,7 @@ class TestSimulateImage(object):
 
             exposure_time = image.DataGrid.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
 
-            sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time.data, pixel_scale=0.1,
+            sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time, pixel_scale=0.1,
                                            psf=psf)
 
             assert (sim_img.effective_exposure_time == np.ones((3, 3))).all()
@@ -572,11 +572,6 @@ class TestSimulateImage(object):
             assert (sim_img == np.array(([0.0, 1.0, 0.0],
                                          [1.0, 2.0, 1.0],
                                          [0.0, 1.0, 0.0]))).all()
-
-            assert (sim_img.sim_optics.psf.data == psf).all()
-
-            assert sim_img.sim_poisson_noise is None
-            assert sim_img.sim_background_noise is None
 
         def test__setup_with__poisson_noise_on(self):
             img = np.array(([0.0, 0.0, 0.0],
@@ -600,9 +595,6 @@ class TestSimulateImage(object):
             assert sim_img.sim_poisson_noise.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                                           [0.0, 0.05, 0.0],
                                                                                           [0.0, 0.0, 0.0]]), 1e-2)
-
-            assert sim_img.sim_optics is None
-            assert sim_img.sim_background_noise is None
 
 
 class TestSimulatePoissonNoise(object):
