@@ -2,7 +2,8 @@ from __future__ import division, print_function
 import pytest
 import numpy as np
 from auto_lens.imaging import grids
-from auto_lens.imaging import imaging
+from auto_lens.imaging import mask as msk
+
 from auto_lens import galaxy
 from auto_lens.profiles import light_profiles, mass_profiles
 import os
@@ -85,7 +86,7 @@ class TestGridCoordsCollection(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             image_grid = mask.compute_grid_coords_image()
             sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
@@ -102,7 +103,7 @@ class TestGridCoordsCollection(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             image_grid = mask.compute_grid_coords_image()
 
@@ -563,7 +564,7 @@ class TestGridCoordsImage(object):
                              [False, False, False],
                              [True, False, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             regular_grid_coords = mask.compute_grid_coords_image()
 
@@ -580,7 +581,7 @@ class TestGridCoordsImage(object):
                              [True, False, True, True],
                              [True, True, True, False]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=6.0)
+            mask = msk.Mask(mask=mask, pixel_scale=6.0)
 
             regular_grid_coords = mask.compute_grid_coords_image()
 
@@ -689,7 +690,7 @@ class TestGridCoordsImageSub(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             sub_grid_coords = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
@@ -826,7 +827,7 @@ class TestGridCoordsBlurring(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             regular_grid_coords = mask.compute_grid_coords_blurring(psf_size=(3, 3))
 
@@ -940,7 +941,7 @@ class TestGridDataCollection(object):
             mask = np.array([[True, False, True],
                              [False, False, False],
                              [True, False, True]])
-            mask = imaging.Mask(mask=mask, pixel_scale=1.0)
+            mask = msk.Mask(mask=mask, pixel_scale=1.0)
 
             image = np.array([[1, 2, 3],
                              [4, 5, 6],
@@ -990,7 +991,7 @@ class TestGridData(object):
                              [False, False, False],
                              [True, False, True]])
 
-            mask = imaging.Mask(mask, pixel_scale=3.0)
+            mask = msk.Mask(mask, pixel_scale=3.0)
 
             grid_data = grids.GridData.from_mask(data, mask)
 
@@ -1031,7 +1032,7 @@ class TestGridMapperCollection(object):
                               [True,  True, False,  True, True],
                               [True,  True,  True,  True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             clustering_to_image, image_to_clustering = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
             mapper_clustering = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
@@ -1078,7 +1079,7 @@ class TestGridMapperCollection(object):
                              [True, True, False, True, True],
                              [True, True, True, True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             mappers = grids.GridMapperCollection.from_mask(mask)
 
@@ -1124,7 +1125,7 @@ class TestGridMapperDataToPixel(object):
                              [False, False, False],
                              [True, False, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             mapper = grids.GridMapperDataToPixel.from_mask(mask)
 
@@ -1142,7 +1143,7 @@ class TestGridMapperDataToPixel(object):
                              [True, False, True, True],
                              [True, True, True, False]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=6.0)
+            mask = msk.Mask(mask=mask, pixel_scale=6.0)
 
             mapper = mask.compute_grid_mapper_data_to_pixel()
             mapper_from_mask = grids.GridMapperDataToPixel.from_mask(mask)
@@ -1162,7 +1163,7 @@ class TestGridMapperDataToPixel(object):
                               [True,  True, False,  True, True],
                               [True,  True,  True,  True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             mapper = grids.GridMapperDataToPixel.from_mask_blurring_mapper(mask, blurring_size=(3,3))
 
@@ -1192,7 +1193,7 @@ class TestGridMapperDataToPixel(object):
                              [True, False, True, True],
                              [True, True, True, False]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=6.0)
+            mask = msk.Mask(mask=mask, pixel_scale=6.0)
 
             mapper = mask.compute_grid_mapper_data_to_pixel()
             mapper_from_mask = grids.GridMapperDataToPixel.from_mask(mask)
@@ -1213,7 +1214,7 @@ class TestGridMapperDataToPixel(object):
                              [False, False, False],
                              [False, False, False]])
 
-            mask = imaging.Mask(mask, pixel_scale=3.0)
+            mask = msk.Mask(mask, pixel_scale=3.0)
 
             grid_data = grids.GridData.from_mask(mask=mask, data=data)
 
@@ -1236,7 +1237,7 @@ class TestGridMapperDataToPixel(object):
                              [False, False, False],
                              [True, False, True]])
 
-            mask = imaging.Mask(mask, pixel_scale=3.0)
+            mask = msk.Mask(mask, pixel_scale=3.0)
 
             grid_data = grids.GridData.from_mask(mask=mask, data=data)
 
@@ -1259,7 +1260,7 @@ class TestGridMapperDataToPixel(object):
                              [False, False, False],
                              [False, False, False]])
 
-            mask = imaging.Mask(mask, pixel_scale=3.0)
+            mask = msk.Mask(mask, pixel_scale=3.0)
 
             grid_data = grids.GridData.from_mask(mask=mask, data=data)
 
@@ -1280,7 +1281,7 @@ class TestGridMapperDataToPixel(object):
                              [False, False, False],
                              [True, False, True]])
 
-            mask = imaging.Mask(mask, pixel_scale=3.0)
+            mask = msk.Mask(mask, pixel_scale=3.0)
 
             mapper = grids.GridMapperDataToPixel.from_mask(mask=mask)
 
@@ -1308,7 +1309,7 @@ class TestGridMapperCluster(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = imaging.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(mask=mask, pixel_scale=3.0)
 
             clustering_to_image, image_to_clustering = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
