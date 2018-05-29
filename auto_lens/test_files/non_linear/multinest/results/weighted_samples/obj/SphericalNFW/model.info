@@ -1,0 +1,7 @@
+SphericalNFW
+
+centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+kappa_s: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+scale_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+
