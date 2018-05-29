@@ -56,6 +56,12 @@ class DataGrid(np.ndarray):
     def shape_arc_seconds(self):
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
+    def new_with_array(self, array):
+        arguments = vars(self)
+        arguments.update({"array": array})
+
+        return self.__class__(**arguments)
+
     def pad(self, new_dimensions):
         """ Pad the data array with zeros around its central pixel.
 
@@ -77,10 +83,7 @@ class DataGrid(np.ndarray):
 
         array = np.pad(self, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
 
-        arguments = vars(self)
-        arguments.update({"array": array})
-
-        return self.__class__(**arguments)
+        return self.new_with_array(array)
 
     def trim(self, new_dimensions):
         """ Trim the data array to a new size around its central pixel.
@@ -114,10 +117,7 @@ class DataGrid(np.ndarray):
             logger.debug(
                 'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
 
-        arguments = vars(self)
-        arguments.update({"array": array})
-
-        return self.__class__(**arguments)
+        return self.new_with_array(array)
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
         """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and sub-grid_coords \
