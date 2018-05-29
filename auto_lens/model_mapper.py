@@ -19,8 +19,8 @@ class ModelMapper(object):
 
         Examples
         --------
-        # The ModelMapper converts a set of classes whose input attributes may be modeled using a non-linear search, to\
-        # parameters with priors attatched.
+        # The ModelMapper converts a set of classes whose input attributes may be modeled using a non-linear search, to
+        # parameters with priors attached.
 
         # A config is passed into the collection to provide default setup values for the priors:
 
