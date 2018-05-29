@@ -1,6 +1,9 @@
 from auto_lens.imaging import data
 import numpy as np
 import pytest
+import os
+
+test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(name="array_grid")
@@ -9,13 +12,63 @@ def make_array_grid():
 
 
 class TestDataGrid(object):
+    class TestConstructors(object):
 
-    def test__constructor(self, array_grid):
-        # Does the array grid class correctly instantiate as an instance of ndarray?
-        assert array_grid.shape == (5, 5)
-        assert array_grid.pixel_scale == 0.5
-        assert isinstance(array_grid, np.ndarray)
-        assert isinstance(array_grid, data.DataGrid)
+        def test__constructor(self, array_grid):
+            # Does the array grid class correctly instantiate as an instance of ndarray?
+            assert array_grid.shape == (5, 5)
+            assert array_grid.pixel_scale == 0.5
+            assert isinstance(array_grid, np.ndarray)
+            assert isinstance(array_grid, data.DataGrid)
+
+        def test__init__input_data_grid_single_value__all_attributes_correct_including_data_inheritance(
+                self):
+            data_grid = data.DataGrid.single_value(value=5.0, shape=(3, 3),
+                                                       pixel_scale=1.0)
+
+            assert (data_grid == 5.0 * np.ones((3, 3))).all()
+            assert data_grid.pixel_scale == 1.0
+            assert data_grid.shape == (3, 3)
+            assert data_grid.central_pixel_coordinates == (1.0, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
+
+        def test__init__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
+            data_grid = data.DataGrid(array=np.ones((3, 3)), pixel_scale=1.0)
+
+            assert data_grid.pixel_scale == 1.0
+            assert data_grid.shape == (3, 3)
+            assert data_grid.central_pixel_coordinates == (1.0, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
+            assert (data_grid == np.ones((3, 3))).all()
+
+        def test__init__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
+            data_grid = data.DataGrid(array=np.ones((4, 3)), pixel_scale=0.1)
+
+            assert (data_grid == np.ones((4, 3))).all()
+            assert data_grid.pixel_scale == 0.1
+            assert data_grid.shape == (4, 3)
+            assert data_grid.central_pixel_coordinates == (1.5, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
+
+        def test__from_fits__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
+            data_grid = data.DataGrid.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
+                                                    pixel_scale=1.0)
+
+            assert (data_grid == np.ones((3, 3))).all()
+            assert data_grid.pixel_scale == 1.0
+            assert data_grid.shape == (3, 3)
+            assert data_grid.central_pixel_coordinates == (1.0, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
+
+        def test__from_fits__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
+            data_grid = data.DataGrid.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
+                                                    pixel_scale=0.1)
+
+            assert (data_grid == np.ones((4, 3))).all()
+            assert data_grid.pixel_scale == 0.1
+            assert data_grid.shape == (4, 3)
+            assert data_grid.central_pixel_coordinates == (1.5, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
     class TestCentralPixel:
 
