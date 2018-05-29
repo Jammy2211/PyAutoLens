@@ -586,15 +586,13 @@ class TestSimulateImage(object):
             assert (sim_img.effective_exposure_time == 20.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
 
-            print(sim_img)
+            assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
+                                                                    [0.0, 0.05, 0.0],
+                                                                    [0.0, 0.0, 0.0]]), 1e-2)
 
             assert sim_img == pytest.approx(np.array(([0.0, 0.0, 0.0],
-                                                      [0.0, 2.05, 0.0],
+                                                      [0.0, 1.05, 0.0],
                                                       [0.0, 0.0, 0.0])), 1e-2)
-
-            assert sim_img.sim_poisson_noise.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
-                                                                                          [0.0, 0.05, 0.0],
-                                                                                          [0.0, 0.0, 0.0]]), 1e-2)
 
 
 class TestSimulatePoissonNoise(object):
@@ -700,7 +698,7 @@ class TestSimulatePoissonNoise(object):
             sim_poisson_img_1 = img_1 + image.generate_poisson_noise(img_1, exposure_time_1.data, seed=1)
 
             assert (sim_poisson_img_0[0, 0] == sim_poisson_img_1[0, 0] / 2.0).all()
-            assert (sim_poisson_img_0[0, 1] == sim_poisson_img_1[0, 1]).all()
+            assert sim_poisson_img_0[0, 1] == sim_poisson_img_1[0, 1]
             assert (sim_poisson_img_0[1, 0] * 1.5 == pytest.approx(sim_poisson_img_1[1, 0], 1e-2)).all()
             assert (sim_poisson_img_0[1, 1] / 2.0 == sim_poisson_img_1[1, 1]).all()
 
