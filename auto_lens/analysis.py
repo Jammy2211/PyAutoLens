@@ -85,6 +85,6 @@ def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_im
     if blurring_image is not None:
         image_2d += blurring_to_pixel.map_to_2d(blurring_image)
 
-    image_2d_blurred = psf.convolve_with_image(image_2d)
+    image_2d_blurred = psf.convolve(image_2d)
 
     return grids.GridData(image_to_pixel.map_to_1d(image_2d_blurred))
