@@ -595,6 +595,8 @@ class TestSimulateImage(object):
             assert (sim_img.effective_exposure_time == 20.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
 
+            print(sim_img)
+
             assert sim_img == pytest.approx(np.array(([0.0, 0.0, 0.0],
                                                       [0.0, 2.05, 0.0],
                                                       [0.0, 0.0, 0.0])), 1e-2)
