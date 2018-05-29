@@ -381,8 +381,6 @@ class TestMultiNestResultsIntermediate(object):
             assert results.most_likely.mass_profile.kappa_s == 7.0
             assert results.most_likely.mass_profile.scale_radius == 8.0
 
-
-
     class TestMostLikely:
 
         def test__one_profile__read_most_likely_vector__via_summary(self):
@@ -405,9 +403,7 @@ class TestMultiNestResultsIntermediate(object):
 
             assert results._most_likely == [12.0, 13.0, 14.0, 15.0, 16.0, -17.0, -18.0, -19.0, -20.0, 21.0, 22.0]
 
-
         def test__one_profile__setup_most_likely(self):
-
 
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
@@ -418,7 +414,6 @@ class TestMultiNestResultsIntermediate(object):
             assert results.most_likely.mass_profile.centre == (5.0, 6.0)
             assert results.most_likely.mass_profile.kappa_s == 7.0
             assert results.most_likely.mass_profile.scale_radius == 8.0
-
 
         def test__multiple_profile__setup_most_likely(self):
 
@@ -440,6 +435,30 @@ class TestMultiNestResultsIntermediate(object):
             assert results.most_likely.mass_profile.centre == (-19.0, -20.0)
             assert results.most_likely.mass_profile.kappa_s == 21.0
             assert results.most_likely.mass_profile.scale_radius == 22.0
+
+        def test__model_has_fewer_parameters_than_summary__raises_error(self):
+
+            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
+            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW,
+                                                 mass_profile_2=mass_profiles.SphericalNFW)
+
+            with pytest.raises(non_linear.MultiNestException):
+                non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
+                    obj_name='obj', model_mapper=model_map)
+
+        def test__model_has_more_parameters_than_summary__raises_error(self):
+
+            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
+            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW,
+                                                 mass_profile_2=mass_profiles.SphericalNFW,
+                                                 mass_profile_3=mass_profiles.SphericalNFW,
+                                                 mass_profile_4=mass_profiles.SphericalNFW)
+
+            with pytest.raises(non_linear.MultiNestException):
+                non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
+                    obj_name='obj', model_mapper=model_map)
+
+
 
     class TestMostProbable:
 
@@ -498,7 +517,6 @@ class TestMultiNestResultsIntermediate(object):
             assert results.most_probable.mass_profile.centre == (-8.0, 9.0)
             assert results.most_probable.mass_profile.kappa_s == 10.0
             assert results.most_probable.mass_profile.scale_radius == 11.0
-
 
     class TestSetupFromMultiNest(object):
 
