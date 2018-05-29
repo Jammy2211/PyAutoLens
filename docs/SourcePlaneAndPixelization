@@ -1,10 +1,10 @@
 We most likely want to split our SourcePlane and Pixelization into two distinct classes, where:
 
 A SourcePlane represents the coordinates of an image traced to the source-plane. For this source-plane, we can recentre
-the coordinates, setup a border, move coordinates outside the border to its edge and so forth.
+the coordinates, setup a setup_border_pixels, move coordinates outside the setup_border_pixels to its edge and so forth.
 
 A Pixelization takes a set of coordinates and builds a pixel-grid using them, whcih is then used to perform the
-source and image reconstruction.
+source and image model_instance.
 
 Why do we want to split them? For single-wavelength imaging (i.e. one image) the two things are very inter-twined. Our
 source-plane coordinates are our pixelization coordinates and visa versa. However, for multi-wwavelength imaging
@@ -16,7 +16,7 @@ build the pixelization using one image (i.e. the highest resolution one) and the
 other source-planes.
 
 Why do we want the same pixelization to be used for each source-plane? If our source-pixels are defined identically in
-each source-reconstruction, we can then regularization them in colour-space. If the source-pixels in each soure-plane are
+each source-model_instance, we can then regularization them in colour-space. If the source-pixels in each soure-plane are
 located offset from one another, this regularization becommes ill-posed.
 
 We need to think carefully about all of this... gets confusing.
