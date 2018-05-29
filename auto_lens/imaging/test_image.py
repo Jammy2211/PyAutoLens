@@ -552,10 +552,6 @@ class TestSimulateImage(object):
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]))).all()
 
-            assert sim_img.sim_optics is None
-            assert sim_img.sim_poisson_noise is None
-            assert sim_img.sim_background_noise is None
-
         def test__setup_with_psf_blurring_on(self):
             img = np.array(([0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
