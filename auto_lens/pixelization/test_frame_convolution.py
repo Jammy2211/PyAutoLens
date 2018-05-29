@@ -105,17 +105,17 @@ class TestFrameExtraction(object):
         assert (np.array([0, -1, -1, 2, 3, -1, 4, -1, -1]) == frame_array[3]).all()
 
         assert (np.array([1, 2, 3, -1, 4, -1, -1, -1, -1]) == frame_array[4]).all()
-#
-#
-# class TestConvolution(object):
-#     def test_simple_convolution(self, simple_frame_array, simple_kernel):
-#         pixel_dict = {4: 1}
-#
-#         convolver = frame_convolution.Convolver(simple_frame_array)
-#
-#         result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_dict)
-#
-#         assert result == {1: 0.1, 3: 0.1, 4: 0.6, 5: 0.1, 7: 0.1}
+
+
+class TestConvolution(object):
+    def test_simple_convolution(self, simple_frame_array, simple_kernel):
+        pixel_dict = {4: 1}
+
+        convolver = frame_convolution.Convolver(simple_frame_array)
+
+        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_dict)
+
+        assert result == {1: 0.1, 3: 0.1, 4: 0.6, 5: 0.1, 7: 0.1}
 #
 #     def test_full_convolution(self, simple_frame_array):
 #         pixel_dict = {0: 1, 4: 1, 8: 1}
