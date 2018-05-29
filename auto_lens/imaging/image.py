@@ -130,3 +130,47 @@ class PSF(DataGrid):
 
 class KernelException(Exception):
     pass
+
+
+def poisson_noise(image, exposure_time, seed=-1):
+    """
+    Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
+    distribution with mean 0.0.
+
+    Parameters
+    ----------
+    image : ndarray
+        The 2D image background noise is added to.
+    exposure_time : ndarray
+        The 2D array of pixel exposure times.
+    seed : int
+        The seed of the random number generator, used for the random noise maps.
+
+    Returns
+    -------
+    poisson_noise: ndarray
+        An array describing simulated poisson noise
+    """
+    setup_random_seed(seed)
+    image_counts = np.multiply(image, exposure_time)
+    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
+
+
+def background_noise(image, sigma, seed=-1):
+    setup_random_seed(seed)
+    background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
+    return background_noise_map
+
+
+def setup_random_seed(seed):
+    """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is positive,
+    that seed is used for all runs, thereby giving reproducible results
+
+    Parameters
+    ----------
+    seed : int
+        The seed of the random number generator, used for the random signal_to_noise_ratio maps.
+    """
+    if seed == -1:
+        seed = np.random.randint(0, int(1e9))  # Use one seed, so all regions have identical column non-uniformity.
+    np.random.seed(seed)
