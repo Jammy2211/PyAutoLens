@@ -951,12 +951,12 @@ class TestGridDataCollection(object):
             noise = np.array([[2, 2, 2],
                               [5, 5, 5],
                               [8, 8, 8]])
-            noise = img.DataGrid(array=noise, pixel_scale=1.0)
+            noise = img.Array(array=noise, pixel_scale=1.0)
 
             exposure_time = np.array([[1, 1, 1],
                                       [1, 1, 1],
                                       [1, 1, 1]])
-            exposure_time = img.DataGrid(array=exposure_time, pixel_scale=1.0)
+            exposure_time = img.Array(array=exposure_time, pixel_scale=1.0)
 
             psf = img.PSF(array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
 
