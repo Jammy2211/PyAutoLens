@@ -2,7 +2,7 @@ from auto_lens.imaging import data
 import numpy as np
 
 
-class Mask(data.DataGrid):
+class Mask(data.Array):
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
