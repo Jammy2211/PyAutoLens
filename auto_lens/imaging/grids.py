@@ -437,7 +437,7 @@ class GridCoordsBlurring(GridCoordsRegular):
             A mask describing which image_to_pixel the image coordinates are computed for, and therefore from which the \
             blurring regions can be computed.
         psf_size : (int, int)
-           The size of the psf which defines the blurring region (e.g. the pixel_dimensions of the PSF)
+           The size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
         if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
             raise MaskException("psf_size of exterior region must be odd")
@@ -692,7 +692,7 @@ class GridMapperDataToPixel(np.ndarray):
         mask : mask.Mask
             The image mask containing the unmasked image_to_pixel of the data grid.
         """
-        return GridMapperDataToPixel(dimensions_2d=mask.pixel_dimensions,
+        return GridMapperDataToPixel(dimensions_2d=mask.shape,
                                      data_to_pixel=mask.compute_grid_mapper_data_to_pixel())
 
     @classmethod
@@ -707,7 +707,7 @@ class GridMapperDataToPixel(np.ndarray):
            The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
         """
         blurring_mask = mask.compute_blurring_mask(psf_size=blurring_size)
-        return GridMapperDataToPixel(dimensions_2d=blurring_mask.pixel_dimensions,
+        return GridMapperDataToPixel(dimensions_2d=blurring_mask.shape,
                                      data_to_pixel=blurring_mask.compute_grid_mapper_data_to_pixel())
 
     def map_to_2d(self, grid_data):

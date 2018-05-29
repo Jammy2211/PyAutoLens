@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 from auto_lens.imaging import grids
 from auto_lens.imaging import mask as msk
+from auto_lens.imaging import image as img
 
 from auto_lens import galaxy
 from auto_lens.profiles import light_profiles, mass_profiles
@@ -86,7 +87,7 @@ class TestGridCoordsCollection(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             image_grid = mask.compute_grid_coords_image()
             sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
@@ -103,7 +104,7 @@ class TestGridCoordsCollection(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             image_grid = mask.compute_grid_coords_image()
 
@@ -559,29 +560,29 @@ class TestGridCoordsImage(object):
 
     class TestFromMask:
 
-        def test__calcalate_from_simple_mask__check_coordinates_are_correct(self):
+        def test__calculate_from_simple_mask__check_coordinates_are_correct(self):
             mask = np.array([[True, False, True],
                              [False, False, False],
                              [True, False, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            regular_grid_coords = mask.compute_grid_coords_image()
+            # regular_grid_coords = mask.compute_grid_coords_image()
 
             grid_image = grids.GridCoordsImage.from_mask(mask)
 
-            assert (grid_image[0] == np.array([0.0, 3.0])).all()
-            assert (grid_image[1] == np.array([-3.0, 0.0])).all()
+            assert (grid_image[0] == np.array([-3.0, 0.0])).all()
+            assert (grid_image[1] == np.array([0.0, -3.0])).all()
             assert (grid_image[2] == np.array([0.0, 0.0])).all()
-            assert (grid_image[3] == np.array([3.0, 0.0])).all()
-            assert (grid_image[4] == np.array([0.0, -3.0])).all()
+            assert (grid_image[3] == np.array([0.0, 3.0])).all()
+            assert (grid_image[4] == np.array([3.0, 0.0])).all()
 
         def test__manually_compare_to_setting_up_directly_via_mask(self):
             mask = np.array([[True, True, False, False],
                              [True, False, True, True],
                              [True, True, True, False]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=6.0)
+            mask = msk.Mask(array=mask, pixel_scale=6.0)
 
             regular_grid_coords = mask.compute_grid_coords_image()
 
@@ -690,7 +691,7 @@ class TestGridCoordsImageSub(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             sub_grid_coords = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
@@ -827,7 +828,7 @@ class TestGridCoordsBlurring(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             regular_grid_coords = mask.compute_grid_coords_blurring(psf_size=(3, 3))
 
@@ -924,7 +925,7 @@ class TestGridDataCollection(object):
             grid_exposure_time = np.array([7, 8, 9])
             grid_exposure_time = grids.GridData(grid_exposure_time)
 
-            psf = imaging.PSF(data=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
+            psf = img.PSF(array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
 
             grid_collection = grids.GridDataCollection(image=grid_image, noise=grid_noise,
                                                        exposure_time=grid_exposure_time, psf=psf)
@@ -932,41 +933,41 @@ class TestGridDataCollection(object):
             assert (grid_collection.image == np.array([1, 2, 3])).all()
             assert (grid_collection.noise == np.array([4, 5, 6])).all()
             assert (grid_collection.exposure_time == np.array([7, 8, 9])).all()
-            assert (grid_collection.psf.data == np.ones((3, 3))).all()
+            assert (grid_collection.psf == np.ones((3, 3))).all()
 
     class TestFromMask:
 
         def test__cross_mask__all_data_setup_as_mask(self):
-
             mask = np.array([[True, False, True],
                              [False, False, False],
                              [True, False, True]])
-            mask = msk.Mask(mask=mask, pixel_scale=1.0)
+            mask = msk.Mask(array=mask, pixel_scale=1.0)
 
             image = np.array([[1, 2, 3],
-                             [4, 5, 6],
-                             [7, 8, 9]])
-            image = imaging.Image(data=image, pixel_scale=1.0)
+                              [4, 5, 6],
+                              [7, 8, 9]])
+            image = img.Image(array=image, pixel_scale=1.0)
 
             noise = np.array([[2, 2, 2],
-                             [5, 5, 5],
-                             [8, 8, 8]])
-            noise = imaging.Noise(data=noise, pixel_scale=1.0)
+                              [5, 5, 5],
+                              [8, 8, 8]])
+            noise = img.DataGrid(array=noise, pixel_scale=1.0)
 
             exposure_time = np.array([[1, 1, 1],
                                       [1, 1, 1],
                                       [1, 1, 1]])
-            exposure_time = imaging.ExposureTime(data=exposure_time, pixel_scale=1.0)
+            exposure_time = img.DataGrid(array=exposure_time, pixel_scale=1.0)
 
-            psf = imaging.PSF(data=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
+            psf = img.PSF(array=np.ones((3, 3)), pixel_scale=1.0, renormalize=False)
 
             grid_collection = grids.GridDataCollection.from_mask(mask=mask, image=image, noise=noise,
-                                                       exposure_time=exposure_time, psf=psf)
+                                                                 exposure_time=exposure_time, psf=psf)
 
             assert (grid_collection.image == np.array([2, 4, 5, 6, 8])).all()
             assert (grid_collection.noise == np.array([2, 5, 5, 5, 8])).all()
             assert (grid_collection.exposure_time == np.array([1, 1, 1, 1, 1])).all()
-            assert (grid_collection.psf.data == np.ones((3, 3))).all()
+            assert (grid_collection.psf == np.ones((3, 3))).all()
+
 
 class TestGridData(object):
     class TestConstructor:
@@ -1025,19 +1026,18 @@ class TestGridMapperCollection(object):
     class TestFromMask:
 
         def test__all_mappers__setup_all_mappers_correctly(self):
+            mask = np.array([[True, True, True, True, True],
+                             [True, True, False, True, True],
+                             [True, False, False, False, True],
+                             [True, True, False, True, True],
+                             [True, True, True, True, True]])
 
-            mask = np.array([[True,   True,  True,  True, True],
-                              [True,  True, False,  True, True],
-                              [True, False, False, False, True],
-                              [True,  True, False,  True, True],
-                              [True,  True,  True,  True, True]])
-
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             clustering_to_image, image_to_clustering = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
             mapper_clustering = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
 
-            mappers = grids.GridMapperCollection.from_mask(mask, blurring_size=(3,3), cluster_grid_size=1)
+            mappers = grids.GridMapperCollection.from_mask(mask, blurring_size=(3, 3), cluster_grid_size=1)
 
             assert mappers.image_to_pixel.dimensions_2d == (5, 5)
             assert mappers.image_to_pixel.dimensions_1d == 5
@@ -1047,7 +1047,7 @@ class TestGridMapperCollection(object):
             assert (mappers.image_to_pixel[2] == np.array([2, 2])).all()
             assert (mappers.image_to_pixel[3] == np.array([2, 3])).all()
             assert (mappers.image_to_pixel[4] == np.array([3, 2])).all()
-            
+
             assert mappers.blurring_to_pixel.dimensions_2d == (5, 5)
             assert mappers.blurring_to_pixel.dimensions_1d == 16
 
@@ -1072,14 +1072,13 @@ class TestGridMapperCollection(object):
             assert (mappers.clustering.image_to_clustering == mapper_clustering.image_to_clustering).all()
 
         def test__blurring_and_clustering_are_none__setup_as_none(self):
-
             mask = np.array([[True, True, True, True, True],
                              [True, True, False, True, True],
                              [True, False, False, False, True],
                              [True, True, False, True, True],
                              [True, True, True, True, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             mappers = grids.GridMapperCollection.from_mask(mask)
 
@@ -1095,12 +1094,11 @@ class TestGridMapperCollection(object):
             assert mappers.blurring_to_pixel == None
             assert mappers.clustering == None
 
-class TestGridMapperDataToPixel(object):
 
+class TestGridMapperDataToPixel(object):
     class TestConstructor:
 
         def test__simple_mapper_input__sets_up_grid_in_attributes(self):
-
             data_to_pixel = np.array([[0, 0],
                                       [0, 1],
                                       [0, 2]])
@@ -1120,12 +1118,12 @@ class TestGridMapperDataToPixel(object):
 
     class TestFromMask:
 
-        def test__calcalate_from_simple_mask__mappings_are_correct(self):
+        def test__calculate_from_simple_mask__mappings_are_correct(self):
             mask = np.array([[True, False, True],
                              [False, False, False],
                              [True, False, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             mapper = grids.GridMapperDataToPixel.from_mask(mask)
 
@@ -1143,7 +1141,7 @@ class TestGridMapperDataToPixel(object):
                              [True, False, True, True],
                              [True, True, True, False]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=6.0)
+            mask = msk.Mask(array=mask, pixel_scale=6.0)
 
             mapper = mask.compute_grid_mapper_data_to_pixel()
             mapper_from_mask = grids.GridMapperDataToPixel.from_mask(mask)
@@ -1156,16 +1154,15 @@ class TestGridMapperDataToPixel(object):
     class TestFromMaskBlurringMapper:
 
         def test__calcalate_from_simple_mask__mappings_are_correct(self):
+            mask = np.array([[True, True, True, True, True],
+                             [True, True, False, True, True],
+                             [True, False, False, False, True],
+                             [True, True, False, True, True],
+                             [True, True, True, True, True]])
 
-            mask = np.array([[True,   True,  True,  True, True],
-                              [True,  True, False,  True, True],
-                              [True, False, False, False, True],
-                              [True,  True, False,  True, True],
-                              [True,  True,  True,  True, True]])
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
-
-            mapper = grids.GridMapperDataToPixel.from_mask_blurring_mapper(mask, blurring_size=(3,3))
+            mapper = grids.GridMapperDataToPixel.from_mask_blurring_mapper(mask, blurring_size=(3, 3))
 
             assert mapper.dimensions_2d == (5, 5)
             assert mapper.dimensions_1d == 16
@@ -1187,13 +1184,12 @@ class TestGridMapperDataToPixel(object):
             assert (mapper[14] == np.array([4, 2])).all()
             assert (mapper[15] == np.array([4, 3])).all()
 
-
         def test__manually_compare_to_setting_up_directly_via_mask(self):
             mask = np.array([[True, True, False, False],
                              [True, False, True, True],
                              [True, True, True, False]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=6.0)
+            mask = msk.Mask(array=mask, pixel_scale=6.0)
 
             mapper = mask.compute_grid_mapper_data_to_pixel()
             mapper_from_mask = grids.GridMapperDataToPixel.from_mask(mask)
@@ -1309,7 +1305,7 @@ class TestGridMapperCluster(object):
                              [True, False, True],
                              [True, True, True]])
 
-            mask = msk.Mask(mask=mask, pixel_scale=3.0)
+            mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             clustering_to_image, image_to_clustering = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
@@ -1319,6 +1315,7 @@ class TestGridMapperCluster(object):
 
             assert (mapper.clustering_to_image == mapper_from_mask.clustering_to_image).all()
             assert (mapper.image_to_clustering == mapper_from_mask.image_to_clustering).all()
+
 
 class TestGridBorder(object):
     class TestCoordinatesAngleFromX(object):
@@ -1434,7 +1431,8 @@ class TestGridBorder(object):
                                     [-1.0, 0.0], [-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)],
                                     [0.0, -1.0], [0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]])
 
-            border = grids.GridBorder(border_pixels=np.arange(8), polynomial_degree=3)
+            border = grids.GridBorder(border_pixels=
+                                      np.arange(8), polynomial_degree=3)
             border.polynomial_fit_to_border(coordinates)
 
             assert border.radius_at_theta(theta=0.0) == pytest.approx(1.0, 1e-3)
