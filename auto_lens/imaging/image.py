@@ -5,8 +5,13 @@ import scipy.signal
 
 
 class Image(DataGrid):
-    def __init__(self, array, pixel_scale=1):
+    def __init__(self, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
+                 poisson_noise=None):
         super(Image, self).__init__(array, pixel_scale)
+        self.psf = psf
+        self.background_noise = background_noise
+        self.poisson_noise = poisson_noise
+        self.effective_exposure_time = effective_exposure_time
 
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
@@ -51,40 +56,6 @@ class Image(DataGrid):
             raise KernelException("PSF Kernel must be odd")
 
         return self.new_with_array(scipy.signal.convolve2d(self, psf, mode='same'))
-
-
-class RealImage(Image):
-    def __init__(self, array, effective_exposure_time, pixel_scale=1, psf=None, background_noise=None,
-                 poisson_noise=None):
-        super(RealImage, self).__init__(array, pixel_scale)
-        self.psf = psf
-        self.background_noise = background_noise
-        self.poisson_noise = poisson_noise
-        self.effective_exposure_time = effective_exposure_time
-
-    def background_noise_from_edges(self, no_edges):
-        """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
-        into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
-        Gaussian gives a signal_to_noise_ratio estimate.
-
-        Parameters
-        ----------
-        no_edges : int
-            Number of edges used to estimate the background signal_to_noise_ratio.
-
-        """
-
-        edges = []
-
-        for edge_no in range(no_edges):
-            top_edge = self[edge_no, edge_no:self.shape[1] - edge_no]
-            bottom_edge = self[self.shape[0] - 1 - edge_no, edge_no:self.shape[1] - edge_no]
-            left_edge = self[edge_no + 1:self.shape[0] - 1 - edge_no, edge_no]
-            right_edge = self[edge_no + 1:self.shape[0] - 1 - edge_no, self.shape[1] - 1 - edge_no]
-
-            edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
-
-        return norm.fit(edges)[1]
 
     def electrons_per_second_to_counts(self, array):
         """
