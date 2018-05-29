@@ -211,48 +211,10 @@ class MultiNestResultsIntermediate(NonLinearDirectory):
         self.most_likely = self.model_mapper.from_physical_vector(self._most_likely)
 
     def read_most_probable(self):
-        return self.read_vector_from_summary(self.files.summary, self.total_parameters, 0)
+        return read_vector_from_summary(self.files.summary, self.total_parameters, 0)
 
     def read_most_likely(self):
-        return self.read_vector_from_summary(self.files.summary, self.total_parameters, 28)
-
-    @staticmethod
-    def read_vector_from_summary(filename_summary, total_parameters, offset):
-        """
-        Read the most probable or most likely model values from the 'obj_summary.txt' file which results from a \
-        multinest analysis.
-
-        This file stores the parameters of the most probable model in the first half of entries and the most likely
-        model in the second half of entries. The offset parameter is used to start at the desired model.
-
-        Parameters
-        -----------
-        filename_summary : str
-            The directory and file name of the summary file.
-        total_parameters : int
-            The total number of parameters of the model.
-        offset : int
-            The summary file stores the most likely model in the first half of columns and the most probable model in
-            the second half. The offset is used to start the parsing at the appropriate column.
-        """
-        summary = open(filename_summary)
-
-        expected_parameters = (len(summary.readline()) - 57) / 56
-        if expected_parameters != total_parameters:
-            raise MultiNestException('The summary file has a different number of parameters than the input model')
-
-        summary.seek(0) # rewind file and skip the first 3 characters of the file (indentation)
-        summary.read(2 + offset*total_parameters)
-
-        vector = []
-
-        for param in range(total_parameters):
-            vector.append(float(summary.read(28)))
-
-        summary.close()
-
-        return vector
-
+        return read_vector_from_summary(self.files.summary, self.total_parameters, 28)
 
 class MultiNestResultsFinal(MultiNestResultsIntermediate):
 
@@ -331,6 +293,62 @@ class MultiNestResultsFinal(MultiNestResultsIntermediate):
         """
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5*self.pdf.loglikes[index]
 
-
 class MultiNestException(Exception):
     pass
+
+def read_vector_from_summary(filename, total_parameters, offset):
+    """
+    Read the most probable or most likely model values from the 'obj_summary.txt' file which results from a \
+    multinest analysis.
+
+    This file stores the parameters of the most probable model in the first half of entries and the most likely
+    model in the second half of entries. The offset parameter is used to start at the desired model.
+
+    Parameters
+    -----------
+    filename : str
+        The directory and file name of the summary file.
+    total_parameters : int
+        The total number of parameters of the model.
+    offset : int
+        The summary file stores the most likely model in the first half of columns and the most probable model in
+        the second half. The offset is used to start the parsing at the appropriate column.
+    """
+    summary = open(filename)
+
+    expected_parameters = (len(summary.readline()) - 57) / 56
+    if expected_parameters != total_parameters:
+        raise MultiNestException('The summary file has a different number of parameters than the input model')
+
+    summary.seek(0) # rewind file and skip the first 3 characters of the file (indentation)
+    summary.read(2 + offset*total_parameters)
+
+    vector = []
+
+    for param in range(total_parameters):
+        vector.append(float(summary.read(28)))
+
+    summary.close()
+
+    return vector
+
+def reorder_summary_file(path, new_order):
+
+    most_probable = read_vector_from_summary(filename=path + 'summary.txt', total_parameters=len(new_order), offset=0)
+    most_probable = list(map(lambda param : ('%18.18E' % param).rjust(28), most_probable))
+    most_probable = ''.join(map(str, most_probable))
+
+    most_likely = read_vector_from_summary(filename=path + 'summary.txt', total_parameters=len(new_order), offset=28)
+    most_likely = list(map(lambda param : ('%18.18E' % param).rjust(28), most_likely))
+    most_likely = ''.join(map(str, most_likely))
+
+    likelihood = 0.0
+    log_likelihood = 0.0
+
+    new_summary_file = open(path+'summary_new.txt', 'w')
+    new_summary_file.write(most_probable+most_likely)
+    new_summary_file.close()
+
+    print(most_likely)
+    print(most_probable)
+
