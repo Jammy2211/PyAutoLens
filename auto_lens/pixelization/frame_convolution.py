@@ -174,6 +174,7 @@ class Convolver(object):
 class KernelConvolver(object):
     def __init__(self, frame_array, kernel):
         self.shape = kernel.shape
+        self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
         self.__result_dict = {}
@@ -254,14 +255,12 @@ class KernelConvolver(object):
 
         frame = self.frame_array[pixel_index]
 
-        keys = frame.keys()
+        # if sub_shape is not None:
+        #     limits = calculate_limits(self.shape, sub_shape)
+        #
+        #     keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
 
-        if sub_shape is not None:
-            limits = calculate_limits(self.shape, sub_shape)
-
-            keys = filter(lambda index: is_in_sub_shape(index, limits, self.shape), keys)
-
-        for kernel_index in keys:
+        for kernel_index in range(self.length):
             vector_index = frame[kernel_index]
             result = self.result_for_value_and_index(value, kernel_index)
             if result > 0:
