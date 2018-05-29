@@ -177,7 +177,6 @@ class KernelConvolver(object):
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
-        self.__result_dict = {}
 
     def convolve_mapping_matrix(self, mapping_matrix):
         """
@@ -222,14 +221,6 @@ class KernelConvolver(object):
 
         return result
 
-    def result_for_value_and_index(self, value, index):
-        # TODO: does it make sense to keep results in a dict? Is multiplying two values actually less efficient?
-        if value not in self.__result_dict:
-            self.__result_dict[value] = {}
-        if index not in self.__result_dict[value]:
-            self.__result_dict[value][index] = value * self.kernel[index]
-        return self.__result_dict[value][index]
-
     def convolution_for_pixel_index_vector(self, pixel_index, pixel_dict, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
@@ -265,7 +256,7 @@ class KernelConvolver(object):
             vector_index = frame[kernel_index]
             if vector_index == -1:
                 continue
-            result = self.result_for_value_and_index(value, kernel_index)
+            result = value * self.kernel[kernel_index]
             if result > 0:
                 new_dict[vector_index] = result
 
