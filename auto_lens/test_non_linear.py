@@ -458,8 +458,6 @@ class TestMultiNestResultsIntermediate(object):
                 non_linear.MultiNestResultsIntermediate(path=path + 'test_files/non_linear/multinest/results/summaries/',
                     obj_name='obj', model_mapper=model_map)
 
-
-
     class TestMostProbable:
 
         def test__one_profile__read_most_probable_vector__via_summary(self):
@@ -765,3 +763,9 @@ class TestMultiNestResultsFinal(object):
             assert results_1._lower_limits_1d == results_2._lower_limits_1d
             assert results_1._upper_limits_1d == results_2._upper_limits_1d
 
+    class TestOutputReorderedSummary(object):
+
+        def test__output_order_is_original_order__summary_stays_same(self):
+
+            non_linear.reorder_summary_file(path=path+'test_files/non_linear/multinest/reorder/summary/',
+                                            new_order=[0, 1, 2, 3])
