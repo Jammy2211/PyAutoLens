@@ -118,9 +118,9 @@ class TestMask(object):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(-1, 0))
 
             assert msk.shape == (3, 3)
-            assert (msk == np.array([[True, True, True],
+            assert (msk == np.array([[True, False, True],
                                      [True, True, True],
-                                     [True, False, True]])).all()
+                                     [True, True, True]])).all()
 
         def test__centre_shift__simple_shift_forward(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(0, 1))
@@ -133,9 +133,9 @@ class TestMask(object):
         def test__centre_shift__diagonal_shift(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5, centre=(1, 1))
 
-            assert (msk == np.array([[True, True, False],
+            assert (msk == np.array([[True, True, True],
                                      [True, True, True],
-                                     [True, True, True]])).all()
+                                     [True, True, False]])).all()
 
     class TestAnnular(object):
 
@@ -196,9 +196,9 @@ class TestMask(object):
                                     outer_radius_mask=3, centre=(-1.0, 0.0))
 
             assert msk.shape == (3, 3)
-            assert (msk == np.array([[False, False, False],
+            assert (msk == np.array([[False, True, False],
                                      [False, False, False],
-                                     [False, True, False]])).all()
+                                     [False, False, False]])).all()
 
         def test__centre_shift__simple_shift_forward(self):
             msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
@@ -214,9 +214,9 @@ class TestMask(object):
                                     outer_radius_mask=3, centre=(1.0, 1.0))
 
             assert msk.shape == (3, 3)
-            assert (msk == np.array([[False, False, True],
+            assert (msk == np.array([[False, False, False],
                                      [False, False, False],
-                                     [False, False, False]])).all()
+                                     [False, False, True]])).all()
 
     class TestUnmasked(object):
 
@@ -268,11 +268,7 @@ class TestMask(object):
 
             image_grid = msk.compute_grid_coords_image()
 
-            assert (image_grid[0] == np.array([0.0, 3.0])).all()
-            assert (image_grid[1] == np.array([-3.0, 0.0])).all()
-            assert (image_grid[2] == np.array([0.0, 0.0])).all()
-            assert (image_grid[3] == np.array([3.0, 0.0])).all()
-            assert (image_grid[4] == np.array([0.0, -3.0])).all()
+            assert (image_grid == np.array([[-3., 0.], [0., -3.], [0., 0.], [0., 3.], [3., 0.]])).all()
 
         def test__setup_4x4_image__ten_coordinates__new_pixel_scale(self):
             msk = np.array([[True, False, False, True],
@@ -284,16 +280,9 @@ class TestMask(object):
 
             image_grid = msk.compute_grid_coords_image()
 
-            assert (image_grid[0] == np.array([-0.5, 1.5])).all()
-            assert (image_grid[1] == np.array([0.5, 1.5])).all()
-            assert (image_grid[2] == np.array([-1.5, 0.5])).all()
-            assert (image_grid[3] == np.array([-0.5, 0.5])).all()
-            assert (image_grid[4] == np.array([0.5, 0.5])).all()
-            assert (image_grid[5] == np.array([-0.5, -0.5])).all()
-            assert (image_grid[6] == np.array([0.5, -0.5])).all()
-            assert (image_grid[7] == np.array([-1.5, -1.5])).all()
-            assert (image_grid[8] == np.array([-0.5, -1.5])).all()
-            assert (image_grid[9] == np.array([0.5, -1.5])).all()
+            assert (image_grid == np.array(
+                [[-1.5, -0.5], [-1.5, 0.5], [-0.5, -1.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
+                 [1.5, -1.5], [1.5, -0.5], [1.5, 0.5]])).all()
 
         def test__setup_3x4_image__six_coordinates(self):
             msk = np.array([[True, False, True, True],
@@ -304,12 +293,8 @@ class TestMask(object):
 
             image_grid = msk.compute_grid_coords_image()
 
-            assert (image_grid[0] == np.array([-1.5, 3.0])).all()
-            assert (image_grid[1] == np.array([-4.5, 0.0])).all()
-            assert (image_grid[2] == np.array([-1.5, 0.0])).all()
-            assert (image_grid[3] == np.array([1.5, 0.0])).all()
-            assert (image_grid[4] == np.array([-1.5, -3.0])).all()
-            assert (image_grid[5] == np.array([4.5, -3.0])).all()
+            assert (image_grid == np.array(
+                [[-3., -1.5], [0., -4.5], [0., -1.5], [0., 1.5], [3., -1.5], [3., 4.5]])).all()
 
     class TestComputeGridCoordsImageSub(object):
 
@@ -322,13 +307,7 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            assert (image_sub_grid == np.array
-            ([[[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]]])).all()
-
-            assert (image_sub_grid[0, 0] == np.array([-0.5, 0.5])).all()
-            assert (image_sub_grid[0, 1] == np.array([0.5, 0.5])).all()
-            assert (image_sub_grid[0, 2] == np.array([-0.5, -0.5])).all()
-            assert (image_sub_grid[0, 3] == np.array([0.5, -0.5])).all()
+            assert (image_sub_grid == np.array([[[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]]])).all()
 
         def test__3x3_mask_with_row_of_pixels__2x2_sub_grid__coordinates(self):
             msk = np.array([[True, True, True],
@@ -339,24 +318,9 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            assert (image_sub_grid == np.array([[[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
-                                                [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]],
-                                                [[2.5, 0.5], [3.5, 0.5], [2.5, -0.5], [3.5, -0.5]]])).all()
-
-            assert (image_sub_grid[0, 0] == np.array([-3.5, 0.5])).all()
-            assert (image_sub_grid[0, 1] == np.array([-2.5, 0.5])).all()
-            assert (image_sub_grid[0, 2] == np.array([-3.5, -0.5])).all()
-            assert (image_sub_grid[0, 3] == np.array([-2.5, -0.5])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([-0.5, 0.5])).all()
-            assert (image_sub_grid[1, 1] == np.array([0.5, 0.5])).all()
-            assert (image_sub_grid[1, 2] == np.array([-0.5, -0.5])).all()
-            assert (image_sub_grid[1, 3] == np.array([0.5, -0.5])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([2.5, 0.5])).all()
-            assert (image_sub_grid[2, 1] == np.array([3.5, 0.5])).all()
-            assert (image_sub_grid[2, 2] == np.array([2.5, -0.5])).all()
-            assert (image_sub_grid[2, 3] == np.array([3.5, -0.5])).all()
+            assert (image_sub_grid == np.array([[[-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5]],
+                                                [[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]],
+                                                [[-0.5, 2.5], [-0.5, 3.5], [0.5, 2.5], [0.5, 3.5]]])).all()
 
         def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__coordinates(self):
             msk = np.array([[True, True, False],
@@ -367,36 +331,11 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            assert (image_sub_grid == np.array([[[2.5, 3.5], [3.5, 3.5], [2.5, 2.5], [3.5, 2.5]],
-                                                [[-3.5, 0.5], [-2.5, 0.5], [-3.5, -0.5], [-2.5, -0.5]],
-                                                [[-0.5, 0.5], [0.5, 0.5], [-0.5, -0.5], [0.5, -0.5]],
-                                                [[2.5, 0.5], [3.5, 0.5], [2.5, -0.5], [3.5, -0.5]],
-                                                [[2.5, -2.5], [3.5, -2.5], [2.5, -3.5], [3.5, -3.5]]])).all()
-
-            assert (image_sub_grid[0, 0] == np.array([2.5, 3.5])).all()
-            assert (image_sub_grid[0, 1] == np.array([3.5, 3.5])).all()
-            assert (image_sub_grid[0, 2] == np.array([2.5, 2.5])).all()
-            assert (image_sub_grid[0, 3] == np.array([3.5, 2.5])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([-3.5, 0.5])).all()
-            assert (image_sub_grid[1, 1] == np.array([-2.5, 0.5])).all()
-            assert (image_sub_grid[1, 2] == np.array([-3.5, -0.5])).all()
-            assert (image_sub_grid[1, 3] == np.array([-2.5, -0.5])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([-0.5, 0.5])).all()
-            assert (image_sub_grid[2, 1] == np.array([0.5, 0.5])).all()
-            assert (image_sub_grid[2, 2] == np.array([-0.5, -0.5])).all()
-            assert (image_sub_grid[2, 3] == np.array([0.5, -0.5])).all()
-
-            assert (image_sub_grid[3, 0] == np.array([2.5, 0.5])).all()
-            assert (image_sub_grid[3, 1] == np.array([3.5, 0.5])).all()
-            assert (image_sub_grid[3, 2] == np.array([2.5, -0.5])).all()
-            assert (image_sub_grid[3, 3] == np.array([3.5, -0.5])).all()
-
-            assert (image_sub_grid[4, 0] == np.array([2.5, -2.5])).all()
-            assert (image_sub_grid[4, 1] == np.array([3.5, -2.5])).all()
-            assert (image_sub_grid[4, 2] == np.array([2.5, -3.5])).all()
-            assert (image_sub_grid[4, 3] == np.array([3.5, -3.5])).all()
+            assert (image_sub_grid == np.array([[[-3.5, 2.5], [-3.5, 3.5], [-2.5, 2.5], [-2.5, 3.5]],
+                                                [[-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5]],
+                                                [[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]],
+                                                [[-0.5, 2.5], [-0.5, 3.5], [0.5, 2.5], [0.5, 3.5]],
+                                                [[2.5, 2.5], [2.5, 3.5], [3.5, 2.5], [3.5, 3.5]]])).all()
 
         def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__different_pixel_scale(self):
             msk = np.array([[True, True, False],
@@ -409,37 +348,11 @@ class TestMask(object):
 
             image_sub_grid = np.round(image_sub_grid, decimals=2)
 
-            assert (image_sub_grid == np.array([[[0.25, 0.35], [0.35, 0.35], [0.25, 0.25], [0.35, 0.25]],
-                                                [[-0.35, 0.05], [-0.25, 0.05], [-0.35, -0.05], [-0.25, -0.05]],
-                                                [[-0.05, 0.05], [0.05, 0.05], [-0.05, -0.05], [0.05, -0.05]],
-                                                [[0.25, 0.05], [0.35, 0.05], [0.25, -0.05], [0.35, -0.05]],
-                                                [[0.25, -0.25], [0.35, -0.25], [0.25, -0.35],
-                                                 [0.35, -0.35]]])).all()
-
-            assert (image_sub_grid[0, 0] == np.array([0.25, 0.35])).all()
-            assert (image_sub_grid[0, 1] == np.array([0.35, 0.35])).all()
-            assert (image_sub_grid[0, 2] == np.array([0.25, 0.25])).all()
-            assert (image_sub_grid[0, 3] == np.array([0.35, 0.25])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([-0.35, 0.05])).all()
-            assert (image_sub_grid[1, 1] == np.array([-0.25, 0.05])).all()
-            assert (image_sub_grid[1, 2] == np.array([-0.35, -0.05])).all()
-            assert (image_sub_grid[1, 3] == np.array([-0.25, -0.05])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([-0.05, 0.05])).all()
-            assert (image_sub_grid[2, 1] == np.array([0.05, 0.05])).all()
-            assert (image_sub_grid[2, 2] == np.array([-0.05, -0.05])).all()
-            assert (image_sub_grid[2, 3] == np.array([0.05, -0.05])).all()
-
-            assert (image_sub_grid[3, 0] == np.array([0.25, 0.05])).all()
-            assert (image_sub_grid[3, 1] == np.array([0.35, 0.05])).all()
-            assert (image_sub_grid[3, 2] == np.array([0.25, -0.05])).all()
-            assert (image_sub_grid[3, 3] == np.array([0.35, -0.05])).all()
-
-            assert (image_sub_grid[4, 0] == np.array([0.25, -0.25])).all()
-            assert (image_sub_grid[4, 1] == np.array([0.35, -0.25])).all()
-            assert (image_sub_grid[4, 2] == np.array([0.25, -0.35])).all()
-            assert (image_sub_grid[4, 3] == np.array([0.35, -0.35])).all()
+            assert (image_sub_grid == np.array([[[-0.35, 0.25], [-0.35, 0.35], [-0.25, 0.25], [-0.25, 0.35]],
+                                                [[-0.05, -0.35], [-0.05, -0.25], [0.05, -0.35], [0.05, -0.25]],
+                                                [[-0.05, -0.05], [-0.05, 0.05], [0.05, -0.05], [0.05, 0.05]],
+                                                [[-0.05, 0.25], [-0.05, 0.35], [0.05, 0.25], [0.05, 0.35]],
+                                                [[0.25, 0.25], [0.25, 0.35], [0.35, 0.25], [0.35, 0.35]]])).all()
 
         def test__3x3_mask_with_one_pixel__3x3_sub_grid__coordinates(self):
             msk = np.array([[True, True, True],
@@ -450,19 +363,8 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=3)
 
-            assert (image_sub_grid == np.array([[[-0.75, 0.75], [0.0, 0.75], [0.75, 0.75],
-                                                 [-0.75, 0.0], [0.0, 0.0], [0.75, 0.0],
-                                                 [-0.75, -0.75], [0.0, -0.75], [0.75, -0.75]]])).all()
-
-            assert (image_sub_grid[0, 0] == np.array([-0.75, 0.75])).all()
-            assert (image_sub_grid[0, 1] == np.array([0.0, 0.75])).all()
-            assert (image_sub_grid[0, 2] == np.array([0.75, 0.75])).all()
-            assert (image_sub_grid[0, 3] == np.array([-0.75, 0.0])).all()
-            assert (image_sub_grid[0, 4] == np.array([0.0, 0.0])).all()
-            assert (image_sub_grid[0, 5] == np.array([0.75, 0.0])).all()
-            assert (image_sub_grid[0, 6] == np.array([-0.75, -0.75])).all()
-            assert (image_sub_grid[0, 7] == np.array([0.0, -0.75])).all()
-            assert (image_sub_grid[0, 8] == np.array([0.75, -0.75])).all()
+            assert (image_sub_grid == np.array([[[-0.75, -0.75], [-0.75, 0.], [-0.75, 0.75], [0., -0.75], [0., 0.],
+                                                 [0., 0.75], [0.75, -0.75], [0.75, 0.], [0.75, 0.75]]])).all()
 
         def test__3x3_mask_with_one_row__3x3_sub_grid__coordinates(self):
             msk = np.array([[True, True, False],
@@ -473,35 +375,12 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=3)
 
-            assert (image_sub_grid[0, 0] == np.array([1.5, 2.5])).all()
-            assert (image_sub_grid[0, 1] == np.array([2.0, 2.5])).all()
-            assert (image_sub_grid[0, 2] == np.array([2.5, 2.5])).all()
-            assert (image_sub_grid[0, 3] == np.array([1.5, 2.0])).all()
-            assert (image_sub_grid[0, 4] == np.array([2.0, 2.0])).all()
-            assert (image_sub_grid[0, 5] == np.array([2.5, 2.0])).all()
-            assert (image_sub_grid[0, 6] == np.array([1.5, 1.5])).all()
-            assert (image_sub_grid[0, 7] == np.array([2.0, 1.5])).all()
-            assert (image_sub_grid[0, 8] == np.array([2.5, 1.5])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([-0.5, 0.5])).all()
-            assert (image_sub_grid[1, 1] == np.array([0.0, 0.5])).all()
-            assert (image_sub_grid[1, 2] == np.array([0.5, 0.5])).all()
-            assert (image_sub_grid[1, 3] == np.array([-0.5, 0.0])).all()
-            assert (image_sub_grid[1, 4] == np.array([0.0, 0.0])).all()
-            assert (image_sub_grid[1, 5] == np.array([0.5, 0.0])).all()
-            assert (image_sub_grid[1, 6] == np.array([-0.5, -0.5])).all()
-            assert (image_sub_grid[1, 7] == np.array([0.0, -0.5])).all()
-            assert (image_sub_grid[1, 8] == np.array([0.5, -0.5])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([1.5, -1.5])).all()
-            assert (image_sub_grid[2, 1] == np.array([2.0, -1.5])).all()
-            assert (image_sub_grid[2, 2] == np.array([2.5, -1.5])).all()
-            assert (image_sub_grid[2, 3] == np.array([1.5, -2.0])).all()
-            assert (image_sub_grid[2, 4] == np.array([2.0, -2.0])).all()
-            assert (image_sub_grid[2, 5] == np.array([2.5, -2.0])).all()
-            assert (image_sub_grid[2, 6] == np.array([1.5, -2.5])).all()
-            assert (image_sub_grid[2, 7] == np.array([2.0, -2.5])).all()
-            assert (image_sub_grid[2, 8] == np.array([2.5, -2.5])).all()
+            assert (image_sub_grid == np.array([[[-2.5, 1.5], [-2.5, 2.], [-2.5, 2.5], [-2., 1.5], [-2., 2.],
+                                                 [-2., 2.5], [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5]],
+                                                [[-0.5, -0.5], [-0.5, 0.], [-0.5, 0.5], [0., -0.5], [0., 0.], [0., 0.5],
+                                                 [0.5, -0.5], [0.5, 0.], [0.5, 0.5]],
+                                                [[1.5, 1.5], [1.5, 2.], [1.5, 2.5], [2., 1.5], [2., 2.], [2., 2.5],
+                                                 [2.5, 1.5], [2.5, 2.], [2.5, 2.5]]])).all()
 
         def test__4x4_mask_with_one_pixel__4x4_sub_grid__coordinates(self):
             msk = np.array([[True, True, True, True],
@@ -515,90 +394,24 @@ class TestMask(object):
 
             image_sub_grid = np.round(image_sub_grid, decimals=1)
 
-            assert (image_sub_grid[0, 0] == np.array([-1.6, 1.6])).all()
-            assert (image_sub_grid[0, 1] == np.array([-1.2, 1.6])).all()
-            assert (image_sub_grid[0, 2] == np.array([-0.8, 1.6])).all()
-            assert (image_sub_grid[0, 3] == np.array([-0.4, 1.6])).all()
-            assert (image_sub_grid[0, 4] == np.array([-1.6, 1.2])).all()
-            assert (image_sub_grid[0, 5] == np.array([-1.2, 1.2])).all()
-            assert (image_sub_grid[0, 6] == np.array([-0.8, 1.2])).all()
-            assert (image_sub_grid[0, 7] == np.array([-0.4, 1.2])).all()
-            assert (image_sub_grid[0, 8] == np.array([-1.6, 0.8])).all()
-            assert (image_sub_grid[0, 9] == np.array([-1.2, 0.8])).all()
-            assert (image_sub_grid[0, 10] == np.array([-0.8, 0.8])).all()
-            assert (image_sub_grid[0, 11] == np.array([-0.4, 0.8])).all()
-            assert (image_sub_grid[0, 12] == np.array([-1.6, 0.4])).all()
-            assert (image_sub_grid[0, 13] == np.array([-1.2, 0.4])).all()
-            assert (image_sub_grid[0, 14] == np.array([-0.8, 0.4])).all()
-            assert (image_sub_grid[0, 15] == np.array([-0.4, 0.4])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([0.4, 1.6])).all()
-            assert (image_sub_grid[1, 1] == np.array([0.8, 1.6])).all()
-            assert (image_sub_grid[1, 2] == np.array([1.2, 1.6])).all()
-            assert (image_sub_grid[1, 3] == np.array([1.6, 1.6])).all()
-            assert (image_sub_grid[1, 4] == np.array([0.4, 1.2])).all()
-            assert (image_sub_grid[1, 5] == np.array([0.8, 1.2])).all()
-            assert (image_sub_grid[1, 6] == np.array([1.2, 1.2])).all()
-            assert (image_sub_grid[1, 7] == np.array([1.6, 1.2])).all()
-            assert (image_sub_grid[1, 8] == np.array([0.4, 0.8])).all()
-            assert (image_sub_grid[1, 9] == np.array([0.8, 0.8])).all()
-            assert (image_sub_grid[1, 10] == np.array([1.2, 0.8])).all()
-            assert (image_sub_grid[1, 11] == np.array([1.6, 0.8])).all()
-            assert (image_sub_grid[1, 12] == np.array([0.4, 0.4])).all()
-            assert (image_sub_grid[1, 13] == np.array([0.8, 0.4])).all()
-            assert (image_sub_grid[1, 14] == np.array([1.2, 0.4])).all()
-            assert (image_sub_grid[1, 15] == np.array([1.6, 0.4])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([-1.6, -0.4])).all()
-            assert (image_sub_grid[2, 1] == np.array([-1.2, -0.4])).all()
-            assert (image_sub_grid[2, 2] == np.array([-0.8, -0.4])).all()
-            assert (image_sub_grid[2, 3] == np.array([-0.4, -0.4])).all()
-            assert (image_sub_grid[2, 4] == np.array([-1.6, -0.8])).all()
-            assert (image_sub_grid[2, 5] == np.array([-1.2, -0.8])).all()
-            assert (image_sub_grid[2, 6] == np.array([-0.8, -0.8])).all()
-            assert (image_sub_grid[2, 7] == np.array([-0.4, -0.8])).all()
-            assert (image_sub_grid[2, 8] == np.array([-1.6, -1.2])).all()
-            assert (image_sub_grid[2, 9] == np.array([-1.2, -1.2])).all()
-            assert (image_sub_grid[2, 10] == np.array([-0.8, -1.2])).all()
-            assert (image_sub_grid[2, 11] == np.array([-0.4, -1.2])).all()
-            assert (image_sub_grid[2, 12] == np.array([-1.6, -1.6])).all()
-            assert (image_sub_grid[2, 13] == np.array([-1.2, -1.6])).all()
-            assert (image_sub_grid[2, 14] == np.array([-0.8, -1.6])).all()
-            assert (image_sub_grid[2, 15] == np.array([-0.4, -1.6])).all()
-
-            assert (image_sub_grid[3, 0] == np.array([0.4, -0.4])).all()
-            assert (image_sub_grid[3, 1] == np.array([0.8, -0.4])).all()
-            assert (image_sub_grid[3, 2] == np.array([1.2, -0.4])).all()
-            assert (image_sub_grid[3, 3] == np.array([1.6, -0.4])).all()
-            assert (image_sub_grid[3, 4] == np.array([0.4, -0.8])).all()
-            assert (image_sub_grid[3, 5] == np.array([0.8, -0.8])).all()
-            assert (image_sub_grid[3, 6] == np.array([1.2, -0.8])).all()
-            assert (image_sub_grid[3, 7] == np.array([1.6, -0.8])).all()
-            assert (image_sub_grid[3, 8] == np.array([0.4, -1.2])).all()
-            assert (image_sub_grid[3, 9] == np.array([0.8, -1.2])).all()
-            assert (image_sub_grid[3, 10] == np.array([1.2, -1.2])).all()
-            assert (image_sub_grid[3, 11] == np.array([1.6, -1.2])).all()
-            assert (image_sub_grid[3, 12] == np.array([0.4, -1.6])).all()
-            assert (image_sub_grid[3, 13] == np.array([0.8, -1.6])).all()
-            assert (image_sub_grid[3, 14] == np.array([1.2, -1.6])).all()
-            assert (image_sub_grid[3, 15] == np.array([1.6, -1.6])).all()
-
-            assert (image_sub_grid[4, 0] == np.array([2.4, -2.4])).all()
-            assert (image_sub_grid[4, 1] == np.array([2.8, -2.4])).all()
-            assert (image_sub_grid[4, 2] == np.array([3.2, -2.4])).all()
-            assert (image_sub_grid[4, 3] == np.array([3.6, -2.4])).all()
-            assert (image_sub_grid[4, 4] == np.array([2.4, -2.8])).all()
-            assert (image_sub_grid[4, 5] == np.array([2.8, -2.8])).all()
-            assert (image_sub_grid[4, 6] == np.array([3.2, -2.8])).all()
-            assert (image_sub_grid[4, 7] == np.array([3.6, -2.8])).all()
-            assert (image_sub_grid[4, 8] == np.array([2.4, -3.2])).all()
-            assert (image_sub_grid[4, 9] == np.array([2.8, -3.2])).all()
-            assert (image_sub_grid[4, 10] == np.array([3.2, -3.2])).all()
-            assert (image_sub_grid[4, 11] == np.array([3.6, -3.2])).all()
-            assert (image_sub_grid[4, 12] == np.array([2.4, -3.6])).all()
-            assert (image_sub_grid[4, 13] == np.array([2.8, -3.6])).all()
-            assert (image_sub_grid[4, 14] == np.array([3.2, -3.6])).all()
-            assert (image_sub_grid[4, 15] == np.array([3.6, -3.6])).all()
+            assert (image_sub_grid == np.array([[[-1.6, -1.6], [-1.6, -1.2], [-1.6, -0.8], [-1.6, -0.4], [-1.2, -1.6],
+                                                 [-1.2, -1.2], [-1.2, -0.8], [-1.2, -0.4], [-0.8, -1.6], [-0.8, -1.2],
+                                                 [-0.8, -0.8], [-0.8, -0.4], [-0.4, -1.6], [-0.4, -1.2], [-0.4, -0.8],
+                                                 [-0.4, -0.4]],
+                                                [[-1.6, 0.4], [-1.6, 0.8], [-1.6, 1.2], [-1.6, 1.6], [-1.2, 0.4],
+                                                 [-1.2, 0.8], [-1.2, 1.2], [-1.2, 1.6], [-0.8, 0.4], [-0.8, 0.8],
+                                                 [-0.8, 1.2], [-0.8, 1.6], [-0.4, 0.4], [-0.4, 0.8], [-0.4, 1.2],
+                                                 [-0.4, 1.6]],
+                                                [[0.4, -1.6], [0.4, -1.2], [0.4, -0.8], [0.4, -0.4], [0.8, -1.6],
+                                                 [0.8, -1.2], [0.8, -0.8], [0.8, -0.4], [1.2, -1.6], [1.2, -1.2],
+                                                 [1.2, -0.8], [1.2, -0.4], [1.6, -1.6], [1.6, -1.2], [1.6, -0.8],
+                                                 [1.6, -0.4]],
+                                                [[0.4, 0.4], [0.4, 0.8], [0.4, 1.2], [0.4, 1.6], [0.8, 0.4], [0.8, 0.8],
+                                                 [0.8, 1.2], [0.8, 1.6], [1.2, 0.4], [1.2, 0.8], [1.2, 1.2], [1.2, 1.6],
+                                                 [1.6, 0.4], [1.6, 0.8], [1.6, 1.2], [1.6, 1.6]],
+                                                [[2.4, 2.4], [2.4, 2.8], [2.4, 3.2], [2.4, 3.6], [2.8, 2.4], [2.8, 2.8],
+                                                 [2.8, 3.2], [2.8, 3.6], [3.2, 2.4], [3.2, 2.8], [3.2, 3.2], [3.2, 3.6],
+                                                 [3.6, 2.4], [3.6, 2.8], [3.6, 3.2], [3.6, 3.6]]])).all()
 
         def test__4x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
             msk = np.array([[True, True, True],
@@ -610,25 +423,9 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            assert (image_sub_grid[0, 0] == np.array([-0.5, 2.0])).all()
-            assert (image_sub_grid[0, 1] == np.array([0.5, 2.0])).all()
-            assert (image_sub_grid[0, 2] == np.array([-0.5, 1.0])).all()
-            assert (image_sub_grid[0, 3] == np.array([0.5, 1.0])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([-0.5, -1.0])).all()
-            assert (image_sub_grid[1, 1] == np.array([0.5, -1.0])).all()
-            assert (image_sub_grid[1, 2] == np.array([-0.5, -2.0])).all()
-            assert (image_sub_grid[1, 3] == np.array([0.5, -2.0])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([2.5, -1.0])).all()
-            assert (image_sub_grid[2, 1] == np.array([3.5, -1.0])).all()
-            assert (image_sub_grid[2, 2] == np.array([2.5, -2.0])).all()
-            assert (image_sub_grid[2, 3] == np.array([3.5, -2.0])).all()
-
-            assert (image_sub_grid[3, 0] == np.array([-3.5, -4.0])).all()
-            assert (image_sub_grid[3, 1] == np.array([-2.5, -4.0])).all()
-            assert (image_sub_grid[3, 2] == np.array([-3.5, -5.0])).all()
-            assert (image_sub_grid[3, 3] == np.array([-2.5, -5.0])).all()
+            assert (image_sub_grid == np.array(
+                [[[-2., -0.5], [-2., 0.5], [-1., -0.5], [-1., 0.5]], [[1., -0.5], [1., 0.5], [2., -0.5], [2., 0.5]],
+                 [[1., 2.5], [1., 3.5], [2., 2.5], [2., 3.5]], [[4., -3.5], [4., -2.5], [5., -3.5], [5., -2.5]]])).all()
 
         def test__3x4_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
             msk = np.array([[True, True, True, False],
@@ -639,30 +436,10 @@ class TestMask(object):
 
             image_sub_grid = msk.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            assert (image_sub_grid[0, 0] == np.array([4.0, 3.5])).all()
-            assert (image_sub_grid[0, 1] == np.array([5.0, 3.5])).all()
-            assert (image_sub_grid[0, 2] == np.array([4.0, 2.5])).all()
-            assert (image_sub_grid[0, 3] == np.array([5.0, 2.5])).all()
-
-            assert (image_sub_grid[1, 0] == np.array([-2.0, 0.5])).all()
-            assert (image_sub_grid[1, 1] == np.array([-1.0, 0.5])).all()
-            assert (image_sub_grid[1, 2] == np.array([-2.0, -0.5])).all()
-            assert (image_sub_grid[1, 3] == np.array([-1.0, -0.5])).all()
-
-            assert (image_sub_grid[2, 0] == np.array([1.0, 0.5])).all()
-            assert (image_sub_grid[2, 1] == np.array([2.0, 0.5])).all()
-            assert (image_sub_grid[2, 2] == np.array([1.0, -0.5])).all()
-            assert (image_sub_grid[2, 3] == np.array([2.0, -0.5])).all()
-
-            assert (image_sub_grid[3, 0] == np.array([-5.0, -2.5])).all()
-            assert (image_sub_grid[3, 1] == np.array([-4.0, -2.5])).all()
-            assert (image_sub_grid[3, 2] == np.array([-5.0, -3.5])).all()
-            assert (image_sub_grid[3, 3] == np.array([-4.0, -3.5])).all()
-
-            assert (image_sub_grid[4, 0] == np.array([1.0, -2.5])).all()
-            assert (image_sub_grid[4, 1] == np.array([2.0, -2.5])).all()
-            assert (image_sub_grid[4, 2] == np.array([1.0, -3.5])).all()
-            assert (image_sub_grid[4, 3] == np.array([2.0, -3.5])).all()
+            assert (image_sub_grid == np.array(
+                [[[-3.5, 4.], [-3.5, 5.], [-2.5, 4.], [-2.5, 5.]], [[-0.5, -2.], [-0.5, -1.], [0.5, -2.], [0.5, -1.]],
+                 [[-0.5, 1.], [-0.5, 2.], [0.5, 1.], [0.5, 2.]], [[2.5, -5.], [2.5, -4.], [3.5, -5.], [3.5, -4.]],
+                 [[2.5, 1.], [2.5, 2.], [3.5, 1.], [3.5, 2.]]])).all()
 
     class TestComputeGridCoordsBlurring(object):
 
@@ -675,14 +452,8 @@ class TestMask(object):
 
             blurring_grid = msk.compute_grid_coords_blurring(psf_size=(3, 3))
 
-            assert (blurring_grid[0] == np.array([-3.0, 3.0])).all()
-            assert (blurring_grid[1] == np.array([0.0, 3.0])).all()
-            assert (blurring_grid[2] == np.array([3.0, 3.0])).all()
-            assert (blurring_grid[3] == np.array([-3.0, 0.0])).all()
-            assert (blurring_grid[4] == np.array([3.0, 0.0])).all()
-            assert (blurring_grid[5] == np.array([-3.0, -3.0])).all()
-            assert (blurring_grid[6] == np.array([0.0, -3.0])).all()
-            assert (blurring_grid[7] == np.array([3.0, -3.0])).all()
+            assert (blurring_grid == np.array(
+                [[-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.], [3., 0.], [3., 3.]])).all()
 
         def test__3x5_blurring_mask_correct_coordinates(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -707,20 +478,9 @@ class TestMask(object):
 
             blurring_grid = msk.compute_grid_coords_blurring(psf_size=(3, 5))
 
-            assert (blurring_grid[0] == np.array([-3.0, 6.0])).all()
-            assert (blurring_grid[1] == np.array([0.0, 6.0])).all()
-            assert (blurring_grid[2] == np.array([3.0, 6.0])).all()
-            assert (blurring_grid[3] == np.array([-3.0, 3.0])).all()
-            assert (blurring_grid[4] == np.array([0.0, 3.0])).all()
-            assert (blurring_grid[5] == np.array([3.0, 3.0])).all()
-            assert (blurring_grid[6] == np.array([-3.0, 0.0])).all()
-            assert (blurring_grid[7] == np.array([3.0, 0.0])).all()
-            assert (blurring_grid[8] == np.array([-3.0, -3.0])).all()
-            assert (blurring_grid[9] == np.array([0.0, -3.0])).all()
-            assert (blurring_grid[10] == np.array([3.0, -3.0])).all()
-            assert (blurring_grid[11] == np.array([-3.0, -6.0])).all()
-            assert (blurring_grid[12] == np.array([0.0, -6.0])).all()
-            assert (blurring_grid[13] == np.array([3.0, -6.0])).all()
+            assert (blurring_grid == np.array(
+                [[-3., -6.], [-3., -3.], [-3., 0.], [-3., 3.], [-3., 6.], [0., -6.], [0., -3.], [0., 3.], [0., 6.],
+                 [3., -6.], [3., -3.], [3., 0.], [3., 3.], [3., 6.]])).all()
 
         def test__5x3_blurring_mask_correct_coordinates(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -745,20 +505,9 @@ class TestMask(object):
 
             blurring_grid = msk.compute_grid_coords_blurring(psf_size=(5, 3))
 
-            assert (blurring_grid[0] == np.array([-6.0, 3.0])).all()
-            assert (blurring_grid[1] == np.array([-3.0, 3.0])).all()
-            assert (blurring_grid[2] == np.array([0.0, 3.0])).all()
-            assert (blurring_grid[3] == np.array([3.0, 3.0])).all()
-            assert (blurring_grid[4] == np.array([6.0, 3.0])).all()
-            assert (blurring_grid[5] == np.array([-6.0, 0.0])).all()
-            assert (blurring_grid[6] == np.array([-3.0, 0.0])).all()
-            assert (blurring_grid[7] == np.array([3.0, 0.0])).all()
-            assert (blurring_grid[8] == np.array([6.0, 0.0])).all()
-            assert (blurring_grid[9] == np.array([-6.0, -3.0])).all()
-            assert (blurring_grid[10] == np.array([-3.0, -3.0])).all()
-            assert (blurring_grid[11] == np.array([0.0, -3.0])).all()
-            assert (blurring_grid[12] == np.array([3.0, -3.0])).all()
-            assert (blurring_grid[13] == np.array([6.0, -3.0])).all()
+            assert (blurring_grid == np.array(
+                [[-6., -3.], [-6., 0.], [-6., 3.], [-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.],
+                 [3., 0.], [3., 3.], [6., -3.], [6., 0.], [6., 3.]])).all()
 
     class TestComputeGridData(object):
 
@@ -906,13 +655,13 @@ class TestMask(object):
 
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 3))
 
-            assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
-                                               [True, True, True, True, True, True, True],
-                                               [True, False, False, False, False, False, True],
-                                               [True, False, False, True, False, False, True],
-                                               [True, False, False, False, False, False, True],
-                                               [True, True, True, True, True, True, True],
-                                               [True, True, True, True, True, True, True]])).all()
+            assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True],
+                                                        [True, True, True, True, True, True, True],
+                                                        [True, False, False, False, False, False, True],
+                                                        [True, False, False, True, False, False, True],
+                                                        [True, False, False, False, False, False, True],
+                                                        [True, True, True, True, True, True, True],
+                                                        [True, True, True, True, True, True, True]]))).all()
 
         def test__size__3x5__large_mask(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -927,13 +676,13 @@ class TestMask(object):
 
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 5))
 
-            assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
-                                               [True, True, False, False, False, True, True],
-                                               [True, True, False, False, False, True, True],
-                                               [True, True, False, True, False, True, True],
-                                               [True, True, False, False, False, True, True],
-                                               [True, True, False, False, False, True, True],
-                                               [True, True, True, True, True, True, True]])).all()
+            assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True],
+                                                        [True, True, False, False, False, True, True],
+                                                        [True, True, False, False, False, True, True],
+                                                        [True, True, False, True, False, True, True],
+                                                        [True, True, False, False, False, True, True],
+                                                        [True, True, False, False, False, True, True],
+                                                        [True, True, True, True, True, True, True]]))).all()
 
         def test__size__3x3__multiple_points(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -997,15 +746,15 @@ class TestMask(object):
 
             blurring_mask = msk.compute_blurring_mask(psf_size=(5, 3))
 
-            assert (blurring_mask == np.array([[True, True, True, True, True, True, True, True, True],
-                                               [False, False, False, False, False, False, False, False, False],
-                                               [False, False, True, False, False, False, True, False, False],
-                                               [False, False, False, False, False, False, False, False, False],
-                                               [True, True, True, True, True, True, True, True, True],
-                                               [False, False, False, False, False, False, False, False, False],
-                                               [False, False, True, False, False, False, True, False, False],
-                                               [False, False, False, False, False, False, False, False, False],
-                                               [True, True, True, True, True, True, True, True, True]])).all()
+            assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True, True, True],
+                                                        [False, False, False, False, False, False, False, False, False],
+                                                        [False, False, True, False, False, False, True, False, False],
+                                                        [False, False, False, False, False, False, False, False, False],
+                                                        [True, True, True, True, True, True, True, True, True],
+                                                        [False, False, False, False, False, False, False, False, False],
+                                                        [False, False, True, False, False, False, True, False, False],
+                                                        [False, False, False, False, False, False, False, False, False],
+                                                        [True, True, True, True, True, True, True, True, True]]))).all()
 
         def test__size__3x5__multiple_points(self):
             msk = np.array([[True, True, True, True, True, True, True, True, True],
@@ -1022,16 +771,16 @@ class TestMask(object):
 
             blurring_mask = msk.compute_blurring_mask(psf_size=(3, 5))
 
-            assert (blurring_mask == np.array([[True, False, False, False, True, False, False, False, True],
-                                               [True, False, False, False, True, False, False, False, True],
-                                               [True, False, True, False, True, False, True, False, True],
-                                               [True, False, False, False, True, False, False, False, True],
-                                               [True, False, False, False, True, False, False, False, True],
-                                               [True, False, False, False, True, False, False, False, True],
-                                               [True, False, True, False, True, False, True, False, True],
-                                               [True, False, False, False, True, False, False, False, True],
-                                               [True, False, False, False, True, False, False, False,
-                                                True]])).all()
+            assert (blurring_mask == np.rot90(np.array([[True, False, False, False, True, False, False, False, True],
+                                                        [True, False, False, False, True, False, False, False, True],
+                                                        [True, False, True, False, True, False, True, False, True],
+                                                        [True, False, False, False, True, False, False, False, True],
+                                                        [True, False, False, False, True, False, False, False, True],
+                                                        [True, False, False, False, True, False, False, False, True],
+                                                        [True, False, True, False, True, False, True, False, True],
+                                                        [True, False, False, False, True, False, False, False, True],
+                                                        [True, False, False, False, True, False, False, False,
+                                                         True]]))).all()
 
         def test__size__3x3__even_sized_image(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
