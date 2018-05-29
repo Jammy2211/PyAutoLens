@@ -310,8 +310,8 @@ class TestEstimateNoiseFromImage:
 
         array = np.ones(shape)
 
-        exposure_time = image.DataGrid.single_value(1, shape)
-        background_noise = image.DataGrid.single_value(0, shape)
+        exposure_time = image.Array.single_value(1, shape)
+        background_noise = image.Array.single_value(0, shape)
 
         img = image.Image(array, effective_exposure_time=exposure_time, background_noise=background_noise)
 
@@ -390,8 +390,8 @@ class TestEstimateNoiseFromImage:
         array = np.array([[5.0, 3.0],
                           [10.0, 20.0]])
 
-        exposure_time = image.DataGrid(np.array([[1.0, 2.0],
-                                                 [3.0, 4.0]]))
+        exposure_time = image.Array(np.array([[1.0, 2.0],
+                                              [3.0, 4.0]]))
 
         background_noise = np.zeros((2, 2))
 
@@ -540,8 +540,8 @@ class TestSimulateImage(object):
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]))
 
-            exposure_time = image.DataGrid.single_value(value=1.0, pixel_scale=0.1,
-                                                        shape=img.shape)
+            exposure_time = image.Array.single_value(value=1.0, pixel_scale=0.1,
+                                                     shape=img.shape)
 
             sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time, pixel_scale=0.1)
 
@@ -561,7 +561,7 @@ class TestSimulateImage(object):
                                             [1.0, 2.0, 1.0],
                                             [0.0, 1.0, 0.0])), pixel_scale=0.1)
 
-            exposure_time = image.DataGrid.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
+            exposure_time = image.Array.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time, pixel_scale=0.1,
                                            psf=psf)
@@ -578,7 +578,7 @@ class TestSimulateImage(object):
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]))
 
-            exposure_time = image.DataGrid.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
+            exposure_time = image.Array.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.Image.simulate(array=img, pixel_scale=0.1, effective_exposure_time=exposure_time,
                                            poisson_noise=image.generate_poisson_noise(img, exposure_time, seed=1))
@@ -601,7 +601,7 @@ class TestSimulatePoissonNoise(object):
         def test__input_img_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
             img = np.zeros((2, 2))
 
-            exposure_time = image.DataGrid.single_value(1.0, img.shape, pixel_scale=0.1)
+            exposure_time = image.Array.single_value(1.0, img.shape, pixel_scale=0.1)
             sim_poisson_img = img + image.generate_poisson_noise(img, exposure_time.data, seed=1)
 
             assert sim_poisson_img.shape == (2, 2)
@@ -611,7 +611,7 @@ class TestSimulatePoissonNoise(object):
             img = np.array([[10., 0.],
                             [0., 10.]])
 
-            exposure_time = image.DataGrid.single_value(1.0, img.shape, pixel_scale=0.1)
+            exposure_time = image.Array.single_value(1.0, img.shape, pixel_scale=0.1)
             poisson_noise_map = image.generate_poisson_noise(img, exposure_time.data, seed=1)
             sim_poisson_img = img + poisson_noise_map
 
@@ -629,7 +629,7 @@ class TestSimulatePoissonNoise(object):
             img = np.array([[10., 10.],
                             [10., 10.]])
 
-            exposure_time = image.DataGrid.single_value(1.0, img.shape, pixel_scale=0.1)
+            exposure_time = image.Array.single_value(1.0, img.shape, pixel_scale=0.1)
             poisson_noise_map = image.generate_poisson_noise(img, exposure_time.data, seed=1)
             sim_poisson_img = img + poisson_noise_map
 
@@ -648,7 +648,7 @@ class TestSimulatePoissonNoise(object):
             img = np.array([[10000000., 0.],
                             [0., 10000000.]])
 
-            exposure_time = image.DataGrid(array=np.ones((2, 2)), pixel_scale=0.1)
+            exposure_time = image.Array(array=np.ones((2, 2)), pixel_scale=0.1)
 
             poisson_noise_map = image.generate_poisson_noise(img, exposure_time.data, seed=2)
 
@@ -669,12 +669,12 @@ class TestSimulatePoissonNoise(object):
             img_0 = np.array([[10., 0.],
                               [0., 10.]])
 
-            exposure_time_0 = image.DataGrid(array=np.ones((2, 2)), pixel_scale=0.1)
+            exposure_time_0 = image.Array(array=np.ones((2, 2)), pixel_scale=0.1)
 
             img_1 = np.array([[5., 0.],
                               [0., 5.]])
 
-            exposure_time_1 = image.DataGrid(array=2.0 * np.ones((2, 2)), pixel_scale=0.1)
+            exposure_time_1 = image.Array(array=2.0 * np.ones((2, 2)), pixel_scale=0.1)
 
             sim_poisson_img_0 = img_0 + image.generate_poisson_noise(img_0, exposure_time_0.data, seed=1)
             sim_poisson_img_1 = img_1 + image.generate_poisson_noise(img_1, exposure_time_1.data, seed=1)
@@ -685,14 +685,14 @@ class TestSimulatePoissonNoise(object):
             img_0 = np.array([[10., 20.],
                               [30., 40.]])
 
-            exposure_time_0 = image.DataGrid(array=np.array([[2., 2.],
-                                                             [3., 4.]]), pixel_scale=0.1)
+            exposure_time_0 = image.Array(array=np.array([[2., 2.],
+                                                          [3., 4.]]), pixel_scale=0.1)
 
             img_1 = np.array([[20., 20.],
                               [45., 20.]])
 
-            exposure_time_1 = image.DataGrid(array=np.array([[1., 2.],
-                                                             [2., 8.]]), pixel_scale=0.1)
+            exposure_time_1 = image.Array(array=np.array([[1., 2.],
+                                                          [2., 8.]]), pixel_scale=0.1)
 
             sim_poisson_img_0 = img_0 + image.generate_poisson_noise(img_0, exposure_time_0.data, seed=1)
             sim_poisson_img_1 = img_1 + image.generate_poisson_noise(img_1, exposure_time_1.data, seed=1)
