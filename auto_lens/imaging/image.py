@@ -1,10 +1,10 @@
-from auto_lens.imaging.data import DataGrid
+from auto_lens.imaging.data import Array
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
 
 
-class Image(DataGrid):
+class Image(Array):
     def __init__(self, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
                  poisson_noise=None):
         super(Image, self).__init__(array, pixel_scale)
@@ -110,7 +110,7 @@ class Image(DataGrid):
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
 
-class PSF(DataGrid):
+class PSF(Array):
 
     def __init__(self, array, pixel_scale, renormalize=True):
         """
