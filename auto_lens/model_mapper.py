@@ -397,6 +397,11 @@ class PriorModel(object):
         return [prior for tuple_prior in self.tuple_priors for prior in
                 tuple_prior[1].priors] + self.direct_priors
 
+    # def __setattr__(self, key, value):
+    #     if key in self.__dict__:
+    #         value.id = self.__dict__[key].id
+    #     super(PriorModel, self).__setattr__(key, value)
+
     def instance_for_arguments(self, arguments):
         """
         Create an instance of the associated class for a set of arguments
