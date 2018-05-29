@@ -1,3 +1,4 @@
+data/
 *.ipynb
 mass_model_catalogue.pdf
 long_paper.pdf
@@ -12,3 +13,7 @@ lib/
 .cache
 .idea
 .env
+AutoLensPy2
+.pytest_cache
+test_files/
+multinest

@@ -1,0 +1,22 @@
+        # If we had a pixelization, we would use it here to fit the light_profile_subtracted_image, e.g:
+
+        # self.light_profile_subtracted_image = grid_datas.image - self.light_profile_image_blurred
+
+        # self.mapping_matrix = ray_tracing.generate_mapping_matrix()
+
+        # (I guess we could make a MappingMatrix and MappingMatrixBlurred class to do the stuff below?)
+
+        # self.mapping_matrix_blurred = pixelization.blur_mapping_matrix(self.mapping_matrix, frame_convolver)
+
+        # self.f_covariance_matrix = pixelization.compute_covariance_matrix(self.mapping_matrx_blurred,
+        # self.grid_mappers)
+
+        # self.data_vector = pixelization.compute_data_vector(self.mapping_matrix_blurred,
+        # self.light_profile_subtracted_image, grid_datas.noise)
+
+        # self.pixelization_image = pixelization.compute_pixelized_image(self.data_vector, self.f_covariance_matrix)
+
+        # self.galaxy_subtracted_image = self.light_profile_subtracted_image - self.pixelization_image
+
+        # self.residuals = grid_datas.image - self.galaxy_subtracted_image
+
