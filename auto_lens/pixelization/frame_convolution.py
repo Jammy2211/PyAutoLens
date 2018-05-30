@@ -66,28 +66,13 @@ class FrameMaker(object):
                 A mask where 0 eliminates data
         """
         self.mask = mask
-        self.__number_array = None
-
-    @property
-    def number_array(self):
-        """
-        Creates an array where points inside the mask are numbered
-        Parameters
-
-        Returns
-        -------
-        number_array: ndarray
-            An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
-        """
-        if self.__number_array is None:
-            self.__number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
-            n = 0
-            for x in range(self.mask.shape[0]):
-                for y in range(self.mask.shape[1]):
-                    if self.mask[x, y] == 1:
-                        self.__number_array[x, y] = n
-                        n += 1
-        return self.__number_array
+        self.number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
+        n = 0
+        for x in range(self.mask.shape[0]):
+            for y in range(self.mask.shape[1]):
+                if self.mask[x, y] == 1:
+                    self.number_array[x, y] = n
+                    n += 1
 
     def make_frame_array(self, kernel_shape):
         """
@@ -301,4 +286,4 @@ def is_in_sub_shape(kernel_index_1d, limits, shape):
     #
     # """
     return limits[1] <= kernel_index_1d / \
-                        shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - limits[1]
+           shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - limits[1]
