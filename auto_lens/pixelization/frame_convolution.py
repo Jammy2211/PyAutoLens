@@ -13,11 +13,6 @@ A set of values in a corresponding image_grid might be represented in a 1D array
 
 [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
-However, values that are masked out need not be considered. Furthermore, much of the array for our case is zeroes. As
-such a more efficient representation is a dictionary:
-
-{1: 8, 3: 5, 4: 7, 5: 5, 7: 1}
-
 This module allows us to find the relationships between image_to_pixel in a mask for a kernel of a given size so that
 convolutions can be efficiently applied to reduced arrays such as the one above.
 
