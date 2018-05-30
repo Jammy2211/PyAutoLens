@@ -37,12 +37,12 @@ def make_cross_frame_array(cross_frame_maker):
 
 @pytest.fixture(name="simple_frame_maker")
 def make_simple_frame_maker():
-    return frame_convolution.FrameMaker(np.ones((3, 3)))
+    return frame_convolution.FrameMaker(np.ones((3, 3)), None)
 
 
 @pytest.fixture(name="cross_frame_maker")
 def make_cross_frame_maker(cross_mask):
-    return frame_convolution.FrameMaker(cross_mask)
+    return frame_convolution.FrameMaker(cross_mask, None)
 
 
 @pytest.fixture(name="simple_kernel")
@@ -54,7 +54,7 @@ class TestNumbering(object):
     def test_simple_numbering(self, simple_number_array):
         shape = (3, 3)
 
-        frame_maker = frame_convolution.FrameMaker(np.ones(shape))
+        frame_maker = frame_convolution.FrameMaker(np.ones(shape), None)
 
         number_array = frame_maker.number_array
 
@@ -63,14 +63,14 @@ class TestNumbering(object):
         assert (number_array == simple_number_array).all()
 
     def test_simple_mask(self, cross_mask):
-        frame_maker = frame_convolution.FrameMaker(cross_mask)
+        frame_maker = frame_convolution.FrameMaker(cross_mask, None)
 
         assert (frame_maker.number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
         assert (frame_maker.mask_number_array == np.array([[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
 
     def test_even_failure(self):
         with pytest.raises(frame_convolution.KernelException):
-            frame_convolution.FrameMaker(np.ones((3, 3))).convolver_for_kernel_shape((2, 2))
+            frame_convolution.FrameMaker(np.ones((3, 3)), None).convolver_for_kernel_shape((2, 2))
 
 
 class TestFrameExtraction(object):
@@ -115,6 +115,13 @@ class TestFrameExtraction(object):
         assert (np.array([2, 3, -1, 4, -1, -1, -1, -1, -1]) == masked_frame_array[3]).all()
 
 
+class TestBlurringRegionMask(object):
+    def test_no_blurring_region(self, cross_mask):
+        frame_maker = frame_convolution.FrameMaker(cross_mask, cross_mask)
+
+        assert 0 == len(frame_maker.make_mask_frame_array(kernel_shape=(3, 3)))
+
+
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
         pixel_dict = {4: 1}
@@ -152,7 +159,7 @@ def make_convolver_4_simple():
     shape = (4, 4)
     mask = np.ones(shape)
 
-    frame_maker = frame_convolution.FrameMaker(mask)
+    frame_maker = frame_convolution.FrameMaker(mask, None)
     return frame_maker.convolver_for_kernel_shape((3, 3))
 
 
@@ -165,7 +172,7 @@ def make_convolver_4_edges():
          [0, 0, 0, 0]]
     )
 
-    frame_maker = frame_convolution.FrameMaker(mask)
+    frame_maker = frame_convolution.FrameMaker(mask, None)
     return frame_maker.convolver_for_kernel_shape((3, 3))
 
 
@@ -240,7 +247,8 @@ class TestSubConvolution(object):
         assert not frame_convolution.is_in_sub_shape(24, (1, 1, 4, 4), (5, 5))
 
     def test_simple_convolution(self):
-        convolver = frame_convolution.FrameMaker(mask=np.ones((5, 5))).convolver_for_kernel_shape(
+        convolver = frame_convolution.FrameMaker(mask=np.ones((5, 5)),
+                                                 blurring_region_mask=None).convolver_for_kernel_shape(
             (5, 5)).convolver_for_kernel(np.ones((5, 5)))
 
         pixel_dict = {12: 1}
