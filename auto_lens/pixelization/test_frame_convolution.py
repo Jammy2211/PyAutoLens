@@ -134,7 +134,6 @@ class TestBlurringRegionMask(object):
 
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
-        # pixel_dict = {4: 1}
         pixel_array = np.array([0, 0, 0, 0, 1, 0, 0, 0, 0])
 
         convolver = frame_convolution.Convolver(simple_frame_array)
@@ -144,7 +143,6 @@ class TestConvolution(object):
         assert (result == np.array([0, 0.1, 0, 0.1, 0.6, 0.1, 0, 0.1, 0])).all()
 
     def test_full_convolution(self, simple_frame_array):
-        # pixel_dict = {0: 1, 4: 1, 8: 1}
         pixel_array = np.array([1, 0, 0, 0, 1, 0, 0, 0, 1])
 
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
@@ -153,20 +151,19 @@ class TestConvolution(object):
 
         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
 
-        print(result)
-
-        # assert result == {0: 0.5, 1: 0.5, 4: 0.5, 5: 0.5, 8: 0.5}
         assert (result == np.array([0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5])).all()
-#
-#     def test_cross_mask_convolution(self, cross_frame_array):
-#         pixel_dict = {2: 1}
-#         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
-#
-#         convolver = frame_convolution.Convolver(cross_frame_array)
-#
-#         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_dict)
-#
-#         assert result == {2: 0.5, 3: 0.5}
+
+    def test_cross_mask_convolution(self, cross_frame_array):
+        # pixel_dict = {2: 1}
+        pixel_array = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0])
+        kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
+
+        convolver = frame_convolution.Convolver(cross_frame_array)
+
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
+
+        # assert result == {2: 0.5, 3: 0.5}
+        assert (result == np.array([0, 0, 0.5, 0.5, 0, 0, 0, 0, 0])).all()
 #
 #
 # @pytest.fixture(name="convolver_4_simple")
