@@ -219,7 +219,7 @@ class KernelConvolver(object):
 
         return result
 
-    def convolution_for_pixel_index_vector(self, pixel_index, pixel_dict, sub_shape=None):
+    def convolution_for_pixel_index_vector(self, pixel_index, pixel_array, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
         Parameters
@@ -228,8 +228,8 @@ class KernelConvolver(object):
             Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_index: int
             The index in the vector to be convolved
-        pixel_dict: [int: float]
-            A dictionary that maps image_grid pixel indices to values
+        pixel_array: [float]
+            An image_grid
         Returns
         -------
         convolution_dict: [int: float]
@@ -237,10 +237,9 @@ class KernelConvolver(object):
             with one particular value
         """
 
-        # noinspection PyUnresolvedReferences
-        new_dict = {}
+        new_array = np.zeros(pixel_array.shape)
 
-        value = pixel_dict[pixel_index]
+        value = pixel_array[pixel_index]
 
         frame = self.frame_array[pixel_index]
 
@@ -256,9 +255,9 @@ class KernelConvolver(object):
                 continue
             result = value * self.kernel[kernel_index]
             if result > 0:
-                new_dict[vector_index] = result
+                new_array[vector_index] = result
 
-        return new_dict
+        return new_array
 
 
 def calculate_limits(shape, sub_shape):
