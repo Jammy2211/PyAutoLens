@@ -299,8 +299,6 @@ class TestHyperCube:
         assert collection.physical_values_ordered_by_class(unit_vector) == [0.6, 0.1, 0.2, 0.8, 0.5, 0.6, 1.8, 0.7, 0.8,
                                                                             2.0]
 
-    # TODO : Fix This - Also tuples and setting parameters equal to one another
-
     def test__order_maintained_with_prior_change(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
