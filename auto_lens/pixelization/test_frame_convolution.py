@@ -112,6 +112,7 @@ class TestFrameExtraction(object):
         assert 4 == len(masked_frame_array)
 
         assert (np.array([-1, -1, -1, -1, -1, 0, -1, 1, 2]) == masked_frame_array[0]).all()
+        assert (np.array([2, 3, -1, 4, -1, -1, -1, -1, -1]) == masked_frame_array[3]).all()
 
 
 class TestConvolution(object):
