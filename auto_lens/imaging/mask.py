@@ -4,6 +4,10 @@ import numpy as np
 
 class Mask(data.Array):
 
+    def __init__(self, array, pixel_scale=1):
+        super().__init__(array, pixel_scale)
+        self.__number_array = None
+
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
         return cls(np.full(tuple(map(lambda d: int(d / pixel_scale), shape_arc_seconds)), True), pixel_scale)
@@ -92,6 +96,34 @@ class Mask(data.Array):
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
+
+    @property
+    def number_array(self):
+        """
+        Creates an array where points inside the mask are numbered
+        Parameters
+
+        Returns
+        -------
+        number_array: ndarray
+            An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
+        """
+        if self.__number_array is None:
+            self.create_number_arrays()
+        return self.__number_array
+
+    @property
+    def masked_number_array(self):
+        pass
+
+    def create_number_arrays(self):
+        self.__number_array = -1 * np.ones(self.shape, dtype=np.int64)
+        n = 0
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if self[x, y] == 1:
+                    self.__number_array[x, y] = n
+                    n += 1
 
     def compute_grid_coords_image(self):
         """

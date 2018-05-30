@@ -62,32 +62,10 @@ class FrameMaker(object):
         Class to create number array and frames used in 1D convolution
         Parameters
         ----------
-        mask: ndarray
-                A mask where 0 eliminates data
+        mask: mask.Mask
+                A mask
         """
         self.mask = mask
-        self.__number_array = None
-
-    @property
-    def number_array(self):
-        """
-        Creates an array where points inside the mask are numbered
-        Parameters
-
-        Returns
-        -------
-        number_array: ndarray
-            An array where non-masked elements are numbered 0, 1, 2,...N with masked elements designated -1
-        """
-        if self.__number_array is None:
-            self.__number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
-            n = 0
-            for x in range(self.mask.shape[0]):
-                for y in range(self.mask.shape[1]):
-                    if self.mask[x, y] == 1:
-                        self.__number_array[x, y] = n
-                        n += 1
-        return self.__number_array
 
     def make_frame_array(self, kernel_shape):
         """
@@ -104,9 +82,9 @@ class FrameMaker(object):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise KernelException("Kernel must be odd")
         frame_array = []
-        for x in range(self.number_array.shape[0]):
-            for y in range(self.number_array.shape[1]):
-                if self.number_array[x][y] > -1:
+        for x in range(self.mask.number_array.shape[0]):
+            for y in range(self.mask.number_array.shape[1]):
+                if self.mask.number_array[x][y] > -1:
                     frame_array.append(self.frame_at_coords((x, y), kernel_shape))
 
         return frame_array
@@ -134,8 +112,8 @@ class FrameMaker(object):
             for j in range(kernel_shape[1]):
                 x = coords[0] - half_x + i
                 y = coords[1] - half_y + j
-                if 0 <= x < self.number_array.shape[0] and 0 <= y < self.number_array.shape[1]:
-                    value = self.number_array[x, y]
+                if 0 <= x < self.mask.number_array.shape[0] and 0 <= y < self.mask.number_array.shape[1]:
+                    value = self.mask.number_array[x, y]
                     if value >= 0:
                         frame[j + kernel_shape[1] * i] = value
 
@@ -301,4 +279,4 @@ def is_in_sub_shape(kernel_index_1d, limits, shape):
     #
     # """
     return limits[1] <= kernel_index_1d / \
-                        shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - limits[1]
+           shape[0] < limits[3] and limits[0] <= kernel_index_1d % shape[0] < shape[0] - limits[1]
