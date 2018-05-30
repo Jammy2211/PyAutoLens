@@ -107,6 +107,12 @@ class TestFrameExtraction(object):
 
         assert (np.array([1, 2, 3, -1, 4, -1, -1, -1, -1]) == frame_array[4]).all()
 
+        masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
+
+        assert 4 == len(masked_frame_array)
+
+        assert (np.array([-1, -1, -1, -1, -1, 0, -1, 1, 2]) == masked_frame_array[0]).all()
+
 
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
