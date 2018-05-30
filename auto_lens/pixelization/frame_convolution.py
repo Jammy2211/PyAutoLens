@@ -192,30 +192,26 @@ class KernelConvolver(object):
         """
         return map(self.convolve_vector, mapping_matrix)
 
-    def convolve_vector(self, pixel_dict, sub_shape=None):
+    def convolve_vector(self, pixel_array, sub_shape=None):
         """
         Convolves a kernel with a 1D vector of non-masked values
         Parameters
         ----------
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
-        pixel_dict: [int: float]
-            A dictionary that maps image_grid pixel indices to values
+        pixel_array: [float]
+            A 1D array
         Returns
         -------
         convolved_vector: [float]
             A vector convolved with the kernel
         """
 
-        # noinspection PyUnresolvedReferences
-        result = {}
-        for key in pixel_dict.keys():
-            new_dict = self.convolution_for_pixel_index_vector(key, pixel_dict, sub_shape)
-            for new_key in new_dict.keys():
-                if new_key in result:
-                    result[new_key] += new_dict[new_key]
-                else:
-                    result[new_key] = new_dict[new_key]
+        result = np.zeros(pixel_array.shape)
+        array_range = range(pixel_array.shape[0])
+        for key in array_range:
+            new_array = self.convolution_for_pixel_index_vector(key, pixel_array, sub_shape)
+            result += new_array
 
         return result
 
