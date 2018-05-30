@@ -97,6 +97,16 @@ class FrameMaker(object):
 
         return frame_array
 
+    def make_mask_frame_array(self, kernel_shape):
+        if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
+            raise KernelException("Kernel must be odd")
+        frame_array = []
+        for x in range(self.number_array.shape[0]):
+            for y in range(self.number_array.shape[1]):
+                if self.mask_number_array[x][y] > -1:
+                    frame_array.append(self.frame_at_coords((x, y), kernel_shape))
+        return frame_array
+
     def frame_at_coords(self, coords, kernel_shape):
         """
         Parameters
