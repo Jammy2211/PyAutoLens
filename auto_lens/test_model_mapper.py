@@ -275,7 +275,7 @@ class TestHyperCube:
             test_config,
             geometry_profile=geometry_profiles.EllipticalProfile)
 
-        assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5]) == [0.5, 0.5, 1.0, 1.0]
+        assert collection.physical_values_ordered_by_class([0.5, 0.5, 0.5, 0.5]) == [0.5, 0.5, 1.0, 1.0]
 
     def test__in_order_of_class_constructor__multiple_profiles(self, test_config):
         collection = model_mapper.ModelMapper(
@@ -283,7 +283,7 @@ class TestHyperCube:
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == [
+        assert collection.physical_values_ordered_by_class([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == [
             0.5, 0.5, 1.0, 1.0, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0]
 
     def test__in_order_of_class_constructor__multiple_profiles_bigger_range_of_unit_values(self, test_config):
@@ -292,7 +292,7 @@ class TestHyperCube:
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        assert collection.physical_vector_from_hypercube_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) == [
+        assert collection.physical_values_ordered_by_class([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) == [
             0.1, 0.2, 0.6, 0.8, 0.5, 0.6, 0.7, 0.8, 1.8, 2.0]
 
     # TODO : Fix This - Also tuples and setting parameters equal to one another
@@ -303,10 +303,13 @@ class TestHyperCube:
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        collection.profile_1.axis_ratio = model_mapper.UniformPrior(100, 200)
+        unit_vector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
-        assert collection.physical_vector_from_hypercube_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]) == [
-            0.5, 0.25, 150.0, 0.8, 0.5, 0.25, 0.5, 0.25, 0.75, 0.8]
+        before = collection.physical_values_ordered_by_class(unit_vector)
+
+        collection.profile_1.axis_ratio = model_mapper.UniformPrior(0, 2)
+
+        assert collection.physical_values_ordered_by_class(unit_vector) == before
 
 
 class TestModelInstancesRealClasses:
@@ -551,4 +554,4 @@ class TestUtility(object):
 
         collection.mock_class.two = model_mapper.UniformPrior(upper_limit=100.)
 
-        assert collection.physical_vector_from_hypercube_vector([1., 0.5]) == [1., 50.]
+        assert collection.physical_values_ordered_by_class([1., 0.5]) == [1., 50.]

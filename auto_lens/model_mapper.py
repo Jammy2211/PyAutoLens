@@ -106,8 +106,10 @@ class ModelMapper(object):
 
         # TODO : Better way to filter defaults / args?
 
-        if 'settings' in defaults: del defaults['settings']
-        if 'settings' in args: args.remove('settings')
+        if 'settings' in defaults:
+            del defaults['settings']
+        if 'settings' in args:
+            args.remove('settings')
 
         prior_model = PriorModel(cls)
 
@@ -171,6 +173,21 @@ class ModelMapper(object):
             A vector with values output by priors
         """
         return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
+
+    def physical_values_ordered_by_class(self, hypercube_vector):
+        model_instance = self.from_unit_vector(hypercube_vector)
+        result = []
+        for instance_key in sorted(model_instance.__dict__.keys()):
+            print(instance_key)
+            instance = model_instance.__dict__[instance_key]
+            for attribute_key in sorted(instance.__dict__.keys()):
+                print(attribute_key)
+                value = instance.__dict__[attribute_key]
+                if isinstance(value, tuple):
+                    result.extend(list(value))
+                else:
+                    result.append(value)
+        return result
 
     def from_prior_medians(self):
         """
