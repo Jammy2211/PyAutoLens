@@ -121,6 +121,16 @@ class TestBlurringRegionMask(object):
 
         assert 0 == len(frame_maker.make_mask_frame_array(kernel_shape=(3, 3)))
 
+    def test_partial_blurring_region(self, cross_mask):
+        partial_mask = np.array(cross_mask)
+        partial_mask[0, 0] = 1
+
+        frame_maker = frame_convolution.FrameMaker(cross_mask, partial_mask)
+        masked_frame_array = frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
+
+        assert 1 == len(masked_frame_array)
+        assert (np.array([-1, -1, -1, -1, -1, 0, -1, 1, 2]) == masked_frame_array[0]).all()
+
 
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
