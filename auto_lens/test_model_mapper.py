@@ -345,15 +345,15 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_3.axis_ratio == 1.8
         assert model_map.profile_3.phi == 2.0
 
-    # TODO : The order of the parametes is not maintained when we change a prior - fix.
+    # TODO : The order of the parameters is not maintained when we change a prior - fix.
 
     # def test__in_order_of_class_constructor_order_maintained_with_prior_changes_simple_model(self):
     #
-    #     collection = prior.ModelMapper(
-    #         prior.Config(config_folder_path=data_path+"test_files/config"),
+    #     collection = model_mapper.ModelMapper(
+    #         model_mapper.Config(config_folder_path=data_path+"test_files/config"),
     #         profile_1=geometry_profiles.EllipticalProfile)
     #
-    #     collection.profile_1.centre.centre_1 = prior.UniformPrior(10, 20)
+    #     collection.profile_1.centre.centre_1 = model_mapper.UniformPrior(10, 20)
     #
     #     model_instance = collection.from_unit_vector([0.1, 1.0, 0.3, 0.4])
     #
