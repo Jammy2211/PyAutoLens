@@ -63,9 +63,10 @@ class TestNumbering(object):
         assert (number_array == simple_number_array).all()
 
     def test_simple_mask(self, cross_mask):
-        number_array = frame_convolution.FrameMaker(cross_mask).number_array
+        frame_maker = frame_convolution.FrameMaker(cross_mask)
 
-        assert (number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
+        assert (frame_maker.number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
+        assert (frame_maker.mask_number_array == np.array([[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
 
     def test_even_failure(self):
         with pytest.raises(frame_convolution.KernelException):

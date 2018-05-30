@@ -62,12 +62,18 @@ class FrameMaker(object):
         """
         self.mask = mask
         self.number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
-        n = 0
+        self.mask_number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
+
+        number_array_count = 0
+        mask_array_count = 0
         for x in range(self.mask.shape[0]):
             for y in range(self.mask.shape[1]):
                 if self.mask[x, y] == 1:
-                    self.number_array[x, y] = n
-                    n += 1
+                    self.number_array[x, y] = number_array_count
+                    number_array_count += 1
+                else:
+                    self.mask_number_array[x, y] = mask_array_count
+                    mask_array_count += 1
 
     def make_frame_array(self, kernel_shape):
         """
