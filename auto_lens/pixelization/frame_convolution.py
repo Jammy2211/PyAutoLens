@@ -52,15 +52,17 @@ class KernelException(Exception):
 
 
 class FrameMaker(object):
-    def __init__(self, mask):
+    def __init__(self, mask, blurring_region_mask):
         """
         Class to create number array and frames used in 1D convolution
         Parameters
         ----------
+        blurring_region_mask
         mask: ndarray
                 A mask where 0 eliminates data
         """
         self.mask = mask
+        self.blurring_region_mask = blurring_region_mask
         self.number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
         self.mask_number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
 
@@ -71,7 +73,7 @@ class FrameMaker(object):
                 if self.mask[x, y] == 1:
                     self.number_array[x, y] = number_array_count
                     number_array_count += 1
-                else:
+                elif self.blurring_region_mask is None or self.blurring_region_mask[x, y] == 1:
                     self.mask_number_array[x, y] = mask_array_count
                     mask_array_count += 1
 
