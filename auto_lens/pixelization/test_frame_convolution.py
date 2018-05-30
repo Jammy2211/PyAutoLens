@@ -1,5 +1,6 @@
 import numpy as np
 from auto_lens.pixelization import frame_convolution
+from auto_lens.imaging import mask as msk
 import pytest
 
 
@@ -10,7 +11,7 @@ def make_simple_number_array():
 
 @pytest.fixture(name="cross_mask")
 def make_cross_mask():
-    mask = np.ones((3, 3))
+    mask = msk.Mask(np.ones((3, 3)))
 
     mask[0, 0] = 0
     mask[0, 2] = 0
@@ -37,7 +38,7 @@ def make_cross_frame_array(cross_frame_maker):
 
 @pytest.fixture(name="simple_frame_maker")
 def make_simple_frame_maker():
-    return frame_convolution.FrameMaker(np.ones((3, 3)))
+    return frame_convolution.FrameMaker(msk.Mask(np.ones((3, 3))))
 
 
 @pytest.fixture(name="cross_frame_maker")
@@ -50,29 +51,11 @@ def make_simple_kernel():
     return np.array([[0, 0.1, 0], [0.1, 0.6, 0.1], [0, 0.1, 0]])
 
 
-class TestNumbering(object):
-    def test_simple_numbering(self, simple_number_array):
-        shape = (3, 3)
-
-        frame_maker = frame_convolution.FrameMaker(np.ones(shape))
-
-        number_array = frame_maker.number_array
-
-        assert number_array.shape == shape
-        # noinspection PyUnresolvedReferences
-        assert (number_array == simple_number_array).all()
-
-    def test_simple_mask(self, cross_mask):
-        number_array = frame_convolution.FrameMaker(cross_mask).number_array
-
-        assert (number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
-
+class TestFrameExtraction(object):
     def test_even_failure(self):
         with pytest.raises(frame_convolution.KernelException):
-            frame_convolution.FrameMaker(np.ones((3, 3))).convolver_for_kernel_shape((2, 2))
+            frame_convolution.FrameMaker(msk.Mask(np.ones((3, 3)))).convolver_for_kernel_shape((2, 2))
 
-
-class TestFrameExtraction(object):
     def test_trivial_frame_at_coords(self, simple_frame_maker):
         assert (np.array([i for i in range(9)]) == simple_frame_maker.frame_at_coords(coords=(1, 1),
                                                                                       kernel_shape=(3, 3))).all()
@@ -142,7 +125,7 @@ class TestConvolution(object):
 @pytest.fixture(name="convolver_4_simple")
 def make_convolver_4_simple():
     shape = (4, 4)
-    mask = np.ones(shape)
+    mask = msk.Mask(np.ones(shape))
 
     frame_maker = frame_convolution.FrameMaker(mask)
     return frame_maker.convolver_for_kernel_shape((3, 3))
@@ -150,12 +133,12 @@ def make_convolver_4_simple():
 
 @pytest.fixture(name="convolver_4_edges")
 def make_convolver_4_edges():
-    mask = np.array(
+    mask = msk.Mask(np.array(
         [[0, 0, 0, 0],
          [0, 1, 1, 0],
          [0, 1, 1, 0],
          [0, 0, 0, 0]]
-    )
+    ))
 
     frame_maker = frame_convolution.FrameMaker(mask)
     return frame_maker.convolver_for_kernel_shape((3, 3))
@@ -232,7 +215,7 @@ class TestSubConvolution(object):
         assert not frame_convolution.is_in_sub_shape(24, (1, 1, 4, 4), (5, 5))
 
     def test_simple_convolution(self):
-        convolver = frame_convolution.FrameMaker(mask=np.ones((5, 5))).convolver_for_kernel_shape(
+        convolver = frame_convolution.FrameMaker(mask=msk.Mask(np.ones((5, 5)))).convolver_for_kernel_shape(
             (5, 5)).convolver_for_kernel(np.ones((5, 5)))
 
         pixel_dict = {12: 1}
