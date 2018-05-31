@@ -208,7 +208,7 @@ class KernelConvolver(object):
         """
 
         result = np.zeros(pixel_array.shape)
-        array_range = range(pixel_array.shape[0])
+        array_range = range(len(self.frame_array))
         for key in array_range:
             new_array = self.convolution_for_pixel_index_vector(key, pixel_array, sub_shape)
             result += new_array
