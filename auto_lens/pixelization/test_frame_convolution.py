@@ -265,7 +265,7 @@ class TestSubConvolution(object):
         pixel_array = np.zeros(shape=(25,))
 
         pixel_array[12] = 1
-        
+
         convolved_vector = convolver.convolve_vector(pixel_array, sub_shape=(3, 3))
 
         assertion_array = np.zeros(shape=(25,))
