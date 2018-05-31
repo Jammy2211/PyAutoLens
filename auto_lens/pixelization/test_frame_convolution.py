@@ -19,17 +19,16 @@ def make_cross_mask():
 
     return mask
 
-
-@pytest.fixture(name="cross_mask_frame_array")
-def make_cross_mask_frame_array():
-    mask = np.zeros((3, 3))
-
-    mask[0, 0] = 1
-    mask[0, 2] = 1
-    mask[2, 2] = 1
-    mask[2, 0] = 1
-
-    return mask
+# @pytest.fixture(name="cross_mask_frame_array")
+# def make_cross_mask_frame_array():
+#     mask = np.zeros((3, 3))
+#
+#     mask[0, 0] = 1
+#     mask[0, 2] = 1
+#     mask[2, 2] = 1
+#     mask[2, 0] = 1
+#
+#     return mask
 
 
 @pytest.fixture(name="cross_number_array")
@@ -45,6 +44,11 @@ def make_simple_frame_array(simple_frame_maker):
 @pytest.fixture(name="cross_frame_array")
 def make_cross_frame_array(cross_frame_maker):
     return cross_frame_maker.make_frame_array((3, 3))
+
+
+@pytest.fixture(name="cross_mask_frame_array")
+def make_cross_mask_frame_array(cross_frame_maker):
+    return cross_frame_maker.make_mask_frame_array((3, 3))
 
 
 @pytest.fixture(name="simple_frame_maker")
@@ -157,7 +161,7 @@ class TestBlurringRegionConvolution(object):
 
         assert (result == np.array([0.6, 0.1, 0,
                                     0.1, 0, 0,
-                                    0, 0, 0]))
+                                    0, 0, 0])).all()
 
 
 class TestConvolution(object):
