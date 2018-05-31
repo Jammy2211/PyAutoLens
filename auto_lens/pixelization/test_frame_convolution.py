@@ -75,14 +75,14 @@ class TestNumbering(object):
         assert (number_array == simple_number_array).all()
 
     def test_simple_mask(self, cross_mask):
-        frame_maker = frame_convolution.FrameMaker(cross_mask, None)
+        frame_maker = frame_convolution.FrameMaker(cross_mask)
 
         assert (frame_maker.number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
         assert (frame_maker.mask_number_array == np.array([[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
 
     def test_even_failure(self):
         with pytest.raises(frame_convolution.KernelException):
-            frame_convolution.FrameMaker(np.ones((3, 3)), None).convolver_for_kernel_shape((2, 2))
+            frame_convolution.FrameMaker(np.ones((3, 3))).convolver_for_kernel_shape((2, 2))
 
 
 class TestFrameExtraction(object):
@@ -197,7 +197,7 @@ def make_convolver_4_simple():
     shape = (4, 4)
     mask = np.ones(shape)
 
-    frame_maker = frame_convolution.FrameMaker(mask, None)
+    frame_maker = frame_convolution.FrameMaker(mask)
     return frame_maker.convolver_for_kernel_shape((3, 3))
 
 
@@ -210,7 +210,7 @@ def make_convolver_4_edges():
          [0, 0, 0, 0]]
     )
 
-    frame_maker = frame_convolution.FrameMaker(mask, None)
+    frame_maker = frame_convolution.FrameMaker(mask)
     return frame_maker.convolver_for_kernel_shape((3, 3))
 
 
