@@ -1,0 +1,22 @@
+{
+    "name": "black",
+    "src": "http://raw.githubusercontent.com/linan7788626/linan7788626.github.io/master/images/black.png",
+    "components": [
+        {
+            "plane": "source",
+            "size": 0.309,
+            "ell": 1.877,
+            "ang": 25.201,
+            "x": 0.112,
+            "y": 0.068
+        },
+        {
+            "plane": "lens",
+            "theta_e": 2.147,
+            "ell": 1.405,
+            "ang": -87.466,
+            "x": -0.112,
+            "y": 0.055
+        }
+    ]
+}
