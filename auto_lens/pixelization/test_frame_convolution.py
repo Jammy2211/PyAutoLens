@@ -20,6 +20,18 @@ def make_cross_mask():
     return mask
 
 
+@pytest.fixture(name="cross_mask_frame_array")
+def make_cross_mask_frame_array():
+    mask = np.zeros((3, 3))
+
+    mask[0, 0] = 1
+    mask[0, 2] = 1
+    mask[2, 2] = 1
+    mask[2, 0] = 1
+
+    return mask
+
+
 @pytest.fixture(name="cross_number_array")
 def make_cross_number_array():
     return np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])
@@ -37,12 +49,12 @@ def make_cross_frame_array(cross_frame_maker):
 
 @pytest.fixture(name="simple_frame_maker")
 def make_simple_frame_maker():
-    return frame_convolution.FrameMaker(np.ones((3, 3)), None)
+    return frame_convolution.FrameMaker(np.ones((3, 3)))
 
 
 @pytest.fixture(name="cross_frame_maker")
 def make_cross_frame_maker(cross_mask):
-    return frame_convolution.FrameMaker(cross_mask, None)
+    return frame_convolution.FrameMaker(cross_mask)
 
 
 @pytest.fixture(name="simple_kernel")
@@ -54,7 +66,7 @@ class TestNumbering(object):
     def test_simple_numbering(self, simple_number_array):
         shape = (3, 3)
 
-        frame_maker = frame_convolution.FrameMaker(np.ones(shape), None)
+        frame_maker = frame_convolution.FrameMaker(np.ones(shape))
 
         number_array = frame_maker.number_array
 
@@ -130,6 +142,22 @@ class TestBlurringRegionMask(object):
 
         assert 1 == len(masked_frame_array)
         assert (np.array([-1, -1, -1, -1, -1, 0, -1, 1, 2]) == masked_frame_array[0]).all()
+
+    def test_no_blurring_region_mask(self, cross_frame_maker):
+        assert 4 == len(cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3)))
+
+
+class TestBlurringRegionConvolution(object):
+    def test_no_blurring_region_mask(self, cross_frame_array, cross_mask_frame_array, simple_kernel):
+        convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
+
+        pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        result = convolver.convolver_for_kernel(simple_kernel).mask_convolution_for_mask_index_vector(0, pixel_array)
+
+        assert (result == np.array([0.6, 0.1, 0,
+                                    0.1, 0, 0,
+                                    0, 0, 0]))
 
 
 class TestConvolution(object):
