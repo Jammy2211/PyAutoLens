@@ -1,0 +1,1 @@
+The unit of ‘ang’ is degree; the units of x and y are arcsec; and the units of size (size of source) and theta_e (Einstein Radius of the lensing system) are arcsec too.  
