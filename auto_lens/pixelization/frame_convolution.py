@@ -52,7 +52,7 @@ class KernelException(Exception):
 
 
 class FrameMaker(object):
-    def __init__(self, mask, blurring_region_mask):
+    def __init__(self, mask, blurring_region_mask=None):
         """
         Class to create number array and frames used in 1D convolution
         Parameters
@@ -154,27 +154,30 @@ class FrameMaker(object):
 
 
 class Convolver(object):
-    def __init__(self, frame_array):
+    def __init__(self, frame_array, mask_frame_array=None):
         """
         Class to convolve a kernel with a 1D vector of non-masked values
         Parameters
         ----------
+        mask_frame_array
         frame_array: [ndarray]
             An array of frames created by the frame maker. A frame maps positions in the kernel to values in the 1D
             vector.
         """
         self.frame_array = frame_array
+        self.mask_frame_array = mask_frame_array
 
     def convolver_for_kernel(self, kernel):
-        return KernelConvolver(self.frame_array, kernel)
+        return KernelConvolver(self.frame_array, kernel, self.mask_frame_array)
 
 
 class KernelConvolver(object):
-    def __init__(self, frame_array, kernel):
+    def __init__(self, frame_array, kernel, mask_frame_array=None):
         self.shape = kernel.shape
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
+        self.mask_frame_array = mask_frame_array
 
     def convolve_mapping_matrix(self, mapping_matrix):
         """
@@ -215,6 +218,29 @@ class KernelConvolver(object):
 
         return result
 
+    def mask_convolution_for_mask_index_vector(self, mask_index, pixel_array, sub_shape=None):
+        new_array = np.zeros(pixel_array.shape)
+
+        value = pixel_array[mask_index]
+
+        frame = self.mask_frame_array[mask_index]
+
+        limits = None
+        if sub_shape is not None:
+            limits = calculate_limits(self.shape, sub_shape)
+
+        for kernel_index in range(self.length):
+            if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
+                continue
+            vector_index = frame[kernel_index]
+            if vector_index == -1:
+                continue
+            result = value * self.kernel[kernel_index]
+            if result > 0:
+                new_array[vector_index] = result
+
+        return new_array
+
     def convolution_for_pixel_index_vector(self, pixel_index, pixel_array, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
@@ -235,6 +261,7 @@ class KernelConvolver(object):
 
         new_array = np.zeros(pixel_array.shape)
 
+        #  TODO: how can pixel index work for both?
         value = pixel_array[pixel_index]
 
         frame = self.frame_array[pixel_index]
