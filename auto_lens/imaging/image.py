@@ -14,26 +14,38 @@ class Image(Array):
         self.effective_exposure_time = effective_exposure_time
 
     @classmethod
-    def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise_map=None,
-                 background_noise_sigma=None, poisson_noise_map=None):
+    def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, background_sky_map=None,
+                 psf=None, include_poisson_noise=False, seed=-1):
+
+        if background_sky_map is not None:
+            array += background_sky_map
+            array_counts = np.multiply(background_sky_map, effective_exposure_time)
+            background_noise = np.sqrt(array_counts)
+            background_noise = np.divide(background_noise, effective_exposure_time)
+        else:
+            background_noise = None
 
         if psf is not None:
             array = psf.convolve(array)
 
-        if poisson_noise_map is not None:
-            array += poisson_noise_map
-            # TODO : Should be using the @properties but not sure how to get it to call in the simulate classmethod
-            array_counts = np.multiply(array, effective_exposure_time)
+        # TODO : The poisson noise map must be generated for the psf blurred image, which is was not before.
+        # TODO : Should be using the @properties but not sure how to get it to call in the simulate classmethod
+
+        if include_poisson_noise is True:
+            array += generate_poisson_noise(array, effective_exposure_time, seed)
+            # The poisson noise map does not include the background sky, so this estimate below removes it
+            if background_sky_map is not None:
+                array_counts = np.multiply(array - background_sky_map, effective_exposure_time)
+            elif background_sky_map is None:
+                array_counts = np.multiply(array, effective_exposure_time)
             poisson_noise = np.sqrt(array_counts)
             poisson_noise = np.divide(poisson_noise, effective_exposure_time)
         else:
             poisson_noise = None
 
-        if background_noise_map is not None:
-            array += background_noise_map
-            background_noise = np.ones(array.shape)*background_noise_sigma
-        else:
-            background_noise = None
+        # The final image is background subtracted.
+        if background_sky_map is not None:
+            array -= background_sky_map
 
         return Image(array, effective_exposure_time=effective_exposure_time, pixel_scale=pixel_scale, psf=psf,
                      background_noise=background_noise, poisson_noise=poisson_noise)
