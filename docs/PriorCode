@@ -25,7 +25,7 @@ class UniPrior(Prior):
 
     def set_phys_value(self, unit_value, cube_no):
         """For an input value between 0 and 1, changes the parameter value to the physical value specified by the priors
-         minimum / maximum and updates the MultiNestOptimizer unit-hypercube and index"""
+         minimum / maximum and updates the MultiNest unit-hypercube and index"""
 
         self.value = self.minimum + unit_value * (self.maximum - self.minimum)
 
@@ -56,7 +56,7 @@ class GaussPrior(Prior):
 
     def set_phys_value(self, unit_value, cube_no):
         """For an input value between 0 and 1, changes the parameter value to the physical value specified by the priors
-         mean / sigma and updates the MultiNestOptimizer unit-hypercube and index"""
+         mean / sigma and updates the MultiNest unit-hypercube and index"""
 
         self.value = self.mean + (self.sigma * math.sqrt(2) * erfinv((unit_value*2.0)-1.0))
 
