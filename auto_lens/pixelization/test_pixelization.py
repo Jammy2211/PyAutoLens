@@ -4,6 +4,49 @@ import pytest
 import numpy as np
 import math
 
+def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, source_centers):
+    """ Match a set of sub_grid image_grid-pixel image_grid to their closest source-image_to_pixel, using the source-pixel centers (x,y).
+
+        This method uses a nearest neighbour search between every sub_image-pixel coordinate and set of source-pixel \
+        centers, thus it is slow when the number of sub_grid image_grid-pixel image_grid or source-image_to_pixel is large. However, it
+        is probably the fastest routine for low numbers of sub_grid image_grid-image_to_pixel and source-image_to_pixel.
+
+        Parameters
+        ----------
+        sub_coordinates : [(float, float)]
+            The x and y sub_grid image_grid-pixel image_grid to be matched to the source-pixel centers.
+        image_total : int
+            The total number of image_grid image_to_pixel in the image_grid.
+        sub_total : int
+            The total number of sub_grid image_to_pixel in the image_grid sub_grid-grid_coords.
+        source_centers: [(float, float)
+            The source-image_to_pixel centers the sub_grid image_grid-pixel image_grid are matched with.
+
+        Returns
+        ----------
+        image_sub_to_source : [int, int]
+            The index in source_pixel_centers each image_grid and sub_grid-image_coordinate is matched with. (e.g. if the fifth
+            sub_coordinate of the third image_grid pixel is closest to the 3rd source-pixel in source_pixel_centers,
+            image_sub_to_source[2,4] = 2).
+
+     """
+
+    image_pixels = sub_coordinates.shape[0]
+    sub_pixels = sub_coordinates.shape[0] * sub_coordinates.shape[1]
+
+    image_sub_to_source = np.zeros((image_pixels, sub_pixels))
+
+    for image_index in range(len(sub_coordinates)):
+        sub_index = 0
+        for sub_coordinate in sub_coordinates[image_index]:
+            distances = list(map(lambda centers: pixelization.compute_squared_separation(sub_coordinate, centers),
+                                 source_centers))
+
+            image_sub_to_source[image_index, sub_index] = (np.argmin(distances))
+            sub_index += 1
+
+    return image_sub_to_source
+
 class TestRegularizationMatrix(object):
 
     # The regularization matrix, H, is calculated by defining a set of B matrices which describe how source-plane
@@ -414,7 +457,9 @@ class TestKMeans:
         sparse_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = pixelization.kmeans_cluster(sparse_coordinates, n_clusters=2)
+        voronoi_pixelization = pixelization.VoronoiPixelization(number_clusters=2)
+
+        kmeans = voronoi_pixelization.kmeans_cluster(sparse_coordinates)
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -428,7 +473,9 @@ class TestKMeans:
                                        [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = pixelization.kmeans_cluster(sparse_coordinates, n_clusters=3)
+        voronoi_pixelization = pixelization.VoronoiPixelization(number_clusters=3)
+
+        kmeans = voronoi_pixelization.kmeans_cluster(sparse_coordinates)
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
@@ -450,13 +497,17 @@ class TestKMeans:
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
                                        [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-        kmeans = pixelization.kmeans_cluster(sparse_coordinates, n_clusters=3)
+        voronoi_pixelization = pixelization.VoronoiPixelization(number_clusters=3)
+
+        kmeans = voronoi_pixelization.kmeans_cluster(sparse_coordinates)
 
         kmeans.cluster_centers_ = list(map(lambda x: pytest.approx(list(x), 1e-3), kmeans.cluster_centers_))
 
         assert [2.0, 2.0] in kmeans.cluster_centers_
         assert [1.0, 1.0] in kmeans.cluster_centers_
         assert [-1.0, -1.0] in kmeans.cluster_centers_
+
+        print(kmeans.labels_)
 
         assert list(kmeans.labels_).count(0) == 3 or 6 or 12
         assert list(kmeans.labels_).count(1) == 3 or 6 or 12
@@ -474,7 +525,7 @@ class TestVoronoi:
                            [0.0, 0.0],
                            [-1.0, -1.0], [1.0, -1.0]])
 
-        voronoi = pixelization.setup_voronoi(points)
+        voronoi = pixelization.compute_voronoi_grid(points)
 
         voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
 
@@ -490,7 +541,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = pixelization.setup_voronoi(points)
+        voronoi = pixelization.compute_voronoi_grid(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -509,7 +560,7 @@ class TestVoronoi:
                            [0.0, 0.0],
                            [-1.0, -1.0], [1.0, -1.0]])
 
-        voronoi = pixelization.setup_voronoi(points)
+        voronoi = pixelization.compute_voronoi_grid(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -534,7 +585,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = pixelization.setup_voronoi(points)
+        voronoi = pixelization.compute_voronoi_grid(points)
 
         # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
         # to look for each list
@@ -564,7 +615,7 @@ class TestVoronoi:
                            [0.0, 0.0],
                            [-1.0, -1.0], [1.0, -1.0]])
 
-        voronoi = pixelization.setup_voronoi(points)
+        voronoi = pixelization.compute_voronoi_grid(points)
 
         assert voronoi.neighbors_total[0] == 3
         assert voronoi.neighbors_total[1] == 3
@@ -585,7 +636,7 @@ class TestVoronoi:
                            [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                            [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-        voronoi = pixelization.setup_voronoi(points)
+        voronoi = pixelization.compute_voronoi_grid(points)
 
         assert voronoi.neighbors_total[0] == 2
         assert voronoi.neighbors_total[1] == 3
@@ -614,11 +665,8 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
         sub_coordinates = np.array([[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]]])
-        image_total = 1
-        sub_total = 4
 
-        image_sub_to_source = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates, image_total, sub_total, source_pixels)
+        image_sub_to_source = sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, source_pixels)
 
         assert image_sub_to_source[0,0] == 0
         assert image_sub_to_source[0,1] == 1
@@ -630,11 +678,8 @@ class TestMatchCoordinatesFromClusters:
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
         sub_coordinates = np.array([[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
                                     [[0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]]])
-        image_total = 2
-        sub_total = 8
 
-        image_sub_to_source = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates, image_total, sub_total, source_pixels)
+        image_sub_to_source = sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, source_pixels)
 
         assert image_sub_to_source[0,0] == 0
         assert image_sub_to_source[0,1] == 1
@@ -650,11 +695,8 @@ class TestMatchCoordinatesFromClusters:
         source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
         sub_coordinates = np.array([[[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49]],
                                     [[0.51, 0.51], [1.01, 1.01], [1.51, 1.51]]])
-        image_total = 2
-        sub_total = 6
 
-        image_sub_to_source = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates, image_total, sub_total, source_pixels)
+        image_sub_to_source = sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, source_pixels)
 
         assert image_sub_to_source[0,0] == 4
         assert image_sub_to_source[0,1] == 4
@@ -663,28 +705,6 @@ class TestMatchCoordinatesFromClusters:
         assert image_sub_to_source[1,1] == 0
         assert image_sub_to_source[1,2] == 5
 
-    def test__find_index_of_nearest_sparse_coordinate__simple_values(self):
-        
-        image_to_sparse = [0, 3, 2, 5, 1, 4]
-
-        assert pixelization.find_nearest_sparse(0, image_to_sparse) == 0
-        assert pixelization.find_nearest_sparse(1, image_to_sparse) == 3
-        assert pixelization.find_nearest_sparse(2, image_to_sparse) == 2
-        assert pixelization.find_nearest_sparse(3, image_to_sparse) == 5
-        assert pixelization.find_nearest_sparse(4, image_to_sparse) == 1
-        assert pixelization.find_nearest_sparse(5, image_to_sparse) == 4
-
-    def test__find_index_of_nearest_sparse_source_pixel__simple_values(self):
-        
-        source_to_sparse = [0, 3, 2, 5, 1, 4]
-
-        assert pixelization.find_nearest_sparse_source(0, source_to_sparse) == 0
-        assert pixelization.find_nearest_sparse_source(1, source_to_sparse) == 3
-        assert pixelization.find_nearest_sparse_source(2, source_to_sparse) == 2
-        assert pixelization.find_nearest_sparse_source(3, source_to_sparse) == 5
-        assert pixelization.find_nearest_sparse_source(4, source_to_sparse) == 1
-        assert pixelization.find_nearest_sparse_source(5, source_to_sparse) == 4
-
     def test__find_separation_of_coordinate_and_nearest_sparse_source_pixel__simple_values(self):
         source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
 
@@ -692,21 +712,21 @@ class TestMatchCoordinatesFromClusters:
 
         nearest_sparse_source_pixel_index = 0
 
-        separation0 = pixelization.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
-                                                                                  sub_coordinate,
-                                                                                  nearest_sparse_source_pixel_index)
+        separation0 = pixelization.compute_sub_to_nearest_sparse_source(source_pixel_centers,
+                                                                        sub_coordinate,
+                                                                        nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 1
 
-        separation1 = pixelization.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
-                                                                                  sub_coordinate,
-                                                                                  nearest_sparse_source_pixel_index)
+        separation1 = pixelization.compute_sub_to_nearest_sparse_source(source_pixel_centers,
+                                                                        sub_coordinate,
+                                                                        nearest_sparse_source_pixel_index)
 
         nearest_sparse_source_pixel_index = 2
 
-        separation2 = pixelization.find_separation_sub_coordinate_and_nearest_sparse_source(source_pixel_centers,
-                                                                                  sub_coordinate,
-                                                                                  nearest_sparse_source_pixel_index)
+        separation2 = pixelization.compute_sub_to_nearest_sparse_source(source_pixel_centers,
+                                                                        sub_coordinate,
+                                                                        nearest_sparse_source_pixel_index)
 
         assert separation0 == 1.5 ** 2
         assert separation1 == 0.5 ** 2
@@ -720,9 +740,9 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1, 2, 3, 4]
 
-        index, separation = pixelization.find_separation_and_nearest_neighboring_source(sub_coordinate,
-                                                                              source_pixel_centers,
-                                                                              source_pixel_neighbors)
+        index, separation = pixelization.compute_nearest_neighboring_source_and_distance(sub_coordinate,
+                                                                                         source_pixel_centers,
+                                                                                         source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
@@ -736,9 +756,9 @@ class TestMatchCoordinatesFromClusters:
 
         source_pixel_neighbors = [1, 2, 3, 4]
 
-        index, separation = pixelization.find_separation_and_nearest_neighboring_source(sub_coordinate,
-                                                                              source_pixel_centers,
-                                                                              source_pixel_neighbors)
+        index, separation = pixelization.compute_nearest_neighboring_source_and_distance(sub_coordinate,
+                                                                                         source_pixel_centers,
+                                                                                         source_pixel_neighbors)
 
         assert separation == (-0.5) ** 2
         assert index == 4
@@ -755,17 +775,14 @@ class TestMatchCoordinatesFromClusters:
                                     [[-0.1, 0.1], [0.1, 0.1], [-0.1, -0.1], [0.1, -0.1]],
                                     [ [0.9, 1.1], [1.1, 1.1], [0.9, 0.9], [1.1, 0.9]]])
 
-        image_total = 3
-        sub_total = 12
-        
-        image_coordinates = np.array([[-1.0, 1.0], 
+        image_coordinates = np.array([[-1.0, 1.0],
                                       [0.0, 0.0],
                                       [1.0, 1.0]])
     
-        voronoi = pixelization.setup_voronoi(source_centers)
+        voronoi = pixelization.compute_voronoi_grid(source_centers)
 
-        image_sub_to_source_via_nearest_neighbour = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates, image_total, sub_total, source_centers)
+        image_sub_to_source_via_nearest_neighbour = sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, source_centers)
 
         # The sparse_grid coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
@@ -774,8 +791,8 @@ class TestMatchCoordinatesFromClusters:
 
         sparse_to_source = np.array([1, 2, 4])
 
-        image_sub_to_source_via_pairs = pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs(
-            sub_coordinates, image_total, sub_total, source_centers, voronoi.neighbors, image_to_sparse, sparse_to_source)
+        image_sub_to_source_via_pairs = pixelization.compute_sub_to_source(
+            sub_coordinates, source_centers, voronoi.neighbors, image_to_sparse, sparse_to_source)
 
         assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
 
@@ -791,16 +808,13 @@ class TestMatchCoordinatesFromClusters:
                                     [[1.05, 1.15], [1.15, 1.15], [1.05, 1.05], [1.15, 1.05]],
                                     [[2.05, 1.15], [2.15, 1.15], [2.05, 1.05], [2.15, 1.05]]])
 
-        image_total = 6
-        sub_total = 24
-
         image_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                       [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
 
-        voronoi = pixelization.setup_voronoi(source_centers)
+        voronoi = pixelization.compute_voronoi_grid(source_centers)
 
-        image_sub_to_source_via_nearest_neighbour = pixelization.sub_coordinates_to_source_pixels_via_nearest_neighbour(
-            sub_coordinates, image_total, sub_total, source_centers)
+        image_sub_to_source_via_nearest_neighbour = sub_coordinates_to_source_pixels_via_nearest_neighbour(
+            sub_coordinates, source_centers)
 
         # The sparse_grid coordinates are not required by the pairing routine routine below, but included here for clarity
         sparse_coordinates = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
@@ -808,8 +822,200 @@ class TestMatchCoordinatesFromClusters:
         image_to_sparse = np.array([0, 1, 2, 1, 1, 2])
         sparse_to_source = np.array([3, 4, 5])
 
-        image_sub_to_source_via_pairs = pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs(
-            sub_coordinates, image_total, sub_total, source_centers, voronoi.neighbors,
-            image_to_sparse, sparse_to_source)
+        image_sub_to_source_via_pairs = pixelization.compute_sub_to_source(
+            sub_coordinates, source_centers, voronoi.neighbors, image_to_sparse, sparse_to_source)
 
         assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
+        
+        
+class TestfMatrix:
+
+    def test__coordinates_to_source_pixel_index__3x6_sub_grid_size_1(self):
+
+        source_pixel_total = 3
+        image_pixel_total = 6
+        sub_grid_size = 1
+
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5]  # For no sub_grid grid, image_grid image_to_pixel map to sub_grid-image_to_pixel.
+        sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2]
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+    #    assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+    #                                        [0, 1, 0, 0, 1, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+    #                                        [0, 0, 1, 0, 0, 1]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
+
+        assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1.0, 5:1}])
+
+    def test__coordinates_to_source_pixel_index__5x11_grid_size_1(self):
+        source_pixel_total = 5
+        image_pixel_total = 11
+        sub_grid_size = 1
+
+        sub_image_pixel_to_image_pixel_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                                10]  # For no sub_grid grid, image_grid image_to_pixel map to sub_grid-image_to_pixel.
+        sub_image_pixel_to_source_pixel_index = [0, 1, 2, 0, 1, 2, 4, 3, 2, 4, 3]
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+     #   assert (mapping_matrix == np.array(
+     #       [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+     #        [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+     #        [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+     #        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+     #        [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
+
+        assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1, 5:1, 8:1},
+                                   {7:1, 10:1}, {6:1, 9:1}])
+
+    def test__coordinates_to_source_pixel_index__3x6_grid_size_2_but_fully_overlaps_image_pixels(self):
+        source_pixel_total = 3
+        image_pixel_total = 6
+        sub_grid_size = 2
+
+        # all sub_grid-image_to_pixel to pixel / source_pixel mappings below have been set up such that all sub_grid-image_to_pixel in an image_grid pixel
+        # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
+        # values in the final matrix.
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                                3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
+
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                                 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+    #    assert (mapping_matrix == np.array([[1, 0, 0, 1, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+    #                                        [0, 1, 0, 0, 1, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+    #                                        [0, 0, 1, 0, 0, 1]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
+
+        assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1, 5:1}])
+
+    def test__coordinates_to_source_pixel_index__5x11_grid_size_2_but_fully_overlaps_image_pixels(self):
+        source_pixel_total = 5
+        image_pixel_total = 11
+        sub_grid_size = 2
+
+        # all sub_grid-image_to_pixel to pixel / source_pixel mappings below have been set up such that all sub_grid-image_to_pixel in an image_grid pixel
+        # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
+        # values in the final matrix.
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5,
+                                                6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10]
+
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                                 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+     #   assert (mapping_matrix == np.array(
+     #       [[1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+     #        [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+     #        [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+     #        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+     #       [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
+
+
+        assert (mapping_matrix == [{0:1, 3:1}, {1:1, 4:1}, {2:1, 5:1, 8:1},
+                                   {7:1, 10:1}, {6:1, 9:1}])
+
+    def test__coordinates_to_source_pixel_index__3x6_grid_size_2_not_fully_overlapping(self):
+        source_pixel_total = 3
+        image_pixel_total = 6
+        sub_grid_size = 2
+
+        # all sub_grid-image_to_pixel to pixel / source_pixel mappings below have been set up such that all sub_grid-image_to_pixel in an image_grid pixel
+        # map to the same source pixel. This means the same mapping matrix as above will be computed with no fractional
+        # values in the final matrix.
+
+        sub_image_pixel_to_image_pixel_index = [0, 1, 1, 0, 1, 4, 4, 1, 2, 2, 2, 0,
+                                                3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5]
+
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                                 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+     #   assert (mapping_matrix == np.array([[0.5, 0.5, 0, 1, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+     #                                       [0, 0.5, 0, 0, 1.5, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+     #                                       [0.25, 0, 0.75, 0, 0,
+     #                                        1]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
+
+
+        assert (mapping_matrix == [{0:0.5, 1:0.5, 3:1}, {1:0.5, 4:1.5}, {0:0.25, 2:0.75, 5:1}])
+
+    def test__coordinates_to_source_pixel_index__5x11_grid_size_2_not_fully_overlapping(self):
+        source_pixel_total = 5
+        image_pixel_total = 11
+        sub_grid_size = 2
+
+        # Moving one of every 4 sub_grid-image_to_pixel to the right compared to the example above. This should turn each 1 in the
+        # mapping matrix to a 0.75, and add a 0.25 to the element to its right
+
+        # Note the last value retains all 4 of it's '10's, so keeps a 1 in the mapping matrix
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6,
+                                                6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 10]
+
+        sub_image_pixel_to_source_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
+                                                 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, 3, 3, 3, 3]
+
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+    #    assert (mapping_matrix == np.array(
+    #        [[0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
+    #         [0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 map to source pixel 1.
+    #         [0, 0, 0.75, 0.25, 0, 0.75, 0.25, 0, 0.75, 0.25, 0],
+    #         [0, 0,    0,    0, 0,    0, 0, 0.75, 0.25, 0, 1],
+    #         [0, 0, 0, 0, 0, 0, 0.75, 0.25, 0, 0.75, 0.25]])).all()  # Image image_to_pixel 2 and 5 map to source pixel 2
+
+        assert (mapping_matrix == [{0:0.75, 1:0.25, 3:0.75, 4:0.25},
+                                   {1:0.75, 2:0.25, 4:0.75, 5:0.25},
+                                   {2:0.75, 3:0.25, 5:0.75, 6:0.25, 8:0.75, 9:0.25},
+                                   {7:0.75, 8:0.25, 10:1},
+                                   {6:0.75, 7:0.25, 9:0.75, 10:0.25}])
+
+    def test__coordinates_to_source_pixel_index__2x3_grid_size_4(self):
+        source_pixel_total = 2
+        image_pixel_total = 3
+        sub_grid_size = 4
+
+        # 4x4 sub_grid pixel, so 16 sub_grid-image_to_pixel per pixel, so 48 sub_grid-image_grid image_to_pixel,
+
+        # No sub_grid-image_to_pixel labelled 0 map to source_pixel 0, so f(0,0) remains 0
+        # 15 sub_grid-image_to_pixel labelled 1 map to source_pixel_index 0, so add 4 * (1/16) = 0.9375 to f(1,1)
+        # 1 sub_grid-pixel labelled 2 map to source_pixel_index 0, so add (1/16) = 0.0625 to f(2,1)
+        # 4 sub_grid-image_to_pixel labelled 0 map to source_pixel_index 1, so add 4 * (1/16) = 0.25 to f(0,2)
+        # 12 sub_grid-image_to_pixel labelled 1 map to source_pixel_index 1, so add 12 * (1/16) = 0.75 to f(1,2)
+        # 16 sub_grid-image_to_pixel labelled 2 map to source_pixel_index 1, so add (16/16) = 1.0 to f(2,2)
+
+        sub_image_pixel_to_image_pixel_index = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                # 50:50 ratio so 1 in each entry of the mapping matrix
+                                                2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+
+        sub_image_pixel_to_source_pixel_index = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+        mapping_matrix = pixelization.create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size,
+                                          sub_image_pixel_to_source_pixel_index,
+                                          sub_image_pixel_to_image_pixel_index)
+
+    #    assert (mapping_matrix == np.array([[0, 0.9375, 0.0625],
+    #                                        [0.25, 0.75, 1.0]])).all()
+
+        assert (mapping_matrix == [{1:0.9375, 2: 0.0625}, {0:0.25, 1:0.75, 2:1.0}])
