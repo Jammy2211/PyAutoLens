@@ -5,7 +5,7 @@ import os
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
 
-    This is used for the paramnames file and outputting the results of a run to a latex table.
+    This is used for the paramnames file and outputting the files of a run to a latex table.
 
     Parameters
     ----------
@@ -28,101 +28,57 @@ def generate_parameter_latex(parameters, subscript=''):
 
     return latex
 
-class NonLinearDirectory(object):
+class NonLinearFiles(object):
 
-    def __init__(self, path, obj_name, model_mapper):
+    def __init__(self, path, obj_name, model_mapper, check_model=True):
         """Abstract base class for non-linear optimizers.
 
-        Sets up the directory structure for their results.
+        This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
+        non-linear optimizers.
 
         Parameters
         ------------
         path : str
-            The path where the non-linear analysis results are stored.
+            The path where the non-linear analysis files are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
-        model_mapper : CalibrationModel.ModelMapper
+        model_mapper : model_mapper.ModelMapper
             Maps the model priors to a set of parameters (a model instance)
+        check_model : bool
+            Check whether the model.info file corresponds to the model_mapper passed in.
         """
+
         self.path = path
         self.obj_name = obj_name
         self.model_mapper = model_mapper
         self.total_parameters = len(self.model_mapper.priors_ordered_by_id)
-        self.setup_results_path()
-        self.resume = self.results_folder_exists()
-        if self.resume == False:
-            self.make_results_folder()
-
-    def setup_results_path(self):
-        """Use the model mapper to set up the results path of the non-linear analysis. This uses the classes that make \
-        up the model mapper.
-        """
 
         self.results_path = self.path + self.obj_name + '/'
         for prior_name, prior_model in self.model_mapper.prior_models:
-            self.results_path += prior_model.cls.__name__
-            self.results_path += '+'
+            self.results_path += prior_model.cls.__name__ + '+'
+        self.results_path = self.results_path[:-1] + '/' # remove last + symbol from path name
 
-        self.results_path = self.results_path[:-1] # remove last + symbol from path name
-        self.results_path +='/'
+        self.file_param_names = self.results_path + self.obj_name + '.paramnames'
+        self.file_model_info = self.results_path + 'model.info'
 
-    def results_folder_exists(self):
-        return os.path.exists(self.results_path)
-
-    def make_results_folder(self):
-        os.makedirs(self.results_path)
-
-
-class MultiNestFiles(object):
-
-    def __init__(self, obj_name, results_path):
-        """Setup the path and file names of the MultiNestOptimizer files.
-
-        Parameters
-        ------------
-        results_path : str
-            The results path of the MultiNestOptimizer analysis.
-        """
-        self.param_names = results_path + obj_name + '.paramnames'
-        self.model_info = results_path + 'model.info'
-        self.weighted_samples = results_path + obj_name + '.txt'
-        self.summary = results_path + 'summary.txt'
-
-
-class MultiNestOptimizer(NonLinearDirectory):
-
-    def __init__(self, path, obj_name, model_mapper):
-        """Class to setup and run a MultiNestOptimizer analysis and output the results file.
-
-        This interfaces with an input model_mapper, which is used for setting up the individual model instances passed \
-        to each iteration of MultiNestOptimizer.
-
-        Parameters
-        ------------
-        path : str
-            The path where the non_linear results are stored.
-        obj_name : str
-            Unique identifier of the data being analysed (e.g. the name of the data set)
-        model_mapper : CalibrationModel.ModelMapper
-            Maps the model priors to a set of parameters (a model instance)
-        """
-
-        super(MultiNestOptimizer, self).__init__(path, obj_name, model_mapper)
-
-        self.files = MultiNestFiles(self.obj_name, self.results_path)
+        self.resume = os.path.exists(self.results_path) # resume True if results path already exists
 
         if self.resume == False:
-            self.make_param_names()
-            self.output_model_info()
-        elif self.resume == True:
-            self.check_model_info()
 
-    def make_param_names(self):
-        """The param_names file lists every parameter's name and Latex tag, and is used for visualization.
+            os.makedirs(self.results_path) # Create results folder if doesnt exist
+            self.create_param_names()
+            self.model_mapper.output_model_info(self.file_model_info)
+
+        elif self.resume == True:
+            if check_model == True:
+                self.model_mapper.check_model_info(self.file_model_info)
+
+    def create_param_names(self):
+        """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
-        param_names = open(self.files.param_names, 'w')
+        param_names = open(self.file_param_names, 'w')
 
         for prior_name, prior_model in self.model_mapper.prior_models:
 
@@ -140,89 +96,118 @@ class MultiNestOptimizer(NonLinearDirectory):
 
         param_names.close()
 
-    def output_model_info(self):
-        model_info = self.model_mapper.generate_info()
-        with open(self.files.model_info, 'w') as file:
-            file.write(model_info)
-        file.close()
 
-    def check_model_info(self):
-        """Check the priors that make up the model_mapper are the same as those which were used to setup the initial \
-        MultiNestOptimizer run which has since been terminated."""
+class MultiNest(NonLinearFiles):
 
-        model_info = self.model_mapper.generate_info()
+    def __init__(self, path, obj_name, model_mapper, check_model=True):
+        """Class to setup and run a MultiNest analysis and output the MultInest files.
 
-        model_info_check = open(self.files.model_info, 'r')
-
-        if str(model_info_check.read()) != model_info:
-
-            raise MultiNestException(
-                'The model_mapper input to MultiNestOptimizer has a different prior for a parameter than the model_mapper existing in '
-                'the directory. Parameter = ')
-
-        model_info_check.close()
-
-    def setup_results_intermediate(self):
-        return MultiNestResultsIntermediate(self.path, self.obj_name, self.model_mapper)
-
-    def setup_results_final(self):
-        return MultiNestResultsFinal(self.path, self.obj_name, self.model_mapper)
-
-
-class MultiNestResultsIntermediate(NonLinearDirectory):
-
-    def __init__(self, path, obj_name, model_mapper):
-        """Class which stores the intermediate results of a MultiNest analysis, e.g. before the non-linear sampling \
-        is complete.
-
-        This corresponds to the most likely and most probable models, and allows the model images, residuals, \
-        chi-sq image, etc. to be inspected before a MultiNest analysis is complete.
+        This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
+        are passed to each iteration of MultiNest.
 
         Parameters
-        -----------
+        ------------
         path : str
-            The path where the non_linear results are stored.
+            The path where the non_linear files are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
-        model_mapper : CalibrationModel.ModelMapper
+        model_mapper : model_mapper.ModelMapper
             Maps the model priors to a set of parameters (a model instance)
         """
 
-        super(MultiNestResultsIntermediate, self).__init__(path, obj_name, model_mapper)
+        super(MultiNest, self).__init__(path, obj_name, model_mapper, check_model)
 
-        self.files = MultiNestFiles(self.obj_name, self.results_path)
+        self.file_summary = self.results_path + 'summary.txt'
 
-        self.setup_most_likely_and_probable()
+    def open_summary_file(self):
 
-    def setup_most_likely_and_probable(self):
-        """Setup the most likely and probable models. This is performed as both 1D vectors of all parameters and a \
-        model_mapper instance of each model.
+        summary = open(self.file_summary)
 
-        The most probable model is defined as the model where each parameter is the mean value of all posterior \
-        samples weighted by their sampling probabilities.
+        expected_parameters = (len(summary.readline()) - 57) / 56
+        if expected_parameters != self.total_parameters:
+            raise MultiNestException('The file_summary file has a different number of parameters than the input model')
 
-        The most likely model is defined as the model which gives the highest likelihood, regardless of the inferred
-        posterior distribution.
+        return summary
+
+    def read_vector_from_summary(self, number_entries, offset):
+
+        summary = self.open_summary_file()
+
+        summary.seek(0)
+        summary.read(2 + offset * self.total_parameters)
+        vector = []
+        for param in range(number_entries):
+            vector.append(float(summary.read(28)))
+
+        summary.close()
+
+        return vector
+
+    def compute_most_probable(self):
         """
-        self._most_probable = self.read_most_probable()
-        self._most_likely = self.read_most_likely()
+        Read the most probable or most likely model values from the 'obj_summary.txt' file which files from a \
+        multinest analysis.
 
-        self.most_probable = self.model_mapper.from_physical_vector(self._most_probable)
-        self.most_likely = self.model_mapper.from_physical_vector(self._most_likely)
+        This file stores the parameters of the most probable model in the first half of entries and the most likely
+        model in the second half of entries. The offset parameter is used to start at the desired model.
 
-    def read_most_probable(self):
-        return read_vector_from_summary(self.files.summary, self.total_parameters, 0)
+        Parameters
+        -----------
+        filename : str
+            The files and file name of the file_summary file.
+        total_parameters : int
+            The total number of parameters of the model.
+        offset : int
+            The file_summary file stores the most likely model in the first half of columns and the most probable model in
+            the second half. The offset is used to start the parsing at the appropriate column.
+        """
+        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=0)
 
-    def read_most_likely(self):
-        return read_vector_from_summary(self.files.summary, self.total_parameters, 28)
+    def compute_most_likely(self):
+        """
+        Read the most probable or most likely model values from the 'obj_summary.txt' file which files from a \
+        multinest analysis.
 
-class MultiNestResultsFinal(MultiNestResultsIntermediate):
+        This file stores the parameters of the most probable model in the first half of entries and the most likely
+        model in the second half of entries. The offset parameter is used to start at the desired model.
 
-    def __init__(self, path, obj_name, model_mapper, limit=0.9973):
-        """Class which stores the final results of a MultiNest analysis, including the intermediate results \
-        produced by the parent class *MultiNestResultsFinal* (these are the most likely / probably models).
+        Parameters
+        -----------
+        filename : str
+            The files and file name of the file_summary file.
+        total_parameters : int
+            The total number of parameters of the model.
+        offset : int
+            The file_summary file stores the most likely model in the first half of columns and the most probable model in
+            the second half. The offset is used to start the parsing at the appropriate column.
+        """
+        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=28)
 
-        The final results use the library *GetDist* to compute and visualize the probably distribution function \
+    def compute_max_likelihood(self):
+        return self.read_vector_from_summary(number_entries=2, offset=56)[0]
+
+    def compute_max_log_likelihood(self):
+        return self.read_vector_from_summary(number_entries=2, offset=56)[1]
+
+    def create_most_probable_model_instance(self):
+        most_probable = self.compute_most_probable()
+        return self.model_mapper.from_physical_vector(most_probable)
+
+    def create_most_likely_model_instance(self):
+        most_likely = self.compute_most_likely()
+        return self.model_mapper.from_physical_vector(most_likely)
+
+    def create_multinest_finished(self, check_model=True):
+        return MultiNestFinished(self.path, self.obj_name, self.model_mapper, check_model)
+
+
+class MultiNestFinished(MultiNest):
+
+    def __init__(self, path, obj_name, model_mapper, check_model=True):
+        """Class which stores the final files of a MultiNest analysis, including the intermediate files \
+        produced by the parent class *MultiNestFinished* (these are the most likely / probably models).
+
+        The final files use the library *GetDist* to compute and visualize the probably distribution function \
         (PDF) of parameter space. This uses the weighted-samples output by MultiNest and allows the marginalized PDF's \
         of parameters in 1D and 2D to be plotted.
 
@@ -231,7 +216,7 @@ class MultiNestResultsFinal(MultiNestResultsIntermediate):
         Parameters
         -----------
         path : str
-            The path where the non_linear results are stored.
+            The path where the non_linear files are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
         model_mapper : CalibrationModel.ModelMapper
@@ -240,14 +225,17 @@ class MultiNestResultsFinal(MultiNestResultsIntermediate):
             The fraction of a PDF used to estimate errors.
         """
 
-        super(MultiNestResultsFinal, self).__init__(path, obj_name, model_mapper)
+        super(MultiNestFinished, self).__init__(path, obj_name, model_mapper, check_model)
 
-        self.pdf = getdist.mcsamples.loadMCSamples(self.files.weighted_samples)
+        self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
+        self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-        self.setup_1d_upper_and_lower_limits(limit)
+    def compute_model_at_limit(self, limit):
+        densities_1d = list(map(lambda p : self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
+        return list(map(lambda p : p.getLimits(limit), densities_1d))
 
-    def setup_1d_upper_and_lower_limits(self, limit):
-        """Setup 1D vectors of the upper and lower limits of the multinest results.
+    def compute_model_at_upper_limit(self, limit):
+        """Setup 1D vectors of the upper and lower limits of the multinest files.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
         each parameter estimate
@@ -257,14 +245,23 @@ class MultiNestResultsFinal(MultiNestResultsIntermediate):
         limit : float
             The fraction of a PDF used to estimate errors.
         """
-        self.densities_1d = list(map(lambda p : self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
+        return list(map(lambda param : param[1], self.compute_model_at_limit(limit)))
 
-        limits = list(map(lambda p : p.getLimits(limit), self.densities_1d))
+    def compute_model_at_lower_limit(self, limit):
+        """Setup 1D vectors of the upper and lower limits of the multinest files.
 
-        self._lower_limits_1d = list(map(lambda p : p[0], limits))
-        self._upper_limits_1d = list(map(lambda p : p[1], limits))
+        These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
+        each parameter estimate
 
-    def setup_weighted_sample_model(self, index):
+        Parameters
+        -----------
+        limit : float
+            The fraction of a PDF used to estimate errors.
+        """
+        self.compute_model_at_limit(limit)
+        return list(map(lambda param : param[0], self.compute_model_at_limit(limit)))
+
+    def create_weighted_sample_model_instance(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
 
         Parameters
@@ -272,15 +269,13 @@ class MultiNestResultsFinal(MultiNestResultsIntermediate):
         index : int
             The index of the weighted sample to return.
         """
-        model, weight, likelihood = self.read_weighted_sample_model(index)
+        model, weight, likelihood = self.compute_weighted_sample_model(index)
 
         self._weighted_sample_model = model
 
-        self.weighted_sample_model = self.model_mapper.from_physical_vector(model)
-        self.weighted_sample_weight = weight
-        self.weighted_sample_likelihood = likelihood
+        return self.model_mapper.from_physical_vector(model), weight, likelihood
 
-    def read_weighted_sample_model(self, index):
+    def compute_weighted_sample_model(self, index):
         """From a weighted sample return the model, weight and likelihood hood.
 
         NOTE: GetDist reads the log likelihood from the weighted_sample.txt file (column 2), which are defined as \
@@ -293,62 +288,26 @@ class MultiNestResultsFinal(MultiNestResultsIntermediate):
         """
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5*self.pdf.loglikes[index]
 
+    # TODO : untested and unfinished, remiains to be seen if we'll need this code.
+
+    def reorder_summary_file(self, new_order):
+
+        most_probable = self.compute_most_probable()
+        most_likely = self.compute_most_likely()
+        likelihood = self.compute_max_likelihood()[0]
+        log_likelihood = self.compute_max_likelihood()[1]
+
+        most_probable = list(map(lambda param : ('%18.18E' % param).rjust(28), most_probable))
+        most_probable = ''.join(map(str, most_probable))
+        most_likely = list(map(lambda param : ('%18.18E' % param).rjust(28), most_likely))
+        most_likely = ''.join(map(str, most_likely))
+        likelihood = ('%18.18E' % 0.0).rjust(28)
+        log_likelihood = ('%18.18E' % 0.0).rjust(28)
+
+        new_summary_file = open(self.results_path+'summary_new.txt', 'w')
+        new_summary_file.write(most_probable+most_likely+likelihood+log_likelihood)
+        new_summary_file.close()
+
+
 class MultiNestException(Exception):
     pass
-
-def read_vector_from_summary(filename, total_parameters, offset):
-    """
-    Read the most probable or most likely model values from the 'obj_summary.txt' file which results from a \
-    multinest analysis.
-
-    This file stores the parameters of the most probable model in the first half of entries and the most likely
-    model in the second half of entries. The offset parameter is used to start at the desired model.
-
-    Parameters
-    -----------
-    filename : str
-        The directory and file name of the summary file.
-    total_parameters : int
-        The total number of parameters of the model.
-    offset : int
-        The summary file stores the most likely model in the first half of columns and the most probable model in
-        the second half. The offset is used to start the parsing at the appropriate column.
-    """
-    summary = open(filename)
-
-    expected_parameters = (len(summary.readline()) - 57) / 56
-    if expected_parameters != total_parameters:
-        raise MultiNestException('The summary file has a different number of parameters than the input model')
-
-    summary.seek(0) # rewind file and skip the first 3 characters of the file (indentation)
-    summary.read(2 + offset*total_parameters)
-
-    vector = []
-
-    for param in range(total_parameters):
-        vector.append(float(summary.read(28)))
-
-    summary.close()
-
-    return vector
-
-def reorder_summary_file(path, new_order):
-
-    most_probable = read_vector_from_summary(filename=path + 'summary.txt', total_parameters=len(new_order), offset=0)
-    most_probable = list(map(lambda param : ('%18.18E' % param).rjust(28), most_probable))
-    most_probable = ''.join(map(str, most_probable))
-
-    most_likely = read_vector_from_summary(filename=path + 'summary.txt', total_parameters=len(new_order), offset=28)
-    most_likely = list(map(lambda param : ('%18.18E' % param).rjust(28), most_likely))
-    most_likely = ''.join(map(str, most_likely))
-
-    likelihood = 0.0
-    log_likelihood = 0.0
-
-    new_summary_file = open(path+'summary_new.txt', 'w')
-    new_summary_file.write(most_probable+most_likely)
-    new_summary_file.close()
-
-    print(most_likely)
-    print(most_probable)
-

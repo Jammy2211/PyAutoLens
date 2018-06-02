@@ -276,7 +276,7 @@ class ModelMapper(object):
 
         return model_instance
 
-    def generate_info(self):
+    def generate_model_info(self):
         """Use the priors that make up the model_mapper to information on each parameter of the overall model.
 
         This information is extracted from each priors *model_info* property.
@@ -296,6 +296,29 @@ class ModelMapper(object):
 
         return model_info
 
+    def output_model_info(self, filename):
+        """Output a model infomation file, which lists the information of the model mapper (e.g. parameters, priors, \
+         etc.) """
+        model_info = self.generate_model_info()
+        with open(filename, 'w') as file:
+            file.write(model_info)
+        file.close()
+
+    def check_model_info(self, filename):
+        """Check whether the priors in this instance of the model_mapper are identical to those output into a model \
+        info file on the hard-disk (e.g. from a previous non-linear search)."""
+
+        model_info = self.generate_model_info()
+
+        model_info_check = open(filename, 'r')
+
+        if str(model_info_check.read()) != model_info:
+
+            raise PriorException(
+                'The model_mapper input to MultiNest has a different prior for a parameter than the model_mapper existing in '
+                'the files. Parameter = ')
+
+        model_info_check.close()
 
 prior_number = 0
 

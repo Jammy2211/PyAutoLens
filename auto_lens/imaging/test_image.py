@@ -574,6 +574,7 @@ class TestSimulateImage(object):
                                          [0.0, 1.0, 0.0]))).all()
 
         def test__setup_with__poisson_noise_on(self):
+
             img = np.array(([0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]))
@@ -581,18 +582,21 @@ class TestSimulateImage(object):
             exposure_time = image.Array.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.Image.simulate(array=img, pixel_scale=0.1, effective_exposure_time=exposure_time,
-                                           poisson_noise=image.generate_poisson_noise(img, exposure_time, seed=1))
+                                           poisson_noise_map=image.generate_poisson_noise(img, exposure_time, seed=1))
 
             assert (sim_img.effective_exposure_time == 20.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
 
-            assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
-                                                                    [0.0, 0.05, 0.0],
-                                                                    [0.0, 0.0, 0.0]]), 1e-2)
-
             assert sim_img == pytest.approx(np.array(([0.0, 0.0, 0.0],
                                                       [0.0, 1.05, 0.0],
                                                       [0.0, 0.0, 0.0])), 1e-2)
+
+            # Because of the image value is 1.05, the estimated Poisson noise is:
+            # sqrt((1.05 * 20))/20 = 0.2291
+
+            assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
+                                                                    [0.0, 0.2291, 0.0],
+                                                                    [0.0, 0.0, 0.0]]), 1e-2)
 
 
 class TestSimulatePoissonNoise(object):
