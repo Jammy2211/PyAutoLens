@@ -536,12 +536,12 @@ class TestSimulateImage(object):
     class TestConstructor(object):
 
         def test__setup_with_all_features_off(self):
+
             img = np.array(([0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]))
 
-            exposure_time = image.Array.single_value(value=1.0, pixel_scale=0.1,
-                                                     shape=img.shape)
+            exposure_time = image.Array.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time, pixel_scale=0.1)
 
@@ -552,7 +552,57 @@ class TestSimulateImage(object):
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]))).all()
 
+        def test__setup_with_background_sky_on__poisson_noise_off_so_no_noise_in_image(self):
+
+            img = np.array(([0.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],
+                            [0.0, 0.0, 0.0]))
+
+            exposure_time = image.Array.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
+
+            background_sky = image.Array.single_value(value=16.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time,
+                                           background_sky_map=background_sky, pixel_scale=0.1, seed=1)
+
+            assert (sim_img.effective_exposure_time == 1.0*np.ones((3, 3))).all()
+            assert sim_img.pixel_scale == 0.1
+
+            assert (sim_img == np.array(([0.0, 0.0, 0.0],
+                                         [0.0, 1.0, 0.0],
+                                         [0.0, 0.0, 0.0]))).all()
+
+            assert (sim_img.background_noise == 4.0*np.ones((3,3))).all()
+
+        def test__setup_with_background_sky_on__poisson_noise_on_so_background_adds_noise_to_image(self):
+
+            img = np.array(([0.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],
+                            [0.0, 0.0, 0.0]))
+
+            exposure_time = image.Array.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
+
+            background_sky = image.Array.single_value(value=16.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time, pixel_scale=0.1,
+                                           background_sky_map=background_sky, include_poisson_noise=True,
+                                           seed=1)
+
+            assert (sim_img.effective_exposure_time == 1.0 * np.ones((3, 3))).all()
+            assert sim_img.pixel_scale == 0.1
+
+            assert (sim_img == np.array(([1.0, 5.0, 4.0],
+                                         [1.0, 2.0, 1.0],
+                                         [5.0, 2.0, 7.0]))).all()
+
+            assert (sim_img.poisson_noise == np.array(([np.sqrt(1.0), np.sqrt(5.0), np.sqrt(4.0)],
+                                                       [np.sqrt(1.0), np.sqrt(2.0), np.sqrt(1.0)],
+                                                       [np.sqrt(5.0), np.sqrt(2.0), np.sqrt(7.0)]))).all()
+
+            assert (sim_img.background_noise == 4.0 * np.ones((3, 3))).all()
+
         def test__setup_with_psf_blurring_on(self):
+
             img = np.array(([0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]))
@@ -582,7 +632,7 @@ class TestSimulateImage(object):
             exposure_time = image.Array.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.Image.simulate(array=img, pixel_scale=0.1, effective_exposure_time=exposure_time,
-                                           poisson_noise_map=image.generate_poisson_noise(img, exposure_time, seed=1))
+                                           include_poisson_noise=True, seed=1)
 
             assert (sim_img.effective_exposure_time == 20.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
@@ -597,6 +647,36 @@ class TestSimulateImage(object):
             assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                     [0.0, 0.2291, 0.0],
                                                                     [0.0, 0.0, 0.0]]), 1e-2)
+
+        def test__setup_with__psf_blurring_and_poisson_noise_on__poisson_noise_added_to_blurred_image(self):
+
+            img = np.array(([0.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],
+                            [0.0, 0.0, 0.0]))
+
+            psf = image.PSF(array=np.array(([0.0, 1.0, 0.0],
+                                            [1.0, 2.0, 1.0],
+                                            [0.0, 1.0, 0.0])), pixel_scale=0.1)
+
+            exposure_time = image.Array.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.Image.simulate(array=img, pixel_scale=0.1, effective_exposure_time=exposure_time, psf=psf,
+                                           include_poisson_noise=True, seed=1)
+
+            assert (sim_img.effective_exposure_time == 20.0 * np.ones((3, 3))).all()
+            assert sim_img.pixel_scale == 0.1
+            assert sim_img == pytest.approx(np.array(([0.0, 1.05, 0.0],
+                                                      [1.3, 2.35, 1.05],
+                                                      [0.0, 1.05, 0.0])), 1e-2)
+
+            # The estimated Poisson noises are:
+            # sqrt((2.35 * 20))/20 = 0.3427
+            # sqrt((1.3 * 20))/20 = 0.2549
+            # sqrt((1.05 * 20))/20 = 0.2291
+
+            assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.2291, 0.0],
+                                                                    [0.2549, 0.3427, 0.2291],
+                                                                    [0.0, 0.2291, 0.0]]), 1e-2)
 
 
 class TestSimulatePoissonNoise(object):
