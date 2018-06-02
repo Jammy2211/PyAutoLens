@@ -14,15 +14,26 @@ class Image(Array):
         self.effective_exposure_time = effective_exposure_time
 
     @classmethod
-    def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
-                 poisson_noise=None):
+    def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise_map=None,
+                 background_noise_sigma=None, poisson_noise_map=None):
 
         if psf is not None:
             array = psf.convolve(array)
-        if poisson_noise is not None:
-            array += poisson_noise
-        if background_noise is not None:
-            array += background_noise
+
+        if poisson_noise_map is not None:
+            array += poisson_noise_map
+            # TODO : Should be using the @properties but not sure how to get it to call in the simulate classmethod
+            array_counts = np.multiply(array, effective_exposure_time)
+            poisson_noise = np.sqrt(array_counts)
+            poisson_noise = np.divide(poisson_noise, effective_exposure_time)
+        else:
+            poisson_noise = None
+
+        if background_noise_map is not None:
+            array += background_noise_map
+            background_noise = np.ones(array.shape)*background_noise_sigma
+        else:
+            background_noise = None
 
         return Image(array, effective_exposure_time=effective_exposure_time, pixel_scale=pixel_scale, psf=psf,
                      background_noise=background_noise, poisson_noise=poisson_noise)
@@ -109,7 +120,6 @@ class Image(Array):
     def estimated_noise(self):
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
-
 class PSF(Array):
 
     def __init__(self, array, pixel_scale, renormalize=True):
@@ -184,7 +194,7 @@ def generate_background_noise(image, sigma, seed=-1):
 
 def setup_random_seed(seed):
     """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is positive,
-    that seed is used for all runs, thereby giving reproducible results
+    that seed is used for all runs, thereby giving reproducible files
 
     Parameters
     ----------
