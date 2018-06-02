@@ -1,5 +1,6 @@
 import numpy as np
 
+from auto_lens.imaging.data import Array
 from auto_lens.imaging.mask import MaskException
 from auto_lens.profiles import geometry_profiles
 
@@ -511,6 +512,7 @@ class GridDataCollection(object):
         noise = GridData.from_mask(noise.data, mask)
         exposure_time = GridData.from_mask(exposure_time.data, mask)
         return GridDataCollection(image, noise, exposure_time, psf)
+
 
 class GridData(np.ndarray):
 
