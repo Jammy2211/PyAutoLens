@@ -150,11 +150,11 @@ class FrameMaker(object):
         -------
             convolver: Convolver
         """
-        return Convolver(self.make_frame_array(kernel_shape))
+        return Convolver(self.number_array, self.make_frame_array(kernel_shape))
 
 
 class Convolver(object):
-    def __init__(self, frame_array, mask_frame_array=None):
+    def __init__(self, number_array, frame_array, mask_frame_array=None):
         """
         Class to convolve a kernel with a 1D vector of non-masked values
         Parameters
@@ -166,14 +166,16 @@ class Convolver(object):
         """
         self.frame_array = frame_array
         self.mask_frame_array = mask_frame_array
+        self.number_array = number_array
 
     def convolver_for_kernel(self, kernel):
-        return KernelConvolver(self.frame_array, kernel, self.mask_frame_array)
+        return KernelConvolver(self.number_array, self.frame_array, kernel, self.mask_frame_array)
 
 
 class KernelConvolver(object):
-    def __init__(self, frame_array, kernel, mask_frame_array=None):
+    def __init__(self, number_array, frame_array, kernel, mask_frame_array=None):
         self.shape = kernel.shape
+        self.number_array = number_array
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
