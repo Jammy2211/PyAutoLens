@@ -1,0 +1,32 @@
+EllipticalSersic
+
+centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+axis_ratio: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+phi: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+intensity: GaussianPrior, mean = 0.0, sigma = 0.5
+effective_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+sersic_index: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+
+EllipticalExponential
+
+centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+axis_ratio: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+phi: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+intensity: GaussianPrior, mean = 0.0, sigma = 0.5
+effective_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+
+SphericalIsothermal
+
+centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+einstein_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+
+SphericalNFW
+
+centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+kappa_s: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+scale_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0
+
