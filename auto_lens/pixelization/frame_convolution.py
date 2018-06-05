@@ -150,11 +150,11 @@ class FrameMaker(object):
         -------
             convolver: Convolver
         """
-        return Convolver(self.number_array, self.make_frame_array(kernel_shape))
+        return Convolver(self.make_frame_array(kernel_shape))
 
 
 class Convolver(object):
-    def __init__(self, number_array, frame_array, mask_frame_array=None):
+    def __init__(self, frame_array, mask_frame_array=None):
         """
         Class to convolve a kernel with a 1D vector of non-masked values
         Parameters
@@ -166,16 +166,15 @@ class Convolver(object):
         """
         self.frame_array = frame_array
         self.mask_frame_array = mask_frame_array
-        self.number_array = number_array
 
     def convolver_for_kernel(self, kernel):
-        return KernelConvolver(self.number_array, self.frame_array, kernel, self.mask_frame_array)
+        return KernelConvolver(self.frame_array, kernel, self.mask_frame_array)
 
 
 class KernelConvolver(object):
-    def __init__(self, number_array, frame_array, kernel, mask_frame_array=None):
+    def __init__(self, frame_array, kernel, mask_frame_array=None):
         self.shape = kernel.shape
-        self.number_array = number_array.flatten()
+        # self.number_array = number_array.flatten()
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
@@ -239,7 +238,7 @@ class KernelConvolver(object):
         result = np.zeros(pixel_array.shape)
         array_range = range(len(pixel_array))
         for pixel_index in array_range:
-            if self.number_array[pixel_index] > -1:
+            if self.frame_array[pixel_index] is not None:
                 new_array = self.convolution_for_pixel_index_vector(pixel_index, pixel_array, sub_shape)
                 result += new_array
 
@@ -268,7 +267,7 @@ class KernelConvolver(object):
         #  TODO: how can pixel index work for both?
         value = pixel_array[pixel_index]
 
-        frame = self.frame_array[self.number_array[pixel_index]]
+        frame = self.frame_array[pixel_index]
 
         limits = None
         if sub_shape is not None:
