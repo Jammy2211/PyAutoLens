@@ -175,7 +175,7 @@ class Convolver(object):
 class KernelConvolver(object):
     def __init__(self, number_array, frame_array, kernel, mask_frame_array=None):
         self.shape = kernel.shape
-        self.number_array = number_array
+        self.number_array = number_array.flatten()
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
@@ -196,29 +196,6 @@ class KernelConvolver(object):
             A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel accounting for convolution
         """
         return map(self.convolve_vector, mapping_matrix)
-
-    def convolve_vector(self, pixel_array, sub_shape=None):
-        """
-        Convolves a kernel with a 1D vector of non-masked values
-        Parameters
-        ----------
-        sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
-        pixel_array: [float]
-            A 1D array
-        Returns
-        -------
-        convolved_vector: [float]
-            A vector convolved with the kernel
-        """
-
-        result = np.zeros(pixel_array.shape)
-        array_range = range(len(self.frame_array))
-        for key in array_range:
-            new_array = self.convolution_for_pixel_index_vector(key, pixel_array, sub_shape)
-            result += new_array
-
-        return result
 
     def mask_convolution_for_mask_index_vector(self, mask_index, pixel_array, sub_shape=None):
         new_array = np.zeros(pixel_array.shape)
@@ -244,6 +221,30 @@ class KernelConvolver(object):
 
         return new_array
 
+    def convolve_vector(self, pixel_array, sub_shape=None):
+        """
+        Convolves a kernel with a 1D vector of non-masked values
+        Parameters
+        ----------
+        sub_shape: (int, int)
+            Defines a sub_grid-region of the kernel for which the result should be calculated
+        pixel_array: [float]
+            A 1D array
+        Returns
+        -------
+        convolved_vector: [float]
+            A vector convolved with the kernel
+        """
+
+        result = np.zeros(pixel_array.shape)
+        array_range = range(len(pixel_array))
+        for pixel_index in array_range:
+            if self.number_array[pixel_index] > -1:
+                new_array = self.convolution_for_pixel_index_vector(pixel_index, pixel_array, sub_shape)
+                result += new_array
+
+        return result
+
     def convolution_for_pixel_index_vector(self, pixel_index, pixel_array, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
@@ -267,7 +268,7 @@ class KernelConvolver(object):
         #  TODO: how can pixel index work for both?
         value = pixel_array[pixel_index]
 
-        frame = self.frame_array[pixel_index]
+        frame = self.frame_array[self.number_array[pixel_index]]
 
         limits = None
         if sub_shape is not None:
