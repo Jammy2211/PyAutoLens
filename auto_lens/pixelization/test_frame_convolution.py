@@ -1,7 +1,6 @@
 import numpy as np
 from auto_lens.pixelization import frame_convolution
 import pytest
-from numpy.testing import assert_array_equal
 
 
 @pytest.fixture(name="simple_number_array")
@@ -72,7 +71,6 @@ class TestNumbering(object):
         frame_maker = frame_convolution.FrameMaker(cross_mask)
 
         assert (frame_maker.number_array == np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])).all()
-        # assert (frame_maker.mask_number_array == np.array([[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
 
     def test_even_failure(self):
         with pytest.raises(frame_convolution.KernelException):
@@ -123,16 +121,16 @@ class TestFrameExtraction(object):
                           -1, 7, -1,
                           -1, -1, -1]) == frame_array[7]).all()
 
-        # masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
-        #
-        # assert 4 == len(masked_frame_array)
-        #
-        # assert (np.array([-1, -1, -1,
-        #                   -1, -1, 0,
-        #                   -1, 1, 2]) == masked_frame_array[0]).all()
-        # assert (np.array([2, 3, -1,
-        #                   4, -1, -1,
-        #                   -1, -1, -1]) == masked_frame_array[3]).all()
+        masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
+
+        assert 9 == len(masked_frame_array)
+
+        assert (np.array([-1, -1, -1,
+                          -1, -1, 1,
+                          -1, 3, 4]) == masked_frame_array[0]).all()
+        assert (np.array([4, 5, -1,
+                          7, -1, -1,
+                          -1, -1, -1]) == masked_frame_array[-1]).all()
 
 
 #
