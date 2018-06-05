@@ -64,18 +64,12 @@ class FrameMaker(object):
         self.mask = mask
         self.blurring_region_mask = blurring_region_mask
         self.number_array = np.full(self.mask.shape, -1)
-        self.mask_number_array = np.full(self.mask.shape, -1)
 
         number_array_count = 0
-        mask_array_count = 0
         for x in range(self.mask.shape[0]):
             for y in range(self.mask.shape[1]):
-                if self.mask[x, y] == 1:
-                    self.number_array[x, y] = number_array_count
-                    number_array_count += 1
-                elif self.blurring_region_mask is None or self.blurring_region_mask[x, y] == 1:
-                    self.mask_number_array[x, y] = mask_array_count
-                    mask_array_count += 1
+                self.number_array[x, y] = number_array_count
+                number_array_count += 1
 
     def make_frame_array(self, kernel_shape):
         """
@@ -94,7 +88,13 @@ class FrameMaker(object):
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
-                if self.number_array[x][y] > -1:
+                if self.mask[x][y] == 0:
+                    frame_array.append(None)
+                    continue
+                frame = self.frame_at_coords((x, y), kernel_shape)
+                if np.amax(frame) == -1:
+                    frame_array.append(None)
+                else:
                     frame_array.append(self.frame_at_coords((x, y), kernel_shape))
 
         return frame_array
