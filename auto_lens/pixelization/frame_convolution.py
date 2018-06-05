@@ -105,8 +105,8 @@ class FrameMaker(object):
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
-                if self.mask[x][y] == 1 or (self.blurring_region_mask is not None and self.blurring_region_mask[
-                    x, y] == 0):
+                if self.mask[x][y] == 1 or (
+                        self.blurring_region_mask is not None and self.blurring_region_mask[x, y] == 0):
                     frame_array.append(None)
                     continue
                 frame = self.frame_at_coords((x, y), kernel_shape)
@@ -157,7 +157,7 @@ class FrameMaker(object):
         -------
             convolver: Convolver
         """
-        return Convolver(self.make_frame_array(kernel_shape))
+        return Convolver(self.make_frame_array(kernel_shape), self.make_mask_frame_array(kernel_shape))
 
 
 class Convolver(object):
@@ -187,51 +187,31 @@ class KernelConvolver(object):
         self.frame_array = frame_array
         self.mask_frame_array = mask_frame_array
 
-    def convolve_mapping_matrix(self, mapping_matrix):
+    def convolve_1d_array(self, array):
         """
         Simple version of function that applies this convolver to a whole mapping matrix.
 
         Parameters
         ----------
-        mapping_matrix: [{int: float}]
+        array: [float]
             A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel
 
         Returns
         -------
-        convolved_mapping_matrix: [{int: float}]
+        convolved_array: [float]
             A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel accounting for convolution
         """
-        return map(self.convolve_vector, mapping_matrix)
-
-    def mask_convolution_for_mask_index_vector(self, mask_index, pixel_array, sub_shape=None):
-        new_array = np.zeros(pixel_array.shape)
-
-        value = pixel_array[mask_index]
-
-        frame = self.mask_frame_array[mask_index]
-
-        limits = None
-        if sub_shape is not None:
-            limits = calculate_limits(self.shape, sub_shape)
-
-        for kernel_index in range(self.length):
-            if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
-                continue
-
-            vector_index = frame[kernel_index]
-            if vector_index == -1:
-                continue
-            result = value * self.kernel[kernel_index]
-            if result > 0:
-                new_array[vector_index] = result
-
-        return new_array
+        return map(self.convolve_vector, array)
 
     def convolve_vector(self, pixel_array, sub_shape=None):
+        return self.convolve_vector_with_frame_array(pixel_array, self.frame_array, sub_shape)
+
+    def convolve_vector_with_frame_array(self, pixel_array, frame_array, sub_shape=None):
         """
         Convolves a kernel with a 1D vector of non-masked values
         Parameters
         ----------
+        frame_array
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_array: [float]
@@ -245,17 +225,18 @@ class KernelConvolver(object):
         result = np.zeros(pixel_array.shape)
         array_range = range(len(pixel_array))
         for pixel_index in array_range:
-            if self.frame_array[pixel_index] is not None:
-                new_array = self.convolution_for_pixel_index_vector(pixel_index, pixel_array, sub_shape)
+            if frame_array[pixel_index] is not None:
+                new_array = self.convolution_for_pixel_index_vector(pixel_index, pixel_array, frame_array, sub_shape)
                 result += new_array
 
         return result
 
-    def convolution_for_pixel_index_vector(self, pixel_index, pixel_array, sub_shape=None):
+    def convolution_for_pixel_index_vector(self, pixel_index, pixel_array, frame_array, sub_shape=None):
         """
         Creates a vector of values describing the convolution of the kernel with a value in the vector
         Parameters
         ----------
+        frame_array
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_index: int
@@ -271,10 +252,9 @@ class KernelConvolver(object):
 
         new_array = np.zeros(pixel_array.shape)
 
-        #  TODO: how can pixel index work for both?
         value = pixel_array[pixel_index]
 
-        frame = self.frame_array[pixel_index]
+        frame = frame_array[pixel_index]
 
         limits = None
         if sub_shape is not None:
