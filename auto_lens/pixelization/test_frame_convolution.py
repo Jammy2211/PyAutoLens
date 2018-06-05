@@ -133,26 +133,38 @@ class TestFrameExtraction(object):
                           -1, -1, -1]) == masked_frame_array[-1]).all()
 
 
-#
-#
-# class TestBlurringRegionMask(object):
-#     def test_no_blurring_region(self, cross_mask):
-#         frame_maker = frame_convolution.FrameMaker(cross_mask, cross_mask)
-#
-#         assert 0 == len(frame_maker.make_mask_frame_array(kernel_shape=(3, 3)))
-#
-#     def test_partial_blurring_region(self, cross_mask):
-#         partial_mask = np.array(cross_mask)
-#         partial_mask[0, 0] = 1
-#
-#         frame_maker = frame_convolution.FrameMaker(cross_mask, partial_mask)
-#         masked_frame_array = frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
-#
-#         assert 1 == len(masked_frame_array)
-#         assert (np.array([-1, -1, -1, -1, -1, 0, -1, 1, 2]) == masked_frame_array[0]).all()
-#
-#     def test_no_blurring_region_mask(self, cross_frame_maker):
-#         assert 4 == len(cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3)))
+class TestBlurringRegionMask(object):
+    def test_no_blurring_region(self, cross_mask):
+        frame_maker = frame_convolution.FrameMaker(cross_mask, cross_mask)
+
+        # noinspection PyTypeChecker
+        assert (frame_maker.make_mask_frame_array(kernel_shape=(3, 3)) == np.full(9, None)).all()
+
+    def test_partial_blurring_region(self, cross_mask):
+        partial_mask = np.array(cross_mask)
+        partial_mask[0, 0] = 1
+
+        frame_maker = frame_convolution.FrameMaker(cross_mask, partial_mask)
+        masked_frame_array = frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
+
+        assert (np.array([-1, -1, -1,
+                          -1, -1, 1,
+                          -1, 3, 4]) == masked_frame_array[0]).all()
+
+    def test_no_blurring_region_mask(self, cross_frame_maker):
+        frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
+        assert frame_array[1] is None
+        assert frame_array[3] is None
+        assert frame_array[4] is None
+        assert frame_array[5] is None
+        assert frame_array[7] is None
+
+        assert frame_array[0] is not None
+        assert frame_array[2] is not None
+        assert frame_array[6] is not None
+        assert frame_array[8] is not None
+
+
 #
 #
 # class TestBlurringRegionConvolution(object):
@@ -293,9 +305,9 @@ class TestNonTrivialExamples(object):
         result = kernel_convolver.convolve_vector(pixel_array)
 
         assert (np.round(result, 1) == np.round(np.array([0., 0., 0., 0.,
-                                                         0., 0.6, 0.6, 0.,
-                                                         0., 0.2, 0.2, 0.,
-                                                         0., 0., 0., 0.]), 1)).all()
+                                                          0., 0.6, 0.6, 0.,
+                                                          0., 0.2, 0.2, 0.,
+                                                          0., 0., 0., 0.]), 1)).all()
 
 
 class TestSubConvolution(object):
