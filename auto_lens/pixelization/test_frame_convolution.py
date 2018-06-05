@@ -181,15 +181,24 @@ class TestConvolution(object):
 
         assert (result == np.array([0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5])).all()
 
-    def test_cross_mask_convolution(self, cross_number_array, cross_frame_array):
-        pixel_array = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0])
-        kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
-
-        convolver = frame_convolution.Convolver(cross_number_array, cross_frame_array)
-
-        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
-
-        assert (result == np.array([0, 0, 0.5, 0.5, 0, 0, 0, 0, 0])).all()
+    # def test_cross_mask_convolution(self, cross_number_array, cross_frame_array):
+    #     pixel_array = np.array([0, 0, 0,
+    #                             0, 1, 0,
+    #                             0, 0, 0])
+    #
+    #     kernel = np.array([[0, 0, 0],
+    #                        [0, 0.5, 0.5],
+    #                        [0, 0, 0]])
+    #
+    #     convolver = frame_convolution.Convolver(cross_number_array, cross_frame_array)
+    #
+    #     result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
+    #
+    #     print(result)
+    #
+    #     assert (result == np.array([0, 0, 0,
+    #                                 0, 0.5, 0.5,
+    #                                 0, 0, 0])).all()
 
 
 @pytest.fixture(name="convolver_4_simple")
@@ -259,13 +268,23 @@ class TestNonTrivialExamples(object):
                            [0.2, 0.4, 0.2],
                            [0, 0.2, 0]])
 
-        pixel_array = np.array([0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        pixel_array = np.array([0, 0, 0, 0,
+                                0, 1, 1, 0,
+                                0, 0, 0, 0,
+                                0, 0, 0, 0])
 
         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
 
         result = kernel_convolver.convolve_vector(pixel_array)
 
-        assert (result == np.array([0.4, 0.4, 0.4, 0.4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
+        print(kernel_convolver.number_array)
+
+        print(result)
+
+        assert (result == np.array([0, 0, 0, 0,
+                                    0, 0.6, 0.6, 0,
+                                    0, 0.2, 0.2, 0,
+                                    0, 0, 0, 0])).all()
 
 
 class TestSubConvolution(object):
