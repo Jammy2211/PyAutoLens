@@ -88,7 +88,7 @@ class FrameMaker(object):
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
-                if self.mask[x][y] == 0:
+                if not self.mask[x][y]:
                     frame_array.append(None)
                     continue
                 frame = self.frame_at_coords((x, y), kernel_shape)
@@ -105,8 +105,8 @@ class FrameMaker(object):
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
-                if self.mask[x][y] == 1 or (
-                        self.blurring_region_mask is not None and self.blurring_region_mask[x, y] == 0):
+                if self.mask[x][y] or (
+                        self.blurring_region_mask is not None and not self.blurring_region_mask[x, y]):
                     frame_array.append(None)
                     continue
                 frame = self.frame_at_coords((x, y), kernel_shape)
@@ -141,7 +141,7 @@ class FrameMaker(object):
                 y = coords[1] - half_y + j
                 if 0 <= x < self.number_array.shape[0] and 0 <= y < self.number_array.shape[1]:
                     value = self.number_array[x, y]
-                    if value >= 0 and self.mask[x, y] == 1:
+                    if value >= 0 and self.mask[x, y]:
                         frame[j + kernel_shape[1] * i] = value
 
         return frame
@@ -181,7 +181,7 @@ class Convolver(object):
 class KernelConvolver(object):
     def __init__(self, frame_array, kernel, mask_frame_array=None):
         self.shape = kernel.shape
-        # self.number_array = number_array.flatten()
+        
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
