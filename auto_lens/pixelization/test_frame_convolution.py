@@ -1,6 +1,7 @@
 import numpy as np
 from auto_lens.pixelization import frame_convolution
 import pytest
+from numpy.testing import assert_array_equal
 
 
 @pytest.fixture(name="simple_number_array")
@@ -216,131 +217,127 @@ class TestConvolution(object):
                                     0, 0.5, 0.5,
                                     0, 0, 0])).all()
 
-#
-# @pytest.fixture(name="convolver_4_simple")
-# def make_convolver_4_simple():
-#     shape = (4, 4)
-#     mask = np.ones(shape)
-#
-#     frame_maker = frame_convolution.FrameMaker(mask)
-#     return frame_maker.convolver_for_kernel_shape((3, 3))
-#
-#
-# @pytest.fixture(name="convolver_4_edges")
-# def make_convolver_4_edges():
-#     mask = np.array(
-#         [[0, 0, 0, 0],
-#          [0, 1, 1, 0],
-#          [0, 1, 1, 0],
-#          [0, 0, 0, 0]]
-#     )
-#
-#     frame_maker = frame_convolution.FrameMaker(mask)
-#     return frame_maker.convolver_for_kernel_shape((3, 3))
-#
-#
-# class TestNonTrivialExamples(object):
-#     def test_larger_mask(self, convolver_4_simple):
-#         kernel = np.array([[0, 0.2, 0],
-#                            [0.2, 0.4, 0.2],
-#                            [0, 0.2, 0]])
-#
-#         pixel_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
-#
-#         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_array)
-#
-#         assert (result == np.array([0, 0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.4, 0.2, 0, 0, 0.2, 0, 0])).all()
-#
-#     def test_asymmetric_kernel(self, convolver_4_simple):
-#         asymmetric_kernel = np.array([[0, 0.0, 0],
-#                                       [0.4, 0.2, 0.3],
-#                                       [0, 0.1, 0]])
-#
-#         pixel_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
-#
-#         kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_array)
-#
-#         assert (result == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0.4, 0.2, 0.3, 0, 0, 0.1, 0, 0])).all()
-#
-#     def test_two_pixel_sum(self, convolver_4_simple):
-#         kernel = np.array([[0, 0.2, 0],
-#                            [0.2, 0.4, 0.2],
-#                            [0, 0.2, 0]])
-#
-#         pixel_array = np.array([0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0])
-#
-#         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_array)
-#
-#         assert (result == np.array([0, 0, 0.2, 0, 0, 0.4, 0.4, 0.2, 0.2, 0.4, 0.4, 0, 0, 0.2, 0, 0])).all()
-#
-#     def test_two_pixel_sum_masked(self, convolver_4_edges):
-#         kernel = np.array([[0, 0.2, 0],
-#                            [0.2, 0.4, 0.2],
-#                            [0, 0.2, 0]])
-#
-#         pixel_array = np.array([0, 0, 0, 0,
-#                                 0, 1, 1, 0,
-#                                 0, 0, 0, 0,
-#                                 0, 0, 0, 0])
-#
-#         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
-#
-#         result = kernel_convolver.convolve_vector(pixel_array)
-#
-#         print(kernel_convolver.number_array)
-#
-#         print(result)
-#
-#         assert (result == np.array([0, 0, 0, 0,
-#                                     0, 0.6, 0.6, 0,
-#                                     0, 0.2, 0.2, 0,
-#                                     0, 0, 0, 0])).all()
-#
-#
-# class TestSubConvolution(object):
-#     def test_calculate_limits(self):
-#         limits = frame_convolution.calculate_limits((5, 5), (3, 3))
-#         assert limits == (1, 1, 4, 4)
-#
-#     def test_is_in_sub_shape(self):
-#         assert not frame_convolution.is_in_sub_shape(0, (1, 1, 4, 4), (5, 5))
-#         assert not frame_convolution.is_in_sub_shape(4, (1, 1, 4, 4), (5, 5))
-#         assert not frame_convolution.is_in_sub_shape(5, (1, 1, 4, 4), (5, 5))
-#         assert not frame_convolution.is_in_sub_shape(9, (1, 1, 4, 4), (5, 5))
-#         assert frame_convolution.is_in_sub_shape(6, (1, 1, 4, 4), (5, 5))
-#         assert frame_convolution.is_in_sub_shape(8, (1, 1, 4, 4), (5, 5))
-#         assert frame_convolution.is_in_sub_shape(16, (1, 1, 4, 4), (5, 5))
-#         assert frame_convolution.is_in_sub_shape(18, (1, 1, 4, 4), (5, 5))
-#         assert not frame_convolution.is_in_sub_shape(21, (1, 1, 4, 4), (5, 5))
-#         assert not frame_convolution.is_in_sub_shape(24, (1, 1, 4, 4), (5, 5))
-#
-#     def test_simple_convolution(self):
-#         convolver = frame_convolution.FrameMaker(mask=np.ones((5, 5)),
-#                                                  blurring_region_mask=None).convolver_for_kernel_shape(
-#             (5, 5)).convolver_for_kernel(np.ones((5, 5)))
-#
-#         pixel_array = np.zeros(shape=(25,))
-#
-#         pixel_array[12] = 1
-#
-#         convolved_vector = convolver.convolve_vector(pixel_array, sub_shape=(3, 3))
-#
-#         assertion_array = np.zeros(shape=(25,))
-#
-#         assertion_array[6] = 1
-#         assertion_array[7] = 1
-#         assertion_array[8] = 1
-#         assertion_array[11] = 1
-#         assertion_array[12] = 1
-#         assertion_array[13] = 1
-#         assertion_array[16] = 1
-#         assertion_array[17] = 1
-#         assertion_array[18] = 1
-#
-#         assert (assertion_array == convolved_vector).all()
+
+@pytest.fixture(name="convolver_4_simple")
+def make_convolver_4_simple():
+    shape = (4, 4)
+    mask = np.ones(shape)
+
+    frame_maker = frame_convolution.FrameMaker(mask)
+    return frame_maker.convolver_for_kernel_shape((3, 3))
+
+
+@pytest.fixture(name="convolver_4_edges")
+def make_convolver_4_edges():
+    mask = np.array(
+        [[0, 0, 0, 0],
+         [0, 1, 1, 0],
+         [0, 1, 1, 0],
+         [0, 0, 0, 0]]
+    )
+
+    frame_maker = frame_convolution.FrameMaker(mask)
+    return frame_maker.convolver_for_kernel_shape((3, 3))
+
+
+class TestNonTrivialExamples(object):
+    def test_larger_mask(self, convolver_4_simple):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        pixel_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_array)
+
+        assert (result == np.array([0, 0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.4, 0.2, 0, 0, 0.2, 0, 0])).all()
+
+    def test_asymmetric_kernel(self, convolver_4_simple):
+        asymmetric_kernel = np.array([[0, 0.0, 0],
+                                      [0.4, 0.2, 0.3],
+                                      [0, 0.1, 0]])
+
+        pixel_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0])
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_array)
+
+        assert (result == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0.4, 0.2, 0.3, 0, 0, 0.1, 0, 0])).all()
+
+    def test_two_pixel_sum(self, convolver_4_simple):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        pixel_array = np.array([0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0])
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_array)
+
+        assert (result == np.array([0, 0, 0.2, 0, 0, 0.4, 0.4, 0.2, 0.2, 0.4, 0.4, 0, 0, 0.2, 0, 0])).all()
+
+    def test_two_pixel_sum_masked(self, convolver_4_edges):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+
+        pixel_array = np.array([0, 0, 0, 0,
+                                0, 1, 1, 0,
+                                0, 0, 0, 0,
+                                0, 0, 0, 0])
+
+        kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_vector(pixel_array)
+
+        assert (np.round(result, 1) == np.round(np.array([0., 0., 0., 0.,
+                                                         0., 0.6, 0.6, 0.,
+                                                         0., 0.2, 0.2, 0.,
+                                                         0., 0., 0., 0.]), 1)).all()
+
+
+class TestSubConvolution(object):
+    def test_calculate_limits(self):
+        limits = frame_convolution.calculate_limits((5, 5), (3, 3))
+        assert limits == (1, 1, 4, 4)
+
+    def test_is_in_sub_shape(self):
+        assert not frame_convolution.is_in_sub_shape(0, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(4, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(5, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(9, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(6, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(8, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(16, (1, 1, 4, 4), (5, 5))
+        assert frame_convolution.is_in_sub_shape(18, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(21, (1, 1, 4, 4), (5, 5))
+        assert not frame_convolution.is_in_sub_shape(24, (1, 1, 4, 4), (5, 5))
+
+    def test_simple_convolution(self):
+        convolver = frame_convolution.FrameMaker(mask=np.ones((5, 5)),
+                                                 blurring_region_mask=None).convolver_for_kernel_shape(
+            (5, 5)).convolver_for_kernel(np.ones((5, 5)))
+
+        pixel_array = np.zeros(shape=(25,))
+
+        pixel_array[12] = 1
+
+        convolved_vector = convolver.convolve_vector(pixel_array, sub_shape=(3, 3))
+
+        assertion_array = np.zeros(shape=(25,))
+
+        assertion_array[6] = 1
+        assertion_array[7] = 1
+        assertion_array[8] = 1
+        assertion_array[11] = 1
+        assertion_array[12] = 1
+        assertion_array[13] = 1
+        assertion_array[16] = 1
+        assertion_array[17] = 1
+        assertion_array[18] = 1
+
+        assert (assertion_array == convolved_vector).all()
