@@ -19,7 +19,7 @@ class Galaxy(object):
         self.redshift = redshift
         self.light_profiles = light_profiles if light_profiles is not None else []
         self.mass_profiles = mass_profiles if mass_profiles is not None else []
-        self.pixelization = pixelization
+        self.pixelization = pixelization  # TODO: should this be here?
 
     def __repr__(self):
         return "<Galaxy redshift={}>".format(self.redshift)
