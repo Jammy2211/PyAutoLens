@@ -181,16 +181,15 @@ class TestBlurringRegionConvolution(object):
 
     def test_blurring_region_mask(self, cross_mask, simple_kernel):
         partial_mask = np.array(cross_mask)
-        partial_mask[0, 0] = 1
+        partial_mask[0, 0] = 0
 
         frame_maker = frame_convolution.FrameMaker(cross_mask, partial_mask)
         convolver = frame_maker.convolver_for_kernel_shape((3, 3))
 
         pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
 
-        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(0, pixel_array,
-                                                                                                  convolver.mask_frame_array)
-
+        result = convolver.convolver_for_kernel(simple_kernel).convolve_vector_with_frame_array(pixel_array,
+                                                                                                convolver.mask_frame_array)
         assert (result == np.array([0, 0, 0,
                                     0, 0, 0,
                                     0, 0, 0])).all()
