@@ -105,8 +105,15 @@ class FrameMaker(object):
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
-                if self.mask_number_array[x][y] > -1:
-                    frame_array.append(self.frame_at_coords((x, y), kernel_shape))
+                if self.mask[x][y] == 1 or (self.blurring_region_mask is not None and self.blurring_region_mask[
+                    x, y] == 0):
+                    frame_array.append(None)
+                    continue
+                frame = self.frame_at_coords((x, y), kernel_shape)
+                if np.amax(frame) == -1:
+                    frame_array.append(None)
+                else:
+                    frame_array.append(frame)
         return frame_array
 
     def frame_at_coords(self, coords, kernel_shape):
