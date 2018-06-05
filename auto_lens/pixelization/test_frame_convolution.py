@@ -19,17 +19,6 @@ def make_cross_mask():
 
     return mask
 
-# @pytest.fixture(name="cross_mask_frame_array")
-# def make_cross_mask_frame_array():
-#     mask = np.zeros((3, 3))
-#
-#     mask[0, 0] = 1
-#     mask[0, 2] = 1
-#     mask[2, 2] = 1
-#     mask[2, 0] = 1
-#
-#     return mask
-
 
 @pytest.fixture(name="cross_number_array")
 def make_cross_number_array():
@@ -95,13 +84,13 @@ class TestFrameExtraction(object):
                                                                                       kernel_shape=(3, 3))).all()
 
     def test_corner_frame(self, simple_frame_maker):
-        corner_dict = [-1, -1, -1, -1, 0, 1, -1, 3, 4]
+        corner_frame = [-1, -1, -1,
+                        -1, 0, 1,
+                        -1, 3, 4]
 
-        corner_frame = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=(3, 3))
+        result = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=(3, 3))
 
-        print(corner_frame)
-
-        assert (corner_dict == corner_frame).all()
+        assert (corner_frame == result).all()
 
     def test_simple_square(self, simple_frame_maker):
         frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
@@ -127,8 +116,12 @@ class TestFrameExtraction(object):
 
         assert 4 == len(masked_frame_array)
 
-        assert (np.array([-1, -1, -1, -1, -1, 0, -1, 1, 2]) == masked_frame_array[0]).all()
-        assert (np.array([2, 3, -1, 4, -1, -1, -1, -1, -1]) == masked_frame_array[3]).all()
+        assert (np.array([-1, -1, -1,
+                          -1, -1, 0,
+                          -1, 1, 2]) == masked_frame_array[0]).all()
+        assert (np.array([2, 3, -1,
+                          4, -1, -1,
+                          -1, -1, -1]) == masked_frame_array[3]).all()
 
 
 class TestBlurringRegionMask(object):
@@ -152,8 +145,9 @@ class TestBlurringRegionMask(object):
 
 
 class TestBlurringRegionConvolution(object):
-    def test_no_blurring_region_mask(self, cross_frame_array, cross_mask_frame_array, simple_kernel):
-        convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
+    def test_no_blurring_region_mask(self, cross_number_array, cross_frame_array, cross_mask_frame_array,
+                                     simple_kernel):
+        convolver = frame_convolution.Convolver(cross_number_array, cross_frame_array, cross_mask_frame_array)
 
         pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
 
@@ -167,31 +161,31 @@ class TestBlurringRegionConvolution(object):
 
 
 class TestConvolution(object):
-    def test_simple_convolution(self, simple_frame_array, simple_kernel):
+    def test_simple_convolution(self, simple_number_array, simple_frame_array, simple_kernel):
         pixel_array = np.array([0, 0, 0, 0, 1, 0, 0, 0, 0])
 
-        convolver = frame_convolution.Convolver(simple_frame_array)
+        convolver = frame_convolution.Convolver(simple_number_array, simple_frame_array)
 
         result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_array)
 
         assert (result == np.array([0, 0.1, 0, 0.1, 0.6, 0.1, 0, 0.1, 0])).all()
 
-    def test_full_convolution(self, simple_frame_array):
+    def test_full_convolution(self, simple_number_array, simple_frame_array):
         pixel_array = np.array([1, 0, 0, 0, 1, 0, 0, 0, 1])
 
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(simple_frame_array)
+        convolver = frame_convolution.Convolver(simple_number_array, simple_frame_array)
 
         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
 
         assert (result == np.array([0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5])).all()
 
-    def test_cross_mask_convolution(self, cross_frame_array):
+    def test_cross_mask_convolution(self, cross_number_array, cross_frame_array):
         pixel_array = np.array([0, 0, 1, 0, 0, 0, 0, 0, 0])
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(cross_frame_array)
+        convolver = frame_convolution.Convolver(cross_number_array, cross_frame_array)
 
         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
 
