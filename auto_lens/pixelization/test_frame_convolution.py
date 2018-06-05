@@ -165,24 +165,37 @@ class TestBlurringRegionMask(object):
         assert frame_array[8] is not None
 
 
-#
-#
-# class TestBlurringRegionConvolution(object):
-#     def test_no_blurring_region_mask(self, cross_number_array, cross_frame_array, cross_mask_frame_array,
-#                                      simple_kernel):
-#         convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
-#
-#         pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
-#
-#         result = convolver.convolver_for_kernel(simple_kernel).mask_convolution_for_mask_index_vector(0, pixel_array)
-#
-#         print(result)
-#
-#         assert (result == np.array([0.6, 0.1, 0,
-#                                     0.1, 0, 0,
-#                                     0, 0, 0])).all()
-#
-#
+class TestBlurringRegionConvolution(object):
+    def test_no_blurring_region_mask(self, cross_frame_array, cross_mask_frame_array,
+                                     simple_kernel):
+        convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
+
+        pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(0, pixel_array,
+                                                                                                  convolver.mask_frame_array)
+
+        assert (result == np.array([0, 0.1, 0,
+                                    0.1, 0, 0,
+                                    0, 0, 0])).all()
+
+    def test_blurring_region_mask(self, cross_mask, simple_kernel):
+        partial_mask = np.array(cross_mask)
+        partial_mask[0, 0] = 1
+
+        frame_maker = frame_convolution.FrameMaker(cross_mask, partial_mask)
+        convolver = frame_maker.convolver_for_kernel_shape((3, 3))
+
+        pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
+
+        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(0, pixel_array,
+                                                                                                  convolver.mask_frame_array)
+
+        assert (result == np.array([0, 0, 0,
+                                    0, 0, 0,
+                                    0, 0, 0])).all()
+
+
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
         pixel_array = np.array([0, 0, 0,
@@ -191,7 +204,8 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(simple_frame_array)
 
-        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_array)
+        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_array,
+                                                                                                  frame_array=convolver.frame_array)
 
         assert (result == np.array([0, 0.1, 0,
                                     0.1, 0.6, 0.1,
