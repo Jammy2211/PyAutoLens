@@ -63,8 +63,8 @@ class FrameMaker(object):
         """
         self.mask = mask
         self.blurring_region_mask = blurring_region_mask
-        self.number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
-        self.mask_number_array = -1 * np.ones(self.mask.shape, dtype=np.int64)
+        self.number_array = np.full(self.mask.shape, -1)
+        self.mask_number_array = np.full(self.mask.shape, -1)
 
         number_array_count = 0
         mask_array_count = 0
