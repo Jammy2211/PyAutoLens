@@ -159,6 +159,8 @@ class TestBlurringRegionConvolution(object):
 
         result = convolver.convolver_for_kernel(simple_kernel).mask_convolution_for_mask_index_vector(0, pixel_array)
 
+        print(result)
+
         assert (result == np.array([0.6, 0.1, 0,
                                     0.1, 0, 0,
                                     0, 0, 0])).all()
