@@ -29,9 +29,12 @@ class GalaxyPrior:
     def galaxy_for_model_instance(self, model_instance):
         light_profiles = []
         mass_profiles = []
-        for num in range(len(self.light_profile_classes)):
-            light_profiles.append(getattr(model_instance, "{}_light_profile_{}".format(self.id, num)))
-        for num in range(len(self.mass_profile_classes)):
-            mass_profiles.append(getattr(model_instance, "{}_mass_profile_{}".format(self.id, num)))
+        try:
+            for num in range(len(self.light_profile_classes)):
+                light_profiles.append(getattr(model_instance, "{}_light_profile_{}".format(self.id, num)))
+            for num in range(len(self.mass_profile_classes)):
+                mass_profiles.append(getattr(model_instance, "{}_mass_profile_{}".format(self.id, num)))
+        except AttributeError as e:
+            raise PriorException(*e.args)
 
         return galaxy.Galaxy(light_profiles=light_profiles, mass_profiles=mass_profiles)
