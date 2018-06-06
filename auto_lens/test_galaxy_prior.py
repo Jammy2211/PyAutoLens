@@ -43,13 +43,13 @@ class TestGalaxyPrior:
 
         setattr(instance, light_profile_name, light_profiles.EllipticalDevVaucouleurs())
         setattr(instance, mass_profile_name, mass_profiles.EllipticalCoredIsothermal())
-        setattr(instance, redshift_name, gp.Redshift(1))
+        setattr(instance, redshift_name, gp.Value(1))
 
         galaxy = galaxy_prior.galaxy_for_model_instance(instance)
 
         assert len(galaxy.light_profiles) == 1
         assert len(galaxy.mass_profiles) == 1
-        assert galaxy.redshift == 1;
+        assert galaxy.redshift == 1
 
     def test_exceptions(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
