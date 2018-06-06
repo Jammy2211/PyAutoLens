@@ -17,6 +17,14 @@ class GalaxyPrior:
         for num, mass_profile_class in enumerate(self.mass_profile_classes):
             model_mapper.add_class("{}_mass_profile_{}".format(self.id, num), mass_profile_class)
 
+    @property
+    def light_profile_names(self):
+        return ["{}_light_profile_{}".format(self.id, num) for num in range(len(self.light_profile_classes))]
+
+    @property
+    def mass_profile_names(self):
+        return ["{}_mass_profile_{}".format(self.id, num) for num in range(len(self.mass_profile_classes))]
+
     def galaxy_for_model_instance(self, model_instance):
         light_profiles = []
         mass_profiles = []
