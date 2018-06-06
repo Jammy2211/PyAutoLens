@@ -102,10 +102,10 @@ class GalaxyPrior:
         light_profiles = []
         mass_profiles = []
         try:
-            for num in range(len(self.light_profile_classes)):
-                light_profiles.append(getattr(model_instance, "{}_light_profile_{}".format(self.id, num)))
-            for num in range(len(self.mass_profile_classes)):
-                mass_profiles.append(getattr(model_instance, "{}_mass_profile_{}".format(self.id, num)))
+            for name in self.light_profile_names:
+                light_profiles.append(getattr(model_instance, name))
+            for name in self.mass_profile_names:
+                mass_profiles.append(getattr(model_instance, name))
             redshift = getattr(model_instance, self.redshift_name).redshift
         except AttributeError as e:
             raise PriorException(*e.args)
