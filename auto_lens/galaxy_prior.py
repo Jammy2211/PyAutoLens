@@ -9,7 +9,8 @@ class GalaxyPrior:
     Class to produce Galaxy instances from sets of profile classes using the model mapper
     """
 
-    def __init__(self, light_profile_classes=None, mass_profile_classes=None, align_centres=False):
+    def __init__(self, light_profile_classes=None, mass_profile_classes=None, align_centres=False,
+                 align_orientations=False):
         """
         Parameters
         ----------
@@ -23,6 +24,7 @@ class GalaxyPrior:
         self.light_profile_classes = light_profile_classes if light_profile_classes is not None else []
         self.mass_profile_classes = mass_profile_classes if mass_profile_classes is not None else []
         self.align_centres = align_centres
+        self.align_orientations = align_orientations
 
     def attach_to_model_mapper(self, model_mapper):
         """
@@ -51,6 +53,11 @@ class GalaxyPrior:
             centre = profile_models[0].centre
             for profile_model in profile_models:
                 profile_model.centre = centre
+
+        if self.align_orientations:
+            phi = profile_models[0].phi
+            for profile_model in profile_models:
+                profile_model.phi = phi
 
         prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.id), Value)]
 

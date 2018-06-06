@@ -8,6 +8,7 @@ class MockPriorModel:
         self.name = name
         self.cls = cls
         self.centre = "centre for {}".format(name)
+        self.phi = "phi for {}".format(name)
 
 
 class MockModelMapper:
@@ -87,3 +88,14 @@ class TestGalaxyPrior:
                                       align_centres=True)
         prior_models = galaxy_prior.attach_to_model_mapper(mapper)
         assert prior_models[0].centre == prior_models[1].centre
+
+    def test_align_phis(self, galaxy_prior, mapper):
+        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+
+        assert prior_models[0].phi != prior_models[1].phi
+
+        galaxy_prior = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+                                      mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal],
+                                      align_orientations=True)
+        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+        assert prior_models[0].phi == prior_models[1].phi
