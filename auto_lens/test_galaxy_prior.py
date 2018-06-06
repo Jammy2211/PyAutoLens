@@ -77,7 +77,11 @@ class TestGalaxyPrior:
 
         assert len(mapper.classes) == 6
 
-    def test_align_centres(self, mapper):
+    def test_align_centres(self, galaxy_prior, mapper):
+        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+
+        assert prior_models[0].centre != prior_models[1].centre
+
         galaxy_prior = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
                                       mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal],
                                       align_centres=True)
