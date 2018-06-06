@@ -3,12 +3,20 @@ from auto_lens.profiles import mass_profiles, light_profiles
 import pytest
 
 
+class MockPriorModel:
+    def __init__(self, name, cls):
+        self.name = name
+        self.cls = cls
+        self.centre = "centre for {}".format(name)
+
+
 class MockModelMapper:
     def __init__(self):
         self.classes = {}
 
     def add_class(self, name, cls):
         self.classes[name] = cls
+        return MockPriorModel(name, cls)
 
 
 class MockModelInstance:
@@ -18,6 +26,12 @@ class MockModelInstance:
 @pytest.fixture(name="mapper")
 def make_mapper():
     return MockModelMapper()
+
+
+@pytest.fixture(name="galaxy_prior_2")
+def make_galaxy_prior_2():
+    return gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+                          mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal])
 
 
 @pytest.fixture(name="galaxy_prior")
@@ -57,11 +71,15 @@ class TestGalaxyPrior:
         with pytest.raises(gp.PriorException):
             galaxy_prior.galaxy_for_model_instance(instance)
 
-    def test_multiple_galaxies(self, galaxy_prior, mapper):
-        galaxy_prior_2 = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
-                                        mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal])
-
+    def test_multiple_galaxies(self, galaxy_prior, galaxy_prior_2, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
         galaxy_prior_2.attach_to_model_mapper(mapper)
 
         assert len(mapper.classes) == 6
+
+    def test_align_centres(self, mapper):
+        galaxy_prior = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+                                      mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal],
+                                      align_centres=True)
+        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+        assert prior_models[0].centre == prior_models[1].centre
