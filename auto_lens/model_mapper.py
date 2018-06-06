@@ -93,6 +93,10 @@ class ModelMapper(object):
         cls: class
             The class for which priors are to be generated.
 
+        Returns
+        -------
+        prior_model: PriorModel
+            A prior_model instance for this class
         """
 
         arg_spec = inspect.getargspec(cls.__init__)
@@ -124,6 +128,7 @@ class ModelMapper(object):
                 setattr(prior_model, arg, self.make_prior(arg, cls))
 
         setattr(self, name, prior_model)
+        return prior_model
 
     @property
     def prior_models(self):
