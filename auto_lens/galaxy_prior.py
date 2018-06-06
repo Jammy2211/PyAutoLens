@@ -9,7 +9,7 @@ class GalaxyPrior:
     Class to produce Galaxy instances from sets of profile classes using the model mapper
     """
 
-    def __init__(self, light_profile_classes=None, mass_profile_classes=None):
+    def __init__(self, light_profile_classes=None, mass_profile_classes=None, align_centres=False):
         """
         Parameters
         ----------
