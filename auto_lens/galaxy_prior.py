@@ -18,6 +18,12 @@ class GalaxyPrior:
             The classes for which light profile instances are generated for this galaxy
         mass_profile_classes: [MassProfile]
             The classes for which light profile instances are generated for this galaxy
+        align_centres: Bool
+            If True the same prior will be used for all the profiles centres such that any generated profiles always
+            have the same centre
+        align_orientations: Bool
+            If True the same prior will be used for all the profiles orientations such that any generated profiles
+            always have the same orientation
         """
         self.id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
