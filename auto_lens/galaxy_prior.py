@@ -22,6 +22,7 @@ class GalaxyPrior:
 
         self.light_profile_classes = light_profile_classes if light_profile_classes is not None else []
         self.mass_profile_classes = mass_profile_classes if mass_profile_classes is not None else []
+        self.align_centres = align_centres
 
     def attach_to_model_mapper(self, model_mapper):
         """
@@ -38,15 +39,20 @@ class GalaxyPrior:
         prior_models: [PriorModel]
             The prior models created to generate instances of the classes
         """
-        prior_models = []
+        profile_models = []
 
         for name, cls in zip(self.light_profile_names, self.light_profile_classes):
-            prior_models.append(model_mapper.add_class(name, cls))
+            profile_models.append(model_mapper.add_class(name, cls))
 
         for name, cls in zip(self.mass_profile_names, self.mass_profile_classes):
-            prior_models.append(model_mapper.add_class(name, cls))
+            profile_models.append(model_mapper.add_class(name, cls))
 
-        prior_models.append(model_mapper.add_class(self.redshift_name.format(self.id), Value))
+        if self.align_centres:
+            centre = profile_models[0].centre
+            for profile_model in profile_models:
+                profile_model.centre = centre
+
+        prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.id), Value)]
 
         return prior_models
 
