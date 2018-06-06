@@ -45,11 +45,11 @@ class GalaxyPrior:
         """
         prior_models = []
 
-        for num, light_profile_class in enumerate(self.light_profile_classes):
-            prior_models.append(model_mapper.add_class("{}_light_profile_{}".format(self.id, num), light_profile_class))
+        for name, cls in zip(self.light_profile_names, self.light_profile_classes):
+            prior_models.append(model_mapper.add_class(name, cls))
 
-        for num, mass_profile_class in enumerate(self.mass_profile_classes):
-            prior_models.append(model_mapper.add_class("{}_mass_profile_{}".format(self.id, num), mass_profile_class))
+        for name, cls in zip(self.mass_profile_names, self.mass_profile_classes):
+            prior_models.append(model_mapper.add_class(name, cls))
 
         prior_models.append(model_mapper.add_class(self.redshift_name.format(self.id), Redshift))
 
