@@ -1,12 +1,7 @@
 import random
 import string
 from auto_lens import galaxy
-from auto_lens.model_mapper import PriorException
-
-
-class Redshift:
-    def __init__(self, redshift):
-        self.redshift = redshift
+from auto_lens.model_mapper import PriorException, Value
 
 
 class GalaxyPrior:
@@ -51,7 +46,7 @@ class GalaxyPrior:
         for name, cls in zip(self.mass_profile_names, self.mass_profile_classes):
             prior_models.append(model_mapper.add_class(name, cls))
 
-        prior_models.append(model_mapper.add_class(self.redshift_name.format(self.id), Redshift))
+        prior_models.append(model_mapper.add_class(self.redshift_name.format(self.id), Value))
 
         return prior_models
 
@@ -106,7 +101,7 @@ class GalaxyPrior:
                 light_profiles.append(getattr(model_instance, name))
             for name in self.mass_profile_names:
                 mass_profiles.append(getattr(model_instance, name))
-            redshift = getattr(model_instance, self.redshift_name).redshift
+            redshift = getattr(model_instance, self.redshift_name).value
         except AttributeError as e:
             raise PriorException(*e.args)
 
