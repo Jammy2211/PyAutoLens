@@ -1,6 +1,7 @@
 import random
 import string
 from auto_lens import galaxy
+from auto_lens.model_mapper import PriorException
 
 
 class GalaxyPrior:

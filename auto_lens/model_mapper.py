@@ -313,12 +313,12 @@ class ModelMapper(object):
         model_info_check = open(filename, 'r')
 
         if str(model_info_check.read()) != model_info:
-
             raise PriorException(
-                'The model_mapper input to MultiNest has a different prior for a parameter than the model_mapper existing in '
-                'the files. Parameter = ')
+                'The model_mapper input to MultiNest has a different prior for a parameter than the model_mapper '
+                'existing in the files. Parameter = ')
 
         model_info_check.close()
+
 
 prior_number = 0
 
