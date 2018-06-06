@@ -30,7 +30,7 @@ class TestGalaxyPrior:
     def test_attach_to_model_mapper(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
 
-        assert len(mapper.classes) == 2
+        assert len(mapper.classes) == 3
 
     def test_recover_classes(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
@@ -39,14 +39,17 @@ class TestGalaxyPrior:
 
         light_profile_name = galaxy_prior.light_profile_names[0]
         mass_profile_name = galaxy_prior.mass_profile_names[0]
+        redshift_name = galaxy_prior.redshift_name
 
         setattr(instance, light_profile_name, light_profiles.EllipticalDevVaucouleurs())
         setattr(instance, mass_profile_name, mass_profiles.EllipticalCoredIsothermal())
+        setattr(instance, redshift_name, gp.Redshift(1))
 
         galaxy = galaxy_prior.galaxy_for_model_instance(instance)
 
         assert len(galaxy.light_profiles) == 1
         assert len(galaxy.mass_profiles) == 1
+        assert galaxy.redshift == 1;
 
     def test_exceptions(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
@@ -61,4 +64,4 @@ class TestGalaxyPrior:
         galaxy_prior.attach_to_model_mapper(mapper)
         galaxy_prior_2.attach_to_model_mapper(mapper)
 
-        assert len(mapper.classes) == 4
+        assert len(mapper.classes) == 6
