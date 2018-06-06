@@ -47,3 +47,9 @@ class TestGalaxyPrior:
 
         assert len(galaxy.light_profiles) == 1
         assert len(galaxy.mass_profiles) == 1
+
+    def test_exceptions(self, galaxy_prior, mapper):
+        galaxy_prior.attach_to_model_mapper(mapper)
+        instance = MockModelInstance()
+        with pytest.raises(gp.PriorException):
+            galaxy_prior.galaxy_for_model_instance(instance)
