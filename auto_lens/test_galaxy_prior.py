@@ -53,3 +53,12 @@ class TestGalaxyPrior:
         instance = MockModelInstance()
         with pytest.raises(gp.PriorException):
             galaxy_prior.galaxy_for_model_instance(instance)
+
+    def test_multiple_galaxies(self, galaxy_prior, mapper):
+        galaxy_prior_2 = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+                                        mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal])
+
+        galaxy_prior.attach_to_model_mapper(mapper)
+        galaxy_prior_2.attach_to_model_mapper(mapper)
+
+        assert len(mapper.classes) == 4
