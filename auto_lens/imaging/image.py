@@ -38,6 +38,7 @@ class Image(Array):
                 array_counts = np.multiply(array - background_sky_map, effective_exposure_time)
             elif background_sky_map is None:
                 array_counts = np.multiply(array, effective_exposure_time)
+            # TODO: What if background_sky_map is None? array_counts doesn't exist
             poisson_noise = np.sqrt(array_counts)
             poisson_noise = np.divide(poisson_noise, effective_exposure_time)
         else:
@@ -132,6 +133,7 @@ class Image(Array):
     def estimated_noise(self):
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
+
 class PSF(Array):
 
     def __init__(self, array, pixel_scale, renormalize=True):
@@ -183,7 +185,7 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
     ----------
     image : ndarray
         The 2D image background noise is added to.
-    exposure_time : ndarray
+    exposure_time : Union(ndarray, int)
         The 2D array of pixel exposure times.
     seed : int
         The seed of the random number generator, used for the random noise maps.
