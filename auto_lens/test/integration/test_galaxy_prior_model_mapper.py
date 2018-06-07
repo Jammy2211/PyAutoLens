@@ -38,3 +38,6 @@ class TestCase:
 
         assert len(lens_galaxy.light_profiles) == 1
         assert len(lens_galaxy.mass_profiles) == 1
+
+        assert source_galaxy.redshift == 1.5
+        assert lens_galaxy.redshift == 1.5
