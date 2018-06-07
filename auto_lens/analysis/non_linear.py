@@ -1,6 +1,18 @@
 import getdist
 from auto_lens import exc
 import os
+import pymultinest
+
+
+class MultiNestWrapper(object):
+    def __init__(self, output_path='out/'):
+        self.output_path = output_path
+
+    def run(self, fitness_function, priors):
+        # noinspection PyUnusedLocal
+        def prior(cube, ndim, nparams):
+            return map(lambda p, c: p(c), priors, cube)
+        pymultinest.run(fitness_function, prior, len(priors), outputfiles_basename=self.output_path)
 
 
 def generate_parameter_latex(parameters, subscript=''):
