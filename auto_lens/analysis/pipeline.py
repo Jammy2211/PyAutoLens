@@ -1,10 +1,12 @@
 from auto_lens.analysis import non_linear
 from auto_lens.analysis import model_mapper as mm
+from auto_lens.analysis import analyse
 
 
 class ModelAnalysis(object):
     def __init__(self, image, lens_galaxy_priors, source_galaxy_priors, pixelization, model_mapper=mm.ModelMapper(),
-                 non_linear_optimizer=non_linear.MultiNestWrapper()):
+                 non_linear_optimizer=non_linear.MultiNestWrapper(),
+                 likelihood_for_tracer=analyse.likelihood_for_tracer):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
         assumed model and applies a pixelization and non linear optimizer to find the best possible fit between the
@@ -33,6 +35,13 @@ class ModelAnalysis(object):
         self.pixelization = pixelization
         self.non_linear_optimizer = non_linear_optimizer
         self.model_mapper = model_mapper
+        self.likelihood_for_tracer = likelihood_for_tracer
 
         for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
             galaxy_prior.attach_to_model_mapper(model_mapper)
+
+    def fitness_function(self):
+        pass
+
+    def run(self):
+        self.non_linear_optimizer.run(self.fitness_function, self.model_mapper.priors_ordered_by_id)
