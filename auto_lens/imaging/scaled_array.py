@@ -6,7 +6,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Array(np.ndarray):
+class ScaledArray(np.ndarray):
     """
     Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
     """
@@ -25,7 +25,7 @@ class Array(np.ndarray):
             The scale of one pixel in arc seconds
         """
         # noinspection PyArgumentList
-        super(Array, self).__init__()
+        super(ScaledArray, self).__init__()
         self.pixel_scale = pixel_scale
 
     @property
@@ -65,7 +65,7 @@ class Array(np.ndarray):
 
         Returns
         -------
-        new_array: Array
+        new_array: ScaledArray
             A new instance of this class that shares all of this instances attributes with a new ndarray.
         """
         arguments = vars(self)
@@ -192,7 +192,7 @@ class Array(np.ndarray):
 
         Returns
         -------
-        array: Array
+        array: ScaledArray
             An array filled with a single value
         """
         array = np.ones(shape) * value

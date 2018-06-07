@@ -1,9 +1,9 @@
-from auto_lens.imaging import data
+from auto_lens.imaging import scaled_array
 from auto_lens import exc
 import numpy as np
 
 
-class Mask(data.Array):
+class Mask(scaled_array.ScaledArray):
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
