@@ -73,9 +73,7 @@ class Image(Array):
         if psf is not None:
             array = psf.convolve(array)
 
-        # TODO : The poisson noise map must be generated for the psf blurred image, which is was not before.
-        # TODO : Should be using the @properties but not sure how to get it to call in the simulate classmethod
-
+        # TODO : Could create image at this point and use properties?
         if include_poisson_noise is True:
             array += generate_poisson_noise(array, effective_exposure_time, seed)
             # The poisson noise map does not include the background sky, so this estimate below removes it
@@ -164,18 +162,42 @@ class Image(Array):
 
     @property
     def counts_array(self):
+        """
+        Returns
+        -------
+        counts_array: ndarray
+            An array representing the image in terms of counts
+        """
         return self.electrons_per_second_to_counts(self)
 
     @property
     def background_noise_counts_array(self):
+        """
+        Returns
+        -------
+        background_noise_counts_array: ndarray
+            An array representing the background noise in terms of counts
+        """
         return self.electrons_per_second_to_counts(self.background_noise)
 
     @property
     def estimated_noise_counts(self):
+        """
+        Returns
+        -------
+        estimated_noise_counts: ndarray
+            An array representing estimated noise in terms of counts
+        """
         return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
 
     @property
     def estimated_noise(self):
+        """
+        Returns
+        -------
+        estimated_noise: ndarray
+            An array representing estimated noise
+        """
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
 
@@ -202,6 +224,23 @@ class PSF(Array):
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
+        """
+        Loads a PSF from fits and renormalizes it
+
+        Parameters
+        ----------
+        file_path: String
+            The path to the file containing the PSF
+        hdu: int
+            HDU ??
+        pixel_scale: float
+            The scale of a pixel in arcseconds
+
+        Returns
+        -------
+        psf: PSF
+            A renormalized PSF instance
+        """
         psf = PSF.from_fits(file_path, hdu, pixel_scale)
         psf.renormalize()
         return psf
@@ -211,6 +250,23 @@ class PSF(Array):
         return np.divide(self, np.sum(self))
 
     def convolve(self, array):
+        """
+        Convolve an array with this PSF
+
+        Parameters
+        ----------
+        array: ndarray
+            An array representing an image
+
+        Returns
+        -------
+        convolved_array: ndarray
+            An array representing an image that has been convolved with this PSF
+
+        Raises
+        ------
+        KernelException if either PSF kernel dimension is odd
+        """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
             raise KernelException("PSF Kernel must be odd")
 
