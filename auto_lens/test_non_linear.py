@@ -5,6 +5,7 @@ from itertools import count
 from auto_lens import non_linear
 from auto_lens import model_mapper
 from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens import exc
 
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -397,7 +398,7 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
 
-            with pytest.raises(model_mapper.PriorException):
+            with pytest.raises(exc.PriorException):
                 non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/wrong_model_info/',
                                           obj_name='obj', model_mapper=model_map)
 

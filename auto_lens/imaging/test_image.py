@@ -2,6 +2,7 @@ import numpy as np
 from auto_lens.imaging import image
 import pytest
 import os
+from auto_lens import exc
 
 test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -161,7 +162,7 @@ class TestPSF(object):
 
             psf = image.PSF(array=kernel, pixel_scale=1.0)
 
-            with pytest.raises(image.KernelException):
+            with pytest.raises(exc.KernelException):
                 img.apply_psf(psf)
 
         def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(self):

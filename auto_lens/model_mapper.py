@@ -3,6 +3,7 @@ from scipy.special import erfinv
 import inspect
 import configparser
 import os
+from auto_lens import exc
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -107,8 +108,6 @@ class ModelMapper(object):
             defaults = {}
 
         args = arg_spec.args[1:]
-
-        # TODO : Better way to filter defaults / args?
 
         if 'settings' in defaults:
             del defaults['settings']
@@ -318,7 +317,7 @@ class ModelMapper(object):
         model_info_check = open(filename, 'r')
 
         if str(model_info_check.read()) != model_info:
-            raise PriorException(
+            raise exc.PriorException(
                 'The model_mapper input to MultiNest has a different prior for a parameter than the model_mapper '
                 'existing in the files. Parameter = ')
 
@@ -479,10 +478,6 @@ class ModelInstance(object):
     pass
 
 
-class PriorException(Exception):
-    pass
-
-
 class Value:
     """Class to add prior for a single free value"""
     def __init__(self, value):
@@ -539,7 +534,7 @@ class Config(object):
         for family_cls in family(cls):
             if self.has(family_cls.__module__, family_cls.__name__, attribute_name):
                 return self.get(family_cls.__module__, family_cls.__name__, attribute_name)
-        raise PriorException(
+        raise exc.PriorException(
             "The prior config for {}.{} and the prior configs of its parents do no contain {}".format(cls.__module__,
                                                                                                       cls.__name__,
                                                                                                       attribute_name))

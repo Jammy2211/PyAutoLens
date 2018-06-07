@@ -2,6 +2,7 @@ from auto_lens.imaging.data import Array
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
+from auto_lens import exc
 
 
 class Image(Array):
@@ -134,7 +135,7 @@ class Image(Array):
         """
 
         if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
-            raise KernelException("PSF Kernel must be odd")
+            raise exc.KernelException("PSF Kernel must be odd")
 
         return self.new_with_array(scipy.signal.convolve2d(self, psf, mode='same'))
 
@@ -268,13 +269,9 @@ class PSF(Array):
         KernelException if either PSF kernel dimension is odd
         """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise KernelException("PSF Kernel must be odd")
+            raise exc.KernelException("PSF Kernel must be odd")
 
         return scipy.signal.convolve2d(array, self, mode='same')
-
-
-class KernelException(Exception):
-    pass
 
 
 def generate_poisson_noise(image, exposure_time, seed=-1):
