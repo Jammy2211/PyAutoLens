@@ -4,6 +4,12 @@ from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
 
+def likelihood_for_tracer(tracer):
+    # TODO: This function should take a tracer and return a likelihood. The ModelAnalysis class in the pipeline module
+    # TODO: will construct the tracer using a non linear optimiser and priors.
+    return 1.0
+
+
 def fit_data_with_model(grid_datas, grid_mappers, tracer):
     """Fit the data using the ray_tracing model
 
