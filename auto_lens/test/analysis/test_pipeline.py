@@ -102,5 +102,9 @@ class TestModelAnalysis:
         assert len(model_mapper.classes) == 2
 
     def test_run(self, model_analysis, non_linear_optimizer):
-        model_analysis.run()
+        result = model_analysis.run()
         assert len(non_linear_optimizer.priors) == 2
+
+        assert result.likelihood == 1
+        assert result.lens_galaxies[0].redshift == 0.5
+        assert result.source_galaxies[0].redshift == 0.5
