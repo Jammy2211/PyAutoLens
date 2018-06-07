@@ -5,6 +5,7 @@ from auto_lens.profiles import light_profiles
 from auto_lens.profiles import geometry_profiles
 import math
 import numpy as np
+from auto_lens import exc
 
 
 @pytest.fixture(name='circular')
@@ -696,8 +697,8 @@ class TestArray(object):
 
 class TestTransform(object):
     def test_exceptions(self, elliptical):
-        with pytest.raises(geometry_profiles.CoordinatesException):
+        with pytest.raises(exc.CoordinatesException):
             elliptical.transform_to_reference_frame(geometry_profiles.TransformedCoordinates((0, 0)))
 
-        with pytest.raises(geometry_profiles.CoordinatesException):
+        with pytest.raises(exc.CoordinatesException):
             elliptical.transform_from_reference_frame((0, 0))
