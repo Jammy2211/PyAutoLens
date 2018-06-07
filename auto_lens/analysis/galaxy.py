@@ -5,7 +5,7 @@ class Galaxy(object):
     """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass 
     profiles"""
 
-    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None, pixelization=None):
+    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None):
         """
         Parameters
         ----------
@@ -19,7 +19,6 @@ class Galaxy(object):
         self.redshift = redshift
         self.light_profiles = light_profiles if light_profiles is not None else []
         self.mass_profiles = mass_profiles if mass_profiles is not None else []
-        self.pixelization = pixelization  # TODO: should this be here?
 
     def __repr__(self):
         return "<Galaxy redshift={}>".format(self.redshift)
