@@ -1,6 +1,7 @@
 from auto_lens import galaxy_prior as gp
 from auto_lens.profiles import mass_profiles, light_profiles
 import pytest
+from auto_lens import exc
 
 
 class MockPriorModel:
@@ -69,7 +70,7 @@ class TestGalaxyPrior:
     def test_exceptions(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
         instance = MockModelInstance()
-        with pytest.raises(gp.PriorException):
+        with pytest.raises(exc.PriorException):
             galaxy_prior.galaxy_for_model_instance(instance)
 
     def test_multiple_galaxies(self, galaxy_prior, galaxy_prior_2, mapper):

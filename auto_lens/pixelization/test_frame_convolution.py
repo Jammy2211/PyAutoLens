@@ -1,6 +1,7 @@
 import numpy as np
 from auto_lens.pixelization import frame_convolution
 import pytest
+from auto_lens import exc
 
 
 @pytest.fixture(name="simple_number_array")
@@ -73,7 +74,7 @@ class TestNumbering(object):
         assert (frame_maker.number_array == np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])).all()
 
     def test_even_failure(self):
-        with pytest.raises(frame_convolution.KernelException):
+        with pytest.raises(exc.KernelException):
             frame_convolution.FrameMaker(np.full((3, 3), False)).convolver_for_kernel_shape((2, 2))
 
 
@@ -170,8 +171,9 @@ class TestBlurringRegionConvolution(object):
 
         pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
 
-        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(0, pixel_array,
-                                                                                                  convolver.mask_frame_array)
+        result = convolver.convolver_for_kernel(
+            simple_kernel).convolution_for_pixel_index_vector(0, pixel_array,
+                                                              convolver.mask_frame_array)
 
         assert (result == np.array([0, 0.1, 0,
                                     0.1, 0, 0,
@@ -186,8 +188,9 @@ class TestBlurringRegionConvolution(object):
 
         pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
 
-        result = convolver.convolver_for_kernel(simple_kernel).convolve_vector_with_frame_array(pixel_array,
-                                                                                                convolver.mask_frame_array)
+        result = convolver.convolver_for_kernel(
+            simple_kernel).convolve_vector_with_frame_array(pixel_array,
+                                                            convolver.mask_frame_array)
         assert (result == np.array([0, 0, 0,
                                     0, 0, 0,
                                     0, 0, 0])).all()
@@ -201,8 +204,9 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(simple_frame_array)
 
-        result = convolver.convolver_for_kernel(simple_kernel).convolution_for_pixel_index_vector(4, pixel_array,
-                                                                                                  frame_array=convolver.frame_array)
+        result = convolver.convolver_for_kernel(
+            simple_kernel).convolution_for_pixel_index_vector(4, pixel_array,
+                                                              frame_array=convolver.frame_array)
 
         assert (result == np.array([0, 0.1, 0,
                                     0.1, 0.6, 0.1,
