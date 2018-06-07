@@ -1,6 +1,6 @@
 from auto_lens.analysis import pipeline
 from auto_lens.analysis import galaxy_prior
-from auto_lens.analysis import galaxy
+from auto_lens.analysis import model_mapper as mm
 import pytest
 
 
@@ -24,20 +24,6 @@ class MockPriorModel:
         self.phi = "phi for {}".format(name)
 
 
-class MockModelMapper:
-    def __init__(self):
-        self.classes = {}
-        self.priors_ordered_by_id = [MockPrior(), MockPrior()]
-
-    def add_class(self, name, cls):
-        self.classes[name] = cls
-        return MockPriorModel(name, cls)
-
-    # noinspection PyMethodMayBeStatic
-    def from_physical_vector(self, vector):
-        return map(lambda v: galaxy.Galaxy(redshift=v), vector)
-
-
 class MockModelInstance:
     pass
 
@@ -54,7 +40,7 @@ def make_source_galaxy_prior():
 
 @pytest.fixture(name="model_mapper")
 def make_model_mapper():
-    return MockModelMapper()
+    return mm.ModelMapper()
 
 
 @pytest.fixture(name="non_linear_optimizer")
