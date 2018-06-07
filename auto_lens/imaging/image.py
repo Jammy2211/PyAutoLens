@@ -1,11 +1,11 @@
-from auto_lens.imaging.data import Array
+from auto_lens.imaging.scaled_array import ScaledArray
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
 from auto_lens import exc
 
 
-class Image(Array):
+class Image(ScaledArray):
     """
     A 2d array representing a real or simulated image.
     """
@@ -202,7 +202,7 @@ class Image(Array):
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
 
-class PSF(Array):
+class PSF(ScaledArray):
 
     def __init__(self, array, pixel_scale, renormalize=True):
         """
