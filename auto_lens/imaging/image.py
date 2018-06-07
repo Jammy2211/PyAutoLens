@@ -5,8 +5,27 @@ import scipy.signal
 
 
 class Image(Array):
-    def __init__(self, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
+    """
+    A 2d array representing a real or simulated image.
+    """
+    def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
                  poisson_noise=None):
+        """
+        Parameters
+        ----------
+        array: ndarray
+            An array of image pixels in gray-scale
+        effective_exposure_time: Union(ndarray, float)
+            A float or array representing the effective exposure time of the whole image or each pixel.
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        psf: PSF
+            An array describing the PSF
+        background_noise: ndarray
+            An array describing the background noise in the image
+        poisson_noise: ndarray
+            An array describing the poisson noise in the image
+        """
         super(Image, self).__init__(array, pixel_scale)
         self.psf = psf
         self.background_noise = background_noise
@@ -16,6 +35,32 @@ class Image(Array):
     @classmethod
     def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, background_sky_map=None,
                  psf=None, include_poisson_noise=False, seed=-1):
+        """
+        Create a realistic simulated image by applying effects to a plain simulated image.
+
+        Parameters
+        ----------
+        array: ndarray
+            A plain image
+        effective_exposure_time: Union(ndarray, float)
+            A float or array representing the effective exposure time of the whole image or each pixel.
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        psf: PSF
+            An array describing the PSF
+        background_sky_map
+        include_poisson_noise: Bool
+            If True poisson noise is simulated and added to the image
+        seed: int
+            A seed for random noise generation
+
+        Returns
+        -------
+        image: Image
+            A simulated image
+        """
+
+        array_counts = None
 
         if background_sky_map is not None:
             array += background_sky_map
