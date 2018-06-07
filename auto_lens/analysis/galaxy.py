@@ -314,3 +314,8 @@ class Galaxy(object):
             The total dimensionless mass within the specified circle.
         """
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
+
+
+class Redshift(int):
+    def __init__(self, redshift):
+        super().__init__(redshift)
