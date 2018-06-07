@@ -182,7 +182,6 @@ class ModelMapper(object):
         model_instance = self.from_unit_vector(hypercube_vector)
         result = []
         for instance_key in sorted(model_instance.__dict__.keys()):
-            print(instance_key)
             instance = model_instance.__dict__[instance_key]
             for attribute_key in sorted(instance.__dict__.keys()):
                 print(attribute_key)
