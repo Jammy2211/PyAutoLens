@@ -73,6 +73,15 @@ class ScaledArray(np.ndarray):
 
         return self.__class__(**arguments)
 
+    def flatten(self, order='C'):
+        """
+        Returns
+        -------
+        flat_scaled_array: ScaledArray
+            A copy of this array flattened to 1D
+        """
+        return self.new_with_array(super(ScaledArray, self).flatten(order))
+
     def pad(self, new_dimensions):
         """ Pad the data array with zeros around its central pixel.
 
