@@ -67,3 +67,14 @@ class ModelAnalysis(object):
             self.likelihood = likelihood
             self.lens_galaxies = lens_galaxies
             self.source_galaxies = source_galaxies
+
+
+class LinearPipeline(object):
+    def __init__(self, *analyses):
+        self.analyses = analyses
+
+    def run(self):
+        results = []
+        for analysis in self.analyses:
+            results.append(analysis.run())
+        return results
