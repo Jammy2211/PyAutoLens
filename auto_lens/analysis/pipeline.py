@@ -1,11 +1,9 @@
 from auto_lens.analysis import non_linear
 from auto_lens.analysis import model_mapper as mm
-from auto_lens.pixelization import pixelization as px
 
 
-class Analysis(object):
-    def __init__(self, image, lens_galaxy_priors, source_galaxy_priors, model_mapper=mm.ModelMapper(),
-                 pixelization=px.VoronoiPixelization,
+class ModelAnalysis(object):
+    def __init__(self, image, lens_galaxy_priors, source_galaxy_priors, pixelization, model_mapper=mm.ModelMapper(),
                  non_linear_optimizer=non_linear.MultiNestWrapper()):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
