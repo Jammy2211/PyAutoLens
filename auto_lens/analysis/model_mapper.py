@@ -477,12 +477,6 @@ class ModelInstance(object):
     pass
 
 
-class Value:
-    """Class to add prior for a single free value"""
-    def __init__(self, value):
-        self.value = value
-
-
 class Config(object):
     """Parses prior config"""
 
