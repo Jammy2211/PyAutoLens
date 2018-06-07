@@ -1,4 +1,4 @@
-from auto_lens.analysis import pipline
+from auto_lens.analysis import pipeline
 
 
 class MockImage:
@@ -25,14 +25,14 @@ class MockNLO:
     pass
 
 
-class TestAnalysis:
+class TestModelAnalysis:
     def test_setup(self):
         lens_galaxy_prior = MockGalaxyPrior()
         source_galaxy_prior = MockGalaxyPrior()
 
-        analysis = pipline.Analysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
-                                    source_galaxy_priors=[source_galaxy_prior], model_mapper=MockModelMapper(),
-                                    pixelization=MockPixelization(), non_linear_optimizer=MockNLO())
+        pipeline.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
+                               source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                               model_mapper=MockModelMapper(), non_linear_optimizer=MockNLO())
 
         assert lens_galaxy_prior.model_mapper is not None
         assert source_galaxy_prior.model_mapper is not None
