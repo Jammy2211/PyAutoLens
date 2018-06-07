@@ -1,7 +1,5 @@
 import numpy as np
-
-from auto_lens.imaging.data import Array
-from auto_lens.imaging.mask import MaskException
+from auto_lens import exc
 from auto_lens.profiles import geometry_profiles
 
 
@@ -441,7 +439,7 @@ class GridCoordsBlurring(GridCoordsRegular):
            The size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
         if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
-            raise MaskException("psf_size of exterior region must be odd")
+            raise exc.MaskException("psf_size of exterior region must be odd")
 
         return GridCoordsBlurring(mask.compute_grid_coords_blurring(psf_size))
 
@@ -905,7 +903,3 @@ class GridBorder(geometry_profiles.Profile):
         """
         move_factor = self.move_factor(coordinate)
         return coordinate[0] * move_factor, coordinate[1] * move_factor
-
-
-class GridException(Exception):
-    pass

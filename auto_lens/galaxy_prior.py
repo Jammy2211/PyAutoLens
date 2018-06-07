@@ -1,7 +1,8 @@
 import random
 import string
 from auto_lens import galaxy
-from auto_lens.model_mapper import PriorException, Value
+from auto_lens.model_mapper import Value
+from auto_lens import exc
 
 
 class GalaxyPrior:
@@ -122,6 +123,6 @@ class GalaxyPrior:
                 mass_profiles.append(getattr(model_instance, name))
             redshift = getattr(model_instance, self.redshift_name).value
         except AttributeError as e:
-            raise PriorException(*e.args)
+            raise exc.PriorException(*e.args)
 
         return galaxy.Galaxy(light_profiles=light_profiles, mass_profiles=mass_profiles, redshift=redshift)

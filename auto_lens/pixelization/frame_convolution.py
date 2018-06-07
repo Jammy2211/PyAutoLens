@@ -1,4 +1,5 @@
 import numpy as np
+from auto_lens import exc
 
 """
 This module is for the application of convolution to sparse_grid vectors.
@@ -57,10 +58,6 @@ entry with a False value for mask.
 """
 
 
-class KernelException(Exception):
-    pass
-
-
 class FrameMaker(object):
     def __init__(self, mask, blurring_region_mask=None):
         """
@@ -94,7 +91,7 @@ class FrameMaker(object):
             A list of frames where the position of a frame corresponds to the number at the centre of that frame
         """
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
-            raise KernelException("Kernel must be odd")
+            raise exc.KernelException("Kernel must be odd")
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):
@@ -111,7 +108,7 @@ class FrameMaker(object):
 
     def make_mask_frame_array(self, kernel_shape):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
-            raise KernelException("Kernel must be odd")
+            raise exc.KernelException("Kernel must be odd")
         frame_array = []
         for x in range(self.number_array.shape[0]):
             for y in range(self.number_array.shape[1]):

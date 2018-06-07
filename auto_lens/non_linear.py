@@ -1,6 +1,7 @@
 import getdist
-import sys
+from auto_lens import exc
 import os
+
 
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
@@ -27,6 +28,7 @@ def generate_parameter_latex(parameters, subscript=''):
             latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
 
     return latex
+
 
 class NonLinearFiles(object):
 
@@ -56,16 +58,16 @@ class NonLinearFiles(object):
         self.results_path = self.path + self.obj_name + '/'
         for prior_name, prior_model in self.model_mapper.prior_models:
             self.results_path += prior_model.cls.__name__ + '+'
-        self.results_path = self.results_path[:-1] + '/' # remove last + symbol from path name
+        self.results_path = self.results_path[:-1] + '/'  # remove last + symbol from path name
 
         self.file_param_names = self.results_path + self.obj_name + '.paramnames'
         self.file_model_info = self.results_path + 'model.info'
 
-        self.resume = os.path.exists(self.results_path) # resume True if results path already exists
+        self.resume = os.path.exists(self.results_path)  # resume True if results path already exists
 
         if self.resume == False:
 
-            os.makedirs(self.results_path) # Create results folder if doesnt exist
+            os.makedirs(self.results_path)  # Create results folder if doesnt exist
             self.create_param_names()
             self.model_mapper.output_model_info(self.file_model_info)
 
@@ -84,7 +86,7 @@ class NonLinearFiles(object):
 
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number+1)
+            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
 
             param_labels = generate_parameter_latex(param_labels, subscript)
 
@@ -125,7 +127,8 @@ class MultiNest(NonLinearFiles):
 
         expected_parameters = (len(summary.readline()) - 57) / 56
         if expected_parameters != self.total_parameters:
-            raise MultiNestException('The file_summary file has a different number of parameters than the input model')
+            raise exc.MultiNestException(
+                'The file_summary file has a different number of parameters than the input model')
 
         return summary
 
@@ -231,8 +234,8 @@ class MultiNestFinished(MultiNest):
         self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
     def compute_model_at_limit(self, limit):
-        densities_1d = list(map(lambda p : self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
-        return list(map(lambda p : p.getLimits(limit), densities_1d))
+        densities_1d = list(map(lambda p: self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
+        return list(map(lambda p: p.getLimits(limit), densities_1d))
 
     def compute_model_at_upper_limit(self, limit):
         """Setup 1D vectors of the upper and lower limits of the multinest files.
@@ -245,7 +248,7 @@ class MultiNestFinished(MultiNest):
         limit : float
             The fraction of a PDF used to estimate errors.
         """
-        return list(map(lambda param : param[1], self.compute_model_at_limit(limit)))
+        return list(map(lambda param: param[1], self.compute_model_at_limit(limit)))
 
     def compute_model_at_lower_limit(self, limit):
         """Setup 1D vectors of the upper and lower limits of the multinest files.
@@ -259,7 +262,7 @@ class MultiNestFinished(MultiNest):
             The fraction of a PDF used to estimate errors.
         """
         self.compute_model_at_limit(limit)
-        return list(map(lambda param : param[0], self.compute_model_at_limit(limit)))
+        return list(map(lambda param: param[0], self.compute_model_at_limit(limit)))
 
     def create_weighted_sample_model_instance(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
@@ -286,28 +289,23 @@ class MultiNestFinished(MultiNest):
         index : int
             The index of the weighted sample to return.
         """
-        return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5*self.pdf.loglikes[index]
+        return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
 
     # TODO : untested and unfinished, remiains to be seen if we'll need this code.
 
     def reorder_summary_file(self, new_order):
-
         most_probable = self.compute_most_probable()
         most_likely = self.compute_most_likely()
         likelihood = self.compute_max_likelihood()[0]
         log_likelihood = self.compute_max_likelihood()[1]
 
-        most_probable = list(map(lambda param : ('%18.18E' % param).rjust(28), most_probable))
+        most_probable = list(map(lambda param: ('%18.18E' % param).rjust(28), most_probable))
         most_probable = ''.join(map(str, most_probable))
-        most_likely = list(map(lambda param : ('%18.18E' % param).rjust(28), most_likely))
+        most_likely = list(map(lambda param: ('%18.18E' % param).rjust(28), most_likely))
         most_likely = ''.join(map(str, most_likely))
         likelihood = ('%18.18E' % 0.0).rjust(28)
         log_likelihood = ('%18.18E' % 0.0).rjust(28)
 
-        new_summary_file = open(self.results_path+'summary_new.txt', 'w')
-        new_summary_file.write(most_probable+most_likely+likelihood+log_likelihood)
+        new_summary_file = open(self.results_path + 'summary_new.txt', 'w')
+        new_summary_file.write(most_probable + most_likely + likelihood + log_likelihood)
         new_summary_file.close()
-
-
-class MultiNestException(Exception):
-    pass
