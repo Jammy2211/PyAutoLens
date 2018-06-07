@@ -785,21 +785,3 @@ class TestSimulatePoissonNoise(object):
             assert sim_poisson_img_0[0, 1] == sim_poisson_img_1[0, 1]
             assert (sim_poisson_img_0[1, 0] * 1.5 == pytest.approx(sim_poisson_img_1[1, 0], 1e-2)).all()
             assert (sim_poisson_img_0[1, 1] / 2.0 == sim_poisson_img_1[1, 1]).all()
-
-
-class TestSimulateBackgroundNoise(object):
-    def test__background_noise_sigma_0__background_noise_map_all_0__img_is_identical_to_input(self):
-        img = np.zeros((3, 3))
-        background_noise = image.generate_background_noise(img, sigma=0.0, seed=1)
-
-        assert (background_noise == np.zeros((3, 3))).all()
-
-    def test__background_noise_sigma_1__background_noise_map_all_non_0__img_has_noise_added(self):
-        img = np.zeros((3, 3))
-        background_noise = image.generate_background_noise(img, sigma=1.0, seed=1)
-
-        # Use seed to give us a known read noise map we'll test for
-
-        assert background_noise == pytest.approx(np.array([[1.62, -0.61, -0.53],
-                                                           [-1.07, 0.87, -2.30],
-                                                           [1.74, -0.76, 0.32]]), 1e-2)

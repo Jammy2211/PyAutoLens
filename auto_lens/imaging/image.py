@@ -301,12 +301,6 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
 
 
-def generate_background_noise(image, sigma, seed=-1):
-    setup_random_seed(seed)
-    background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
-    return background_noise_map
-
-
 def setup_random_seed(seed):
     """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is positive,
     that seed is used for all runs, thereby giving reproducible files
