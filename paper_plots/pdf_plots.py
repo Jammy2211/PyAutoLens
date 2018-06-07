@@ -2,9 +2,7 @@ import sys
 import os
 sys.path.append("../")
 
-from auto_lens import non_linear
-from auto_lens import model_mapper
-from auto_lens.profiles import light_profiles as lp
+from auto_lens.analysis import model_mapper, non_linear
 from auto_lens.profiles import mass_profiles as mp
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))

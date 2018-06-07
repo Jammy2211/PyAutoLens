@@ -1,5 +1,4 @@
-from auto_lens import ray_tracing
-from auto_lens import galaxy
+from auto_lens.analysis import galaxy
 from auto_lens.profiles import geometry_profiles, mass_profiles, light_profiles
 
 import pytest

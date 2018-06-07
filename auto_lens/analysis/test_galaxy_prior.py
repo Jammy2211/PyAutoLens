@@ -1,4 +1,4 @@
-from auto_lens import galaxy_prior as gp
+from auto_lens.analysis import galaxy_prior as gp
 from auto_lens.profiles import mass_profiles, light_profiles
 import pytest
 from auto_lens import exc
