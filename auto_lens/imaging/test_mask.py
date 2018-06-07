@@ -1,6 +1,7 @@
 import numpy as np
 from auto_lens.imaging import mask
 import pytest
+from auto_lens import exc
 
 
 class TestMask(object):
@@ -887,8 +888,8 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            with pytest.raises(mask.MaskException):
-                blurring_mask = msk.compute_blurring_mask(psf_size=(5, 5))
+            with pytest.raises(exc.MaskException):
+                msk.compute_blurring_mask(psf_size=(5, 5))
 
     class TestComputeBorderPixels(object):
 
@@ -967,8 +968,7 @@ class TestMask(object):
 
             border_pixels = msk.compute_grid_border()
 
-            assert (border_pixels == np.array
-            ([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 26, 27, 28, 29])).all()
+            assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 26, 27, 28, 29])).all()
 
         def test__7x8_mask_add_edge_pixels__also_in_border(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
