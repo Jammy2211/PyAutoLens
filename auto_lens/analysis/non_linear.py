@@ -18,7 +18,7 @@ class MultiNestWrapper(object):
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
 
-    This is used for the paramnames file and outputting the files of a run to a latex table.
+    This is used for the param names file and outputting the files of a run to a latex table.
 
     Parameters
     ----------
