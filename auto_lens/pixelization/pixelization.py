@@ -6,18 +6,16 @@ import scipy.spatial
 class VoronoiPixelization(object):
 
     def __init__(self, number_clusters, regularization_coefficient=1.0):
-
         self.number_clusters = number_clusters
         self.regularizatioon_coefficient = regularization_coefficient
 
     def compute_mapping_matrix(self, sub_coordinates, cluster_coordinates, image_to_cluster):
-
         kmeans = self.kmeans_cluster(cluster_coordinates)
         voronoi = compute_voronoi_grid(cluster_coordinates)
         sub_to_source = compute_sub_to_source(sub_coordinates, kmeans.cluster_centers_, voronoi.neighbors,
                                               image_to_cluster, kmeans.labels_)
-    # return create_mapping_matrix()
 
+    # return create_mapping_matrix()
 
     def kmeans_cluster(self, coordinates):
         """Perform k-means clustering on a set of image_grid to compute the set of k-means clustering that group the data.
@@ -34,27 +32,29 @@ class VoronoiPixelization(object):
         kmeans = sklearn.cluster.KMeans(self.number_clusters)
         return kmeans.fit(coordinates)
 
+
 def compute_voronoi_grid(coordinates):
-        """Setup a Voronoi grid_coords for a given set of image_grid, as well as a list of each Voronoi cell's neighboring \
-         Voronoi cells.
+    """Setup a Voronoi grid_coords for a given set of image_grid, as well as a list of each Voronoi cell's neighboring \
+     Voronoi cells.
 
-        This is used to compute the Voronoi grid_coords of the source-pixel centers of the *AmorphousPixelization*.
+    This is used to compute the Voronoi grid_coords of the source-pixel centers of the *AmorphousPixelization*.
 
-        Parameters
-        ----------
-        coordinates : ndarray
-            The x and y image_grid to derive the Voronoi grid_coords.
-        """
-        voronoi = scipy.spatial.Voronoi(coordinates, qhull_options='Qbb Qc Qx Qm')
+    Parameters
+    ----------
+    coordinates : ndarray
+        The x and y image_grid to derive the Voronoi grid_coords.
+    """
+    voronoi = scipy.spatial.Voronoi(coordinates, qhull_options='Qbb Qc Qx Qm')
 
-        voronoi.neighbors = [[] for _ in range(len(coordinates))]
+    voronoi.neighbors = [[] for _ in range(len(coordinates))]
 
-        for pair in reversed(voronoi.ridge_points):
-            voronoi.neighbors[pair[0]].append(pair[1])
-            voronoi.neighbors[pair[1]].append(pair[0])
+    for pair in reversed(voronoi.ridge_points):
+        voronoi.neighbors[pair[0]].append(pair[1])
+        voronoi.neighbors[pair[1]].append(pair[0])
 
-        voronoi.neighbors_total = list(map(lambda x: len(x), voronoi.neighbors))
-        return voronoi
+    voronoi.neighbors_total = list(map(lambda x: len(x), voronoi.neighbors))
+    return voronoi
+
 
 def compute_sub_to_source(sub_coordinates, source_centers, source_neighbors, image_to_sparse, sparse_to_source):
     """ Match a set of sub grid coordinates to their closest source-pixel, using the source-pixel centers (x,y).
@@ -117,11 +117,12 @@ def compute_sub_to_source(sub_coordinates, source_centers, source_neighbors, ima
             while True:
 
                 sub_to_sparse_source_distance = compute_sub_to_nearest_sparse_source(source_centers,
-                                                              sub_coordinate, nearest_sparse_source)
+                                                                                     sub_coordinate,
+                                                                                     nearest_sparse_source)
 
                 neighboring_source_index, sub_to_neighboring_source_distance = \
-                compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers,
-                                                                source_neighbors[nearest_sparse_source])
+                    compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers,
+                                                                    source_neighbors[nearest_sparse_source])
 
                 if sub_to_sparse_source_distance < sub_to_neighboring_source_distance:
                     break
@@ -134,9 +135,11 @@ def compute_sub_to_source(sub_coordinates, source_centers, source_neighbors, ima
 
     return sub_to_source
 
+
 def compute_sub_to_nearest_sparse_source(source_centers, sub_coordinate, source_pixel):
     nearest_sparse_source_pixel_center = source_centers[source_pixel]
     return compute_squared_separation(sub_coordinate, nearest_sparse_source_pixel_center)
+
 
 def compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers, source_neighbors):
     """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
@@ -168,9 +171,11 @@ def compute_nearest_neighboring_source_and_distance(sub_coordinate, source_cente
 
     return source_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
 
+
 def compute_squared_separation(coordinate1, coordinate2):
     """Computes the squared separation of two image_grid (no square root for efficiency)"""
     return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+
 
 # TODO : Remove image_pixel_total, sub_grid_size, sub_to_image from input, as can be derived from sub_to_source
 # TODO : Make a method in Pixelization class, thus also removing source_pixel_total.
@@ -227,6 +232,7 @@ def create_mapping_matrix(source_pixel_total, image_pixel_total, sub_grid_size, 
 
     return f
 
+
 def setup_regularization_matrix_via_pixel_pairs(dimension, regularization_weights, no_pairs, pixel_pairs):
     """
     Setup a new regularization matrix, bypassing matrix multiplication by exploiting a list of pixel-pairs.
@@ -259,4 +265,3 @@ def setup_regularization_matrix_via_pixel_pairs(dimension, regularization_weight
         matrix[pixel_pairs[j, 1], pixel_pairs[j, 0]] -= reg_weight[pixel_pairs[j, 1]]
 
     return matrix
-
