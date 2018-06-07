@@ -440,11 +440,6 @@ class PriorModel(object):
         return [prior for tuple_prior in self.tuple_priors for prior in
                 tuple_prior[1].priors] + self.direct_priors
 
-    # def __setattr__(self, key, value):
-    #     if key in self.__dict__:
-    #         value.id = self.__dict__[key].id
-    #     super(PriorModel, self).__setattr__(key, value)
-
     def instance_for_arguments(self, arguments):
         """
         Create an instance of the associated class for a set of arguments
@@ -498,8 +493,8 @@ class Config(object):
         ----------
         module_name: String
             The name of the module for which a config is to be read (priors relate one to one with configs).
-
         """
+        print("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
         self.parser.read("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
 
     def get_for_nearest_ancestor(self, cls, attribute_name):
