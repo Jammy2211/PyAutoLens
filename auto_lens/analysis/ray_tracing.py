@@ -1,4 +1,4 @@
-class TraceImageAndSource(object):
+class Tracer(object):
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.

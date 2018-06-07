@@ -4,7 +4,7 @@ from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
 
-def fit_data_with_model(grid_datas, grid_mappers, ray_tracing):
+def fit_data_with_model(grid_datas, grid_mappers, tracer):
     """Fit the data using the ray_tracing model
 
     Parameters
@@ -13,10 +13,10 @@ def fit_data_with_model(grid_datas, grid_mappers, ray_tracing):
         The collection of grid data-sets (image, noise, psf, etc.)
     grid_mappers : grids.GridMapperCollection
         The collection of grid mappings, used to map images from 2d and 1d.
-    ray_tracing : ray_tracing.TraceImageAndSource
+    tracer : ray_tracing.Tracer
         The ray-tracing configuration of the model galaxies and their profiles.
     """
-    blurred_model_image = generate_blurred_light_profie_image(ray_tracing, grid_datas.psf, grid_mappers)
+    blurred_model_image = generate_blurred_light_profile_image(tracer, grid_datas.psf, grid_mappers)
     return compute_likelihood(grid_datas.image, grid_datas.noise, blurred_model_image)
 
 
@@ -46,13 +46,13 @@ def compute_likelihood(image, noise, model_image):
     return -0.5 * (np.sum(((image - model_image) / noise) ** 2.0 + np.log(2 * np.pi * noise ** 2.0)))
 
 
-def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
+def generate_blurred_light_profile_image(tracer, psf, grid_mappers):
     """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
     PSF.
 
     Parameters
     ----------
-    ray_tracing : ray_tracing.TraceImageAndSource
+    tracer : ray_tracing.Tracer
         The ray-tracing configuration of the model galaxies and their profiles.
     psf : imaging.PSF
         The 2D Point Spread Function (PSF).
@@ -60,8 +60,8 @@ def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
         The collection of grid mappings, used to map images from 2d and 1d.
     """
 
-    image_light_profile = ray_tracing.generate_image_of_galaxy_light_profiles()
-    blurring_image_light_profile = ray_tracing.generate_blurring_image_of_galaxy_light_profiles()
+    image_light_profile = tracer.generate_image_of_galaxy_light_profiles()
+    blurring_image_light_profile = tracer.generate_blurring_image_of_galaxy_light_profiles()
     return blur_image_including_blurring_region(image_light_profile, grid_mappers.image_to_pixel, psf,
                                                 blurring_image_light_profile, grid_mappers.blurring_to_pixel)
 

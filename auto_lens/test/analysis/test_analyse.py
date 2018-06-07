@@ -59,8 +59,8 @@ class TestFitData:
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
-        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                                    image_plane_grids=grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=grid_collection)
 
         likelihood = analyse.fit_data_with_model(grid_datas, grid_mappers, ray_trace)
 
@@ -90,8 +90,8 @@ class TestFitData:
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
-        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                                    image_plane_grids=grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=grid_collection)
 
         likelihood = analyse.fit_data_with_model(grid_datas, grid_mappers, ray_trace)
 
@@ -166,14 +166,14 @@ class TestGenerateBlurredLightProfileImage:
         grid_collection = grids.GridCoordsCollection.from_mask(mask=mask, blurring_size=psf.shape)
         grid_mappers = grids.GridMapperCollection.from_mask(mask=mask, blurring_size=psf.shape)
 
-        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                                    image_plane_grids=grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=grid_collection)
 
         # For this PSF, the blurring region does not blur any flux into the central pixel.
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles()
-        blurred_value = analyse.generate_blurred_light_profie_image(ray_tracing=ray_trace, psf=psf,
-                                                                    grid_mappers=grid_mappers)
+        blurred_value = analyse.generate_blurred_light_profile_image(tracer=ray_trace, psf=psf,
+                                                                     grid_mappers=grid_mappers)
 
         assert non_blurred_value == blurred_value
 
@@ -196,11 +196,11 @@ class TestGenerateBlurredLightProfileImage:
         grid_collection = grids.GridCoordsCollection.from_mask(mask=mask, blurring_size=psf.shape)
         grid_mappers = grids.GridMapperCollection.from_mask(mask=mask, blurring_size=psf.shape)
 
-        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                                    image_plane_grids=grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=grid_collection)
 
-        blurred_value = analyse.generate_blurred_light_profie_image(ray_tracing=ray_trace, psf=psf,
-                                                                    grid_mappers=grid_mappers)
+        blurred_value = analyse.generate_blurred_light_profile_image(tracer=ray_trace, psf=psf,
+                                                                     grid_mappers=grid_mappers)
 
         # Manually compute result of convolution, which for our PSF of all 1's is just the central value +
         # the (central value x each blurring region value).
@@ -231,11 +231,11 @@ class TestGenerateBlurredLightProfileImage:
         grid_collection = grids.GridCoordsCollection.from_mask(mask=mask, blurring_size=psf.shape)
         grid_mappers = grids.GridMapperCollection.from_mask(mask=mask, blurring_size=psf.shape)
 
-        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                                    image_plane_grids=grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=grid_collection)
 
-        blurred_value = analyse.generate_blurred_light_profie_image(ray_tracing=ray_trace, psf=psf,
-                                                                    grid_mappers=grid_mappers)
+        blurred_value = analyse.generate_blurred_light_profile_image(tracer=ray_trace, psf=psf,
+                                                                     grid_mappers=grid_mappers)
 
         # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
@@ -272,11 +272,11 @@ class TestGenerateBlurredLightProfileImage:
         grid_collection = grids.GridCoordsCollection.from_mask(mask=mask)
         grid_mappers = grids.GridMapperCollection.from_mask(mask=mask)
 
-        ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                                    image_plane_grids=grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=grid_collection)
 
-        blurred_value = analyse.generate_blurred_light_profie_image(ray_tracing=ray_trace, psf=psf,
-                                                                    grid_mappers=grid_mappers)
+        blurred_value = analyse.generate_blurred_light_profile_image(tracer=ray_trace, psf=psf,
+                                                                     grid_mappers=grid_mappers)
 
         # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
