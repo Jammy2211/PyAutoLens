@@ -19,4 +19,10 @@ class Analysis(object):
             A wrapper around a library that searches an n-dimensional space by providing unit vector hypercubes to
             the analysis.
         """
+
+        self.image = image
+        self.lens_galaxy_priors = lens_galaxy_priors
+        self.source_galaxy_priors = source_galaxy_priors
+        self.pixelization = pixelization
+        self.non_linear_optimizer = non_linear_optimizer
         pass
