@@ -1,4 +1,5 @@
 from auto_lens.analysis import galaxy_prior as gp
+from auto_lens.analysis import galaxy as g
 from auto_lens.profiles import mass_profiles, light_profiles
 import pytest
 from auto_lens import exc
@@ -59,7 +60,7 @@ class TestGalaxyPrior:
 
         setattr(instance, light_profile_name, light_profiles.EllipticalDevVaucouleurs())
         setattr(instance, mass_profile_name, mass_profiles.EllipticalCoredIsothermal())
-        setattr(instance, redshift_name, gp.Value(1))
+        setattr(instance, redshift_name, g.Redshift(1))
 
         galaxy = galaxy_prior.galaxy_for_model_instance(instance)
 

@@ -316,6 +316,6 @@ class Galaxy(object):
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
 
-class Redshift(int):
+class Redshift(object):
     def __init__(self, redshift):
-        super().__init__(redshift)
+        self.redshift = redshift
