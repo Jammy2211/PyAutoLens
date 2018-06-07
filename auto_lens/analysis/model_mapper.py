@@ -280,10 +280,11 @@ class ModelMapper(object):
         return model_instance
 
     def generate_model_info(self):
-        """Use the priors that make up the model_mapper to information on each parameter of the overall model.
+        """
+        Use the priors that make up the model_mapper to information on each parameter of the overall model.
 
         This information is extracted from each priors *model_info* property.
-        '"""
+        """
 
         model_info = ''
 
@@ -432,9 +433,6 @@ class PriorModel(object):
     def direct_priors(self):
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
-    # TODO : I have swapped the routine below, as I require that the first input parameters (e.g. centre) are always
-    # TODO : The tuples. Obviously, it'd be better if tuples can go anywhere.
-
     @property
     def priors(self):
         return [prior for tuple_prior in self.tuple_priors for prior in
@@ -494,7 +492,6 @@ class Config(object):
         module_name: String
             The name of the module for which a config is to be read (priors relate one to one with configs).
         """
-        print("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
         self.parser.read("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
 
     def get_for_nearest_ancestor(self, cls, attribute_name):
