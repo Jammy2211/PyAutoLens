@@ -1,16 +1,7 @@
 from auto_lens.analysis import pipeline
 from auto_lens.analysis import galaxy_prior
+from auto_lens.analysis import galaxy
 import pytest
-
-
-class MockNLO:
-    def __init__(self):
-        self.priors = None
-        self.fitness_function = None
-
-    def run(self, fitness_function, priors):
-        self.fitness_function = fitness_function
-        self.priors = priors
 
 
 class MockImage:
@@ -42,6 +33,10 @@ class MockModelMapper:
         self.classes[name] = cls
         return MockPriorModel(name, cls)
 
+    # noinspection PyMethodMayBeStatic
+    def from_physical_vector(self, vector):
+        return map(lambda v: galaxy.Galaxy(redshift=v), vector)
+
 
 class MockModelInstance:
     pass
@@ -68,17 +63,41 @@ def make_non_linear_optimizer():
 
 
 @pytest.fixture(name="model_analysis")
-def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer):
+def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
     return pipeline.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
                                   source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                                  model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer)
+                                  model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
+                                  likelihood_for_tracer=analyse.likelihood_for_tracer)
+
+
+@pytest.fixture(name="analyse")
+def make_analyse():
+    return MockAnalyse()
+
+
+class MockNLO:
+    def __init__(self):
+        self.priors = None
+        self.fitness_function = None
+
+    def run(self, fitness_function, priors):
+        self.fitness_function = fitness_function
+        self.priors = priors
+        fitness_function([0.5, 0.5])
+
+
+class MockAnalyse:
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    def likelihood_for_tracer(self, tracer):
+        return 1
 
 
 class TestModelAnalysis:
-    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
+    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
         pipeline.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
                                source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                               model_mapper=model_mapper, non_linear_optimizer=MockNLO())
+                               model_mapper=model_mapper, non_linear_optimizer=MockNLO(),
+                               likelihood_for_tracer=analyse.likelihood_for_tracer)
 
         assert len(model_mapper.classes) == 2
 
