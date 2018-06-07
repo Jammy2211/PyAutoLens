@@ -1,4 +1,4 @@
-from auto_lens.analysis import pipeline
+from auto_lens.analysis import linearpipeline as pl
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
 import pytest
@@ -57,7 +57,7 @@ def make_non_linear_optimizer():
 
 @pytest.fixture(name="model_analysis")
 def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
-    return pipeline.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
+    return pl.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
                                   source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
                                   model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
                                   likelihood_for_tracer=analyse.likelihood_for_tracer)
@@ -87,10 +87,10 @@ class MockAnalyse:
 
 class TestModelAnalysis:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
-        pipeline.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
-                               source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                               model_mapper=model_mapper, non_linear_optimizer=MockNLO(),
-                               likelihood_for_tracer=analyse.likelihood_for_tracer)
+        pl.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
+                         source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                         model_mapper=model_mapper, non_linear_optimizer=MockNLO(),
+                         likelihood_for_tracer=analyse.likelihood_for_tracer)
 
         assert len(model_mapper.prior_models) == 2
 
@@ -101,3 +101,32 @@ class TestModelAnalysis:
         assert result.likelihood == 1
         assert result.lens_galaxies[0].redshift == 0.5
         assert result.source_galaxies[0].redshift == 0.5
+
+
+class DummyResult:
+    pass
+
+
+class DummyAnalysis:
+    def __init__(self):
+        self.is_run = False
+
+    def run(self):
+        self.is_run = True
+        return DummyResult()
+
+
+class TestLinearPipeline:
+    def test_simple_run(self):
+        a1 = DummyAnalysis()
+        a2 = DummyAnalysis()
+        a3 = DummyAnalysis()
+
+        pipeline = pl.LinearPipeline(a1, a2, a3)
+
+        assert True not in map(lambda a: a.is_run, (a1, a2, a3))
+
+        results = pipeline.run()
+
+        assert len(results) == 3
+        assert False not in map(lambda a: a.is_run, (a1, a2, a3))
