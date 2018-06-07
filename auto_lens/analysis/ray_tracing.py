@@ -34,6 +34,7 @@ class TraceImageAndSource(object):
             return self.image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
                    self.source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
+
 class Plane(object):
 
     def __init__(self, galaxies, grids):
@@ -59,6 +60,7 @@ class Plane(object):
         """Generate the image of the galaxies in this plane."""
         if self.grids.blurring is not None:
             return self.grids.blurring.intensities_via_grid(self.galaxies)
+
 
 class LensPlane(Plane):
 
