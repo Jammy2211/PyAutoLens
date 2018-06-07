@@ -1,10 +1,10 @@
-from auto_lens import model_mapper
+from auto_lens.analysis import model_mapper
 import pytest
 from auto_lens.profiles import geometry_profiles, light_profiles, mass_profiles
 
 import os
 
-data_path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
+data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(name='uniform_simple')
@@ -64,7 +64,7 @@ class MockProfile(object):
         self.intensity = intensity
 
 
-class TestModelpingCollection(object):
+class TestModelingCollection(object):
     def test__argument_extraction(self):
         collection = model_mapper.ModelMapper(MockConfig())
         collection.add_class("mock_class", MockClass)

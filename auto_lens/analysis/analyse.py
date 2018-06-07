@@ -1,7 +1,8 @@
 import numpy as np
 
 from auto_lens.imaging import grids
-from auto_lens import ray_tracing
+from auto_lens.analysis import ray_tracing
+
 
 def fit_data_with_model(grid_datas, grid_mappers, ray_tracing):
     """Fit the data using the ray_tracing model
@@ -42,7 +43,8 @@ def compute_likelihood(image, noise, model_image):
     model_image : grids.GridData
         The model image of the data.
     """
-    return -0.5*(np.sum(((image - model_image) / noise) ** 2.0 + np.log(2*np.pi*noise**2.0)))
+    return -0.5 * (np.sum(((image - model_image) / noise) ** 2.0 + np.log(2 * np.pi * noise ** 2.0)))
+
 
 def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
     """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
@@ -63,6 +65,7 @@ def generate_blurred_light_profie_image(ray_tracing, psf, grid_mappers):
     return blur_image_including_blurring_region(image_light_profile, grid_mappers.image_to_pixel, psf,
                                                 blurring_image_light_profile, grid_mappers.blurring_to_pixel)
 
+
 # TODO : Do this convolution in 1D eventually..
 
 def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_image=None, blurring_to_pixel=None):
@@ -70,7 +73,7 @@ def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_im
 
     Parameters
     ----------
-    image : grids.GridData
+    image : ndarray
         The image data using the GridData 1D representation.
     image_to_pixel : grids.GridMapperDataToPixel
         The mapping between a 1D image pixel (GridData) and 2D image location.

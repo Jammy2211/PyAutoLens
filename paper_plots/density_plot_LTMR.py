@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 sys.path.append("../")
 
 from paper_plots import density_plot_tools
-from auto_lens import galaxy
-from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens.analysis import galaxy
+from auto_lens.profiles import mass_profiles
 
 
 ltm_skip = 0
