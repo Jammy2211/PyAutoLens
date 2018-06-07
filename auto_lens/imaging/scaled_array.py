@@ -33,27 +33,68 @@ class ScaledArray(np.ndarray):
         """
         Returns
         -------
-
+        central_pixel_coordinates:
+            The coordinates of the central pixel in the image. If a dimension of the image are odd then the
+            corresponding coordinate will be fractional.
         """
         return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
 
     def pixels_to_arc_seconds(self, pixels):
+        """
+        Converts a value from pixels to arc seconds.
+        """
         return self.pixel_scale * pixels
 
     def arc_seconds_to_pixels(self, arc_seconds):
+        """
+        Converts a value from arc seconds to pixels.
+        """
         return arc_seconds / self.pixel_scale
 
     def pixel_coordinates_to_arc_second_coordinates(self, pixel_coordinates):
+        """
+        Converts a pixel coordinate pair to an arc seconds coordinate pair. The pixel coordinate origin is at the top
+        left corner of the image whilst the arc second coordinate origin is at the centre. This means that the original
+        pixel coordinates, (0, 0), will give negative arc second coordinates.
+
+        Parameters
+        ----------
+        pixel_coordinates: (float, float)
+            The coordinates of a point in pixels
+
+        Returns
+        -------
+        arc_second_coordinates: (float, float)
+            The coordinates of a point in arc seconds
+        """
         return tuple(map(lambda coord, centre: self.pixels_to_arc_seconds(coord - centre), pixel_coordinates,
                          self.central_pixel_coordinates))
 
     def arc_second_coordinates_to_pixel_coordinates(self, arc_second_coordinates):
+        """
+        Converts an arc second coordinate pair to a pixel coordinate pair. The pixel coordinate origin is at the top
+        left corner of the image whilst the arc second coordinate origin is at the centre. This means that the original
+        pixel coordinates, (0, 0), will give negative arc second coordinates.
+
+        Parameters
+        ----------
+        arc_second_coordinates: (float, float)
+            The coordinates of a point in arc seconds
+
+        Returns
+        -------
+        pixel_coordinates: (float, float)
+            The coordinates of a point in pixels
+        """
         return tuple(map(lambda coord, centre: self.arc_seconds_to_pixels(coord) + centre,
                          arc_second_coordinates,
                          self.central_pixel_coordinates))
 
     @property
     def shape_arc_seconds(self):
+        """
+        The shape of the image in arc seconds
+        """
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
     def new_with_array(self, array):
@@ -106,7 +147,8 @@ class ScaledArray(np.ndarray):
         return self.new_with_array(array)
 
     def trim(self, new_dimensions):
-        """ Trim the data array to a new size around its central pixel.
+        """
+        Trim the data array to a new size around its central pixel.
 
         NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
         (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
