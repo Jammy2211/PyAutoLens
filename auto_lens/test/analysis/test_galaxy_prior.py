@@ -2,32 +2,12 @@ from auto_lens.analysis import galaxy_prior as gp
 from auto_lens.profiles import mass_profiles, light_profiles
 import pytest
 from auto_lens import exc
-
-
-class MockPriorModel:
-    def __init__(self, name, cls):
-        self.name = name
-        self.cls = cls
-        self.centre = "centre for {}".format(name)
-        self.phi = "phi for {}".format(name)
-
-
-class MockModelMapper:
-    def __init__(self):
-        self.classes = {}
-
-    def add_class(self, name, cls):
-        self.classes[name] = cls
-        return MockPriorModel(name, cls)
-
-
-class MockModelInstance:
-    pass
+from auto_lens.test import mock
 
 
 @pytest.fixture(name="mapper")
 def make_mapper():
-    return MockModelMapper()
+    return mock.MockModelMapper()
 
 
 @pytest.fixture(name="galaxy_prior_2")
@@ -51,7 +31,7 @@ class TestGalaxyPrior:
     def test_recover_classes(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
 
-        instance = MockModelInstance()
+        instance = mock.MockModelInstance()
 
         light_profile_name = galaxy_prior.light_profile_names[0]
         mass_profile_name = galaxy_prior.mass_profile_names[0]
@@ -69,7 +49,7 @@ class TestGalaxyPrior:
 
     def test_exceptions(self, galaxy_prior, mapper):
         galaxy_prior.attach_to_model_mapper(mapper)
-        instance = MockModelInstance()
+        instance = mock.MockModelInstance()
         with pytest.raises(exc.PriorException):
             galaxy_prior.galaxy_for_model_instance(instance)
 
