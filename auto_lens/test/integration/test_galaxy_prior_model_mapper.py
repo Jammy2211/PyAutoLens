@@ -9,10 +9,12 @@ class TestCase:
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
         mapper = mm.ModelMapper(
             mm.Config("{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config")))
+
         # Create a galaxy prior for the source galaxy. Here we are describing only the light profile of the source
         # galaxy which comprises an elliptical exponential and elliptical sersic light profile.
         source_galaxy_prior = gp.GalaxyPrior(
             light_profile_classes=[light_profiles.EllipticalExponential, light_profiles.EllipticalSersic])
+
         # Create a galaxy prior for the source galaxy. Here we are describing both the light and mass profiles. We've
         # also stipulated that the centres of any galaxies generated using the galaxy prior should match.
         lens_galaxy_prior = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalExponential],
