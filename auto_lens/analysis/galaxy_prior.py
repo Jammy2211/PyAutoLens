@@ -1,7 +1,6 @@
 import random
 import string
 from auto_lens.analysis import galaxy
-from auto_lens.analysis.model_mapper import Value
 from auto_lens import exc
 
 
@@ -66,7 +65,7 @@ class GalaxyPrior:
             for profile_model in profile_models:
                 profile_model.phi = phi
 
-        prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.id), Value)]
+        prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.id), galaxy.Redshift)]
 
         return prior_models
 
