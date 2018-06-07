@@ -715,7 +715,7 @@ class GridMapperDataToPixel(np.ndarray):
 
         Parameters
         -----------
-        grid_data : GridData
+        grid_data : ndarray
             The grid-data which is mapped to its 2D image.
         """
         data_2d = np.zeros(self.dimensions_2d)

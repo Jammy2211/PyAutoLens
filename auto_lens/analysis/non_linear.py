@@ -65,14 +65,13 @@ class NonLinearFiles(object):
 
         self.resume = os.path.exists(self.results_path)  # resume True if results path already exists
 
-        if self.resume == False:
+        if not self.resume:
 
             os.makedirs(self.results_path)  # Create results folder if doesnt exist
             self.create_param_names()
             self.model_mapper.output_model_info(self.file_model_info)
 
-        elif self.resume == True:
-            if check_model == True:
+        elif self.resume and check_model:
                 self.model_mapper.check_model_info(self.file_model_info)
 
     def create_param_names(self):
