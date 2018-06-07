@@ -57,6 +57,17 @@ class Array(np.ndarray):
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
     def new_with_array(self, array):
+        """
+        Parameters
+        ----------
+        array: ndarray
+            An ndarray
+
+        Returns
+        -------
+        new_array: Array
+            A new instance of this class that shares all of this instances attributes with a new ndarray.
+        """
         arguments = vars(self)
         arguments.update({"array": array})
 
@@ -167,5 +178,22 @@ class Array(np.ndarray):
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):
+        """
+        Creates an instance of Array and fills it with a single value
+
+        Parameters
+        ----------
+        value: float
+            The value with which the array should be filled
+        shape: (int, int)
+            The shape of the array
+        pixel_scale: float
+            The scale of a pixel in arc seconds
+
+        Returns
+        -------
+        array: Array
+            An array filled with a single value
+        """
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
