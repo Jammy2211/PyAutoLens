@@ -64,6 +64,7 @@ class MockProfile(object):
         self.intensity = intensity
 
 
+# noinspection PyUnresolvedReferences
 class TestModelingCollection(object):
     def test__argument_extraction(self):
         collection = model_mapper.ModelMapper(MockConfig())
@@ -106,6 +107,7 @@ class TestModelingCollection(object):
         assert 3 == len(collection.priors_ordered_by_id)
 
 
+# noinspection PyUnresolvedReferences
 class TestModelInstance(object):
 
     def test_simple_model(self):
@@ -200,6 +202,7 @@ class TestModelInstance(object):
         assert model_map.mock_profile.intensity == 0.
 
 
+# noinspection PyUnresolvedReferences
 class TestRealClasses(object):
 
     def test_combination(self):
@@ -215,6 +218,7 @@ class TestRealClasses(object):
         assert isinstance(model_map.lens_light_profile, light_profiles.EllipticalCoreSersic)
 
 
+# noinspection PyUnresolvedReferences
 class TestConfigFunctions:
 
     def test_loading_config(self, test_config):
@@ -268,6 +272,7 @@ class TestConfigFunctions:
         assert isinstance(model_map.exponential_light_profile, light_profiles.EllipticalExponential)
 
 
+# noinspection PyUnresolvedReferences
 class TestHyperCube:
 
     def test__in_order_of_class_constructor__one_profile(self, test_config):
@@ -314,6 +319,7 @@ class TestHyperCube:
         assert collection.physical_values_ordered_by_class(unit_vector) == before
 
 
+# noinspection PyUnresolvedReferences
 class TestModelInstancesRealClasses:
 
     def test__in_order_of_class_constructor__one_profile(self, test_config):
@@ -344,62 +350,6 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_3.centre == (0.7, 0.8)
         assert model_map.profile_3.axis_ratio == 1.8
         assert model_map.profile_3.phi == 2.0
-
-    # TODO : The order of the parameters is not maintained when we change a prior - fix.
-
-    # def test__in_order_of_class_constructor_order_maintained_with_prior_changes_simple_model(self):
-    #
-    #     collection = model_mapper.ModelMapper(
-    #         model_mapper.Config(config_folder_path=data_path+"test_files/config"),
-    #         profile_1=geometry_profiles.EllipticalProfile)
-    #
-    #     collection.profile_1.centre.centre_1 = model_mapper.UniformPrior(10, 20)
-    #
-    #     model_instance = collection.from_unit_vector([0.1, 1.0, 0.3, 0.4])
-    #
-    #     assert model_instance.profile_1.centre == (0.1, 20.0)
-    #     assert model_instance.profile_1.axis_ratio == 0.6
-    #     assert model_instance.profile_1.phi == 0.8
-
-    # def test__in_order_of_class_constructor_order_maintained_with_prior_changes(self):
-    #
-    #     collection = prior.ModelMapper(
-    #         prior.Config(config_folder_path=data_path+"test_files/config"),
-    #         profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
-    #         profile_3=geometry_profiles.EllipticalProfile)
-    #
-    #     collection.profile_1.phi = prior.UniformPrior(100, 200)
-    #     collection.profile_2.centre.centre_1 = prior.UniformPrior(10, 20)
-    #
-    #     model_instance = collection.from_unit_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-    #
-    #     assert model_instance.profile_1.centre == (0.1, 0.2)
-    #     assert model_instance.profile_1.axis_ratio == 0.6
-    #     assert model_instance.profile_1.phi == 140.0
-    #
-    #     assert model_instance.profile_2.centre == (0.5, 16.0)
-    #
-    #     assert model_instance.profile_3.centre == (0.7, 0.8)
-    #     assert model_instance.profile_3.axis_ratio == 1.8
-    #     assert model_instance.profile_3.phi == 2.0
-
-    # TODO : Same problem with a prior reassignment / pair
-
-    # def test__in_order_of_class_constructor_order_maintained_when_prior_reassigned__simple_model(self):
-    #
-    #     collection = prior.ModelMapper(
-    #         prior.Config(config_folder_path=data_path+"test_files/config"),
-    #         profile_1=geometry_profiles.EllipticalProfile)
-    #
-    #     collection.profile_1.centre.centre_1 = collection.profile_1.phi
-    #
-    #     model_instance = collection.from_unit_vector([0.1, 1.0, 0.3, 0.4])
-    #
-    #     assert model_instance.profile_1.centre == (0.1, 2.0)
-    #     assert model_instance.profile_1.axis_ratio == 0.6
-    #     assert model_instance.profile_1.phi == 0.8
-
-    # TODO : This test works because we reasign each parameter in order... pretty useless.
 
     def test__check_order_for_different_unit_values(self, test_config):
         collection = model_mapper.ModelMapper(
@@ -536,6 +486,7 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_1.phi == model_2.profile_1.phi == 1.0
 
 
+# noinspection PyUnresolvedReferences
 class TestUtility(object):
 
     def test_class_priors_dict(self):
