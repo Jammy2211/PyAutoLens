@@ -2,8 +2,10 @@ import numpy as np
 
 
 class Galaxy(object):
-    """Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass 
-    profiles"""
+    """
+    Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass
+    profiles
+    """
 
     def __init__(self, redshift=None, light_profiles=None, mass_profiles=None):
         """

@@ -63,8 +63,8 @@ class TestTraceImageAndSoure(object):
 
         def test__image_grid__no_galaxy__image_and_source_planes_setup__same_coordinates(self, grid_image, no_galaxies):
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
-                                                        image_plane_grids=grid_image)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
+                                           image_plane_grids=grid_image)
 
             assert ray_trace.image_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
@@ -72,8 +72,8 @@ class TestTraceImageAndSoure(object):
 
         def test__image_grid__sis_lens__image_coordinates_are_grid_and_source_plane_is_deflected(self, grid_image, galaxy_mass_sis):
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_mass_sis], source_galaxies=no_galaxies,
-                                                        image_plane_grids=grid_image)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=no_galaxies,
+                                           image_plane_grids=grid_image)
 
             assert ray_trace.image_plane.grids.image == pytest.approx(np.array([[1.0, 1.0]]), 1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
@@ -81,8 +81,8 @@ class TestTraceImageAndSoure(object):
 
         def test__image_grid__2_sis_lenses__same_as_above_but_deflections_double(self, grid_image, galaxy_mass_sis):
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_mass_sis, galaxy_mass_sis], source_galaxies=no_galaxies,
-                                                        image_plane_grids=grid_image)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis, galaxy_mass_sis], source_galaxies=no_galaxies,
+                                           image_plane_grids=grid_image)
 
             assert ray_trace.image_plane.grids.image == pytest.approx(np.array([[1.0, 1.0]]), 1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([1.414, 1.414]), 1e-3)
@@ -90,8 +90,8 @@ class TestTraceImageAndSoure(object):
 
         def test__all_grids__sis_lens__planes_setup_correctly(self, all_grids, galaxy_mass_sis):
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_mass_sis], source_galaxies=no_galaxies,
-                                                        image_plane_grids=all_grids)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=no_galaxies,
+                                           image_plane_grids=all_grids)
 
             assert ray_trace.image_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
             assert ray_trace.image_plane.grids.sub[0, 0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
@@ -117,8 +117,8 @@ class TestTraceImageAndSoure(object):
             source_plane = ray_tracing.SourcePlane(galaxies=no_galaxies, grids=grid_image)
             plane_image = image_plane.generate_image_of_galaxy_light_profiles() + source_plane.generate_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
-                                                        image_plane_grids=grid_image)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
+                                           image_plane_grids=grid_image)
             ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
@@ -131,8 +131,8 @@ class TestTraceImageAndSoure(object):
             source_plane = ray_tracing.SourcePlane(galaxies=[galaxy_light_only], grids=grid_image)
             plane_image = image_plane.generate_image_of_galaxy_light_profiles() + source_plane.generate_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_only],
-                                                        source_galaxies=[galaxy_light_only], image_plane_grids=grid_image)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_only],
+                                           source_galaxies=[galaxy_light_only], image_plane_grids=grid_image)
             ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
@@ -148,9 +148,9 @@ class TestTraceImageAndSoure(object):
             source_plane = ray_tracing.SourcePlane(galaxies=[galaxy_light_and_mass], grids=source_grid)
             plane_image = image_plane.generate_image_of_galaxy_light_profiles() + source_plane.generate_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_and_mass],
-                                                        source_galaxies=[galaxy_light_and_mass],
-                                                        image_plane_grids=grid_image)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_and_mass],
+                                           source_galaxies=[galaxy_light_and_mass],
+                                           image_plane_grids=grid_image)
             ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
@@ -166,8 +166,8 @@ class TestTraceImageAndSoure(object):
             plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
                           source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
-                                                        image_plane_grids=grid_image_and_blurring)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
+                                           image_plane_grids=grid_image_and_blurring)
             ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
@@ -182,9 +182,9 @@ class TestTraceImageAndSoure(object):
             plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
                           source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_only],
-                                                        source_galaxies=[galaxy_light_only],
-                                                        image_plane_grids=grid_image_and_blurring)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_only],
+                                           source_galaxies=[galaxy_light_only],
+                                           image_plane_grids=grid_image_and_blurring)
             ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
@@ -201,9 +201,9 @@ class TestTraceImageAndSoure(object):
             plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
                           source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[galaxy_light_and_mass],
-                                                        source_galaxies=[galaxy_light_and_mass],
-                                                        image_plane_grids=grid_image_and_blurring)
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_and_mass],
+                                           source_galaxies=[galaxy_light_and_mass],
+                                           image_plane_grids=grid_image_and_blurring)
             ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
