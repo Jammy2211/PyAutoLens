@@ -2,6 +2,13 @@ from auto_lens.analysis import pipeline
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
 import pytest
+import os
+
+
+@pytest.fixture(name='test_config')
+def make_test_config():
+    return mm.Config(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config"))
 
 
 class MockImage:
@@ -39,8 +46,8 @@ def make_source_galaxy_prior():
 
 
 @pytest.fixture(name="model_mapper")
-def make_model_mapper():
-    return mm.ModelMapper()
+def make_model_mapper(test_config):
+    return mm.ModelMapper(config=test_config)
 
 
 @pytest.fixture(name="non_linear_optimizer")
@@ -85,7 +92,7 @@ class TestModelAnalysis:
                                model_mapper=model_mapper, non_linear_optimizer=MockNLO(),
                                likelihood_for_tracer=analyse.likelihood_for_tracer)
 
-        assert len(model_mapper.classes) == 2
+        assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_analysis, non_linear_optimizer):
         result = model_analysis.run()
