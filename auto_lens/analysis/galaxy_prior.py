@@ -120,7 +120,7 @@ class GalaxyPrior:
                 light_profiles.append(getattr(model_instance, name))
             for name in self.mass_profile_names:
                 mass_profiles.append(getattr(model_instance, name))
-            redshift = getattr(model_instance, self.redshift_name).value
+            redshift = getattr(model_instance, self.redshift_name).redshift
         except AttributeError as e:
             raise exc.PriorException(*e.args)
 
