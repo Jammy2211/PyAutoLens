@@ -79,8 +79,8 @@ def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_im
         The mapping between a 1D image pixel (GridData) and 2D image location.
     psf : imaging.PSF
         The 2D Point Spread Function (PSF).
-    blurring_image : grids.GridData
-        The blurring regioon data, using the GridData 1D representation.
+    blurring_image : ndarray
+        The blurring region data, using the GridData 1D representation.
     blurring_to_pixel : grid.GridMapperBlurringToPixel
         The mapping between a 1D blurring image pixel (GridData) and 2D image location.
     """

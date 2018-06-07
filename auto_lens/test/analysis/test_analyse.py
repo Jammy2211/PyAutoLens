@@ -8,13 +8,13 @@ from auto_lens.imaging import image as img
 from auto_lens.profiles import light_profiles
 
 
-@pytest.fixture(scope='function')
-def no_galaxies():
+@pytest.fixture(name="no_galaxies", scope='function')
+def make_no_galaxies():
     return [galaxy.Galaxy()]
 
 
-@pytest.fixture(scope='function')
-def galaxy_light_sersic():
+@pytest.fixture(name="galaxy_light_sersic", scope='function')
+def make_galaxy_light_sersic():
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
     return galaxy.Galaxy(light_profiles=[sersic])
@@ -108,8 +108,8 @@ class TestLikelihood:
         likelihood = analyse.compute_likelihood(image, noise, model_image)
 
         chi_sq_term = 0
-        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + \
-                     np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0)
+        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
+            2 * np.pi * 4.0)
 
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
