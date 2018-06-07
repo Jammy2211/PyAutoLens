@@ -5,7 +5,7 @@ from auto_lens.imaging import grids
 from auto_lens.imaging import mask as msk
 from auto_lens.imaging import image as img
 
-from auto_lens import galaxy
+from auto_lens.analysis import galaxy
 from auto_lens.profiles import light_profiles, mass_profiles
 import os
 
