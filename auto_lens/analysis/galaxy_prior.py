@@ -1,7 +1,7 @@
 import random
 import string
-from auto_lens import galaxy
-from auto_lens.model_mapper import Value
+from auto_lens.analysis import galaxy
+from auto_lens.analysis.model_mapper import Value
 from auto_lens import exc
 
 
