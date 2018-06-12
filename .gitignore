@@ -15,9 +15,4 @@ lib/
 .env
 AutoLensPy2
 .pytest_cache
-<<<<<<< HEAD
-=======
-test_files/
-test_files/non_linear/files
-MultiNest/
->>>>>>> befe5def5c7993e2f33a3546eb8c6276260505a1
+
