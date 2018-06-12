@@ -1,11 +1,12 @@
 from auto_lens.analysis import non_linear
 from auto_lens.analysis import model_mapper as mm
 from auto_lens.analysis import analyse
+from auto_lens.imaging import grids
 
 
 class ModelAnalysis(object):
-    def __init__(self, image, lens_galaxy_priors, source_galaxy_priors, pixelization, model_mapper=mm.ModelMapper(),
-                 non_linear_optimizer=non_linear.MultiNestWrapper(),
+    def __init__(self, image, mask, lens_galaxy_priors, source_galaxy_priors, pixelization,
+                 model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(),
                  likelihood_for_tracer=analyse.likelihood_for_tracer):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
@@ -16,6 +17,8 @@ class ModelAnalysis(object):
         ----------
         image: Image
             An image of the galaxy to be fit
+        mask: Mask
+            A mask eliminating the areas of the image that are not relevant to the analysis
         lens_galaxy_priors: [GalaxyPrior]
             A list of prior instances describing the lens
         source_galaxy_priors: [GalaxyPrior]
@@ -30,12 +33,16 @@ class ModelAnalysis(object):
         """
 
         self.image = image
+        self.mask = mask
         self.lens_galaxy_priors = lens_galaxy_priors
         self.source_galaxy_priors = source_galaxy_priors
         self.pixelization = pixelization
         self.non_linear_optimizer = non_linear_optimizer
         self.model_mapper = model_mapper
         self.likelihood_for_tracer = likelihood_for_tracer
+
+        # TODO: is this step correct? How is the mask chosen?
+        self.image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
 
         for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
             galaxy_prior.attach_to_model_mapper(model_mapper)

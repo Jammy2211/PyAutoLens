@@ -3,6 +3,7 @@ from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
 import pytest
 import os
+import numpy as np
 
 
 @pytest.fixture(name='test_config')
@@ -57,10 +58,10 @@ def make_non_linear_optimizer():
 
 @pytest.fixture(name="model_analysis")
 def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
-    return pl.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
-                                  source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                                  model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
-                                  likelihood_for_tracer=analyse.likelihood_for_tracer)
+    return pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+                            source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                            model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
+                            likelihood_for_tracer=analyse.likelihood_for_tracer)
 
 
 @pytest.fixture(name="analyse")
@@ -85,9 +86,15 @@ class MockAnalyse:
         return 1
 
 
+class MockMask:
+    # noinspection PyMethodMayBeStatic
+    def compute_grid_coords_image(self):
+        return np.array([[-1., -1.], [1., 1.]])
+
+
 class TestModelAnalysis:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
-        pl.ModelAnalysis(image=MockImage(), lens_galaxy_priors=[lens_galaxy_prior],
+        pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
                          model_mapper=model_mapper, non_linear_optimizer=MockNLO(),
                          likelihood_for_tracer=analyse.likelihood_for_tracer)
