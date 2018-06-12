@@ -24,14 +24,20 @@ class MockImage:
 
 
 class MockPixelization:
-    pass
+    def __init__(self, param):
+        self.param = param
 
 
 class MockInstrumentation:
-    pass
+    def __init__(self, param):
+        self.param = param
 
 
 class MockPrior:
+    pass
+
+
+class MockGalaxy:
     pass
 
 
@@ -105,12 +111,32 @@ class TestModelAnalysis:
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_analysis, non_linear_optimizer):
-        result = model_analysis.run(MockImage(), MockMask(), MockPixelization(), MockInstrumentation())
+        result = model_analysis.run(MockImage(), MockMask(), MockPixelization(0), MockInstrumentation(0))
         assert len(non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
         assert result.lens_galaxies[0].redshift == 0.5
         assert result.source_galaxies[0].redshift == 0.5
+
+
+class TestHyperparameterAnalysis:
+    def test_setup(self, model_mapper, non_linear_optimizer):
+        pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper, non_linear_optimizer)
+
+        assert len(model_mapper.prior_models) == 2
+
+    def test_run(self, model_mapper, non_linear_optimizer):
+        hyperparameter_analysis = pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper,
+                                                            non_linear_optimizer)
+
+        assert len(non_linear_optimizer.priors) == 2
+        result = hyperparameter_analysis.run([MockGalaxy()], [MockGalaxy()])
+
+        assert len(non_linear_optimizer.priors) == 2
+
+        assert result.likelihood == 1
+        assert result.pixelization.param == 0.5
+        assert result.instrumentation.param == 0.5
 
 
 class TestLinearPipeline:
@@ -137,4 +163,4 @@ class TestMainPipeline:
     def test_main_pipeline(self, lens_galaxy_prior, source_galaxy_prior):
         pipeline = pl.MainPipeline(pl.ModelAnalysis([lens_galaxy_prior], [source_galaxy_prior]),
                                    hyperparameter_analysis=MockHyperparameterAnalysis())
-        assert len(pipeline.run(MockImage(), MockMask(), MockPixelization(), MockInstrumentation())) == 2
+        assert len(pipeline.run(MockImage(), MockMask(), MockPixelization(0), MockInstrumentation(0))) == 2

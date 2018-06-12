@@ -133,7 +133,8 @@ class ModelAnalysis(object):
 
 
 class HyperparameterAnalysis(object):
-    pass
+    def __init__(self, model_mapper=mm.ModelMapper()):
+        self.model_mapper = model_mapper
 
 
 class MainPipeline(object):
