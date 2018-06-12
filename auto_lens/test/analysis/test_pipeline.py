@@ -54,12 +54,6 @@ class MockNLO:
         fitness_function([0.5, 0.5])
 
 
-class MockAnalyse:
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def likelihood_for_tracer(self, tracer):
-        return 1
-
-
 class MockMask:
     # noinspection PyMethodMayBeStatic
     def compute_grid_coords_image(self):
@@ -92,20 +86,15 @@ def make_non_linear_optimizer():
     return MockNLO()
 
 
-@pytest.fixture(name="analyse")
-def make_analyse():
-    return MockAnalyse()
-
-
 @pytest.fixture(name="model_stage")
-def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
+def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer):
     return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                             source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
                             non_linear_optimizer=non_linear_optimizer, model_mapper=model_mapper)
 
 
 class TestModelStage:
-    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
+    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
         pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
                          non_linear_optimizer=MockNLO(), model_mapper=model_mapper)
