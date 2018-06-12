@@ -4,7 +4,7 @@ from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
 
-def likelihood_for_image_and_tracer(image, tracer):
+def likelihood_for_image_tracer_pixelization_and_instrumentation(image, tracer, pixelization, instrumentation):
     # TODO: This function should take a tracer and return a likelihood. The ModelAnalysis class in the pipeline module
     # TODO: will construct the tracer using a non linear optimiser and priors.
     return 1.0

@@ -27,6 +27,10 @@ class MockPixelization:
     pass
 
 
+class MockInstrumentation:
+    pass
+
+
 class MockPrior:
     pass
 
@@ -88,21 +92,20 @@ def make_non_linear_optimizer():
 
 @pytest.fixture(name="model_stage")
 def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer):
-    return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
-                            source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+    return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior], source_galaxy_priors=[source_galaxy_prior],
                             non_linear_optimizer=non_linear_optimizer, model_mapper=model_mapper)
 
 
 class TestModelStage:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
         pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
-                         source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                         source_galaxy_priors=[source_galaxy_prior],
                          non_linear_optimizer=MockNLO(), model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_stage, non_linear_optimizer):
-        result = model_stage.run(MockImage(), MockMask())
+        result = model_stage.run(MockImage(), MockMask(), MockPixelization(), MockInstrumentation())
         assert len(non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
