@@ -10,7 +10,7 @@ class MockResult:
     pass
 
 
-class MockAnalysis:
+class MockStage:
     def __init__(self):
         self.is_run = False
 
@@ -97,25 +97,25 @@ def make_analyse():
     return MockAnalyse()
 
 
-@pytest.fixture(name="model_analysis")
-def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
-    return pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
-                            source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                            non_linear_optimizer=non_linear_optimizer,
-                            likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
-
-
-class TestModelAnalysis:
-    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
-        pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+@pytest.fixture(name="model_stage")
+def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
+    return pl.ModelStage(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                         non_linear_optimizer=MockNLO(),
+                         non_linear_optimizer=non_linear_optimizer,
                          likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
+
+
+class TestModelStage:
+    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
+        pl.ModelStage(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+                      source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                      non_linear_optimizer=MockNLO(),
+                      likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
-    def test_run(self, model_analysis, non_linear_optimizer):
-        result = model_analysis.run()
+    def test_run(self, model_stage, non_linear_optimizer):
+        result = model_stage.run()
         assert len(non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
@@ -125,15 +125,15 @@ class TestModelAnalysis:
 
 class TestLinearPipeline:
     def test_simple_run(self):
-        a1 = MockAnalysis()
-        a2 = MockAnalysis()
-        a3 = MockAnalysis()
+        s1 = MockStage()
+        s2 = MockStage()
+        s3 = MockStage()
 
-        pipeline = pl.LinearPipeline(a1, a2, a3)
+        pipeline = pl.LinearPipeline(s1, s2, s3)
 
-        assert True not in map(lambda a: a.is_run, (a1, a2, a3))
+        assert True not in map(lambda a: a.is_run, (s1, s2, s3))
 
         results = pipeline.run()
 
         assert len(results) == 3
-        assert False not in map(lambda a: a.is_run, (a1, a2, a3))
+        assert False not in map(lambda a: a.is_run, (s1, s2, s3))
