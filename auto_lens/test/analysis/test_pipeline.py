@@ -99,23 +99,21 @@ def make_analyse():
 
 @pytest.fixture(name="model_stage")
 def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
-    return pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+    return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                             source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                            non_linear_optimizer=non_linear_optimizer,
-                            likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
+                            non_linear_optimizer=non_linear_optimizer, model_mapper=model_mapper)
 
 
 class TestModelStage:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
-        pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+        pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                         non_linear_optimizer=MockNLO(),
-                         likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
+                         non_linear_optimizer=MockNLO(), model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_stage, non_linear_optimizer):
-        result = model_stage.run()
+        result = model_stage.run(MockImage(), MockMask())
         assert len(non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
