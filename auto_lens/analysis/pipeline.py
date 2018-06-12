@@ -53,6 +53,22 @@ class ModelAnalysis(object):
         self.likelihood = None
 
     def fitness_function(self, physical_values):
+        """
+        Generates a model instance from a set of physical values, uses this to construct galaxies and ultimately a
+        tracer that can be passed to analyse.likelihood_for_tracer.
+
+        Parameters
+        ----------
+        physical_values: [float]
+            Physical values from a non-linear optimiser
+
+        Returns
+        -------
+        likelihood: float
+            A value for the likelihood associated with this set of physical values in conjunction with the provided
+            model
+        """
+
         # Recover classes from physical values
         model_instance = self.model_mapper.from_physical_vector(physical_values)
         # Construct galaxies from their priors
@@ -67,21 +83,60 @@ class ModelAnalysis(object):
         return self.likelihood
 
     def run(self):
+        """
+        Run the analysis, iteratively analysing each set of values provided by the non-linear optimiser until it
+        terminates.
+
+        Returns
+        -------
+        result: Result
+            The result of the analysis, comprising a likelihood and the final set of galaxies generated
+        """
+
+        # Run the optimiser using the fitness function. The fitness function is applied iteratively until the optimiser
+        # terminates
         self.non_linear_optimizer.run(self.fitness_function, self.model_mapper.priors_ordered_by_id)
-        return ModelAnalysis.Result(self.likelihood, self.lens_galaxies, self.source_galaxies)
+        return self.__class__.Result(self)
 
     class Result(object):
-        def __init__(self, likelihood, lens_galaxies, source_galaxies):
-            self.likelihood = likelihood
-            self.lens_galaxies = lens_galaxies
-            self.source_galaxies = source_galaxies
+        def __init__(self, analysis):
+            """
+            The result of an analysis
+
+            Parameters
+            ----------
+            analysis: ModelAnalysis
+                An analysis
+            """
+            # The final likelihood found
+            self.likelihood = analysis.likelihood
+            # The final lens galaxies generated
+            self.lens_galaxies = analysis.lens_galaxies
+            # The final source galaxies generated
+            self.source_galaxies = analysis.source_galaxies
 
 
 class LinearPipeline(object):
     def __init__(self, *analyses):
+        """
+        A pipeline to linearly apply a series of analyses
+
+        Parameters
+        ----------
+        analyses: Analysis...
+            A series of analyses to be applied in order
+        """
         self.analyses = analyses
 
     def run(self):
+        """
+        Run the pipeline
+
+        Returns
+        -------
+        results: Results
+            A list of result objects describing the results of the analyses
+        """
         results = []
         for analysis in self.analyses:
             results.append(analysis.run())
