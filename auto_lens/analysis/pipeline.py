@@ -132,12 +132,17 @@ class ModelAnalysis(object):
             self.source_galaxies = run.source_galaxies
 
 
-class MainPipeline(object):
-    def __init__(self, *analyses):
-        self.analyses = analyses
+class HyperparameterAnalysis(object):
+    pass
 
-    def run(self, image, mask, pixelization, instrumentation, reduced_psf=None):
-        psf = reduced_psf if reduced_psf is not None else image.psf
+
+class MainPipeline(object):
+    def __init__(self, *analyses, hyperparameter_analysis=HyperparameterAnalysis()):
+        self.analyses = analyses
+        self.hyperparameter_analysis = hyperparameter_analysis
+
+    def run(self, image, mask, pixelization, instrumentation):
+        pass
         # TODO: test and implement
 
 
