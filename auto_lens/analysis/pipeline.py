@@ -2,6 +2,7 @@ from auto_lens.analysis import non_linear
 from auto_lens.analysis import model_mapper as mm
 from auto_lens.analysis import analyse
 from auto_lens.imaging import grids
+from auto_lens.analysis import ray_tracing
 
 
 class ModelAnalysis(object):
@@ -60,9 +61,9 @@ class ModelAnalysis(object):
         self.source_galaxies = list(map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
                                         self.source_galaxy_priors))
         # TODO: Construct ray tracing here
-        # tracer = ray_tracing.Tracer(self.image, self.lens_galaxies, self.source_galaxies)
+        tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
         # Determine likelihood:
-        self.likelihood = self.likelihood_for_tracer(None)
+        self.likelihood = self.likelihood_for_tracer(tracer)
         return self.likelihood
 
     def run(self):
