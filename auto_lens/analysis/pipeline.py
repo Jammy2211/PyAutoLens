@@ -124,7 +124,7 @@ class LinearPipeline(object):
         Parameters
         ----------
         stages: Stage...
-            A series of analyses to be applied in order
+            A series of stages to be applied in order
         """
         self.stages = stages
 
