@@ -55,10 +55,13 @@ class ModelAnalysis(object):
         result: Result
             The result of the analysis, comprising a likelihood and the final set of galaxies generated
         """
+
+        # Set up expensive objects that can be used repeatedly for fittings
         image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
 
         # TODO: Convert image to 1D and create other auxiliary data structures such as kernel makers
 
+        # Create an instance of run that will be used for this analysis
         run = self.__class__.Run(image, image_grid_collection, self.model_mapper, self.lens_galaxy_priors,
                                  self.source_galaxy_priors, pixelization, instrumentation)
 
@@ -133,17 +136,26 @@ class ModelAnalysis(object):
 
 
 class HyperparameterAnalysis(object):
-    def __init__(self, model_mapper=mm.ModelMapper()):
+    def __init__(self, pixelization_class, instrumentation_class, model_mapper=mm.ModelMapper(),
+                 non_linear_optimizer=non_linear.MultiNestWrapper()):
         self.model_mapper = model_mapper
+        self.pixelization_class = pixelization_class
+        self.instrumentation_class = instrumentation_class
+        self.non_linear_optimizer = non_linear_optimizer
+
+    def run(self, lens_galaxies, source_galaxies):
+        pass
 
 
 class MainPipeline(object):
-    def __init__(self, *analyses, hyperparameter_analysis=HyperparameterAnalysis()):
+    def __init__(self, *analyses, hyperparameter_analysis):
         self.analyses = analyses
         self.hyperparameter_analysis = hyperparameter_analysis
 
     def run(self, image, mask, pixelization, instrumentation):
-        pass
+        hyperparameter_results = []
+        model_results = []
+        return hyperparameter_results, model_results
         # TODO: test and implement
 
 
