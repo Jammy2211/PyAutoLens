@@ -143,6 +143,9 @@ class HyperparameterAnalysis(object):
         self.instrumentation_class = instrumentation_class
         self.non_linear_optimizer = non_linear_optimizer
 
+        model_mapper.add_class('pixelization', pixelization_class)
+        model_mapper.add_class('instrumentation', instrumentation_class)
+
     def run(self, lens_galaxies, source_galaxies):
         pass
 
@@ -153,10 +156,10 @@ class MainPipeline(object):
         self.hyperparameter_analysis = hyperparameter_analysis
 
     def run(self, image, mask, pixelization, instrumentation):
+        # TODO: test and implement
         hyperparameter_results = []
         model_results = []
         return hyperparameter_results, model_results
-        # TODO: test and implement
 
 
 class LinearPipeline(object):
