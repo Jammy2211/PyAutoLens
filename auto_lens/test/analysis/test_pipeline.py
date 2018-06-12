@@ -46,14 +46,15 @@ class MockModelInstance:
 
 
 class MockNLO:
-    def __init__(self):
+    def __init__(self, arr):
         self.priors = None
         self.fitness_function = None
+        self.arr = arr
 
     def run(self, fitness_function, priors):
         self.fitness_function = fitness_function
         self.priors = priors
-        fitness_function([0.5, 0.5])
+        fitness_function(self.arr)
 
 
 class MockMask:
@@ -83,28 +84,23 @@ def make_model_mapper(test_config):
     return mm.ModelMapper(config=test_config)
 
 
-@pytest.fixture(name="non_linear_optimizer")
-def make_non_linear_optimizer():
-    return MockNLO()
-
-
 @pytest.fixture(name="model_analysis")
-def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer):
+def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper):
     return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior], source_galaxy_priors=[source_galaxy_prior],
-                            non_linear_optimizer=non_linear_optimizer, model_mapper=model_mapper)
+                            non_linear_optimizer=MockNLO([0.5, 0.5]), model_mapper=model_mapper)
 
 
 class TestModelAnalysis:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
         pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior],
-                         non_linear_optimizer=MockNLO(), model_mapper=model_mapper)
+                         non_linear_optimizer=MockNLO([0.5, 0.5]), model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
-    def test_run(self, model_analysis, non_linear_optimizer):
+    def test_run(self, model_analysis):
         result = model_analysis.run(MockImage(), MockMask(), px.VoronoiPixelization(0), inst.Instrumentation(0))
-        assert len(non_linear_optimizer.priors) == 2
+        assert len(model_analysis.non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
         assert result.lens_galaxies[0].redshift == 0.5
@@ -112,19 +108,19 @@ class TestModelAnalysis:
 
 
 class TestHyperparameterAnalysis:
-    def test_setup(self, model_mapper, non_linear_optimizer):
-        pl.HyperparameterAnalysis(px.VoronoiPixelization, inst.Instrumentation, model_mapper, non_linear_optimizer)
+    def test_setup(self, model_mapper):
+        pl.HyperparameterAnalysis(px.VoronoiPixelization, inst.Instrumentation, model_mapper, MockNLO([0.5, 0.5, 0.5]))
 
         assert len(model_mapper.prior_models) == 2
 
-    def test_run(self, model_mapper, non_linear_optimizer):
+    def test_run(self, model_mapper):
         hyperparameter_analysis = pl.HyperparameterAnalysis(px.VoronoiPixelization, inst.Instrumentation, model_mapper,
-                                                            non_linear_optimizer)
+                                                            MockNLO([0.5, 0.5, 0.5]))
 
         result = hyperparameter_analysis.run(MockImage(), MockMask(), [MockGalaxy()], [MockGalaxy()])
-        assert len(non_linear_optimizer.priors) == 2
+        assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 2
 
-        assert len(non_linear_optimizer.priors) == 2
+        assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
         assert result.pixelization.param == 0.5
