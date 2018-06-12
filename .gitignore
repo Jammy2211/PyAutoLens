@@ -15,4 +15,3 @@ lib/
 .env
 AutoLensPy2
 .pytest_cache
-test_files/
