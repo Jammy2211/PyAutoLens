@@ -121,8 +121,8 @@ class TestHyperparameterAnalysis:
         hyperparameter_analysis = pl.HyperparameterAnalysis(px.VoronoiPixelization, inst.Instrumentation, model_mapper,
                                                             non_linear_optimizer)
 
+        result = hyperparameter_analysis.run(MockImage(), MockMask(), [MockGalaxy()], [MockGalaxy()])
         assert len(non_linear_optimizer.priors) == 2
-        result = hyperparameter_analysis.run([MockGalaxy()], [MockGalaxy()])
 
         assert len(non_linear_optimizer.priors) == 2
 
