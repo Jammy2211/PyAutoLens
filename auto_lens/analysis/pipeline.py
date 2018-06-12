@@ -1,14 +1,14 @@
 from auto_lens.analysis import non_linear
 from auto_lens.analysis import model_mapper as mm
-from auto_lens.analysis import analyse
+from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
 
-class ModelAnalysis(object):
+class ModelStage(object):
     def __init__(self, image, mask, lens_galaxy_priors, source_galaxy_priors, pixelization,
                  model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(),
-                 likelihood_for_tracer=analyse.likelihood_for_tracer):
+                 likelihood_for_tracer=fitting.likelihood_for_tracer):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
         assumed model and applies a pixelization and non linear optimizer to find the best possible fit between the
@@ -105,7 +105,7 @@ class ModelAnalysis(object):
 
             Parameters
             ----------
-            analysis: ModelAnalysis
+            analysis: ModelStage
                 An analysis
             """
             # The final likelihood found
@@ -117,16 +117,16 @@ class ModelAnalysis(object):
 
 
 class LinearPipeline(object):
-    def __init__(self, *analyses):
+    def __init__(self, *stages):
         """
         A pipeline to linearly apply a series of analyses
 
         Parameters
         ----------
-        analyses: Analysis...
-            A series of analyses to be applied in order
+        stages: Stage...
+            A series of stages to be applied in order
         """
-        self.analyses = analyses
+        self.stages = stages
 
     def run(self):
         """
@@ -138,6 +138,6 @@ class LinearPipeline(object):
             A list of result objects describing the results of the analyses
         """
         results = []
-        for analysis in self.analyses:
-            results.append(analysis.run())
+        for stage in self.stages:
+            results.append(stage.run())
         return results
