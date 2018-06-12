@@ -5,6 +5,7 @@ from functools import wraps
 import inspect
 from matplotlib import pyplot
 import colorsys
+from auto_lens import exc
 
 
 def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
@@ -294,13 +295,6 @@ def transform_coordinates(func):
         return func(profile, coordinates, *args, **kwargs)
 
     return wrapper
-
-
-class CoordinatesException(Exception):
-    """Exception thrown when coordinate assertion fails"""
-
-    def __init__(self, message):
-        super(CoordinatesException, self).__init__(message)
 
 
 class Profile(object):
@@ -601,8 +595,9 @@ class EllipticalProfile(Profile):
         """
 
         if not isinstance(coordinates_elliptical, TransformedCoordinates):
-            raise CoordinatesException("Can't return cartesian coordinates to cartesian coordinates. Did you remember"
-                                       " to explicitly make the elliptical coordinates TransformedCoordinates?")
+            raise exc.CoordinatesException(
+                "Can't return cartesian coordinates to cartesian coordinates. Did you remember"
+                " to explicitly make the elliptical coordinates TransformedCoordinates?")
 
         x, y = self.rotate_coordinates_from_profile(coordinates_elliptical)
         return self.coordinates_from_centre((x, y))
@@ -623,7 +618,7 @@ class EllipticalProfile(Profile):
         """
 
         if isinstance(coordinates, TransformedCoordinates):
-            raise CoordinatesException("Trying to transform already transformed coordinates")
+            raise exc.CoordinatesException("Trying to transform already transformed coordinates")
 
         # Compute distance of coordinates to the lens profiles centre
         radius = self.coordinates_to_radius(coordinates)

@@ -1,14 +1,12 @@
 import numpy as np
-
-from auto_lens.imaging.data import Array
-from auto_lens.imaging.mask import MaskException
+from auto_lens import exc
 from auto_lens.profiles import geometry_profiles
 
 
 class GridCoordsCollection(object):
 
     def __init__(self, image, sub=None, blurring=None):
-        """A collection of grids which contain the coordinates of an image. This includes the image's regular grid, \
+        """A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
         sub-gri, blurring region, etc.
 
         Coordinate grids are passed through the ray-tracing module to set up the image, lens and source planes.
@@ -34,7 +32,8 @@ class GridCoordsCollection(object):
         Parameters
         -----------
         mask : mask.Mask
-            A mask describing which image_to_pixel the coordinates are computed for and used to setup the collection of grids.
+            A mask describing which image_to_pixel the coordinates are computed for and used to setup the collection of
+            grids.
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
         blurring_size : (int, int)
@@ -441,7 +440,7 @@ class GridCoordsBlurring(GridCoordsRegular):
            The size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
         if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
-            raise MaskException("psf_size of exterior region must be odd")
+            raise exc.MaskException("psf_size of exterior region must be odd")
 
         return GridCoordsBlurring(mask.compute_grid_coords_blurring(psf_size))
 
@@ -717,7 +716,7 @@ class GridMapperDataToPixel(np.ndarray):
 
         Parameters
         -----------
-        grid_data : GridData
+        grid_data : ndarray
             The grid-data which is mapped to its 2D image.
         """
         data_2d = np.zeros(self.dimensions_2d)
@@ -905,7 +904,3 @@ class GridBorder(geometry_profiles.Profile):
         """
         move_factor = self.move_factor(coordinate)
         return coordinate[0] * move_factor, coordinate[1] * move_factor
-
-
-class GridException(Exception):
-    pass

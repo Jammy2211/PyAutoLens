@@ -6,8 +6,8 @@ import numpy as np
 from astropy import cosmology
 import matplotlib.pyplot as plt
 
-from auto_lens import galaxy
-from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens.analysis import galaxy
+from auto_lens.profiles import mass_profiles
 
 def weighted_avg_and_std(values, weights):
     """
@@ -129,7 +129,7 @@ class SLACS(object):
                                                       scale_radius=30.0*self.arcsec_per_kpc)
 
         self.lens_galaxy = galaxy.Galaxy(redshift=self.redshift,
-                                    mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
+                                         mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
 
         self.source_galaxy = galaxy.Galaxy(redshift=self.source_redshift)
 
@@ -155,7 +155,7 @@ class SLACS(object):
                                                       scale_radius=30.0*self.arcsec_per_kpc)
 
         self.lens_galaxy = galaxy.Galaxy(redshift=self.redshift,
-                                    mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
+                                         mass_profiles=[sersic_bulge, exponential_halo, dark_matter_halo])
 
         self.source_galaxy = galaxy.Galaxy(redshift=self.source_redshift)
 
