@@ -56,17 +56,17 @@ def make_non_linear_optimizer():
     return MockNLO()
 
 
+@pytest.fixture(name="analyse")
+def make_analyse():
+    return MockAnalyse()
+
+
 @pytest.fixture(name="model_analysis")
 def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
     return pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
                             source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
                             model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
                             likelihood_for_tracer=analyse.likelihood_for_tracer)
-
-
-@pytest.fixture(name="analyse")
-def make_analyse():
-    return MockAnalyse()
 
 
 class MockNLO:
