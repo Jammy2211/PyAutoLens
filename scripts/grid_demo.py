@@ -1,12 +1,10 @@
 import numpy as np
-import sys
-
-sys.path.append("../")
 
 from auto_lens.profiles import light_profiles, mass_profiles
-from auto_lens import galaxy
 from auto_lens.imaging import grids
-from auto_lens import ray_tracing
+from auto_lens.analysis import ray_tracing, galaxy
+
+# Note: you can run this by typing python -m scripts.grid_demo whilst in the autolens directory.
 
 # Simple coordinates to show behaviour
 coordinates = np.array([[1.0, 1.0]])
@@ -53,8 +51,8 @@ print('grid_coords collection coordinates = ', grid_collection.image, '\n')
 
 # Now lets pass our lens galaxy, source galaxy and grid_coords collection through the ray tracing module.
 # We'll assume only one image-plane and one source-plane (multiple planes will be added to the code in the future).
-ray_trace = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                            image_plane_grids=grid_collection)
+ray_trace = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                               image_plane_grids=grid_collection)
 
 # The ray tracing sets up an image plane, whose coordinates are our original coordinates.
 print('--- VALUES OF IMAGE COORDINATES, DEFLS AND SOURCE COORDINATES ---')
@@ -69,8 +67,8 @@ print('source plane grid_coords coordinates =', ray_trace.source_plane.grids.ima
 # If we pass the same lens galaxy to the image plane 3 times, notice that the deflection angles triple (as we are
 # basically including the same mass profile 3 times)
 print('--- VALUES OF IMAGE COORDINATES, DEFLS AND SOURCE COORDINATES FOR X3 LENS GALAXY ---')
-ray_trace_x3 = ray_tracing.TraceImageAndSource(lens_galaxies=[lens_galaxy, lens_galaxy, lens_galaxy],
-                                               source_galaxies=[source_galaxy], image_plane_grids=grid_collection)
+ray_trace_x3 = ray_tracing.Tracer(lens_galaxies=[lens_galaxy, lens_galaxy, lens_galaxy],
+                                  source_galaxies=[source_galaxy], image_plane_grids=grid_collection)
 print('image plane x3 grid_coords coordinates = ', ray_trace_x3.image_plane.grids.image)
 print('image plane x3 deflection angles = ', ray_trace_x3.image_plane.deflections.image)
 print('source plane x3 grid_coords coordinates =', ray_trace_x3.source_plane.grids.image, '\n')

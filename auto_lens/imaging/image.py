@@ -1,12 +1,32 @@
-from auto_lens.imaging.data import Array
+from auto_lens.imaging.scaled_array import ScaledArray
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
+from auto_lens import exc
 
 
-class Image(Array):
-    def __init__(self, array, effective_exposure_time=1, pixel_scale=1, psf=None, background_noise=None,
+class Image(ScaledArray):
+    """
+    A 2d array representing a real or simulated image.
+    """
+    def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
                  poisson_noise=None):
+        """
+        Parameters
+        ----------
+        array: ndarray
+            An array of image pixels in gray-scale
+        effective_exposure_time: Union(ndarray, float)
+            A float or array representing the effective exposure time of the whole image or each pixel.
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        psf: PSF
+            An array describing the PSF
+        background_noise: ndarray
+            An array describing the background noise in the image
+        poisson_noise: ndarray
+            An array describing the poisson noise in the image
+        """
         super(Image, self).__init__(array, pixel_scale)
         self.psf = psf
         self.background_noise = background_noise
@@ -16,6 +36,32 @@ class Image(Array):
     @classmethod
     def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, background_sky_map=None,
                  psf=None, include_poisson_noise=False, seed=-1):
+        """
+        Create a realistic simulated image by applying effects to a plain simulated image.
+
+        Parameters
+        ----------
+        array: ndarray
+            A plain image
+        effective_exposure_time: Union(ndarray, float)
+            A float or array representing the effective exposure time of the whole image or each pixel.
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        psf: PSF
+            An array describing the PSF
+        background_sky_map
+        include_poisson_noise: Bool
+            If True poisson noise is simulated and added to the image
+        seed: int
+            A seed for random noise generation
+
+        Returns
+        -------
+        image: Image
+            A simulated image
+        """
+
+        array_counts = None
 
         if background_sky_map is not None:
             array += background_sky_map
@@ -28,9 +74,7 @@ class Image(Array):
         if psf is not None:
             array = psf.convolve(array)
 
-        # TODO : The poisson noise map must be generated for the psf blurred image, which is was not before.
-        # TODO : Should be using the @properties but not sure how to get it to call in the simulate classmethod
-
+        # TODO : Could create image at this point and use properties?
         if include_poisson_noise is True:
             array += generate_poisson_noise(array, effective_exposure_time, seed)
             # The poisson noise map does not include the background sky, so this estimate below removes it
@@ -38,6 +82,7 @@ class Image(Array):
                 array_counts = np.multiply(array - background_sky_map, effective_exposure_time)
             elif background_sky_map is None:
                 array_counts = np.multiply(array, effective_exposure_time)
+            # TODO: What if background_sky_map is None? array_counts doesn't exist
             poisson_noise = np.sqrt(array_counts)
             poisson_noise = np.divide(poisson_noise, effective_exposure_time)
         else:
@@ -90,7 +135,7 @@ class Image(Array):
         """
 
         if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
-            raise KernelException("PSF Kernel must be odd")
+            raise exc.KernelException("PSF Kernel must be odd")
 
         return self.new_with_array(scipy.signal.convolve2d(self, psf, mode='same'))
 
@@ -118,21 +163,46 @@ class Image(Array):
 
     @property
     def counts_array(self):
+        """
+        Returns
+        -------
+        counts_array: ndarray
+            An array representing the image in terms of counts
+        """
         return self.electrons_per_second_to_counts(self)
 
     @property
     def background_noise_counts_array(self):
+        """
+        Returns
+        -------
+        background_noise_counts_array: ndarray
+            An array representing the background noise in terms of counts
+        """
         return self.electrons_per_second_to_counts(self.background_noise)
 
     @property
     def estimated_noise_counts(self):
+        """
+        Returns
+        -------
+        estimated_noise_counts: ndarray
+            An array representing estimated noise in terms of counts
+        """
         return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
 
     @property
     def estimated_noise(self):
+        """
+        Returns
+        -------
+        estimated_noise: ndarray
+            An array representing estimated noise
+        """
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
-class PSF(Array):
+
+class PSF(ScaledArray):
 
     def __init__(self, array, pixel_scale, renormalize=True):
         """
@@ -155,6 +225,23 @@ class PSF(Array):
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
+        """
+        Loads a PSF from fits and renormalizes it
+
+        Parameters
+        ----------
+        file_path: String
+            The path to the file containing the PSF
+        hdu: int
+            HDU ??
+        pixel_scale: float
+            The scale of a pixel in arcseconds
+
+        Returns
+        -------
+        psf: PSF
+            A renormalized PSF instance
+        """
         psf = PSF.from_fits(file_path, hdu, pixel_scale)
         psf.renormalize()
         return psf
@@ -164,14 +251,27 @@ class PSF(Array):
         return np.divide(self, np.sum(self))
 
     def convolve(self, array):
+        """
+        Convolve an array with this PSF
+
+        Parameters
+        ----------
+        array: ndarray
+            An array representing an image
+
+        Returns
+        -------
+        convolved_array: ndarray
+            An array representing an image that has been convolved with this PSF
+
+        Raises
+        ------
+        KernelException if either PSF kernel dimension is odd
+        """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
-            raise KernelException("PSF Kernel must be odd")
+            raise exc.KernelException("PSF Kernel must be odd")
 
         return scipy.signal.convolve2d(array, self, mode='same')
-
-
-class KernelException(Exception):
-    pass
 
 
 def generate_poisson_noise(image, exposure_time, seed=-1):
@@ -183,7 +283,7 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
     ----------
     image : ndarray
         The 2D image background noise is added to.
-    exposure_time : ndarray
+    exposure_time : Union(ndarray, int)
         The 2D array of pixel exposure times.
     seed : int
         The seed of the random number generator, used for the random noise maps.
@@ -196,12 +296,6 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
     setup_random_seed(seed)
     image_counts = np.multiply(image, exposure_time)
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
-
-
-def generate_background_noise(image, sigma, seed=-1):
-    setup_random_seed(seed)
-    background_noise_map = np.random.normal(loc=0.0, scale=sigma, size=image.shape)
-    return background_noise_map
 
 
 def setup_random_seed(seed):
