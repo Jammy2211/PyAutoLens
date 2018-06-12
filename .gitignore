@@ -15,7 +15,6 @@ lib/
 .env
 AutoLensPy2
 .pytest_cache
-test_files/
 test_files/non_linear/files
 MultiNest/
 multinest
