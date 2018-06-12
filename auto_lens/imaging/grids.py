@@ -6,7 +6,7 @@ from auto_lens.profiles import geometry_profiles
 class GridCoordsCollection(object):
 
     def __init__(self, image, sub=None, blurring=None):
-        """A collection of grids which contain the coordinates of an image. This includes the image's regular grid, \
+        """A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
         sub-gri, blurring region, etc.
 
         Coordinate grids are passed through the ray-tracing module to set up the image, lens and source planes.
@@ -32,7 +32,8 @@ class GridCoordsCollection(object):
         Parameters
         -----------
         mask : mask.Mask
-            A mask describing which image_to_pixel the coordinates are computed for and used to setup the collection of grids.
+            A mask describing which image_to_pixel the coordinates are computed for and used to setup the collection of
+            grids.
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
         blurring_size : (int, int)
