@@ -5,7 +5,7 @@ from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
 
-class ModelStage(object):
+class ModelAnalysis(object):
     def __init__(self, image, mask, lens_galaxy_priors, source_galaxy_priors, pixelization,
                  model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(),
                  likelihood_for_tracer=fitting.likelihood_for_tracer):
@@ -105,7 +105,7 @@ class ModelStage(object):
 
             Parameters
             ----------
-            analysis: ModelStage
+            analysis: ModelAnalysis
                 An analysis
             """
             # The final likelihood found
@@ -114,6 +114,14 @@ class ModelStage(object):
             self.lens_galaxies = analysis.lens_galaxies
             # The final source galaxies generated
             self.source_galaxies = analysis.source_galaxies
+
+
+class MainPipeline(object):
+    def __init__(self, *analyses):
+        self.analyses = analyses
+
+    def run(self, image, mask, reduced_psf=None):
+        psf = reduced_psf if reduced_psf is not None else image.psf
 
 
 class LinearPipeline(object):
