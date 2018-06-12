@@ -127,3 +127,14 @@ class TestLinearPipeline:
 
         assert len(results) == 3
         assert False not in map(lambda a: a.is_run, (s1, s2, s3))
+
+
+class MockHyperparameterAnalysis(object):
+    pass
+
+
+class TestMainPipeline:
+    def test_main_pipeline(self, lens_galaxy_prior, source_galaxy_prior):
+        pipeline = pl.MainPipeline(pl.ModelAnalysis([lens_galaxy_prior], [source_galaxy_prior]),
+                                   hyperparameter_analysis=MockHyperparameterAnalysis())
+        assert len(pipeline.run(MockImage(), MockMask(), MockPixelization(), MockInstrumentation())) == 2
