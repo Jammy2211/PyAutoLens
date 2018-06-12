@@ -17,3 +17,4 @@ AutoLensPy2
 .pytest_cache
 test_files/
 multinest
+.DS_Store
