@@ -30,7 +30,9 @@ class MockPrior:
 
 
 class MockGalaxy:
-    pass
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    def deflections_at_coordinates(self, coordinates):
+        return 1
 
 
 class MockPriorModel:
@@ -118,12 +120,10 @@ class TestHyperparameterAnalysis:
                                                             MockNLO([0.5, 0.5, 0.5]))
 
         result = hyperparameter_analysis.run(MockImage(), MockMask(), [MockGalaxy()], [MockGalaxy()])
-        assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 2
-
-        assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 2
+        assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 3
 
         assert result.likelihood == 1
-        assert result.pixelization.param == 0.5
+        assert result.pixelization.number_clusters == 0.5  # TODO: make these tests correct
         assert result.instrumentation.param == 0.5
 
 
