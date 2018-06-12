@@ -70,7 +70,7 @@ class ModelMapper(object):
 
         self.class_dict = classes
 
-        self.config = (config if config is not None else Config("{}/config".format(path)))
+        self.config = (config if config is not None else Config("{}/../config".format(path)))
 
         for name, cls in classes.items():
             self.add_class(name, cls)
