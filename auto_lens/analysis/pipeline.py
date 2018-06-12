@@ -60,7 +60,7 @@ class ModelAnalysis(object):
                                       self.lens_galaxy_priors))
         self.source_galaxies = list(map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
                                         self.source_galaxy_priors))
-        # TODO: Construct ray tracing here
+        # Construct a ray tracer
         tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
         # Determine likelihood:
         self.likelihood = self.likelihood_for_tracer(tracer)
