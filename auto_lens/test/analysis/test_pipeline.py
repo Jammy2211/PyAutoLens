@@ -99,18 +99,18 @@ def make_analyse():
 
 @pytest.fixture(name="model_stage")
 def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
-    return pl.ModelStage(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
-                         source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                         non_linear_optimizer=non_linear_optimizer,
-                         likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
+    return pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+                            source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                            non_linear_optimizer=non_linear_optimizer,
+                            likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
 
 
 class TestModelStage:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
-        pl.ModelStage(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
-                      source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                      non_linear_optimizer=MockNLO(),
-                      likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
+        pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
+                         source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
+                         non_linear_optimizer=MockNLO(),
+                         likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
