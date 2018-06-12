@@ -10,7 +10,7 @@ class MockResult:
     pass
 
 
-class MockStage:
+class MockAnalysis:
     def __init__(self):
         self.is_run = False
 
@@ -90,13 +90,13 @@ def make_non_linear_optimizer():
     return MockNLO()
 
 
-@pytest.fixture(name="model_stage")
-def make_model_stage(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer):
+@pytest.fixture(name="model_analysis")
+def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer):
     return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior], source_galaxy_priors=[source_galaxy_prior],
                             non_linear_optimizer=non_linear_optimizer, model_mapper=model_mapper)
 
 
-class TestModelStage:
+class TestModelAnalysis:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
         pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior],
@@ -104,8 +104,8 @@ class TestModelStage:
 
         assert len(model_mapper.prior_models) == 2
 
-    def test_run(self, model_stage, non_linear_optimizer):
-        result = model_stage.run(MockImage(), MockMask(), MockPixelization(), MockInstrumentation())
+    def test_run(self, model_analysis, non_linear_optimizer):
+        result = model_analysis.run(MockImage(), MockMask(), MockPixelization(), MockInstrumentation())
         assert len(non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
@@ -115,18 +115,18 @@ class TestModelStage:
 
 class TestLinearPipeline:
     def test_simple_run(self):
-        s1 = MockStage()
-        s2 = MockStage()
-        s3 = MockStage()
+        a1 = MockAnalysis()
+        a2 = MockAnalysis()
+        a3 = MockAnalysis()
 
-        pipeline = pl.LinearPipeline(s1, s2, s3)
+        pipeline = pl.LinearPipeline(a1, a2, a3)
 
-        assert True not in map(lambda a: a.is_run, (s1, s2, s3))
+        assert True not in map(lambda a: a.is_run, (a1, a2, a3))
 
         results = pipeline.run()
 
         assert len(results) == 3
-        assert False not in map(lambda a: a.is_run, (s1, s2, s3))
+        assert False not in map(lambda a: a.is_run, (a1, a2, a3))
 
 
 class MockHyperparameterAnalysis(object):
