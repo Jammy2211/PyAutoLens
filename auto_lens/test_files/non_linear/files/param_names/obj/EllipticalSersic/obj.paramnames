@@ -1,7 +1,0 @@
-light_profile_0_centre_0                $x_{\mathrm{l1}}$
-light_profile_0_centre_1                $y_{\mathrm{l1}}$
-light_profile_0_axis_ratio              $q_{\mathrm{l1}}$
-light_profile_0_phi                     $\phi_{\mathrm{l1}}$
-light_profile_0_intensity               $I_{\mathrm{l1}}$
-light_profile_0_effective_radius        $R_{\mathrm{l1}}$
-light_profile_0_sersic_index            $n_{\mathrm{l1}}$
