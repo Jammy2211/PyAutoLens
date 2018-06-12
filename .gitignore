@@ -18,4 +18,5 @@ AutoLensPy2
 test_files/
 test_files/non_linear/files
 MultiNest/
+multinest
 .DS_Store
