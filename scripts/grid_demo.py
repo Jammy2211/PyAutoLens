@@ -1,11 +1,10 @@
 import numpy as np
-import sys
-
-sys.path.append("../")
 
 from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing, galaxy
+
+# Note: you can run this by typing python -m scripts.grid_demo whilst in the autolens directory.
 
 # Simple coordinates to show behaviour
 coordinates = np.array([[1.0, 1.0]])
