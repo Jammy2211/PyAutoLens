@@ -126,8 +126,8 @@ class TestHyperparameterAnalysis:
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_mapper, non_linear_optimizer):
-        hyperparameter_analysis = pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper,
-                                                            non_linear_optimizer)
+        hyperparameter_analysis = pl.HyperparameterAnalysis(MockInstrumentation, model_mapper, non_linear_optimizer,
+                                                            MockPixelization)
 
         assert len(non_linear_optimizer.priors) == 2
         result = hyperparameter_analysis.run([MockGalaxy()], [MockGalaxy()])
