@@ -6,10 +6,17 @@ import os
 import numpy as np
 
 
-@pytest.fixture(name='test_config')
-def make_test_config():
-    return mm.Config(
-        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config"))
+class MockResult:
+    pass
+
+
+class MockAnalysis:
+    def __init__(self):
+        self.is_run = False
+
+    def run(self):
+        self.is_run = True
+        return MockResult()
 
 
 class MockImage:
@@ -34,6 +41,35 @@ class MockPriorModel:
 
 class MockModelInstance:
     pass
+
+
+class MockNLO:
+    def __init__(self):
+        self.priors = None
+        self.fitness_function = None
+
+    def run(self, fitness_function, priors):
+        self.fitness_function = fitness_function
+        self.priors = priors
+        fitness_function([0.5, 0.5])
+
+
+class MockAnalyse:
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    def likelihood_for_tracer(self, tracer):
+        return 1
+
+
+class MockMask:
+    # noinspection PyMethodMayBeStatic
+    def compute_grid_coords_image(self):
+        return np.array([[-1., -1.], [1., 1.]])
+
+
+@pytest.fixture(name='test_config')
+def make_test_config():
+    return mm.Config(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config"))
 
 
 @pytest.fixture(name="lens_galaxy_prior")
@@ -65,39 +101,16 @@ def make_analyse():
 def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper, non_linear_optimizer, analyse):
     return pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
                             source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                            model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
-                            likelihood_for_tracer=analyse.likelihood_for_tracer)
-
-
-class MockNLO:
-    def __init__(self):
-        self.priors = None
-        self.fitness_function = None
-
-    def run(self, fitness_function, priors):
-        self.fitness_function = fitness_function
-        self.priors = priors
-        fitness_function([0.5, 0.5])
-
-
-class MockAnalyse:
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def likelihood_for_tracer(self, tracer):
-        return 1
-
-
-class MockMask:
-    # noinspection PyMethodMayBeStatic
-    def compute_grid_coords_image(self):
-        return np.array([[-1., -1.], [1., 1.]])
+                            non_linear_optimizer=non_linear_optimizer,
+                            likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
 
 
 class TestModelAnalysis:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper, analyse):
         pl.ModelAnalysis(image=MockImage(), mask=MockMask(), lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior], pixelization=MockPixelization(),
-                         model_mapper=model_mapper, non_linear_optimizer=MockNLO(),
-                         likelihood_for_tracer=analyse.likelihood_for_tracer)
+                         non_linear_optimizer=MockNLO(),
+                         likelihood_for_tracer=analyse.likelihood_for_tracer, model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
@@ -110,24 +123,11 @@ class TestModelAnalysis:
         assert result.source_galaxies[0].redshift == 0.5
 
 
-class DummyResult:
-    pass
-
-
-class DummyAnalysis:
-    def __init__(self):
-        self.is_run = False
-
-    def run(self):
-        self.is_run = True
-        return DummyResult()
-
-
 class TestLinearPipeline:
     def test_simple_run(self):
-        a1 = DummyAnalysis()
-        a2 = DummyAnalysis()
-        a3 = DummyAnalysis()
+        a1 = MockAnalysis()
+        a2 = MockAnalysis()
+        a3 = MockAnalysis()
 
         pipeline = pl.LinearPipeline(a1, a2, a3)
 
