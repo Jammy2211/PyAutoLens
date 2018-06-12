@@ -6,8 +6,8 @@ from auto_lens.analysis import ray_tracing
 
 
 class ModelAnalysis(object):
-    def __init__(self, lens_galaxy_priors, source_galaxy_priors, pixelization,
-                 model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper()):
+    def __init__(self, lens_galaxy_priors, source_galaxy_priors, model_mapper=mm.ModelMapper(),
+                 non_linear_optimizer=non_linear.MultiNestWrapper()):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
         assumed model and applies a pixelization and non linear optimizer to find the best possible fit between the
@@ -30,14 +30,13 @@ class ModelAnalysis(object):
 
         self.lens_galaxy_priors = lens_galaxy_priors
         self.source_galaxy_priors = source_galaxy_priors
-        self.pixelization = pixelization
         self.non_linear_optimizer = non_linear_optimizer
         self.model_mapper = model_mapper
 
         for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
             galaxy_prior.attach_to_model_mapper(model_mapper)
 
-    def run(self, image, mask):
+    def run(self, image, mask, pixelization, instrumentation):
         """
         Run the analysis, iteratively analysing each set of values provided by the non-linear optimiser until it
         terminates.
@@ -50,7 +49,7 @@ class ModelAnalysis(object):
         image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
 
         run = self.__class__.Run(image, image_grid_collection, self.model_mapper, self.lens_galaxy_priors,
-                                 self.source_galaxy_priors)
+                                 self.source_galaxy_priors, pixelization, instrumentation)
 
         # Run the optimiser using the fitness function. The fitness function is applied iteratively until the optimiser
         # terminates
@@ -58,7 +57,8 @@ class ModelAnalysis(object):
         return self.__class__.Result(run)
 
     class Run(object):
-        def __init__(self, image, image_grid_collection, model_mapper, lens_galaxy_priors, source_galaxy_priors):
+        def __init__(self, image, image_grid_collection, model_mapper, lens_galaxy_priors, source_galaxy_priors,
+                     pixelization, instrumentation):
             self.image = image
             self.model_mapper = model_mapper
             self.lens_galaxy_priors = lens_galaxy_priors
@@ -66,6 +66,8 @@ class ModelAnalysis(object):
             self.lens_galaxies = []
             self.source_galaxies = []
             self.image_grid_collection = image_grid_collection
+            self.pixelization = pixelization
+            self.instrumentation = instrumentation
             self.likelihood = None
 
         def fitness_function(self, physical_values):
@@ -96,7 +98,9 @@ class ModelAnalysis(object):
             # Construct a ray tracer
             tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
             # Determine likelihood:
-            self.likelihood = fitting.likelihood_for_image_and_tracer(self.image, tracer)
+            self.likelihood = fitting.likelihood_for_image_tracer_pixelization_and_instrumentation(self.image, tracer,
+                                                                                                   self.pixelization,
+                                                                                                   self.instrumentation)
             return self.likelihood
 
     class Result(object):
@@ -121,7 +125,7 @@ class MainPipeline(object):
     def __init__(self, *analyses):
         self.analyses = analyses
 
-    def run(self, image, mask, reduced_psf=None):
+    def run(self, image, mask, pixelization, instrumentation, reduced_psf=None):
         psf = reduced_psf if reduced_psf is not None else image.psf
         # TODO: test and implement
 
