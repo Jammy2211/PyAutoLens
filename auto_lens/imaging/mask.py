@@ -1,8 +1,9 @@
-from auto_lens.imaging import data
+from auto_lens.imaging import scaled_array
+from auto_lens import exc
 import numpy as np
 
 
-class Mask(data.Array):
+class Mask(scaled_array.ScaledArray):
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
@@ -295,7 +296,7 @@ class Mask(data.Array):
                                 if self[x + x1, y + y1]:
                                     blurring_mask[x + x1, y + y1] = False
                             else:
-                                raise MaskException(
+                                raise exc.MaskException(
                                     "setup_blurring_mask extends beyond the size of the mask - pad the image"
                                     "before masking")
 
@@ -398,10 +399,6 @@ class Mask(data.Array):
 
                         iboarder += 1
                         if iboarder == 100:
-                            raise MaskException('compute_image_to_sparse - Stuck in infinite loop')
+                            raise exc.MaskException('compute_image_to_sparse - Stuck in infinite loop')
 
         return image_to_sparse
-
-
-class MaskException(Exception):
-    pass
