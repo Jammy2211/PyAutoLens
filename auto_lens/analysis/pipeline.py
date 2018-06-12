@@ -21,8 +21,6 @@ class ModelAnalysis(object):
             A list of prior instances describing the source
         model_mapper: ModelMapper
             A class used to bridge between non linear unit vectors and class instances
-        pixelization: Pixelization
-            A class determining how the source plane should be pixelized
         non_linear_optimizer: NonLinearOptimizer
             A wrapper around a library that searches an n-dimensional space by providing unit vector hypercubes to
             the analysis.
@@ -41,12 +39,25 @@ class ModelAnalysis(object):
         Run the analysis, iteratively analysing each set of values provided by the non-linear optimiser until it
         terminates.
 
+        Parameters
+        ----------
+        image: Image
+            An image
+        mask: Mask
+            A mask defining which regions of the image should be ignored
+        pixelization: Pixelization
+            An object determining how the source plane should be pixelized
+        instrumentation: Instrumentation
+            An object describing instrumental effects to be applied to generated images
+
         Returns
         -------
         result: Result
             The result of the analysis, comprising a likelihood and the final set of galaxies generated
         """
         image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
+
+        # TODO: Convert image to 1D and create other auxiliary data structures such as kernel makers
 
         run = self.__class__.Run(image, image_grid_collection, self.model_mapper, self.lens_galaxy_priors,
                                  self.source_galaxy_priors, pixelization, instrumentation)
