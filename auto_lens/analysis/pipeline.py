@@ -123,6 +123,7 @@ class MainPipeline(object):
 
     def run(self, image, mask, reduced_psf=None):
         psf = reduced_psf if reduced_psf is not None else image.psf
+        # TODO: test and implement
 
 
 class LinearPipeline(object):
