@@ -116,6 +116,20 @@ class FrameMaker(object):
         # return blurring_region_number_array
 
     def make_mask_frame_array(self, kernel_shape, blurring_region_mask):
+        """
+        Parameters
+        ----------
+        kernel_shape: (int, int)
+            The shape of the kernel
+        blurring_region_mask: Mask
+            A mask describing the boundary of the region from which values may be convoluted
+
+        Returns
+        -------
+        mask_frame_array [ndarray]
+            A list of frames where the position corresponds to a position in the blurring region data grid and the
+            entries correspond to positions in the primary data grid
+        """
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
         if blurring_region_mask is not None and self.mask.shape != blurring_region_mask.shape:
