@@ -312,8 +312,18 @@ class Analysis(object):
     def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(), **kwargs):
         self.model_mapper = model_mapper
         self.non_linear_optimizer = non_linear_optimizer
+        self.included_attributes = []
+
+        attribute_map = {"pixelization_class": "pixelization",
+                         "instrumentation_class": "instrumentation",
+                         "lens_galaxy_priors": "lens_galaxies",
+                         "source_galaxy_priors": "source_galaxies"}
+
         for key, value in kwargs.items():
             setattr(self, key, value)
+            self.included_attributes.append(key)
+
+        self.missing_attributes = [value for key, value in attribute_map.items() if key not in self.included_attributes]
 
     def run(self, image, mask, **kwargs):
         def one_or_other(model_name, instance_name):
