@@ -216,9 +216,9 @@ class TestConvolution(object):
                            [0, 0.5, 0.5],
                            [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(cross_frame_array)
+        convolver = frame_convolution.Convolver(cross_frame_array, [])
 
-        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array, [])
 
         print(result)
 
