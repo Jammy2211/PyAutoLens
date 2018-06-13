@@ -234,39 +234,22 @@ class HyperparameterAnalysis(object):
 
 
 class MainPipeline(object):
-    def __init__(self, *analyses, hyperparameter_analysis):
-        self.analyses = analyses
+    def __init__(self, *model_analyses, hyperparameter_analysis):
+        self.model_analyses = model_analyses
         self.hyperparameter_analysis = hyperparameter_analysis
 
     def run(self, image, mask, pixelization, instrumentation):
-        # TODO: test and implement
-        hyperparameter_results = []
         model_results = []
-        return hyperparameter_results, model_results
+        hyperparameter_results = []
 
+        for model_analysis in self.model_analyses:
+            model_result = model_analysis.run(image, mask, pixelization, instrumentation)
+            hyperparameter_result = self.hyperparameter_analysis.run(image, mask, model_result.lens_galaxies,
+                                                                     model_result.source_galaxies)
+            pixelization = hyperparameter_result.pixelization
+            instrumentation = hyperparameter_result.instrumentation
 
-class LinearPipeline(object):
-    def __init__(self, *stages):
-        """
-        A pipeline to linearly apply a series of analyses
+            model_results.append(model_result)
+            hyperparameter_results.append(hyperparameter_result)
 
-        Parameters
-        ----------
-        stages: Stage...
-            A series of stages to be applied in order
-        """
-        self.stages = stages
-
-    def run(self):
-        """
-        Run the pipeline
-
-        Returns
-        -------
-        results: Results
-            A list of result objects describing the results of the analyses
-        """
-        results = []
-        for stage in self.stages:
-            results.append(stage.run())
-        return results
+        return model_results, hyperparameter_results

@@ -9,16 +9,44 @@ import numpy as np
 
 
 class MockResult:
-    pass
+    def __init__(self, image=None, mask=None, pixelization=None, instrumentation=None, lens_galaxies=None,
+                 source_galaxies=None):
+        self.image = image
+        self.mask = mask
+        self.pixelization = pixelization
+        self.instrumentation = instrumentation
+        self.lens_galaxies = lens_galaxies
+        self.source_galaxies = source_galaxies
 
 
-class MockAnalysis:
+class MockModelAnalysis:
     def __init__(self):
-        self.is_run = False
+        self.image = None
+        self.mask = None
+        self.pixelization = None
+        self.instrumentation = None
 
-    def run(self):
-        self.is_run = True
-        return MockResult()
+    def run(self, image, mask, pixelization, instrumentation):
+        self.image = image
+        self.mask = mask
+        self.pixelization = pixelization
+        self.instrumentation = instrumentation
+        return MockResult(lens_galaxies=[MockGalaxy()], source_galaxies=[MockGalaxy(), MockGalaxy()])
+
+
+class MockHyperparameterAnalysis(object):
+    def __init__(self):
+        self.image = None
+        self.mask = None
+        self.lens_galaxies = None
+        self.source_galaxies = None
+
+    def run(self, image, mask, lens_galaxies, source_galaxies):
+        self.image = image
+        self.mask = mask
+        self.lens_galaxies = lens_galaxies
+        self.source_galaxies = source_galaxies
+        return MockResult(pixelization=px.VoronoiPixelization(0), instrumentation=inst.Instrumentation(0))
 
 
 class MockImage:
@@ -127,28 +155,19 @@ class TestHyperparameterAnalysis:
         assert result.instrumentation.param == 0.5
 
 
-class TestLinearPipeline:
-    def test_simple_run(self):
-        a1 = MockAnalysis()
-        a2 = MockAnalysis()
-        a3 = MockAnalysis()
-
-        pipeline = pl.LinearPipeline(a1, a2, a3)
-
-        assert True not in map(lambda a: a.is_run, (a1, a2, a3))
-
-        results = pipeline.run()
-
-        assert len(results) == 3
-        assert False not in map(lambda a: a.is_run, (a1, a2, a3))
-
-
-class MockHyperparameterAnalysis(object):
-    pass
-
-
 class TestMainPipeline:
-    def test_main_pipeline(self, lens_galaxy_prior, source_galaxy_prior):
-        pipeline = pl.MainPipeline(pl.ModelAnalysis([lens_galaxy_prior], [source_galaxy_prior]),
-                                   hyperparameter_analysis=MockHyperparameterAnalysis())
-        assert len(pipeline.run(MockImage(), MockMask(), px.VoronoiPixelization(0), inst.Instrumentation(0))) == 2
+    def test_main_pipeline(self):
+        hyperparameter_analysis = MockHyperparameterAnalysis()
+        model_analysis = MockModelAnalysis()
+        pipeline = pl.MainPipeline(model_analysis,
+                                   hyperparameter_analysis=hyperparameter_analysis)
+        results = pipeline.run(MockImage(), MockMask(), px.VoronoiPixelization(0), inst.Instrumentation(0))
+        assert len(results) == 2
+        assert len(hyperparameter_analysis.source_galaxies) == 2
+        assert len(hyperparameter_analysis.lens_galaxies) == 1
+
+        assert len(results[0]) == 1
+        assert len(results[1]) == 1
+
+        assert len(results[0][0].source_galaxies) == 2
+        assert len(results[0][0].lens_galaxies) == 1
