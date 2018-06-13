@@ -72,12 +72,16 @@ class TestNumbering(object):
         frame_maker = frame_convolution.FrameMaker(cross_mask)
 
         assert (frame_maker.number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
-        assert (frame_maker.mask_number_array == np.array([[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
+
+    def test_blurring_region_number_array(self, cross_frame_maker):
+        assert (cross_frame_maker.make_blurring_region_number_array(np.full((3, 3), False)) == np.array(
+            [[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
 
     def test_even_failure(self):
         with pytest.raises(exc.KernelException):
             frame_convolution.FrameMaker(np.full((3, 3), False)).convolver_for_kernel_shape((2, 2))
 
+    # def test_mismatching_masks_failure(self):
 
 # class TestFrameExtraction(object):
 #     def test_trivial_frame_at_coords(self, simple_frame_maker):
