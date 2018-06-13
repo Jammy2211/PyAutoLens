@@ -5,6 +5,11 @@ from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
 
+# TODO: Maybe we need a general Analysis class where each argument is either a model or model instance and any model
+# TODO: is a constant and any model instance a variable? The distinction between fixed and variable objects would be
+# TODO: made between the constructor and run function.
+
+
 class ModelAnalysis(object):
     def __init__(self, lens_galaxy_priors, source_galaxy_priors, model_mapper=mm.ModelMapper(),
                  non_linear_optimizer=non_linear.MultiNestWrapper()):
@@ -138,6 +143,16 @@ class ModelAnalysis(object):
 class HyperparameterAnalysis(object):
     def __init__(self, pixelization_class, instrumentation_class, model_mapper=mm.ModelMapper(),
                  non_linear_optimizer=non_linear.MultiNestWrapper()):
+        """
+        An analysis to improve hyperparameter settings. This optimizes pixelization and instrumentation.
+
+        Parameters
+        ----------
+        pixelization_class
+        instrumentation_class
+        model_mapper
+        non_linear_optimizer
+        """
         self.model_mapper = model_mapper
         self.pixelization_class = pixelization_class
         self.instrumentation_class = instrumentation_class
@@ -235,20 +250,58 @@ class HyperparameterAnalysis(object):
 
 class MainPipeline(object):
     def __init__(self, *model_analyses, hyperparameter_analysis):
+        """
+        The primary pipeline. This pipeline runs a series of model analyses with hyperparameter analyses in between.
+
+        Parameters
+        ----------
+        model_analyses: [ModelAnalysis]
+            A series of analysis, each with a fixed model, pixelization and instrumentation but variable model instance.
+        hyperparameter_analysis: HyperparameterAnalysis
+            An analysis with a fixed model instance but variable pixelization and instrumentation instances.
+        """
         self.model_analyses = model_analyses
         self.hyperparameter_analysis = hyperparameter_analysis
 
     def run(self, image, mask, pixelization, instrumentation):
+        """
+        Run this pipeline on an image and mask with a given initial pixelization and instrumentation.
+
+        Parameters
+        ----------
+        image: Image
+            The image to be fit
+        mask: Mask
+            A mask describing which parts of the image are to be included
+        pixelization: Pixelization
+            The initial pixelization of the source plane
+        instrumentation: Instrumentation
+            The initial instrumentation
+
+        Returns
+        -------
+        results_tuple: ([ModelAnalysis.Result], [HyperparameterAnalysis.Result])
+            A tuple with a list of results from each model analysis and a list of results from each hyperparameter
+            analysis
+        """
+
+        # Define lists to keep results in
         model_results = []
         hyperparameter_results = []
 
+        # Run through each model analysis
         for model_analysis in self.model_analyses:
+            # Analyse the model
             model_result = model_analysis.run(image, mask, pixelization, instrumentation)
+            # Analyse the hyper parameters
             hyperparameter_result = self.hyperparameter_analysis.run(image, mask, model_result.lens_galaxies,
                                                                      model_result.source_galaxies)
+
+            # Update the hyperparameters
             pixelization = hyperparameter_result.pixelization
             instrumentation = hyperparameter_result.instrumentation
 
+            # Append results for these two analyses
             model_results.append(model_result)
             hyperparameter_results.append(hyperparameter_result)
 
