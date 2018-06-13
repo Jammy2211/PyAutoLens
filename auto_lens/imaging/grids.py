@@ -600,7 +600,7 @@ class GridMapperCollection(object):
             Mapper between 1D image *GridData* and its 2D image coordinates.
         blurring_to_pixel : GridMapperDataToPixel
             Mapper between 1D blurrinng region *GridData* and its 2D image coordinates.
-        clustering : GridMapperClustering
+        clustering : GridMapperCluster
             Mapper between image image_to_pixel and the clustering grid image_to_pixel.
         """
 
@@ -625,7 +625,7 @@ class GridMapperCollection(object):
         image_to_pixel = GridMapperDataToPixel.from_mask(mask)
         blurring_to_pixel = GridMapperDataToPixel.from_mask_blurring_mapper(mask, blurring_size) \
             if blurring_size is not None else None
-        clustering = GridMapperClustering.from_mask(mask, cluster_grid_size) if cluster_grid_size is not None else None
+        clustering = GridMapperCluster.from_mask(mask, cluster_grid_size) if cluster_grid_size is not None else None
 
         return GridMapperCollection(image_to_pixel, blurring_to_pixel, clustering)
 
@@ -742,9 +742,9 @@ class GridMapperDataToPixel(np.ndarray):
         return data_1d
 
 
-class GridMapperClustering(object):
+class GridMapperCluster(object):
 
-    def __init__(self, clustering_to_image, image_to_clustering):
+    def __init__(self, cluster_to_image, image_to_cluster):
         """ The KMeans clustering used to derive an amorphous pixeliation uses a set of image-grid coordinates. For \
         high resolution imaging, the large number of coordinates makes KMeans clustering (unfeasibly) slow.
 
@@ -753,7 +753,7 @@ class GridMapperClustering(object):
         clustering grid (as they are already calculated for the image-grid). Instead, we just need a mapper between \
         clustering-image_to_pixel and image-image_to_pixel.
 
-        Thus, the *clustering_to_image* attribute maps every pixel on the clustering grid to its closest image pixel \
+        Thus, the *cluster_to_image* attribute maps every pixel on the clustering grid to its closest image pixel \
         (via the image pixel's 1D index). This is used before the KMeans clustering algorithm, to extract the sub-set \
         of coordinates that the algorithm uses.
 
@@ -761,12 +761,12 @@ class GridMapperClustering(object):
         source-image_to_pixel and clustering-image_to_pixel. However, to perform the source reconstruction, we need to know all of the \
         mappings between source image_to_pixel and image image_to_pixel / sub-image image_to_pixel.This would require a (computationally \
         expensive) nearest-neighbor search (over all clustering image_to_pixel and image / sub image_to_pixel) to calculate. The \
-        calculation can be sped-up by using the attribute *image_to_clustering*, which maps every image-pixel to its \
+        calculation can be sped-up by using the attribute *image_to_cluster*, which maps every image-pixel to its \
         closest pixel on the clustering grid (see *pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs*).
         """
 
-        self.clustering_to_image = clustering_to_image
-        self.image_to_clustering = image_to_clustering
+        self.cluster_to_image = cluster_to_image
+        self.image_to_cluster = image_to_cluster
 
     @classmethod
     def from_mask(cls, mask, cluster_grid_size):
@@ -778,8 +778,8 @@ class GridMapperClustering(object):
         mask : mask.Mask
             The image mask containing the image_to_pixel the blurring grid_coords is computed for and the image's data grid_coords.
         """
-        sparse_to_image, image_to_sparse = mask.compute_grid_mapper_sparse(cluster_grid_size)
-        return GridMapperClustering(sparse_to_image, image_to_sparse)
+        cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(cluster_grid_size)
+        return GridMapperCluster(cluster_to_image, image_to_cluster)
 
 
 class GridBorder(geometry_profiles.Profile):
