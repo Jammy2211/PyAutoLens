@@ -187,6 +187,8 @@ class TestAnalysis:
         analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
                      pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
 
+        assert analysis.missing_attributes == ['pixelization', 'instrumentation', 'source_galaxies']
+
         with pytest.raises(AssertionError):
             analysis.run(image=MockImage(), mask=MockMask(), pixelization=MockPixelization(0),
                          instrumentation=inst.Instrumentation(0))
