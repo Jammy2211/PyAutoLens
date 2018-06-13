@@ -38,7 +38,7 @@ def make_cross_frame_array(cross_frame_maker):
 
 @pytest.fixture(name="cross_mask_frame_array")
 def make_cross_mask_frame_array(cross_frame_maker):
-    return cross_frame_maker.make_mask_frame_array((3, 3))
+    return cross_frame_maker.make_mask_frame_array((3, 3), blurring_region_mask=np.full((3, 3), False))
 
 
 @pytest.fixture(name="simple_frame_maker")
@@ -164,22 +164,27 @@ class TestBlurringRegionMask(object):
         frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3),
                                                               blurring_region_mask=np.full((3, 3), False))
         assert len(frame_array) == 4
-#
-#
-# class TestBlurringRegionConvolution(object):
-#     def test_no_blurring_region_mask(self, cross_frame_array, cross_mask_frame_array,
-#                                      simple_kernel):
-#         convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
-#
-#         pixel_array = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0])
-#
-#         result = convolver.convolver_for_kernel(
-#             simple_kernel).convolution_for_pixel_index_vector(0, pixel_array,
-#                                                               convolver.mask_frame_array)
-#
-#         assert (result == np.array([0, 0.1, 0,
-#                                     0.1, 0, 0,
-#                                     0, 0, 0])).all()
+
+
+class TestBlurringRegionConvolution(object):
+    def test_no_blurring_region_mask(self, cross_frame_array, cross_mask_frame_array,
+                                     simple_kernel):
+        convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
+
+        print("cross_mask_frame_array = {}".format(cross_mask_frame_array))
+
+        blurring_region_array = np.array([1, 0, 0, 0])
+
+        result = convolver.convolver_for_kernel(
+            simple_kernel).blurring_convolution_for_pixel_index_vector(0, blurring_region_array,
+                                                                       convolver.mask_frame_array,
+                                                                       np.array([0., 0., 0., 0., 0.]))
+
+        print(result)
+
+        assert (result == np.array([0.1,
+                                    0.1, 0, 0,
+                                    0])).all()
 #
 #     def test_blurring_region_mask(self, cross_mask, simple_kernel):
 #         partial_mask = np.array(cross_mask)
