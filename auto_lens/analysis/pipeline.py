@@ -4,10 +4,15 @@ from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 
-
 # TODO: Maybe we need a general Analysis class where each argument is either a model or model instance and any model
 # TODO: is a constant and any model instance a variable? The distinction between fixed and variable objects would be
 # TODO: made between the constructor and run function.
+
+
+attribute_map = {"pixelization_class": "pixelization",
+                 "instrumentation_class": "instrumentation",
+                 "lens_galaxy_priors": "lens_galaxies",
+                 "source_galaxy_priors": "source_galaxies"}
 
 
 class ModelAnalysis(object):
@@ -314,16 +319,33 @@ class Analysis(object):
         self.non_linear_optimizer = non_linear_optimizer
         self.included_attributes = []
 
-        attribute_map = {"pixelization_class": "pixelization",
-                         "instrumentation_class": "instrumentation",
-                         "lens_galaxy_priors": "lens_galaxies",
-                         "source_galaxy_priors": "source_galaxies"}
-
         for key, value in kwargs.items():
             setattr(self, key, value)
             self.included_attributes.append(key)
 
         self.missing_attributes = [value for key, value in attribute_map.items() if key not in self.included_attributes]
+
+        # for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
+        #     galaxy_prior.attach_to_model_mapper(model_mapper)
+
+        # model_mapper.add_class('pixelization', pixelization_class)
+        # model_mapper.add_class('instrumentation', instrumentation_class)
+
+        def add_galaxy_priors(name):
+            if hasattr(self, name):
+                for galaxy_prior in getattr(self, name):
+                    galaxy_prior.attach_to_model_mapper(model_mapper)
+
+        add_galaxy_priors('lens_galaxy_priors')
+        add_galaxy_priors('source_galaxy_priors')
+
+        def add_class(name):
+            attribute_name = "{}_class".format(name)
+            if hasattr(self, attribute_name):
+                model_mapper.add_class(name, getattr(self, attribute_name))
+
+        add_class('instrumentation')
+        add_class('pixelization')
 
     def run(self, image, mask, **kwargs):
         for attribute in self.missing_attributes:
@@ -334,4 +356,50 @@ class Analysis(object):
             if key not in self.missing_attributes:
                 raise AssertionError("A model has been defined for {}".format(key))
 
+        image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
+        run = Analysis.Run(image, image_grid_collection, self.model_mapper)
 
+        kwargs.update(self.__dict__)
+
+        for key, value in kwargs.items():
+            setattr(run, key, value)
+
+        self.non_linear_optimizer.run(run.fitness_function, self.model_mapper.priors_ordered_by_id)
+        return self.__class__.Result(run)
+
+    class Result(object):
+        def __init__(self, run):
+            for name in attribute_map.values():
+                setattr(self, name, getattr(run, name))
+
+    class Run(object):
+        def __init__(self, image, image_grid_collection, model_mapper):
+            self.image = image
+            self.image_grid_collection = image_grid_collection
+            self.model_mapper = model_mapper
+
+        # noinspection PyAttributeOutsideInit
+        def fitness_function(self, physical_values):
+            model_instance = self.model_mapper.from_physical_vector(physical_values)
+
+            if hasattr(self, "pixelization_class"):
+                self.pixelization = model_instance.pixelization
+            if hasattr(self, "instrumentation_class"):
+                self.instrumentation = model_instance.instrumentation
+            if hasattr(self, "lens_galaxy_priors"):
+                self.lens_galaxies = list(
+                    map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
+                        self.lens_galaxy_priors))
+            if hasattr(self, "source_galaxy_priors"):
+                self.source_galaxies = list(
+                    map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
+                        self.source_galaxy_priors))
+
+            # Construct a ray tracer
+            tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
+            # Determine likelihood:
+            self.likelihood = fitting.likelihood_for_image_tracer_pixelization_and_instrumentation(self.image,
+                                                                                                   tracer,
+                                                                                                   self.pixelization,
+                                                                                                   self.instrumentation)
+            return self.likelihood
