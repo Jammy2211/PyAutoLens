@@ -294,60 +294,32 @@ class KernelConvolver(object):
             A vector convolved with the kernel
         """
 
-        result = np.zeros(pixel_array.shape)
+        new_array = np.zeros(pixel_array.shape)
         array_range = range(len(pixel_array))
         for pixel_index in array_range:
-            if frame_array[pixel_index] is not None:
-                new_array = self.convolution_for_pixel_index_vector(pixel_index, pixel_array, frame_array, sub_shape)
-                result += new_array
+            frame = frame_array[pixel_index]
+            value = pixel_array[pixel_index]
 
-        return result
+            if frame_array[pixel_index] is not None and value > 0:
+                new_array = self.convolution_for_value_frame_and_new_array(frame, value, new_array, sub_shape)
 
-    def convolution_for_pixel_index_vector(self, pixel_index, pixel_array, frame_array, sub_shape=None):
-        """
-        Creates a vector of values describing the convolution of the kernel with a value in the vector
-        Parameters
-        ----------
-        frame_array
-        sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
-        pixel_index: int
-            The index in the vector to be convolved
-        pixel_array: [float]
-            An image_grid
-        Returns
-        -------
-        convolution_dict: [int: float]
-            A dictionary with values populated according to the convolution of the kernel
-            with one particular value
-        """
-
-        # TODO: existing array should be passed in to avoid allocation
-        new_array = np.zeros(pixel_array.shape)
-
-        value = pixel_array[pixel_index]
-        frame = frame_array[pixel_index]
-
-        return self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape=sub_shape)
+        return new_array
 
     def convolution_for_value_frame_and_new_array(self, value, frame, new_array, sub_shape=None):
         limits = None
         if sub_shape is not None:
             limits = calculate_limits(self.shape, sub_shape)
 
-        print("length = {}".format(self.length))
-
         for kernel_index in range(self.length):
             if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
                 continue
             vector_index = frame[kernel_index]
-            print("kernel index {} -> vector index {}".format(kernel_index, vector_index))
 
             if vector_index == -1:
                 continue
             result = value * self.kernel[kernel_index]
             if result > 0:
-                new_array[vector_index] = result
+                new_array[vector_index] += result
 
         return new_array
 
