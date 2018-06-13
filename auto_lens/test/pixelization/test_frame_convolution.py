@@ -128,18 +128,18 @@ class TestFrameExtraction(object):
                           -1, 4, -1,
                           -1, -1, -1]) == frame_array[4]).all()
 
-    # def test_masked_square_masked_frame_array(self, cross_frame_maker):
-    #
-    #     masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
-    #
-    #     assert 9 == len(masked_frame_array)
-    #
-    #     assert (np.array([-1, -1, -1,
-    #                       -1, -1, 1,
-    #                       -1, 3, 4]) == masked_frame_array[0]).all()
-    #     assert (np.array([4, 5, -1,
-    #                       7, -1, -1,
-    #                       -1, -1, -1]) == masked_frame_array[-1]).all()
+    def test_masked_square_masked_frame_array(self, cross_frame_maker):
+        masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3),
+                                                                     blurring_region_mask=np.full((3, 3), False))
+
+        assert 4 == len(masked_frame_array)
+
+        assert (np.array([-1, -1, -1,
+                          -1, -1, 0,
+                          -1, 1, 2]) == masked_frame_array[0]).all()
+        assert (np.array([2, 3, -1,
+                          4, -1, -1,
+                          -1, -1, -1]) == masked_frame_array[-1]).all()
 
 #
 # class TestBlurringRegionMask(object):
