@@ -1011,17 +1011,17 @@ class TestGridMapperCollection(object):
 
         mapper_2d = grids.GridMapperDataToPixel(dimensions_2d=(3, 3), data_to_pixel=data_to_pixel)
 
-        clustering_to_image = np.array([1, 2, 3, 5])
-        image_to_clustering = np.array([6, 7, 2, 3])
+        cluster_to_image = np.array([1, 2, 3, 5])
+        image_to_cluster = np.array([6, 7, 2, 3])
 
-        mapper_clustering = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
+        mapper_clustering = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
 
         mappers = grids.GridMapperCollection(image_to_pixel=mapper_2d, clustering=mapper_clustering)
 
         assert (mappers.image_to_pixel == mapper_2d).all()
 
-        assert (mappers.clustering.clustering_to_image == mapper_clustering.clustering_to_image).all()
-        assert (mappers.clustering.image_to_clustering == mapper_clustering.image_to_clustering).all()
+        assert (mappers.clustering.cluster_to_image == mapper_clustering.cluster_to_image).all()
+        assert (mappers.clustering.image_to_cluster == mapper_clustering.image_to_cluster).all()
 
     class TestFromMask:
 
@@ -1034,8 +1034,8 @@ class TestGridMapperCollection(object):
 
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            clustering_to_image, image_to_clustering = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
-            mapper_clustering = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
+            cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
+            mapper_clustering = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
 
             mappers = grids.GridMapperCollection.from_mask(mask, blurring_size=(3, 3), cluster_grid_size=1)
 
@@ -1068,8 +1068,8 @@ class TestGridMapperCollection(object):
             assert (mappers.blurring_to_pixel[14] == np.array([4, 2])).all()
             assert (mappers.blurring_to_pixel[15] == np.array([4, 3])).all()
 
-            assert (mappers.clustering.clustering_to_image == mapper_clustering.clustering_to_image).all()
-            assert (mappers.clustering.image_to_clustering == mapper_clustering.image_to_clustering).all()
+            assert (mappers.clustering.cluster_to_image == mapper_clustering.cluster_to_image).all()
+            assert (mappers.clustering.image_to_cluster == mapper_clustering.image_to_cluster).all()
 
         def test__blurring_and_clustering_are_none__setup_as_none(self):
             mask = np.array([[True, True, True, True, True],
@@ -1290,13 +1290,13 @@ class TestGridMapperCluster(object):
     class TestConstructor:
 
         def test__simple_mapper_input__sets_up_grid_in_attributes(self):
-            clustering_to_image = np.array([1, 2, 3, 5])
-            image_to_clustering = np.array([6, 7, 2, 3])
+            cluster_to_image = np.array([1, 2, 3, 5])
+            image_to_cluster = np.array([6, 7, 2, 3])
 
-            mapper = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
+            mapper = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
 
-            assert (mapper.clustering_to_image == np.array([1, 2, 3, 5])).all()
-            assert (mapper.image_to_clustering == np.array([6, 7, 2, 3])).all()
+            assert (mapper.cluster_to_image == np.array([1, 2, 3, 5])).all()
+            assert (mapper.image_to_cluster == np.array([6, 7, 2, 3])).all()
 
     class TestFromMask:
 
@@ -1307,14 +1307,14 @@ class TestGridMapperCluster(object):
 
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            clustering_to_image, image_to_clustering = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
+            cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
-            mapper = grids.GridMapperClustering(clustering_to_image, image_to_clustering)
+            mapper = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
 
-            mapper_from_mask = grids.GridMapperClustering.from_mask(mask, cluster_grid_size=1)
+            mapper_from_mask = grids.GridMapperCluster.from_mask(mask, cluster_grid_size=1)
 
-            assert (mapper.clustering_to_image == mapper_from_mask.clustering_to_image).all()
-            assert (mapper.image_to_clustering == mapper_from_mask.image_to_clustering).all()
+            assert (mapper.cluster_to_image == mapper_from_mask.cluster_to_image).all()
+            assert (mapper.image_to_cluster == mapper_from_mask.image_to_cluster).all()
 
 
 class TestGridBorder(object):
