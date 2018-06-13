@@ -186,11 +186,10 @@ class TestConvolution(object):
                                 0, 1, 0,
                                 0, 0, 0])
 
-        convolver = frame_convolution.Convolver(simple_frame_array)
+        convolver = frame_convolution.Convolver(simple_frame_array, [])
 
         result = convolver.convolver_for_kernel(
-            simple_kernel).convolution_for_pixel_index_vector(4, pixel_array,
-                                                              frame_array=convolver.frame_array)
+            simple_kernel).convolution_for_value_frame_and_new_array(1, convolver.frame_array[4], np.zeros((3, 3)))
 
         assert (result == np.array([0, 0.1, 0,
                                     0.1, 0.6, 0.1,
@@ -201,9 +200,9 @@ class TestConvolution(object):
 
         kernel = np.array([[0, 0, 0], [0, 0.5, 0.5], [0, 0, 0]])
 
-        convolver = frame_convolution.Convolver(simple_frame_array)
+        convolver = frame_convolution.Convolver(simple_frame_array, [])
 
-        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array)
+        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array, [])
 
         assert (result == np.array([0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5])).all()
 
@@ -233,7 +232,7 @@ def make_convolver_4_simple():
     mask = np.full(shape, False)
 
     frame_maker = frame_convolution.FrameMaker(mask)
-    return frame_maker.convolver_for_kernel_shape((3, 3))
+    return frame_maker.convolver_for_kernel_shape((3, 3), mask)
 
 
 @pytest.fixture(name="convolver_4_edges")
@@ -246,7 +245,7 @@ def make_convolver_4_edges():
     )
 
     frame_maker = frame_convolution.FrameMaker(mask)
-    return frame_maker.convolver_for_kernel_shape((3, 3))
+    return frame_maker.convolver_for_kernel_shape((3, 3), mask)
 
 
 class TestNonTrivialExamples(object):
@@ -259,7 +258,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array)
+        result = kernel_convolver.convolve_vector(pixel_array, [])
 
         assert (result == np.array([0, 0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.4, 0.2, 0, 0, 0.2, 0, 0])).all()
 
@@ -272,7 +271,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array)
+        result = kernel_convolver.convolve_vector(pixel_array, [])
 
         assert (result == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0.4, 0.2, 0.3, 0, 0, 0.1, 0, 0])).all()
 
@@ -285,7 +284,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array)
+        result = kernel_convolver.convolve_vector(pixel_array, blurring_array=[])
 
         assert (result == np.array([0, 0, 0.2, 0, 0, 0.4, 0.4, 0.2, 0.2, 0.4, 0.4, 0, 0, 0.2, 0, 0])).all()
 
@@ -301,7 +300,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array)
+        result = kernel_convolver.convolve_vector(pixel_array, blurring_array=[])
 
         assert (np.round(result, 1) == np.round(np.array([0., 0., 0., 0.,
                                                           0., 0.6, 0.6, 0.,
