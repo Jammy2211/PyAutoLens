@@ -134,7 +134,7 @@ class ModelAnalysis(Analysis):
                          lens_galaxy_priors=lens_galaxy_priors, source_galaxy_priors=source_galaxy_priors)
 
 
-class HyperparameterAnalysis(object):
+class HyperparameterAnalysis(Analysis):
     def __init__(self, pixelization_class, instrumentation_class, model_mapper=mm.ModelMapper(),
                  non_linear_optimizer=non_linear.MultiNestWrapper()):
         """
@@ -147,99 +147,8 @@ class HyperparameterAnalysis(object):
         model_mapper
         non_linear_optimizer
         """
-        self.model_mapper = model_mapper
-        self.pixelization_class = pixelization_class
-        self.instrumentation_class = instrumentation_class
-        self.non_linear_optimizer = non_linear_optimizer
-
-        model_mapper.add_class('pixelization', pixelization_class)
-        model_mapper.add_class('instrumentation', instrumentation_class)
-
-    def run(self, image, mask, lens_galaxies, source_galaxies):
-        """
-        Run the analysis, iteratively analysing each set of values provided by the non-linear optimiser until it
-        terminates.
-
-        Parameters
-        ----------
-        image: Image
-            An image
-        mask: Mask
-            A mask defining which regions of the image should be ignored
-        lens_galaxies: [Galaxy]
-
-        source_galaxies: [Galaxy]
-
-
-        Returns
-        -------
-        result: Result
-            The result of the analysis, comprising a likelihood and the final pixelization and instrumentation generated
-        """
-
-        # Set up expensive objects that can be used repeatedly for fittings
-        image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
-
-        # TODO: Convert image to 1D and create other auxiliary data structures such as kernel makers
-
-        # Create an instance of run that will be used for this analysis
-        run = self.__class__.Run(image, image_grid_collection, self.model_mapper, self.pixelization_class,
-                                 self.instrumentation_class, lens_galaxies, source_galaxies)
-
-        # Run the optimiser using the fitness function. The fitness function is applied iteratively until the optimiser
-        # terminates
-        self.non_linear_optimizer.run(run.fitness_function, self.model_mapper.priors_ordered_by_id)
-        return self.__class__.Result(run)
-
-    class Run(object):
-        def __init__(self, image, image_grid_collection, model_mapper, pixelization_class, instrumentation_class,
-                     lens_galaxies, source_galaxies):
-            self.image = image
-            self.image_grid_collection = image_grid_collection
-            self.model_mapper = model_mapper
-            self.pixelization_class = pixelization_class
-            self.instrumentation_class = instrumentation_class
-            self.lens_galaxies = lens_galaxies
-            self.source_galaxies = source_galaxies
-            self.pixelization = None
-            self.instrumentation = None
-            self.likelihood = None
-
-        def fitness_function(self, physical_values):
-            """
-            Generates a model instance from a set of physical values, uses this to construct galaxies and ultimately a
-            tracer that can be passed to analyse.likelihood_for_tracer.
-
-            Parameters
-            ----------
-            physical_values: [float]
-                Physical values from a non-linear optimiser
-
-            Returns
-            -------
-            likelihood: float
-                A value for the likelihood associated with this set of physical values in conjunction with the provided
-                model
-            """
-
-            # Recover classes from physical values
-            model_instance = self.model_mapper.from_physical_vector(physical_values)
-            self.pixelization = model_instance.pixelization
-            self.instrumentation = model_instance.instrumentation
-
-            # Construct a ray tracer
-            tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
-            # Determine likelihood:
-            self.likelihood = fitting.likelihood_for_image_tracer_pixelization_and_instrumentation(self.image, tracer,
-                                                                                                   self.pixelization,
-                                                                                                   self.instrumentation)
-            return self.likelihood
-
-    class Result(object):
-        def __init__(self, run):
-            self.pixelization = run.pixelization
-            self.instrumentation = run.instrumentation
-            self.likelihood = run.likelihood
+        super().__init__(model_mapper, non_linear_optimizer, pixelization_class=pixelization_class,
+                         instrumentation_class=instrumentation_class)
 
 
 class MainPipeline(object):
@@ -288,11 +197,14 @@ class MainPipeline(object):
             # Analyse the model
             model_result = model_analysis.run(image, mask, pixelization, instrumentation)
             # Analyse the hyper parameters
-            hyperparameter_result = self.hyperparameter_analysis.run(image, mask, model_result.lens_galaxies,
-                                                                     model_result.source_galaxies)
+            hyperparameter_result = self.hyperparameter_analysis.run(image, mask,
+                                                                     lens_galaxies=model_result.lens_galaxies,
+                                                                     source_galaxies=model_result.source_galaxies)
 
             # Update the hyperparameters
+            # noinspection PyUnresolvedReferences
             pixelization = hyperparameter_result.pixelization
+            # noinspection PyUnresolvedReferences
             instrumentation = hyperparameter_result.instrumentation
 
             # Append results for these two analyses
