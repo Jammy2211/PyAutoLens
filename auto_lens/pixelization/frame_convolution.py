@@ -262,14 +262,19 @@ class KernelConvolver(object):
         """
 
         new_array = np.zeros(pixel_array.shape)
-        array_range = range(len(pixel_array))
 
-        for pixel_index in array_range:
+        print("len(pixel_array) = {}".format(len(pixel_array)))
+        print("len(frame_array) = {}".format(len(self.frame_array)))
+
+        for pixel_index in range(len(pixel_array)):
             frame = self.frame_array[pixel_index]
             value = pixel_array[pixel_index]
 
             if value > 0:
                 new_array = self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape)
+
+        print("len(blurring_array) = {}".format(len(blurring_array)))
+        print("len(blurring_frame_array) = {}".format(len(self.blurring_frame_array)))
 
         for pixel_index in range(len(blurring_array)):
             frame = self.blurring_frame_array[pixel_index]
