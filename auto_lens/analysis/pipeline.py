@@ -326,16 +326,12 @@ class Analysis(object):
         self.missing_attributes = [value for key, value in attribute_map.items() if key not in self.included_attributes]
 
     def run(self, image, mask, **kwargs):
-        def one_or_other(model_name, instance_name):
-            is_model = getattr(self, model_name, None)
-            is_instance = instance_name in kwargs
-            if is_model and is_instance:
-                raise AssertionError("{} already exists in analysis".format(model_name))
-            if not (is_model or is_instance):
-                raise AssertionError("{} is not defined so {} is required".format(model_name, instance_name))
+        for attribute in self.missing_attributes:
+            if attribute not in kwargs:
+                raise AssertionError("{} is required".format(attribute))
 
-        one_or_other("pixelization_class", "pixelization")
-        one_or_other("instrumentation_class", "instrumentation")
-        one_or_other("lens_galaxy_priors", "lens_galaxies")
-        one_or_other("source_galaxy_priors", "source_galaxies")
-        # Pixelisation, Instrumentation, Source Galaxies, Lens Galaxies
+        for key in kwargs.keys():
+            if key not in self.missing_attributes:
+                raise AssertionError("A model has been defined for {}".format(key))
+
+
