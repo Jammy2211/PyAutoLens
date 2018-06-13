@@ -135,7 +135,8 @@ class TestModelAnalysis:
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_analysis):
-        result = model_analysis.run(MockImage(), MockMask(), MockPixelization(0), inst.Instrumentation(0))
+        result = model_analysis.run(MockImage(), MockMask(), pixelization=MockPixelization(0),
+                                    instrumentation=inst.Instrumentation(0))
         assert len(model_analysis.non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
