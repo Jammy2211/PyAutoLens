@@ -178,6 +178,7 @@ class FrameMaker(object):
         Create a convolver that can be used to apply a kernel of any shape to a 1D vector of non-masked values
         Parameters
         ----------
+        blurring_region_mask
         kernel_shape: (int, int)
             The shape of the kernel
         Returns
@@ -250,7 +251,6 @@ class KernelConvolver(object):
         Parameters
         ----------
         blurring_array
-        frame_array
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_array: [float]
@@ -263,19 +263,20 @@ class KernelConvolver(object):
 
         new_array = np.zeros(pixel_array.shape)
         array_range = range(len(pixel_array))
+
         for pixel_index in array_range:
             frame = self.frame_array[pixel_index]
             value = pixel_array[pixel_index]
 
             if value > 0:
-                new_array = self.convolution_for_value_frame_and_new_array(frame, value, new_array, sub_shape)
+                new_array = self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape)
 
         for pixel_index in range(len(blurring_array)):
             frame = self.blurring_frame_array[pixel_index]
             value = blurring_array[pixel_index]
 
             if value > 0:
-                new_array = self.convolution_for_value_frame_and_new_array(frame, value, new_array, sub_shape)
+                new_array = self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape)
 
         return new_array
 
@@ -287,6 +288,8 @@ class KernelConvolver(object):
         for kernel_index in range(self.length):
             if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
                 continue
+            print(kernel_index)
+            print(frame)
             vector_index = frame[kernel_index]
 
             if vector_index == -1:
