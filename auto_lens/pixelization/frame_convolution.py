@@ -115,7 +115,7 @@ class FrameMaker(object):
 
     # return blurring_region_number_array
 
-    def make_mask_frame_array(self, kernel_shape, blurring_region_mask):
+    def make_blurring_frame_array(self, kernel_shape, blurring_region_mask):
         """
         Parameters
         ----------
@@ -126,7 +126,7 @@ class FrameMaker(object):
 
         Returns
         -------
-        mask_frame_array [ndarray]
+        blurring_frame_array [ndarray]
             A list of frames where the position corresponds to a position in the blurring region data grid and the
             entries correspond to positions in the primary data grid
         """
@@ -173,7 +173,7 @@ class FrameMaker(object):
 
         return frame
 
-    def convolver_for_kernel_shape(self, kernel_shape):
+    def convolver_for_kernel_shape(self, kernel_shape, blurring_region_mask):
         """
         Create a convolver that can be used to apply a kernel of any shape to a 1D vector of non-masked values
         Parameters
@@ -184,16 +184,17 @@ class FrameMaker(object):
         -------
             convolver: Convolver
         """
-        return Convolver(self.make_frame_array(kernel_shape), self.make_mask_frame_array(kernel_shape))
+        return Convolver(self.make_frame_array(kernel_shape),
+                         self.make_blurring_frame_array(kernel_shape, blurring_region_mask))
 
 
 class Convolver(object):
-    def __init__(self, frame_array, mask_frame_array=None):
+    def __init__(self, frame_array, blurring_frame_array=None):
         """
         Class to convolve a kernel with a 1D vector of non-masked values
         Parameters
         ----------
-        mask_frame_array: [ndarray]
+        blurring_frame_array: [ndarray]
             An array of frames created by the frame maker. Maps positions in the kernel to values in the 1D vector for
             masked pixels.
         frame_array: [ndarray]
@@ -201,7 +202,7 @@ class Convolver(object):
             vector.
         """
         self.frame_array = frame_array
-        self.mask_frame_array = mask_frame_array
+        self.blurring_frame_array = blurring_frame_array
 
     def convolver_for_kernel(self, kernel):
         """
@@ -215,24 +216,25 @@ class Convolver(object):
         convolver: KernelConvolver
             An object used to convolve images
         """
-        return KernelConvolver(self.frame_array, kernel, self.mask_frame_array)
+        return KernelConvolver(kernel, self.frame_array, self.blurring_frame_array)
 
 
 class KernelConvolver(object):
-    def __init__(self, frame_array, kernel, mask_frame_array=None):
+    def __init__(self, kernel, frame_array, blurring_frame_array=None):
         self.shape = kernel.shape
 
         self.length = self.shape[0] * self.shape[1]
         self.kernel = kernel.flatten()
         self.frame_array = frame_array
-        self.mask_frame_array = mask_frame_array
+        self.blurring_frame_array = blurring_frame_array
 
-    def convolve_1d_array(self, array):
+    def convolve_1d_array(self, array, blurring_array):
         """
         Simple version of function that applies this convolver to a whole mapping matrix.
 
         Parameters
         ----------
+        blurring_array
         array: [float]
             A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel
 
@@ -241,48 +243,13 @@ class KernelConvolver(object):
         convolved_array: [float]
             A matrix representing the mapping of source image_to_pixel to image_grid image_to_pixel accounting for convolution
         """
-        return map(self.convolve_vector, array)
+        return map(self.convolve_vector, array, blurring_array)
 
-    def convolve_vector(self, pixel_array, sub_shape=None):
-        """
-        Convolves the kernel with a 1D vector of non-masked values
-
-        Parameters
-        ----------
-        pixel_array: [ndarray]
-            1D vector
-        sub_shape: (int, int)
-            The shape to which the kernel should be constrained
-
-        Returns
-        -------
-        convolved_vector: [float]
-            A vector convolved with the kernel
-        """
-        return self.convolve_vector_with_frame_array(pixel_array, self.frame_array, sub_shape)
-
-    def convolve_blurring_vector(self, pixel_array, sub_shape=None):
-        """
-        Convolves the kernel with a 1D vector of non-masked values taken from the blurring region
-
-        Parameters
-        ----------
-        pixel_array: [ndarray]
-            1D vector
-        sub_shape: (int, int)
-            The shape to which the kernel should be constrained
-
-        Returns
-        -------
-        convolved_vector: [float]
-            A vector convolved with the kernel
-        """
-        return self.convolve_vector_with_frame_array(pixel_array, self.mask_frame_array, sub_shape)
-
-    def convolve_vector_with_frame_array(self, pixel_array, frame_array, sub_shape=None):
+    def convolve_vector(self, pixel_array, blurring_array, sub_shape=None):
         """
         Parameters
         ----------
+        blurring_array
         frame_array
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
@@ -297,10 +264,17 @@ class KernelConvolver(object):
         new_array = np.zeros(pixel_array.shape)
         array_range = range(len(pixel_array))
         for pixel_index in array_range:
-            frame = frame_array[pixel_index]
+            frame = self.frame_array[pixel_index]
             value = pixel_array[pixel_index]
 
-            if frame_array[pixel_index] is not None and value > 0:
+            if value > 0:
+                new_array = self.convolution_for_value_frame_and_new_array(frame, value, new_array, sub_shape)
+
+        for pixel_index in range(len(blurring_array)):
+            frame = self.blurring_frame_array[pixel_index]
+            value = blurring_array[pixel_index]
+
+            if value > 0:
                 new_array = self.convolution_for_value_frame_and_new_array(frame, value, new_array, sub_shape)
 
         return new_array
@@ -323,11 +297,11 @@ class KernelConvolver(object):
 
         return new_array
 
-    def blurring_convolution_for_pixel_index_vector(self, pixel_index, blurring_region_array, mask_frame_array,
+    def blurring_convolution_for_pixel_index_vector(self, pixel_index, blurring_region_array, blurring_frame_array,
                                                     new_array, sub_shape=None):
 
         value = blurring_region_array[pixel_index]
-        frame = mask_frame_array[pixel_index]
+        frame = blurring_frame_array[pixel_index]
 
         return self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape=sub_shape)
 
