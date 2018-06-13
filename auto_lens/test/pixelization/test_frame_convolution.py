@@ -185,7 +185,7 @@ class TestConvolution(object):
         convolver = frame_convolution.Convolver(simple_frame_array, [])
 
         result = convolver.convolver_for_kernel(
-            simple_kernel).convolution_for_value_frame_and_new_array(1, convolver.frame_array[4], np.zeros((3, 3)))
+            simple_kernel).convolution_for_value_frame_and_new_array(1, convolver.frame_array[4], np.zeros((9,)))
 
         assert (result == np.array([0, 0.1, 0,
                                     0.1, 0.6, 0.1,
@@ -203,9 +203,9 @@ class TestConvolution(object):
         assert (result == np.array([0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5])).all()
 
     def test_cross_mask_convolution(self, cross_frame_array):
-        pixel_array = np.array([0, 0, 0,
+        pixel_array = np.array([0,
                                 0, 1, 0,
-                                0, 0, 0])
+                                0])
 
         kernel = np.array([[0, 0, 0],
                            [0, 0.5, 0.5],
@@ -215,11 +215,9 @@ class TestConvolution(object):
 
         result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array, [])
 
-        print(result)
-
-        assert (result == np.array([0, 0, 0,
+        assert (result == np.array([0,
                                     0, 0.5, 0.5,
-                                    0, 0, 0])).all()
+                                    0])).all()
 
 
 @pytest.fixture(name="convolver_4_simple")
