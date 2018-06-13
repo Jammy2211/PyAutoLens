@@ -73,9 +73,9 @@ class TestNumbering(object):
 
         assert (frame_maker.number_array == np.array([[-1, 0, -1], [1, 2, 3], [-1, 4, -1]])).all()
 
-    def test_blurring_region_number_array(self, cross_frame_maker):
-        assert (cross_frame_maker.make_blurring_region_number_array(np.full((3, 3), False)) == np.array(
-            [[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
+    # def test_blurring_region_number_array(self, cross_frame_maker):
+    #     assert (cross_frame_maker.make_blurring_region_number_array(np.full((3, 3), False)) == np.array(
+    #         [[0, -1, 1], [-1, -1, -1], [2, -1, 3]])).all()
 
     def test_even_failure(self):
         with pytest.raises(exc.KernelException):
@@ -83,7 +83,7 @@ class TestNumbering(object):
 
     def test_mismatching_masks_failure(self, cross_frame_maker):
         with pytest.raises(AssertionError):
-            cross_frame_maker.make_blurring_region_number_array(np.full((3, 4), False))
+            cross_frame_maker.make_mask_frame_array((3, 3), np.full((3, 4), False))
 
 
 class TestFrameExtraction(object):
