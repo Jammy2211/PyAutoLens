@@ -279,10 +279,27 @@ class TestNonTrivialExamples(object):
 
         result = kernel_convolver.convolve_array(pixel_array, blurring_array=[])
 
-        assert (np.round(result, 1) == np.round(np.array([
+        assert (np.round(result, 1) == np.array([
             0.6, 0.6,
             0.2, 0.2
-        ]), 1)).all()
+        ])).all()
+
+    def test_cross_mask_with_blurring_entries(self, cross_frame_maker):
+        kernel = np.array([[0, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [0, 0.2, 0]])
+        pixel_array = np.array([
+            1, 0, 0, 0, 0
+        ])
+
+        blurring_array = np.array([1, 0, 0, 0])
+
+        convolver = cross_frame_maker.convolver_for_kernel_shape((3, 3), np.full((3, 3), False))
+        kernel_convolver = convolver.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_array(pixel_array, blurring_array)
+
+        assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0., 0.])).all()
 
 
 class TestSubConvolution(object):
