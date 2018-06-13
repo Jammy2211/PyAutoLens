@@ -190,7 +190,7 @@ class FrameMaker(object):
 
 
 class Convolver(object):
-    def __init__(self, frame_array, blurring_frame_array=None):
+    def __init__(self, frame_array, blurring_frame_array):
         """
         Class to convolve a kernel with a 1D vector of non-masked values
         Parameters
@@ -288,8 +288,7 @@ class KernelConvolver(object):
         for kernel_index in range(self.length):
             if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
                 continue
-            print(kernel_index)
-            print(frame)
+
             vector_index = frame[kernel_index]
 
             if vector_index == -1:
