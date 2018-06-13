@@ -113,7 +113,7 @@ class FrameMaker(object):
     #                 blurring_region_number_array[x, y] = count
     #                 count += 1
 
-        # return blurring_region_number_array
+    # return blurring_region_number_array
 
     def make_mask_frame_array(self, kernel_shape, blurring_region_mask):
         """
@@ -322,6 +322,7 @@ class KernelConvolver(object):
             with one particular value
         """
 
+        # TODO: existing array should be passed in to avoid allocation
         new_array = np.zeros(pixel_array.shape)
 
         value = pixel_array[pixel_index]
@@ -332,14 +333,47 @@ class KernelConvolver(object):
         if sub_shape is not None:
             limits = calculate_limits(self.shape, sub_shape)
 
+        print("length = {}".format(self.length))
+
+        for kernel_index in range(self.length):
+            if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
+                continue
+            vector_index = frame[kernel_index]
+            print("kernel index {} -> vector index {}".format(kernel_index, vector_index))
+
+            if vector_index == -1:
+                continue
+            result = value * self.kernel[kernel_index]
+            if result > 0:
+                new_array[vector_index] = result
+
+        return new_array
+
+    def blurring_convolution_for_pixel_index_vector(self, pixel_index, blurring_region_array, mask_frame_array,
+                                                    new_array, sub_shape=None):
+
+        value = blurring_region_array[pixel_index]
+        print("value = {}".format(value))
+
+        frame = mask_frame_array[pixel_index]
+        print("frame = {}".format(frame))
+
+        limits = None
+        if sub_shape is not None:
+            limits = calculate_limits(self.shape, sub_shape)
+
         for kernel_index in range(self.length):
             if sub_shape is not None and not is_in_sub_shape(kernel_index, limits, self.shape):
                 continue
             vector_index = frame[kernel_index]
 
+            print("kernel index {} -> vector index {}".format(kernel_index, vector_index))
+
             if vector_index == -1:
                 continue
             result = value * self.kernel[kernel_index]
+            print("value from kernel = {}".format(self.kernel[kernel_index]))
+            print("result = {}".format(result))
             if result > 0:
                 new_array[vector_index] = result
 
