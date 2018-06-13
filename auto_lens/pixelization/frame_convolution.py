@@ -103,35 +103,29 @@ class FrameMaker(object):
 
         return frame_array
 
-    def make_blurring_region_number_array(self, blurring_region_mask):
-        if blurring_region_mask is not None and self.mask.shape != blurring_region_mask.shape:
-            raise AssertionError("mask and blurring_region_mask must have the same shape")
+    # def make_blurring_region_number_array(self, blurring_region_mask):
+    #     blurring_region_number_array = np.full(self.mask.shape, -1)
+    #     count = 0
+    #
+    #     for x in range(self.mask.shape[0]):
+    #         for y in range(self.mask.shape[1]):
+    #             if self.mask[x, y] and not blurring_region_mask[x, y]:
+    #                 blurring_region_number_array[x, y] = count
+    #                 count += 1
 
-        blurring_region_number_array = np.full(self.mask.shape, -1)
-        count = 0
-
-        for x in range(self.mask.shape[0]):
-            for y in range(self.mask.shape[1]):
-                if self.mask[x, y] and not blurring_region_mask[x, y]:
-                    blurring_region_number_array[x, y] = count
-                    count += 1
-
-        return blurring_region_number_array
+        # return blurring_region_number_array
 
     def make_mask_frame_array(self, kernel_shape, blurring_region_mask):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
+        if blurring_region_mask is not None and self.mask.shape != blurring_region_mask.shape:
+            raise AssertionError("mask and blurring_region_mask must have the same shape")
 
         frame_array = []
-        for x in range(self.number_array.shape[0]):
-            for y in range(self.number_array.shape[1]):
-                if not self.mask[x][y] or blurring_region_mask[x, y]:
-                    frame_array.append(None)
-                    continue
-                frame = self.frame_at_coords((x, y), kernel_shape)
-                if np.amax(frame) == -1:
-                    frame_array.append(None)
-                else:
+        for x in range(self.mask.shape[0]):
+            for y in range(self.mask.shape[1]):
+                if self.mask[x][y] and not blurring_region_mask[x, y]:
+                    frame = self.frame_at_coords((x, y), kernel_shape)
                     frame_array.append(frame)
         return frame_array
 
