@@ -38,7 +38,7 @@ def make_cross_frame_array(cross_frame_maker):
 
 @pytest.fixture(name="cross_mask_frame_array")
 def make_cross_mask_frame_array(cross_frame_maker):
-    return cross_frame_maker.make_mask_frame_array((3, 3), blurring_region_mask=np.full((3, 3), False))
+    return cross_frame_maker.make_blurring_frame_array((3, 3), blurring_region_mask=np.full((3, 3), False))
 
 
 @pytest.fixture(name="simple_frame_maker")
@@ -79,11 +79,11 @@ class TestNumbering(object):
 
     def test_even_failure(self):
         with pytest.raises(exc.KernelException):
-            frame_convolution.FrameMaker(np.full((3, 3), False)).convolver_for_kernel_shape((2, 2))
+            frame_convolution.FrameMaker(np.full((3, 3), False)).convolver_for_kernel_shape((2, 2), None)
 
     def test_mismatching_masks_failure(self, cross_frame_maker):
         with pytest.raises(AssertionError):
-            cross_frame_maker.make_mask_frame_array((3, 3), np.full((3, 4), False))
+            cross_frame_maker.make_blurring_frame_array((3, 3), np.full((3, 4), False))
 
 
 class TestFrameExtraction(object):
@@ -129,7 +129,7 @@ class TestFrameExtraction(object):
                           -1, -1, -1]) == frame_array[4]).all()
 
     def test_masked_square_masked_frame_array(self, cross_frame_maker):
-        masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3),
+        masked_frame_array = cross_frame_maker.make_blurring_frame_array(kernel_shape=(3, 3),
                                                                      blurring_region_mask=np.full((3, 3), False))
 
         assert 4 == len(masked_frame_array)
@@ -147,21 +147,21 @@ class TestBlurringRegionMask(object):
         frame_maker = frame_convolution.FrameMaker(cross_mask)
 
         # noinspection PyTypeChecker
-        assert (len(frame_maker.make_mask_frame_array(kernel_shape=(3, 3), blurring_region_mask=cross_mask)) == 0)
+        assert (len(frame_maker.make_blurring_frame_array(kernel_shape=(3, 3), blurring_region_mask=cross_mask)) == 0)
 
     def test_partial_blurring_region(self, cross_mask):
         partial_mask = np.array(cross_mask)
         partial_mask[0, 0] = False
 
         frame_maker = frame_convolution.FrameMaker(cross_mask)
-        masked_frame_array = frame_maker.make_mask_frame_array(kernel_shape=(3, 3), blurring_region_mask=partial_mask)
+        masked_frame_array = frame_maker.make_blurring_frame_array(kernel_shape=(3, 3), blurring_region_mask=partial_mask)
 
         assert (np.array([-1, -1, -1,
                           -1, -1, 0,
                           -1, 1, 2]) == masked_frame_array[0]).all()
 
     def test_no_blurring_region_mask(self, cross_frame_maker):
-        frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3),
+        frame_array = cross_frame_maker.make_blurring_frame_array(kernel_shape=(3, 3),
                                                               blurring_region_mask=np.full((3, 3), False))
         assert len(frame_array) == 4
 
@@ -175,7 +175,7 @@ class TestBlurringRegionConvolution(object):
 
         result = convolver.convolver_for_kernel(
             simple_kernel).blurring_convolution_for_pixel_index_vector(0, blurring_region_array,
-                                                                       convolver.mask_frame_array,
+                                                                       convolver.blurring_frame_array,
                                                                        np.array([0., 0., 0., 0., 0.]))
 
         assert (result == np.array([0.1,
