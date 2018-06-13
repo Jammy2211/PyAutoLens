@@ -85,59 +85,62 @@ class TestNumbering(object):
         with pytest.raises(AssertionError):
             cross_frame_maker.make_blurring_region_number_array(np.full((3, 4), False))
 
-# class TestFrameExtraction(object):
-#     def test_trivial_frame_at_coords(self, simple_frame_maker):
-#         assert (np.array([i for i in range(9)]) == simple_frame_maker.frame_at_coords(coords=(1, 1),
-#                                                                                       kernel_shape=(3, 3))).all()
-#
-#     def test_corner_frame(self, simple_frame_maker):
-#         corner_frame = [-1, -1, -1,
-#                         -1, 0, 1,
-#                         -1, 3, 4]
-#
-#         result = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=(3, 3))
-#
-#         assert (corner_frame == result).all()
-#
-#     def test_simple_square(self, simple_frame_maker):
-#         frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
-#
-#         assert 9 == len(frame_array)
-#
-#         assert (np.array([i for i in range(9)] == frame_array[4])).all()
-#
-#     def test_masked_square(self, cross_frame_maker):
-#         frame_array = cross_frame_maker.make_frame_array(kernel_shape=(3, 3))
-#
-#         assert 9 == len(frame_array)
-#
-#         assert (np.array([-1, -1, -1,
-#                           -1, 1, -1,
-#                           3, 4, 5]) == frame_array[1]).all()
-#
-#         assert (np.array([-1, -1, 1,
-#                           -1, 3, 4,
-#                           -1, -1, 7]) == frame_array[3]).all()
-#
-#         assert (np.array([1, -1, -1,
-#                           4, 5, -1,
-#                           7, -1, -1]) == frame_array[5]).all()
-#
-#         assert (np.array([3, 4, 5,
-#                           -1, 7, -1,
-#                           -1, -1, -1]) == frame_array[7]).all()
-#
-#         masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
-#
-#         assert 9 == len(masked_frame_array)
-#
-#         assert (np.array([-1, -1, -1,
-#                           -1, -1, 1,
-#                           -1, 3, 4]) == masked_frame_array[0]).all()
-#         assert (np.array([4, 5, -1,
-#                           7, -1, -1,
-#                           -1, -1, -1]) == masked_frame_array[-1]).all()
-#
+
+class TestFrameExtraction(object):
+    def test_trivial_frame_at_coords(self, simple_frame_maker):
+        assert (np.array([i for i in range(9)]) == simple_frame_maker.frame_at_coords(coords=(1, 1),
+                                                                                      kernel_shape=(3, 3))).all()
+
+    def test_corner_frame(self, simple_frame_maker):
+        corner_frame = [-1, -1, -1,
+                        -1, 0, 1,
+                        -1, 3, 4]
+
+        result = simple_frame_maker.frame_at_coords(coords=(0, 0), kernel_shape=(3, 3))
+
+        assert (corner_frame == result).all()
+
+    def test_simple_square(self, simple_frame_maker):
+        frame_array = simple_frame_maker.make_frame_array(kernel_shape=(3, 3))
+
+        assert 9 == len(frame_array)
+
+        assert (np.array([i for i in range(9)] == frame_array[4])).all()
+
+    def test_masked_square(self, cross_frame_maker):
+        frame_array = cross_frame_maker.make_frame_array(kernel_shape=(3, 3))
+
+        assert 5 == len(frame_array)
+
+        assert (np.array([-1, -1, -1,
+                          -1, 0, -1,
+                          1, 2, 3]) == frame_array[0]).all()
+
+        assert (np.array([-1, -1, 0,
+                          -1, 1, 2,
+                          -1, -1, 4]) == frame_array[1]).all()
+
+        assert (np.array([0, -1, -1,
+                          2, 3, -1,
+                          4, -1, -1]) == frame_array[3]).all()
+
+        assert (np.array([1, 2, 3,
+                          -1, 4, -1,
+                          -1, -1, -1]) == frame_array[4]).all()
+
+    # def test_masked_square_masked_frame_array(self, cross_frame_maker):
+    #
+    #     masked_frame_array = cross_frame_maker.make_mask_frame_array(kernel_shape=(3, 3))
+    #
+    #     assert 9 == len(masked_frame_array)
+    #
+    #     assert (np.array([-1, -1, -1,
+    #                       -1, -1, 1,
+    #                       -1, 3, 4]) == masked_frame_array[0]).all()
+    #     assert (np.array([4, 5, -1,
+    #                       7, -1, -1,
+    #                       -1, -1, -1]) == masked_frame_array[-1]).all()
+
 #
 # class TestBlurringRegionMask(object):
 #     def test_no_blurring_region(self, cross_mask):
