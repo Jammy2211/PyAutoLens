@@ -154,7 +154,8 @@ class TestHyperparameterAnalysis:
         hyperparameter_analysis = pl.HyperparameterAnalysis(MockPixelization, inst.Instrumentation, model_mapper,
                                                             MockNLO([0.5, 0.5, 0.5]))
 
-        result = hyperparameter_analysis.run(MockImage(), MockMask(), [MockGalaxy()], [MockGalaxy()])
+        result = hyperparameter_analysis.run(MockImage(), MockMask(), lens_galaxies=[MockGalaxy()],
+                                             source_galaxies=[MockGalaxy()])
         assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 3
 
         assert result.likelihood == 1
