@@ -306,3 +306,26 @@ class MainPipeline(object):
             hyperparameter_results.append(hyperparameter_result)
 
         return model_results, hyperparameter_results
+
+
+class Analysis(object):
+    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(), **kwargs):
+        self.model_mapper = model_mapper
+        self.non_linear_optimizer = non_linear_optimizer
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def run(self, image, mask, **kwargs):
+        def one_or_other(model_name, instance_name):
+            is_model = getattr(self, model_name, None)
+            is_instance = instance_name in kwargs
+            if is_model and is_instance:
+                raise AssertionError("{} already exists in analysis".format(model_name))
+            if not (is_model or is_instance):
+                raise AssertionError("{} is not defined so {} is required".format(model_name, instance_name))
+
+        one_or_other("pixelization_class", "pixelization")
+        one_or_other("instrumentation_class", "instrumentation")
+        one_or_other("lens_galaxy_priors", "lens_galaxies")
+        one_or_other("source_galaxy_priors", "source_galaxies")
+        # Pixelisation, Instrumentation, Source Galaxies, Lens Galaxies
