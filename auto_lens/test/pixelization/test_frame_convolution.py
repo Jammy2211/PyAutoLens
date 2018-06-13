@@ -171,16 +171,12 @@ class TestBlurringRegionConvolution(object):
                                      simple_kernel):
         convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
 
-        print("cross_mask_frame_array = {}".format(cross_mask_frame_array))
-
         blurring_region_array = np.array([1, 0, 0, 0])
 
         result = convolver.convolver_for_kernel(
             simple_kernel).blurring_convolution_for_pixel_index_vector(0, blurring_region_array,
                                                                        convolver.mask_frame_array,
                                                                        np.array([0., 0., 0., 0., 0.]))
-
-        print(result)
 
         assert (result == np.array([0.1,
                                     0.1, 0, 0,
