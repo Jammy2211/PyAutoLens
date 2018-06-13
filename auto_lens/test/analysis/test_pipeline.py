@@ -196,3 +196,12 @@ class TestAnalysis:
         with pytest.raises(AssertionError):
             analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], lens_galaxies=[MockGalaxy()],
                          mask=MockMask(), pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+
+    def test_run(self):
+        analysis = pl.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+                               non_linear_optimizer=MockNLO([0.5]), model_mapper=mm.ModelMapper())
+
+        result = analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
+                              pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+
+        assert result.pixelization is not None
