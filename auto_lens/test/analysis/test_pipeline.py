@@ -123,7 +123,7 @@ class TestHyperparameterAnalysis:
         assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 3
 
         assert result.likelihood == 1
-        assert result.pixelization.number_clusters == 0.5  # TODO: make these tests correct
+        assert result.pixelization.number_clusters == 0.5
         assert result.instrumentation.param == 0.5
 
 
