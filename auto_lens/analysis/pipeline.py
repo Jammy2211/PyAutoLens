@@ -15,7 +15,101 @@ attribute_map = {"pixelization_class": "pixelization",
                  "source_galaxy_priors": "source_galaxies"}
 
 
-class ModelAnalysis(object):
+class Analysis(object):
+    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(), **kwargs):
+        self.model_mapper = model_mapper
+        self.non_linear_optimizer = non_linear_optimizer
+        self.included_attributes = []
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+            self.included_attributes.append(key)
+
+        self.missing_attributes = [value for key, value in attribute_map.items() if key not in self.included_attributes]
+
+        # for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
+        #     galaxy_prior.attach_to_model_mapper(model_mapper)
+
+        # model_mapper.add_class('pixelization', pixelization_class)
+        # model_mapper.add_class('instrumentation', instrumentation_class)
+
+        def add_galaxy_priors(name):
+            if hasattr(self, name):
+                for galaxy_prior in getattr(self, name):
+                    galaxy_prior.attach_to_model_mapper(model_mapper)
+
+        add_galaxy_priors('lens_galaxy_priors')
+        add_galaxy_priors('source_galaxy_priors')
+
+        def add_class(name):
+            attribute_name = "{}_class".format(name)
+            if hasattr(self, attribute_name):
+                model_mapper.add_class(name, getattr(self, attribute_name))
+
+        add_class('instrumentation')
+        add_class('pixelization')
+
+    def run(self, image, mask, **kwargs):
+        for attribute in self.missing_attributes:
+            if attribute not in kwargs:
+                raise AssertionError("{} is required".format(attribute))
+
+        for key in kwargs.keys():
+            if key not in self.missing_attributes:
+                raise AssertionError("A model has been defined for {}".format(key))
+
+        image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
+        run = Analysis.Run(image, image_grid_collection, self.model_mapper)
+
+        kwargs.update(self.__dict__)
+
+        for key, value in kwargs.items():
+            setattr(run, key, value)
+
+        self.non_linear_optimizer.run(run.fitness_function, self.model_mapper.priors_ordered_by_id)
+        return self.__class__.Result(run)
+
+    class Result(object):
+        def __init__(self, run):
+            for name in attribute_map.values():
+                setattr(self, name, getattr(run, name))
+
+            self.likelihood = run.likelihood
+
+    class Run(object):
+        def __init__(self, image, image_grid_collection, model_mapper):
+            self.image = image
+            self.image_grid_collection = image_grid_collection
+            self.model_mapper = model_mapper
+
+        # noinspection PyAttributeOutsideInit
+        def fitness_function(self, physical_values):
+            model_instance = self.model_mapper.from_physical_vector(physical_values)
+
+            if hasattr(self, "pixelization_class"):
+                self.pixelization = model_instance.pixelization
+            if hasattr(self, "instrumentation_class"):
+                self.instrumentation = model_instance.instrumentation
+            if hasattr(self, "lens_galaxy_priors"):
+                self.lens_galaxies = list(
+                    map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
+                        self.lens_galaxy_priors))
+            if hasattr(self, "source_galaxy_priors"):
+                self.source_galaxies = list(
+                    map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
+                        self.source_galaxy_priors))
+
+            # Construct a ray tracer
+            tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
+            # Determine likelihood:
+            self.likelihood = fitting.likelihood_for_image_tracer_pixelization_and_instrumentation(self.image,
+                                                                                                   tracer,
+                                                                                                   self.pixelization,
+                                                                                                   self.instrumentation)
+            return self.likelihood
+
+
+class ModelAnalysis(Analysis):
     def __init__(self, lens_galaxy_priors, source_galaxy_priors, model_mapper=mm.ModelMapper(),
                  non_linear_optimizer=non_linear.MultiNestWrapper()):
         """
@@ -36,113 +130,8 @@ class ModelAnalysis(object):
             the analysis.
         """
 
-        self.lens_galaxy_priors = lens_galaxy_priors
-        self.source_galaxy_priors = source_galaxy_priors
-        self.non_linear_optimizer = non_linear_optimizer
-        self.model_mapper = model_mapper
-
-        for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
-            galaxy_prior.attach_to_model_mapper(model_mapper)
-
-    def run(self, image, mask, pixelization, instrumentation):
-        """
-        Run the analysis, iteratively analysing each set of values provided by the non-linear optimiser until it
-        terminates.
-
-        Parameters
-        ----------
-        image: Image
-            An image
-        mask: Mask
-            A mask defining which regions of the image should be ignored
-        pixelization: Pixelization
-            An object determining how the source plane should be pixelized
-        instrumentation: Instrumentation
-            An object describing instrumental effects to be applied to generated images
-
-        Returns
-        -------
-        result: Result
-            The result of the analysis, comprising a likelihood and the final set of galaxies generated
-        """
-
-        # Set up expensive objects that can be used repeatedly for fittings
-        image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
-
-        # TODO: Convert image to 1D and create other auxiliary data structures such as kernel makers
-
-        # Create an instance of run that will be used for this analysis
-        run = self.__class__.Run(image, image_grid_collection, self.model_mapper, self.lens_galaxy_priors,
-                                 self.source_galaxy_priors, pixelization, instrumentation)
-
-        # Run the optimiser using the fitness function. The fitness function is applied iteratively until the optimiser
-        # terminates
-        self.non_linear_optimizer.run(run.fitness_function, self.model_mapper.priors_ordered_by_id)
-        return self.__class__.Result(run)
-
-    class Run(object):
-        def __init__(self, image, image_grid_collection, model_mapper, lens_galaxy_priors, source_galaxy_priors,
-                     pixelization, instrumentation):
-            self.image = image
-            self.model_mapper = model_mapper
-            self.lens_galaxy_priors = lens_galaxy_priors
-            self.source_galaxy_priors = source_galaxy_priors
-            self.lens_galaxies = []
-            self.source_galaxies = []
-            self.image_grid_collection = image_grid_collection
-            self.pixelization = pixelization
-            self.instrumentation = instrumentation
-            self.likelihood = None
-
-        def fitness_function(self, physical_values):
-            """
-            Generates a model instance from a set of physical values, uses this to construct galaxies and ultimately a
-            tracer that can be passed to analyse.likelihood_for_tracer.
-
-            Parameters
-            ----------
-            physical_values: [float]
-                Physical values from a non-linear optimiser
-
-            Returns
-            -------
-            likelihood: float
-                A value for the likelihood associated with this set of physical values in conjunction with the provided
-                model
-            """
-
-            # Recover classes from physical values
-            model_instance = self.model_mapper.from_physical_vector(physical_values)
-            # Construct galaxies from their priors
-            self.lens_galaxies = list(map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
-                                          self.lens_galaxy_priors))
-            self.source_galaxies = list(map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
-                                            self.source_galaxy_priors))
-
-            # Construct a ray tracer
-            tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
-            # Determine likelihood:
-            self.likelihood = fitting.likelihood_for_image_tracer_pixelization_and_instrumentation(self.image, tracer,
-                                                                                                   self.pixelization,
-                                                                                                   self.instrumentation)
-            return self.likelihood
-
-    class Result(object):
-        def __init__(self, run):
-            """
-            The result of an analysis
-
-            Parameters
-            ----------
-            run: Run
-                An analysis run
-            """
-            # The final likelihood found
-            self.likelihood = run.likelihood
-            # The final lens galaxies generated
-            self.lens_galaxies = run.lens_galaxies
-            # The final source galaxies generated
-            self.source_galaxies = run.source_galaxies
+        super().__init__(model_mapper=model_mapper, non_linear_optimizer=non_linear_optimizer,
+                         lens_galaxy_priors=lens_galaxy_priors, source_galaxy_priors=source_galaxy_priors)
 
 
 class HyperparameterAnalysis(object):
@@ -311,95 +300,3 @@ class MainPipeline(object):
             hyperparameter_results.append(hyperparameter_result)
 
         return model_results, hyperparameter_results
-
-
-class Analysis(object):
-    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(), **kwargs):
-        self.model_mapper = model_mapper
-        self.non_linear_optimizer = non_linear_optimizer
-        self.included_attributes = []
-
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-            self.included_attributes.append(key)
-
-        self.missing_attributes = [value for key, value in attribute_map.items() if key not in self.included_attributes]
-
-        # for galaxy_prior in lens_galaxy_priors + source_galaxy_priors:
-        #     galaxy_prior.attach_to_model_mapper(model_mapper)
-
-        # model_mapper.add_class('pixelization', pixelization_class)
-        # model_mapper.add_class('instrumentation', instrumentation_class)
-
-        def add_galaxy_priors(name):
-            if hasattr(self, name):
-                for galaxy_prior in getattr(self, name):
-                    galaxy_prior.attach_to_model_mapper(model_mapper)
-
-        add_galaxy_priors('lens_galaxy_priors')
-        add_galaxy_priors('source_galaxy_priors')
-
-        def add_class(name):
-            attribute_name = "{}_class".format(name)
-            if hasattr(self, attribute_name):
-                model_mapper.add_class(name, getattr(self, attribute_name))
-
-        add_class('instrumentation')
-        add_class('pixelization')
-
-    def run(self, image, mask, **kwargs):
-        for attribute in self.missing_attributes:
-            if attribute not in kwargs:
-                raise AssertionError("{} is required".format(attribute))
-
-        for key in kwargs.keys():
-            if key not in self.missing_attributes:
-                raise AssertionError("A model has been defined for {}".format(key))
-
-        image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
-        run = Analysis.Run(image, image_grid_collection, self.model_mapper)
-
-        kwargs.update(self.__dict__)
-
-        for key, value in kwargs.items():
-            setattr(run, key, value)
-
-        self.non_linear_optimizer.run(run.fitness_function, self.model_mapper.priors_ordered_by_id)
-        return self.__class__.Result(run)
-
-    class Result(object):
-        def __init__(self, run):
-            for name in attribute_map.values():
-                setattr(self, name, getattr(run, name))
-
-    class Run(object):
-        def __init__(self, image, image_grid_collection, model_mapper):
-            self.image = image
-            self.image_grid_collection = image_grid_collection
-            self.model_mapper = model_mapper
-
-        # noinspection PyAttributeOutsideInit
-        def fitness_function(self, physical_values):
-            model_instance = self.model_mapper.from_physical_vector(physical_values)
-
-            if hasattr(self, "pixelization_class"):
-                self.pixelization = model_instance.pixelization
-            if hasattr(self, "instrumentation_class"):
-                self.instrumentation = model_instance.instrumentation
-            if hasattr(self, "lens_galaxy_priors"):
-                self.lens_galaxies = list(
-                    map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
-                        self.lens_galaxy_priors))
-            if hasattr(self, "source_galaxy_priors"):
-                self.source_galaxies = list(
-                    map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
-                        self.source_galaxy_priors))
-
-            # Construct a ray tracer
-            tracer = ray_tracing.Tracer(self.lens_galaxies, self.source_galaxies, self.image_grid_collection)
-            # Determine likelihood:
-            self.likelihood = fitting.likelihood_for_image_tracer_pixelization_and_instrumentation(self.image,
-                                                                                                   tracer,
-                                                                                                   self.pixelization,
-                                                                                                   self.instrumentation)
-            return self.likelihood
