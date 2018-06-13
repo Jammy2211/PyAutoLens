@@ -81,7 +81,9 @@ class TestNumbering(object):
         with pytest.raises(exc.KernelException):
             frame_convolution.FrameMaker(np.full((3, 3), False)).convolver_for_kernel_shape((2, 2))
 
-    # def test_mismatching_masks_failure(self):
+    def test_mismatching_masks_failure(self, cross_frame_maker):
+        with pytest.raises(AssertionError):
+            cross_frame_maker.make_blurring_region_number_array(np.full((3, 4), False))
 
 # class TestFrameExtraction(object):
 #     def test_trivial_frame_at_coords(self, simple_frame_maker):
