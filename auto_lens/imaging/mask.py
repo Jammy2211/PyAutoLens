@@ -232,10 +232,10 @@ class Mask(scaled_array.ScaledArray):
 
         Returns
         -------
-        clustering_to_image : ndarray
+        cluster_to_image : ndarray
             The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
             of the image pixel in the mask.
-        image_to_clustering : ndarray
+        image_to_cluster : ndarray
             The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D
             index of the sparse pixel in sparse_pixel arrays.
         """
@@ -318,7 +318,7 @@ class Mask(scaled_array.ScaledArray):
     def compute_sparse_index_image(self, sparse_mask):
         """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
 
-         This is used for computing the image_to_clustering vector, whereby each image pixel is paired to the sparse
+         This is used for computing the image_to_cluster vector, whereby each image pixel is paired to the sparse
          pixel in this image via a neighbor search."""
 
         sparse_index_2d = np.zeros(self.shape)
@@ -343,7 +343,7 @@ class Mask(scaled_array.ScaledArray):
 
         Returns
         -------
-        clustering_to_image : ndarray
+        cluster_to_image : ndarray
             The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
             of the image pixel in the self.
         """
@@ -377,7 +377,7 @@ class Mask(scaled_array.ScaledArray):
 
         Returns
         -------
-        image_to_clustering : ndarray
+        image_to_cluster : ndarray
             The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D
             index of the sparse pixel in sparse_pixel arrays.
 
