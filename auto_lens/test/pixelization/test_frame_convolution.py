@@ -182,10 +182,6 @@ class TestBlurringRegionConvolution(object):
 
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
-        pixel_array = np.array([0, 0, 0,
-                                0, 1, 0,
-                                0, 0, 0])
-
         convolver = frame_convolution.Convolver(simple_frame_array, [])
 
         result = convolver.convolver_for_kernel(
@@ -293,19 +289,19 @@ class TestNonTrivialExamples(object):
                            [0.2, 0.4, 0.2],
                            [0, 0.2, 0]])
 
-        pixel_array = np.array([0, 0, 0, 0,
-                                0, 1, 1, 0,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0])
+        pixel_array = np.array([
+            1, 1,
+            0, 0
+        ])
 
         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
 
         result = kernel_convolver.convolve_vector(pixel_array, blurring_array=[])
 
-        assert (np.round(result, 1) == np.round(np.array([0., 0., 0., 0.,
-                                                          0., 0.6, 0.6, 0.,
-                                                          0., 0.2, 0.2, 0.,
-                                                          0., 0., 0., 0.]), 1)).all()
+        assert (np.round(result, 1) == np.round(np.array([
+            0.6, 0.6,
+            0.2, 0.2
+        ]), 1)).all()
 
 
 class TestSubConvolution(object):
