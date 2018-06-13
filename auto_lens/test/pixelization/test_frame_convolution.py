@@ -163,23 +163,6 @@ class TestBlurringRegionMask(object):
         assert len(frame_array) == 4
 
 
-class TestBlurringRegionConvolution(object):
-    def test_no_blurring_region_mask(self, cross_frame_array, cross_mask_frame_array,
-                                     simple_kernel):
-        convolver = frame_convolution.Convolver(cross_frame_array, cross_mask_frame_array)
-
-        blurring_region_array = np.array([1, 0, 0, 0])
-
-        result = convolver.convolver_for_kernel(
-            simple_kernel).blurring_convolution_for_pixel_index_vector(0, blurring_region_array,
-                                                                       convolver.blurring_frame_array,
-                                                                       np.array([0., 0., 0., 0., 0.]))
-
-        assert (result == np.array([0.1,
-                                    0.1, 0, 0,
-                                    0])).all()
-
-
 class TestConvolution(object):
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
         convolver = frame_convolution.Convolver(simple_frame_array, [])
@@ -198,7 +181,7 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(simple_frame_array, [])
 
-        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array, [])
+        result = convolver.convolver_for_kernel(kernel).convolve_array(pixel_array, [])
 
         assert (result == np.array([0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5])).all()
 
@@ -213,7 +196,7 @@ class TestConvolution(object):
 
         convolver = frame_convolution.Convolver(cross_frame_array, [])
 
-        result = convolver.convolver_for_kernel(kernel).convolve_vector(pixel_array, [])
+        result = convolver.convolver_for_kernel(kernel).convolve_array(pixel_array, [])
 
         assert (result == np.array([0,
                                     0, 0.5, 0.5,
@@ -252,7 +235,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array, [])
+        result = kernel_convolver.convolve_array(pixel_array, [])
 
         assert (result == np.array([0, 0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.4, 0.2, 0, 0, 0.2, 0, 0])).all()
 
@@ -265,7 +248,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array, [])
+        result = kernel_convolver.convolve_array(pixel_array, [])
 
         assert (result == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0.4, 0.2, 0.3, 0, 0, 0.1, 0, 0])).all()
 
@@ -278,7 +261,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_simple.convolver_for_kernel(kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array, blurring_array=[])
+        result = kernel_convolver.convolve_array(pixel_array, blurring_array=[])
 
         assert (result == np.array([0, 0, 0.2, 0, 0, 0.4, 0.4, 0.2, 0.2, 0.4, 0.4, 0, 0, 0.2, 0, 0])).all()
 
@@ -294,7 +277,7 @@ class TestNonTrivialExamples(object):
 
         kernel_convolver = convolver_4_edges.convolver_for_kernel(kernel)
 
-        result = kernel_convolver.convolve_vector(pixel_array, blurring_array=[])
+        result = kernel_convolver.convolve_array(pixel_array, blurring_array=[])
 
         assert (np.round(result, 1) == np.round(np.array([
             0.6, 0.6,
@@ -327,7 +310,7 @@ class TestSubConvolution(object):
 
         pixel_array[12] = 1
 
-        convolved_vector = convolver.convolve_vector(pixel_array, np.zeros(shape=(0,)), sub_shape=(3, 3))
+        convolved_vector = convolver.convolve_array(pixel_array, np.zeros(shape=(0,)), sub_shape=(3, 3))
 
         assertion_array = np.zeros(shape=(25,))
 
