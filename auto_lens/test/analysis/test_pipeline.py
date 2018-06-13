@@ -177,3 +177,20 @@ class TestMainPipeline:
 
         assert len(results[0][0].source_galaxies) == 2
         assert len(results[0][0].lens_galaxies) == 1
+
+
+class TestAnalysis:
+    def test_setup(self):
+        analysis = pl.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+                               non_linear_optimizer=MockNLO([0.5]), model_mapper=mm.ModelMapper())
+
+        analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
+                     pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+
+        with pytest.raises(AssertionError):
+            analysis.run(image=MockImage(), mask=MockMask(), pixelization=MockPixelization(0),
+                         instrumentation=inst.Instrumentation(0))
+
+        with pytest.raises(AssertionError):
+            analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], lens_galaxies=[MockGalaxy()],
+                         mask=MockMask(), pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
