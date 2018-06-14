@@ -473,6 +473,7 @@ class TestVoronoiPixelization:
     class TestKMeans:
 
         def test__simple_points__sets_up_two_clusters(self):
+
             cluster_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                            [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
