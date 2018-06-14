@@ -1,14 +1,14 @@
 from auto_lens.analysis import pipeline as pl
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
-from auto_lens import instrumentation as inst
 from auto_lens import exc
 import pytest
 import os
 import numpy as np
 
 
-class MockResult:
+# noinspection PyMissingConstructor
+class MockResult(pl.Analysis.Result):
     def __init__(self, image=None, mask=None, pixelization=None, instrumentation=None, lens_galaxies=None,
                  source_galaxies=None):
         self.image = image
@@ -197,11 +197,11 @@ class TestAnalysis:
 
         assert analysis.missing_attributes == ['pixelization', 'instrumentation', 'source_galaxies']
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(exc.PipelineException):
             analysis.run(image=MockImage(), mask=MockMask(), pixelization=MockPixelization(0),
                          instrumentation=MockInstrumentation(0))
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(exc.PipelineException):
             analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], lens_galaxies=[MockGalaxy()],
                          mask=MockMask(), pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
@@ -223,6 +223,11 @@ class TestPipeline:
         with pytest.raises(exc.PipelineException):
             pipeline.run(MockImage(), MockMask(), lens_galaxy_priors=[], source_galaxy_priors=[])
 
-    def test_missing_constant_passing(self):
-        result = MockResult(pixelization=MockPixelization(0), instrumentation=MockInstrumentation())
+    def test_missing_constant_passing(self, model_mapper):
+        pipeline = pl.Pipeline(
+            pl.Analysis(model_mapper=model_mapper, pixelization_class=MockPixelization))
 
+        results = pipeline.run(MockImage(), MockMask(), pixelization=MockPixelization(0),
+                               instrumentation=MockInstrumentation(),
+                               lens_galaxies=[], source_galaxies=[])
+        assert len(results) == 1
