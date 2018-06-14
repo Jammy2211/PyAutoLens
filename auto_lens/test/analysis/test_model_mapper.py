@@ -509,3 +509,11 @@ class TestUtility(object):
         collection.mock_class.two = model_mapper.UniformPrior(upper_limit=100.)
 
         assert collection.physical_values_ordered_by_class([1., 0.5]) == [1., 50.]
+
+
+class TestPriorReplacement(object):
+    def test_prior_replacement(self):
+        mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClass)
+        mapper.replace_priors([model_mapper.GaussianPrior(10, 3), model_mapper.GaussianPrior(5, 3)])
+
+        assert isinstance(mapper.mock_class.one, model_mapper.GaussianPrior)
