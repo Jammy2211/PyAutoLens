@@ -517,3 +517,5 @@ class TestPriorReplacement(object):
         mapper.replace_priors([model_mapper.GaussianPrior(10, 3), model_mapper.GaussianPrior(5, 3)])
 
         assert isinstance(mapper.mock_class.one, model_mapper.GaussianPrior)
+        assert len(mapper.priors_ordered_by_id) == 2
+        assert isinstance(mapper.priors_ordered_by_id[0][1], model_mapper.GaussianPrior)
