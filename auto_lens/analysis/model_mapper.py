@@ -301,7 +301,7 @@ class ModelMapper(object):
         return model_info
 
     def output_model_info(self, filename):
-        """Output a model infomation file, which lists the information of the model mapper (e.g. parameters, priors, \
+        """Output a model information file, which lists the information of the model mapper (e.g. parameters, priors,
          etc.) """
         model_info = self.generate_model_info()
         with open(filename, 'w') as file:
@@ -322,6 +322,12 @@ class ModelMapper(object):
                 'existing in the files. Parameter = ')
 
         model_info_check.close()
+
+    def replace_priors(self, new_priors):
+        arguments = dict(
+            map(lambda prior, new_prior: (prior[0], new_prior), self.priors_ordered_by_id, new_priors))
+        for prior_model in self.prior_models:
+            prior_model[1].replace_priors(arguments)
 
 
 prior_number = 0
@@ -455,6 +461,10 @@ class PriorModel(object):
         for tuple_prior in self.tuple_priors:
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
         return self.cls(**model_arguments)
+
+    def replace_priors(self, prior_arguments):
+        for tup in prior_arguments.items():
+            setattr(self, tup[0], tup[1])
 
 
 class TuplePrior(object):
