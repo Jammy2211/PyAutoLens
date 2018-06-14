@@ -89,11 +89,11 @@ class Analysis(object):
         """
         for attribute in self.missing_attributes:
             if attribute not in kwargs:
-                raise AssertionError("{} is required".format(attribute))
+                raise exc.PipelineException("{} is required".format(attribute))
 
         for key in kwargs.keys():
             if key not in self.missing_attributes:
-                raise AssertionError("A model has been defined for {}".format(key))
+                raise exc.PipelineException("A model has been defined for {}".format(key))
 
         image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
         run = Analysis.Run(image, image_grid_collection, self.model_mapper, self.fitting_function)
@@ -231,19 +231,15 @@ class HyperparameterAnalysis(Analysis):
 class Pipeline(object):
     def __init__(self, *analyses):
         self.analyses = analyses
-        self.counter = 0
 
-    @property
-    def next_analysis(self):
-        analysis = self.analyses[self.counter]
-        self.counter += 1
-        return analysis
-
-    def run(self, image, mask, **kwargs):
-        analysis = self.next_analysis
-        for attribute in analysis.missing_attributes:
-            if attribute not in kwargs:
-                raise exc.PipelineException("{} is required for the first analysis in this pipeline".format(attribute))
+    def run(self, image, mask, **arg_dict):
+        results = []
+        for analysis in self.analyses:
+            args = {key: value for key, value in arg_dict.items() if key in analysis.missing_attributes}
+            result = analysis.run(image, mask, **args)
+            results.append(result)
+            arg_dict = result.__dict__
+        return results
 
 
 class MainPipeline(object):
