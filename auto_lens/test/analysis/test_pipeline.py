@@ -36,8 +36,9 @@ class MockModelAnalysis:
         self.mask = None
         self.pixelization = None
         self.instrumentation = None
+        self.missing_attributes = ['pixelization, instrumentation']
 
-    def run(self, image, mask, pixelization, instrumentation):
+    def run(self, image, mask, pixelization=None, instrumentation=None):
         self.image = image
         self.mask = mask
         self.pixelization = pixelization
@@ -51,8 +52,9 @@ class MockHyperparameterAnalysis(object):
         self.mask = None
         self.lens_galaxies = None
         self.source_galaxies = None
+        self.missing_attributes = ['lens_galaxies', 'source_galaxies']
 
-    def run(self, image, mask, lens_galaxies, source_galaxies):
+    def run(self, image, mask, lens_galaxies=None, source_galaxies=None):
         self.image = image
         self.mask = mask
         self.lens_galaxies = lens_galaxies
