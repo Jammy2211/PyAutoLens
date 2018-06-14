@@ -60,7 +60,7 @@ Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in p
 INITIALIZATION PHASES:
 
 1) Mass: SIE+Shear
-   Source; Sersic
+   Source: Sersic
    NLO: LM
 
 2) Mass: SIE+Shear (priors from phase 1)
