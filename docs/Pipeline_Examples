@@ -1,0 +1,167 @@
+NOTES ON PREPROCESSING:
+
+- Preprocessing is used to initialize the priors on the lens model in the initialize phases. No preprocessing step is
+compulsory as broad priors on the parameters can be assumed instead. However, they will speed up the initialization
+phases and complex lens models may fail to reach a 'correct' solution without them.
+
+Source:
+
+- The brightest regions / multiple images of the source are marked so that we can discard the large fraction of mass
+models where these pixels trace nowhere near one another in the source plane (and thus cannot reconstruct a good source)
+- By drawing a circle around the source, we produce a crude estimate of its Einstein Radius. The center of this circle
+also estimates the centre of the mass model. We could also consider doing this with an ellipse for axis-ratio / phi.
+
+Lens:
+- The centre of the lens light is bright, and can thus easily tell us the centre of the lens light component.
+- Could we draw an ellipse around the lens light to get its phi / axis ratio?
+- Can we use the flux values of the source / lens to estimate their initial intensity values?
+- Should we explore a linear routine to subtract the foreground lens light?
+- Do we need our own routines to do this or are we to reply on Nan's Hoopla? Depends how much work GUI stuff like this
+is.
+
+NOTES ON NON-LINEAR OPTIMIZATION:
+
+- Whilst we have been heavily focused on MultiNest, MultiNest does not 'sample' parameter space fast. In fact, it
+tries to map out the entirity of parameter space, including the regions where the solution is lower likelihood. For the
+initial pipeline, we're going to want something which just tries to find the 'peak' likelihood. I'll implement an
+optimizer to do this called the LM (Levenberg–Marquardt) sampler.
+
+- We can just use MultiNest until the LM is integrated.
+
+NOTES ON PIXELIZATIONS:
+
+- Our pixelization can produce either a 'noisy' likelihood function if the discretization changes with every lens model
+(e.g. KMeans clustering on the source-plane) or a 'smooth' likelihood function if the discretization is deterministic
+with every lens model (e.g. a fixed square-grid or performing KMeans clustering on the image-plane).
+
+- A 'noisy' likelihood function fully samples every possible model. Thus it gives complete errors and has no systematic
+bias in the lens model. However, it is very slow - so we want to avoid it in initialization.
+
+- In contrast, a 'smooth' likelihood function is fast to sample, but could lead to a biased model.
+
+- In the pipelines below, I'll refer to the pixelization and 'noisy' or 'smooth'.
+
+
+Pipeline 1:
+
+PURPOSE - Fit a source-only image (i.e. no lens light component)
+
+PREPROCESSING:
+
+- Mark the brighest regions / multiple images of the source.
+- Draw a circle tracing the source (Einstein Radius / center)
+- Draw circle / ellipse for the mask.
+
+NOTES:
+
+Image: Observed image used throughout.
+Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
+
+INITIALIZATION PHASES:
+
+1) Mass: SIE+Shear
+   Source; Sersic
+   NLO: LM
+
+2) Mass: SIE+Shear (priors from phase 1)
+   Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+   NLO: LM
+
+2H) Hyper-parameters: All included in model (most priors broad and uniform, but use preivous phase regularization as well)
+    Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
+    Source: 'noisy' pixelization
+    NLO: MN
+
+MAIN PIPELINE:
+
+a) Mass: SPLE+Shear (priors from Init phase 2)
+   Source: 'noisy' pixelization (Fixed to init 2H hyper-parameters)
+
+
+
+
+
+Pipeline 2:
+
+PURPOSE - Fit a lens light + source image (mass model does not decomposed the light and dark matter)
+
+PREPROCESSING:
+
+- Mark the brighest regions / multiple images of the source.
+- Draw a circle around the source (Einstein Radius / center)
+- Mark the centre of the lens light.
+- Draw circle / ellipse for mask containing the lens galaxy.
+- Draw annulus for mask containing the source (excludes central regions of image where lens is).
+
+INITIALIZATION PHASES:
+
+1) Image: Observed image, includes lens+source.
+   MasK: Circle / Ellipse containing entire lens galaxy.
+   Light: Sersic (This phase simply subtracts the lens light from the image - the source is present and disrupts the fit
+   NLO: LM        but we choose not to care)
+   Purpose: Provides lens subtracted image for subsequent phases.
+
+2) Image: The lens light subtracted image from phase 1.
+   Mask: Annulus mask containing just source
+   Light: None
+   Mass: SIE+Shear
+   Source; Sersic
+   NLO: LM
+   Purpose: Provides mass model priors for next pahse.
+
+3) Image: The lens light subtracted image from phase 1.
+   Mask: Circle / Ellipse containing entire lens galaxy.
+   Light: None
+   Mass: SIE+Shear (priors from phase 2)
+   Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+   NLO: LM
+   Purpose: Refines mass model and sets up the source-plane pixelization regularization.
+
+4) Image: Observed image, includes lens+source.
+   MasK: Circle / Ellipse containing entire lens galaxy.
+   Light: Sersic + Exponential (shared centre / phi, include Instrumentation lens light noise scaling parameters in model)
+   Mass: SIE+Shear (fixed to results from phase 3)
+   Source: 'smooth' pixelization (include regularization parameter(s) in the model, using previous phase prior)
+   NLO: LM
+   Purpose: To fit a complex light profile, we need to do so simultaneously with the source reconstruction to avoid
+            systematics. Thus, this rather confusing phase sets it up so that the mass profile is fixed whilst we
+            get ourselves a good multi-component light profile.
+
+4H) Hyper-parameters: All included in model (most priors broad and uniform, but use preivous phase regularization as well)
+    Image: The lens light subtracted image from phase 1.
+    Mask: Circle / Ellipse containing entire lens galaxy.
+    Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
+    Source: 'noisy' pixelization
+    NLO: MN.
+
+MAIN PIPELINE:
+
+1) Image: Observed image, includes lens+source.
+   MasK: Circle / Ellipse containing entire lens galaxy.
+   Hyper-parameters: Fixed to results of hyper-parameter opt.
+   Light: Sersic + Exponential (shared centre / phi, priors from previous phase)
+   Mass: SIE+Shear (priors from previous phase)
+   Source: 'noisy' pixelization (parameters fixed from hyper-parameter opt)
+   NLO: MN
+   Purpose: Refine the model above, now fitting the light, mass and source simultaneously.
+
+1H) Reoptimize hyper-parameters, using the previous phases highest likelihood model and priors from the previous
+    hyper-parameter optimization.
+
+2) MODEL COMPARISON PHASE.
+
+    Image: Observed image, includes lens+source.
+    Mask: Circle / Ellipse containing entire lens galaxy.
+    Hyper-parameter: Include the lens light noise scaling parameters (rest fixed).
+    Mass: SIE+Shear (priors from main phase 1)
+    Source: 'noisy' pixelization (parameters fixed from hyper-parameter opt)
+    NLO: MN
+
+    Light a: Sersic + Exponential (shared centre / phi)
+    Light b: Sersic + Exponential (shared centre, but different phi's)
+    Light c: Sersic + Exponential (different centre and phi's)
+
+    Purpose: Determine if the two components should share the same geometry or not.
+
+2H) Reoptimize hyper-parameters, using the previous phases highest likelihood model (which may be a new model) and
+    priors from the previous hyper-parameter optimization.
