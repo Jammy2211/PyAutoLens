@@ -17,3 +17,7 @@ class MaskException(Exception):
 class CoordinatesException(Exception):
     """Exception thrown when coordinate assertion fails"""
     pass
+
+
+class PipelineException(Exception):
+    pass
