@@ -25,6 +25,11 @@ class MockPixelization:
         self.regularization_coefficient = regularization_coefficient
 
 
+class MockInstrumentation(object):
+    def __init__(self, param=0):
+        self.param = param
+
+
 class MockModelAnalysis:
     def __init__(self):
         self.image = None
@@ -52,7 +57,7 @@ class MockHyperparameterAnalysis(object):
         self.mask = mask
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
-        return MockResult(pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+        return MockResult(pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
 
 class MockImage:
@@ -137,7 +142,7 @@ class TestModelAnalysis:
 
     def test_run(self, model_analysis):
         result = model_analysis.run(MockImage(), MockMask(), pixelization=MockPixelization(0),
-                                    instrumentation=inst.Instrumentation(0))
+                                    instrumentation=MockInstrumentation(0))
         assert len(model_analysis.non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
@@ -147,12 +152,12 @@ class TestModelAnalysis:
 
 class TestHyperparameterAnalysis:
     def test_setup(self, model_mapper):
-        pl.HyperparameterAnalysis(MockPixelization, inst.Instrumentation, model_mapper, MockNLO([0.5, 0.5, 0.5]))
+        pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper, MockNLO([0.5, 0.5, 0.5]))
 
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_mapper):
-        hyperparameter_analysis = pl.HyperparameterAnalysis(MockPixelization, inst.Instrumentation, model_mapper,
+        hyperparameter_analysis = pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper,
                                                             MockNLO([0.5, 0.5, 0.5]))
 
         result = hyperparameter_analysis.run(MockImage(), MockMask(), lens_galaxies=[MockGalaxy()],
@@ -170,7 +175,7 @@ class TestMainPipeline:
         model_analysis = MockModelAnalysis()
         # noinspection PyTypeChecker
         pipeline = pl.MainPipeline(model_analysis, hyperparameter_analysis=hyperparameter_analysis)
-        results = pipeline.run(MockImage(), MockMask(), MockPixelization(0), inst.Instrumentation(0))
+        results = pipeline.run(MockImage(), MockMask(), MockPixelization(0), MockInstrumentation(0))
         assert len(results) == 2
         assert len(hyperparameter_analysis.source_galaxies) == 2
         assert len(hyperparameter_analysis.lens_galaxies) == 1
@@ -188,24 +193,24 @@ class TestAnalysis:
                                non_linear_optimizer=MockNLO([0.5]), model_mapper=mm.ModelMapper())
 
         analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
-                     pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+                     pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
         assert analysis.missing_attributes == ['pixelization', 'instrumentation', 'source_galaxies']
 
         with pytest.raises(AssertionError):
             analysis.run(image=MockImage(), mask=MockMask(), pixelization=MockPixelization(0),
-                         instrumentation=inst.Instrumentation(0))
+                         instrumentation=MockInstrumentation(0))
 
         with pytest.raises(AssertionError):
             analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], lens_galaxies=[MockGalaxy()],
-                         mask=MockMask(), pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+                         mask=MockMask(), pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
     def test_run(self):
         analysis = pl.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
                                non_linear_optimizer=MockNLO([0.5]), model_mapper=mm.ModelMapper())
 
         result = analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
-                              pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
+                              pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
         assert result.pixelization is not None
 
@@ -217,4 +222,7 @@ class TestPipeline:
 
         with pytest.raises(exc.PipelineException):
             pipeline.run(MockImage(), MockMask(), lens_galaxy_priors=[], source_galaxy_priors=[])
+
+    def test_missing_constant_passing(self):
+        result = MockResult(pixelization=MockPixelization(0), instrumentation=MockInstrumentation())
 
