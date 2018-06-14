@@ -184,7 +184,7 @@ class ModelMapper(object):
         for instance_key in sorted(model_instance.__dict__.keys()):
             instance = model_instance.__dict__[instance_key]
             for attribute_key in sorted(instance.__dict__.keys()):
-                print(attribute_key)
+
                 value = instance.__dict__[attribute_key]
                 if isinstance(value, tuple):
                     result.extend(list(value))
