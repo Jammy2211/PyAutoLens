@@ -87,10 +87,10 @@ class MockModelInstance:
 
 
 class MockNLO:
-    def __init__(self, arr):
+    def __init__(self, num):
         self.priors = None
         self.fitness_function = None
-        self.arr = arr
+        self.arr = [0.5 for _ in range(num)]
 
     def run(self, fitness_function, priors):
         self.fitness_function = fitness_function
@@ -128,14 +128,14 @@ def make_model_mapper(test_config):
 @pytest.fixture(name="model_analysis")
 def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper):
     return pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior], source_galaxy_priors=[source_galaxy_prior],
-                            non_linear_optimizer=MockNLO([0.5, 0.5]), model_mapper=model_mapper)
+                            non_linear_optimizer=MockNLO(2), model_mapper=model_mapper)
 
 
 class TestModelAnalysis:
     def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
         pl.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                          source_galaxy_priors=[source_galaxy_prior],
-                         non_linear_optimizer=MockNLO([0.5, 0.5]), model_mapper=model_mapper)
+                         non_linear_optimizer=MockNLO(2), model_mapper=model_mapper)
 
         assert len(model_mapper.prior_models) == 2
 
@@ -151,13 +151,13 @@ class TestModelAnalysis:
 
 class TestHyperparameterAnalysis:
     def test_setup(self, model_mapper):
-        pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper, MockNLO([0.5, 0.5, 0.5]))
+        pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper, MockNLO(3))
 
         assert len(model_mapper.prior_models) == 2
 
     def test_run(self, model_mapper):
         hyperparameter_analysis = pl.HyperparameterAnalysis(MockPixelization, MockInstrumentation, model_mapper,
-                                                            MockNLO([0.5, 0.5, 0.5]))
+                                                            MockNLO(3))
 
         result = hyperparameter_analysis.run(MockImage(), MockMask(), lens_galaxies=[MockGalaxy()],
                                              source_galaxies=[MockGalaxy()])
@@ -189,7 +189,7 @@ class TestMainPipeline:
 class TestAnalysis:
     def test_setup(self):
         analysis = pl.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
-                               non_linear_optimizer=MockNLO([0.5]), model_mapper=mm.ModelMapper())
+                               non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
 
         analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
                      pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
@@ -206,7 +206,7 @@ class TestAnalysis:
 
     def test_run(self):
         analysis = pl.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
-                               non_linear_optimizer=MockNLO([0.5]), model_mapper=mm.ModelMapper())
+                               non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
 
         result = analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
                               pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
@@ -222,26 +222,29 @@ class TestPipeline:
         with pytest.raises(exc.PipelineException):
             pipeline.run(MockImage(), MockMask(), lens_galaxy_priors=[], source_galaxy_priors=[])
 
-    # def test_missing_constant_passing(self, model_mapper):
-    #     pipeline = pl.Pipeline(
-    #         pl.Analysis(model_mapper=model_mapper, pixelization_class=MockPixelization))
-    #
-    #     results = pipeline.run(MockImage(), MockMask(),
-    #                            instrumentation=MockInstrumentation(),
-    #                            lens_galaxies=[], source_galaxies=[])
-    #     assert len(results) == 1
+    def test_missing_constant_passing(self, model_mapper):
+        pipeline = pl.Pipeline(
+            pl.Analysis(model_mapper=model_mapper, non_linear_optimizer=MockNLO(3),
+                        pixelization_class=MockPixelization))
+
+        results = pipeline.run(MockImage(), MockMask(),
+                               instrumentation=MockInstrumentation(),
+                               lens_galaxies=[], source_galaxies=[])
+        assert len(results) == 1
 
     def test_arbitrary_pipeline(self, test_config):
         pipeline = pl.Pipeline(
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), pixelization_class=MockPixelization,
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), non_linear_optimizer=MockNLO(9),
+                        pixelization_class=MockPixelization,
                         instrumentation_class=MockInstrumentation, lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
                         source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), pixelization_class=MockPixelization,
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), non_linear_optimizer=MockNLO(3),
+                        pixelization_class=MockPixelization,
                         instrumentation_class=MockInstrumentation),
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config),
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), non_linear_optimizer=MockNLO(2),
                         lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
                         source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config),
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), non_linear_optimizer=MockNLO(1),
                         source_galaxy_priors=[galaxy_prior.GalaxyPrior()])
         )
 
