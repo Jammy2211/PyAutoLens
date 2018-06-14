@@ -466,8 +466,11 @@ class PriorModel(object):
         return self.cls(**model_arguments)
 
     def replace_priors(self, prior_arguments):
-        for tup in prior_arguments.items():
-            setattr(self, tup[0], tup[1])
+        # TODO: Need to figure out tuple priors here...
+        for tuple_prior in self.tuple_priors:
+            tuple_prior[1].replace_priors(prior_arguments)
+        for prior in self.direct_priors:
+            setattr(self, prior[0], prior_arguments[prior[0]])
 
 
 class TuplePrior(object):
@@ -477,6 +480,10 @@ class TuplePrior(object):
 
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
+
+    def replace_priors(self, prior_arguments):
+        for prior in self.priors:
+            setattr(self, prior[0], prior_arguments[prior[0]])
 
 
 class ModelInstance(object):
