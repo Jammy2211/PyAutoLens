@@ -329,6 +329,9 @@ class ModelMapper(object):
         for prior_model in self.prior_models:
             prior_model[1].replace_priors(arguments)
 
+    def replace_priors_with_gaussians_from_tuples(self, tuples):
+        self.replace_priors(map(lambda t: GaussianPrior(t[0], t[1]), tuples))
+
 
 prior_number = 0
 
