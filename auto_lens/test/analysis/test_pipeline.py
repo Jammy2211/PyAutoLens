@@ -2,6 +2,7 @@ from auto_lens.analysis import pipeline as pl
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
 from auto_lens import instrumentation as inst
+from auto_lens import exc
 import pytest
 import os
 import numpy as np
@@ -207,3 +208,13 @@ class TestAnalysis:
                               pixelization=MockPixelization(0), instrumentation=inst.Instrumentation(0))
 
         assert result.pixelization is not None
+
+
+class TestPipeline:
+    def test_required_initialization(self, model_mapper):
+        pipeline = pl.Pipeline(
+            pl.Analysis(model_mapper=model_mapper, pixelization_class=MockPixelization))
+
+        with pytest.raises(exc.PipelineException):
+            pipeline.run(MockImage(), MockMask(), lens_galaxy_priors=[], source_galaxy_priors=[])
+

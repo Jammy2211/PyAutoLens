@@ -3,6 +3,7 @@ from auto_lens.analysis import model_mapper as mm
 from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
+from auto_lens import exc
 
 attribute_map = {"pixelization_class": "pixelization",
                  "instrumentation_class": "instrumentation",
@@ -222,6 +223,24 @@ class HyperparameterAnalysis(Analysis):
         """
         super().__init__(model_mapper, non_linear_optimizer, pixelization_class=pixelization_class,
                          instrumentation_class=instrumentation_class)
+
+
+class Pipeline(object):
+    def __init__(self, *analyses):
+        self.analyses = analyses
+        self.counter = 0
+
+    @property
+    def next_analysis(self):
+        analysis = self.analyses[self.counter]
+        self.counter += 1
+        return analysis
+
+    def run(self, image, mask, **kwargs):
+        analysis = self.next_analysis
+        for attribute in analysis.missing_attributes:
+            if attribute not in kwargs:
+                raise exc.PipelineException("{} is required for the first analysis in this pipeline".format(attribute))
 
 
 class MainPipeline(object):
