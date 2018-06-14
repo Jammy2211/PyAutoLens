@@ -249,7 +249,7 @@ class Pipeline(object):
         return results
 
 
-class MainPipeline(object):
+class MainPipeline(Pipeline):
     def __init__(self, *model_analyses, hyperparameter_analysis):
         """
         The primary pipeline. This pipeline runs a series of model analyses with hyperparameter analyses in between.
@@ -261,10 +261,13 @@ class MainPipeline(object):
         hyperparameter_analysis: HyperparameterAnalysis
             An analysis with a fixed model instance but variable pixelization and instrumentation instances.
         """
-        self.model_analyses = model_analyses
-        self.hyperparameter_analysis = hyperparameter_analysis
+        analyses = []
+        for model_analysis in model_analyses:
+            analyses.append(model_analysis)
+            analyses.append(hyperparameter_analysis)
+        super().__init__(*analyses)
 
-    def run(self, image, mask, pixelization, instrumentation):
+    def run(self, image, mask, pixelization=None, instrumentation=None):
         """
         Run this pipeline on an image and mask with a given initial pixelization and instrumentation.
 
@@ -286,27 +289,7 @@ class MainPipeline(object):
             analysis
         """
 
-        # Define lists to keep results in
-        model_results = []
-        hyperparameter_results = []
+        results = super(MainPipeline, self).run(image, mask, pixelization=pixelization, instrumentation=instrumentation)
 
-        # Run through each model analysis
-        for model_analysis in self.model_analyses:
-            # Analyse the model
-            model_result = model_analysis.run(image, mask, pixelization, instrumentation)
-            # Analyse the hyper parameters
-            hyperparameter_result = self.hyperparameter_analysis.run(image, mask,
-                                                                     lens_galaxies=model_result.lens_galaxies,
-                                                                     source_galaxies=model_result.source_galaxies)
-
-            # Update the hyperparameters
-            # noinspection PyUnresolvedReferences
-            pixelization = hyperparameter_result.pixelization
-            # noinspection PyUnresolvedReferences
-            instrumentation = hyperparameter_result.instrumentation
-
-            # Append results for these two analyses
-            model_results.append(model_result)
-            hyperparameter_results.append(hyperparameter_result)
-
-        return model_results, hyperparameter_results
+        return [result for i, result in enumerate(results) if i % 2 == 0], [result for i, result in enumerate(results)
+                                                                            if i % 2 != 0]
