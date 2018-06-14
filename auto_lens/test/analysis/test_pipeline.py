@@ -107,7 +107,6 @@ class MockMask:
 @pytest.fixture(name='test_config')
 def make_test_config():
     path = "{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config")
-    print(path)
     return mm.Config(config_folder_path=path)
 
 
@@ -223,11 +222,28 @@ class TestPipeline:
         with pytest.raises(exc.PipelineException):
             pipeline.run(MockImage(), MockMask(), lens_galaxy_priors=[], source_galaxy_priors=[])
 
-    def test_missing_constant_passing(self, model_mapper):
-        pipeline = pl.Pipeline(
-            pl.Analysis(model_mapper=model_mapper, pixelization_class=MockPixelization))
+    # def test_missing_constant_passing(self, model_mapper):
+    #     pipeline = pl.Pipeline(
+    #         pl.Analysis(model_mapper=model_mapper, pixelization_class=MockPixelization))
+    #
+    #     results = pipeline.run(MockImage(), MockMask(),
+    #                            instrumentation=MockInstrumentation(),
+    #                            lens_galaxies=[], source_galaxies=[])
+    #     assert len(results) == 1
 
-        results = pipeline.run(MockImage(), MockMask(), pixelization=MockPixelization(0),
-                               instrumentation=MockInstrumentation(),
-                               lens_galaxies=[], source_galaxies=[])
-        assert len(results) == 1
+    def test_arbitrary_pipeline(self, test_config):
+        pipeline = pl.Pipeline(
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), pixelization_class=MockPixelization,
+                        instrumentation_class=MockInstrumentation, lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+                        source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config), pixelization_class=MockPixelization,
+                        instrumentation_class=MockInstrumentation),
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config),
+                        lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+                        source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
+            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config),
+                        source_galaxy_priors=[galaxy_prior.GalaxyPrior()])
+        )
+
+        results = pipeline.run(MockImage(), MockMask())
+        assert len(results) == 4
