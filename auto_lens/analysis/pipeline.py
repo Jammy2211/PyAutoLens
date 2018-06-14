@@ -235,10 +235,13 @@ class Pipeline(object):
     def run(self, image, mask, **arg_dict):
         results = []
         for analysis in self.analyses:
+            print(arg_dict)
+            print(analysis.missing_attributes)
             args = {key: value for key, value in arg_dict.items() if key in analysis.missing_attributes}
             result = analysis.run(image, mask, **args)
             results.append(result)
             arg_dict = result.__dict__
+
         return results
 
 
