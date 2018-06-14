@@ -1,5 +1,6 @@
 import getdist
 from auto_lens import exc
+import math
 import os
 import pymultinest
 
@@ -244,11 +245,34 @@ class MultiNestFinished(MultiNest):
         self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
         self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-    def compute_model_at_limit(self, limit):
+    # TODO : Make it so that the sigma_limit values are setup for each parameter in each profile and contain a minimum
+    # TODO : error value as well.
+
+    def compute_gaussian_priors(self, sigma_limit):
+        """Compute the Gaussian Priors these results should be initialzed with in the next phase, by taking their \
+        most probable values (e.g the means of their PDF) and computing the error at an input sigma_limit.
+
+        Parameters
+        -----------
+        sigma_limit : float
+            The sigma limit within which the PDF is used to estimate errors (e.g. sigma_limit = 1.0 uses 0.6826 of the \
+            PDF).
+        """
+
+        means = self.compute_most_probable()
+        uppers = self.compute_model_at_upper_limit(sigma_limit)
+        lowers = self.compute_model_at_lower_limit(sigma_limit)
+
+        sigmas = list(map(lambda mean, upper, lower : max([upper - mean, mean - lower]), means, uppers, lowers))
+
+        return list(map(lambda mean, sigma : (mean, sigma), means, sigmas))
+
+    def compute_model_at_limit(self, sigma_limit):
+        limit = math.erf(0.5*sigma_limit* math.sqrt(2))
         densities_1d = list(map(lambda p: self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
         return list(map(lambda p: p.getLimits(limit), densities_1d))
 
-    def compute_model_at_upper_limit(self, limit):
+    def compute_model_at_upper_limit(self, sigma_limit):
         """Setup 1D vectors of the upper and lower limits of the multinest files.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
@@ -256,12 +280,13 @@ class MultiNestFinished(MultiNest):
 
         Parameters
         -----------
-        limit : float
-            The fraction of a PDF used to estimate errors.
+        sigma_limit : float
+            The sigma limit within which the PDF is used to estimate errors (e.g. sigma_limit = 1.0 uses 0.6826 of the \
+            PDF).
         """
-        return list(map(lambda param: param[1], self.compute_model_at_limit(limit)))
+        return list(map(lambda param: param[1], self.compute_model_at_limit(sigma_limit)))
 
-    def compute_model_at_lower_limit(self, limit):
+    def compute_model_at_lower_limit(self, sigma_limit):
         """Setup 1D vectors of the upper and lower limits of the multinest files.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
@@ -269,11 +294,11 @@ class MultiNestFinished(MultiNest):
 
         Parameters
         -----------
-        limit : float
-            The fraction of a PDF used to estimate errors.
+        sigma_limit : float
+            The sigma limit within which the PDF is used to estimate errors (e.g. sigma_limit = 1.0 uses 0.6826 of the \
+            PDF).
         """
-        self.compute_model_at_limit(limit)
-        return list(map(lambda param: param[0], self.compute_model_at_limit(limit)))
+        return list(map(lambda param: param[0], self.compute_model_at_limit(sigma_limit)))
 
     def create_weighted_sample_model_instance(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
