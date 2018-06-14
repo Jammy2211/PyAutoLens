@@ -4,6 +4,11 @@ from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 from auto_lens import exc
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.level = logging.DEBUG
 
 attribute_map = {"pixelization_class": "pixelization",
                  "instrumentation_class": "instrumentation",
@@ -104,6 +109,7 @@ class Analysis(object):
             setattr(run, key, value)
 
         self.non_linear_optimizer.run(run.fitness_function, self.model_mapper.priors_ordered_by_id)
+
         return self.__class__.Result(run)
 
     class Result(object):
@@ -235,8 +241,6 @@ class Pipeline(object):
     def run(self, image, mask, **arg_dict):
         results = []
         for analysis in self.analyses:
-            print(arg_dict)
-            print(analysis.missing_attributes)
             args = {key: value for key, value in arg_dict.items() if key in analysis.missing_attributes}
             result = analysis.run(image, mask, **args)
             results.append(result)
