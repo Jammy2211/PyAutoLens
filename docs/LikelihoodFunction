@@ -1,0 +1,89 @@
+The likelihood function begins after we have set up our Tracer, and are thus able to use it to generate model images
+of galaxy profiles and mapping_matrices for pixelization (if pixelizations are turned on). If HyperImage features
+are on, it will also performed them.
+
+PROFILE ONLY LIKELIHOOD FUNCTION:
+
+1) Use ray tracing to compute model image of all galaxies.
+2) Blur this model image with PSF.
+3) Compare to image, using the noise map -> returns likelihood.
+
+PIXELIZATION ONLY LIKELIHOOD FUNCTION:
+
+1) Use ray tracing to compute mapping matrix of all pixelizations (typically only 1).
+2) Use mapping matrix, image data, noise and PSF to compute f, F, D and use linear inversion to solve for S (flux in every pixel).
+3) Map S back to image, compare to image -> returns likelihood.
+
+PROFILE + PIXELIZATION LIKELIIHOOD FUNCTION:
+
+NOTE - This essentially commbine the two above, but instead subtracts the profile galaxy images from the image data.
+
+1) Use ray tracing to compute model image of all galaxies.
+2) Blur this model image with PSF.
+3) Subtract from observed image to produce a profile subtracted image (typically, this is just a lens light subtraction)
+2) Use mapping matrix, SUBTRACTED image data and PSF to compute f, F, D and use linear inversion to solve for S (flux in every pixel).
+3) Map S back to image, compare to image, using the noise map -> returns likelihood.
+
+
+
+HYPERIMAGE + PROFILE + PIXELIZATION
+
+NOTE - The hyper image essentially just changes the image and noise map which are used for every other step, so its just
+a few extra steps at the start.
+
+1) If background sky is a free hyper-parameter, use it to produce a background-sky scaled image (this image is now the
+observed image used in all of the following steps).
+2) If the contribution map hyper-parameters are free parameters, use them to produce a new contributioon map.
+3) If the noise-map scaling parameters are free parameters, use them to produce a new scaled noise map (this is the noise
+map ussed in all of the following steps)
+4) Perofrm the PROFILE + PIXELIATION LIKELIHOOD FUNCTIION using the scaled images / contributions / noises.
+
+Although a hyper-parameter may not be a free-parameter in the fit, if it has been used previously (i.e. in a hyper-
+parameter optimization) we must still generate its corresponding scaled data quantity.
+
+For example, if in the previous hyper-parameter phase we scaled the noise, we must use that scaled noise map in the
+subsequent phase (even though the hyper-parameter is now fixed). This could involve fixing the noise-scaling parameters
+to their resulting values and always calling step 3) above, but ideally we would just store the scaled noise map
+so as to not repeat step 3 for efficiency).
+
+
+
+NOTE ON MULTIPLE GALAXIES:
+
+If we have multiple galaxies with profiles, nothing changes above, we just compute all their profiles at once and blur
+with the PSF. If we have multiple galaxies with pixelizations, nothing changes above, we just compute each mapping
+matrix individually and combine them to solve for S.
+
+
+
+Schematic of fitting function:
+
+def fit_data_with_model(hyper_datas, grid_datas, grid_mappers, tracer):
+
+    hyper_datas_fit = hyper_datas
+    grid_datas_fit = grid_datas
+
+    ### HYPER IMAGE STUFFF ##
+
+    if hyper_sky_scale is True:
+        grid_datas_fit.image = generate_scaled_sky_image(grid_datas.image)
+
+    if hyper_contributions_change is True:
+        hyper_datas_fit.contribution_maps = hyper_image.compute_all_galaxy_contributions(hyper_images.galaxy_images,
+                                                                                         hyper_images.minimum_values)
+
+    if hyper_noise_scale_change is True:
+        grid_datas_fit.noise = hyper_image.compute_scaled_noise(grid_datas.baseline_noise, grid_datas.background_noise,
+                                                                 hyper_images.contribution_maps)
+
+    ### PROFILE STUFF ###
+
+    blurred_model_image = generate_blurred_light_profile_image(tracer, grid_datas.psf, grid_mappers)
+
+    if use_pixelization is False:
+        return compute_likelihood(grid_datas_fit.image, grid_datas_fit.noise, blurred_model_image)
+    elif: use_pixelization is True:
+        subtracted_image =  grid_datas_fit.image - blurred_model_image
+        mapping_matrix = ray_tracing.compute_mapping_matrices(grid_mappers)
+        reconstructed_image = mapping_matrix.fit_image(grid_datas_fit.image, grid_datas_fit.psf, **)
+        return compute_likelihood(subtracted_image, grid_datas_fit.noise, reconstructed_image)
