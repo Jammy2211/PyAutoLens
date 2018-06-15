@@ -26,9 +26,9 @@ class GalaxyPrior:
         self.name = name
 
         light_profile_tuples = [(key, value) for key, value in kwargs.items() if
-                                isinstance(value, light_profiles.LightProfile)]
+                                issubclass(value, light_profiles.LightProfile)]
         mass_profile_tuples = [(key, value) for key, value in kwargs.items() if
-                               isinstance(value, mass_profiles.MassProfile)]
+                               issubclass(value, mass_profiles.MassProfile)]
 
         self.light_profile_classes = [value for _, value in light_profile_tuples]
         self.mass_profile_classes = [value for _, value in mass_profile_tuples]
