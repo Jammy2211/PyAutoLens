@@ -25,19 +25,29 @@ class GalaxyPrior:
         """
         self.name = name
 
-        light_profile_tuples = [(key, value) for key, value in kwargs.items() if
-                                issubclass(value, light_profiles.LightProfile)]
-        mass_profile_tuples = [(key, value) for key, value in kwargs.items() if
-                               issubclass(value, mass_profiles.MassProfile)]
-
-        self.light_profile_classes = [value for _, value in light_profile_tuples]
-        self.mass_profile_classes = [value for _, value in mass_profile_tuples]
-
-        self.light_profile_names = ["{}_{}".format(name, key) for key, _ in light_profile_tuples]
-        self.mass_profile_names = ["{}_{}".format(name, key) for key, _ in mass_profile_tuples]
+        self.light_profile_dict = {"{}_{}".format(name, key): value for key, value in kwargs.items() if
+                                   issubclass(value, light_profiles.LightProfile)}
+        self.mass_profile_dict = {"{}_{}".format(name, key): value for key, value in kwargs.items() if
+                                  issubclass(value, mass_profiles.MassProfile)}
 
         self.align_centres = align_centres
         self.align_orientations = align_orientations
+
+    @property
+    def light_profile_classes(self):
+        return self.light_profile_dict.values()
+
+    @property
+    def light_profile_names(self):
+        return list(self.light_profile_dict.keys())
+
+    @property
+    def mass_profile_classes(self):
+        return self.mass_profile_dict.values()
+
+    @property
+    def mass_profile_names(self):
+        return list(self.mass_profile_dict.keys())
 
     def attach_to_model_mapper(self, model_mapper):
         """
