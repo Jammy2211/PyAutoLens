@@ -31,8 +31,11 @@ class Analysis(object):
         non_linear_optimizer: NonLinearOptimizer
             A wrapper around a library that searches an n-dimensional space by providing unit vector hypercubes to
             the analysis.
-        kwargs
-            The model classes that produce variable model instances to be used in each fitting
+        lens_galaxy_priors
+        source_galaxy_priors
+        pixelization_class
+        instrumentation_class
+            The optional model classes that produce variable model instances to be used in each fitting
 
         Examples
         --------
