@@ -514,27 +514,22 @@ class TestUtility(object):
 class TestPriorReplacement(object):
     def test_prior_replacement(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClass)
-        mapper.replace_priors([model_mapper.GaussianPrior(10, 3), model_mapper.GaussianPrior(5, 3)])
+        result = mapper.prior_results_for_gaussian_tuples(
+            [(10, 3), (5, 3)])
 
-        assert isinstance(mapper.mock_class.one, model_mapper.GaussianPrior)
-        assert len(mapper.priors_ordered_by_id) == 2
-        assert isinstance(mapper.priors_ordered_by_id[0][1], model_mapper.GaussianPrior)
+        assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
     def test_replace_priors_with_gaussians_from_tuples(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClass)
-        mapper.replace_priors_with_gaussians_from_tuples([(10, 3), (5, 3)])
+        result = mapper.prior_results_for_gaussian_tuples([(10, 3), (5, 3)])
 
-        assert isinstance(mapper.mock_class.one, model_mapper.GaussianPrior)
-        assert len(mapper.priors_ordered_by_id) == 2
-        assert isinstance(mapper.priors_ordered_by_id[0][1], model_mapper.GaussianPrior)
+        assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
     def test_replacing_priors_for_profile(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockProfile)
-        mapper.replace_priors(
-            [model_mapper.GaussianPrior(10, 3), model_mapper.GaussianPrior(5, 3), model_mapper.GaussianPrior(5, 3)])
+        result = mapper.prior_results_for_gaussian_tuples(
+            [(10, 3), (5, 3), (5, 3)])
 
-        assert isinstance(mapper.mock_class.centre.priors[0][1], model_mapper.GaussianPrior)
-        assert isinstance(mapper.mock_class.centre.priors[1][1], model_mapper.GaussianPrior)
-        assert isinstance(mapper.mock_class.intensity, model_mapper.GaussianPrior)
-        assert len(mapper.priors_ordered_by_id) == 3
-        assert isinstance(mapper.priors_ordered_by_id[0][1], model_mapper.GaussianPrior)
+        assert isinstance(result.mock_class.centre.priors[0][1], model_mapper.GaussianPrior)
+        assert isinstance(result.mock_class.centre.priors[1][1], model_mapper.GaussianPrior)
+        assert isinstance(result.mock_class.intensity, model_mapper.GaussianPrior)
