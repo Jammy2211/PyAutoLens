@@ -79,6 +79,12 @@ class NonLinearOptimizer(object):
         elif check_model:
             self.model_mapper.check_model_info(self.file_model_info)
 
+    def run(self, fitness_function):
+        raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
+
+    def compute_gaussian_priors(self, sigma_limit):
+        raise NotImplementedError("Gaussian priors function must be overridden by non linear optimizers")
+
     def create_param_names(self):
         """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
 
@@ -305,3 +311,8 @@ class MultiNest(NonLinearOptimizer):
         new_summary_file = open(self.results_path + 'summary_new.txt', 'w')
         new_summary_file.write(most_probable + most_likely + likelihood + log_likelihood)
         new_summary_file.close()
+
+
+class LevenbergMarquardt(NonLinearOptimizer):
+    def __init__(self, model_mapper, obj_name='default', path=default_path):
+        super().__init__(model_mapper, obj_name=obj_name, path=path)
