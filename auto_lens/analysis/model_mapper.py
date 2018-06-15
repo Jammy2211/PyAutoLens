@@ -325,14 +325,16 @@ class ModelMapper(object):
 
         model_info_check.close()
 
-    def replace_priors(self, new_priors):
-        arguments = dict(
-            map(lambda prior, new_prior: (prior[0], new_prior), self.priors_ordered_by_id, new_priors))
-        for prior_model in self.prior_models:
-            prior_model[1].replace_priors(arguments)
+    def prior_results_for_gaussian_tuples(self, tuples):
+        model_instance = ModelInstance()
 
-    def replace_priors_with_gaussians_from_tuples(self, tuples):
-        self.replace_priors(map(lambda t: GaussianPrior(t[0], t[1]), tuples))
+        new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
+        arguments = dict(map(lambda prior, new_prior: (prior[0], new_prior), self.priors_ordered_by_id, new_priors))
+
+        for prior_model in self.prior_models:
+            setattr(model_instance, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
+
+        return model_instance
 
 
 prior_number = 0
@@ -467,12 +469,15 @@ class PriorModel(object):
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
         return self.cls(**model_arguments)
 
-    def replace_priors(self, prior_arguments):
-        # TODO: Need to figure out tuple priors here...
+    def gaussian_prior_model_for_arguments(self, prior_arguments):
+        new_model = PriorModel(self.cls)
+
         for tuple_prior in self.tuple_priors:
-            tuple_prior[1].replace_priors(prior_arguments)
+            setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(prior_arguments))
         for prior in self.direct_priors:
-            setattr(self, prior[0], prior_arguments[prior[0]])
+            setattr(new_model, prior[0], prior_arguments[prior[0]])
+
+        return new_model
 
 
 class TuplePrior(object):
@@ -483,9 +488,11 @@ class TuplePrior(object):
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
 
-    def replace_priors(self, prior_arguments):
+    def gaussian_tuple_prior_for_arguments(self, prior_arguments):
+        tuple_prior = TuplePrior()
         for prior in self.priors:
-            setattr(self, prior[0], prior_arguments[prior[0]])
+            setattr(tuple_prior, prior[0], prior_arguments[prior[0]])
+        return tuple_prior
 
 
 class ModelInstance(object):
