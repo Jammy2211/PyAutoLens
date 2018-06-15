@@ -1,4 +1,4 @@
-from auto_lens.analysis import pipeline as pl
+from auto_lens.analysis import analysis as pl
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
 from auto_lens import exc
