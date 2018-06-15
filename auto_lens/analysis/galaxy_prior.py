@@ -8,7 +8,7 @@ class GalaxyPrior:
     Class to produce Galaxy instances from sets of profile classes using the model mapper
     """
 
-    def __init__(self, name, align_centres=False, align_orientations=False, **kwargs):
+    def __init__(self, name, model_mapper, align_centres=False, align_orientations=False, **kwargs):
         """
         Parameters
         ----------
@@ -34,37 +34,8 @@ class GalaxyPrior:
         self.align_centres = align_centres
         self.align_orientations = align_orientations
 
-    @property
-    def light_profile_classes(self):
-        return self.light_profile_dict.values()
+        self.model_mapper = model_mapper
 
-    @property
-    def light_profile_names(self):
-        return list(self.light_profile_dict.keys())
-
-    @property
-    def mass_profile_classes(self):
-        return self.mass_profile_dict.values()
-
-    @property
-    def mass_profile_names(self):
-        return list(self.mass_profile_dict.keys())
-
-    def attach_to_model_mapper(self, model_mapper):
-        """
-        Associate this instance with a given model_mapper, passing its internal classes to the model mapper to become
-        priors.
-
-        Parameters
-        ----------
-        model_mapper: ModelMapper
-            A class used to generated instances from non-linear search hypercube vectors.
-
-        Returns
-        -------
-        prior_models: [PriorModel]
-            The prior models created to generate instances of the classes
-        """
         profile_models = []
 
         for name, cls in zip(self.light_profile_names, self.light_profile_classes):
@@ -83,9 +54,30 @@ class GalaxyPrior:
             for profile_model in profile_models:
                 profile_model.phi = phi
 
-        prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.name), galaxy.Redshift)]
+        self.prior_models = profile_models + [
+            model_mapper.add_class(self.redshift_name.format(self.name), galaxy.Redshift)]
 
-        return prior_models
+    def __getattr__(self, item):
+        try:
+            return self.__getattribute__(item)
+        except AttributeError:
+            return getattr(self.model_mapper, "{}_{}".format(self.name, item))
+
+    @property
+    def light_profile_classes(self):
+        return self.light_profile_dict.values()
+
+    @property
+    def light_profile_names(self):
+        return list(self.light_profile_dict.keys())
+
+    @property
+    def mass_profile_classes(self):
+        return self.mass_profile_dict.values()
+
+    @property
+    def mass_profile_names(self):
+        return list(self.mass_profile_dict.keys())
 
     @property
     def redshift_name(self):
