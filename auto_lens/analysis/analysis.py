@@ -13,7 +13,7 @@ logger.level = logging.DEBUG
 
 
 class Analysis(object):
-    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=None,
+    def __init__(self, model_mapper, non_linear_optimizer=None,
                  fitting_function=fitting.likelihood_for_image_tracer_pixelization_and_instrumentation,
                  lens_galaxy_priors=None, source_galaxy_priors=None, pixelization_class=None,
                  instrumentation_class=None):
@@ -58,14 +58,7 @@ class Analysis(object):
         self.pixelization_class = pixelization_class
         self.instrumentation_class = instrumentation_class
 
-        if lens_galaxy_priors is not None:
-            for galaxy_prior in lens_galaxy_priors:
-                galaxy_prior.attach_to_model_mapper(model_mapper)
-
-        if source_galaxy_priors is not None:
-            for galaxy_prior in source_galaxy_priors:
-                galaxy_prior.attach_to_model_mapper(model_mapper)
-
+        # TODO: This may be better in pipeline?
         if pixelization_class is not None:
             model_mapper.add_class('pixelization', pixelization_class)
 
