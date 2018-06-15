@@ -83,8 +83,9 @@ class TestNonLinearFiles(object):
             if os.path.exists(path + 'test_files/non_linear/files/setup/obj/EllipticalSersic'):
                 shutil.rmtree(path + 'test_files/non_linear/files/setup/obj/EllipticalSersic')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/setup/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/setup/',
+                                                obj_name='obj')
 
             nlo.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic)
             nlo.save_model_info()
@@ -96,8 +97,9 @@ class TestNonLinearFiles(object):
             if os.path.exists(path + 'test_files/non_linear/files/setup/obj/SphericalNFW'):
                 shutil.rmtree(path + 'test_files/non_linear/files/setup/obj/SphericalNFW')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/setup/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/setup/',
+                                                obj_name='obj')
 
             nlo.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
             nlo.save_model_info()
@@ -113,8 +115,9 @@ class TestNonLinearFiles(object):
                     path + 'test_files/non_linear/files/setup/obj/'
                            'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/setup/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/setup/',
+                                                obj_name='obj')
 
             nlo.model_mapper.add_classes(
                 light_profile=light_profiles.EllipticalSersic,
@@ -136,7 +139,8 @@ class TestNonLinearFiles(object):
             if os.path.exists(path + 'test_files/non_linear/files/obj/EllipticalSersic'):
                 shutil.rmtree(path + 'test_files/non_linear/files/obj/EllipticalSersic')
 
-            nl_directory = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/',
+            nl_directory = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                         path=path + 'test_files/non_linear/files/',
                                                          obj_name='obj')
 
             nl_directory.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic)
@@ -150,7 +154,8 @@ class TestNonLinearFiles(object):
             if os.path.exists(path + 'test_files/non_linear/files/obj/SphericalNFW'):
                 shutil.rmtree(path + 'test_files/non_linear/files/obj/SphericalNFW')
 
-            nl_directory = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/',
+            nl_directory = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                         path=path + 'test_files/non_linear/files/',
                                                          obj_name='obj')
 
             nl_directory.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
@@ -168,7 +173,8 @@ class TestNonLinearFiles(object):
                     path + 'test_files/non_linear/files/obj/'
                            'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW')
 
-            nl_directory = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/',
+            nl_directory = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                         path=path + 'test_files/non_linear/files/',
                                                          obj_name='obj')
 
             nl_directory.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic,
@@ -206,8 +212,9 @@ class TestNonLinearFiles(object):
             if os.path.exists(path + 'test_files/non_linear/files/param_names/obj/EllipticalSersic'):
                 shutil.rmtree(path + 'test_files/non_linear/files/param_names/obj/EllipticalSersic')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/param_names/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/param_names/',
+                                                obj_name='obj')
             nlo.model_mapper.add_classes(
                 light_profile_0=light_profiles.EllipticalSersic)
 
@@ -241,8 +248,9 @@ class TestNonLinearFiles(object):
                 shutil.rmtree(path + 'test_files/non_linear/files/param_names/obj/'
                                      'EllipticalSersic+EllipticalExponential')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/param_names/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/param_names/',
+                                                obj_name='obj')
 
             nlo.model_mapper.add_classes(
                 light_profile_0=light_profiles.EllipticalSersic,
@@ -279,8 +287,9 @@ class TestNonLinearFiles(object):
                 shutil.rmtree(path + 'test_files/non_linear/files/param_names/obj/'
                                      'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/param_names/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/param_names/',
+                                                obj_name='obj')
 
             nlo.model_mapper.add_classes(
                 light_profile_0=light_profiles.EllipticalSersic,
@@ -323,8 +332,9 @@ class TestNonLinearFiles(object):
             if os.path.exists(path + 'test_files/non_linear/files/model_info/obj/EllipticalSersic'):
                 shutil.rmtree(path + 'test_files/non_linear/files/model_info/obj/EllipticalSersic')
 
-            nlo=non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/model_info/',
-                                          obj_name='obj')
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/model_info/',
+                                                obj_name='obj')
             nlo.model_mapper.add_classes(
                 light_profile_0=light_profiles.EllipticalSersic)
             nlo.save_model_info()
@@ -351,8 +361,9 @@ class TestNonLinearFiles(object):
                 shutil.rmtree(path + 'test_files/non_linear/files/model_info/obj/'
                                      'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW')
 
-            nlo = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/model_info/',
-                                          obj_name='obj')\
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/model_info/',
+                                                obj_name='obj')
 
             nlo.model_mapper.add_classes(
                 light_profile_0=light_profiles.EllipticalSersic,
@@ -411,7 +422,8 @@ class TestNonLinearFiles(object):
                 file.write('The model info is missing :(')
 
             with pytest.raises(exc.PriorException):
-                nl = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/wrong_model_info/',
+                nl = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                   path=path + 'test_files/non_linear/files/wrong_model_info/',
                                                    obj_name='obj')
                 nl.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
                 nl.save_model_info()
