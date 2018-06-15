@@ -36,7 +36,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, obj_name, model_mapper, path=default_path, check_model=True):
+    def __init__(self, model_mapper, obj_name="default", path=default_path, check_model=True):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
@@ -57,6 +57,7 @@ class NonLinearOptimizer(object):
         self.path = path
         self.obj_name = obj_name
         self.model_mapper = model_mapper
+        print(self.model_mapper)
         self.total_parameters = len(self.model_mapper.priors_ordered_by_id)
 
         self.results_path = self.path + self.obj_name + '/'
@@ -120,11 +121,14 @@ class MultiNest(NonLinearOptimizer):
             Maps the model priors to a set of parameters (a model instance)
         """
 
-        super(MultiNest, self).__init__(path, obj_name, model_mapper, check_model)
+        super(MultiNest, self).__init__(model_mapper, obj_name, path, check_model)
 
         self.file_summary = self.results_path + 'summary.txt'
         self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
-        self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
+
+    @property
+    def pdf(self):
+        return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
     def run(self, fitness_function):
         # noinspection PyUnusedLocal
