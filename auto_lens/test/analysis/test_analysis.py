@@ -114,12 +114,12 @@ def make_test_config():
 
 @pytest.fixture(name="lens_galaxy_prior")
 def make_lens_galaxy_prior():
-    return galaxy_prior.GalaxyPrior()
+    return galaxy_prior.GalaxyPrior("lens_galaxy")
 
 
 @pytest.fixture(name="source_galaxy_prior")
 def make_source_galaxy_prior():
-    return galaxy_prior.GalaxyPrior()
+    return galaxy_prior.GalaxyPrior("source_galaxy")
 
 
 @pytest.fixture(name="model_mapper")
@@ -172,7 +172,7 @@ class TestHyperparameterAnalysis:
 
 class TestAnalysis:
     def test_setup(self):
-        analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+        analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy")],
                               non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
 
         analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
@@ -189,7 +189,7 @@ class TestAnalysis:
                          mask=MockMask(), pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
     def test_run(self):
-        analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+        analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy")],
                               non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
 
         result = analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),

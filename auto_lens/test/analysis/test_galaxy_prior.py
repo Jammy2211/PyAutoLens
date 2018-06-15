@@ -33,13 +33,13 @@ def make_mapper():
 
 @pytest.fixture(name="galaxy_prior_2")
 def make_galaxy_prior_2():
-    return gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+    return gp.GalaxyPrior("galaxy_2", light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
                           mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal])
 
 
 @pytest.fixture(name="galaxy_prior")
 def make_galaxy_prior():
-    return gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+    return gp.GalaxyPrior("galaxy_1", light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
                           mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal])
 
 
@@ -85,7 +85,7 @@ class TestGalaxyPrior:
 
         assert prior_models[0].centre != prior_models[1].centre
 
-        galaxy_prior = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+        galaxy_prior = gp.GalaxyPrior("galaxy", light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
                                       mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal],
                                       align_centres=True)
         prior_models = galaxy_prior.attach_to_model_mapper(mapper)
@@ -96,7 +96,7 @@ class TestGalaxyPrior:
 
         assert prior_models[0].phi != prior_models[1].phi
 
-        galaxy_prior = gp.GalaxyPrior(light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
+        galaxy_prior = gp.GalaxyPrior("galaxy", light_profile_classes=[light_profiles.EllipticalDevVaucouleurs],
                                       mass_profile_classes=[mass_profiles.EllipticalCoredIsothermal],
                                       align_orientations=True)
         prior_models = galaxy_prior.attach_to_model_mapper(mapper)
