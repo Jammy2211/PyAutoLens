@@ -297,7 +297,7 @@ class MainPipeline(Pipeline):
             A series of analysis, each with a fixed model, pixelization and instrumentation but variable model instance.
         hyperparameter_analysis: HyperparameterAnalysis
             An analysis with a fixed model instance but variable pixelization and instrumentation instances.
-            
+
         Examples
         --------
 
