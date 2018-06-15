@@ -85,8 +85,8 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/setup/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/setup/',
+                                          obj_name='obj', model_mapper=model_map)
 
             assert os.path.exists(path + 'test_files/non_linear/files/setup/obj/EllipticalSersic') == True
 
@@ -98,8 +98,8 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/setup/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/setup/',
+                                          obj_name='obj', model_mapper=model_map)
 
             assert os.path.exists(path + 'test_files/non_linear/files/setup/obj/SphericalNFW') == True
 
@@ -119,8 +119,8 @@ class TestNonLinearFiles(object):
                                                  mass_profile=mass_profiles.SphericalNFW,
                                                  mass_profile_2=mass_profiles.SphericalNFW)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/setup/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/setup/',
+                                          obj_name='obj', model_mapper=model_map)
 
             assert os.path.exists(path +
                                   'test_files/non_linear/files/setup/obj/'
@@ -136,8 +136,8 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
 
-            nl_directory = non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/',
-                                                     obj_name='obj', model_mapper=model_map)
+            nl_directory = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/',
+                                                         obj_name='obj', model_mapper=model_map)
 
             assert nl_directory.total_parameters == 7
 
@@ -149,8 +149,8 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
 
-            nl_directory = non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/',
-                                                     obj_name='obj', model_mapper=model_map)
+            nl_directory = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/',
+                                                         obj_name='obj', model_mapper=model_map)
 
             assert nl_directory.total_parameters == 4
 
@@ -170,8 +170,8 @@ class TestNonLinearFiles(object):
                                                  mass_profile=mass_profiles.SphericalNFW,
                                                  mass_profile_2=mass_profiles.SphericalNFW)
 
-            nl_directory = non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/',
-                                                     obj_name='obj', model_mapper=model_map)
+            nl_directory = non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/',
+                                                         obj_name='obj', model_mapper=model_map)
 
             assert nl_directory.total_parameters == 29
 
@@ -203,8 +203,8 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/param_names/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/param_names/',
+                                          obj_name='obj', model_mapper=model_map)
 
             paramnames_test = open(path + 'test_files/non_linear/files/param_names/obj/'
                                           'EllipticalSersic/obj.paramnames')
@@ -238,8 +238,8 @@ class TestNonLinearFiles(object):
             model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic,
                                                  light_profile_1=light_profiles.EllipticalExponential)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/param_names/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/param_names/',
+                                          obj_name='obj', model_mapper=model_map)
 
             paramnames_test = open(path + 'test_files/non_linear/files/param_names/obj/'
                                           'EllipticalSersic+EllipticalExponential/obj.paramnames')
@@ -276,8 +276,8 @@ class TestNonLinearFiles(object):
                                                  mass_profile_0=mass_profiles.SphericalIsothermal,
                                                  mass_profile_1=mass_profiles.SphericalNFW)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/param_names/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/param_names/',
+                                          obj_name='obj', model_mapper=model_map)
 
             paramnames_test = open(path + 'test_files/non_linear/files/param_names/obj/'
                                           'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW/obj.paramnames')
@@ -315,8 +315,8 @@ class TestNonLinearFiles(object):
             config = model_mapper.Config(config_folder_path=path + 'test_files/config')
             model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/model_info/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/model_info/',
+                                          obj_name='obj', model_mapper=model_map)
 
             model_info_test = open(path + 'test_files/non_linear/files/model_info/obj/'
                                           'EllipticalSersic/model.info')
@@ -346,8 +346,8 @@ class TestNonLinearFiles(object):
                                                  mass_profile_0=mass_profiles.SphericalIsothermal,
                                                  mass_profile_1=mass_profiles.SphericalNFW)
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/model_info/',
-                                      obj_name='obj', model_mapper=model_map)
+            non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/model_info/',
+                                          obj_name='obj', model_mapper=model_map)
 
             model_info_test = open(
                 path + 'test_files/non_linear/files/model_info/obj/'
@@ -401,8 +401,8 @@ class TestNonLinearFiles(object):
             model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
 
             with pytest.raises(exc.PriorException):
-                non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/wrong_model_info/',
-                                          obj_name='obj', model_mapper=model_map)
+                non_linear.NonLinearOptimizer(path=path + 'test_files/non_linear/files/wrong_model_info/',
+                                              obj_name='obj', model_mapper=model_map)
 
 
 class TestMultiNest(object):
