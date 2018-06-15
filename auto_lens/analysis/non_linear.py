@@ -34,7 +34,7 @@ def generate_parameter_latex(parameters, subscript=''):
     return latex
 
 
-class NonLinearFiles(object):
+class NonLinearOptimizer(object):
 
     def __init__(self, obj_name, model_mapper, path=default_path, check_model=True):
         """Abstract base class for non-linear optimizers.
@@ -102,7 +102,7 @@ class NonLinearFiles(object):
         param_names.close()
 
 
-class MultiNest(NonLinearFiles):
+class MultiNest(NonLinearOptimizer):
 
     def __init__(self, model_mapper, obj_name="default", path=default_path, check_model=True):
         """Class to setup and run a MultiNest analysis and output the MultInest files.
@@ -126,13 +126,14 @@ class MultiNest(NonLinearFiles):
         self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
         self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-    def run(self, fitness_function, priors):
+    def run(self, fitness_function):
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
-            return map(lambda p, c: p(c), priors, cube)
+            return map(lambda p, c: p(c), self.model_mapper.priors_ordered_by_id, cube)
 
         # TODO: is this output path correct?
-        pymultinest.run(fitness_function, prior, len(priors), outputfiles_basename=self.file_summary)
+        pymultinest.run(fitness_function, prior, len(self.model_mapper.priors_ordered_by_id),
+                        outputfiles_basename=self.file_summary)
 
     def open_summary_file(self):
 
@@ -292,7 +293,7 @@ class MultiNest(NonLinearFiles):
         """
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
 
-    # TODO : untested and unfinished, remiains to be seen if we'll need this code.
+    # TODO : untested and unfinished, remains to be seen if we'll need this code.
 
     def reorder_summary_file(self, new_order):
         most_probable = self.compute_most_probable()
