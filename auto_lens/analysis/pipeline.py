@@ -1,7 +1,6 @@
 from auto_lens.analysis import analysis
 
-
-class SourceOnlyPipeline(analysis.Pipeline):
+class SourceOnlyPipeline(object):
     pass
     """
     Pipeline 1:
