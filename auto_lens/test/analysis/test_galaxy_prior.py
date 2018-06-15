@@ -45,10 +45,12 @@ def make_galaxy_prior(mapper):
 
 
 class TestGalaxyPrior:
-    def test_init_to_model_mapper(self, galaxy_prior, mapper):
+    def test_init_to_model_mapper(self, mapper):
+        gp.GalaxyPrior("galaxy_1", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
+                       mass_profile=mass_profiles.EllipticalCoredIsothermal)
         assert len(mapper.classes) == 3
 
-    def test_recover_classes(self, galaxy_prior, mapper):
+    def test_recover_classes(self, galaxy_prior):
         instance = MockModelInstance()
 
         light_profile_name = galaxy_prior.light_profile_names[0]
@@ -65,12 +67,16 @@ class TestGalaxyPrior:
         assert len(galaxy.mass_profiles) == 1
         assert galaxy.redshift == 1
 
-    def test_exceptions(self, galaxy_prior, mapper):
+    def test_exceptions(self, galaxy_prior):
         instance = MockModelInstance()
         with pytest.raises(exc.PriorException):
             galaxy_prior.galaxy_for_model_instance(instance)
 
-    def test_multiple_galaxies(self, galaxy_prior, galaxy_prior_2, mapper):
+    def test_multiple_galaxies(self, mapper):
+        gp.GalaxyPrior("galaxy_1", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
+                       mass_profile=mass_profiles.EllipticalCoredIsothermal)
+        gp.GalaxyPrior("galaxy_2", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
+                       mass_profile=mass_profiles.EllipticalCoredIsothermal)
         assert len(mapper.classes) == 6
 
     def test_align_centres(self, galaxy_prior, mapper):
