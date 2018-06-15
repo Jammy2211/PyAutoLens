@@ -19,6 +19,5 @@ test_files/non_linear/files
 MultiNest/
 multinest
 .DS_Store
-test_files/
 test_files/non_linear/files
 MultiNest/
