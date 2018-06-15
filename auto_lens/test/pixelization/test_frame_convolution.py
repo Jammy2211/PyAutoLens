@@ -342,3 +342,31 @@ class TestSubConvolution(object):
         assertion_array[18] = 1
 
         assert (assertion_array == convolved_vector).all()
+
+
+class TestOptionalBlurringRegion(object):
+    def test_create_kernel_convolver(self, cross_mask):
+        frame_maker = frame_convolution.FrameMaker(cross_mask)
+        convolver = frame_maker.convolver_for_kernel_shape((3, 3))
+        kernel_convolver = convolver.convolver_for_kernel(np.ones((3, 3)))
+        assert kernel_convolver.frame_array is not None
+        assert kernel_convolver.blurring_frame_array is None
+
+    def test_convolution(self, cross_mask):
+        frame_maker = frame_convolution.FrameMaker(cross_mask)
+        convolver = frame_maker.convolver_for_kernel_shape((3, 3))
+        kernel = np.array([[0, 0, 0],
+                           [0, 0.5, 0.5],
+                           [0, 0, 0]])
+
+        pixel_array = np.array([0,
+                                0, 1, 0,
+                                0])
+
+        kernel_convolver = convolver.convolver_for_kernel(kernel)
+
+        result = kernel_convolver.convolve_array(pixel_array)
+
+        assert (result == np.array([0,
+                                    0, 0.5, 0.5,
+                                    0])).all()
