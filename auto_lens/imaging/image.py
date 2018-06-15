@@ -96,7 +96,7 @@ class Image(ScaledArray):
                      background_noise=background_noise, poisson_noise=poisson_noise)
 
     def background_noise_from_edges(self, no_edges):
-        """Estimate the background signal_to_noise_ratio by binning image_to_pixel located at the edge(s) of an image
+        """Estimate the background signal_to_noise_ratio by binning data_to_pixel located at the edge(s) of an image
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
         Gaussian gives a signal_to_noise_ratio estimate.
 

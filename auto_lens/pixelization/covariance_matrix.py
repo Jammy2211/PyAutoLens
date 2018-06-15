@@ -3,8 +3,8 @@ import queue as queue
 """
 Find an F matrix from an f matrix efficiently.
 
-It is assumed that the f matrix is sparse_grid. It is also assumed that covariance of source image_to_pixel will 
-principally be found between a pixel and image_to_pixel in a contiguous patch about that pixel in the source plane, 
+It is assumed that the f matrix is sparse_grid. It is also assumed that covariance of source data_to_pixel will 
+principally be found between a pixel and data_to_pixel in a contiguous patch about that pixel in the source plane, 
 except for the case that overlap occurs between convolution kernels. See https://github.com/Jammy2211/AutoLens/issues/6 
 for a thorough discussion.
 
@@ -30,9 +30,9 @@ def create_d_matrix(pixel_maps, noise_vector, image_vector):
     ----------
     pixel_maps: [{int: float}]
         List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid
-        image_to_pixel.
+        data_to_pixel.
     noise_vector: [float]
-        A list of signal_to_noise_ratio values of length image_grid image_to_pixel
+        A list of signal_to_noise_ratio values of length image_grid data_to_pixel
     image_vector: [float]
         A vector describing the image_grid
 
@@ -59,9 +59,9 @@ def create_covariance_matrix(pixel_maps, noise_vector, graph, neighbour_search_l
     ----------
     pixel_maps: [{int: float}]
         List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid
-        image_to_pixel.
+        data_to_pixel.
     noise_vector: [float]
-        A list of signal_to_noise_ratio values of length image_grid image_to_pixel
+        A list of signal_to_noise_ratio values of length image_grid data_to_pixel
     graph: [[int]]
         A graph representing source pixel neighbouring
     neighbour_search_limit: float
@@ -89,9 +89,9 @@ class CovarianceMatrixGenerator(object):
         ----------
         pixel_maps: [{int: float}]
             List of dictionaries. Each dictionary describes the contribution that a source pixel makes to image_grid
-            image_to_pixel.
+            data_to_pixel.
         noise_vector: [float]
-            A list of signal_to_noise_ratio values of length image_grid image_to_pixel
+            A list of signal_to_noise_ratio values of length image_grid data_to_pixel
         graph: [[int]]
             A graph representing source pixel neighbouring
         neighbour_search_limit: float
@@ -132,7 +132,7 @@ class CovarianceMatrixGenerator(object):
     def find_contiguous_covariances(self, source_index):
         """
         Performs a breadth first search starting at the source pixel and calculating covariance with the source pixel
-        and each found image_to_pixel until no further neighbours that have non-zero covariance with the source pixel
+        and each found data_to_pixel until no further neighbours that have non-zero covariance with the source pixel
         are found.
 
         Parameters
