@@ -3,7 +3,7 @@ from auto_lens.analysis import galaxy_prior
 from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens.analysis import model_mapper as mm
 from auto_lens.analysis import non_linear
-
+from auto_lens.pixelization import pixelization
 
 # Defines how wide gaussian prior should be
 SIGMA_LIMIT = 3
@@ -59,6 +59,27 @@ def source_only_pipeline(image, mask, instrumentation):
     """
     mapper_2 = mm.ModelMapper()
     optimizer_2 = non_linear.LevenbergMarquardt(mapper_2)
+
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior("lens_galaxy_prior", mapper_2,
+                                                 spherical_mass_profile=mass_profiles.SphericalIsothermal,
+                                                 shear_mass_profile=mass_profiles.ExternalShear)
+
+    lens_galaxy_prior.override_prior_models(spherical_mass_profile=prior_results.spherical_mass_profile,
+                                            shear_mass_profile=prior_results.shear_mass_profile)
+
+    initialization_2 = analysis.Analysis(mapper_2, non_linear_optimizer=optimizer_2,
+                                         lens_galaxy_priors=[lens_galaxy_prior],
+                                         pixelization_class=pixelization.SquarePixelization)
+
+    result = initialization_2.run(image, mask, instrumentation=instrumentation)
+
+    """
+    2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
+        Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
+        Source: 'noisy' pixelization
+        NLO: MN
+    """
+    mapper_3 = mm.ModelMapper()
 
 
 """
