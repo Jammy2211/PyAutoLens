@@ -19,7 +19,7 @@ attribute_map = {"pixelization_class": "pixelization",
 
 
 class Analysis(object):
-    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNest(),
+    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=None,
                  fitting_function=fitting.likelihood_for_image_tracer_pixelization_and_instrumentation, **kwargs):
         """
         A generic analysis class. Model classes are provided in the constructor as keyword arguments. These classes act
@@ -49,7 +49,8 @@ class Analysis(object):
                               pixelization=pixelization, instrumentation=instrumentation)
         """
         self.model_mapper = model_mapper
-        self.non_linear_optimizer = non_linear_optimizer
+        self.non_linear_optimizer = non_linear_optimizer if non_linear_optimizer is not None else non_linear.MultiNest(
+            model_mapper)
         self.fitting_function = fitting_function
         self.included_attributes = []
 
@@ -191,7 +192,7 @@ class Analysis(object):
 
 class ModelAnalysis(Analysis):
     def __init__(self, lens_galaxy_priors, source_galaxy_priors, model_mapper=mm.ModelMapper(),
-                 non_linear_optimizer=non_linear.MultiNest()):
+                 non_linear_optimizer=None):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
         assumed model and applies a pixelization and non linear optimizer to find the best possible fit between the
@@ -216,7 +217,7 @@ class ModelAnalysis(Analysis):
 
 class HyperparameterAnalysis(Analysis):
     def __init__(self, pixelization_class, instrumentation_class, model_mapper=mm.ModelMapper(),
-                 non_linear_optimizer=non_linear.MultiNest()):
+                 non_linear_optimizer=None):
         """
         An analysis to improve hyperparameter settings. This optimizes pixelization and instrumentation.
 
@@ -234,7 +235,6 @@ class HyperparameterAnalysis(Analysis):
         """
         super().__init__(model_mapper, non_linear_optimizer, pixelization_class=pixelization_class,
                          instrumentation_class=instrumentation_class)
-
 
 # class Pipeline(object):
 #     def __init__(self, *analyses):
