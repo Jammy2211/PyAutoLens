@@ -1,4 +1,4 @@
-mass_profile_centre_0                   $x_{\mathrm{d99}}$
-mass_profile_centre_1                   $y_{\mathrm{d99}}$
-mass_profile_kappa_s                    $\kappa_{\mathrm{d99}}$
-mass_profile_scale_radius               $Rs_{\mathrm{d99}}$
+mass_profile_centre_0                   $x_{\mathrm{d98}}$
+mass_profile_centre_1                   $y_{\mathrm{d98}}$
+mass_profile_kappa_s                    $\kappa_{\mathrm{d98}}$
+mass_profile_scale_radius               $Rs_{\mathrm{d98}}$
