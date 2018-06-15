@@ -184,7 +184,7 @@ class ModelMapper(object):
         for instance_key in sorted(model_instance.__dict__.keys()):
             instance = model_instance.__dict__[instance_key]
             for attribute_key in sorted(instance.__dict__.keys()):
-                print(attribute_key)
+
                 value = instance.__dict__[attribute_key]
                 if isinstance(value, tuple):
                     result.extend(list(value))
@@ -301,7 +301,7 @@ class ModelMapper(object):
         return model_info
 
     def output_model_info(self, filename):
-        """Output a model infomation file, which lists the information of the model mapper (e.g. parameters, priors, \
+        """Output a model information file, which lists the information of the model mapper (e.g. parameters, priors,
          etc.) """
         model_info = self.generate_model_info()
         with open(filename, 'w') as file:
@@ -322,6 +322,15 @@ class ModelMapper(object):
                 'existing in the files. Parameter = ')
 
         model_info_check.close()
+
+    def replace_priors(self, new_priors):
+        arguments = dict(
+            map(lambda prior, new_prior: (prior[0], new_prior), self.priors_ordered_by_id, new_priors))
+        for prior_model in self.prior_models:
+            prior_model[1].replace_priors(arguments)
+
+    def replace_priors_with_gaussians_from_tuples(self, tuples):
+        self.replace_priors(map(lambda t: GaussianPrior(t[0], t[1]), tuples))
 
 
 prior_number = 0
@@ -456,6 +465,13 @@ class PriorModel(object):
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
         return self.cls(**model_arguments)
 
+    def replace_priors(self, prior_arguments):
+        # TODO: Need to figure out tuple priors here...
+        for tuple_prior in self.tuple_priors:
+            tuple_prior[1].replace_priors(prior_arguments)
+        for prior in self.direct_priors:
+            setattr(self, prior[0], prior_arguments[prior[0]])
+
 
 class TuplePrior(object):
     @property
@@ -464,6 +480,10 @@ class TuplePrior(object):
 
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
+
+    def replace_priors(self, prior_arguments):
+        for prior in self.priors:
+            setattr(self, prior[0], prior_arguments[prior[0]])
 
 
 class ModelInstance(object):
