@@ -108,7 +108,7 @@ class FrameMaker(object):
 
         return frame_array
 
-    def make_blurring_frame_array(self, kernel_shape, blurring_region_mask):
+    def make_blurring_frame_array(self, kernel_shape, blurring_region_mask=None):
         """
         Parameters
         ----------
@@ -131,7 +131,7 @@ class FrameMaker(object):
         frame_array = []
         for x in range(self.mask.shape[0]):
             for y in range(self.mask.shape[1]):
-                if self.mask[x][y] and not blurring_region_mask[x, y]:
+                if self.mask[x][y] and (blurring_region_mask is None or not blurring_region_mask[x, y]):
                     frame = self.frame_at_coords((x, y), kernel_shape)
                     frame_array.append(frame)
         return frame_array
@@ -166,7 +166,7 @@ class FrameMaker(object):
 
         return frame
 
-    def convolver_for_kernel_shape(self, kernel_shape, blurring_region_mask):
+    def convolver_for_kernel_shape(self, kernel_shape, blurring_region_mask=None):
         """
         Create a convolver that can be used to apply a kernel of any shape to a 1D vector of non-masked values
         Parameters
@@ -180,7 +180,9 @@ class FrameMaker(object):
             convolver: Convolver
         """
         return Convolver(self.make_frame_array(kernel_shape),
-                         self.make_blurring_frame_array(kernel_shape, blurring_region_mask))
+                         self.make_blurring_frame_array(
+                             kernel_shape,
+                             blurring_region_mask) if blurring_region_mask is not None else None)
 
 
 class Convolver(object):
@@ -242,7 +244,7 @@ class KernelConvolver(object):
         """
         return map(self.convolve_array, array, blurring_array)
 
-    def convolve_array(self, pixel_array, blurring_array, sub_shape=None):
+    def convolve_array(self, pixel_array, blurring_array=None, sub_shape=None):
         """
         Parameters
         ----------
@@ -267,12 +269,13 @@ class KernelConvolver(object):
             if value > 0:
                 new_array = self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape)
 
-        for pixel_index in range(len(blurring_array)):
-            frame = self.blurring_frame_array[pixel_index]
-            value = blurring_array[pixel_index]
+        if blurring_array is not None:
+            for pixel_index in range(len(blurring_array)):
+                frame = self.blurring_frame_array[pixel_index]
+                value = blurring_array[pixel_index]
 
-            if value > 0:
-                new_array = self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape)
+                if value > 0:
+                    new_array = self.convolution_for_value_frame_and_new_array(value, frame, new_array, sub_shape)
 
         return new_array
 
