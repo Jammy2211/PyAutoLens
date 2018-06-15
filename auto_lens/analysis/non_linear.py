@@ -71,10 +71,10 @@ class NonLinearOptimizer(object):
         self.file_model_info = self.results_path + 'model.info'
 
     def save_model_info(self):
+        print("making dir {}".format(self.results_path))
         resume = os.path.exists(self.results_path)  # resume True if results path already exists
 
         if not resume:
-
             os.makedirs(self.results_path)  # Create results folder if doesnt exist
             self.create_param_names()
             self.model_mapper.output_model_info(self.file_model_info)
