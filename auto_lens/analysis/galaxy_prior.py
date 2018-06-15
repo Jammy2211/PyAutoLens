@@ -26,7 +26,8 @@ class GalaxyPrior:
         self.name = name
 
         self.light_profile_dict = {"{}_{}".format(name, key): value for key, value in kwargs.items() if
-                                   issubclass(value, light_profiles.LightProfile)}
+                                   issubclass(value, light_profiles.LightProfile) and not
+                                   issubclass(value, mass_profiles.MassProfile)}
         self.mass_profile_dict = {"{}_{}".format(name, key): value for key, value in kwargs.items() if
                                   issubclass(value, mass_profiles.MassProfile)}
 
