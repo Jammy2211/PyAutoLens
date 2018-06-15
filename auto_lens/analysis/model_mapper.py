@@ -82,6 +82,10 @@ class ModelMapper(object):
         elif config_arr[0] == "g":
             return GaussianPrior(config_arr[1], config_arr[2])
 
+    def add_classes(self, **kwargs):
+        for key, value in kwargs.items():
+            self.add_class(key, value)
+
     def add_class(self, name, cls):
         """
         Add a class to this collection. Priors are automatically generated for __init__ arguments. Prior type and
