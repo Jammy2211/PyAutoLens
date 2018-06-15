@@ -28,7 +28,7 @@ This can then produce a convolver for any given kernel shape and corresponding b
 convolver = frame_maker.convolver_for_kernel_shape((3, 3), blurring_region_mask)
 
 Here the blurring region mask describes the region under the mask from which a given PSF kernel may blur pixels. If the
-regular mask specifies True for a given pixel and the blurring region mask False then that pixel will be blurred in
+regular mask specifies True for a givena pixel and the blurring region mask False then that pixel will be blurred in
 using the blurring array.
 
 A convolver can then be made for any given kernel:
