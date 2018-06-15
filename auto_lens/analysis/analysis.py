@@ -236,128 +236,128 @@ class HyperparameterAnalysis(Analysis):
                          instrumentation_class=instrumentation_class)
 
 
-class Pipeline(object):
-    def __init__(self, *analyses):
-        """
-        Generic pipeline. Runs a series of analyses, passing the results of one analysis into the following analysis
-        where required.
-
-        Parameters
-        ----------
-        analyses: [Analysis]
-            A series of analyses
-        """
-        self.analyses = analyses
-
-    def run(self, image, mask, **arg_dict):
-        """
-        Run the pipeline. Each analysis will be run in turn with the results of one analysis being passed into the next.
-        Any missing model classes in the first analysis must have a corresponding model instance passed in as a keyword
-        argument to the run function.
-
-        Parameters
-        ----------
-        image: Image
-            An image to fit for
-        mask: Mask
-            A mask describing the region of the image we are going to analyse
-        arg_dict
-            The model instances that are to remain constant for the first analysis
-
-        Returns
-        -------
-        results: [Result]
-            A list of objects describing the results for each analysis
-        """
-
-        # Define a list to keep results in
-        results = []
-        # Iterate through the analyses
-        for analysis in self.analyses:
-            # Take required arguments for an analysis from the arg dict
-            args = {key: value for key, value in arg_dict.items() if key in analysis.missing_attributes}
-            # Run the analysis
-            result = analysis.run(image, mask, **args)
-            # Add the results of the analysis to the list of results
-            results.append(result)
-            # Use the previous result to overwrite the arg dict
-            arg_dict = result.__dict__
-
-        return results
-
-
-class MainPipeline(Pipeline):
-    def __init__(self, *model_analyses, hyperparameter_analysis):
-        """
-        The primary pipeline. This pipeline runs a series of model analyses with hyperparameter analyses in between.
-
-        Parameters
-        ----------
-        model_analyses: [ModelAnalysis]
-            A series of analysis, each with a fixed model, pixelization and instrumentation but variable model instance.
-        hyperparameter_analysis: HyperparameterAnalysis
-            An analysis with a fixed model instance but variable pixelization and instrumentation instances.
-
-        Examples
-        --------
-
-        # We define a pipeline that is a series of analyses
-        pipeline = pl.Pipeline(
-
-            # The first analysis is built to vary all galaxy priors and hyperparameters simultaneously
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
-                        pixelization_class=MockPixelization,
-                        instrumentation_class=MockInstrumentation,
-                        lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
-                        source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
-
-            # The second analysis focuses on hyperparameters
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
-                        pixelization_class=MockPixelization,
-                        instrumentation_class=MockInstrumentation),
-
-            # The third analysis focuses on galaxy models
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
-                        lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
-                        source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
-
-            # The final analysis focuses on the source galaxy
-            pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
-                        source_galaxy_priors=[galaxy_prior.GalaxyPrior()])
-        )
-
-        # We run the pipeline and obtain a list of results, one for each analysis
-        results = pipeline.run(MockImage(), MockMask())
-        """
-        analyses = []
-        for model_analysis in model_analyses:
-            analyses.append(model_analysis)
-            analyses.append(hyperparameter_analysis)
-        super().__init__(*analyses)
-
-    def run(self, image, mask, pixelization=None, instrumentation=None):
-        """
-        Run this pipeline on an image and mask with a given initial pixelization and instrumentation.
-
-        Parameters
-        ----------
-        image: Image
-            The image to be fit
-        mask: Mask
-            A mask describing which parts of the image are to be included
-        pixelization: Pixelization
-            The initial pixelization of the source plane
-        instrumentation: Instrumentation
-            The initial instrumentation
-
-        Returns
-        -------
-        results_tuple: ([ModelAnalysis.Result], [HyperparameterAnalysis.Result])
-            A tuple with a list of results from each model analysis and a list of results from each hyperparameter
-            analysis
-        """
-
-        results = super(MainPipeline, self).run(image, mask, pixelization=pixelization, instrumentation=instrumentation)
-
-        return [result for i, result in enumerate(results) if i % 2 == 0], [result for i, result in enumerate(results)
-                                                                            if i % 2 != 0]
+# class Pipeline(object):
+#     def __init__(self, *analyses):
+#         """
+#         Generic pipeline. Runs a series of analyses, passing the results of one analysis into the following analysis
+#         where required.
+#
+#         Parameters
+#         ----------
+#         analyses: [Analysis]
+#             A series of analyses
+#         """
+#         self.analyses = analyses
+#
+#     def run(self, image, mask, **arg_dict):
+#         """
+#         Run the pipeline. Each analysis will be run in turn with the results of one analysis being passed into the next.
+#         Any missing model classes in the first analysis must have a corresponding model instance passed in as a keyword
+#         argument to the run function.
+#
+#         Parameters
+#         ----------
+#         image: Image
+#             An image to fit for
+#         mask: Mask
+#             A mask describing the region of the image we are going to analyse
+#         arg_dict
+#             The model instances that are to remain constant for the first analysis
+#
+#         Returns
+#         -------
+#         results: [Result]
+#             A list of objects describing the results for each analysis
+#         """
+#
+#         # Define a list to keep results in
+#         results = []
+#         # Iterate through the analyses
+#         for analysis in self.analyses:
+#             # Take required arguments for an analysis from the arg dict
+#             args = {key: value for key, value in arg_dict.items() if key in analysis.missing_attributes}
+#             # Run the analysis
+#             result = analysis.run(image, mask, **args)
+#             # Add the results of the analysis to the list of results
+#             results.append(result)
+#             # Use the previous result to overwrite the arg dict
+#             arg_dict = result.__dict__
+#
+#         return results
+#
+#
+# class MainPipeline(Pipeline):
+#     def __init__(self, *model_analyses, hyperparameter_analysis):
+#         """
+#         The primary pipeline. This pipeline runs a series of model analyses with hyperparameter analyses in between.
+#
+#         Parameters
+#         ----------
+#         model_analyses: [ModelAnalysis]
+#             A series of analysis, each with a fixed model, pixelization and instrumentation but variable model instance.
+#         hyperparameter_analysis: HyperparameterAnalysis
+#             An analysis with a fixed model instance but variable pixelization and instrumentation instances.
+#
+#         Examples
+#         --------
+#
+#         # We define a pipeline that is a series of analyses
+#         pipeline = pl.Pipeline(
+#
+#             # The first analysis is built to vary all galaxy priors and hyperparameters simultaneously
+#             pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
+#                         pixelization_class=MockPixelization,
+#                         instrumentation_class=MockInstrumentation,
+#                         lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+#                         source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
+#
+#             # The second analysis focuses on hyperparameters
+#             pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
+#                         pixelization_class=MockPixelization,
+#                         instrumentation_class=MockInstrumentation),
+#
+#             # The third analysis focuses on galaxy models
+#             pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
+#                         lens_galaxy_priors=[galaxy_prior.GalaxyPrior()],
+#                         source_galaxy_priors=[galaxy_prior.GalaxyPrior()]),
+#
+#             # The final analysis focuses on the source galaxy
+#             pl.Analysis(model_mapper=mm.ModelMapper(config=test_config)
+#                         source_galaxy_priors=[galaxy_prior.GalaxyPrior()])
+#         )
+#
+#         # We run the pipeline and obtain a list of results, one for each analysis
+#         results = pipeline.run(MockImage(), MockMask())
+#         """
+#         analyses = []
+#         for model_analysis in model_analyses:
+#             analyses.append(model_analysis)
+#             analyses.append(hyperparameter_analysis)
+#         super().__init__(*analyses)
+#
+#     def run(self, image, mask, pixelization=None, instrumentation=None):
+#         """
+#         Run this pipeline on an image and mask with a given initial pixelization and instrumentation.
+#
+#         Parameters
+#         ----------
+#         image: Image
+#             The image to be fit
+#         mask: Mask
+#             A mask describing which parts of the image are to be included
+#         pixelization: Pixelization
+#             The initial pixelization of the source plane
+#         instrumentation: Instrumentation
+#             The initial instrumentation
+#
+#         Returns
+#         -------
+#         results_tuple: ([ModelAnalysis.Result], [HyperparameterAnalysis.Result])
+#             A tuple with a list of results from each model analysis and a list of results from each hyperparameter
+#             analysis
+#         """
+#
+#         results = super(MainPipeline, self).run(image, mask, pixelization=pixelization, instrumentation=instrumentation)
+#
+#         return [result for i, result in enumerate(results) if i % 2 == 0], [result for i, result in enumerate(results)
+#                                                                             if i % 2 != 0]
