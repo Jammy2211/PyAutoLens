@@ -112,10 +112,21 @@ class TestNamedProfiles:
         assert len(galaxy_prior.mass_profile_names) == 1
         assert len(galaxy_prior.mass_profile_classes) == 1
 
-    def test_get_prior(self):
+    def test_get_prior_model(self):
         mapper = mm.ModelMapper()
         galaxy_prior = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.EllipticalSersicMass)
 
         assert isinstance(galaxy_prior.light_profile, mm.PriorModel)
         assert isinstance(galaxy_prior.mass_profile, mm.PriorModel)
+
+    def test_set_prior_model(self):
+        mapper = mm.ModelMapper()
+        galaxy_prior = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalSersic,
+                                      mass_profile=mass_profiles.EllipticalSersicMass)
+
+        assert 15 == len(mapper.priors_ordered_by_id)
+
+        galaxy_prior.override_prior_models(light_profile=mm.PriorModel(light_profiles.LightProfile))
+
+        assert 8 == len(mapper.priors_ordered_by_id)

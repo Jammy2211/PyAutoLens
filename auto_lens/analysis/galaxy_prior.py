@@ -1,6 +1,7 @@
 from auto_lens.analysis import galaxy
 from auto_lens import exc
 from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens.analysis.model_mapper import ModelMapper
 
 
 class GalaxyPrior:
@@ -64,6 +65,10 @@ class GalaxyPrior:
             name = "{}_{}".format(self.name, item)
             return getattr(self.model_mapper, name)
 
+    def override_prior_models(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self.model_mapper, "{}_{}".format(self.name, key), value)
+
     @property
     def light_profile_classes(self):
         return self.light_profile_dict.values()
@@ -104,15 +109,16 @@ class GalaxyPrior:
         galaxy: Galaxy
             A galaxy generated for this GalaxyPrior
         """
-        light_profiles = []
-        mass_profiles = []
+        light_profile_instances = []
+        mass_profile_instances = []
         try:
             for name in self.light_profile_names:
-                light_profiles.append(getattr(model_instance, name))
+                light_profile_instances.append(getattr(model_instance, name))
             for name in self.mass_profile_names:
-                mass_profiles.append(getattr(model_instance, name))
+                mass_profile_instances.append(getattr(model_instance, name))
             redshift = getattr(model_instance, self.redshift_name).redshift
         except AttributeError as e:
             raise exc.PriorException(*e.args)
 
-        return galaxy.Galaxy(light_profiles=light_profiles, mass_profiles=mass_profiles, redshift=redshift)
+        return galaxy.Galaxy(light_profiles=light_profile_instances, mass_profiles=mass_profile_instances,
+                             redshift=redshift)
