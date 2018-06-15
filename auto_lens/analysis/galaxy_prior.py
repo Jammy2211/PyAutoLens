@@ -61,7 +61,8 @@ class GalaxyPrior:
         try:
             return self.__getattribute__(item)
         except AttributeError:
-            return getattr(self.model_mapper, "{}_{}".format(self.name, item))
+            name = "{}_{}".format(self.name, item)
+            return getattr(self.model_mapper, name)
 
     @property
     def light_profile_classes(self):

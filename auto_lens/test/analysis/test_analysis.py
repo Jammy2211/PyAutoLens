@@ -109,29 +109,23 @@ def make_test_config():
     return mm.Config(config_folder_path=path)
 
 
-@pytest.fixture(name="lens_galaxy_prior")
-def make_lens_galaxy_prior():
-    return galaxy_prior.GalaxyPrior("lens_galaxy")
-
-
-@pytest.fixture(name="source_galaxy_prior")
-def make_source_galaxy_prior():
-    return galaxy_prior.GalaxyPrior("source_galaxy")
-
-
 @pytest.fixture(name="model_mapper")
 def make_model_mapper(test_config):
     return mm.ModelMapper(config=test_config)
 
 
 @pytest.fixture(name="model_analysis")
-def make_model_analysis(lens_galaxy_prior, source_galaxy_prior, model_mapper):
+def make_model_analysis(model_mapper):
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior("lens_galaxy", model_mapper)
+    source_galaxy_prior = galaxy_prior.GalaxyPrior("source_galaxy", model_mapper)
     return a.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior], source_galaxy_priors=[source_galaxy_prior],
                            non_linear_optimizer=MockNLO(2), model_mapper=model_mapper)
 
 
 class TestModelAnalysis:
-    def test_setup(self, lens_galaxy_prior, source_galaxy_prior, model_mapper):
+    def test_setup(self, model_mapper):
+        lens_galaxy_prior = galaxy_prior.GalaxyPrior("lens_galaxy", model_mapper)
+        source_galaxy_prior = galaxy_prior.GalaxyPrior("source_galaxy", model_mapper)
         a.ModelAnalysis(lens_galaxy_priors=[lens_galaxy_prior],
                         source_galaxy_priors=[source_galaxy_prior],
                         non_linear_optimizer=MockNLO(2), model_mapper=model_mapper)
@@ -169,15 +163,17 @@ class TestHyperparameterAnalysis:
 
 class TestAnalysis:
     def test_setup(self):
-        analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy")],
-                              non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
+        model_mapper = mm.ModelMapper()
+        analysis = a.Analysis(model_mapper, lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy", model_mapper)],
+                              non_linear_optimizer=MockNLO(1))
 
         analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
                      pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
     def test_run(self):
-        analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy")],
-                              non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
+        model_mapper = mm.ModelMapper()
+        analysis = a.Analysis(model_mapper, lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy", model_mapper)],
+                              non_linear_optimizer=MockNLO(1))
 
         result = analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
                               pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
