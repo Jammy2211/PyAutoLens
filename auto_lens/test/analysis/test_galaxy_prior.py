@@ -1,6 +1,7 @@
 from auto_lens.analysis import galaxy_prior as gp
 from auto_lens.analysis import galaxy as g
 from auto_lens.profiles import mass_profiles, light_profiles
+from auto_lens.analysis import model_mapper as mm
 import pytest
 from auto_lens import exc
 
@@ -32,26 +33,22 @@ def make_mapper():
 
 
 @pytest.fixture(name="galaxy_prior_2")
-def make_galaxy_prior_2():
-    return gp.GalaxyPrior("galaxy_2", light_profile=light_profiles.EllipticalDevVaucouleurs,
+def make_galaxy_prior_2(mapper):
+    return gp.GalaxyPrior("galaxy_2", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
                           mass_profile=mass_profiles.EllipticalCoredIsothermal)
 
 
 @pytest.fixture(name="galaxy_prior")
-def make_galaxy_prior():
-    return gp.GalaxyPrior("galaxy_1", light_profile=light_profiles.EllipticalDevVaucouleurs,
+def make_galaxy_prior(mapper):
+    return gp.GalaxyPrior("galaxy_1", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
                           mass_profile=mass_profiles.EllipticalCoredIsothermal)
 
 
 class TestGalaxyPrior:
-    def test_attach_to_model_mapper(self, galaxy_prior, mapper):
-        galaxy_prior.attach_to_model_mapper(mapper)
-
+    def test_init_to_model_mapper(self, galaxy_prior, mapper):
         assert len(mapper.classes) == 3
 
     def test_recover_classes(self, galaxy_prior, mapper):
-        galaxy_prior.attach_to_model_mapper(mapper)
-
         instance = MockModelInstance()
 
         light_profile_name = galaxy_prior.light_profile_names[0]
@@ -69,43 +66,38 @@ class TestGalaxyPrior:
         assert galaxy.redshift == 1
 
     def test_exceptions(self, galaxy_prior, mapper):
-        galaxy_prior.attach_to_model_mapper(mapper)
         instance = MockModelInstance()
         with pytest.raises(exc.PriorException):
             galaxy_prior.galaxy_for_model_instance(instance)
 
     def test_multiple_galaxies(self, galaxy_prior, galaxy_prior_2, mapper):
-        galaxy_prior.attach_to_model_mapper(mapper)
-        galaxy_prior_2.attach_to_model_mapper(mapper)
-
         assert len(mapper.classes) == 6
 
     def test_align_centres(self, galaxy_prior, mapper):
-        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+        prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre != prior_models[1].centre
 
-        galaxy_prior = gp.GalaxyPrior("galaxy", light_profile=light_profiles.EllipticalDevVaucouleurs,
+        prior_models = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_centres=True)
-        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+                                      align_centres=True).prior_models
+
         assert prior_models[0].centre == prior_models[1].centre
 
     def test_align_phis(self, galaxy_prior, mapper):
-        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+        prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].phi != prior_models[1].phi
 
-        galaxy_prior = gp.GalaxyPrior("galaxy", light_profile=light_profiles.EllipticalDevVaucouleurs,
+        prior_models = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_orientations=True)
-        prior_models = galaxy_prior.attach_to_model_mapper(mapper)
+                                      align_orientations=True).prior_models
         assert prior_models[0].phi == prior_models[1].phi
 
 
 class TestNamedProfiles:
-    def test_constructor(self):
-        galaxy_prior = gp.GalaxyPrior("galaxy", light_profile=light_profiles.EllipticalSersic,
+    def test_constructor(self, mapper):
+        galaxy_prior = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.EllipticalGeneralizedNFW)
 
         assert len(galaxy_prior.light_profile_names) == 1
@@ -113,3 +105,11 @@ class TestNamedProfiles:
 
         assert len(galaxy_prior.mass_profile_names) == 1
         assert len(galaxy_prior.mass_profile_classes) == 1
+
+    def test_get_prior(self):
+        mapper = mm.ModelMapper()
+        galaxy_prior = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalSersic,
+                                      mass_profile=mass_profiles.EllipticalSersicMass)
+
+        assert isinstance(galaxy_prior.light_profile, mm.PriorModel)
+        assert isinstance(galaxy_prior.mass_profile, mm.PriorModel)
