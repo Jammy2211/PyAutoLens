@@ -4,16 +4,7 @@ import math
 import os
 import pymultinest
 
-
-class MultiNestWrapper(object):
-    def __init__(self, output_path='out/'):
-        self.output_path = output_path
-
-    def run(self, fitness_function, priors):
-        # noinspection PyUnusedLocal
-        def prior(cube, ndim, nparams):
-            return map(lambda p, c: p(c), priors, cube)
-        pymultinest.run(fitness_function, prior, len(priors), outputfiles_basename=self.output_path)
+default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def generate_parameter_latex(parameters, subscript=''):
@@ -45,7 +36,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class NonLinearFiles(object):
 
-    def __init__(self, path, obj_name, model_mapper, check_model=True):
+    def __init__(self, obj_name, model_mapper, path=default_path, check_model=True):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
@@ -84,8 +75,8 @@ class NonLinearFiles(object):
             self.create_param_names()
             self.model_mapper.output_model_info(self.file_model_info)
 
-        elif self.resume and check_model:
-                self.model_mapper.check_model_info(self.file_model_info)
+        elif check_model:
+            self.model_mapper.check_model_info(self.file_model_info)
 
     def create_param_names(self):
         """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
@@ -113,7 +104,7 @@ class NonLinearFiles(object):
 
 class MultiNest(NonLinearFiles):
 
-    def __init__(self, path, obj_name, model_mapper, check_model=True):
+    def __init__(self, model_mapper, obj_name="default", path=default_path, check_model=True):
         """Class to setup and run a MultiNest analysis and output the MultInest files.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -132,6 +123,16 @@ class MultiNest(NonLinearFiles):
         super(MultiNest, self).__init__(path, obj_name, model_mapper, check_model)
 
         self.file_summary = self.results_path + 'summary.txt'
+        self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
+        self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
+
+    def run(self, fitness_function, priors):
+        # noinspection PyUnusedLocal
+        def prior(cube, ndim, nparams):
+            return map(lambda p, c: p(c), priors, cube)
+
+        # TODO: is this output path correct?
+        pymultinest.run(fitness_function, prior, len(priors), outputfiles_basename=self.file_summary)
 
     def open_summary_file(self):
 
@@ -212,42 +213,6 @@ class MultiNest(NonLinearFiles):
         most_likely = self.compute_most_likely()
         return self.model_mapper.from_physical_vector(most_likely)
 
-    def create_multinest_finished(self, check_model=True):
-        return MultiNestFinished(self.path, self.obj_name, self.model_mapper, check_model)
-
-
-class MultiNestFinished(MultiNest):
-
-    def __init__(self, path, obj_name, model_mapper, check_model=True):
-        """Class which stores the final files of a MultiNest analysis, including the intermediate files \
-        produced by the parent class *MultiNestFinished* (these are the most likely / probably models).
-
-        The final files use the library *GetDist* to compute and visualize the probably distribution function \
-        (PDF) of parameter space. This uses the weighted-samples output by MultiNest and allows the marginalized PDF's \
-        of parameters in 1D and 2D to be plotted.
-
-        Confidence limits on parameters are also calculated, by marginalized parameters over 1 or 2 dimensions.
-
-        Parameters
-        -----------
-        path : str
-            The path where the non_linear files are stored.
-        obj_name : str
-            Unique identifier of the data being analysed (e.g. the name of the data set)
-        model_mapper : CalibrationModel.ModelMapper
-            Maps the model priors to a set of parameters (a model instance)
-        limit : float
-            The fraction of a PDF used to estimate errors.
-        """
-
-        super(MultiNestFinished, self).__init__(path, obj_name, model_mapper, check_model)
-
-        self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
-        self.pdf = getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
-
-    # TODO : Make it so that the sigma_limit values are setup for each parameter in each profile and contain a minimum
-    # TODO : error value as well.
-
     def compute_gaussian_priors(self, sigma_limit):
         """Compute the Gaussian Priors these results should be initialzed with in the next phase, by taking their \
         most probable values (e.g the means of their PDF) and computing the error at an input sigma_limit.
@@ -263,12 +228,12 @@ class MultiNestFinished(MultiNest):
         uppers = self.compute_model_at_upper_limit(sigma_limit)
         lowers = self.compute_model_at_lower_limit(sigma_limit)
 
-        sigmas = list(map(lambda mean, upper, lower : max([upper - mean, mean - lower]), means, uppers, lowers))
+        sigmas = list(map(lambda mean, upper, lower: max([upper - mean, mean - lower]), means, uppers, lowers))
 
-        return list(map(lambda mean, sigma : (mean, sigma), means, sigmas))
+        return list(map(lambda mean, sigma: (mean, sigma), means, sigmas))
 
     def compute_model_at_limit(self, sigma_limit):
-        limit = math.erf(0.5*sigma_limit* math.sqrt(2))
+        limit = math.erf(0.5 * sigma_limit * math.sqrt(2))
         densities_1d = list(map(lambda p: self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
         return list(map(lambda p: p.getLimits(limit), densities_1d))
 
