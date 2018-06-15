@@ -10,7 +10,7 @@ def likelihood_for_image_tracer_pixelization_and_instrumentation(image, tracer, 
     return 1.0
 
 
-def fit_data_with_model(grid_datas, grid_mappers, tracer):
+def fit_data_with_model(grid_datas, grid_mappers, kernel_convolver, tracer):
     """Fit the data using the ray_tracing model
 
     Parameters
@@ -19,12 +19,42 @@ def fit_data_with_model(grid_datas, grid_mappers, tracer):
         The collection of grid data-sets (image, noise, psf, etc.)
     grid_mappers : grids.GridMapperCollection
         The collection of grid mappings, used to map images from 2d and 1d.
+    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+        The 2D Point Spread Function (PSF).
     tracer : ray_tracing.Tracer
         The ray-tracing configuration of the model galaxies and their profiles.
     """
-    blurred_model_image = generate_blurred_light_profile_image(tracer, grid_datas.psf, grid_mappers)
+    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
     return compute_likelihood(grid_datas.image, grid_datas.noise, blurred_model_image)
 
+def generate_blurred_light_profile_image(tracer, kernel_convolver):
+    """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
+    PSF.
+
+    Parameters
+    ----------
+    tracer : ray_tracing.Tracer
+        The ray-tracing configuration of the model galaxies and their profiles.
+    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+        The 2D Point Spread Function (PSF).
+    """
+    image_light_profile = tracer.generate_image_of_galaxy_light_profiles()
+    blurring_image_light_profile = tracer.generate_blurring_image_of_galaxy_light_profiles()
+    return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile, kernel_convolver)
+
+def blur_image_including_blurring_region(image, blurring_image, kernel_convolver):
+    """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
+
+    Parameters
+    ----------
+    image : ndarray
+        The image data using the GridData 1D representation.
+    blurring_image : ndarray
+        The blurring region data, using the GridData 1D representation.
+    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+        The 2D Point Spread Function (PSF).
+    """
+    return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
 
 def compute_likelihood(image, noise, model_image):
     """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \
@@ -50,52 +80,3 @@ def compute_likelihood(image, noise, model_image):
         The model image of the data.
     """
     return -0.5 * (np.sum(((image - model_image) / noise) ** 2.0 + np.log(2 * np.pi * noise ** 2.0)))
-
-
-def generate_blurred_light_profile_image(tracer, psf, grid_mappers):
-    """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
-    PSF.
-
-    Parameters
-    ----------
-    tracer : ray_tracing.Tracer
-        The ray-tracing configuration of the model galaxies and their profiles.
-    psf : imaging.PSF
-        The 2D Point Spread Function (PSF).
-    grid_mappers : grids.GridMapperCollection
-        The collection of grid mappings, used to map images from 2d and 1d.
-    """
-
-    image_light_profile = tracer.generate_image_of_galaxy_light_profiles()
-    blurring_image_light_profile = tracer.generate_blurring_image_of_galaxy_light_profiles()
-    return blur_image_including_blurring_region(image_light_profile, grid_mappers.image_to_pixel, psf,
-                                                blurring_image_light_profile, grid_mappers.blurring_to_pixel)
-
-
-# TODO : Do this convolution in 1D eventually..
-
-def blur_image_including_blurring_region(image, image_to_pixel, psf, blurring_image=None, blurring_to_pixel=None):
-    """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
-
-    Parameters
-    ----------
-    image : ndarray
-        The image data using the GridData 1D representation.
-    image_to_pixel : grids.GridMapperDataToPixel
-        The mapping between a 1D image pixel (GridData) and 2D image location.
-    psf : imaging.PSF
-        The 2D Point Spread Function (PSF).
-    blurring_image : ndarray
-        The blurring region data, using the GridData 1D representation.
-    blurring_to_pixel : grid.GridMapperBlurringToPixel
-        The mapping between a 1D blurring image pixel (GridData) and 2D image location.
-    """
-
-    image_2d = image_to_pixel.map_to_2d(image)
-
-    if blurring_image is not None:
-        image_2d += blurring_to_pixel.map_to_2d(blurring_image)
-
-    image_2d_blurred = psf.convolve(image_2d)
-
-    return grids.GridData(image_to_pixel.map_to_1d(image_2d_blurred))
