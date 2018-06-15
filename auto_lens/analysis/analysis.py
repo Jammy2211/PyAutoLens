@@ -19,7 +19,7 @@ attribute_map = {"pixelization_class": "pixelization",
 
 
 class Analysis(object):
-    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNestWrapper(),
+    def __init__(self, model_mapper=mm.ModelMapper(), non_linear_optimizer=non_linear.MultiNest(),
                  fitting_function=fitting.likelihood_for_image_tracer_pixelization_and_instrumentation, **kwargs):
         """
         A generic analysis class. Model classes are provided in the constructor as keyword arguments. These classes act
@@ -191,7 +191,7 @@ class Analysis(object):
 
 class ModelAnalysis(Analysis):
     def __init__(self, lens_galaxy_priors, source_galaxy_priors, model_mapper=mm.ModelMapper(),
-                 non_linear_optimizer=non_linear.MultiNestWrapper()):
+                 non_linear_optimizer=non_linear.MultiNest()):
         """
         A class encapsulating an analysis. An analysis takes an image and a set of galaxy priors describing an
         assumed model and applies a pixelization and non linear optimizer to find the best possible fit between the
@@ -216,7 +216,7 @@ class ModelAnalysis(Analysis):
 
 class HyperparameterAnalysis(Analysis):
     def __init__(self, pixelization_class, instrumentation_class, model_mapper=mm.ModelMapper(),
-                 non_linear_optimizer=non_linear.MultiNestWrapper()):
+                 non_linear_optimizer=non_linear.MultiNest()):
         """
         An analysis to improve hyperparameter settings. This optimizes pixelization and instrumentation.
 

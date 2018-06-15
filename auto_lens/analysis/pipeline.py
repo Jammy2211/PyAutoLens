@@ -5,12 +5,20 @@ from auto_lens.analysis import non_linear
 
 
 def source_only_pipeline(image, mask, instrumentation):
+    results = []
+
     source_galaxy_prior = galaxy_prior.GalaxyPrior("source_galaxy_prior",
                                                    light_profile_classes=[light_profiles.EllipticalSersic])
     lens_galaxy_prior = galaxy_prior.GalaxyPrior("lens_galaxy_prior",
                                                  mass_profile_classes=[mass_profiles.SphericalIsothermal,
                                                                        mass_profiles.ExternalShear])
-    initialization_1 = analysis.Analysis()
+    initialization_1 = analysis.Analysis(source_galaxy_priors=[source_galaxy_prior],
+                                         lens_galaxy_prior=[lens_galaxy_prior])
+
+    result = initialization_1.run(image, mask, instrumentation=instrumentation)
+    results.append(result)
+
+    initialization_1.non_linear_optimizer
 
 
 """
