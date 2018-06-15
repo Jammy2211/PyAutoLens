@@ -3,6 +3,7 @@ from auto_lens import exc
 import math
 import os
 import pymultinest
+from auto_lens.analysis import model_mapper as mm
 
 default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -36,7 +37,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, model_mapper, obj_name="default", path=default_path, check_model=True):
+    def __init__(self, config_path=None, obj_name="default", path=default_path, check_model=True):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
@@ -48,15 +49,16 @@ class NonLinearOptimizer(object):
             The path where the non-linear analysis files are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
-        model_mapper : model_mapper.ModelMapper
-            Maps the model priors to a set of parameters (a model instance)
         check_model : bool
             Check whether the model.info file corresponds to the model_mapper passed in.
         """
 
         self.path = path
+        self.check_model = check_model
         self.obj_name = obj_name
-        self.model_mapper = model_mapper
+        config = mm.Config(
+            "{}/../config".format(os.path.dirname(os.path.realpath(__file__))) if config_path is None else config_path)
+        self.model_mapper = mm.ModelMapper(config)
         print(self.model_mapper)
         self.total_parameters = len(self.model_mapper.priors_ordered_by_id)
 
@@ -68,15 +70,16 @@ class NonLinearOptimizer(object):
         self.file_param_names = self.results_path + self.obj_name + '.paramnames'
         self.file_model_info = self.results_path + 'model.info'
 
-        self.resume = os.path.exists(self.results_path)  # resume True if results path already exists
+    def save_model_info(self):
+        resume = os.path.exists(self.results_path)  # resume True if results path already exists
 
-        if not self.resume:
+        if not resume:
 
             os.makedirs(self.results_path)  # Create results folder if doesnt exist
             self.create_param_names()
             self.model_mapper.output_model_info(self.file_model_info)
 
-        elif check_model:
+        elif self.check_model:
             self.model_mapper.check_model_info(self.file_model_info)
 
     def run(self, fitness_function):
@@ -111,7 +114,7 @@ class NonLinearOptimizer(object):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, model_mapper, obj_name="default", path=default_path, check_model=True):
+    def __init__(self, config_path=None, obj_name="default", path=default_path, check_model=True):
         """Class to setup and run a MultiNest analysis and output the MultInest files.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -123,11 +126,9 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear files are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
-        model_mapper : model_mapper.ModelMapper
-            Maps the model priors to a set of parameters (a model instance)
         """
 
-        super(MultiNest, self).__init__(model_mapper, obj_name, path, check_model)
+        super(MultiNest, self).__init__(config_path, obj_name, path, check_model)
 
         self.file_summary = self.results_path + 'summary.txt'
         self.file_weighted_samples = self.results_path + self.obj_name + '.txt'
@@ -137,6 +138,8 @@ class MultiNest(NonLinearOptimizer):
         return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
     def run(self, fitness_function):
+        self.save_model_info()
+
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
             return map(lambda p, c: p(c), self.model_mapper.priors_ordered_by_id, cube)
@@ -314,5 +317,5 @@ class MultiNest(NonLinearOptimizer):
 
 
 class LevenbergMarquardt(NonLinearOptimizer):
-    def __init__(self, model_mapper, obj_name='default', path=default_path):
-        super().__init__(model_mapper, obj_name=obj_name, path=path)
+    def __init__(self, config_path=None, obj_name='default', path=default_path):
+        super().__init__(config_path, obj_name=obj_name, path=path)
