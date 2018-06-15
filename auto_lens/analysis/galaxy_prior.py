@@ -1,5 +1,6 @@
 from auto_lens.analysis import galaxy
 from auto_lens import exc
+from auto_lens.profiles import light_profiles, mass_profiles
 
 
 class GalaxyPrior:
@@ -7,8 +8,7 @@ class GalaxyPrior:
     Class to produce Galaxy instances from sets of profile classes using the model mapper
     """
 
-    def __init__(self, name, light_profile_classes=None, mass_profile_classes=None, align_centres=False,
-                 align_orientations=False):
+    def __init__(self, name, align_centres=False, align_orientations=False, **kwargs):
         """
         Parameters
         ----------
@@ -25,8 +25,17 @@ class GalaxyPrior:
         """
         self.name = name
 
-        self.light_profile_classes = light_profile_classes if light_profile_classes is not None else []
-        self.mass_profile_classes = mass_profile_classes if mass_profile_classes is not None else []
+        light_profile_tuples = [(key, value) for key, value in kwargs.items() if
+                                isinstance(value, light_profiles.LightProfile)]
+        mass_profile_tuples = [(key, value) for key, value in kwargs.items() if
+                               isinstance(value, mass_profiles.MassProfile)]
+
+        self.light_profile_classes = [value for _, value in light_profile_tuples]
+        self.mass_profile_classes = [value for _, value in mass_profile_tuples]
+
+        self.light_profile_names = ["{}_{}".format(name, key) for key, _ in light_profile_tuples]
+        self.mass_profile_names = ["{}_{}".format(name, key) for key, _ in mass_profile_tuples]
+
         self.align_centres = align_centres
         self.align_orientations = align_orientations
 
@@ -66,26 +75,6 @@ class GalaxyPrior:
         prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.name), galaxy.Redshift)]
 
         return prior_models
-
-    @property
-    def light_profile_names(self):
-        """
-        Returns
-        -------
-        light_profile_names: [String]
-            A list of names associated with the light profiles of this galaxy
-        """
-        return ["{}_light_profile_{}".format(self.name, num) for num in range(len(self.light_profile_classes))]
-
-    @property
-    def mass_profile_names(self):
-        """
-        Returns
-        -------
-        mass_profile_names: [String]
-            A list of names associated with the mass profiles of this galaxy
-        """
-        return ["{}_mass_profile_{}".format(self.name, num) for num in range(len(self.mass_profile_classes))]
 
     @property
     def redshift_name(self):
