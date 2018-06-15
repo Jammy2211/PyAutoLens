@@ -178,16 +178,6 @@ class TestAnalysis:
         analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], mask=MockMask(),
                      pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
-        assert analysis.missing_attributes == ['pixelization', 'instrumentation', 'source_galaxies']
-
-        with pytest.raises(exc.PipelineException):
-            analysis.run(image=MockImage(), mask=MockMask(), pixelization=MockPixelization(0),
-                         instrumentation=MockInstrumentation(0))
-
-        with pytest.raises(exc.PipelineException):
-            analysis.run(image=MockImage(), source_galaxies=[MockGalaxy()], lens_galaxies=[MockGalaxy()],
-                         mask=MockMask(), pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
-
     def test_run(self):
         analysis = a.Analysis(lens_galaxy_priors=[galaxy_prior.GalaxyPrior("lens_galaxy")],
                               non_linear_optimizer=MockNLO(1), model_mapper=mm.ModelMapper())
@@ -196,8 +186,7 @@ class TestAnalysis:
                               pixelization=MockPixelization(0), instrumentation=MockInstrumentation(0))
 
         assert result.pixelization is not None
-        
-        
+
 # class TestMainPipeline:
 #     def test_main_pipeline(self):
 #         hyperparameter_analysis = MockHyperparameterAnalysis()
@@ -252,4 +241,3 @@ class TestAnalysis:
 #
 #         results = pipeline.run(MockImage(), MockMask())
 #         assert len(results) == 4
-

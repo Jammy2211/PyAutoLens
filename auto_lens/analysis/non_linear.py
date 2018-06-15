@@ -191,16 +191,6 @@ class MultiNest(NonLinearOptimizer):
 
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
-
-        Parameters
-        -----------
-        filename : str
-            The files and file name of the file_summary file.
-        total_parameters : int
-            The total number of parameters of the model.
-        offset : int
-            The file_summary file stores the most likely model in the first half of columns and the most probable model in
-            the second half. The offset is used to start the parsing at the appropriate column.
         """
         return self.read_vector_from_summary(number_entries=self.total_parameters, offset=28)
 
