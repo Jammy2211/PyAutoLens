@@ -1,7 +1,6 @@
 from auto_lens.analysis import analysis as a
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper as mm
-from auto_lens import exc
 import pytest
 import os
 import numpy as np
@@ -90,13 +89,11 @@ class MockModelInstance:
 
 class MockNLO:
     def __init__(self, num):
-        self.priors = None
         self.fitness_function = None
         self.arr = [0.5 for _ in range(num)]
 
-    def run(self, fitness_function, priors):
+    def run(self, fitness_function):
         self.fitness_function = fitness_function
-        self.priors = priors
         fitness_function(self.arr)
 
 
@@ -144,7 +141,7 @@ class TestModelAnalysis:
     def test_run(self, model_analysis):
         result = model_analysis.run(MockImage(), MockMask(), pixelization=MockPixelization(0),
                                     instrumentation=MockInstrumentation(0))
-        assert len(model_analysis.non_linear_optimizer.priors) == 2
+        # assert len(model_analysis.non_linear_optimizer.priors) == 2
 
         assert result.likelihood == 1
         assert result.lens_galaxies[0].redshift == 0.5
@@ -163,7 +160,7 @@ class TestHyperparameterAnalysis:
 
         result = hyperparameter_analysis.run(MockImage(), MockMask(), lens_galaxies=[MockGalaxy()],
                                              source_galaxies=[MockGalaxy()])
-        assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 3
+        # assert len(hyperparameter_analysis.non_linear_optimizer.priors) == 3
 
         assert result.likelihood == 1
         assert result.pixelization.number_clusters == 0.5
