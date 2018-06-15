@@ -192,9 +192,9 @@ class VoronoiPixelization(Pixelization):
         sub_coordinates : [[float, float]]
             The x and y sub_grid to be matched to the source_pixel centers.
         image_total : int
-            The total number of image_grid image_to_pixel in the image_grid.
+            The total number of image_grid data_to_pixel in the image_grid.
         sub_total : int
-            The total number of sub_grid image_to_pixel in the image_grid sub_grid-grid_coords.
+            The total number of sub_grid data_to_pixel in the image_grid sub_grid-grid_coords.
         source_centers: [[float, float]]
             The source_pixel centers the sub_grid are matched with.
         source_neighbors : [[]]
