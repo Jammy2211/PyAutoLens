@@ -99,6 +99,8 @@ class ModelMapper(object):
         prior_model: PriorModel
             A prior_model instance for this class
         """
+        if hasattr(self, name):
+            raise exc.PriorException("Model mapper already has a prior model called {}".format(name))
 
         arg_spec = inspect.getargspec(cls.__init__)
 

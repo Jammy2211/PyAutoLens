@@ -1,40 +1,51 @@
 from auto_lens.analysis import analysis
+from auto_lens.analysis import galaxy_prior
+from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens.analysis import non_linear
 
-class SourceOnlyPipeline(object):
-    pass
-    """
-    Pipeline 1:
 
-    PURPOSE - Fit a source-only image (i.e. no lens light component)
+def source_only_pipeline(image, mask, instrumentation):
+    source_galaxy_prior = galaxy_prior.GalaxyPrior("source_galaxy_prior",
+                                                   light_profile_classes=[light_profiles.EllipticalSersic])
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior("lens_galaxy_prior",
+                                                 mass_profile_classes=[mass_profiles.SphericalIsothermal,
+                                                                       mass_profiles.ExternalShear])
+    initialization_1 = analysis.Analysis()
 
-    PREPROCESSING:
 
-    - Mark the brightest regions / multiple images of the source.
-    - Draw a circle tracing the source (Einstein Radius / centre)
-    - Draw circle / ellipse for the mask.
+"""
+Pipeline 1:
 
-    NOTES:
+PURPOSE - Fit a source-only image (i.e. no lens light component)
 
-    Image: Observed image used throughout.
-    Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
+PREPROCESSING:
 
-    INITIALIZATION PHASES:
+- Mark the brightest regions / multiple images of the source.
+- Draw a circle tracing the source (Einstein Radius / centre)
+- Draw circle / ellipse for the mask.
 
-    1) Mass: SIE+Shear
-       Source: Sersic
-       NLO: LM
+NOTES:
 
-    2) Mass: SIE+Shear (priors from phase 1)
-       Source: 'smooth' pixelization (include regularization parameter(s) in the model)
-       NLO: LM
+Image: Observed image used throughout.
+Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
 
-    2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
-        Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
-        Source: 'noisy' pixelization
-        NLO: MN
+INITIALIZATION PHASES:
 
-    MAIN PIPELINE:
+1) Mass: SIE+Shear
+   Source: Sersic
+   NLO: LM
 
-    a) Mass: SPLE+Shear (priors from Init phase 2)
-       Source: 'noisy' pixelization (Fixed to init 2H hyper-parameters)
-    """
+2) Mass: SIE+Shear (priors from phase 1)
+   Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+   NLO: LM
+
+2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
+    Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
+    Source: 'noisy' pixelization
+    NLO: MN
+
+MAIN PIPELINE:
+
+a) Mass: SPLE+Shear (priors from Init phase 2)
+   Source: 'noisy' pixelization (Fixed to init 2H hyper-parameters)
+"""
