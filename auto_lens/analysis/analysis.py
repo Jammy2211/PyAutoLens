@@ -3,7 +3,6 @@ from auto_lens.analysis import model_mapper as mm
 from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
-from auto_lens import exc
 import logging
 
 # TODO: Pipelines that modify images, pipeline with or without hyper_image, pipeline with prior modification
@@ -135,7 +134,7 @@ class Analysis(object):
             self.model_mapper = model_mapper
             self.fitting_function = fitting_function
 
-        # noinspection PyAttributeOutsideInit
+        # noinspection PyAttributeOutsideInit,PyUnresolvedReferences
         def fitness_function(self, physical_values):
             """
             A function that constructs model instances and determines a likelihood
@@ -153,15 +152,15 @@ class Analysis(object):
 
             model_instance = self.model_mapper.from_physical_vector(physical_values)
 
-            if hasattr(self, "pixelization_class"):
+            if hasattr(model_instance, 'pixelization'):
                 self.pixelization = model_instance.pixelization
-            if hasattr(self, "instrumentation_class"):
+            if hasattr(model_instance, "instrumentation"):
                 self.instrumentation = model_instance.instrumentation
-            if hasattr(self, "lens_galaxy_priors"):
+            if self.lens_galaxy_priors is not None:
                 self.lens_galaxies = list(
                     map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
                         self.lens_galaxy_priors))
-            if hasattr(self, "source_galaxy_priors"):
+            if self.source_galaxy_priors is not None:
                 self.source_galaxies = list(
                     map(lambda galaxy_prior: galaxy_prior.galaxy_for_model_instance(model_instance),
                         self.source_galaxy_priors))
