@@ -47,27 +47,27 @@ class TestMask(object):
                                      [False, False, False],
                                      [False, False, False]])).all()
 
-        def test__odd_x_odd_mask_input_radius_small__mask(self):
+        def test__3x3_mask_input_radius_small__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=0.5)
             assert (msk == np.array([[True, True, True],
                                      [True, False, True],
                                      [True, True, True]])).all()
 
-        def test__odd_x_odd_mask_input_radius_medium__mask(self):
+        def test__3x3_mask_input_radius_medium__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=1)
 
             assert (msk == np.array([[True, False, True],
                                      [False, False, False],
                                      [True, False, True]])).all()
 
-        def test__odd_x_odd_mask_input_radius_large__mask(self):
+        def test__3x3_mask_input_radius_large__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(3, 3), pixel_scale=1, radius_mask=3)
 
             assert (msk == np.array([[False, False, False],
                                      [False, False, False],
                                      [False, False, False]])).all()
 
-        def test__even_x_odd_mask_input_radius_small__mask(self):
+        def test__4x3_mask_input_radius_small__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(4, 3), pixel_scale=1, radius_mask=0.5)
 
             assert (msk == np.array([[True, True, True],
@@ -75,7 +75,7 @@ class TestMask(object):
                                      [True, False, True],
                                      [True, True, True]])).all()
 
-        def test__even_x_odd_mask_input_radius_medium__mask(self):
+        def test__4x3_mask_input_radius_medium__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(4, 3), pixel_scale=1, radius_mask=1.50001)
 
             assert (msk == np.array([[True, False, True],
@@ -83,7 +83,7 @@ class TestMask(object):
                                      [False, False, False],
                                      [True, False, True]])).all()
 
-        def test__even_x_odd_mask_input_radius_large__mask(self):
+        def test__4x3_mask_input_radius_large__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(4, 3), pixel_scale=1, radius_mask=3)
 
             assert (msk == np.array([[False, False, False],
@@ -91,7 +91,7 @@ class TestMask(object):
                                      [False, False, False],
                                      [False, False, False]])).all()
 
-        def test__even_x_even_mask_input_radius_small__mask(self):
+        def test__4x4_mask_input_radius_small__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(4, 4), pixel_scale=1, radius_mask=0.72)
 
             assert (msk == np.array([[True, True, True, True],
@@ -99,7 +99,7 @@ class TestMask(object):
                                      [True, False, False, True],
                                      [True, True, True, True]])).all()
 
-        def test__even_x_even_mask_input_radius_medium__mask(self):
+        def test__4x4_mask_input_radius_medium__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(4, 4), pixel_scale=1, radius_mask=1.7)
 
             assert (msk == np.array([[True, False, False, True],
@@ -107,7 +107,7 @@ class TestMask(object):
                                      [False, False, False, False],
                                      [True, False, False, True]])).all()
 
-        def test__even_x_even_mask_input_radius_large__mask(self):
+        def test__4x4_mask_input_radius_large__mask(self):
             msk = mask.Mask.circular(shape_arc_seconds=(4, 4), pixel_scale=1, radius_mask=3)
 
             assert (msk == np.array([[False, False, False, False],
@@ -140,7 +140,7 @@ class TestMask(object):
 
     class TestAnnular(object):
 
-        def test__odd_x_odd_mask_inner_radius_zero_outer_radius_small__mask(self):
+        def test__3x3_mask_inner_radius_zero_outer_radius_small__mask(self):
             msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0,
                                     outer_radius_mask=0.5)
 
@@ -148,7 +148,7 @@ class TestMask(object):
                                      [True, False, True],
                                      [True, True, True]])).all()
 
-        def test__odd_x_odd_mask_inner_radius_small_outer_radius_large__mask(self):
+        def test__3x3_mask_inner_radius_small_outer_radius_large__mask(self):
             msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
                                     outer_radius_mask=3)
 
@@ -156,7 +156,7 @@ class TestMask(object):
                                      [False, True, False],
                                      [False, False, False]])).all()
 
-        def test__even_x_odd_mask_inner_radius_small_outer_radius_medium__mask(self):
+        def test__4x4_mask_inner_radius_small_outer_radius_medium__mask(self):
             msk = mask.Mask.annular(shape_arc_seconds=(4, 3), pixel_scale=1, inner_radius_mask=0.51,
                                     outer_radius_mask=1.51)
 
@@ -165,7 +165,7 @@ class TestMask(object):
                                      [False, True, False],
                                      [True, False, True]])).all()
 
-        def test__even_x_odd_mask_inner_radius_medium_outer_radius_large__mask(self):
+        def test__4x3_mask_inner_radius_medium_outer_radius_large__mask(self):
             msk = mask.Mask.annular(shape_arc_seconds=(4, 3), pixel_scale=1, inner_radius_mask=1.51,
                                     outer_radius_mask=3)
 
@@ -174,7 +174,7 @@ class TestMask(object):
                                      [True, True, True],
                                      [False, True, False]])).all()
 
-        def test__even_x_even_mask_inner_radius_small_outer_radius_medium__mask(self):
+        def test__3x3_mask_inner_radius_small_outer_radius_medium__mask(self):
             msk = mask.Mask.annular(shape_arc_seconds=(4, 4), pixel_scale=1, inner_radius_mask=0.81,
                                     outer_radius_mask=2)
 
@@ -183,7 +183,7 @@ class TestMask(object):
                                      [False, True, True, False],
                                      [True, False, False, True]])).all()
 
-        def test__even_x_even_mask_inner_radius_medium_outer_radius_large__mask(self):
+        def test__4x4_mask_inner_radius_medium_outer_radius_large__mask(self):
             msk = mask.Mask.annular(shape_arc_seconds=(4, 4), pixel_scale=1, inner_radius_mask=1.71,
                                     outer_radius_mask=3)
 
@@ -222,6 +222,7 @@ class TestMask(object):
     class TestUnmasked(object):
 
         def test__3x3__input__all_are_false(self):
+
             msk = mask.Mask.unmasked(shape_arc_seconds=(3, 3), pixel_scale=1)
 
             assert msk.shape == (3, 3)
@@ -246,6 +247,106 @@ class TestMask(object):
                                      [False, False, False, False, False],
                                      [False, False, False, False, False],
                                      [False, False, False, False, False]])).all()
+
+    class TestForSimulate(object):
+
+        def test__3x3_image__3x3_psf_size__5x5_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(3,3))
+
+            assert (msk == np.array([[True,  True,  True,  True, True],
+                                     [True, False, False, False, True],
+                                     [True, False, False, False, True],
+                                     [True, False, False, False, True],
+                                     [True,  True,  True,  True, True]])).all()
+
+        def test__3x3_image__5x5_psf_size__7x7_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(5,5))
+
+            assert (msk == np.array([[True, True, True,  True,  True,  True, True],
+                                     [True, True, True,  True,  True,  True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, True,  True,  True,  True, True],
+                                     [True, True, True,  True,  True,  True, True]])).all()
+
+        def test__4x3_image__3x3_psf_size__6x5_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(3,3))
+
+            assert (msk == np.array([[True,  True,  True,  True, True],
+                                     [True, False, False, False, True],
+                                     [True, False, False, False, True],
+                                     [True, False, False, False, True],
+                                     [True, False, False, False, True],
+                                     [True,  True,  True,  True, True]])).all()
+
+        def test__4x3_image__5x5_psf_size__8x7_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(5,5))
+
+            assert (msk == np.array([[True, True, True,   True,  True, True, True],
+                                     [True, True, True,   True,  True, True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, False, False, False, True, True],
+                                     [True, True, True,   True,  True, True, True],
+                                     [True, True, True,   True,  True, True, True]])).all()
+
+        def test__3x4_image__3x3_psf_size__5x6_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 4), pixel_scale=1, psf_size=(3,3))
+
+            assert (msk == np.array([[True,  True,  True,  True,  True, True],
+                                     [True, False, False, False, False, True],
+                                     [True, False, False, False, False, True],
+                                     [True, False, False, False, False, True],
+                                     [True,  True,  True,  True,  True, True]])).all()
+
+        def test__3x4_image__5x5_psf_size__7x8_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 4), pixel_scale=1, psf_size=(5,5))
+
+            assert (msk == np.array([[True, True, True,  True,  True,  True,  True, True],
+                                     [True, True, True,  True,  True,  True,  True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, True,  True,  True,  True,  True, True],
+                                     [True, True, True,  True,  True,  True,  True, True]])).all()
+
+        def test__4x4_image__3x3_psf_size__6x6_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(3, 3))
+
+            assert (msk == np.array([[True, True, True, True, True, True],
+                                     [True, False, False, False, False, True],
+                                     [True, False, False, False, False, True],
+                                     [True, False, False, False, False, True],
+                                     [True, False, False, False, False, True],
+                                     [True, True, True, True, True, True]])).all()
+
+        def test__4x4_image__5x5_psf_size__8x8_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(5,5))
+
+            assert (msk == np.array([[True, True, True,  True,  True,  True,  True, True],
+                                     [True, True, True,  True,  True,  True,  True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, False, False, False, False, True, True],
+                                     [True, True, True,  True,  True,  True,  True, True],
+                                     [True, True, True,  True,  True,  True,  True, True]])).all()
+
+        def test__non_square_psf_shape__raises_error(self):
+
+            with pytest.raises(exc.KernelException):
+                msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(3, 5))
+
 
     class TestComputeGridCoordsImage(object):
 
