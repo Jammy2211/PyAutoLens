@@ -102,7 +102,9 @@ class Analysis(object):
             if key not in self.missing_attributes:
                 raise exc.PipelineException("A model has been defined for {}".format(key))
 
-        image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
+        # TODO : Make grid_size_sub and blurring size an iput value or use the kernel size
+
+        image_grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=1, blurring_size=(3,3))
         run = Analysis.Run(image, image_grid_collection, self.model_mapper, self.fitting_function)
 
         kwargs.update(self.__dict__)

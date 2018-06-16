@@ -5,7 +5,7 @@ from auto_lens.profiles import geometry_profiles
 
 class GridCoordsCollection(object):
 
-    def __init__(self, image, sub=None, blurring=None):
+    def __init__(self, image, sub, blurring):
         """A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
         sub-gri, blurring region, etc.
 
@@ -26,7 +26,7 @@ class GridCoordsCollection(object):
         self.blurring = blurring
 
     @classmethod
-    def from_mask(cls, mask, grid_size_sub=None, blurring_size=None):
+    def from_mask(cls, mask, grid_size_sub, blurring_size):
         """Setup the collection of coordinate grids using an image mask.
 
         Parameters
@@ -41,8 +41,8 @@ class GridCoordsCollection(object):
         """
 
         image = GridCoordsImage.from_mask(mask)
-        sub = GridCoordsImageSub.from_mask(mask, grid_size_sub) if grid_size_sub is not None else None
-        blurring = GridCoordsBlurring.from_mask(mask, blurring_size) if blurring_size is not None else None
+        sub = GridCoordsImageSub.from_mask(mask, grid_size_sub)
+        blurring = GridCoordsBlurring.from_mask(mask, blurring_size)
 
         return GridCoordsCollection(image, sub, blurring)
 
@@ -51,17 +51,16 @@ class GridCoordsCollection(object):
         and set these up as a new collection of grids."""
 
         image = self.image.setup_deflections_grid(galaxies)
-        sub = self.sub.setup_deflections_grid(galaxies) if self.sub is not None else None
-
-        blurring = self.blurring.setup_deflections_grid(galaxies) if self.blurring is not None else None
+        sub = self.sub.setup_deflections_grid(galaxies)
+        blurring = self.blurring.setup_deflections_grid(galaxies)
 
         return GridCoordsCollection(image, sub, blurring)
 
     def traced_grids_for_deflections(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
         image = self.image.setup_traced_grid(deflections.image)
-        sub = self.sub.setup_traced_grid(deflections.sub) if self.sub is not None else None
-        blurring = self.blurring.setup_traced_grid(deflections.blurring) if self.blurring is not None else None
+        sub = self.sub.setup_traced_grid(deflections.sub)
+        blurring = self.blurring.setup_traced_grid(deflections.blurring)
 
         return GridCoordsCollection(image, sub, blurring)
 
@@ -590,7 +589,7 @@ class GridData(np.ndarray):
 
 class GridMapperCollection(object):
 
-    def __init__(self, data_to_pixel, blurring_to_pixel=None, clustering=None):
+    def __init__(self, data_to_pixel, clustering=None):
         """A collection of mappers, which map between data on different grids.
 
         Parameters
@@ -604,11 +603,10 @@ class GridMapperCollection(object):
         """
 
         self.data_to_pixel = data_to_pixel
-        self.blurring_to_pixel = blurring_to_pixel
         self.clustering = clustering
 
     @classmethod
-    def from_mask(cls, mask, blurring_size=None, cluster_grid_size=None):
+    def from_mask(cls, mask, cluster_grid_size=None):
         """Setup the collection of grid mappers using an image mask.
 
         Parameters
@@ -622,11 +620,9 @@ class GridMapperCollection(object):
         """
 
         image_to_pixel = GridMapperDataToPixel.from_mask(mask)
-        blurring_to_pixel = GridMapperDataToPixel.from_mask_blurring_mapper(mask, blurring_size) \
-            if blurring_size is not None else None
         clustering = GridMapperCluster.from_mask(mask, cluster_grid_size) if cluster_grid_size is not None else None
 
-        return GridMapperCollection(image_to_pixel, blurring_to_pixel, clustering)
+        return GridMapperCollection(image_to_pixel, clustering)
 
 
 class GridMapperDataToPixel(np.ndarray):
@@ -694,21 +690,6 @@ class GridMapperDataToPixel(np.ndarray):
         """
         return GridMapperDataToPixel(dimensions_2d=mask.shape,
                                      data_to_pixel=mask.compute_grid_mapper_data_to_pixel())
-
-    @classmethod
-    def from_mask_blurring_mapper(cls, mask, blurring_size):
-        """Using an image.Mask, setup a data to 2d mapper for the blurring region.
-
-        Parameters
-        ----------
-        mask : mask.Mask
-            The image mask containing the unmasked data_to_pixel of the data grid.
-        blurring_size : (int, int)
-           The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
-        """
-        blurring_mask = mask.compute_blurring_mask(kernal_shape=blurring_size)
-        return GridMapperDataToPixel(dimensions_2d=blurring_mask.shape,
-                                     data_to_pixel=blurring_mask.compute_grid_mapper_data_to_pixel())
 
     def map_to_2d(self, grid_data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
