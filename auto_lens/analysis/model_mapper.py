@@ -75,6 +75,8 @@ class ModelMapper(object):
         for name, cls in classes.items():
             self.add_class(name, cls)
 
+        self.total_parameters = len(self.priors_ordered_by_id)
+
     def make_prior(self, attribute_name, cls):
         config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
         if config_arr[0] == "u":
@@ -85,6 +87,8 @@ class ModelMapper(object):
     def add_classes(self, **kwargs):
         for key, value in kwargs.items():
             self.add_class(key, value)
+
+        self.total_parameters = len(self.priors_ordered_by_id)
 
     def add_class(self, name, cls):
         """
