@@ -27,7 +27,7 @@ class TestCase:
 
         ma = mask.Mask(array=ma, pixel_scale=1.0)
         image_grids = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_size=(3,3))
-        mappers = grids.GridMapperCollection.from_mask(mask=ma, blurring_size=(3,3))
+        mappers = grids.GridMapperCollection.from_mask(mask=ma)
 
         ### Setup the ray tracing model, and use to generate the 2D galaxy image ###
 

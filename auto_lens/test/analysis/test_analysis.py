@@ -102,9 +102,17 @@ class MockNLO:
 
 class MockMask:
     # noinspection PyMethodMayBeStatic
+
+    # TODO : Had to add these to MockMask to get tests passing.
+
     def compute_grid_coords_image(self):
         return np.array([[-1., -1.], [1., 1.]])
 
+    def compute_grid_coords_image_sub(self, sub_grid_size):
+        return np.array([[[-1., -1.], [1., 1.]]])
+
+    def compute_grid_coords_blurring(self, psf_size):
+        return np.array([[[-1., -1.], [1., 1.]]])
 
 @pytest.fixture(name='test_config')
 def make_test_config():

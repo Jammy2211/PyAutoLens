@@ -31,9 +31,11 @@ def galaxy_light_sersic():
 
 
 class TestGridCoordsCollection(object):
+
     class TestConstructor(object):
 
         def test__simple_grid_input__all_grids_used__sets_up_attributes(self):
+
             image_grid = grids.GridCoordsImage(np.array([[1.0, 1.0],
                                                          [2.0, 2.0],
                                                          [3.0, 3.0]]))
@@ -65,24 +67,10 @@ class TestGridCoordsCollection(object):
             assert (grid_collection.blurring[0] == np.array([1.0, 1.0])).all()
             assert (grid_collection.blurring[0] == np.array([1.0, 1.0])).all()
 
-        def test__simple_grid_input__sub_and_blurring_are_none__sets_up_attributes(self):
-            image_grid = grids.GridCoordsImage(np.array([[1.0, 1.0],
-                                                         [2.0, 2.0],
-                                                         [3.0, 3.0]]))
-
-            grid_collection = grids.GridCoordsCollection(image_grid)
-
-            assert (grid_collection.image[0] == np.array([1.0, 1.0])).all()
-            assert (grid_collection.image[1] == np.array([2.0, 2.0])).all()
-            assert (grid_collection.image[2] == np.array([3.0, 3.0])).all()
-
-            assert grid_collection.sub is None
-
-            assert grid_collection.blurring is None
-
     class TestFromMask(object):
 
         def test__all_grids_from_masks__correct_grids_setup(self):
+
             mask = np.array([[True, True, True],
                              [True, False, True],
                              [True, True, True]])
@@ -99,64 +87,7 @@ class TestGridCoordsCollection(object):
             assert (grid_collection.sub == sub_grid).all()
             assert (grid_collection.blurring == blurring_grid).all()
 
-        def test__sub_and_blurring_grids_are_none__correct_grids_setup(self):
-            mask = np.array([[True, True, True],
-                             [True, False, True],
-                             [True, True, True]])
-
-            mask = msk.Mask(array=mask, pixel_scale=3.0)
-
-            image_grid = mask.compute_grid_coords_image()
-
-            grid_collection = grids.GridCoordsCollection.from_mask(mask)
-
-            assert (grid_collection.image == image_grid).all()
-            assert grid_collection.sub is None
-            assert grid_collection.blurring is None
-
     class TestDeflectionAnglesViaGalaxy(object):
-
-        def test__image_coordinates_only(self, galaxy_mass_sis):
-            image_grid = np.array([[1.0, 1.0]])
-
-            image_grid = grids.GridCoordsImage(image_grid)
-
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid)
-            deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
-
-            assert deflections.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
-            assert deflections.sub is None
-            assert deflections.blurring is None
-
-        def test__image_and_sub_grid(self, galaxy_mass_sis):
-            image_grid = np.array([[1.0, 1.0]])
-            sub_grid = np.array([[[1.0, 1.0], [1.0, 0.0]]])
-
-            image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
-
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid)
-            deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
-
-            assert deflections.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
-            assert deflections.sub[0, 0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert deflections.sub[0, 1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert deflections.sub.grid_size_sub == 2
-            assert deflections.blurring is None
-
-        def test__image_and_blurring_grid(self, galaxy_mass_sis):
-            image_grid = np.array([[1.0, 1.0]])
-            blurring_grid = np.array([[1.0, 0.0]])
-
-            image_grid = grids.GridCoordsImage(image_grid)
-            blurring_grid = grids.GridCoordsBlurring(blurring_grid)
-
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, blurring=blurring_grid)
-            deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
-
-            assert deflections.image == pytest.approx(np.array([[0.707, 0.707]]), 1e-3)
-            assert deflections.sub is None
-            assert deflections.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
         def test_all_coordinates(self, galaxy_mass_sis):
             image_grid = np.array([[1.0, 1.0]])
@@ -258,21 +189,6 @@ class TestGridCoordsCollection(object):
 
     class TestSetupTracedGrids(object):
 
-        def test__image_coordinates_only(self, galaxy_mass_sis):
-            image_grid = np.array([[1.0, 1.0]])
-
-            image_grid = grids.GridCoordsImage(image_grid)
-
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid)
-
-            deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
-
-            traced = ray_trace_grid.traced_grids_for_deflections(deflections)
-
-            assert traced.image == pytest.approx(np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
-            assert traced.sub is None
-            assert traced.blurring is None
-
         def test_all_coordinates(self, galaxy_mass_sis):
             image_grid = np.array([[1.0, 1.0]])
             sub_grid = np.array([[[1.0, 1.0], [1.0, 0.0]]])
@@ -296,6 +212,7 @@ class TestGridCoordsCollection(object):
 
 
 class TestGridCoordsRegular(object):
+
     class TestConstructor:
 
         def test__simple_grid_input__sets_up_grid_correctly_in_attributes(self):
@@ -999,6 +916,7 @@ class TestGridData(object):
 
 
 class TestGridMapperCollection(object):
+
     class TestConstructor:
         data_to_pixel = np.array([[0, 0],
                                   [0, 1],
@@ -1021,6 +939,7 @@ class TestGridMapperCollection(object):
     class TestFromMask:
 
         def test__all_mappers__setup_all_mappers_correctly(self):
+
             mask = np.array([[True, True, True, True, True],
                              [True, True, False, True, True],
                              [True, False, False, False, True],
@@ -1032,7 +951,7 @@ class TestGridMapperCollection(object):
             cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
             mapper_clustering = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
 
-            mappers = grids.GridMapperCollection.from_mask(mask, blurring_size=(3, 3), cluster_grid_size=1)
+            mappers = grids.GridMapperCollection.from_mask(mask, cluster_grid_size=1)
 
             assert mappers.data_to_pixel.dimensions_2d == (5, 5)
             assert mappers.data_to_pixel.dimensions_1d == 5
@@ -1042,52 +961,9 @@ class TestGridMapperCollection(object):
             assert (mappers.data_to_pixel[2] == np.array([2, 2])).all()
             assert (mappers.data_to_pixel[3] == np.array([2, 3])).all()
             assert (mappers.data_to_pixel[4] == np.array([3, 2])).all()
-
-            assert mappers.blurring_to_pixel.dimensions_2d == (5, 5)
-            assert mappers.blurring_to_pixel.dimensions_1d == 16
-
-            assert (mappers.blurring_to_pixel[0] == np.array([0, 1])).all()
-            assert (mappers.blurring_to_pixel[1] == np.array([0, 2])).all()
-            assert (mappers.blurring_to_pixel[2] == np.array([0, 3])).all()
-            assert (mappers.blurring_to_pixel[3] == np.array([1, 0])).all()
-            assert (mappers.blurring_to_pixel[4] == np.array([1, 1])).all()
-            assert (mappers.blurring_to_pixel[5] == np.array([1, 3])).all()
-            assert (mappers.blurring_to_pixel[6] == np.array([1, 4])).all()
-            assert (mappers.blurring_to_pixel[7] == np.array([2, 0])).all()
-            assert (mappers.blurring_to_pixel[8] == np.array([2, 4])).all()
-            assert (mappers.blurring_to_pixel[9] == np.array([3, 0])).all()
-            assert (mappers.blurring_to_pixel[10] == np.array([3, 1])).all()
-            assert (mappers.blurring_to_pixel[11] == np.array([3, 3])).all()
-            assert (mappers.blurring_to_pixel[12] == np.array([3, 4])).all()
-            assert (mappers.blurring_to_pixel[13] == np.array([4, 1])).all()
-            assert (mappers.blurring_to_pixel[14] == np.array([4, 2])).all()
-            assert (mappers.blurring_to_pixel[15] == np.array([4, 3])).all()
 
             assert (mappers.clustering.cluster_to_image == mapper_clustering.cluster_to_image).all()
             assert (mappers.clustering.image_to_cluster == mapper_clustering.image_to_cluster).all()
-
-        def test__blurring_and_clustering_are_none__setup_as_none(self):
-            mask = np.array([[True, True, True, True, True],
-                             [True, True, False, True, True],
-                             [True, False, False, False, True],
-                             [True, True, False, True, True],
-                             [True, True, True, True, True]])
-
-            mask = msk.Mask(array=mask, pixel_scale=3.0)
-
-            mappers = grids.GridMapperCollection.from_mask(mask)
-
-            assert mappers.data_to_pixel.dimensions_2d == (5, 5)
-            assert mappers.data_to_pixel.dimensions_1d == 5
-
-            assert (mappers.data_to_pixel[0] == np.array([1, 2])).all()
-            assert (mappers.data_to_pixel[1] == np.array([2, 1])).all()
-            assert (mappers.data_to_pixel[2] == np.array([2, 2])).all()
-            assert (mappers.data_to_pixel[3] == np.array([2, 3])).all()
-            assert (mappers.data_to_pixel[4] == np.array([3, 2])).all()
-
-            assert mappers.blurring_to_pixel == None
-            assert mappers.clustering == None
 
 
 class TestGridMapperDataToPixel(object):
@@ -1130,54 +1006,6 @@ class TestGridMapperDataToPixel(object):
             assert (mapper[2] == np.array([1, 1])).all()
             assert (mapper[3] == np.array([1, 2])).all()
             assert (mapper[4] == np.array([2, 1])).all()
-
-        def test__manually_compare_to_setting_up_directly_via_mask(self):
-            mask = np.array([[True, True, False, False],
-                             [True, False, True, True],
-                             [True, True, True, False]])
-
-            mask = msk.Mask(array=mask, pixel_scale=6.0)
-
-            mapper = mask.compute_grid_mapper_data_to_pixel()
-            mapper_from_mask = grids.GridMapperDataToPixel.from_mask(mask)
-
-            assert mapper_from_mask.dimensions_2d == (3, 4)
-            assert mapper_from_mask.dimensions_1d == 4
-
-            assert (mapper == mapper_from_mask).all()
-
-    class TestFromMaskBlurringMapper:
-
-        def test__calcalate_from_simple_mask__mappings_are_correct(self):
-            mask = np.array([[True, True, True, True, True],
-                             [True, True, False, True, True],
-                             [True, False, False, False, True],
-                             [True, True, False, True, True],
-                             [True, True, True, True, True]])
-
-            mask = msk.Mask(array=mask, pixel_scale=3.0)
-
-            mapper = grids.GridMapperDataToPixel.from_mask_blurring_mapper(mask, blurring_size=(3, 3))
-
-            assert mapper.dimensions_2d == (5, 5)
-            assert mapper.dimensions_1d == 16
-
-            assert (mapper[0] == np.array([0, 1])).all()
-            assert (mapper[1] == np.array([0, 2])).all()
-            assert (mapper[2] == np.array([0, 3])).all()
-            assert (mapper[3] == np.array([1, 0])).all()
-            assert (mapper[4] == np.array([1, 1])).all()
-            assert (mapper[5] == np.array([1, 3])).all()
-            assert (mapper[6] == np.array([1, 4])).all()
-            assert (mapper[7] == np.array([2, 0])).all()
-            assert (mapper[8] == np.array([2, 4])).all()
-            assert (mapper[9] == np.array([3, 0])).all()
-            assert (mapper[10] == np.array([3, 1])).all()
-            assert (mapper[11] == np.array([3, 3])).all()
-            assert (mapper[12] == np.array([3, 4])).all()
-            assert (mapper[13] == np.array([4, 1])).all()
-            assert (mapper[14] == np.array([4, 2])).all()
-            assert (mapper[15] == np.array([4, 3])).all()
 
         def test__manually_compare_to_setting_up_directly_via_mask(self):
             mask = np.array([[True, True, False, False],
