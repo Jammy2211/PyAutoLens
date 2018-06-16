@@ -836,3 +836,73 @@ class TestMassProfiles(object):
             assert -1.0 * galaxy_isothermal.deflections_at_coordinates(np.array([49.0, 49.0]))[
                 1] == pytest.approx(
                 galaxy_isothermal.deflections_at_coordinates(np.array([51.0, 51.0]))[1], 1e-5)
+
+
+class TestHyperGalaxy(object):
+
+    class TestContributionMaps(object):
+
+        def test__model_image_all_1s__factor_is_0__contributions_all_1s(self):
+
+            galaxy_image = np.ones((3))
+
+            hyp = galaxy.HyperGalaxy(contribution_factor=0.0)
+            contributions = hyp.compute_contributions(model_image=galaxy_image, galaxy_image=galaxy_image,
+                                                      minimum_value=0.0)
+
+            assert (contributions == np.ones((3))).all()
+
+        def test__different_values__factor_is_1__contributions_are_value_divied_by_factor_and_max(self):
+
+            galaxy_image = np.array([0.5, 1.0, 1.5])
+
+            hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
+            contributions = hyp.compute_contributions(model_image=galaxy_image, galaxy_image=galaxy_image,
+                                                      minimum_value=0.0)
+
+            assert (contributions == np.array([(0.5/1.5)/(1.5/2.5), (1.0/2.0)/(1.5/2.5), 1.0])).all()
+
+        def test__different_values__threshold_is_1_minimum_threshold_included__wipes_1st_value_to_0(self):
+
+            galaxy_image = np.array([0.5, 1.0, 1.5])
+
+            hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
+            contributions = hyp.compute_contributions(model_image=galaxy_image, galaxy_image=galaxy_image,
+                                                      minimum_value=0.6)
+
+            assert (contributions == np.array([0.0, (1.0/2.0)/(1.5/2.5), 1.0])).all()
+            
+    class TestScaledNoise(object):
+        
+        def test__contribution_all_1s__noise_factor_2__noise_adds_double(self):
+
+            noise = np.array([1.0, 2.0, 3.0])
+            galaxy_contributions = [np.ones((3))]
+
+            hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
+
+            scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
+
+            assert (scaled_noise == np.array([3.0, 6.0, 9.0])).all()
+
+        def test__same_as_above_but_contributions_vary(self):
+
+            noise = np.array([1.0, 2.0, 3.0])
+            galaxy_contributions = [np.array([0.0, 0.5, 1.0])]
+
+            hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
+
+            scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
+
+            assert (scaled_noise == np.array([1.0, 4.0, 9.0])).all()
+
+        def test__same_as_above_but_change_noise_scale_terms(self):
+
+            noise = np.array([1.0, 2.0, 3.0])
+            galaxy_contributions = [np.array([0.0, 0.5, 1.0])]
+
+            hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=2.0)
+
+            scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
+
+            assert (scaled_noise == np.array([1.0, 4.0, 21.0])).all()

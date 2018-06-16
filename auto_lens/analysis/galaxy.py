@@ -316,6 +316,63 @@ class Galaxy(object):
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
 
+# TODO : Is should galaxy image and minimum value be in the constructor (they arn't free parameters)?
+
+class HyperGalaxy(object):
+
+    def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
+        """Class for scaling the noise in the different galaixe of an image (e.g. the lens, source).
+
+        Parameters
+        -----------
+        contribution_factor : float
+            Factor that adjusts how much of the galaxy's light is attributed to the contribution map.
+        noise_factor : float
+            Factor by which the noise is increased in the regions of the galaxy's contribution map.
+        noise_power : float
+            The power to which the contribution map is raised when scaling the noise.
+        """
+        self.contribution_factor = contribution_factor
+        self.noise_factor = noise_factor
+        self.noise_power = noise_power
+
+    def compute_contributions(self, model_image, galaxy_image, minimum_value):
+        """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
+        galaxy can be attributed to contain.
+
+        This is computed by dividing that galaxy's flux by the total flux in that pixel, and then scaling by the \
+        maximum flux such that the contribution map ranges between 0 and 1.
+
+        Parameters
+        -----------
+        model_image : ndarray
+            The model image of the observed data (from a previous analysis phase). This tells us the total light \
+            attributed to each image pixel by the model.
+        galaxy_image : ndarray
+            A model image of the galaxy (e.g the lens light profile or source reconstruction) computed from a
+            previous analysis.
+        minimum_value : float
+            The minimum fractional flux a pixel must contain to not be rounded to 0.
+        """
+        contributions = galaxy_image / (model_image + self.contribution_factor)
+        contributions = contributions / np.max(contributions)
+        contributions[contributions < minimum_value] = 0.0
+        return contributions
+
+    def compute_scaled_noise(self, noise, contributions):
+        """Compute a scaled galaxy noise map from a baseline nosie map.
+
+        This uses the galaxy contribution map with their noise scaling hyper-parameters.
+
+        Parameters
+        -----------
+        noise : ndarray
+            The noise before scaling (this may already have the background scaled in HyperImage)
+        contributions : ndarray
+            The galaxy contribution map.
+        """
+        return noise + (self.noise_factor * (noise * contributions) ** self.noise_power)
+
 class Redshift(object):
     def __init__(self, redshift):
         self.redshift = redshift
