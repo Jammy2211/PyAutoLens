@@ -90,6 +90,16 @@ class Mask(scaled_array.ScaledArray):
         grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
         return cls(np.ma.make_mask_none(grid.shape), pixel_scale)
 
+    @classmethod
+    def for_simulate(cls, shape_arc_seconds, pixel_scale, psf_size):
+
+        if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0 or psf_size[0] != psf_size[1]:
+            raise exc.KernelException("PSF Kernel must be odd and square")
+
+        ma = cls.unmasked(shape_arc_seconds, pixel_scale)
+        pad_size = (int(psf_size[0]/2)+1, int(psf_size[1]/2)+1)
+        return ma.pad(new_dimensions=(ma.shape[0]+pad_size[0], ma.shape[1]+pad_size[1]), pad_value=1)
+
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
