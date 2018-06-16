@@ -39,7 +39,7 @@ class Mask(scaled_array.ScaledArray):
 
                 grid[x, y] = radius_arcsec > radius_mask
 
-        return grid
+        return cls(grid, pixel_scale)
 
     @classmethod
     def annular(cls, shape_arc_seconds, pixel_scale, inner_radius_mask, outer_radius_mask, centre=(0., 0.)):
@@ -73,7 +73,7 @@ class Mask(scaled_array.ScaledArray):
 
                 grid[x, y] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
 
-        return grid
+        return cls(grid, pixel_scale)
 
     @classmethod
     def unmasked(cls, shape_arc_seconds, pixel_scale):
@@ -88,7 +88,7 @@ class Mask(scaled_array.ScaledArray):
             The arc-second to pixel conversion factor of each pixel.
         """
         grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
-        return np.ma.make_mask_none(grid.shape)
+        return cls(np.ma.make_mask_none(grid.shape), pixel_scale)
 
     @property
     def pixels_in_mask(self):
