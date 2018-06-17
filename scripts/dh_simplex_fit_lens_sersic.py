@@ -16,12 +16,6 @@ from auto_lens.analysis import galaxy
 from auto_lens.analysis import fitting
 
 import scipy.optimize
-import lmfit
-
-import numpy as np
-from functools import partial
-
-import matplotlib.pyplot as plt
 
 lens_name = 'lens_sersic'
 data_dir = "../data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
@@ -54,8 +48,6 @@ model_map = model_mapper.ModelMapper(config=config, light_profile=lp.EllipticalS
 
 def likelihood(params, model_mapper, grid_coords, grid_data, grid_mappers, kernel_convolver):
 
-    print(params)
-
     physical_model = model_mapper.from_physical_vector(params)
 
     gal = galaxy.Galaxy(light_profiles=[physical_model.light_profile])
@@ -64,23 +56,7 @@ def likelihood(params, model_mapper, grid_coords, grid_data, grid_mappers, kerne
     return -2.0*fitting.fit_data_with_model(grid_data=grid_data, grid_mappers=grid_mappers,
                                             kernel_convolver=kernel_convolver, tracer=ray_trace)
 
-# result = scipy.optimize.minimize(likelihood, x0=[0.1, 0.1, 0.5, 80.0, 0.5, 1.0, 5.0],
-#                                  options={'gtol': 1e-6, 'disp': True},
-#                                  args=(model_map, grid_coords, grid_data, mappers, kernel_convolver))
-
 result = scipy.optimize.fmin(likelihood, x0=[0.0, 0.0, 0.5, 50.0, 0.5, 1.0, 5.0],
                                  args=(model_map, grid_coords, grid_data, mappers, kernel_convolver))
-
-# params = lmfit.Parameters()
-# params.add('x_center', value=0.0, min=-1.0, max=1.0)
-# params.add('y_center', value=0.0, min=-1.0, max=1.0)
-# params.add('axis_ratio', value=0.8, min=0.1, max=1.0)
-# params.add('phi', value=90.0, min=0.0, max=180.0)
-# params.add('intensity', value=0.5, min=0.0, max=3.0)
-# params.add('effective_radius', value=1.0, min=0.0, max=4.0)
-# params.add('sersic_index', value=4.0, min=0.6, max=8.0)
-#
-# result = lmfit.fmin(likelihood, params, method='Nelder-Mead', tol=0.1,
-#                         args=(model_map, grid_coords, grid_data, mappers, kernel_convolver))
 
 print(result)
