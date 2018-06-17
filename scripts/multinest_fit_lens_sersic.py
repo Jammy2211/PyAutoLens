@@ -67,8 +67,8 @@ def likelihood(physical_cube, ndim, n_params, model_mapper, grid_coords, grid_da
     gal = galaxy.Galaxy(light_profiles=[physical_model.light_profile])
     ray_trace = ray_tracing.Tracer(lens_galaxies=[gal], source_galaxies=[], image_plane_grids=grid_coords)
 
-    return fitting.fit_data_with_model(grid_data=grid_data, grid_mappers=grid_mappers,
-                                       kernel_convolver=kernel_convolver, tracer=ray_trace)
+    return fitting.fit_data_with_profiles(grid_data=grid_data, grid_mappers=grid_mappers,
+                                          kernel_convolver=kernel_convolver, tracer=ray_trace)
 
 prior_pass = partial(prior, model_mapper=model_map)
 likelihood_pass = partial(likelihood, model_mapper=model_map, grid_coords=grid_coords, grid_data=grid_data,

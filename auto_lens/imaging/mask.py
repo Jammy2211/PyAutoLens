@@ -331,7 +331,7 @@ class Mask(scaled_array.ScaledArray):
          This is used for computing the image_to_cluster vector, whereby each image pixel is paired to the sparse
          pixel in this image via a neighbor search."""
 
-        sparse_index_2d = np.zeros(self.shape)
+        sparse_index_2d = np.zeros(self.shape, dtype=int)
         sparse_pixel_index = 0
 
         for x in range(self.shape[0]):
@@ -357,7 +357,7 @@ class Mask(scaled_array.ScaledArray):
             The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
             of the image pixel in the self.
         """
-        sparse_to_image = np.empty(0)
+        sparse_to_image = np.empty(0, dtype=int)
         image_pixel_index = 0
 
         for x in range(self.shape[0]):
@@ -392,7 +392,7 @@ class Mask(scaled_array.ScaledArray):
             index of the sparse pixel in sparse_pixel arrays.
 
         """
-        image_to_sparse = np.empty(0)
+        image_to_sparse = np.empty(0, dtype=int)
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):

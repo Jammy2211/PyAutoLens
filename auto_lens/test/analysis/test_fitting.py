@@ -60,7 +60,6 @@ class TestFitData:
 
         grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time)
         grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_size=(3,3))
-        grid_mappers = grids.GridMapperCollection.from_mask(mask=ma)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -68,7 +67,7 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=grid_collection)
 
-        likelihood = fitting.fit_data_with_model(grid_datas, grid_mappers, kernel_convolver,ray_trace)
+        likelihood = fitting.fit_data_with_profiles(grid_datas, kernel_convolver, ray_trace)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
@@ -96,7 +95,6 @@ class TestFitData:
 
         grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time)
         grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_size=(3,3))
-        grid_mappers = grids.GridMapperCollection.from_mask(mask=ma)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -104,7 +102,7 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=grid_collection)
 
-        likelihood = fitting.fit_data_with_model(grid_datas, grid_mappers, kernel_convolver, ray_trace)
+        likelihood = fitting.fit_data_with_profiles(grid_datas, kernel_convolver, ray_trace)
 
         assert likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
@@ -130,7 +128,6 @@ class TestGenerateBlurredLightProfileImage:
         # Setup the image and blurring coordinate grids
 
         grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_size=(3,3))
-        grid_mappers = grids.GridMapperCollection.from_mask(mask=ma)
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
                                        image_plane_grids=grid_collection)
@@ -380,3 +377,38 @@ class TestLikelihood:
             2 * np.pi * 16.0)
 
         assert likelihood == pytest.approx(-0.5 * (chi_sq_term + noise_term), 1e-4)
+
+
+class TestPixModelImageFromSVector:
+
+    def test__s_vector_all_1s__simple_blurred_mapping_matrix__correct_model_image(self):
+
+        s_vector = np.array([1.0, 1.0, 1.0, 1.0])
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],
+                                           [1.0, 0.0, 1.0, 1.0],
+                                           [1.0, 0.0, 0.0, 0.0]])
+
+        model_image = fitting.pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
+
+        # Image pixel 0 maps to 4 sources pixxels -> value is 4.0
+        # Image pixel 1 maps to 3 sources pixxels -> value is 3.0
+        # Image pixel 2 maps to 1 sources pixxels -> value is 1.0
+
+        assert (model_image == np.array([4.0, 3.0, 1.0])).all()
+
+    def test__s_vector_different_values__simple_blurred_mapping_matrix__correct_model_image(self):
+
+        s_vector = np.array([1.0, 2.0, 3.0, 4.0])
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],
+                                           [1.0, 0.0, 1.0, 1.0],
+                                           [1.0, 0.0, 0.0, 0.0]])
+
+        model_image = fitting.pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
+
+        # Image pixel 0 maps to 4 sources pixxels -> value is 1.0 + 2.0 + 3.0 + 4.0 = 10.0
+        # Image pixel 1 maps to 3 sources pixxels -> value is 1.0 + 3.0 + 4.0
+        # Image pixel 2 maps to 1 sources pixxels -> value is 1.0
+
+        assert (model_image == np.array([10.0, 8.0, 1.0])).all()

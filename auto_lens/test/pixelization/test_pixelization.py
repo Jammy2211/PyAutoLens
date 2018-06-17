@@ -774,7 +774,8 @@ class TestClusterPixelization:
 
         pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-        mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+        mapping_matrix, reg = pix.compute_mapping_and_regularization_matrix(source_coordinates, source_sub_coordinates,
+                                                                            mapper_cluster)
 
         assert (mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -810,7 +811,8 @@ class TestClusterPixelization:
 
         pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-        mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+        mapping_matrix, reg = pix.compute_mapping_and_regularization_matrix(source_coordinates, source_sub_coordinates,
+                                                                            mapper_cluster)
 
         assert (mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                             [1.0, 0.0, 0.0, 0.0, 0.0],
@@ -852,7 +854,8 @@ class TestClusterPixelization:
 
         pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-        mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+        mapping_matrix, reg = pix.compute_mapping_and_regularization_matrix(source_coordinates, source_sub_coordinates,
+                                                                            mapper_cluster)
 
         assert (mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0,  0.0],
                                             [0.0, 0.75, 0.25, 0.0,  0.0],
@@ -950,7 +953,8 @@ class TestAmorphousPixelization:
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+            mapping_matrix, reg = pix.compute_mapping_and_regularization_matrix(source_coordinates,
+                                                                                source_sub_coordinates, mapper_cluster)
 
             # Due to the stochastic nature of the Amorphous pixelizations source pixel indexing, we can only test
             # properties of the mapping matrix. The example below is what it looks like if the source-pixel indexing
@@ -1002,7 +1006,8 @@ class TestAmorphousPixelization:
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+            mapping_matrix, reg = pix.compute_mapping_and_regularization_matrix(source_coordinates,
+                                                                                source_sub_coordinates, mapper_cluster)
 
             # Due to the stochastic nature of the Amorphous pixelizations source pixel indexing, we can only test
             # properties of the mapping matrix. The example below is what it looks like if the source-pixel indexing
@@ -1072,7 +1077,8 @@ class TestAmorphousPixelization:
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+            mapping_matrix, reg = pix.compute_mapping_and_regularization_matrix(source_coordinates,
+                                                                                source_sub_coordinates, mapper_cluster)
 
             # Due to the stochastic nature of the Amorphous pixelizations source pixel indexing, we can only test
             # properties of the mapping matrix. The example below is what it looks like if the source-pixel indexing
