@@ -2,6 +2,8 @@ import numpy as np
 import logging
 from astropy.io import fits
 
+from auto_lens.tools import arrays
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -123,8 +125,8 @@ class ScaledArray(np.ndarray):
         """
         return self.new_with_array(super(ScaledArray, self).flatten(order))
 
-    def pad(self, new_dimensions):
-        """ Pad the data array with zeros around its central pixel.
+    def pad(self, new_dimensions, pad_value=0):
+        """ Pad the data array with zeros (or an input value) around its central pixel.
 
         NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be padded to even arrays \
         (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
@@ -133,6 +135,8 @@ class ScaledArray(np.ndarray):
         ----------
         new_dimensions : (int, int)
             The (x,y) new pixel dimension of the padded data-array.
+        pad_value : float
+            The value to pad the array with.
         """
         if new_dimensions[0] < self.shape[0]:
             raise ValueError('grids.Grid2d.pad - You have specified a new x_size smaller than the data array')
@@ -142,7 +146,7 @@ class ScaledArray(np.ndarray):
         x_pad = int((new_dimensions[0] - self.shape[0] + 1) / 2)
         y_pad = int((new_dimensions[1] - self.shape[1] + 1) / 2)
 
-        array = np.pad(self, ((x_pad, y_pad), (x_pad, y_pad)), 'constant')
+        array = np.pad(self, ((x_pad, y_pad), (x_pad, y_pad)), 'constant', constant_values=pad_value)
 
         return self.new_with_array(array)
 
@@ -223,9 +227,7 @@ class ScaledArray(np.ndarray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        hdu_list = fits.open(file_path)  # Open the fits file
-        array = np.array(hdu_list[hdu].data)
-        return cls(array, pixel_scale)
+        return cls(arrays.numpy_array_from_fits(file_path, hdu), pixel_scale)
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):

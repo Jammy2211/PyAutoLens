@@ -505,9 +505,9 @@ class GridDataCollection(object):
         psf : imaging.PSF
             The 2D Point Spread Function (PSF).
         """
-        image = GridData.from_mask(image.data, mask)
-        noise = GridData.from_mask(noise.data, mask)
-        exposure_time = GridData.from_mask(exposure_time.data, mask)
+        image = GridData.from_mask(image, mask)
+        noise = GridData.from_mask(noise, mask)
+        exposure_time = GridData.from_mask(exposure_time, mask)
         return GridDataCollection(image, noise, exposure_time)
 
 

@@ -10,12 +10,12 @@ def likelihood_for_image_tracer_pixelization_and_instrumentation(image, tracer, 
     return 1.0
 
 
-def fit_data_with_model(grid_datas, grid_mappers, kernel_convolver, tracer):
+def fit_data_with_model(grid_data, grid_mappers, kernel_convolver, tracer):
     """Fit the data using the ray_tracing model
 
     Parameters
     ----------
-    grid_datas : grids.GridDataCollection
+    grid_data : grids.GridDataCollection
         The collection of grid data-sets (image, noise, psf, etc.)
     grid_mappers : grids.GridMapperCollection
         The collection of grid mappings, used to map images from 2d and 1d.
@@ -25,7 +25,7 @@ def fit_data_with_model(grid_datas, grid_mappers, kernel_convolver, tracer):
         The ray-tracing configuration of the model galaxies and their profiles.
     """
     blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
-    return compute_likelihood(grid_datas.image, grid_datas.noise, blurred_model_image)
+    return compute_likelihood(grid_data.image, grid_data.noise, blurred_model_image)
 
 def generate_blurred_light_profile_image(tracer, kernel_convolver):
     """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
