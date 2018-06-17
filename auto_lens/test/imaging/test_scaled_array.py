@@ -3,8 +3,7 @@ import numpy as np
 import pytest
 import os
 
-test_data_dir = "{}/../test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
-
+test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 @pytest.fixture(name="array_grid")
 def make_array_grid():
@@ -51,7 +50,7 @@ class TestDataGrid(object):
             assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledArray.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
+            data_grid = scaled_array.ScaledArray.from_fits(file_path=test_data_dir + '3x3_ones', hdu=0,
                                                            pixel_scale=1.0)
 
             assert (data_grid == np.ones((3, 3))).all()
@@ -61,7 +60,7 @@ class TestDataGrid(object):
             assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
 
         def test__from_fits__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledArray.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
+            data_grid = scaled_array.ScaledArray.from_fits(file_path=test_data_dir + '4x3_ones', hdu=0,
                                                            pixel_scale=0.1)
 
             assert (data_grid == np.ones((4, 3))).all()
@@ -320,6 +319,23 @@ class TestDataGrid(object):
 
             with pytest.raises(ValueError):
                 array.trim(new_dimensions=(8, 3))
+
+        def test__pad_with_1s_instead(self):
+
+            array = np.ones((3, 3))
+            array[1, 1] = 2.0
+
+            array = scaled_array.ScaledArray(array, pixel_scale=1.0)
+            modified = array.pad(new_dimensions=(5, 5), pad_value=1)
+
+            assert (modified == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
+                                          [1.0, 1.0, 1.0, 1.0, 1.0],
+                                          [1.0, 1.0, 2.0, 1.0, 1.0],
+                                          [1.0, 1.0, 1.0, 1.0, 1.0],
+                                          [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
+
+            assert modified.shape == (5, 5)
+            assert modified.shape_arc_seconds == (5.0, 5.0)
 
     class TestTrim:
 
