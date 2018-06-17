@@ -1,6 +1,7 @@
 from auto_lens.pixelization import covariance_matrix
 import pytest
 
+import numpy as np
 
 
 @pytest.fixture(name="trivial_pixel_maps")
@@ -56,6 +57,92 @@ def make_generator():
         pixel_maps.append({i: 1 for i in l})
     noise_vector = [1 for _ in range(9)]
     return covariance_matrix.CovarianceMatrixGenerator(pixel_maps, noise_vector, graph)
+
+class TestComputeCovarianceMatrixExactly(object):
+
+    def test__simple_blurred_mapping_matrix__correct_covariance_matrix(self):
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
+                                           [1.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 1.0, 1.0],
+                                           [0.0, 0.0, 0.0],
+                                           [0.0, 0.0, 0.0]])
+
+        noise_vector = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+        cov = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, noise_vector)
+
+        assert (cov == np.array([[2.0, 1.0, 0.0],
+                                 [1.0, 3.0, 1.0],
+                                 [0.0, 1.0, 1.0]])).all()
+
+    def test__simple_blurred_mapping_matrix__change_noise_values__correct_covariance_matrix(self):
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
+                                           [1.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 1.0, 1.0],
+                                           [0.0, 0.0, 0.0],
+                                           [0.0, 0.0, 0.0]])
+
+        noise_vector = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+        cov = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, noise_vector)
+
+        assert (cov == np.array([[1.25, 0.25, 0.0],
+                                 [0.25, 2.25, 1.0],
+                                 [0.0, 1.0, 1.0]])).all()
+
+class TestComputeDMatrixExactly(object):
+
+    def test__simple_blurred_mapping_matrix__correct_d_matrix(self):
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
+                                           [1.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 1.0, 1.0],
+                                           [0.0, 0.0, 0.0],
+                                           [0.0, 0.0, 0.0]])
+
+        image_vector = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        noise_vector = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+        d = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, image_vector, noise_vector)
+
+        assert (d == np.array([2.0, 3.0, 1.0])).all()
+
+    def test__simple_blurred_mapping_matrix__change_image_values__correct_d_matrix(self):
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
+                                           [1.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 1.0, 1.0],
+                                           [0.0, 0.0, 0.0],
+                                           [0.0, 0.0, 0.0]])
+
+        image_vector = np.array([3.0, 1.0, 1.0, 10.0, 1.0, 1.0])
+        noise_vector = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+        d = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, image_vector, noise_vector)
+
+        assert (d == np.array([4.0, 14.0, 10.0])).all()
+
+    def test__simple_blurred_mapping_matrix__change_noise_values__correct_d_matrix(self):
+
+        blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
+                                           [1.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 1.0, 1.0],
+                                           [0.0, 0.0, 0.0],
+                                           [0.0, 0.0, 0.0]])
+
+        image_vector = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
+        noise_vector = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
+
+        d = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, image_vector, noise_vector)
+
+        assert (d == np.array([2.0, 3.0, 1.0])).all()
 
 
 class TestMissingCovariances(object):

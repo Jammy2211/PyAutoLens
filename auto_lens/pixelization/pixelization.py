@@ -33,7 +33,7 @@ class Pixelization(object):
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
 
-    def compute_mapping_matrix(self):
+    def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
         raise exc.PixelizationException('compute_mapping_matrix must be over-riden by a Pixelization.')
 
     def create_mapping_matrix(self, sub_to_source):
@@ -291,7 +291,7 @@ class ClusterPixelization(VoronoiPixelization):
         """
         super(ClusterPixelization, self).__init__(pixels, regularization_coefficients)
 
-    def compute_mapping_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
+    def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
         """
         Compute the mapping matrix of the cluster pixelization by following these steps:
 
@@ -322,7 +322,13 @@ class ClusterPixelization(VoronoiPixelization):
         sub_to_source = self.compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors,
                                                    mapper_cluster.image_to_cluster, source_to_image)
 
-        return self.create_mapping_matrix(sub_to_source)
+        # TODO : WE have to compute regularization matrix here as tey both use source_neighbors. Can we make source
+        # TODO : neigbors a class property so these are separate functions (that doon't repeat the calculation?)
+
+        regularization_weights = self.compute_regularization_weights()
+
+        return self.create_mapping_matrix(sub_to_source), self.create_regularization_matrix(regularization_weights,
+                                                                                            source_neighbors)
 
 
 class AmorphousPixelization(VoronoiPixelization):
@@ -344,7 +350,7 @@ class AmorphousPixelization(VoronoiPixelization):
         """
         super(AmorphousPixelization, self).__init__(pixels, regularization_coefficients)
 
-    def compute_mapping_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
+    def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
         """
         Compute the mapping matrix of the amorphous pixelization by following these steps:
 
@@ -371,7 +377,10 @@ class AmorphousPixelization(VoronoiPixelization):
         sub_to_source = self.compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors,
                                                    mapper_cluster.image_to_cluster, source_to_cluster)
 
-        return self.create_mapping_matrix(sub_to_source)
+        regularization_weights = self.compute_regularization_weights()
+
+        return self.create_mapping_matrix(sub_to_source), self.create_regularization_matrix(regularization_weights,
+                                                                                            source_neighbors)
 
     def kmeans_cluster(self, cluster_coordinates):
         """Perform k-means clustering on the cluster_coordinates to compute the k-means clusters which represent \
