@@ -88,7 +88,7 @@ class TestCase:
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
 
-        likelihood = fitting.fit_data_with_model(grid_datas=fit_grid_datas, grid_mappers=fit_grid.mappers,
+        likelihood = fitting.fit_data_with_model(grid_data=fit_grid_datas, grid_mappers=fit_grid.mappers,
                                                  kernel_convolver=kernel_convolver, tracer=ray_trace)
 
         assert likelihood == -0.5*9.0*np.log(2 * np.pi * 1.0 ** 2.0)
@@ -122,7 +122,7 @@ class TestCase:
                                              blurring_region_mask=fit_grid.ma.compute_blurring_mask(kernal_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=sim_psf)
 
-        likelihood = fitting.fit_data_with_model(grid_datas=fit_grid_datas, grid_mappers=fit_grid.mappers,
+        likelihood = fitting.fit_data_with_model(grid_data=fit_grid_datas, grid_mappers=fit_grid.mappers,
                                                  kernel_convolver=kernel_convolver, tracer=ray_trace)
 
         assert likelihood == -0.5*9.0*np.log(2 * np.pi * 1.0 ** 2.0)
@@ -159,7 +159,7 @@ class TestCase:
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
 
-        likelihood = fitting.fit_data_with_model(grid_datas=fit_grid_datas, grid_mappers=fit_grid.mappers,
+        likelihood = fitting.fit_data_with_model(grid_data=fit_grid_datas, grid_mappers=fit_grid.mappers,
                                                  kernel_convolver=kernel_convolver, tracer=ray_trace)
 
         assert likelihood == -0.5*9.0*np.log(2 * np.pi * 1.0 ** 2.0)

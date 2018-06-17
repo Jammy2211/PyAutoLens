@@ -833,6 +833,7 @@ class TestGridDataCollection(object):
     class TestConstructor:
 
         def test__all_grid_datas_entered__sets_up_attributes(self):
+
             grid_image = np.array([1, 2, 3])
             grid_image = grids.GridData(grid_image)
 
@@ -852,6 +853,7 @@ class TestGridDataCollection(object):
     class TestFromMask:
 
         def test__cross_mask__all_data_setup_as_mask(self):
+
             mask = np.array([[True, False, True],
                              [False, False, False],
                              [True, False, True]])
@@ -871,7 +873,6 @@ class TestGridDataCollection(object):
                                       [1, 1, 1],
                                       [1, 1, 1]])
             exposure_time = img.ScaledArray(array=exposure_time, pixel_scale=1.0)
-
 
             grid_collection = grids.GridDataCollection.from_mask(mask=mask, image=image, noise=noise,
                                                                  exposure_time=exposure_time)
