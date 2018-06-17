@@ -3,6 +3,8 @@ from auto_lens import exc
 import math
 import os
 import pymultinest
+import scipy.optimize
+
 from auto_lens.analysis import model_mapper as mm
 
 default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
@@ -104,6 +106,21 @@ class NonLinearOptimizer(object):
         param_names.close()
 
 
+# TODO : Integratioin tests for this?? Hard to test as a unit test.
+# TODO : Need to think how this interfaces with Prior intialization.
+
+class DownhillSimplex(NonLinearOptimizer):
+
+    def __init__(self, config_path, path=default_path):
+
+        super(DownhillSimplex, self).__init__(config_path, path, False)
+
+    def run(self, fitness_function):
+
+        initlal_model = self.model_mapper.physical_values_from_prior_medians()
+        return scipy.optimize.fmin(fitness_function, x0=initlal_model)
+
+
 class MultiNest(NonLinearOptimizer):
 
     def __init__(self, config_path=None, path=default_path, check_model=True):
@@ -134,11 +151,11 @@ class MultiNest(NonLinearOptimizer):
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
-            return map(lambda p, c: p(c), self.model_mapper.priors_ordered_by_id, cube)
+            return map(lambda p, c: p(c), self.model_mapper.total_parameters, cube)
 
-        # TODO: is this output path correct?
-        pymultinest.run(fitness_function, prior, len(self.model_mapper.priors_ordered_by_id),
-                        outputfiles_basename=self.file_summary)
+        # TODO: is this output path correct? No - I have changed it to just the path.
+        pymultinest.run(fitness_function, prior, self.model_mapper.total_parameters,
+                        outputfiles_basename=self.path)
 
     def open_summary_file(self):
 
@@ -306,8 +323,3 @@ class MultiNest(NonLinearOptimizer):
         new_summary_file = open(self.path + 'summary_new.txt', 'w')
         new_summary_file.write(most_probable + most_likely + likelihood + log_likelihood)
         new_summary_file.close()
-
-
-class LevenbergMarquardt(NonLinearOptimizer):
-    def __init__(self, config_path=None, path=default_path):
-        super().__init__(config_path, path=path)
