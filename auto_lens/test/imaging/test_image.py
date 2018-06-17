@@ -4,8 +4,7 @@ import pytest
 import os
 from auto_lens import exc
 
-test_data_dir = "{}/../test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
-
+test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 class TestImage(object):
     class TestEstimateDataGrid(object):
@@ -110,7 +109,8 @@ class TestPSF(object):
             assert psf.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_psf_3x3__all_attributes_correct_including_data_inheritance(self):
-            psf = image.PSF.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0, pixel_scale=1.0)
+
+            psf = image.PSF.from_fits(file_path=test_data_dir + '3x3_ones', hdu=0, pixel_scale=1.0)
 
             assert (psf == np.ones((3, 3))).all()
             assert psf.pixel_scale == 1.0
@@ -119,7 +119,7 @@ class TestPSF(object):
             assert psf.shape_arc_seconds == pytest.approx((3.0, 3.0))
 
         def test__from_fits__input_psf_4x3__all_attributes_correct_including_data_inheritance(self):
-            psf = image.PSF.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0, pixel_scale=0.1)
+            psf = image.PSF.from_fits(file_path=test_data_dir + '4x3_ones', hdu=0, pixel_scale=0.1)
 
             assert (psf == np.ones((4, 3))).all()
             assert psf.pixel_scale == 0.1

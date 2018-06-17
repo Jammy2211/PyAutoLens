@@ -15,16 +15,16 @@ from auto_lens.analysis import ray_tracing
 from auto_lens.analysis import galaxy
 from auto_lens.analysis import fitting
 
+import scipy.optimize
+import lmfit
+
 import numpy as np
 from functools import partial
-import pymultinest
 
 import matplotlib.pyplot as plt
 
-lens_name = 'source_sersic'
+lens_name = 'lens_sersic'
 data_dir = "../data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
-
-print(data_dir)
 
 im = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/image', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/noise', hdu=0, pixel_scale=0.1)
@@ -50,38 +50,37 @@ kernel_convolver = convolver.convolver_for_kernel(kernel=data.psf)
 # NON LINEAR ANALYSIS #
 
 config = model_mapper.Config(config_folder_path='../auto_lens/config')
-model_map = model_mapper.ModelMapper(config=config, mass_profile=mp.EllipticalIsothermal,
-                                     light_profile=lp.EllipticalSersic)
-multinest = non_linear.MultiNest(path='../results/', obj_name='test_fit', model_mapper=model_map)
+model_map = model_mapper.ModelMapper(config=config, light_profile=lp.EllipticalSersic)
 
-def prior(cube, ndim, n_params, model_mapper):
+def likelihood(params, model_mapper, grid_coords, grid_data, grid_mappers, kernel_convolver):
 
-    phys_cube = model_mapper.physical_vector_from_hypercube_vector(hypercube_vector=cube)
+    print(params)
 
-    for i in range(n_params):
-        cube[i] = phys_cube[i]
+    physical_model = model_mapper.from_physical_vector(params)
 
-    return cube
+    gal = galaxy.Galaxy(light_profiles=[physical_model.light_profile])
+    ray_trace = ray_tracing.Tracer(lens_galaxies=[gal], source_galaxies=[], image_plane_grids=grid_coords)
 
-def likelihood(physical_cube, ndim, n_params, model_mapper, grid_coords, grid_data, grid_mappers, kernel_convolver):
+    return -2.0*fitting.fit_data_with_model(grid_data=grid_data, grid_mappers=grid_mappers,
+                                            kernel_convolver=kernel_convolver, tracer=ray_trace)
 
-    physical_model = model_mapper.from_physical_vector(physical_cube)
+# result = scipy.optimize.minimize(likelihood, x0=[0.1, 0.1, 0.5, 80.0, 0.5, 1.0, 5.0],
+#                                  options={'gtol': 1e-6, 'disp': True},
+#                                  args=(model_map, grid_coords, grid_data, mappers, kernel_convolver))
 
-    lens_galaxy = galaxy.Galaxy(mass_profiles=[physical_model.mass_profile])
-    source_galaxy = galaxy.Galaxy(light_profiles=[physical_model.light_profile])
-    ray_trace = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                   image_plane_grids=grid_coords)
+result = scipy.optimize.fmin(likelihood, x0=[0.0, 0.0, 0.5, 50.0, 0.5, 1.0, 5.0],
+                                 args=(model_map, grid_coords, grid_data, mappers, kernel_convolver))
 
-    return fitting.fit_data_with_model(grid_data=grid_data, grid_mappers=grid_mappers,
-                                       kernel_convolver=kernel_convolver, tracer=ray_trace)
+# params = lmfit.Parameters()
+# params.add('x_center', value=0.0, min=-1.0, max=1.0)
+# params.add('y_center', value=0.0, min=-1.0, max=1.0)
+# params.add('axis_ratio', value=0.8, min=0.1, max=1.0)
+# params.add('phi', value=90.0, min=0.0, max=180.0)
+# params.add('intensity', value=0.5, min=0.0, max=3.0)
+# params.add('effective_radius', value=1.0, min=0.0, max=4.0)
+# params.add('sersic_index', value=4.0, min=0.6, max=8.0)
+#
+# result = lmfit.fmin(likelihood, params, method='Nelder-Mead', tol=0.1,
+#                         args=(model_map, grid_coords, grid_data, mappers, kernel_convolver))
 
-prior_pass = partial(prior, model_mapper=model_map)
-likelihood_pass = partial(likelihood, model_mapper=model_map, grid_coords=grid_coords, grid_data=grid_data,
-                          grid_mappers=mappers, kernel_convolver=kernel_convolver)
-
-pymultinest.run(likelihood_pass, prior_pass, n_dims=multinest.total_parameters, n_params=multinest.total_parameters,
-                n_clustering_params=None, wrapped_params=None, importance_nested_sampling=True, multimodal=True,
-                const_efficiency_mode=False, n_live_points=50, evidence_tolerance=0.5, sampling_efficiency=0.2,
-                n_iter_before_update=100, null_log_evidence=-1e+90, max_modes=100, mode_tolerance=-1e+90,
-                outputfiles_basename=multinest.results_path + multinest.obj_name + '_', seed=-1, verbose=False,
-                resume=True, context=0, write_output=True, log_zero=-1e+100, max_iter=0, init_MPI=True)
+print(result)

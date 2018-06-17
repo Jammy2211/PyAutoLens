@@ -1,6 +1,39 @@
-from auto_lens.tools import array
+from auto_lens.tools import arrays
 import numpy as np
+import os
 import pytest
+
+
+test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+
+class TestFits:
+
+    def test__numpy_array_from_fits__3x3_all_ones(self):
+
+        arr = arrays.numpy_array_from_fits(file_path=test_data_dir+'3x3_ones', hdu=0)
+
+        assert (arr == np.ones((3,3))).all()
+
+    def test__numpy_array_from_fits__4x3_all_ones(self):
+
+        arr = arrays.numpy_array_from_fits(file_path=test_data_dir+'4x3_ones', hdu=0)
+
+        assert (arr == np.ones((4,3))).all()
+
+    def test__numpy_array_to_fits__output_and_load(self):
+
+        if os.path.exists(test_data_dir+'test.fits'):
+            os.remove(test_data_dir+'test.fits')
+
+        arr = np.array([[10., 30., 40.],
+                        [92., 19., 20.]])
+
+        arrays.numpy_array_to_fits(arr, file_path=test_data_dir+'test')
+
+        array_load = arrays.numpy_array_from_fits(file_path=test_data_dir+'test', hdu=0)
+
+        assert (arr == array_load).all()
+        
 
 class TestVariancesFromNoise:
 
@@ -9,24 +42,24 @@ class TestVariancesFromNoise:
         noise = np.array([[1.0, 1.0],
                           [1.0, 1.0]])
 
-        assert (array.compute_variances_from_noise(noise) == np.array([[1.0, 1.0],
-                                                                                  [1.0, 1.0]])).all()
+        assert (arrays.compute_variances_from_noise(noise) == np.array([[1.0, 1.0],
+                                                                        [1.0, 1.0]])).all()
 
     def test__noise_all_2s__variances_all_4s(self):
 
         noise = np.array([[2.0, 2.0],
                           [2.0, 2.0]])
 
-        assert (array.compute_variances_from_noise(noise) == np.array([[4.0, 4.0],
-                                                                                   [4.0, 4.0]])).all()
+        assert (arrays.compute_variances_from_noise(noise) == np.array([[4.0, 4.0],
+                                                                        [4.0, 4.0]])).all()
 
     def test__noise_all_05s__variances_all_025s(self):
 
         noise = np.array([[0.5, 0.5],
                           [0.5, 0.5]])
 
-        assert (array.compute_variances_from_noise(noise) == np.array([[0.25, 0.25],
-                                                                                   [0.25, 0.25]])).all()
+        assert (arrays.compute_variances_from_noise(noise) == np.array([[0.25, 0.25],
+                                                                        [0.25, 0.25]])).all()
 
 
 class TestComputeResiduals:
@@ -39,7 +72,7 @@ class TestComputeResiduals:
         model = np.array([[10, 10],
                           [10, 10]])
 
-        result = array.compute_residuals(data, model)
+        result = arrays.compute_residuals(data, model)
 
         assert result[0, 0] == 0
         assert result[0, 1] == 0
@@ -54,7 +87,7 @@ class TestComputeResiduals:
         model = np.array([[10, 10],
                           [10, -5]])
 
-        result = array.compute_residuals(test_image, model)
+        result = arrays.compute_residuals(test_image, model)
 
         assert result[0, 0] == 0  # (10 - 10 = 0)
         assert result[0, 1] == -5  # (5 - 10 = -5)
@@ -75,7 +108,7 @@ class TestComputeChiSquared:
         noise = np.array([[1, 1],
                           [1, 1]])
 
-        result = array.compute_chi_sq_image(data, model, noise)
+        result = arrays.compute_chi_sq_image(data, model, noise)
 
         assert result[0, 0] == 0
         assert result[0, 1] == 0
@@ -92,7 +125,7 @@ class TestComputeChiSquared:
         noise = np.array([[1, 5],
                           [-1, -2]])
 
-        result = array.compute_chi_sq_image(test_image, model, noise)
+        result = arrays.compute_chi_sq_image(test_image, model, noise)
 
         assert result[0, 0] == 0  # ( (10 - 10)/1 )^2 = 0
         assert result[0, 1] == 1  # ( (5 - 10)/5 )^2 = ((-)2.5)^2
@@ -111,7 +144,7 @@ class TestComputeLikelihood:
         noise = np.array([[1, 1],
                           [1, 1]])
 
-        result = array.compute_likelihood(data, model, noise)
+        result = arrays.compute_likelihood(data, model, noise)
 
         assert result == 0
 
@@ -126,7 +159,7 @@ class TestComputeLikelihood:
         noise = np.array([[1, 5],
                           [-1, -2]])
 
-        result = array.compute_likelihood(test_image, model, noise)
+        result = arrays.compute_likelihood(test_image, model, noise)
 
         assert result == -72.53125  # -0.5*(0 + 1 + 144 + 0.0625)
 
