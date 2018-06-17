@@ -32,6 +32,10 @@ def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, sour
 
      """
 
+    def compute_squared_separation(coordinate1, coordinate2):
+        """Computes the squared separation of two image_grid (no square root for efficiency)"""
+        return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+
     image_pixels = sub_coordinates.shape[0]
     sub_pixels = sub_coordinates.shape[1]
 
@@ -40,13 +44,21 @@ def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, sour
     for image_index in range(len(sub_coordinates)):
         sub_index = 0
         for sub_coordinate in sub_coordinates[image_index]:
-            distances = list(map(lambda centers: pixelization.compute_squared_separation(sub_coordinate, centers),
+            distances = list(map(lambda centers: compute_squared_separation(sub_coordinate, centers),
                                  source_centers))
 
             image_sub_to_source[image_index, sub_index] = (np.argmin(distances))
             sub_index += 1
 
     return image_sub_to_source
+
+
+class MockMapperCluster(object):
+
+    def __init__(self, cluster_to_image, image_to_cluster):
+
+        self.cluster_to_image = cluster_to_image
+        self.image_to_cluster = image_to_cluster
 
 
 class TestPixelization:
@@ -120,6 +132,17 @@ class TestPixelization:
                   [[  0.75,   0.25,      0,      0,     0,     0],
                    [     0,      0,    1.0,      0,     0,     0],
                    [0.1875, 0.1875, 0.1875, 0.1875, 0.125, 0.125]])).all()
+
+
+    class TestComputeRegularizationWeights:
+
+        def test__constant_regularization_schemes__weights_are_array_of_size_pixels_with_regularization_value(self):
+
+            pix = pixelization.Pixelization(pixels=4, regularization_coefficients=(10.0,))
+
+            weights = pix.compute_regularization_weights()
+
+            assert (weights == np.array([10.0, 10.0, 10.0, 10.0])).all()
 
 
     class TestRegularizationMatrix(object):
@@ -240,7 +263,7 @@ class TestPixelization:
             source_neighbors = np.array([[2], [3], [0], [1]])
             regularization_weights = np.ones((4))
 
-            pix = pixelization.VoronoiPixelization(pixels=4)
+            pix = pixelization.Pixelization(pixels=4)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -249,7 +272,7 @@ class TestPixelization:
             # Here, we define the source_neighbors first here and make the B matrices based on them.
 
             # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
-            # have to have as many B matrices as we do the source pixel with the most Voronoi vertices. We can combine the
+            # have to have as many B matrices as we do the source pixel with the most  vertices. We can combine the
             # rows of each B matrix wherever we like ;0.
 
             source_neighbors = np.array([[1, 2], [0], [0]])
@@ -270,7 +293,7 @@ class TestPixelization:
 
             regularization_weights = np.ones((3))
 
-            pix = pixelization.VoronoiPixelization(pixels=3)
+            pix = pixelization.Pixelization(pixels=3)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -296,7 +319,7 @@ class TestPixelization:
             source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
             regularization_weights = np.ones((4))
 
-            pix = pixelization.VoronoiPixelization(pixels=4)
+            pix = pixelization.Pixelization(pixels=4)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -348,7 +371,7 @@ class TestPixelization:
 
             regularization_weights = np.ones((6))
 
-            pix = pixelization.VoronoiPixelization(pixels=6)
+            pix = pixelization.Pixelization(pixels=6)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -376,7 +399,7 @@ class TestPixelization:
 
             source_neighbors = [[1], [0], []]
 
-            pix = pixelization.VoronoiPixelization(pixels=3)
+            pix = pixelization.Pixelization(pixels=3)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -411,7 +434,7 @@ class TestPixelization:
 
             source_neighbors = [[1, 2], [0, 2, 3], [0, 1], [1]]
 
-            pix = pixelization.VoronoiPixelization(pixels=4)
+            pix = pixelization.Pixelization(pixels=4)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -461,77 +484,13 @@ class TestPixelization:
             test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
                                          test_regularization_matrix_3 + test_regularization_matrix_4
 
-            pix = pixelization.VoronoiPixelization(pixels=6)
+            pix = pixelization.Pixelization(pixels=6)
             regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
 
 class TestVoronoiPixelization:
-
-
-    class TestKMeans:
-
-        def test__simple_points__sets_up_two_clusters(self):
-
-            cluster_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
-
-            pix = pixelization.VoronoiPixelization(pixels=2)
-
-            kmeans = pix.kmeans_cluster(cluster_coordinates)
-
-            assert [2.0, 2.0] in kmeans.cluster_centers_
-            assert [1.0, 1.0] in kmeans.cluster_centers_
-
-            assert list(kmeans.labels_).count(0) == 3
-            assert list(kmeans.labels_).count(1) == 3
-
-        def test__simple_points__sets_up_three_clusters(self):
-            cluster_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
-                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
-
-            pix = pixelization.VoronoiPixelization(pixels=3)
-
-            kmeans = pix.kmeans_cluster(cluster_coordinates)
-
-            assert [2.0, 2.0] in kmeans.cluster_centers_
-            assert [1.0, 1.0] in kmeans.cluster_centers_
-            assert [-1.0, -1.0] in kmeans.cluster_centers_
-
-            assert list(kmeans.labels_).count(0) == 3
-            assert list(kmeans.labels_).count(1) == 3
-            assert list(kmeans.labels_).count(2) == 3
-
-        def test__simple_points__sets_up_three_clusters_more_points_in_third_cluster(self):
-            cluster_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
-
-                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
-                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
-
-            pix = pixelization.VoronoiPixelization(pixels=3)
-
-            kmeans = pix.kmeans_cluster(cluster_coordinates)
-
-            kmeans.cluster_centers_ = list(map(lambda x: pytest.approx(list(x), 1e-3), kmeans.cluster_centers_))
-
-            assert [2.0, 2.0] in kmeans.cluster_centers_
-            assert [1.0, 1.0] in kmeans.cluster_centers_
-            assert [-1.0, -1.0] in kmeans.cluster_centers_
-
-            print(kmeans.labels_)
-
-            assert list(kmeans.labels_).count(0) == 3 or 6 or 12
-            assert list(kmeans.labels_).count(1) == 3 or 6 or 12
-            assert list(kmeans.labels_).count(2) == 3 or 6 or 12
-
-            assert list(kmeans.labels_).count(0) != list(kmeans.labels_).count(1) != list(kmeans.labels_).count(2)
 
 
     class TestComputeVoronoi:
@@ -543,7 +502,7 @@ class TestVoronoiPixelization:
                                [0.0, 0.0],
                                [-1.0, -1.0], [1.0, -1.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(points)
 
             voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
@@ -561,7 +520,7 @@ class TestVoronoiPixelization:
                                [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                                [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=9, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=9, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(points)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
@@ -581,7 +540,7 @@ class TestVoronoiPixelization:
                                [0.0, 0.0],
                                [-1.0, -1.0], [1.0, -1.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(points)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
@@ -608,7 +567,7 @@ class TestVoronoiPixelization:
                                [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                                [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=9, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=9, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(points)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
@@ -643,7 +602,7 @@ class TestVoronoiPixelization:
                                [0.0, 0.0],
                                [-1.0, -1.0], [1.0, -1.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(points)
             neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
@@ -661,7 +620,7 @@ class TestVoronoiPixelization:
                                [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
                                [0.0, 2.0], [1.0, 2.0], [2.0, 2.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=9, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=9, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(points)
             neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
@@ -676,7 +635,7 @@ class TestVoronoiPixelization:
             assert set(neighbors[8]) == set([5, 7])
 
 
-    class TestComputeSubToSource:
+    class TestSubToSourceViaNearestNeighborsForTesting:
 
         def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
 
@@ -720,63 +679,8 @@ class TestVoronoiPixelization:
             assert image_sub_to_source[1, 1] == 0
             assert image_sub_to_source[1, 2] == 5
 
-        def test__find_separation_of_coordinate_and_nearest_cluster_source_pixel__simple_values(self):
-            source_pixel_centers = [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]
 
-            sub_coordinate = [1.5, 0.0]
-
-            nearest_cluster_source_pixel_index = 0
-
-            separation0 = pixelization.compute_sub_to_nearest_sparse_source(source_pixel_centers,
-                                                                            sub_coordinate,
-                                                                            nearest_cluster_source_pixel_index)
-
-            nearest_cluster_source_pixel_index = 1
-
-            separation1 = pixelization.compute_sub_to_nearest_sparse_source(source_pixel_centers,
-                                                                            sub_coordinate,
-                                                                            nearest_cluster_source_pixel_index)
-
-            nearest_cluster_source_pixel_index = 2
-
-            separation2 = pixelization.compute_sub_to_nearest_sparse_source(source_pixel_centers,
-                                                                            sub_coordinate,
-                                                                            nearest_cluster_source_pixel_index)
-
-            assert separation0 == 1.5 ** 2
-            assert separation1 == 0.5 ** 2
-            assert separation2 == 0.5 ** 2
-
-        def test__find_separation_and_index_of_nearest_neighboring_source_pixel__simple_case(self):
-            sub_coordinate = np.array([0.0, 0.0])
-            source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5]])
-
-            # Lets assume we're currently on source_pixel 0 and all other source_pixels are neighbors
-
-            source_pixel_neighbors = [1, 2, 3, 4]
-
-            index, separation = pixelization.compute_nearest_neighboring_source_and_distance(sub_coordinate,
-                                                                                             source_pixel_centers,
-                                                                                             source_pixel_neighbors)
-
-            assert separation == (-0.5) ** 2
-            assert index == 4
-
-        def test__find_separation_and_index_of_nearest_neighboring_source_pixel__skips_if_not_a_neighbor(self):
-            sub_coordinate = np.array([0.0, 0.0])
-            source_pixel_centers = np.array([[0.0, 0.0], [-1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, -0.5], [0.0, -0.01]])
-
-            # Lets assume we're currently on source_pixel 0 and the new source_pixel added above is not a neighbor (this doesn't make
-            # sense geometrically, but tests the code functionality).
-
-            source_pixel_neighbors = [1, 2, 3, 4]
-
-            index, separation = pixelization.compute_nearest_neighboring_source_and_distance(sub_coordinate,
-                                                                                             source_pixel_centers,
-                                                                                             source_pixel_neighbors)
-
-            assert separation == (-0.5) ** 2
-            assert index == 4
+    class TestComputeSubToSource:
 
         def test__sub_coordinates_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs(self):
 
@@ -794,7 +698,7 @@ class TestVoronoiPixelization:
                                           [0.0, 0.0],
                                           [1.0, 1.0]])
 
-            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(source_centers)
             source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
@@ -829,7 +733,7 @@ class TestVoronoiPixelization:
             image_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                           [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
 
-            pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficient=1.0)
+            pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(source_centers)
             source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
@@ -846,3 +750,347 @@ class TestVoronoiPixelization:
                 sub_coordinates, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
 
             assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
+
+
+class TestClusterPixelization:
+
+    def test__5_simple_coordinates__no_sub_grid__sets_up_correct_mapping_matrix(self):
+
+        # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
+
+        source_coordinates = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+
+        # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
+        # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+        cluster_to_image = np.array([0, 1, 2, 3, 4])
+        # We will assume that source-pixels with similar coordinates are near each other in the image.
+        image_to_cluster = np.array([0, 1, 2, 3, 4])
+
+        # There is no sub-grid, so our sub_coordinates are just the image coordinates (note the NumPy data structure
+        # ensures this has no sub-gridding)
+        source_sub_coordinates = np.array([[[1.0, 1.0]], [[-1.0, 1.0]], [[0.0, 0.0]], [[1.0, -1.0]], [[-1.0, -1.0]]])
+
+        mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+        pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
+
+        mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+
+        assert (mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0, 0.0, 0.0],
+                                            [0.0, 0.0, 1.0, 0.0, 0.0],
+                                            [0.0, 0.0, 0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
+
+    def test__15_coordinates__no_sub_grid__sets_up_correct_mapping_matrix(self):
+
+        # Source-plane comprises 15 coordinates, so 15 image pixels traced to the source-plane.
+
+        source_coordinates = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
+                                       [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
+                                       [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
+                                       [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
+                                       [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
+
+        # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
+        # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+        cluster_to_image = np.array([1, 4, 7, 10, 13])
+        # We will assume that source-pixels with similar coordinates are near each other in the image.
+        image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
+
+        # There is no sub-grid, so our sub_coordinates are just the image coordinates (note the NumPy data structure
+        # ensures this has no sub-gridding)
+        source_sub_coordinates = np.array([ [[0.9, 0.9]],   [[1.0, 1.0]],  [[1.1, 1.1]],
+                                            [[-0.9, 0.9]],  [[-1.0, 1.0]], [[-1.1, 1.1]],
+                                            [[-0.01, 0.01]],  [[0.0, 0.0]],    [[0.01, 0.01]],
+                                            [[0.9, -0.9]],  [[1.0, -1.0]], [[1.1, -1.1]],
+                                            [[-0.9, -0.9]], [[-1.0, -1.0]],  [[-1.1, -1.1]] ])
+
+        mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+        pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
+
+        mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+
+        assert (mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
+                                            [1.0, 0.0, 0.0, 0.0, 0.0],
+                                            [1.0, 0.0, 0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0, 0.0, 0.0],
+                                            [0.0, 0.0, 1.0, 0.0, 0.0],
+                                            [0.0, 0.0, 1.0, 0.0, 0.0],
+                                            [0.0, 0.0, 1.0, 0.0, 0.0],
+                                            [0.0, 0.0, 0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0, 0.0, 1.0],
+                                            [0.0, 0.0, 0.0, 0.0, 1.0],
+                                            [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
+
+    def test__5_simple_coordinates__include_sub_grid__sets_up_correct_mapping_matrix(self):
+
+        # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
+        source_coordinates = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+
+        # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
+        # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+        cluster_to_image = np.array([0, 1, 2, 3, 4])
+        # We will assume that source-pixels with similar coordinates are near each other in the image.
+        image_to_cluster = np.array([0, 1, 2, 3, 4])
+
+        # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
+        # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
+        # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the sub-grid.
+        source_sub_coordinates = np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]],
+                                           [[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0]],
+                                           [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                                           [[1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0]],
+                                           [[-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]]])
+
+        mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+        pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
+
+        mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+
+        assert (mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0,  0.0],
+                                            [0.0, 0.75, 0.25, 0.0,  0.0],
+                                            [0.0, 0.0,  1.0,  0.0,  0.0],
+                                            [0.0, 0.0,  0.25, 0.75, 0.0],
+                                            [0.0, 0.0,  0.25, 0.0,  0.75]])).all()
+
+
+class TestAmorphousPixelization:
+
+
+    class TestKMeans:
+
+        def test__simple_points__sets_up_two_clusters(self):
+
+            cluster_coordinates = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+            pix = pixelization.AmorphousPixelization(pixels=2)
+
+            source_centers, source_to_image = pix.kmeans_cluster(cluster_coordinates)
+
+            assert [2.0, 2.0] in source_centers
+            assert [1.0, 1.0] in source_centers
+
+            assert list(source_to_image).count(0) == 3
+            assert list(source_to_image).count(1) == 3
+
+        def test__simple_points__sets_up_three_clusters(self):
+
+            cluster_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
+                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+            pix = pixelization.AmorphousPixelization(pixels=3)
+
+            source_centers, source_to_image = pix.kmeans_cluster(cluster_coordinates)
+
+            assert [2.0, 2.0] in source_centers
+            assert [1.0, 1.0] in source_centers
+            assert [-1.0, -1.0] in source_centers
+
+            assert list(source_to_image).count(0) == 3
+            assert list(source_to_image).count(1) == 3
+            assert list(source_to_image).count(2) == 3
+
+        def test__simple_points__sets_up_three_clusters_more_points_in_third_cluster(self):
+
+            cluster_coordinates = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
+
+                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+                                           [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
+
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
+                                           [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+
+            pix = pixelization.AmorphousPixelization(pixels=3)
+
+            source_centers, source_to_image = pix.kmeans_cluster(cluster_coordinates)
+
+            source_centers = list(map(lambda x: pytest.approx(list(x), 1e-3), source_centers))
+
+            assert [2.0, 2.0] in source_centers
+            assert [1.0, 1.0] in source_centers
+            assert [-1.0, -1.0] in source_centers
+
+            assert list(source_to_image).count(0) == 3 or 6 or 12
+            assert list(source_to_image).count(1) == 3 or 6 or 12
+            assert list(source_to_image).count(2) == 3 or 6 or 12
+
+            assert list(source_to_image).count(0) != list(source_to_image).count(1) != list(source_to_image).count(2)
+
+
+    class TestComputeMappingMatrix:
+
+        def test__5_simple_coordinates__no_sub_grid__sets_up_correct_mapping_matrix(self):
+
+            # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
+            source_coordinates = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+
+            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
+            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+            cluster_to_image = np.array([0, 1, 2, 3, 4])
+            # We will assume that source-pixels with similar coordinates are near each other in the image.
+            image_to_cluster = np.array([0, 1, 2, 3, 4])
+
+            # There is no sub-grid, so our sub_coordinates are just the image coordinates (note the NumPy data structure
+            # ensures this has no sub-gridding)
+            source_sub_coordinates = np.array(
+                [[[1.0, 1.0]], [[-1.0, 1.0]], [[0.0, 0.0]], [[1.0, -1.0]], [[-1.0, -1.0]]])
+
+            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
+
+            mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+
+            # Due to the stochastic nature of the Amorphous pixelizations source pixel indexing, we can only test
+            # properties of the mapping matrix. The example below is what it looks like if the source-pixel indexing
+            # goes 0, 1, 2, 3, 4 relative to the image-pixels.
+
+            # [[1.0, 0.0, 0.0, 0.0, 0.0],
+            #  [0.0, 1.0, 0.0, 0.0, 0.0],
+            #  [0.0, 0.0, 1.0, 0.0, 0.0],
+            #  [0.0, 0.0, 0.0, 1.0, 0.0],
+            #  [0.0, 0.0, 0.0, 0.0, 1.0]]
+
+            assert np.sum(mapping_matrix) == 5.0
+            assert np.sum(mapping_matrix[:,0]) == 1.0
+            assert np.sum(mapping_matrix[:,1]) == 1.0
+            assert np.sum(mapping_matrix[:,2]) == 1.0
+            assert np.sum(mapping_matrix[:,3]) == 1.0
+            assert np.sum(mapping_matrix[:,4]) == 1.0
+            assert np.sum(mapping_matrix[0,:]) == 1.0
+            assert np.sum(mapping_matrix[1,:]) == 1.0
+            assert np.sum(mapping_matrix[2,:]) == 1.0
+            assert np.sum(mapping_matrix[3,:]) == 1.0
+            assert np.sum(mapping_matrix[4,:]) == 1.0
+
+        def test__15_coordinates__no_sub_grid__sets_up_correct_mapping_matrix(self):
+
+            # Source-plane comprises 15 coordinates, so 15 image pixels traced to the source-plane.
+
+            source_coordinates = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
+                                           [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
+                                           [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
+                                           [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
+                                           [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
+
+            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
+            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+            cluster_to_image = np.array([1, 4, 7, 10, 13])
+            # We will assume that source-pixels with similar coordinates are near each other in the image.
+            image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
+
+            # There is no sub-grid, so our sub_coordinates are just the image coordinates (note the NumPy data structure
+            # ensures this has no sub-gridding)
+            source_sub_coordinates = np.array([[[0.9, 0.9]], [[1.0, 1.0]], [[1.1, 1.1]],
+                                               [[-0.9, 0.9]], [[-1.0, 1.0]], [[-1.1, 1.1]],
+                                               [[-0.01, 0.01]], [[0.0, 0.0]], [[0.01, 0.01]],
+                                               [[0.9, -0.9]], [[1.0, -1.0]], [[1.1, -1.1]],
+                                               [[-0.9, -0.9]], [[-1.0, -1.0]], [[-1.1, -1.1]]])
+
+            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
+
+            mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+
+            # Due to the stochastic nature of the Amorphous pixelizations source pixel indexing, we can only test
+            # properties of the mapping matrix. The example below is what it looks like if the source-pixel indexing
+            # goes 0 -> 14 relative to the image-pixels.
+
+            #[[1.0, 0.0, 0.0, 0.0, 0.0],
+            # [1.0, 0.0, 0.0, 0.0, 0.0],
+            # [1.0, 0.0, 0.0, 0.0, 0.0],
+            # [0.0, 1.0, 0.0, 0.0, 0.0],
+            # [0.0, 1.0, 0.0, 0.0, 0.0],
+            # [0.0, 1.0, 0.0, 0.0, 0.0],
+            # [0.0, 0.0, 1.0, 0.0, 0.0],
+            # [0.0, 0.0, 1.0, 0.0, 0.0],
+            # [0.0, 0.0, 1.0, 0.0, 0.0],
+            # [0.0, 0.0, 0.0, 1.0, 0.0],
+            # [0.0, 0.0, 0.0, 1.0, 0.0],
+            # [0.0, 0.0, 0.0, 1.0, 0.0],
+            # [0.0, 0.0, 0.0, 0.0, 1.0],
+            # [0.0, 0.0, 0.0, 0.0, 1.0],
+            # [0.0, 0.0, 0.0, 0.0, 1.0]]
+
+            assert np.sum(mapping_matrix) == 15.0
+
+            assert np.sum(mapping_matrix[:,0]) == 3.0
+            assert np.sum(mapping_matrix[:,1]) == 3.0
+            assert np.sum(mapping_matrix[:,2]) == 3.0
+            assert np.sum(mapping_matrix[:,3]) == 3.0
+            assert np.sum(mapping_matrix[:,4]) == 3.0
+
+            assert np.sum(mapping_matrix[0,:]) == 1.0
+            assert np.sum(mapping_matrix[1,:]) == 1.0
+            assert np.sum(mapping_matrix[2,:]) == 1.0
+            assert np.sum(mapping_matrix[3,:]) == 1.0
+            assert np.sum(mapping_matrix[4,:]) == 1.0
+            assert np.sum(mapping_matrix[5,:]) == 1.0
+            assert np.sum(mapping_matrix[6,:]) == 1.0
+            assert np.sum(mapping_matrix[7,:]) == 1.0
+            assert np.sum(mapping_matrix[8,:]) == 1.0
+            assert np.sum(mapping_matrix[9,:]) == 1.0
+            assert np.sum(mapping_matrix[10,:]) == 1.0
+            assert np.sum(mapping_matrix[11,:]) == 1.0
+            assert np.sum(mapping_matrix[12,:]) == 1.0
+            assert np.sum(mapping_matrix[13,:]) == 1.0
+            assert np.sum(mapping_matrix[14,:]) == 1.0
+
+        def test__5_simple_coordinates__include_sub_grid__sets_up_correct_mapping_matrix(self):
+
+            # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
+            source_coordinates = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+
+            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
+            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+            cluster_to_image = np.array([0, 1, 2, 3, 4])
+            # We will assume that source-pixels with similar coordinates are near each other in the image.
+            image_to_cluster = np.array([0, 1, 2, 3, 4])
+
+            # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
+            # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
+            # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the sub-grid.
+            source_sub_coordinates = np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]],
+                                               [[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0]],
+                                               [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                                               [[1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0]],
+                                               [[-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]]])
+
+            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
+
+            mapping_matrix = pix.compute_mapping_matrix(source_coordinates, source_sub_coordinates, mapper_cluster)
+
+            # Due to the stochastic nature of the Amorphous pixelizations source pixel indexing, we can only test
+            # properties of the mapping matrix. The example below is what it looks like if the source-pixel indexing
+            # goes 0 -> 14 relative to the image-pixels.
+
+            #[[0.75,  0.0, 0.25,  0.0,  0.0],
+            # [ 0.0, 0.75, 0.25,  0.0,  0.0],
+            # [ 0.0,  0.0,  1.0,  0.0,  0.0],
+            # [ 0.0,  0.0, 0.25, 0.75,  0.0],
+            # [ 0.0,  0.0, 0.25,  0.0, 0.75]]
+
+            assert np.sum(mapping_matrix) == 5.0
+
+            assert np.sum(mapping_matrix[0,:]) == 1.0
+            assert np.sum(mapping_matrix[1,:]) == 1.0
+            assert np.sum(mapping_matrix[2,:]) == 1.0
+            assert np.sum(mapping_matrix[3,:]) == 1.0
+            assert np.sum(mapping_matrix[4,:]) == 1.0
+
+            assert np.sum(mapping_matrix[:,0]) or np.sum(mapping_matrix[:,1]) or np.sum(mapping_matrix[:,2]) or \
+                   np.sum(mapping_matrix[:,3]) or np.sum(mapping_matrix[:,4]) == 0.75

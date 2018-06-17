@@ -19,5 +19,9 @@ class CoordinatesException(Exception):
     pass
 
 
+class PixelizationException(Exception):
+    pass
+
+
 class PipelineException(Exception):
     pass
