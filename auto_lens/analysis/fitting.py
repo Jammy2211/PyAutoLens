@@ -2,23 +2,21 @@ import numpy as np
 
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
-
+from auto_lens.pixelization import pixelization
+from auto_lens.pixelization import covariance_matrix
 
 def likelihood_for_image_tracer_pixelization_and_instrumentation(image, tracer, pixelization, instrumentation):
     # TODO: This function should take a tracer and return a likelihood. The ModelAnalysis class in the pipeline module
     # TODO: will construct the tracer using a non linear optimiser and priors.
     return 1.0
 
-
-def fit_data_with_model(grid_data, grid_mappers, kernel_convolver, tracer):
-    """Fit the data using the ray_tracing model
+def fit_data_with_profiles(grid_data, kernel_convolver, tracer):
+    """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
     Parameters
     ----------
     grid_data : grids.GridDataCollection
-        The collection of grid data-sets (image, noise, psf, etc.)
-    grid_mappers : grids.GridMapperCollection
-        The collection of grid mappings, used to map images from 2d and 1d.
+        The collection of grid data-sets (image, noise, etc.)
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     tracer : ray_tracing.Tracer
@@ -80,3 +78,63 @@ def compute_likelihood(image, noise, model_image):
         The model image of the data.
     """
     return -0.5 * (np.sum(((image - model_image) / noise) ** 2.0 + np.log(2 * np.pi * noise ** 2.0)))
+
+
+def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster):
+    """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
+
+    Parameters
+    ----------
+    grid_data : grids.GridDataCollection
+        The collection of grid data-sets (image, noise, etc.)
+    pix : pixelization.Pixelization
+        The pixelization used to fit the data.
+    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+        The 2D Point Spread Function (PSF).
+    tracer : ray_tracing.Tracer
+        The ray-tracing configuration of the model galaxies and their profiles.
+    mapper_cluster : auto_lens.imaging.grids.GridMapperCluster
+        The mapping between cluster-pixels and image / source pixels.
+    """
+
+    # TODO : If pixelization is in galaxy or tracer, we can compute the mapping matrix from it.
+
+    mapping_matrix, regularization_matrix = pix.compute_mapping_and_regularization_matrix(
+        source_coordinates=tracer.source_plane.grids.image, source_sub_coordinates=tracer.source_plane.grids.sub,
+        mapper_cluster=mapper_cluster)
+
+    # TODO : Build matrix convolution into frame_convolution?
+    # Go over every column of mapping matrix, perform blurring
+    blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
+    for i in range(mapping_matrix.shape[1]):
+        blurred_mapping_matrix[:,i] = kernel_convolver.convolve_array(mapping_matrix[:,i])
+
+    # TODO : Use fast routines once ready.
+
+    cov_matrix = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, grid_data.noise)
+    d_vector = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, grid_data.image, grid_data.noise)
+
+    cov_reg_matrix = cov_matrix + regularization_matrix
+
+    s_vector = np.linalg.solve(cov_reg_matrix, d_vector)
+
+    # TODO : The likelihood of a pixelization has additional terms (determinants of cov and reg matrices), so need to
+    # TODO : Write routine which computes them.
+
+    model_image = pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
+
+    # likelihood = compute_pixelization_likelihood(grid_data.image, grid_data.noise, model_image, s_vector,
+    # cov_reg_matrix, regularization_matrix)
+
+    return model_image
+
+# TODO : Put this here for now as it uses the blurred mapping matrix (and thus the PSF). Move to pixelization?
+def pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix):
+    """ Map the reconstructioon source s_vecotr back to the image-plane to compute the pixelization's model-image.
+    """
+    pixelization_model_image  = np.zeros(blurred_mapping_matrix.shape[0])
+    for i in range(blurred_mapping_matrix.shape[0]):
+        for j in range(len(s_vector)):
+            pixelization_model_image[i] += s_vector[j] * blurred_mapping_matrix[i,j]
+
+    return pixelization_model_image

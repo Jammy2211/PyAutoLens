@@ -58,7 +58,7 @@ matrix individually and combine them to solve for S.
 
 Schematic of fitting function:
 
-def fit_data_with_model(hyper_datas, grid_datas, grid_mappers, tracer):
+def fit_data_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer):
 
     hyper_datas_fit = hyper_datas
     grid_datas_fit = grid_datas
