@@ -202,7 +202,7 @@ class ModelMapper(object):
                     result.append(value)
         return result
 
-    def from_prior_medians(self):
+    def physical_values_from_prior_medians(self):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.

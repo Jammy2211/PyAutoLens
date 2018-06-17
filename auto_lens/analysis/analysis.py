@@ -85,7 +85,17 @@ class Analysis(object):
             An object comprising the final model instances generated and a corresponding likelihood
         """
         image_grid_collection = grids.GridCoordsCollection.from_mask(mask)
-        run = Analysis.Run(image, image_grid_collection, self.model_mapper, self.fitting_function)
+
+        # TODO : For multinest, the fitness function returns a likelihood. For the Downhill Simplex, it returns a
+        # TODO : chi squared (-2.0 * likelihood) - this seemed like the best place to add the clause in.
+        # TODO : This is currently untested.
+
+        if type(self.non_linear_optimizer) is non_linear.DownhillSimplex:
+            return_chi_squared = True
+        else:
+            return_chi_squared = False
+
+        run = Analysis.Run(image, image_grid_collection, self.model_mapper, self.fitting_function, return_chi_squared)
 
         kwargs.update(self.__dict__)
 
@@ -112,7 +122,7 @@ class Analysis(object):
             self.likelihood = run.likelihood
 
     class Run(object):
-        def __init__(self, image, image_grid_collection, model_mapper, fitting_function):
+        def __init__(self, image, image_grid_collection, model_mapper, fitting_function, return_chi_squared=False):
             """
             An object created when the analysis is run. Model class and model instance arguments are set by the analysis
 
@@ -124,11 +134,14 @@ class Analysis(object):
                 An object storing grids used to map between the image and arrays used in the analysis
             model_mapper: ModelMapper
                 A class used to bridge between non linear unit vectors and class instances
+            return_chi_squared : bool
+                Whether the fitness function returns a likelihood (default, false) or a chi_squared value.
             """
             self.image = image
             self.image_grid_collection = image_grid_collection
             self.model_mapper = model_mapper
             self.fitting_function = fitting_function
+            self.return_chi_squared = return_chi_squared
 
         # noinspection PyAttributeOutsideInit,PyUnresolvedReferences
         def fitness_function(self, physical_values):
@@ -168,6 +181,10 @@ class Analysis(object):
                                                     tracer,
                                                     self.pixelization,
                                                     self.instrumentation)
+
+            if self.return_chi_squared is True:
+                self.likelihood = -2.0*self.likelihood
+
             return self.likelihood
 
 

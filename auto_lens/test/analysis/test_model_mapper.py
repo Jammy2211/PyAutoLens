@@ -443,7 +443,7 @@ class TestModelInstancesRealClasses:
             test_config,
             profile_1=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.from_prior_medians()
+        model_map = collection.physical_values_from_prior_medians()
 
         model_2 = collection.from_unit_vector([0.5, 0.5, 0.5, 0.5])
 
@@ -457,7 +457,7 @@ class TestModelInstancesRealClasses:
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.from_prior_medians()
+        model_map = collection.physical_values_from_prior_medians()
 
         model_2 = collection.from_unit_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
 
@@ -478,7 +478,7 @@ class TestModelInstancesRealClasses:
 
         collection.profile_1.axis_ratio = collection.profile_1.phi
 
-        model_map = collection.from_prior_medians()
+        model_map = collection.physical_values_from_prior_medians()
 
         model_2 = collection.from_unit_vector([0.5, 0.5, 0.5])
 
