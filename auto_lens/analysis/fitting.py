@@ -79,7 +79,6 @@ def compute_likelihood(image, noise, model_image):
     """
     return -0.5 * (np.sum(((image - model_image) / noise) ** 2.0 + np.log(2 * np.pi * noise ** 2.0)))
 
-
 def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
@@ -129,6 +128,28 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
     return model_image
 
 # TODO : Put this here for now as it uses the blurred mapping matrix (and thus the PSF). Move to pixelization?
+
+# TODO : Speed this up using source_pixel neighbors list to skip sparsity (see regularization matrix calculation)
+def pixelization_sum_of_regularizations(s_vector, regularizaton_matrix):
+    """ Compute the regularization term of a pixelization's Bayesian likelihood function. This represents the sum \
+     of the difference in fluxes between every pair of neighboring source-pixels. This is computed as:
+
+     s_T * H * s = s_vector.T * regularization_matrix * s_vector
+
+     The term is referred to as 'G_l' in Warren & Dye 2003, Nightingale & Dye 2015.
+
+     The above works include the regularization coefficient (lambda) in this calculation. In PyAutoLens, this is  \
+     already in the regularization matrix and thus included in the matrix multiplication.
+
+     Parameters
+     -----------
+     s_vector : ndarray
+        1D vector of the reconstructed source fluxes.
+    regularization_matrix : ndarray
+        The matrix encoding which source-pixel pairs are regularized with one another.
+     """
+    return np.matmul(s_vector.T, np.matmul(regularizaton_matrix, s_vector))
+
 def pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix):
     """ Map the reconstructioon source s_vecotr back to the image-plane to compute the pixelization's model-image.
     """
