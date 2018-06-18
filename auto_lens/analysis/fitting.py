@@ -150,6 +150,19 @@ def pixelization_sum_of_regularizations(s_vector, regularizaton_matrix):
      """
     return np.matmul(s_vector.T, np.matmul(regularizaton_matrix, s_vector))
 
+# TODO : Cholesky decomposition can also use source pixel neighbors list to skip sparsity.
+def log_determinant_of_positive_definite_matrix(matrix):
+    """There are two terms in the pixelization's Bayesian likelihood funcition which require the log determinant of \
+    a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
+
+    ln[det(F + H)] = ln[det(cov_reg_matrix)]
+    ln[det(H)]     = ln[det(regularization_matrix)]
+
+    Both of the above matrices are positive-definite, which means their log_determinant can be computed efficiently \
+    (compared to using np.det) by using a Cholesky decomposition first and summing the log of each diagonal term.
+    """
+    return 2.0*np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
+
 def pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix):
     """ Map the reconstructioon source s_vecotr back to the image-plane to compute the pixelization's model-image.
     """
