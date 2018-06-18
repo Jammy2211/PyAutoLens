@@ -54,31 +54,6 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     """
     return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
 
-def compute_likelihood(image, noise, model_image):
-    """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \
-    image and model ray-tracing image. The likelihood consists of two terms:
-
-    Chi-squared term - The residuals (model - data) of every pixel divided by the noise in each pixel, all squared.
-    [Chi_Squared_Term] = sum(([Residuals] / [Noise]) ** 2.0)
-
-    The overall normalization of the noise is also included, by summing the log noise value in each pixel:
-    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
-
-    These are summed and multiplied by -0.5 to give the likelihood:
-
-    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term]
-
-    Parameters
-    ----------
-    image : grids.GridData
-        The image data.
-    noise : grids.GridData
-        The noise in each pixel.
-    model_image : grids.GridData
-        The model image of the data.
-    """
-    return -0.5 * (np.sum(((image - model_image) / noise) ** 2.0 + np.log(2 * np.pi * noise ** 2.0)))
-
 def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
@@ -117,20 +92,85 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
 
     s_vector = np.linalg.solve(cov_reg_matrix, d_vector)
 
-    # TODO : The likelihood of a pixelization has additional terms (determinants of cov and reg matrices), so need to
-    # TODO : Write routine which computes them.
-
     model_image = pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
 
-    # likelihood = compute_pixelization_likelihood(grid_data.image, grid_data.noise, model_image, s_vector,
-    # cov_reg_matrix, regularization_matrix)
-
-    return model_image
+    return compute_bayesian_evidence(grid_data.image, grid_data.noise, model_image, s_vector, cov_reg_matrix,
+                                     regularization_matrix)
 
 # TODO : Put this here for now as it uses the blurred mapping matrix (and thus the PSF). Move to pixelization?
+def pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix):
+    """ Map the reconstructioon source s_vecotr back to the image-plane to compute the pixelization's model-image.
+    """
+    pixelization_model_image  = np.zeros(blurred_mapping_matrix.shape[0])
+    for i in range(blurred_mapping_matrix.shape[0]):
+        for j in range(len(s_vector)):
+            pixelization_model_image[i] += s_vector[j] * blurred_mapping_matrix[i,j]
+
+    return pixelization_model_image
+
+def compute_likelihood(image, noise, model_image):
+    """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \
+    image and model ray-tracing image. The likelihood consists of two terms:
+
+    Chi-squared term - The residuals (model - data) of every pixel divided by the noise in each pixel, all squared.
+    [Chi_Squared_Term] = sum(([Residuals] / [Noise]) ** 2.0)
+
+    The overall normalization of the noise is also included, by summing the log noise value in each pixel:
+    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
+
+    These are summed and multiplied by -0.5 to give the likelihood:
+
+    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term]
+
+    Parameters
+    ----------
+    image : grids.GridData
+        The image data.
+    noise : grids.GridData
+        The noise in each pixel.
+    model_image : grids.GridData
+        The model image of the data.
+    """
+    return -0.5 * (compute_chi_sq_term(image, noise, model_image) + compute_noise_term(noise))
+
+def compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, regularization_matrix):
+    return -0.5 * (compute_chi_sq_term(image, noise, model_image)
+                   + compute_regularization_term(s_vector, regularization_matrix)
+                   + compute_log_determinant_of_matrix(cov_reg_matrix)
+                   - compute_log_determinant_of_matrix(regularization_matrix)
+                   + compute_noise_term(noise))
+
+def compute_chi_sq_term(image, noise, model_image):
+    """Compute the chi-squared of a model image's fit to the data, by taking the difference between the observed \
+    image and model ray-tracing image, dividing by the noise in each pixel and squaring:
+
+    [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
+
+    Parameters
+    ----------
+    image : grids.GridData
+        The image data.
+    noise : grids.GridData
+        The noise in each pixel.
+    model_image : grids.GridData
+        The model image of the data.
+    """
+    return np.sum(((image - model_image) / noise) ** 2.0)
+
+def compute_noise_term(noise):
+    """Compute the noise normalization term of an image, which is computed by summing the noise in every pixel:
+
+    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
+
+    Parameters
+    ----------
+    noise : grids.GridData
+        The noise in each pixel.
+    """
+    return np.sum(np.log(2 * np.pi * noise ** 2.0))
 
 # TODO : Speed this up using source_pixel neighbors list to skip sparsity (see regularization matrix calculation)
-def pixelization_sum_of_regularizations(s_vector, regularizaton_matrix):
+def compute_regularization_term(s_vector, regularizaton_matrix):
     """ Compute the regularization term of a pixelization's Bayesian likelihood function. This represents the sum \
      of the difference in fluxes between every pair of neighboring source-pixels. This is computed as:
 
@@ -145,13 +185,13 @@ def pixelization_sum_of_regularizations(s_vector, regularizaton_matrix):
      -----------
      s_vector : ndarray
         1D vector of the reconstructed source fluxes.
-    regularization_matrix : ndarray
+     regularization_matrix : ndarray
         The matrix encoding which source-pixel pairs are regularized with one another.
      """
     return np.matmul(s_vector.T, np.matmul(regularizaton_matrix, s_vector))
 
 # TODO : Cholesky decomposition can also use source pixel neighbors list to skip sparsity.
-def log_determinant_of_positive_definite_matrix(matrix):
+def compute_log_determinant_of_matrix(matrix):
     """There are two terms in the pixelization's Bayesian likelihood funcition which require the log determinant of \
     a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
 
@@ -160,15 +200,10 @@ def log_determinant_of_positive_definite_matrix(matrix):
 
     Both of the above matrices are positive-definite, which means their log_determinant can be computed efficiently \
     (compared to using np.det) by using a Cholesky decomposition first and summing the log of each diagonal term.
+
+    Parameters
+    -----------
+    matrix : ndarray
+        The positive-definite matrix the log determinant is computed for.
     """
     return 2.0*np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
-
-def pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix):
-    """ Map the reconstructioon source s_vecotr back to the image-plane to compute the pixelization's model-image.
-    """
-    pixelization_model_image  = np.zeros(blurred_mapping_matrix.shape[0])
-    for i in range(blurred_mapping_matrix.shape[0]):
-        for j in range(len(s_vector)):
-            pixelization_model_image[i] += s_vector[j] * blurred_mapping_matrix[i,j]
-
-    return pixelization_model_image
