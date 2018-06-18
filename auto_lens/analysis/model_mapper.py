@@ -118,7 +118,7 @@ class ModelMapper(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {prior[1]: prior for _, prior_model in self.prior_models for prior in
+        return {"{}_{}".format(name, prior[1]): prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
 
     @property
