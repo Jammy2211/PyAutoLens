@@ -84,6 +84,8 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         galaxy: Galaxy
             A galaxy generated for this GalaxyPrior
         """
+        print(model_instance.__dict__)
+
         light_profile_instances = []
         mass_profile_instances = []
         try:
