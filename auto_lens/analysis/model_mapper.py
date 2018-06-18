@@ -110,7 +110,7 @@ class ModelMapper(object):
 
     @property
     def prior_models(self):
-        return list(filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.items()))
+        return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
     def prior_set(self):
@@ -403,7 +403,11 @@ class GaussianPrior(Prior):
         return 'GaussianPrior, mean = ' + str(self.mean) + ', sigma = ' + str(self.sigma)
 
 
-class PriorModel(object):
+class AbstractPriorModel:
+    pass
+
+
+class PriorModel(AbstractPriorModel):
     """Object comprising class and associated priors"""
 
     def __init__(self, cls, config=None):
