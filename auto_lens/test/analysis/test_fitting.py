@@ -335,6 +335,7 @@ class TestComputeBlurredImages:
 class TestLikelihood:
 
     def test__model_matches_data__noise_all_2s__lh_is_noise_term(self):
+
         image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
         noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
         model_image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
@@ -379,13 +380,13 @@ class TestLikelihood:
         assert likelihood == pytest.approx(-0.5 * (chi_sq_term + noise_term), 1e-4)
 
 
-class TestPixelSumOfRegularization:
+class TestComputeRegularizationTerm:
 
     def test__s_vector_all_1s__regularization_matrix_simple(self):
 
         s_vector = np.array([1.0, 1.0, 1.0])
 
-        regularizatiton_matrix = np.array([[1.0, 0.0, 0.0],
+        regularization_matrix = np.array([[1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
                                            [0.0, 0.0, 1.0]])
 
@@ -403,15 +404,15 @@ class TestPixelSumOfRegularization:
         #                                   [1.0]
         #                                   [1.0]
 
-        assert fitting.pixelization_sum_of_regularizations(s_vector, regularizatiton_matrix) == 3.0
+        assert fitting.compute_regularization_term(s_vector, regularization_matrix) == 3.0
 
     def test__s_vector_and_regularization_matrix_range_of_values(self):
 
         s_vector = np.array([2.0, 3.0, 5.0])
 
-        regularizatiton_matrix = np.array([[1.0,  1.0,  0.0],
-                                           [1.0,  2.0, -2.0],
-                                           [0.0, -2.0,  1.0]])
+        regularization_matrix = np.array([[ 2.0, -1.0,  0.0],
+                                          [-1.0,  2.0, -1.0],
+                                          [ 0.0, -1.0,  2.0]])
 
         # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
 
@@ -419,19 +420,30 @@ class TestPixelSumOfRegularization:
 
         # Matrix multiplication:
 
-        # s_T * H = [2.0, 3.0, 5.0] * [1.0,  1.0,  1.0] = [(2.0*1.0) + (3.0* 1.0) + (5.0 *0.0)] = [5.0, -2.0, -1.0]
-        #                             [1.0,  2.0, -2.0]   [(2.0*1.0) + (3.0* 2.0) + (5.0*-2.0)]
-        #                             [1.0, -2.0,  1.0]   [(2.0*0.0) + (3.0*-2.0) + (5.0 *1.0)]
+        # s_T * H = [2.0, 3.0, 5.0] * [2.0,  -1.0,  0.0] = [(2.0* 2.0) + (3.0*-1.0) + (5.0 *0.0)] = [1.0, -1.0, 7.0]
+        #                             [-1.0,  2.0, -1.0]   [(2.0*-1.0) + (3.0* 2.0) + (5.0*-1.0)]
+        #                             [ 0.0, -1.0,  2.0]   [(2.0* 0.0) + (3.0*-1.0) + (5.0 *2.0)]
 
-        # (s_T * H) * s = [5.0, -2.0, -1.0] * [2.0] = -1.0
-        #                                     [3.0]
-        #                                     [5.0]
+        # (s_T * H) * s = [1.0, -1.0, 7.0] * [2.0] = 34.0
+        #                                    [3.0]
+        #                                    [5.0]
 
-        assert fitting.pixelization_sum_of_regularizations(s_vector, regularizatiton_matrix) == -1.0
+        assert fitting.compute_regularization_term(s_vector, regularization_matrix) == 34.0
+
 
 class TestLogDetMatrix:
 
     def test__simple_example_positive_definite_matrix(self):
+
+        matrix = np.array([[1.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0],
+                           [0.0, 0.0, 1.0]])
+
+        log_determinant = np.log(np.linalg.det(matrix))
+
+        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix(matrix), 1e-4)
+
+    def test__simple_example_positive_definite_matrix_2(self):
 
         matrix = np.array([[ 2.0, -1.0,  0.0],
                            [-1.0,  2.0, -1.0],
@@ -439,7 +451,8 @@ class TestLogDetMatrix:
 
         log_determinant = np.log(np.linalg.det(matrix))
 
-        assert log_determinant == pytest.approx(fitting.log_determinant_of_positive_definite_matrix(matrix), 1e-4)
+        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix(matrix), 1e-4)
+
 
 class TestPixModelImageFromSVector:
 
@@ -474,3 +487,86 @@ class TestPixModelImageFromSVector:
         # Image pixel 2 maps to 1 sources pixxels -> value is 1.0
 
         assert (model_image == np.array([10.0, 8.0, 1.0])).all()
+
+
+class TestBayesianEvidence:
+
+    def test__simple_values(self):
+
+        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+        noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
+        model_image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+
+        s_vector = np.array([1.0, 1.0, 1.0])
+
+        cov_reg_matrix = np.array([[ 2.0, -1.0,  0.0],
+                                   [-1.0,  2.0, -1.0],
+                                   [ 0.0, -1.0,  2.0]])
+
+        reg_matrix = np.array([[1.0, 0.0, 0.0],
+                               [0.0, 1.0, 0.0],
+                               [0.0, 0.0, 1.0]])
+
+        evidence = fitting.compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, reg_matrix)
+
+        chi_sq_term = 0
+        reg_term = 3.0
+        log_det_cov_reg = np.log(np.linalg.det(cov_reg_matrix))
+        log_det_reg = np.log(np.linalg.det(reg_matrix))
+        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
+            2 * np.pi * 4.0)
+
+        assert evidence == pytest.approx(-0.5*(chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term), 1e-4)
+
+    def test__complicated_values(self):
+
+        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+        noise = grids.GridData(grid_data=np.array([1.0, 2.0, 3.0, 4.0]))
+        model_image = grids.GridData(grid_data=np.array([11.0, 10.0, 9.0, 8.0]))
+
+        s_vector = np.array([2.0, 3.0, 5.0])
+
+        cov_reg_matrix = np.array([[1.0, 0.0, 0.0],
+                               [0.0, 1.0, 0.0],
+                               [0.0, 0.0, 1.0]])
+
+        reg_matrix = np.array([[ 2.0, -1.0,  0.0],
+                               [-1.0,  2.0, -1.0],
+                               [ 0.0, -1.0,  2.0]])
+
+        evidence = fitting.compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, reg_matrix)
+
+        chi_sq_term = 1.0 + (1.0 / 9.0) + 0.25
+        reg_term = 34.0
+        log_det_cov_reg = np.log(np.linalg.det(cov_reg_matrix))
+        log_det_reg = np.log(np.linalg.det(reg_matrix))
+        noise_term = np.log(2 * np.pi * 1.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 9.0) + np.log(
+            2 * np.pi * 16.0)
+
+        assert evidence == pytest.approx(-0.5*(chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term), 1e-4)
+
+    def test__use_fitting_functions_to_compute_terms(self):
+
+        image = grids.GridData(grid_data=np.array([10.0, 100.0, 0.0, 10.0]))
+        noise = grids.GridData(grid_data=np.array([1.0, 2.0, 77.0, 4.0]))
+        model_image = grids.GridData(grid_data=np.array([11.0, 13.0, 9.0, 8.0]))
+
+        s_vector = np.array([8.0, 7.0, 3.0])
+
+        cov_reg_matrix = np.array([[1.0, 0.0, 0.0],
+                               [0.0, 1.0, 0.0],
+                               [0.0, 0.0, 1.0]])
+
+        reg_matrix = np.array([[ 2.0, -1.0,  0.0],
+                               [-1.0,  2.0, -1.0],
+                               [ 0.0, -1.0,  2.0]])
+
+        evidence = fitting.compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, reg_matrix)
+
+        chi_sq_term = fitting.compute_chi_sq_term(image, noise, model_image)
+        reg_term = fitting.compute_regularization_term(s_vector, reg_matrix)
+        log_det_cov_reg = fitting.compute_log_determinant_of_matrix(cov_reg_matrix)
+        log_det_reg = fitting.compute_log_determinant_of_matrix(reg_matrix)
+        noise_term = fitting.compute_noise_term(noise)
+
+        assert evidence == pytest.approx(-0.5*(chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term), 1e-4)
