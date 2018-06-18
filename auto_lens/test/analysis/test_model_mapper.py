@@ -116,7 +116,7 @@ class TestModelInstance(object):
 
         collection.add_class("mock_class", MockClass)
 
-        model_map = collection.from_unit_vector([1., 1.])
+        model_map = collection.instance_from_unit_vector([1., 1.])
 
         assert isinstance(model_map.mock_class, MockClass)
         assert model_map.mock_class.one == 1.
@@ -128,7 +128,7 @@ class TestModelInstance(object):
         collection.add_class("mock_class_1", MockClass)
         collection.add_class("mock_class_2", MockClass)
 
-        model_map = collection.from_unit_vector([1., 0., 0., 1.])
+        model_map = collection.instance_from_unit_vector([1., 0., 0., 1.])
 
         assert isinstance(model_map.mock_class_1, MockClass)
         assert isinstance(model_map.mock_class_2, MockClass)
@@ -147,7 +147,7 @@ class TestModelInstance(object):
 
         collection.mock_class_2.one = collection.mock_class_1.one
 
-        model_map = collection.from_unit_vector([1., 0., 0.])
+        model_map = collection.instance_from_unit_vector([1., 0., 0.])
 
         assert isinstance(model_map.mock_class_1, MockClass)
         assert isinstance(model_map.mock_class_2, MockClass)
@@ -165,7 +165,7 @@ class TestModelInstance(object):
 
         collection.mock_class.one = model_mapper.UniformPrior(100, 200)
 
-        model_map = collection.from_unit_vector([0., 0.])
+        model_map = collection.instance_from_unit_vector([0., 0.])
 
         assert model_map.mock_class.one == 100.
 
@@ -174,7 +174,7 @@ class TestModelInstance(object):
 
         collection.add_class("mock_profile", MockProfile)
 
-        model_map = collection.from_unit_vector([1., 0., 0.])
+        model_map = collection.instance_from_unit_vector([1., 0., 0.])
 
         assert model_map.mock_profile.centre == (1., 0.)
         assert model_map.mock_profile.intensity == 0.
@@ -186,7 +186,7 @@ class TestModelInstance(object):
 
         collection.mock_profile.centre.centre_0 = model_mapper.UniformPrior(1., 10.)
 
-        model_map = collection.from_unit_vector([1., 1., 1.])
+        model_map = collection.instance_from_unit_vector([1., 1., 1.])
 
         assert model_map.mock_profile.centre == (10., 1.)
 
@@ -197,7 +197,7 @@ class TestModelInstance(object):
 
         collection.mock_profile.centre.centre_1 = collection.mock_profile.centre.centre_0
 
-        model_map = collection.from_unit_vector([1., 0.])
+        model_map = collection.instance_from_unit_vector([1., 0.])
 
         assert model_map.mock_profile.centre == (1., 1.)
         assert model_map.mock_profile.intensity == 0.
@@ -211,7 +211,7 @@ class TestRealClasses(object):
                                               lens_mass_profile=mass_profiles.EllipticalCoredIsothermal,
                                               lens_light_profile=light_profiles.EllipticalCoreSersic)
 
-        model_map = collection.from_unit_vector(
+        model_map = collection.instance_from_unit_vector(
             [1 for _ in range(len(collection.priors_ordered_by_id))])
 
         assert isinstance(model_map.source_light_profile, light_profiles.EllipticalSersic)
@@ -232,7 +232,7 @@ class TestConfigFunctions:
         collection = model_mapper.ModelMapper(test_config,
                                               geometry_profile=geometry_profiles.Profile)
 
-        model_map = collection.from_unit_vector([1., 1.])
+        model_map = collection.instance_from_unit_vector([1., 1.])
 
         assert model_map.geometry_profile.centre == (1., 1.0)
 
@@ -240,7 +240,7 @@ class TestConfigFunctions:
         collection = model_mapper.ModelMapper(test_config,
                                               geometry_profile=geometry_profiles.Profile)
 
-        model_map = collection.from_physical_vector([10., 50.])
+        model_map = collection.instance_from_physical_vector([10., 50.])
 
         assert model_map.geometry_profile.centre == (10., 50.0)
 
@@ -248,7 +248,7 @@ class TestConfigFunctions:
         collection = model_mapper.ModelMapper(test_config,
                                               geometry_profile=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.from_unit_vector([1., 1., 1., 1.])
+        model_map = collection.instance_from_unit_vector([1., 1., 1., 1.])
 
         assert model_map.geometry_profile.centre == (1.0, 1.0)
 
@@ -262,7 +262,7 @@ class TestConfigFunctions:
                                               spherical_profile=geometry_profiles.SphericalProfile,
                                               exponential_light_profile=light_profiles.EllipticalExponential)
 
-        model_map = collection.from_unit_vector(
+        model_map = collection.instance_from_unit_vector(
             [1 for _ in range(len(collection.priors_ordered_by_id))])
 
         assert isinstance(model_map.elliptical_profile_1, geometry_profiles.EllipticalProfile)
@@ -328,7 +328,7 @@ class TestModelInstancesRealClasses:
             test_config,
             profile_1=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.from_unit_vector([0.25, 0.5, 0.75, 1.0])
+        model_map = collection.instance_from_unit_vector([0.25, 0.5, 0.75, 1.0])
 
         assert model_map.profile_1.centre == (0.25, 0.5)
         assert model_map.profile_1.axis_ratio == 1.5
@@ -340,7 +340,7 @@ class TestModelInstancesRealClasses:
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.from_unit_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+        model_map = collection.instance_from_unit_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
 
         assert model_map.profile_1.centre == (0.1, 0.2)
         assert model_map.profile_1.axis_ratio == 0.6
@@ -371,7 +371,7 @@ class TestModelInstancesRealClasses:
         collection.profile_3.axis_ratio = model_mapper.UniformPrior(0.0, 1.0)
         collection.profile_3.phi = model_mapper.UniformPrior(0.0, 1.0)
 
-        model_map = collection.from_unit_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
+        model_map = collection.instance_from_unit_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
 
         assert model_map.profile_1.centre == (0.1, 0.2)
         assert model_map.profile_1.axis_ratio == 0.3
@@ -407,7 +407,7 @@ class TestModelInstancesRealClasses:
         collection.profile_1.axis_ratio = collection.profile_1.phi
         collection.profile_3.centre.centre_1 = collection.profile_2.centre.centre_1
 
-        model_map = collection.from_unit_vector([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+        model_map = collection.instance_from_unit_vector([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
 
         assert model_map.profile_1.centre == (0.2, 0.3)
         assert model_map.profile_1.axis_ratio == 0.4
@@ -425,7 +425,7 @@ class TestModelInstancesRealClasses:
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.from_physical_vector(
+        model_map = collection.instance_from_physical_vector(
             [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
 
         assert model_map.profile_1.centre == (0.1, 0.2)
@@ -445,7 +445,7 @@ class TestModelInstancesRealClasses:
 
         model_map = collection.physical_values_from_prior_medians()
 
-        model_2 = collection.from_unit_vector([0.5, 0.5, 0.5, 0.5])
+        model_2 = collection.instance_from_unit_vector([0.5, 0.5, 0.5, 0.5])
 
         assert model_map.profile_1.centre == model_2.profile_1.centre == (0.5, 0.5)
         assert model_map.profile_1.axis_ratio == model_2.profile_1.axis_ratio == 1.0
@@ -459,7 +459,7 @@ class TestModelInstancesRealClasses:
 
         model_map = collection.physical_values_from_prior_medians()
 
-        model_2 = collection.from_unit_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+        model_2 = collection.instance_from_unit_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
 
         assert model_map.profile_1.centre == model_2.profile_1.centre == (0.5, 0.5)
         assert model_map.profile_1.axis_ratio == model_2.profile_1.axis_ratio == 1.0
@@ -480,7 +480,7 @@ class TestModelInstancesRealClasses:
 
         model_map = collection.physical_values_from_prior_medians()
 
-        model_2 = collection.from_unit_vector([0.5, 0.5, 0.5])
+        model_2 = collection.instance_from_unit_vector([0.5, 0.5, 0.5])
 
         assert model_map.profile_1.centre == model_2.profile_1.centre == (0.5, 0.5)
         assert model_map.profile_1.axis_ratio == model_2.profile_1.axis_ratio == 1.0
@@ -545,7 +545,7 @@ class TestIndependentPriorModel(object):
 
         assert len(mapper.prior_models) == 1
 
-        instance = mapper.from_physical_vector([1, 2])
+        instance = mapper.instance_from_physical_vector([1, 2])
 
         assert instance.prior_model.one == 1
         assert instance.prior_model.two == 2

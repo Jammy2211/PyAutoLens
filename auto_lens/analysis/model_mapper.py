@@ -158,7 +158,7 @@ class ModelMapper(object):
         return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
 
     def physical_values_ordered_by_class(self, hypercube_vector):
-        model_instance = self.from_unit_vector(hypercube_vector)
+        model_instance = self.instance_from_unit_vector(hypercube_vector)
         result = []
         for instance_key in sorted(model_instance.__dict__.keys()):
             instance = model_instance.__dict__[instance_key]
@@ -184,9 +184,9 @@ class ModelMapper(object):
             An object containing reconstructed model_mapper instances
 
         """
-        return self.from_unit_vector(unit_vector=[0.5] * len(self.prior_set))
+        return self.instance_from_unit_vector(unit_vector=[0.5] * len(self.prior_set))
 
-    def from_unit_vector(self, unit_vector):
+    def instance_from_unit_vector(self, unit_vector):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -210,7 +210,7 @@ class ModelMapper(object):
 
         return self.model_instance(arguments)
 
-    def from_physical_vector(self, physical_vector):
+    def instance_from_physical_vector(self, physical_vector):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
