@@ -4,6 +4,14 @@ from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens.analysis import model_mapper
 
 
+def is_light_profile(cls):
+    return issubclass(cls, light_profiles.LightProfile) and not issubclass(cls, mass_profiles.MassProfile)
+
+
+def is_mass_profile(cls):
+    return issubclass(cls, mass_profiles.MassProfile)
+
+
 class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
@@ -26,10 +34,9 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         """
 
         self.light_profile_dict = {key: value for key, value in kwargs.items() if
-                                   issubclass(value, light_profiles.LightProfile) and not
-                                   issubclass(value, mass_profiles.MassProfile)}
+                                   is_light_profile(value)}
         self.mass_profile_dict = {key: value for key, value in kwargs.items() if
-                                  issubclass(value, mass_profiles.MassProfile)}
+                                  is_mass_profile(value)}
 
         self.align_centres = align_centres
         self.align_orientations = align_orientations
@@ -67,6 +74,16 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items())]
 
     @property
+    def light_profile_prior_models(self):
+        return filter(
+            lambda prior_model: is_light_profile(prior_model.cls), self.prior_models)
+
+    @property
+    def mass_profile_prior_models(self):
+        return filter(
+            lambda prior_model: is_mass_profile(prior_model.cls), self.prior_models)
+
+    @property
     def priors(self):
         return [prior for prior_model in self.prior_models for prior in prior_model.priors]
 
@@ -100,24 +117,27 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return galaxy.Galaxy(light_profiles=light_profile_instances, mass_profiles=mass_profile_instances,
                              redshift=redshift)
 
-    # def instance_for_arguments(self, arguments):
-    #     """
-    #     Create an instance of the associated class for a set of arguments
-    #
-    #     Parameters
-    #     ----------
-    #     arguments: {Prior: value}
-    #         Dictionary mapping priors to attribute name and value pairs
-    #
-    #     Returns
-    #     -------
-    #         An instance of the class
-    #     """
-    #     model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
-    #     for tuple_prior in self.tuple_priors:
-    #         model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
-    #     return self.cls(**model_arguments)
-    #
+    def instance_for_arguments(self, arguments):
+        """
+        Create an instance of the associated class for a set of arguments
+
+        Parameters
+        ----------
+        arguments: {Prior: value}
+            Dictionary mapping priors to attribute name and value pairs
+
+        Returns
+        -------
+            An instance of the class
+        """
+        instance_light_profiles = map(lambda prior_model: prior_model.instance_for_arguments(arguments),
+                                      self.light_profile_prior_models)
+        instance_mass_profiles = map(lambda prior_model: prior_model.instance_for_arguments(arguments),
+                                     self.mass_profile_prior_models)
+        instance_redshift = self.redshift.instance_for_arguments(arguments)
+        return galaxy.Galaxy(light_profiles=instance_light_profiles, mass_profiles=instance_mass_profiles,
+                             redshift=instance_redshift)
+
     # def gaussian_prior_model_for_arguments(self, prior_arguments):
     #     new_model = PriorModel(self.cls, self.config)
     #
