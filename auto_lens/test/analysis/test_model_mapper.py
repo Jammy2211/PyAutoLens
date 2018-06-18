@@ -535,6 +535,21 @@ class TestPriorReplacement(object):
         assert isinstance(result.mock_class.intensity, model_mapper.GaussianPrior)
 
 
+class TestArguments(object):
+    def test_same_argument_name(self, test_config):
+        mapper = model_mapper.ModelMapper()
+
+        mapper.one = model_mapper.PriorModel(MockClass, test_config)
+        mapper.two = model_mapper.PriorModel(MockClass, test_config)
+
+        instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
+
+        assert instance.one.one == 1
+        assert instance.one.two == 2
+        assert instance.two.one == 3
+        assert instance.two.two == 4
+
+
 class TestIndependentPriorModel(object):
     def test_associate_prior_model(self):
         prior_model = model_mapper.PriorModel(MockClass, MockConfig())
@@ -549,3 +564,4 @@ class TestIndependentPriorModel(object):
 
         assert instance.prior_model.one == 1
         assert instance.prior_model.two == 2
+

@@ -118,7 +118,9 @@ class ModelMapper(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {"{}_{}".format(name, prior[1]): prior for name, prior_model in self.prior_models for prior in
+        # return {"{}_{}".format(name, prior[1]): prior for name, prior_model in self.prior_models for prior in
+        #         prior_model.priors}.values()
+        return {prior[1]: prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
 
     @property
@@ -206,7 +208,7 @@ class ModelMapper(object):
         arguments = dict(
             map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, unit_vector))
 
-        return self.model_instance(arguments)
+        return self.instance_from_arguments(arguments)
 
     def instance_from_physical_vector(self, physical_vector):
         """
@@ -229,9 +231,9 @@ class ModelMapper(object):
         arguments = dict(
             map(lambda prior, physical_unit: (prior[1], physical_unit), self.priors_ordered_by_id, physical_vector))
 
-        return self.model_instance(arguments)
+        return self.instance_from_arguments(arguments)
 
-    def model_instance(self, arguments):
+    def instance_from_arguments(self, arguments):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
