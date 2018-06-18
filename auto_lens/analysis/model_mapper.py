@@ -77,13 +77,6 @@ class ModelMapper(object):
 
         self.total_parameters = len(self.priors_ordered_by_id)
 
-    def make_prior(self, attribute_name, cls):
-        config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
-        if config_arr[0] == "u":
-            return UniformPrior(config_arr[1], config_arr[2])
-        elif config_arr[0] == "g":
-            return GaussianPrior(config_arr[1], config_arr[2])
-
     def add_classes(self, **kwargs):
         for key, value in kwargs.items():
             self.add_class(key, value)
@@ -110,31 +103,7 @@ class ModelMapper(object):
         if hasattr(self, name):
             raise exc.PriorException("Model mapper already has a prior model called {}".format(name))
 
-        arg_spec = inspect.getargspec(cls.__init__)
-
-        try:
-            defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
-        except TypeError:
-            defaults = {}
-
-        args = arg_spec.args[1:]
-
-        if 'settings' in defaults:
-            del defaults['settings']
-        if 'settings' in args:
-            args.remove('settings')
-
-        prior_model = PriorModel(cls)
-
-        for arg in args:
-            if arg in defaults and isinstance(defaults[arg], tuple):
-                tuple_prior = TuplePrior()
-                for i in range(len(defaults[arg])):
-                    attribute_name = "{}_{}".format(arg, i)
-                    setattr(tuple_prior, attribute_name, self.make_prior(attribute_name, cls))
-                setattr(prior_model, arg, tuple_prior)
-            else:
-                setattr(prior_model, arg, self.make_prior(arg, cls))
+        prior_model = PriorModel(cls, self.config)
 
         setattr(self, name, prior_model)
         return prior_model
@@ -437,7 +406,7 @@ class GaussianPrior(Prior):
 class PriorModel(object):
     """Object comprising class and associated priors"""
 
-    def __init__(self, cls):
+    def __init__(self, cls, config=None):
         """
         Parameters
         ----------
@@ -445,6 +414,38 @@ class PriorModel(object):
             The class associated with this instance
         """
         self.cls = cls
+        self.config = (config if config is not None else Config("{}/../config".format(path)))
+
+        arg_spec = inspect.getargspec(cls.__init__)
+
+        try:
+            defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
+        except TypeError:
+            defaults = {}
+
+        args = arg_spec.args[1:]
+
+        if 'settings' in defaults:
+            del defaults['settings']
+        if 'settings' in args:
+            args.remove('settings')
+
+        for arg in args:
+            if arg in defaults and isinstance(defaults[arg], tuple):
+                tuple_prior = TuplePrior()
+                for i in range(len(defaults[arg])):
+                    attribute_name = "{}_{}".format(arg, i)
+                    setattr(tuple_prior, attribute_name, self.make_prior(attribute_name, cls))
+                setattr(self, arg, tuple_prior)
+            else:
+                setattr(self, arg, self.make_prior(arg, cls))
+
+    def make_prior(self, attribute_name, cls):
+        config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
+        if config_arr[0] == "u":
+            return UniformPrior(config_arr[1], config_arr[2])
+        elif config_arr[0] == "g":
+            return GaussianPrior(config_arr[1], config_arr[2])
 
     @property
     def tuple_priors(self):
