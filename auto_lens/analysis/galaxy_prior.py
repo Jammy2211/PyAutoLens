@@ -1,14 +1,15 @@
 from auto_lens.analysis import galaxy
 from auto_lens import exc
 from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens.analysis import model_mapper
 
 
-class GalaxyPrior:
+class GalaxyPrior(object):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
     """
 
-    def __init__(self, name, model_mapper, align_centres=False, align_orientations=False, **kwargs):
+    def __init__(self, align_centres=False, align_orientations=False, config=None, **kwargs):
         """
         Parameters
         ----------
@@ -23,26 +24,22 @@ class GalaxyPrior:
             If True the same prior will be used for all the profiles orientations such that any generated profiles
             always have the same orientation
         """
-        self.name = name
 
-        self.light_profile_dict = {"{}_{}".format(name, key): value for key, value in kwargs.items() if
+        self.light_profile_dict = {key: value for key, value in kwargs.items() if
                                    issubclass(value, light_profiles.LightProfile) and not
                                    issubclass(value, mass_profiles.MassProfile)}
-        self.mass_profile_dict = {"{}_{}".format(name, key): value for key, value in kwargs.items() if
+        self.mass_profile_dict = {key: value for key, value in kwargs.items() if
                                   issubclass(value, mass_profiles.MassProfile)}
 
         self.align_centres = align_centres
         self.align_orientations = align_orientations
 
-        self.model_mapper = model_mapper
-
         profile_models = []
 
-        for name, cls in zip(self.light_profile_names, self.light_profile_classes):
-            profile_models.append(model_mapper.add_class(name, cls))
-
-        for name, cls in zip(self.mass_profile_names, self.mass_profile_classes):
-            profile_models.append(model_mapper.add_class(name, cls))
+        for name, cls in kwargs.items():
+            model = model_mapper.PriorModel(cls, config)
+            profile_models.append(model)
+            setattr(self, name, model)
 
         if self.align_centres:
             centre = profile_models[0].centre
@@ -54,19 +51,7 @@ class GalaxyPrior:
             for profile_model in profile_models:
                 profile_model.phi = phi
 
-        self.prior_models = profile_models + [
-            model_mapper.add_class(self.redshift_name.format(self.name), galaxy.Redshift)]
-
-    def __getattr__(self, item):
-        try:
-            return self.__getattribute__(item)
-        except AttributeError:
-            name = "{}_{}".format(self.name, item)
-            return getattr(self.model_mapper, name)
-
-    def override_prior_models(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self.model_mapper, "{}_{}".format(self.name, key), value)
+        self.red_shift = model_mapper.PriorModel(galaxy.Redshift, config)
 
     @property
     def light_profile_classes(self):
@@ -93,6 +78,10 @@ class GalaxyPrior:
             The name of the prior associated with redshift for this galaxy.
         """
         return "{}_redshift".format(self.name)
+
+    @property
+    def direct_priors(self):
+        return list(filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()))
 
     def galaxy_for_model_instance(self, model_instance):
         """
