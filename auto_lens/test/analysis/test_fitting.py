@@ -429,6 +429,18 @@ class TestPixelSumOfRegularization:
 
         assert fitting.pixelization_sum_of_regularizations(s_vector, regularizatiton_matrix) == -1.0
 
+class TestLogDetMatrix:
+
+    def test__simple_example_positive_definite_matrix(self):
+
+        matrix = np.array([[ 2.0, -1.0,  0.0],
+                           [-1.0,  2.0, -1.0],
+                           [ 0.0, -1.0,  2.0]])
+
+        log_determinant = np.log(np.linalg.det(matrix))
+
+        assert log_determinant == pytest.approx(fitting.log_determinant_of_positive_definite_matrix(matrix), 1e-4)
+
 class TestPixModelImageFromSVector:
 
     def test__s_vector_all_1s__simple_blurred_mapping_matrix__correct_model_image(self):
