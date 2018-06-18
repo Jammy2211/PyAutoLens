@@ -413,6 +413,7 @@ class PriorModel(object):
         cls: class
             The class associated with this instance
         """
+
         self.cls = cls
         self.config = (config if config is not None else Config("{}/../config".format(path)))
 
@@ -479,7 +480,7 @@ class PriorModel(object):
         return self.cls(**model_arguments)
 
     def gaussian_prior_model_for_arguments(self, prior_arguments):
-        new_model = PriorModel(self.cls)
+        new_model = PriorModel(self.cls, self.config)
 
         for tuple_prior in self.tuple_priors:
             setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(prior_arguments))
