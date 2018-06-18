@@ -68,8 +68,6 @@ class ModelMapper(object):
         """
         super(ModelMapper, self).__init__()
 
-        self.class_dict = classes
-
         self.config = (config if config is not None else Config("{}/../config".format(path)))
 
         for name, cls in classes.items():
@@ -562,10 +560,14 @@ class Config(object):
         for family_cls in family(cls):
             if self.has(family_cls.__module__, family_cls.__name__, attribute_name):
                 return self.get(family_cls.__module__, family_cls.__name__, attribute_name)
+
+        ini_filename = cls.__module__.split(".")[-1]
         raise exc.PriorException(
-            "The prior config for {}.{} and the prior configs of its parents do no contain {}".format(cls.__module__,
-                                                                                                      cls.__name__,
-                                                                                                      attribute_name))
+            "The prior config at {}/{} does not contain {} in {} or any of its parents".format(self.path,
+                                                                                               ini_filename,
+                                                                                               attribute_name,
+                                                                                               cls.__name__
+                                                                                               ))
 
     def get(self, module_name, class_name, attribute_name):
         """
