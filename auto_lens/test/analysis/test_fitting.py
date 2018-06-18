@@ -379,6 +379,56 @@ class TestLikelihood:
         assert likelihood == pytest.approx(-0.5 * (chi_sq_term + noise_term), 1e-4)
 
 
+class TestPixelSumOfRegularization:
+
+    def test__s_vector_all_1s__regularization_matrix_simple(self):
+
+        s_vector = np.array([1.0, 1.0, 1.0])
+
+        regularizatiton_matrix = np.array([[1.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 0.0, 1.0]])
+
+        # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
+
+        # G_l = s_T * H * s
+
+        # Matrix multiplication:
+
+        # s_T * H = [1.0, 1.0, 1.0] * [1.0, 1.0, 1.0] = [(1.0*1.0) + (1.0*0.0) + (1.0*0.0)] = [1.0, 1.0, 1.0]
+        #                             [1.0, 1.0, 1.0]   [(1.0*0.0) + (1.0*1.0) + (1.0*0.0)]
+        #                             [1.0, 1.0, 1.0]   [(1.0*0.0) + (1.0*0.0) + (1.0*1.0)]
+
+        # (s_T * H) * s = [1.0, 1.0, 1.0] * [1.0] = 3.0
+        #                                   [1.0]
+        #                                   [1.0]
+
+        assert fitting.pixelization_sum_of_regularizations(s_vector, regularizatiton_matrix) == 3.0
+
+    def test__s_vector_and_regularization_matrix_range_of_values(self):
+
+        s_vector = np.array([2.0, 3.0, 5.0])
+
+        regularizatiton_matrix = np.array([[1.0,  1.0,  0.0],
+                                           [1.0,  2.0, -2.0],
+                                           [0.0, -2.0,  1.0]])
+
+        # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
+
+        # G_l = s_T * H * s
+
+        # Matrix multiplication:
+
+        # s_T * H = [2.0, 3.0, 5.0] * [1.0,  1.0,  1.0] = [(2.0*1.0) + (3.0* 1.0) + (5.0 *0.0)] = [5.0, -2.0, -1.0]
+        #                             [1.0,  2.0, -2.0]   [(2.0*1.0) + (3.0* 2.0) + (5.0*-2.0)]
+        #                             [1.0, -2.0,  1.0]   [(2.0*0.0) + (3.0*-2.0) + (5.0 *1.0)]
+
+        # (s_T * H) * s = [5.0, -2.0, -1.0] * [2.0] = -1.0
+        #                                     [3.0]
+        #                                     [5.0]
+
+        assert fitting.pixelization_sum_of_regularizations(s_vector, regularizatiton_matrix) == -1.0
+
 class TestPixModelImageFromSVector:
 
     def test__s_vector_all_1s__simple_blurred_mapping_matrix__correct_model_image(self):
