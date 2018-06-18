@@ -66,11 +66,10 @@ class TestGalaxyPrior:
 
         light_profile_name = galaxy_prior.light_profile_names[0]
         mass_profile_name = galaxy_prior.mass_profile_names[0]
-        redshift_name = galaxy_prior.redshift_name
 
         setattr(instance, light_profile_name, light_profiles.EllipticalDevVaucouleurs())
         setattr(instance, mass_profile_name, mass_profiles.EllipticalCoredIsothermal())
-        setattr(instance, redshift_name, g.Redshift(1))
+        setattr(instance, "redshift", g.Redshift(1))
 
         galaxy = galaxy_prior.galaxy_for_model_instance(instance)
 
@@ -90,14 +89,16 @@ class TestGalaxyPrior:
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
         assert len(mapper.prior_models) == 2
 
-    def test_align_centres(self, galaxy_prior, mapper):
+    def test_align_centres(self, galaxy_prior, test_config):
         prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre != prior_models[1].centre
 
-        prior_models = gp.GalaxyPrior("galaxy", mapper, light_profile=light_profiles.EllipticalDevVaucouleurs,
+        galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_centres=True).prior_models
+                                      align_centres=True, config=test_config)
+
+        prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre == prior_models[1].centre
 
@@ -118,10 +119,7 @@ class TestNamedProfiles:
                                       mass_profile=mass_profiles.EllipticalGeneralizedNFW, config=test_config)
 
         assert len(galaxy_prior.light_profile_names) == 1
-        assert len(galaxy_prior.light_profile_classes) == 1
-
         assert len(galaxy_prior.mass_profile_names) == 1
-        assert len(galaxy_prior.mass_profile_classes) == 1
 
     def test_get_prior_model(self):
         galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalSersic,
