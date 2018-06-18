@@ -51,33 +51,15 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             for profile_model in profile_models:
                 profile_model.phi = phi
 
-        self.red_shift = model_mapper.PriorModel(galaxy.Redshift, config)
-
-    @property
-    def light_profile_classes(self):
-        return self.light_profile_dict.values()
+        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
 
     @property
     def light_profile_names(self):
         return list(self.light_profile_dict.keys())
 
     @property
-    def mass_profile_classes(self):
-        return self.mass_profile_dict.values()
-
-    @property
     def mass_profile_names(self):
         return list(self.mass_profile_dict.keys())
-
-    @property
-    def redshift_name(self):
-        """
-        Returns
-        -------
-        redshift_name: String
-            The name of the prior associated with redshift for this galaxy.
-        """
-        return "{}_redshift".format(self.name)
 
     @property
     def prior_models(self):
@@ -109,7 +91,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 light_profile_instances.append(getattr(model_instance, name))
             for name in self.mass_profile_names:
                 mass_profile_instances.append(getattr(model_instance, name))
-            redshift = getattr(model_instance, self.redshift_name).redshift
+            redshift = getattr(model_instance, "redshift").redshift
         except AttributeError as e:
             raise exc.PriorException(*e.args)
 
