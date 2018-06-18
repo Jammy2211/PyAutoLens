@@ -4,7 +4,7 @@ from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens.analysis import model_mapper
 
 
-class GalaxyPrior(object):
+class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
     """
@@ -80,8 +80,13 @@ class GalaxyPrior(object):
         return "{}_redshift".format(self.name)
 
     @property
-    def direct_priors(self):
-        return list(filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()))
+    def prior_models(self):
+        return [value for _, value in
+                filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items())]
+
+    @property
+    def priors(self):
+        return [prior for prior_model in self.prior_models for prior in prior_model.priors]
 
     def galaxy_for_model_instance(self, model_instance):
         """
@@ -110,3 +115,31 @@ class GalaxyPrior(object):
 
         return galaxy.Galaxy(light_profiles=light_profile_instances, mass_profiles=mass_profile_instances,
                              redshift=redshift)
+
+    # def instance_for_arguments(self, arguments):
+    #     """
+    #     Create an instance of the associated class for a set of arguments
+    #
+    #     Parameters
+    #     ----------
+    #     arguments: {Prior: value}
+    #         Dictionary mapping priors to attribute name and value pairs
+    #
+    #     Returns
+    #     -------
+    #         An instance of the class
+    #     """
+    #     model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
+    #     for tuple_prior in self.tuple_priors:
+    #         model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
+    #     return self.cls(**model_arguments)
+    #
+    # def gaussian_prior_model_for_arguments(self, prior_arguments):
+    #     new_model = PriorModel(self.cls, self.config)
+    #
+    #     for tuple_prior in self.tuple_priors:
+    #         setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(prior_arguments))
+    #     for prior in self.direct_priors:
+    #         setattr(new_model, prior[0], prior_arguments[prior[0]])
+    #
+    #     return new_model
