@@ -32,8 +32,8 @@ class TestCase:
 
         # Recover galaxy instances. We can pass the model instance to galaxy priors to recover a fully constructed
         # galaxy
-        source_galaxy = source_galaxy_prior.galaxy_for_model_instance(instance)
-        lens_galaxy = lens_galaxy_prior.galaxy_for_model_instance(instance)
+        source_galaxy = instance.source_galaxy
+        lens_galaxy = instance.lens_galaxy
 
         # Let's just check that worked
         assert len(source_galaxy.light_profiles) == 2
