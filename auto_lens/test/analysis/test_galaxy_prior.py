@@ -61,27 +61,6 @@ class TestGalaxyPrior:
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
         assert len(mapper.priors_ordered_by_id) == 13
 
-    def test_recover_classes(self, galaxy_prior):
-        instance = MockModelInstance()
-
-        light_profile_name = galaxy_prior.light_profile_names[0]
-        mass_profile_name = galaxy_prior.mass_profile_names[0]
-
-        setattr(instance, light_profile_name, light_profiles.EllipticalDevVaucouleurs())
-        setattr(instance, mass_profile_name, mass_profiles.EllipticalCoredIsothermal())
-        setattr(instance, "redshift", g.Redshift(1))
-
-        galaxy = galaxy_prior.galaxy_for_model_instance(instance)
-
-        assert len(galaxy.light_profiles) == 1
-        assert len(galaxy.mass_profiles) == 1
-        assert galaxy.redshift == 1
-
-    def test_exceptions(self, galaxy_prior):
-        instance = MockModelInstance()
-        with pytest.raises(exc.PriorException):
-            galaxy_prior.galaxy_for_model_instance(instance)
-
     def test_multiple_galaxies(self, mapper, test_config):
         mapper.galaxy_1 = gp.GalaxyPrior(light_profile=light_profiles.EllipticalDevVaucouleurs,
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
