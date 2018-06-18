@@ -220,11 +220,11 @@ class MultiNest(NonLinearOptimizer):
 
     def create_most_probable_model_instance(self):
         most_probable = self.compute_most_probable()
-        return self.model_mapper.from_physical_vector(most_probable)
+        return self.model_mapper.instance_from_physical_vector(most_probable)
 
     def create_most_likely_model_instance(self):
         most_likely = self.compute_most_likely()
-        return self.model_mapper.from_physical_vector(most_likely)
+        return self.model_mapper.instance_from_physical_vector(most_likely)
 
     def compute_gaussian_priors(self, sigma_limit):
         """Compute the Gaussian Priors these results should be initialzed with in the next phase, by taking their \
@@ -290,7 +290,7 @@ class MultiNest(NonLinearOptimizer):
 
         self._weighted_sample_model = model
 
-        return self.model_mapper.from_physical_vector(model), weight, likelihood
+        return self.model_mapper.instance_from_physical_vector(model), weight, likelihood
 
     def compute_weighted_sample_model(self, index):
         """From a weighted sample return the model, weight and likelihood hood.

@@ -159,7 +159,7 @@ class Analysis(object):
                 The likelihood that this model instance fits the image
             """
 
-            model_instance = self.model_mapper.from_physical_vector(physical_values)
+            model_instance = self.model_mapper.instance_from_physical_vector(physical_values)
 
             if hasattr(model_instance, 'pixelization'):
                 self.pixelization = model_instance.pixelization
