@@ -1,7 +1,7 @@
-light_profile_centre_0                  $x_{\mathrm{l73}}$
-light_profile_centre_1                  $y_{\mathrm{l73}}$
-light_profile_axis_ratio                $q_{\mathrm{l73}}$
-light_profile_phi                       $\phi_{\mathrm{l73}}$
-light_profile_intensity                 $I_{\mathrm{l73}}$
-light_profile_effective_radius          $R_{\mathrm{l73}}$
-light_profile_sersic_index              $n_{\mathrm{l73}}$
+light_profile_centre_0                  $x_{\mathrm{l72}}$
+light_profile_centre_1                  $y_{\mathrm{l72}}$
+light_profile_axis_ratio                $q_{\mathrm{l72}}$
+light_profile_phi                       $\phi_{\mathrm{l72}}$
+light_profile_intensity                 $I_{\mathrm{l72}}$
+light_profile_effective_radius          $R_{\mathrm{l72}}$
+light_profile_sersic_index              $n_{\mathrm{l72}}$
