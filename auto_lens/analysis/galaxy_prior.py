@@ -1,7 +1,6 @@
 from auto_lens.analysis import galaxy
 from auto_lens import exc
 from auto_lens.profiles import light_profiles, mass_profiles
-from auto_lens.analysis.model_mapper import ModelMapper
 
 
 class GalaxyPrior:
