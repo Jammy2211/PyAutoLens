@@ -107,7 +107,7 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, config_path, path=default_path):
+    def __init__(self, config_path=None, path=default_path):
         super(DownhillSimplex, self).__init__(config_path, path, False)
 
     def fit(self, analysis, **constants):
