@@ -277,18 +277,17 @@ class TestPixelization:
 
                 source_neighbors = np.array([[1, 2], [0], [0]])
 
-                test_b_matrix_1 = np.array([[-1, 1, 0],  # Pair 1
+                test_b_matrix = np.array([[-1, 1, 0],  # Pair 1
                                             [-1, 0, 1],  # Pair 2
                                             [0, 0, 0,]])  # Pair 1 flip
 
-                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
-
-                test_regularization_matrix = test_regularization_matrix_1
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(3)
 
                 pix = pixelization.Pixelization(pixels=3, regularization_coefficients=(1.0,))
                 regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
 
                 assert (regularization_matrix == test_regularization_matrix).all()
+                assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
             def test__1_B_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
 
@@ -297,7 +296,8 @@ class TestPixelization:
                                           [0, 0, -1, 1],
                                           [1, 0, 0, -1]])
 
-                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
+
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(4)
 
                 source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0,2]])
 
@@ -305,23 +305,61 @@ class TestPixelization:
                 regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
 
                 assert (regularization_matrix == test_regularization_matrix).all()
+                assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
             def test__1_B_matrix_size_4x4__coefficient_2__makes_correct_regularization_matrix(self):
+
+                source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0,2]])
 
                 test_b_matrix = 2.0*np.array([[-1, 1, 0, 0],
                                               [0, -1, 1, 0],
                                               [0, 0, -1, 1],
                                               [1, 0, 0, -1]])
 
-                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
-
-                source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0,2]])
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(4)
 
                 pix = pixelization.Pixelization(pixels=4, regularization_coefficients=(2.0,))
                 regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
 
                 assert (regularization_matrix == test_regularization_matrix).all()
+                assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
+            def test__1_B_matrix_size_9x9__coefficient_2__makes_correct_regularization_matrix(self):
+
+                source_neighbors = [[1, 3], [4, 2, 0], [1, 5], [4, 6, 0], [7, 1, 5, 3], [4, 2, 8], [7, 3], [4, 8, 6],
+                                    [7, 5]]
+
+                test_b_matrix_0 = np.array([[-1, 1,  0,  0,  0,  0,  0,  0,  0],
+                                            [-1, 0,  0,  1,  0,  0,  0,  0,  0],
+                                            [0, -1,  1,  0,  0,  0,  0,  0,  0],
+                                            [0, -1,  0,  0,  1,  0,  0,  0,  0],
+                                            [0,  0, -1,  0,  0,  1,  0,  0,  0],
+                                            [0,  0,  0, -1,  1,  0,  0,  0,  0],
+                                            [0,  0,  0, -1,  0,  0,  1,  0,  0],
+                                            [0,  0,  0,  0, -1,  1,  0,  0,  0],
+                                            [0,  0,  0,  0, -1,  0,  0,  1,  0]])
+                
+                test_b_matrix_1 = np.array([[0,  0,  0,  0,  0,  -1,  0,  0,  1],
+                                            [0,  0,  0,  0,  0,  0,  -1,  1,  0],
+                                            [0,  0,  0,  0,  0,  0,  0,  -1,  1],
+                                            [0,  0,  0,  0,  0,  0,  0,  0,  0],
+                                            [0,  0,  0,  0,  0,  0,  0,  0,  0],
+                                            [0,  0,  0,  0,  0,  0,  0,  0,  0],
+                                            [0,  0,  0,  0,  0,  0,  0,  0,  0],
+                                            [0,  0,  0,  0,  0,  0,  0,  0,  0],
+                                            [0,  0,  0,  0,  0,  0,  0,  0,  0]])
+
+                test_regularization_matrix_0 = np.matmul(test_b_matrix_0.T, test_b_matrix_0)
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+
+                test_regularization_matrix = test_regularization_matrix_0 + test_regularization_matrix_1 + \
+                                             1e-8 * np.identity(9)
+
+                pix = pixelization.Pixelization(pixels=9, regularization_coefficients=(1.0,))
+                regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
+
+                assert (regularization_matrix == test_regularization_matrix).all()
+                assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
         class TestWeightedRegularization:
 
