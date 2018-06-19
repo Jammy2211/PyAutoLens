@@ -1,9 +1,7 @@
 from auto_lens.analysis import galaxy_prior as gp
-from auto_lens.analysis import galaxy as g
 from auto_lens.profiles import mass_profiles, light_profiles
 from auto_lens.analysis import model_mapper as mm
 import pytest
-from auto_lens import exc
 import os
 
 
@@ -128,3 +126,22 @@ class TestResultForArguments:
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
         assert galaxy.redshift == 0.5
+
+    def test_complicated_instance_for_arguments(self):
+        galaxy_prior = gp.GalaxyPrior(align_centres=True, light_profile=light_profiles.EllipticalSersic,
+                                      mass_profile=mass_profiles.SphericalIsothermal)
+
+        arguments = {galaxy_prior.redshift.redshift: 0.5,
+                     galaxy_prior.mass_profile.centre.centre_0: 1.0,
+                     galaxy_prior.mass_profile.centre.centre_1: 2.0,
+                     galaxy_prior.mass_profile.einstein_radius: 3.0,
+                     galaxy_prior.light_profile.axis_ratio: 4.0,
+                     galaxy_prior.light_profile.phi: 5.0,
+                     galaxy_prior.light_profile.intensity: 6.0,
+                     galaxy_prior.light_profile.effective_radius: 7.0,
+                     galaxy_prior.light_profile.sersic_index: 8.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.light_profiles[0].centre[0] == 1.0
+        assert galaxy.light_profiles[0].centre[1] == 2.0

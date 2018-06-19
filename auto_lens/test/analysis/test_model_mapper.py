@@ -564,4 +564,3 @@ class TestIndependentPriorModel(object):
 
         assert instance.prior_model.one == 1
         assert instance.prior_model.two == 2
-
