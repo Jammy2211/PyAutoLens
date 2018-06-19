@@ -20,7 +20,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     @DynamicAttrs
     """
 
-    def __init__(self, align_centres=False, align_orientations=False, redshift=None, config=None, **kwargs):
+    def __init__(self, align_centres=False, align_orientations=False, config=None, **kwargs):
         """
         Parameters
         ----------
@@ -62,7 +62,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 for profile_model in profile_models:
                     profile_model.phi = phi
 
-        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config) if redshift is None else redshift
+        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
         self.config = config
 
     @property
@@ -114,20 +114,10 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                              redshift=instance_redshift.redshift)
 
     def gaussian_prior_model_for_arguments(self, arguments):
-        light_profile_prior_models = list(
-            map(lambda prior_model: prior_model.gaussian_prior_model_for_arguments(arguments),
-                self.light_profile_prior_models))
-        mass_profile_prior_models = list(
-            map(lambda prior_model: prior_model.gaussian_prior_model_for_arguments(arguments),
-                self.mass_profile_prior_models))
-        redshift_prior_model = self.redshift.gaussian_prior_model_for_arguments(arguments)
-
         new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
-                                config=self.config, redshift=redshift_prior_model)
+                                config=self.config)
 
-        # TODO
-
-        # for prior in self.prior_models:
-        #     setattr(new_model, prior[0], prior_arguments[prior[0]])
+        for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
+            setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
 
         return new_model
