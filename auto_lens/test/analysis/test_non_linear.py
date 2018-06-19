@@ -7,6 +7,7 @@ from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens import exc
 
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+config_path = path + 'test_files/config'
 
 
 def create_summary_4_parameters(path):
@@ -43,7 +44,7 @@ def create_summary_11_parameters(path):
 
 
 def create_weighted_samples_4_parameters(path):
-    weighted_samples = open(path + 'obj.txt', 'w')
+    weighted_samples = open(path + 'multinest.txt', 'w')
     weighted_samples.write(
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01\n'
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01\n'
@@ -59,7 +60,7 @@ def create_weighted_samples_4_parameters(path):
 
 
 def create_weighted_samples_11_parameters(path):
-    weighted_samples = open(path + 'obj.txt', 'w')
+    weighted_samples = open(path + 'multinest.txt', 'w')
     weighted_samples.write(
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01   -0.510000000000000000E+01   -0.610000000000000000E+01   -0.710000000000000000E+01   -0.810000000000000000E+01    0.910000000000000000E+01    1.010000000000000000E+01    1.110000000000000000E+01\n'
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01   -0.490000000000000000E+01   -0.590000000000000000E+01   -0.690000000000000000E+01   -0.790000000000000000E+01    0.890000000000000000E+01    0.990000000000000000E+01    1.090000000000000000E+01\n'
@@ -77,103 +78,53 @@ def create_weighted_samples_11_parameters(path):
 class TestNonLinearFiles(object):
     class TestDirectorySetup(object):
 
-        def test__one_light_profile__correct_directory(self):
+        def test__input_path_sets_up_correct_directory(self):
 
-            if os.path.exists(path + 'test_files/non_linear/files/setup/obj/EllipticalSersic'):
-                shutil.rmtree(path + 'test_files/non_linear/files/setup/obj/EllipticalSersic')
+            if os.path.exists(path + 'test_files/non_linear/files/setup/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/setup/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path, 
+                                                path=path + 'test_files/non_linear/files/setup/')
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/setup/',
-                                      obj_name='obj', model_mapper=model_map)
+            nlo.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic)
+            nlo.save_model_info()
 
-            assert os.path.exists(path + 'test_files/non_linear/files/setup/obj/EllipticalSersic') == True
+            assert os.path.exists(path + 'test_files/non_linear/files/setup/') == True
 
-        def test__one_mass_profile__correct_directory(self):
-
-            if os.path.exists(path + 'test_files/non_linear/files/setup/obj/SphericalNFW'):
-                shutil.rmtree(path + 'test_files/non_linear/files/setup/obj/SphericalNFW')
-
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
-
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/setup/',
-                                      obj_name='obj', model_mapper=model_map)
-
-            assert os.path.exists(path + 'test_files/non_linear/files/setup/obj/SphericalNFW') == True
-
-        def test__multiple_light_and_mass_profiles__correct_directory(self):
-
-            if os.path.exists(path +
-                              'test_files/non_linear/files/setup/obj/'
-                              'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW'):
-                shutil.rmtree(
-                    path + 'test_files/non_linear/files/setup/obj/'
-                           'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW')
-
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic,
-                                                 light_profile_2=light_profiles.EllipticalSersic,
-                                                 light_profile_3=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW,
-                                                 mass_profile_2=mass_profiles.SphericalNFW)
-
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/setup/',
-                                      obj_name='obj', model_mapper=model_map)
-
-            assert os.path.exists(path +
-                                  'test_files/non_linear/files/setup/obj/'
-                                  'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW') == True
 
     class TestTotalParameters(object):
 
-        def test__one_light_profile__correct_directory(self):
+        def test__1_light_profile__correct_directory(self):
 
-            if os.path.exists(path + 'test_files/non_linear/files/obj/EllipticalSersic'):
-                shutil.rmtree(path + 'test_files/non_linear/files/obj/EllipticalSersic')
+            if os.path.exists(path + 'test_files/non_linear/files/setup/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/setup/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                         path=path + 'test_files/non_linear/files/setup')
 
-            nl_directory = non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/',
-                                                     obj_name='obj', model_mapper=model_map)
+            nlo.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic)
 
-            assert nl_directory.total_parameters == 7
+            nlo.save_model_info()
 
-        def test__one_mass_profile__correct_directory(self):
+            assert nlo.model_mapper.total_parameters == 7
 
-            if os.path.exists(path + 'test_files/non_linear/files/obj/SphericalNFW'):
-                shutil.rmtree(path + 'test_files/non_linear/files/obj/SphericalNFW')
+        def test__nlo_multiple_light_and_mass_profiles__correct_directory(self):
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            if os.path.exists(path + 'test_files/non_linear/files/setup/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/setup/')
 
-            nl_directory = non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/',
-                                                     obj_name='obj', model_mapper=model_map)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/setup/')
 
-            assert nl_directory.total_parameters == 4
+            nlo.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic,
+                                         light_profile_2=light_profiles.EllipticalSersic,
+                                         light_profile_3=light_profiles.EllipticalSersic,
+                                         mass_profile=mass_profiles.SphericalNFW,
+                                         mass_profile_2=mass_profiles.SphericalNFW)
 
-        def test__nl_directory_multiple_light_and_mass_profiles__correct_directory(self):
+            nlo.save_model_info()
 
-            if os.path.exists(path +
-                              'test_files/non_linear/files/obj/'
-                              'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW'):
-                shutil.rmtree(
-                    path + 'test_files/non_linear/files/obj/'
-                           'EllipticalSersic+EllipticalSersic+EllipticalSersic+SphericalNFW+SphericalNFW')
-
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile=light_profiles.EllipticalSersic,
-                                                 light_profile_2=light_profiles.EllipticalSersic,
-                                                 light_profile_3=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW,
-                                                 mass_profile_2=mass_profiles.SphericalNFW)
-
-            nl_directory = non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/',
-                                                     obj_name='obj', model_mapper=model_map)
-
-            assert nl_directory.total_parameters == 29
+            assert nlo.model_mapper.total_parameters == 29
 
     class TestGenerateLatex(object):
 
@@ -197,17 +148,16 @@ class TestNonLinearFiles(object):
 
             light_profiles.EllipticalLightProfile._ids = count()
 
-            if os.path.exists(path + 'test_files/non_linear/files/param_names/obj/EllipticalSersic'):
-                shutil.rmtree(path + 'test_files/non_linear/files/param_names/obj/EllipticalSersic')
+            if os.path.exists(path + 'test_files/non_linear/files/paramnames/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/paramnames/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/paramnames/')
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/param_names/',
-                                      obj_name='obj', model_mapper=model_map)
+            nlo.model_mapper.add_classes(light_profile_0=light_profiles.EllipticalSersic)
+            nlo.save_model_info()
 
-            paramnames_test = open(path + 'test_files/non_linear/files/param_names/obj/'
-                                          'EllipticalSersic/obj.paramnames')
+            paramnames_test = open(path + 'test_files/non_linear/files/paramnames/multinest.paramnames')
 
             paramnames_str_0 = paramnames_test.readline()
             paramnames_str_1 = paramnames_test.readline()
@@ -225,62 +175,26 @@ class TestNonLinearFiles(object):
             assert paramnames_str_5 == r'light_profile_0_effective_radius        $R_{\mathrm{l1}}$' + '\n'
             assert paramnames_str_6 == r'light_profile_0_sersic_index            $n_{\mathrm{l1}}$' + '\n'
 
-        def test__two_light_models_outputs_paramnames(self):
-
-            light_profiles.EllipticalLightProfile._ids = count()
-
-            if os.path.exists(path + 'test_files/non_linear/files/param_names/obj/'
-                                     'EllipticalSersic+EllipticalExponential'):
-                shutil.rmtree(path + 'test_files/non_linear/files/param_names/obj/'
-                                     'EllipticalSersic+EllipticalExponential')
-
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic,
-                                                 light_profile_1=light_profiles.EllipticalExponential)
-
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/param_names/',
-                                      obj_name='obj', model_mapper=model_map)
-
-            paramnames_test = open(path + 'test_files/non_linear/files/param_names/obj/'
-                                          'EllipticalSersic+EllipticalExponential/obj.paramnames')
-
-            paramnames_str = paramnames_test.readlines()
-
-            assert paramnames_str[0] == r'light_profile_0_centre_0                $x_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[1] == r'light_profile_0_centre_1                $y_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[2] == r'light_profile_0_axis_ratio              $q_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[3] == r'light_profile_0_phi                     $\phi_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[4] == r'light_profile_0_intensity               $I_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[5] == r'light_profile_0_effective_radius        $R_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[6] == r'light_profile_0_sersic_index            $n_{\mathrm{l1}}$' + '\n'
-            assert paramnames_str[7] == r'light_profile_1_centre_0                $x_{\mathrm{l2}}$' + '\n'
-            assert paramnames_str[8] == r'light_profile_1_centre_1                $y_{\mathrm{l2}}$' + '\n'
-            assert paramnames_str[9] == r'light_profile_1_axis_ratio              $q_{\mathrm{l2}}$' + '\n'
-            assert paramnames_str[10] == r'light_profile_1_phi                     $\phi_{\mathrm{l2}}$' + '\n'
-            assert paramnames_str[11] == r'light_profile_1_intensity               $I_{\mathrm{l2}}$' + '\n'
-            assert paramnames_str[12] == r'light_profile_1_effective_radius        $R_{\mathrm{l2}}$' + '\n'
-
-        def test__two_light_models__two_mass_models__outputs_paramnames(self):
+        def test__2_light_models__2_mass_models__outputs_paramnames(self):
 
             light_profiles.EllipticalLightProfile._ids = count()
             mass_profiles.EllipticalMassProfile._ids = count()
 
-            if os.path.exists(path + 'test_files/non_linear/files/param_names/obj/'
-                                     'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW'):
-                shutil.rmtree(path + 'test_files/non_linear/files/param_names/obj/'
-                                     'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW')
+            if os.path.exists(path + 'test_files/non_linear/files/paramnames/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/paramnames/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic,
-                                                 light_profile_1=light_profiles.EllipticalExponential,
-                                                 mass_profile_0=mass_profiles.SphericalIsothermal,
-                                                 mass_profile_1=mass_profiles.SphericalNFW)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/paramnames/')
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/param_names/',
-                                      obj_name='obj', model_mapper=model_map)
+            nlo.model_mapper.add_classes(
+                light_profile_0=light_profiles.EllipticalSersic,
+                light_profile_1=light_profiles.EllipticalExponential,
+                mass_profile_0=mass_profiles.SphericalIsothermal,
+                mass_profile_1=mass_profiles.SphericalNFW)
 
-            paramnames_test = open(path + 'test_files/non_linear/files/param_names/obj/'
-                                          'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW/obj.paramnames')
+            nlo.save_model_info()
+
+            paramnames_test = open(path + 'test_files/non_linear/files/paramnames/multinest.paramnames')
 
             paramnames_str = paramnames_test.readlines()
 
@@ -309,17 +223,15 @@ class TestNonLinearFiles(object):
 
         def test__single_model__outputs_all_info(self):
 
-            if os.path.exists(path + 'test_files/non_linear/files/model_info/obj/EllipticalSersic'):
-                shutil.rmtree(path + 'test_files/non_linear/files/model_info/obj/EllipticalSersic')
+            if os.path.exists(path + 'test_files/non_linear/files/model_info/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/model_info/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/model_info/')
+            nlo.model_mapper.add_classes(light_profile_0=light_profiles.EllipticalSersic)
+            nlo.save_model_info()
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/model_info/',
-                                      obj_name='obj', model_mapper=model_map)
-
-            model_info_test = open(path + 'test_files/non_linear/files/model_info/obj/'
-                                          'EllipticalSersic/model.info')
+            model_info_test = open(path + 'test_files/non_linear/files/model_info/model.info')
 
             model_info_str = model_info_test.readlines()
 
@@ -333,25 +245,22 @@ class TestNonLinearFiles(object):
             assert model_info_str[7] == r'effective_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
             assert model_info_str[8] == r'sersic_index: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
 
-        def test__two_models_and_parameter_sets__outputs_paramnames(self):
+        def test__2_models_and_parameter_sets__outputs_paramnames(self):
 
-            if os.path.exists(path + 'test_files/non_linear/files/model_info/obj/'
-                                     'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW'):
-                shutil.rmtree(path + 'test_files/non_linear/files/model_info/obj/'
-                                     'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW')
+            if os.path.exists(path + 'test_files/non_linear/files/model_info/'):
+                shutil.rmtree(path + 'test_files/non_linear/files/model_info/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic,
-                                                 light_profile_1=light_profiles.EllipticalExponential,
-                                                 mass_profile_0=mass_profiles.SphericalIsothermal,
-                                                 mass_profile_1=mass_profiles.SphericalNFW)
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                path=path + 'test_files/non_linear/files/model_info/')
 
-            non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/model_info/',
-                                      obj_name='obj', model_mapper=model_map)
+            nlo.model_mapper.add_classes(light_profile_0=light_profiles.EllipticalSersic,
+                                         light_profile_1=light_profiles.EllipticalExponential,
+                                         mass_profile_0=mass_profiles.SphericalIsothermal,
+                                         mass_profile_1=mass_profiles.SphericalNFW)
 
-            model_info_test = open(
-                path + 'test_files/non_linear/files/model_info/obj/'
-                       'EllipticalSersic+EllipticalExponential+SphericalIsothermal+SphericalNFW/model.info')
+            nlo.save_model_info()
+
+            model_info_test = open(path + 'test_files/non_linear/files/model_info/model.info')
 
             model_info_str = model_info_test.readlines()
 
@@ -390,19 +299,18 @@ class TestNonLinearFiles(object):
     class TestCheckModelInfo(object):
 
         def test__single_model__prior_changed_from_input_model__raises_error(self):
-            if os.path.exists(path + 'test_files/non_linear/files/wrong_model_info/obj/EllipticalSersic/*'):
-                shutil.rmtree(path + 'test_files/non_linear/files/wrong_model_info/obj/EllipticalSersic/*')
 
-            with open(path + 'test_files/non_linear/files/wrong_model_info/obj/EllipticalSersic/model.info',
-                      'w') as file:
+            if os.path.exists(path + 'test_files/non_linear/files/wrong_model_info/*'):
+                shutil.rmtree(path + 'test_files/non_linear/files/wrong_model_info/*')
+
+            with open(path + 'test_files/non_linear/files/wrong_model_info//model.info', 'w') as file:
                 file.write('The model info is missing :(')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, light_profile_0=light_profiles.EllipticalSersic)
-
             with pytest.raises(exc.PriorException):
-                non_linear.NonLinearFiles(path=path + 'test_files/non_linear/files/wrong_model_info/',
-                                          obj_name='obj', model_mapper=model_map)
+                nl = non_linear.NonLinearOptimizer(config_path=config_path,
+                                                   path=path + 'test_files/non_linear/files/wrong_model_info/')
+                nl.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
+                nl.save_model_info()
 
 
 class TestMultiNest(object):
@@ -410,16 +318,18 @@ class TestMultiNest(object):
 
         def test__1_profile__read_most_likely_vector__via_summary(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest/summary/profile/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/profile/*')
 
-            create_summary_4_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/')
+            create_summary_4_parameters(path=path + 'test_files/non_linear/multinest/summary/profile/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            files = non_linear.MultiNest(config_path=config_path,
+                                         path=path + 'test_files/non_linear/multinest/summary/profile/',
+                                         check_model=False)
 
-            files = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                         obj_name='obj', model_mapper=model_map, check_model=False)
+            files.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
+
+            files.save_model_info()
 
             most_likely = files.compute_most_likely()
 
@@ -427,19 +337,19 @@ class TestMultiNest(object):
 
         def test__multiple_profile__read_most_likely_vector__via_summary(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest/summary/multiple_profiles/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/multiple_profiles/*')
 
-            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/'
-                                                     'EllipticalSersic+SphericalNFW/')
+            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/multiple_profiles')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            files = non_linear.MultiNest(config_path=config_path,
+                                         path=path + 'test_files/non_linear/multinest/summary/multiple_profiles',
+                                         check_model=False)
 
-            files = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                         obj_name='obj', model_mapper=model_map, check_model=False)
+            files.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic,
+                                           mass_profile=mass_profiles.SphericalNFW)
+
+            files.save_model_info()
 
             most_likely = files.compute_most_likely()
 
@@ -447,16 +357,18 @@ class TestMultiNest(object):
 
         def test__1_profile__read_most_probable_vector__via_summary(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest/summary/profile/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/profile/*')
 
-            create_summary_4_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/')
+            create_summary_4_parameters(path=path + 'test_files/non_linear/multinest/summary/profile/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            files = non_linear.MultiNest(config_path=config_path,
+                                         path=path + 'test_files/non_linear/multinest/summary/profile/',
+                                         check_model=False)
 
-            files = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                         obj_name='obj', model_mapper=model_map, check_model=False)
+            files.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
+
+            files.save_model_info()
 
             most_probable = files.compute_most_probable()
 
@@ -464,19 +376,19 @@ class TestMultiNest(object):
 
         def test__multiple_profile__read_most_probable_vector__via_summary(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest/summary/multiple_profiles/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/multiple_profiles/*')
 
-            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/'
-                                                     'EllipticalSersic+SphericalNFW/')
+            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/multiple_profiles/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            files = non_linear.MultiNest(config_path=config_path,
+                                         path=path + 'test_files/non_linear/multinest/summary/multiple_profiles',
+                                         check_model=False)
 
-            files = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                         obj_name='obj', model_mapper=model_map, check_model=False)
+            files.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic,
+                                           mass_profile=mass_profiles.SphericalNFW)
+
+            files.save_model_info()
 
             most_probable = files.compute_most_probable()
 
@@ -484,16 +396,18 @@ class TestMultiNest(object):
 
         def test__1_profile__read_likelihoods_from_summary(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest/summary/profile/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/profile/*')
 
-            create_summary_4_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/SphericalNFW/')
+            create_summary_4_parameters(path=path + 'test_files/non_linear/multinest/summary/profile/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            files = non_linear.MultiNest(config_path=config_path,
+                                         path=path + 'test_files/non_linear/multinest/summary/profile/',
+                                         check_model=False)
 
-            files = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                         obj_name='obj', model_mapper=model_map, check_model=False)
+            files.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
+
+            files.save_model_info()
 
             max_likelihood = files.compute_max_likelihood()
             max_log_likelihood = files.compute_max_log_likelihood()
@@ -503,19 +417,19 @@ class TestMultiNest(object):
 
         def test__multiple_profiles__read_likelihoods_from_summary(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest/summary/multiple_profiles/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest/summary/multiple_profiles/*')
 
-            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/'
-                                                     'EllipticalSersic+SphericalNFW/')
+            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/multiple_profiles/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            files = non_linear.MultiNest(config_path=config_path,
+                                         path=path + 'test_files/non_linear/multinest/summary/multiple_profiles/',
+                                         check_model=False)
 
-            files = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                         obj_name='obj', model_mapper=model_map, check_model=False)
+            files.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic,
+                                           mass_profile=mass_profiles.SphericalNFW)
+
+            files.save_model_info()
 
             max_likelihood = files.compute_max_likelihood()
             max_log_likelihood = files.compute_max_log_likelihood()
@@ -526,19 +440,19 @@ class TestMultiNest(object):
         def test__multiple_profiles__setup_model_instance_most_likely_and_probable_via_summary(self):
 
             if os.path.exists(
-                    path + 'test_files/non_linear/multinest/summary/obj/EllipticalSersic+SphericalNFW/*'):
+                    path + 'test_files/non_linear/multinest/summary/multiple_profiles/*'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/multinest/results_intermediate/summary/obj/EllipticalSersic+SphericalNFW/*')
+                    path + 'test_files/non_linear/multinest/results_intermediate/summary/multiple_profiles/*')
 
-            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/obj/'
-                                                     'EllipticalSersic+SphericalNFW/')
+            create_summary_11_parameters(path=path + 'test_files/non_linear/multinest/summary/multiple_profiles/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(
-                config=config, light_profile=light_profiles.EllipticalSersic, mass_profile=mass_profiles.SphericalNFW)
+            multinest = non_linear.MultiNest(config_path=config_path,
+                                             path=path + 'test_files/non_linear/multinest/summary/multiple_profiles/',
+                                             check_model=False)
+            multinest.model_mapper.add_classes(light_profile=light_profiles.EllipticalSersic,
+                                               mass_profile=mass_profiles.SphericalNFW)
 
-            multinest = non_linear.MultiNest(path=path + 'test_files/non_linear/multinest/summary/',
-                                             obj_name='obj', model_mapper=model_map, check_model=False)
+            multinest.save_model_info()
 
             most_probable = multinest.create_most_probable_model_instance()
             most_likely = multinest.create_most_likely_model_instance()
@@ -567,23 +481,22 @@ class TestMultiNest(object):
 
 
 class TestMultiNestFinished(object):
-
-
     class TestGaussianPriors(object):
 
         def test__1_profile__gaussian_priors_at_3_sigma_confidence(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/gaussian_priors/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/gaussian_priors/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/gaussian_priors/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/gaussian_priors/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/',
+                                           check_model=False)
+            results.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.save_model_info()
 
             gaussian_priors = results.compute_gaussian_priors(sigma_limit=3.0)
 
@@ -599,17 +512,19 @@ class TestMultiNestFinished(object):
 
         def test__1_profile__gaussian_priors_at_1_sigma_confidence(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/gaussian_priors/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/gaussian_priors/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/gaussian_priors/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/gaussian_priors/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/gaussian_priors/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             gaussian_priors = results.compute_gaussian_priors(sigma_limit=1.0)
 
@@ -626,23 +541,22 @@ class TestMultiNestFinished(object):
             assert gaussian_priors[2][1] == pytest.approx(3.0 - lower_sigmas[2], 5e-2)
             assert gaussian_priors[3][1] == pytest.approx(4.1 - lower_sigmas[3], 5e-2)
 
-
     class TestWeightedSamples(object):
 
-        def test__one_profile__read_first_weighted_sample__model_weight_and_likelihood(self):
+        def test__1_profile__read_first_weighted_sample__model_weight_and_likelihood(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
+            results.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.save_model_info()
 
             model, weight, likelihood = results.compute_weighted_sample_model(index=0)
 
@@ -650,20 +564,21 @@ class TestMultiNestFinished(object):
             assert weight == 0.02
             assert likelihood == -0.5 * 9999999.9
 
-        def test__one_profile__read_fifth_weighted_sample__model_weight_and_likelihood(self):
+        def test__1_profile__read_fifth_weighted_sample__model_weight_and_likelihood(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_classes(mass_profile=mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             model, weight, likelihood = results.compute_weighted_sample_model(index=5)
 
@@ -674,20 +589,20 @@ class TestMultiNestFinished(object):
         def test__multiple_profiles__read_first_weighted_sample__model_weight_and_likelihood(self):
 
             if os.path.exists(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*'):
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*')
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_11_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                              'EllipticalSersic+SphericalNFW/')
+            create_weighted_samples_11_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
+            results.model_mapper.add_class("light_profile", light_profiles.EllipticalSersic)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.save_model_info()
 
             model, weight, likelihood = results.compute_weighted_sample_model(index=0)
 
@@ -698,20 +613,21 @@ class TestMultiNestFinished(object):
         def test__multiple_profiles__read_fifth_weighted_sample__model_weight_and_likelihood(self):
 
             if os.path.exists(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*'):
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*')
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_11_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                              'EllipticalSersic+SphericalNFW/')
+            create_weighted_samples_11_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_class("light_profile", light_profiles.EllipticalSersic)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             model, weight, likelihood = results.compute_weighted_sample_model(index=5)
 
@@ -722,19 +638,20 @@ class TestMultiNestFinished(object):
         def test__one_profile__setup_first_weighted_sample_model__include_weight_and_likelihood(self):
 
             if os.path.exists(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*'):
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*')
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_11_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                              'EllipticalSersic+SphericalNFW/')
+            create_weighted_samples_11_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             weighted_sample_model, weight, likelihood = results.create_weighted_sample_model_instance(index=0)
 
@@ -747,18 +664,19 @@ class TestMultiNestFinished(object):
 
         def test__1_profile__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             weighted_sample_model, weight, likelihood = results.create_weighted_sample_model_instance(index=5)
 
@@ -772,20 +690,21 @@ class TestMultiNestFinished(object):
         def test__multiple_profiles__setup_first_weighted_sample_model__include_weight_and_likelihood(self):
 
             if os.path.exists(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*'):
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*')
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_11_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                              'EllipticalSersic+SphericalNFW/')
+            create_weighted_samples_11_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_class("light_profile", light_profiles.EllipticalSersic)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             weighted_sample_model, weight, likelihood = results.create_weighted_sample_model_instance(index=0)
 
@@ -806,20 +725,21 @@ class TestMultiNestFinished(object):
         def test__multiple_profiles__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self):
 
             if os.path.exists(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*'):
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
                 shutil.rmtree(
-                    path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/EllipticalSersic+SphericalNFW/*')
+                    path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_11_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                              'EllipticalSersic+SphericalNFW/')
+            create_weighted_samples_11_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config,
-                                                 light_profile=light_profiles.EllipticalSersic,
-                                                 mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.model_mapper.add_class("light_profile", light_profiles.EllipticalSersic)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
+
+            results.save_model_info()
 
             weighted_sample_model, weight, likelihood = results.create_weighted_sample_model_instance(index=5)
 
@@ -837,39 +757,44 @@ class TestMultiNestFinished(object):
             assert weighted_sample_model.mass_profile.kappa_s == 10.0
             assert weighted_sample_model.mass_profile.scale_radius == 11.0
 
-
     class TestLimits(object):
 
         def test__1_profile__limits_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.save_model_info()
 
-            assert results.compute_model_at_upper_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12], 1e-2)
-            assert results.compute_model_at_lower_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88], 1e-2)
+            assert results.compute_model_at_upper_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12],
+                                                                                          1e-2)
+            assert results.compute_model_at_lower_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88],
+                                                                                          1e-2)
 
         def test__1_profile__change_limit_to_1_sigma(self):
 
-            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*'):
-                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/SphericalNFW/*')
+            if os.path.exists(path + 'test_files/non_linear/multinest_finished/weighted_samples/*'):
+                shutil.rmtree(path + 'test_files/non_linear/multinest_finished/weighted_samples/*')
 
-            create_weighted_samples_4_parameters(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/obj/'
-                                                             'SphericalNFW/')
+            create_weighted_samples_4_parameters(
+                path=path + 'test_files/non_linear/multinest_finished/weighted_samples/')
 
-            config = model_mapper.Config(config_folder_path=path + 'test_files/config')
-            model_map = model_mapper.ModelMapper(config=config, mass_profile=mass_profiles.SphericalNFW)
+            results = non_linear.MultiNest(config_path=config_path,
+                                           path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
+                                           check_model=False)
+            results.model_mapper.add_class("mass_profile", mass_profiles.SphericalNFW)
 
-            results = non_linear.MultiNestFinished(path=path + 'test_files/non_linear/multinest_finished/weighted_samples/',
-                                                   obj_name='obj', model_mapper=model_map, check_model=False)
+            results.save_model_info()
 
-            assert results.compute_model_at_upper_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07], 1e-2)
-            assert results.compute_model_at_lower_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
+            assert results.compute_model_at_upper_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07],
+                                                                                          1e-2)
+            assert results.compute_model_at_lower_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93],
+                                                                                          1e-2)
