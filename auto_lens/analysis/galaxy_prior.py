@@ -120,7 +120,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                                               self.light_profile_prior_models))
         mass_profile_prior_models = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
                                              self.mass_profile_prior_models))
-        redshift_prior_model = self.redshift.instance_for_arguments(arguments)
+        redshift_prior_model = self.redshift.gaussian_prior_model_for_arguments(arguments)
 
         new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
                                 config=self.config, redshift=redshift_prior_model)
