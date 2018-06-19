@@ -37,9 +37,9 @@ def generate_parameter_latex(parameters, subscript=''):
     return latex
 
 
-class NonLinearOptimizer(object):
+class NonLinearOptimizer(mm.ModelMapper):
 
-    def __init__(self, config_path=None, path=default_path, check_model=True):
+    def __init__(self, config_path=None, path=default_path, check_model=True, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
@@ -55,11 +55,10 @@ class NonLinearOptimizer(object):
             Check whether the model.info file corresponds to the model_mapper passed in.
         """
 
+        super().__init__(config=mm.Config(
+            "{}/../config".format(os.path.dirname(os.path.realpath(__file__))) if config_path is None else config_path))
         self.path = path
         self.check_model = check_model
-        config = mm.Config(
-            "{}/../config".format(os.path.dirname(os.path.realpath(__file__))) if config_path is None else config_path)
-        self.model_mapper = mm.ModelMapper(config)
 
         self.file_param_names = self.path + 'multinest.paramnames'
         self.file_model_info = self.path + 'model.info'
@@ -71,10 +70,10 @@ class NonLinearOptimizer(object):
         if not resume:
             os.makedirs(self.path)  # Create results folder if doesnt exist
             self.create_param_names()
-            self.model_mapper.output_model_info(self.file_model_info)
+            self.output_model_info(self.file_model_info)
 
         elif self.check_model:
-            self.model_mapper.check_model_info(self.file_model_info)
+            self.check_model_info(self.file_model_info)
 
     def run(self, fitness_function):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
@@ -89,7 +88,7 @@ class NonLinearOptimizer(object):
         properties of each model class."""
         param_names = open(self.file_param_names, 'w')
 
-        for prior_name, prior_model in self.model_mapper.prior_models:
+        for prior_name, prior_model in self.prior_models:
 
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
@@ -97,7 +96,7 @@ class NonLinearOptimizer(object):
 
             param_labels = generate_parameter_latex(param_labels, subscript)
 
-            for param_no, param in enumerate(self.model_mapper.class_priors_dict[prior_name]):
+            for param_no, param in enumerate(self.class_priors_dict[prior_name]):
                 line = prior_name + '_' + param[0]
                 line += ' ' * (40 - len(line)) + param_labels[param_no]
 
@@ -112,19 +111,17 @@ class NonLinearOptimizer(object):
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, config_path, path=default_path):
-
         super(DownhillSimplex, self).__init__(config_path, path, False)
 
     def run(self, fitness_function):
-
-        initlal_model = self.model_mapper.physical_values_from_prior_medians()
-        return scipy.optimize.fmin(fitness_function, x0=initlal_model)
+        initial_model = self.physical_values_from_prior_medians()
+        return scipy.optimize.fmin(fitness_function, x0=initial_model)
 
 
 class MultiNest(NonLinearOptimizer):
 
     def __init__(self, config_path=None, path=default_path, check_model=True):
-        """Class to setup and run a MultiNest analysis and output the MultInest files.
+        """Class to setup and run a MultiNest analysis and output the MultiNest files.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
         are passed to each iteration of MultiNest.
@@ -133,8 +130,6 @@ class MultiNest(NonLinearOptimizer):
         ------------
         path : str
             The path where the non_linear files are stored.
-        obj_name : str
-            Unique identifier of the data being analysed (e.g. the name of the data set)
         """
 
         super(MultiNest, self).__init__(config_path, path, check_model)
@@ -151,10 +146,9 @@ class MultiNest(NonLinearOptimizer):
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
-            return map(lambda p, c: p(c), self.model_mapper.total_parameters, cube)
+            return map(lambda p, c: p(c), self.total_parameters, cube)
 
-        # TODO: is this output path correct? No - I have changed it to just the path.
-        pymultinest.run(fitness_function, prior, self.model_mapper.total_parameters,
+        pymultinest.run(fitness_function, prior, self.total_parameters,
                         outputfiles_basename=self.path)
 
     def open_summary_file(self):
@@ -162,7 +156,7 @@ class MultiNest(NonLinearOptimizer):
         summary = open(self.file_summary)
 
         expected_parameters = (len(summary.readline()) - 57) / 56
-        if expected_parameters != self.model_mapper.total_parameters:
+        if expected_parameters != self.total_parameters:
             raise exc.MultiNestException(
                 'The file_summary file has a different number of parameters than the input model')
 
@@ -173,7 +167,7 @@ class MultiNest(NonLinearOptimizer):
         summary = self.open_summary_file()
 
         summary.seek(0)
-        summary.read(2 + offset * self.model_mapper.total_parameters)
+        summary.read(2 + offset * self.total_parameters)
         vector = []
         for param in range(number_entries):
             vector.append(float(summary.read(28)))
@@ -190,17 +184,8 @@ class MultiNest(NonLinearOptimizer):
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
 
-        Parameters
-        -----------
-        filename : str
-            The files and file name of the file_summary file.
-        total_parameters : int
-            The total number of parameters of the model.
-        offset : int
-            The file_summary file stores the most likely model in the first half of columns and the most probable model in
-            the second half. The offset is used to start the parsing at the appropriate column.
         """
-        return self.read_vector_from_summary(number_entries=self.model_mapper.total_parameters, offset=0)
+        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=0)
 
     def compute_most_likely(self):
         """
@@ -210,7 +195,7 @@ class MultiNest(NonLinearOptimizer):
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
         """
-        return self.read_vector_from_summary(number_entries=self.model_mapper.total_parameters, offset=28)
+        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=28)
 
     def compute_max_likelihood(self):
         return self.read_vector_from_summary(number_entries=2, offset=56)[0]
@@ -220,11 +205,11 @@ class MultiNest(NonLinearOptimizer):
 
     def create_most_probable_model_instance(self):
         most_probable = self.compute_most_probable()
-        return self.model_mapper.instance_from_physical_vector(most_probable)
+        return self.instance_from_physical_vector(most_probable)
 
     def create_most_likely_model_instance(self):
         most_likely = self.compute_most_likely()
-        return self.model_mapper.instance_from_physical_vector(most_likely)
+        return self.instance_from_physical_vector(most_likely)
 
     def compute_gaussian_priors(self, sigma_limit):
         """Compute the Gaussian Priors these results should be initialzed with in the next phase, by taking their \
@@ -290,7 +275,7 @@ class MultiNest(NonLinearOptimizer):
 
         self._weighted_sample_model = model
 
-        return self.model_mapper.instance_from_physical_vector(model), weight, likelihood
+        return self.instance_from_physical_vector(model), weight, likelihood
 
     def compute_weighted_sample_model(self, index):
         """From a weighted sample return the model, weight and likelihood hood.
@@ -306,20 +291,20 @@ class MultiNest(NonLinearOptimizer):
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
 
     # TODO : untested and unfinished, remains to be seen if we'll need this code.
-
-    def reorder_summary_file(self, new_order):
-        most_probable = self.compute_most_probable()
-        most_likely = self.compute_most_likely()
-        likelihood = self.compute_max_likelihood()[0]
-        log_likelihood = self.compute_max_likelihood()[1]
-
-        most_probable = list(map(lambda param: ('%18.18E' % param).rjust(28), most_probable))
-        most_probable = ''.join(map(str, most_probable))
-        most_likely = list(map(lambda param: ('%18.18E' % param).rjust(28), most_likely))
-        most_likely = ''.join(map(str, most_likely))
-        likelihood = ('%18.18E' % 0.0).rjust(28)
-        log_likelihood = ('%18.18E' % 0.0).rjust(28)
-
-        new_summary_file = open(self.path + 'summary_new.txt', 'w')
-        new_summary_file.write(most_probable + most_likely + likelihood + log_likelihood)
-        new_summary_file.close()
+    #
+    # def reorder_summary_file(self, new_order):
+    #     most_probable = self.compute_most_probable()
+    #     most_likely = self.compute_most_likely()
+    #     likelihood = self.compute_max_likelihood()[0]
+    #     log_likelihood = self.compute_max_likelihood()[1]
+    #
+    #     most_probable = list(map(lambda param: ('%18.18E' % param).rjust(28), most_probable))
+    #     most_probable = ''.join(map(str, most_probable))
+    #     most_likely = list(map(lambda param: ('%18.18E' % param).rjust(28), most_likely))
+    #     most_likely = ''.join(map(str, most_likely))
+    #     likelihood = ('%18.18E' % 0.0).rjust(28)
+    #     log_likelihood = ('%18.18E' % 0.0).rjust(28)
+    #
+    #     new_summary_file = open(self.path + 'summary_new.txt', 'w')
+    #     new_summary_file.write(most_probable + most_likely + likelihood + log_likelihood)
+    #     new_summary_file.close()

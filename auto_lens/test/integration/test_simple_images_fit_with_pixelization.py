@@ -101,6 +101,7 @@ class TestCase:
             chi_sq_term = 0.0
             gl_term = 0.0
             det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
+            print(reg_matrix)
             det_reg_term = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
             noise_term = 9.0*np.log(2 * np.pi * 1.0 ** 2.0)
 
