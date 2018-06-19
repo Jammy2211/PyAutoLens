@@ -1,7 +1,6 @@
 from auto_lens.analysis import model_mapper
 import pytest
 from auto_lens.profiles import geometry_profiles, light_profiles, mass_profiles
-
 import os
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -65,7 +64,6 @@ class MockProfile(object):
         self.intensity = intensity
 
 
-# noinspection PyUnresolvedReferences
 class TestModelingCollection(object):
     def test__argument_extraction(self):
         collection = model_mapper.ModelMapper(MockConfig())
@@ -108,7 +106,6 @@ class TestModelingCollection(object):
         assert 3 == len(collection.priors_ordered_by_id)
 
 
-# noinspection PyUnresolvedReferences
 class TestModelInstance(object):
 
     def test_simple_model(self):
@@ -203,7 +200,6 @@ class TestModelInstance(object):
         assert model_map.mock_profile.intensity == 0.
 
 
-# noinspection PyUnresolvedReferences
 class TestRealClasses(object):
 
     def test_combination(self):
@@ -219,7 +215,6 @@ class TestRealClasses(object):
         assert isinstance(model_map.lens_light_profile, light_profiles.EllipticalCoreSersic)
 
 
-# noinspection PyUnresolvedReferences
 class TestConfigFunctions:
 
     def test_loading_config(self, test_config):
@@ -273,7 +268,6 @@ class TestConfigFunctions:
         assert isinstance(model_map.exponential_light_profile, light_profiles.EllipticalExponential)
 
 
-# noinspection PyUnresolvedReferences
 class TestHyperCube:
 
     def test__in_order_of_class_constructor__one_profile(self, test_config):
@@ -320,8 +314,7 @@ class TestHyperCube:
         assert collection.physical_values_ordered_by_class(unit_vector) == before
 
 
-# noinspection PyUnresolvedReferences
-class TestModelInstancesRealClasses:
+class TestModelInstancesRealClasses(object):
 
     def test__in_order_of_class_constructor__one_profile(self, test_config):
         collection = model_mapper.ModelMapper(
@@ -382,8 +375,6 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_3.centre == (0.7, 0.8)
         assert model_map.profile_3.axis_ratio == 0.9
         assert model_map.profile_3.phi == 1.0
-
-    # TODO : It doesnt totally make sense to me why this one works tbh...
 
     def test__check_order_for_different_unit_values_and_set_priors_equal_to_one_another(self, test_config):
         collection = model_mapper.ModelMapper(
@@ -487,7 +478,6 @@ class TestModelInstancesRealClasses:
         assert model_map.profile_1.phi == model_2.profile_1.phi == 1.0
 
 
-# noinspection PyUnresolvedReferences
 class TestUtility(object):
 
     def test_class_priors_dict(self):
