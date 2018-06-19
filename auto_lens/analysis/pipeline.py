@@ -39,7 +39,7 @@ def source_only_pipeline(image, mask, instrumentation):
        NLO: LM
     """
     # Create an optimizer
-    optimizer_1 = non_linear.LevenbergMarquardt()
+    optimizer_1 = non_linear.DownhillSimplex()
 
     # Define galaxy priors
     source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
@@ -62,7 +62,7 @@ def source_only_pipeline(image, mask, instrumentation):
        NLO: LM
     """
     # Create an optimizer
-    optimizer_2 = non_linear.LevenbergMarquardt()
+    optimizer_2 = non_linear.DownhillSimplex()
 
     # Define galaxy priors
     lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.SphericalIsothermal,
@@ -75,8 +75,9 @@ def source_only_pipeline(image, mask, instrumentation):
     optimizer_2.source_galaxies = [source_galaxy_prior]
 
     # Associate priors founds in the first analysis with the new galaxy priors
-    lens_galaxy_prior.spherical_mass_profile = result_1.priors.spherical_mass_profile
-    lens_galaxy_prior.shear_mass_profile = result_1.priors.shear_mass_profile
+    lens_galaxy_prior_result = result_1.priors.lens_galaxies[0]
+    lens_galaxy_prior.spherical_mass_profile = lens_galaxy_prior_result.spherical_mass_profile
+    lens_galaxy_prior.shear_mass_profile = lens_galaxy_prior_result.shear_mass_profile
 
     # Analyse the system
     result_2 = optimizer_2.fit(analysis)
@@ -124,8 +125,9 @@ def source_only_pipeline(image, mask, instrumentation):
     optimizer_a.lens_galaxies = [lens_galaxy_prior]
 
     # Set some lens galaxy priors using results from analysis 2
-    lens_galaxy_prior.shear_mass_profile = result_2.prior.shear_mass_profile
-    lens_galaxy_prior.spherical_power_law_mass_profile.centre = result_2.prior.spherical_mass_profile.centre
+    lens_galaxy_prior_result = result_2.priors.lens_galaxies[0]
+    lens_galaxy_prior.shear_mass_profile = lens_galaxy_prior_result.shear_mass_profile
+    lens_galaxy_prior.spherical_power_law_mass_profile.centre = lens_galaxy_prior_result.spherical_mass_profile.centre
 
     # TODO: Should the whole galaxy be passed in? How do results work?
     # source_galaxy = galaxy.Galaxy(pixelization=result_2h.pixelization)
