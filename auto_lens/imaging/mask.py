@@ -121,7 +121,6 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
-        print(grid)
         print("assert (image_grid == np.array({})).all()".format(
             str(grid).replace("0. ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
                                                                                                                ''))
@@ -160,7 +159,7 @@ class Mask(scaled_array.ScaledArray):
                             sub_pixel_count += 1
 
                     image_pixel_count += 1
-        print(grid)
+
         print("assert (image_sub_grid == np.array({})).all()".format(
             str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
                                                                                                                 ''))
