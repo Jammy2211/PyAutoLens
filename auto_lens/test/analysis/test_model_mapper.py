@@ -534,6 +534,16 @@ class TestPriorReplacement(object):
         assert isinstance(result.mock_class.centre.priors[1][1], model_mapper.GaussianPrior)
         assert isinstance(result.mock_class.intensity, model_mapper.GaussianPrior)
 
+    def test_replace_priors_for_two_classes(self):
+        mapper = model_mapper.ModelMapper(MockConfig(), one=MockClass, two=MockClass)
+
+        result = mapper.prior_results_for_gaussian_tuples([(1, 1), (2, 1), (3, 1), (4, 1)])
+
+        assert result.one.one.mean == 1
+        assert result.one.two.mean == 2
+        assert result.two.one.mean == 3
+        assert result.two.two.mean == 4
+
 
 class TestArguments(object):
     def test_same_argument_name(self, test_config):
