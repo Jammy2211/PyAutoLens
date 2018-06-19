@@ -75,7 +75,7 @@ class NonLinearOptimizer(mm.ModelMapper):
         elif self.check_model:
             self.check_model_info(self.file_model_info)
 
-    def run(self, fitness_function):
+    def fit(self, analysis, **constants):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
     def compute_gaussian_priors(self, sigma_limit):
@@ -110,11 +110,25 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
+    def compute_gaussian_priors(self, sigma_limit):
+        pass
+        # TODO
+
     def __init__(self, config_path, path=default_path):
         super(DownhillSimplex, self).__init__(config_path, path, False)
 
-    def run(self, fitness_function):
+    def fit(self, analysis, **constants):
         initial_model = self.physical_values_from_prior_medians()
+
+        result = None
+
+        def fitness_function(vector):
+            global result
+            instance = self.instance_from_physical_vector(vector)
+            args = {**constants, **instance.__dict__}
+            result = analysis.run(**args)
+            return result.likelihood
+
         return scipy.optimize.fmin(fitness_function, x0=initial_model)
 
 
@@ -141,15 +155,26 @@ class MultiNest(NonLinearOptimizer):
     def pdf(self):
         return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-    def run(self, fitness_function):
+    def fit(self, analysis, **constants):
         self.save_model_info()
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
             return map(lambda p, c: p(c), self.total_parameters, cube)
 
+        result = None
+
+        def fitness_function(vector):
+            global result
+            instance = self.instance_from_physical_vector(vector)
+            args = {**constants, **instance.__dict__}
+            result = analysis.run(**args)
+            return result.likelihood
+
         pymultinest.run(fitness_function, prior, self.total_parameters,
                         outputfiles_basename=self.path)
+
+        return result
 
     def open_summary_file(self):
 
