@@ -85,10 +85,36 @@ class Pixelization(object):
         source-pixel"""
         return np.full(shape=(self.pixels), fill_value=self.regularization_coefficients[0])
 
-    def create_regularization_matrix(self, regularization_weights, source_neighbors):
+    def create_constant_regularization_matrix(self, source_neighbors):
         """
-        Setup a new regularization matrix, bypassing matrix multiplication by exploiting a list of source pixel \
-        neighbors.
+        Setup a constant regularization matrix, where source-pixels are regularized with one another in 1 direction
+        with 1 constant regularization coefficient.
+
+        Matrix multiplication is bypassed by exploiting a list of source pixel neighbors.
+
+        Parameters
+        ----------
+        source_neighbors : [[]]
+            A list of the neighbors of each source pixel.
+        """
+
+        regularization_matrix = np.zeros(shape=(self.pixels, self.pixels))
+
+        reg_coeff = self.regularization_coefficients[0] ** 2.0
+
+        for i in range(self.pixels):
+            for j in source_neighbors[i]:
+                regularization_matrix[i, i] += reg_coeff
+                regularization_matrix[i, j] -= reg_coeff
+
+        return regularization_matrix
+
+    def create_weighted_regularization_matrix(self, regularization_weights, source_neighbors):
+        """
+        Setup a weighted regularization matrix, where all source-pixels are regularized with one another in both
+        directions different effective regularization coefficients.
+
+        Matrix multiplication is bypassed by exploiting a list of source pixel neighbors.
 
         Parameters
         ----------
@@ -100,7 +126,7 @@ class Pixelization(object):
 
         regularization_matrix = np.zeros(shape=(self.pixels, self.pixels))
 
-        reg_weight = regularization_weights ** 2
+        reg_weight = regularization_weights ** 2.0
 
         for i in range(self.pixels):
             for j in source_neighbors[i]:
@@ -287,7 +313,7 @@ class ClusterPixelization(VoronoiPixelization):
         source-coordinates (i.e. traced image-pixels) are mapped to them.
 
         For this pixelization, a set of cluster-pixels (defined in the image-plane as a sparse uniform grid of \
-        image-pixels) are used to determine the source-pixel centers .
+        image-pixels) determine the source-pixel centers .
 
         Parameters
         ----------
@@ -330,10 +356,7 @@ class ClusterPixelization(VoronoiPixelization):
         # TODO : WE have to compute regularization matrix here as tey both use source_neighbors. Can we make source
         # TODO : neigbors a class property so these are separate functions (that doon't repeat the calculation?)
 
-        regularization_weights = self.compute_regularization_weights()
-
-        return self.create_mapping_matrix(sub_to_source), self.create_regularization_matrix(regularization_weights,
-                                                                                            source_neighbors)
+        return self.create_mapping_matrix(sub_to_source), self.create_constant_regularization_matrix(source_neighbors)
 
 
 class AmorphousPixelization(VoronoiPixelization):
@@ -382,10 +405,7 @@ class AmorphousPixelization(VoronoiPixelization):
         sub_to_source = self.compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors,
                                                    mapper_cluster.image_to_cluster, source_to_cluster)
 
-        regularization_weights = self.compute_regularization_weights()
-
-        return self.create_mapping_matrix(sub_to_source), self.create_regularization_matrix(regularization_weights,
-                                                                                            source_neighbors)
+        return self.create_mapping_matrix(sub_to_source), self.create_constant_regularization_matrix(source_neighbors)
 
     def kmeans_cluster(self, cluster_coordinates):
         """Perform k-means clustering on the cluster_coordinates to compute the k-means clusters which represent \
