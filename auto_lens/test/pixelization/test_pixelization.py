@@ -156,8 +156,8 @@ class TestPixelization:
         # |6|7|8|
         # ^^^^^^^
 
-        # Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right and
-        # below it.
+        # Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right
+        # and below it.
 
         # So, 0 is regularized with pixels 1 and 3, pixel 1 with 2 and 4, but pixel 2 with only pixel 5, etc. So,
         #
@@ -186,14 +186,14 @@ class TestPixelization:
         #       [ 0,  0,  0,  0,  0,  0,  0, -1,  0] # []
         #       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] # []
 
-        # So, we basically just make B matrices representing regularization in each direction. For each, we can then compute
-        # their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
+        # So, we basically just make B matrices representing regularization in each direction. For each, we
+        # can then compute their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
 
         # So, H_x = B_x.T, * B_x H_y = B_y.T * B_y
         # And our overall regularization matrix, H = H_x + H_y
 
-        # For an adaptive Voronoi grid, we do the exact same thing, however we make a B matrix for every shared Voronoi vertex
-        # of each soure-pixel cluster. This means that the number of B matrices we compute is equal to the the number of
+        # For an adaptive Voronoi grid, we do this, however we make a B matrix for every shared Voronoi vertex
+        # of each source-pixel cluster. This means the number of B matrices we compute is equal to the the number of
         # Voronoi vertices in the source-pixel with the most Voronoi vertices (i.e. the most neighbours a source-pixel has).
 
         ### COMBINING B MATRICES ###
@@ -212,27 +212,45 @@ class TestPixelization:
 
         #### SKIPPING THE B MATRIX CALCULATION ####
 
-        # The routine make_via_source_neighbors doesn't use the B matrices to compute H at all!. They are used purely for testing.
+        # The create_regularization_matrix routines in pixelization don't use the B matrices to compute H!.
 
         # This is because, if you know all the pairs between source pixels (which the Voronoi gridding can tell you), you
-        # can bypass the B matrix multiplicaion entire and enter the values directly into the H matrix. Obviously, this saves
-        # a huge amount of time and memory, but makes the routine hard to understand. Nevertheless, as the tests below confirm,
-        # It produces a numerically equivalent result to the B matrices above.
+        # can bypass the B matrix multiplicaion entirely and enter the values directly into the H matrix (making the
+        # calculation significantly faster).
 
-        # It should be noted this routine is defined such that all pixels are regularized with one another (e.g. if 1->2,
-        # then 2->1 as well). There are regularization schemes where this is not the case (i.e. 1->2 but not 2->1), however
-        # For a constant regularization scheme this amounts to a scaling of the regularization coefficient. For a non-constant
-        # shceme it wouldn't make sense to have directional regularization.
+        #### POSITIVE DEFINITE MATRIX ####
+
+        # The regularization matrix must be positive-definite, to ensure that its determinant is 0. To ensure this
+        # criteria is met, two forms of regularization schemes are applied in slightly different ways.
+
+        #### CONSTANT REGULARIZATION ####
+
+        # For the constant regularization scheme, there is only 1 regularization coefficient that is applied to all
+        # source-pair regularizations equally. This means that we when write B, we only need to regularize pixels
+        # in one direction (e.g. source pixel 0 regularizes source pixel 1, but NOT visa versa). For example:
+
+        # B = [-1, 1]  [0->1]
+        #     [0, -1]  1 does not regularization with 0
 
         #### WEIGHTED REGULARIZATION ####
 
-        # The final thing we want to do is apply non-constant regularization. The idea here is that we given each source
-        # pixel an 'effective regularization weight', instead of applying just one constant scheme overall. The AutoLens
-        # paper motives why, but the idea is basically that different regions of the source-plane want different
-        # levels of regularizations.
+        # For the weighted regularization scheme, each sourceis given an 'effective regularization weight', instead
+        # of applying one constant regularization coefficient to each source-pixel pair. scheme overall. This is
+        # because different regions of a source-plane want different levels of regularization
+        # (see Nightingale, Dye and Massey) 2018.
 
-        # Say we have our regularization weights (see the code for how they are computed), how does this change our B matrix?
-        # Well, we just multiple the regularization weight of each source-pixel by each row of B it has a -1 in, so:
+        # Unlike the constant regularization scheme, regularization pairs are now defined such that all pixels are
+        # regularized with one another (e.g. if source pixel 0 regularizes source pixel 1, source pixel 1 also
+        # regularizes source pixel 0). For example :
+        #
+        # B = [-1, 1]  [0->1]
+        #     [-1, -1]  1 now also regularizes 0
+        #
+        # For a constant regularization coefficient this would NOT produce a positive-definite matrix. However, for
+        # the weighted scheme, it does!
+
+        # The regularize weights change the B matrix as shown below, we simply multiply each source-pixel's effective
+        # regularization weight by each row of B it has a -1 in, so:
 
         # regularization_weights = [1, 2, 3, 4]
 
@@ -248,246 +266,303 @@ class TestPixelization:
         #     [-1, 1, 0 ,0] # [0->1]
         #     [0, 0, -3 ,3] # [2->3] This is valid!
 
-        # For the latter case, you can't just multiply regularization_weights by the matrix (as a vector). The pair routine
-        # which computes H takes care of all of this :)
+        class TestConstantRegularization:
 
-        def test__1_B_matrix_size_4x4__makes_correct_regularization_matrix(self):
+            def test__1_B_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
+                # Here, we define the source_neighbors first here and make the B matrices based on them.
 
-            test_b_matrix = np.array([[-1, 0, 1, 0],
-                                      [0, -1, 0, 1],
-                                      [1, 0, -1, 0],
-                                      [0, 1, 0, -1]])
+                # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
+                # have to have as many B matrices as we do the source pixel with the most  vertices. We can combine the
+                # rows of each B matrix wherever we like ;0.
 
-            test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
+                source_neighbors = np.array([[1, 2], [0], [0]])
 
-            source_neighbors = np.array([[2], [3], [0], [1]])
-            regularization_weights = np.ones((4))
+                test_b_matrix_1 = np.array([[-1, 1, 0],  # Pair 1
+                                            [-1, 0, 1],  # Pair 2
+                                            [0, 0, 0,]])  # Pair 1 flip
 
-            pix = pixelization.Pixelization(pixels=4)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+                test_regularization_matrix = test_regularization_matrix_1
 
-        def test__2_B_matrices_size_3x3__makes_correct_regularization_matrix(self):
-            # Here, we define the source_neighbors first here and make the B matrices based on them.
+                pix = pixelization.Pixelization(pixels=3, regularization_coefficients=(1.0,))
+                regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
 
-            # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
-            # have to have as many B matrices as we do the source pixel with the most  vertices. We can combine the
-            # rows of each B matrix wherever we like ;0.
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-            source_neighbors = np.array([[1, 2], [0], [0]])
+            def test__1_B_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
 
-            test_b_matrix_1 = np.array([[-1, 1, 0],  # Pair 1
-                                        [-1, 0, 1],  # Pair 2
-                                        [1, -1, 0]])  # Pair 1 flip
+                test_b_matrix = np.array([[-1, 1, 0, 0],
+                                          [0, -1, 1, 0],
+                                          [0, 0, -1, 1],
+                                          [1, 0, 0, -1]])
 
-            test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
-            test_b_matrix_2 = np.array([[1, 0, -1],  # Pair 2 flip
-                                        [0, 0, 0],
-                                        [0, 0, 0]])
+                source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0,2]])
 
-            test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+                pix = pixelization.Pixelization(pixels=4, regularization_coefficients=(1.0,))
+                regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
 
-            test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-            regularization_weights = np.ones((3))
+            def test__1_B_matrix_size_4x4__coefficient_2__makes_correct_regularization_matrix(self):
 
-            pix = pixelization.Pixelization(pixels=3)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+                test_b_matrix = 2.0*np.array([[-1, 1, 0, 0],
+                                              [0, -1, 1, 0],
+                                              [0, 0, -1, 1],
+                                              [1, 0, 0, -1]])
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
-        def test__2_B_matrices_size_4x4__makes_correct_regularization_matrix(self):
+                source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0,2]])
 
-            test_b_matrix_1 = np.array([[-1, 1, 0, 0],
-                                        [0, -1, 1, 0],
-                                        [0, 0, -1, 1],
-                                        [1, 0, 0, -1]])
+                pix = pixelization.Pixelization(pixels=4, regularization_coefficients=(2.0,))
+                regularization_matrix = pix.create_constant_regularization_matrix(source_neighbors)
 
-            test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-            test_b_matrix_2 = np.array([[-1, 0, 0, 1],
-                                        [1, -1, 0, 0],
-                                        [0, 1, -1, 0],
-                                        [0, 0, 1, -1]])
 
-            test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+        class TestWeightedRegularization:
 
-            test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+            def test__1_B_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
 
-            source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
-            regularization_weights = np.ones((4))
+                source_neighbors = np.array([[2], [3], [0], [1]])
 
-            pix = pixelization.Pixelization(pixels=4)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+                test_b_matrix = np.array([[-1, 0, 1, 0],
+                                          [0, -1, 0, 1],
+                                          [1, 0, -1, 0],
+                                          [0, 1, 0, -1]])
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
-        def test__4_B_matrices_size_6x6__makes_correct_regularization_matrix(self):
-            # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a lot less
-            # Stressful.
+                regularization_weights = np.ones((4))
 
-            source_neighbors = [[2, 3, 4], [2, 5], [0, 1, 3, 5], [0, 2], [5, 0], [4, 1, 2]]
+                pix = pixelization.Pixelization(pixels=4)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
 
-            test_b_matrix_1 = np.array([[-1,  0, 1, 0,  0, 0],  # Pair 1
-                                        [ 0, -1, 1, 0,  0, 0],  # Pair 2
-                                        [-1,  0, 0, 1,  0, 0],  # Pair 3
-                                        [ 0,  0, 0, 0, -1, 1],  # Pair 4
-                                        [ 0, -1, 0, 0,  0, 1],  # Pair 5
-                                        [-1,  0, 0, 0,  1, 0]])  # Pair 6
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-            test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+            def test__2_B_matrices_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
+                # Here, we define the source_neighbors first here and make the B matrices based on them.
 
-            test_b_matrix_2 = np.array([[0, 0, -1, 1, 0, 0],  # Pair 7
-                                        [0, 0, -1, 0, 0, 1],  # Pair 8
-                                        [0, 0,  0, 0, 0, 0],
-                                        [0, 0,  0, 0, 0, 0],
-                                        [0, 0,  0, 0, 0, 0],
-                                        [0, 0,  0, 0, 0, 0]])
+                # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
+                # have to have as many B matrices as we do the source pixel with the most  vertices. We can combine the
+                # rows of each B matrix wherever we like ;0.
 
-            test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+                source_neighbors = np.array([[1, 2], [0], [0]])
 
-            test_b_matrix_3 = np.array([[1, 0, -1,  0,  0,  0],  # Pair 1 flip
-                                        [0, 1, -1,  0,  0,  0],  # Pair 2 flip
-                                        [1, 0,  0, -1,  0,  0],  # Pair 3 flip
-                                        [0, 0,  0,  0,  1, -1],  # Pair 4 flip
-                                        [0, 1,  0,  0,  0, -1],  # Pair 5 flip
-                                        [1, 0,  0,  0, -1,  0]])  # Pair 6 flip
+                test_b_matrix_1 = np.array([[-1, 1, 0],  # Pair 1
+                                            [-1, 0, 1],  # Pair 2
+                                            [1, -1, 0]])  # Pair 1 flip
 
-            test_regularization_matrix_3 = np.matmul(test_b_matrix_3.T, test_b_matrix_3)
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
-            test_b_matrix_4 = np.array([[0, 0, 1, -1, 0,  0],  # Pair 7 flip
-                                        [0, 0, 1,  0, 0, -1],  # Pair 8 flip
-                                        [0, 0, 0,  0, 0,  0],
-                                        [0, 0, 0,  0, 0,  0],
-                                        [0, 0, 0,  0, 0,  0],
-                                        [0, 0, 0,  0, 0,  0]])
+                test_b_matrix_2 = np.array([[1, 0, -1],  # Pair 2 flip
+                                            [0, 0, 0],
+                                            [0, 0, 0]])
 
-            test_regularization_matrix_4 = np.matmul(test_b_matrix_4.T, test_b_matrix_4)
+                test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
 
-            test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
-                                         test_regularization_matrix_3 + + test_regularization_matrix_4
+                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
-            regularization_weights = np.ones((6))
+                regularization_weights = np.ones((3))
 
-            pix = pixelization.Pixelization(pixels=6)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+                pix = pixelization.Pixelization(pixels=3)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-        def test__1_B_matrix_size_3x3_variables_regularization_weights__makes_correct_regularization_matrix(self):
-            # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
+            def test__2_B_matrices_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
 
-            # This means our B matrix is:
+                test_b_matrix_1 = np.array([[-1, 1, 0, 0],
+                                            [0, -1, 1, 0],
+                                            [0, 0, -1, 1],
+                                            [1, 0, 0, -1]])
 
-            # [-1, 1, 0]
-            # [0, -1, 1]
-            # [0, 0, -1]
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
-            # Regularization Matrix, H = B * B.T.I can
+                test_b_matrix_2 = np.array([[-1, 0, 0, 1],
+                                            [1, -1, 0, 0],
+                                            [0, 1, -1, 0],
+                                            [0, 0, 1, -1]])
 
-            regularization_weights = np.array([2.0, 4.0, 1.0])
+                test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
 
-            test_b_matrix = np.array([[-1, 1, 0],  # [[-2, 2, 0], (Matrix)
-                                      [1, -1, 0],  # [4, -4, 0], (after)
-                                      [0, 0, 0]])  # [0, 0,  0]]) (weights)
+                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
 
-            test_b_matrix = (test_b_matrix.T * regularization_weights).T
+                source_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
+                regularization_weights = np.ones((4))
 
-            test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
+                pix = pixelization.Pixelization(pixels=4)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
 
-            source_neighbors = [[1], [0], []]
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-            pix = pixelization.Pixelization(pixels=3)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+            def test__4_B_matrices_size_6x6__weights_all_1s__makes_correct_regularization_matrix(self):
+                # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a lot less
+                # Stressful.
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+                source_neighbors = [[2, 3, 4], [2, 5], [0, 1, 3, 5], [0, 2], [5, 0], [4, 1, 2]]
 
-        def test__two_B_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
-            # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
+                test_b_matrix_1 = np.array([[-1,  0, 1, 0,  0, 0],  # Pair 1
+                                            [ 0, -1, 1, 0,  0, 0],  # Pair 2
+                                            [-1,  0, 0, 1,  0, 0],  # Pair 3
+                                            [ 0,  0, 0, 0, -1, 1],  # Pair 4
+                                            [ 0, -1, 0, 0,  0, 1],  # Pair 5
+                                            [-1,  0, 0, 0,  1, 0]])  # Pair 6
 
-            # This means our B matrix is:
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
 
-            # [-1, 1, 0]
-            # [0, -1, 1]
-            # [0, 0, -1]
+                test_b_matrix_2 = np.array([[0, 0, -1, 1, 0, 0],  # Pair 7
+                                            [0, 0, -1, 0, 0, 1],  # Pair 8
+                                            [0, 0,  0, 0, 0, 0],
+                                            [0, 0,  0, 0, 0, 0],
+                                            [0, 0,  0, 0, 0, 0],
+                                            [0, 0,  0, 0, 0, 0]])
 
-            # Regularization Matrix, H = B * B.T.I can
+                test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
 
-            regularization_weights = np.array([2.0, 4.0, 1.0, 8.0])
+                test_b_matrix_3 = np.array([[1, 0, -1,  0,  0,  0],  # Pair 1 flip
+                                            [0, 1, -1,  0,  0,  0],  # Pair 2 flip
+                                            [1, 0,  0, -1,  0,  0],  # Pair 3 flip
+                                            [0, 0,  0,  0,  1, -1],  # Pair 4 flip
+                                            [0, 1,  0,  0,  0, -1],  # Pair 5 flip
+                                            [1, 0,  0,  0, -1,  0]])  # Pair 6 flip
 
-            test_b_matrix_1 = np.array([[-2, 2, 0, 0],
-                                        [-2, 0, 2, 0],
-                                        [0, -4, 4, 0],
-                                        [0, -4, 0, 4]])
+                test_regularization_matrix_3 = np.matmul(test_b_matrix_3.T, test_b_matrix_3)
 
-            test_b_matrix_2 = np.array([[4, -4, 0, 0],
-                                        [1, 0, -1, 0],
-                                        [0, 1, -1, 0],
-                                        [0, 8, 0, -8]])
+                test_b_matrix_4 = np.array([[0, 0, 1, -1, 0,  0],  # Pair 7 flip
+                                            [0, 0, 1,  0, 0, -1],  # Pair 8 flip
+                                            [0, 0, 0,  0, 0,  0],
+                                            [0, 0, 0,  0, 0,  0],
+                                            [0, 0, 0,  0, 0,  0],
+                                            [0, 0, 0,  0, 0,  0]])
 
-            test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
-            test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+                test_regularization_matrix_4 = np.matmul(test_b_matrix_4.T, test_b_matrix_4)
 
-            test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
+                                             test_regularization_matrix_3 + + test_regularization_matrix_4
 
-            source_neighbors = [[1, 2], [0, 2, 3], [0, 1], [1]]
+                regularization_weights = np.ones((6))
 
-            pix = pixelization.Pixelization(pixels=4)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+                pix = pixelization.Pixelization(pixels=6)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-        def test__4_B_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
+            def test__1_B_matrix_size_3x3_variables_regularization_weights__makes_correct_regularization_matrix(self):
+                # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
-            source_neighbors = [[1, 4], [2, 4, 0], [3, 4, 5, 1], [5, 2], [5, 0, 1, 2], [2, 3, 4]]
-            regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+                # This means our B matrix is:
 
-            # I'm inputting the regularizationo weights directly thiss time, as it'd be a pain to multiply with a loop.
+                # [-1, 1, 0]
+                # [0, -1, 1]
+                # [0, 0, -1]
 
-            test_b_matrix_1 = np.array([[-1, 1, 0, 0, 0, 0],  # Pair 1
-                                        [-1, 0, 0, 0, 1, 0],  # Pair 2
-                                        [0, -2, 2, 0, 0, 0],  # Pair 3
-                                        [0, -2, 0, 0, 2, 0],  # Pair 4
-                                        [0, 0, -3, 3, 0, 0],  # Pair 5
-                                        [0, 0, -3, 0, 3, 0]])  # Pair 6
+                # Regularization Matrix, H = B * B.T.I can
 
-            test_b_matrix_2 = np.array([[0, 0, -3, 0, 0, 3],  # Pair 7
-                                        [0, 0, 0, -4, 0, 4],  # Pair 8
-                                        [0, 0, 0, 0, -5, 5],  # Pair 9
-                                        [0, 0, 0, 0, 0, 0],
-                                        [0, 0, 0, 0, 0, 0],
-                                        [0, 0, 0, 0, 0, 0]])
+                regularization_weights = np.array([2.0, 4.0, 1.0])
 
-            # Now do the same pairs but with the regularization direction and weights swapped.
+                test_b_matrix = np.array([[-1, 1, 0],  # [[-2, 2, 0], (Matrix)
+                                          [1, -1, 0],  # [4, -4, 0], (after)
+                                          [0, 0, 0]])  # [0, 0,  0]]) (weights)
 
-            test_b_matrix_3 = np.array([[2, -2, 0, 0, 0, 0],  # Pair 1
-                                        [5, 0, 0, 0, -5, 0],  # Pair 2
-                                        [0, 3, -3, 0, 0, 0],  # Pair 3
-                                        [0, 5, 0, 0, -5, 0],  # Pair 4
-                                        [0, 0, 4, -4, 0, 0],  # Pair 5
-                                        [0, 0, 5, 0, -5, 0]])  # Pair 6
+                test_b_matrix = (test_b_matrix.T * regularization_weights).T
 
-            test_b_matrix_4 = np.array([[0, 0, 6, 0, 0, -6],  # Pair 7
-                                        [0, 0, 0, 6, 0, -6],  # Pair 8
-                                        [0, 0, 0, 0, 6, -6],  # Pair 9
-                                        [0, 0, 0, 0, 0, 0],
-                                        [0, 0, 0, 0, 0, 0],
-                                        [0, 0, 0, 0, 0, 0]])
+                test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
-            test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
-            test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
-            test_regularization_matrix_3 = np.matmul(test_b_matrix_3.T, test_b_matrix_3)
-            test_regularization_matrix_4 = np.matmul(test_b_matrix_4.T, test_b_matrix_4)
+                source_neighbors = [[1], [0], []]
 
-            test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
-                                         test_regularization_matrix_3 + test_regularization_matrix_4
+                pix = pixelization.Pixelization(pixels=3)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
 
-            pix = pixelization.Pixelization(pixels=6)
-            regularization_matrix = pix.create_regularization_matrix(regularization_weights, source_neighbors)
+                assert (regularization_matrix == test_regularization_matrix).all()
 
-            assert (regularization_matrix == test_regularization_matrix).all()
+            def test__2_B_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
+                # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
+
+                # This means our B matrix is:
+
+                # [-1, 1, 0]
+                # [0, -1, 1]
+                # [0, 0, -1]
+
+                # Regularization Matrix, H = B * B.T.I can
+
+                regularization_weights = np.array([2.0, 4.0, 1.0, 8.0])
+
+                test_b_matrix_1 = np.array([[-2, 2, 0, 0],
+                                            [-2, 0, 2, 0],
+                                            [0, -4, 4, 0],
+                                            [0, -4, 0, 4]])
+
+                test_b_matrix_2 = np.array([[4, -4, 0, 0],
+                                            [1, 0, -1, 0],
+                                            [0, 1, -1, 0],
+                                            [0, 8, 0, -8]])
+
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+                test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+
+                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2
+
+                source_neighbors = [[1, 2], [0, 2, 3], [0, 1], [1]]
+
+                pix = pixelization.Pixelization(pixels=4)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
+
+                assert (regularization_matrix == test_regularization_matrix).all()
+
+            def test__4_B_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
+
+                source_neighbors = [[1, 4], [2, 4, 0], [3, 4, 5, 1], [5, 2], [5, 0, 1, 2], [2, 3, 4]]
+                regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+
+                # I'm inputting the regularizationo weights directly thiss time, as it'd be a pain to multiply with a loop.
+
+                test_b_matrix_1 = np.array([[-1, 1, 0, 0, 0, 0],  # Pair 1
+                                            [-1, 0, 0, 0, 1, 0],  # Pair 2
+                                            [0, -2, 2, 0, 0, 0],  # Pair 3
+                                            [0, -2, 0, 0, 2, 0],  # Pair 4
+                                            [0, 0, -3, 3, 0, 0],  # Pair 5
+                                            [0, 0, -3, 0, 3, 0]])  # Pair 6
+
+                test_b_matrix_2 = np.array([[0, 0, -3, 0, 0, 3],  # Pair 7
+                                            [0, 0, 0, -4, 0, 4],  # Pair 8
+                                            [0, 0, 0, 0, -5, 5],  # Pair 9
+                                            [0, 0, 0, 0, 0, 0],
+                                            [0, 0, 0, 0, 0, 0],
+                                            [0, 0, 0, 0, 0, 0]])
+
+                # Now do the same pairs but with the regularization direction and weights swapped.
+
+                test_b_matrix_3 = np.array([[2, -2, 0, 0, 0, 0],  # Pair 1
+                                            [5, 0, 0, 0, -5, 0],  # Pair 2
+                                            [0, 3, -3, 0, 0, 0],  # Pair 3
+                                            [0, 5, 0, 0, -5, 0],  # Pair 4
+                                            [0, 0, 4, -4, 0, 0],  # Pair 5
+                                            [0, 0, 5, 0, -5, 0]])  # Pair 6
+
+                test_b_matrix_4 = np.array([[0, 0, 6, 0, 0, -6],  # Pair 7
+                                            [0, 0, 0, 6, 0, -6],  # Pair 8
+                                            [0, 0, 0, 0, 6, -6],  # Pair 9
+                                            [0, 0, 0, 0, 0, 0],
+                                            [0, 0, 0, 0, 0, 0],
+                                            [0, 0, 0, 0, 0, 0]])
+
+                test_regularization_matrix_1 = np.matmul(test_b_matrix_1.T, test_b_matrix_1)
+                test_regularization_matrix_2 = np.matmul(test_b_matrix_2.T, test_b_matrix_2)
+                test_regularization_matrix_3 = np.matmul(test_b_matrix_3.T, test_b_matrix_3)
+                test_regularization_matrix_4 = np.matmul(test_b_matrix_4.T, test_b_matrix_4)
+
+                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
+                                             test_regularization_matrix_3 + test_regularization_matrix_4
+
+                pix = pixelization.Pixelization(pixels=6)
+                regularization_matrix = pix.create_weighted_regularization_matrix(regularization_weights, source_neighbors)
+
+                assert (regularization_matrix == test_regularization_matrix).all()
 
 
 class TestVoronoiPixelization:
