@@ -110,6 +110,11 @@ class ModelMapper(object):
 
     @property
     def prior_models(self):
+        """
+        Returns
+        -------
+        prior_model_tuples: [(String, PriorModel)]
+        """
         return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
@@ -235,6 +240,17 @@ class ModelMapper(object):
 
         return self.instance_from_arguments(arguments)
 
+    def prior_results_for_gaussian_tuples(self, tuples):
+        model_instance = ModelInstance()
+
+        new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
+        arguments = dict(map(lambda prior, new_prior: (prior[1], new_prior), self.priors_ordered_by_id, new_priors))
+
+        for prior_model in self.prior_models:
+            setattr(model_instance, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
+
+        return model_instance
+
     def instance_from_arguments(self, arguments):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
@@ -303,17 +319,6 @@ class ModelMapper(object):
                 'existing in the files. Parameter = ')
 
         model_info_check.close()
-
-    def prior_results_for_gaussian_tuples(self, tuples):
-        model_instance = ModelInstance()
-
-        new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
-        arguments = dict(map(lambda prior, new_prior: (prior[0], new_prior), self.priors_ordered_by_id, new_priors))
-
-        for prior_model in self.prior_models:
-            setattr(model_instance, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
-
-        return model_instance
 
 
 prior_number = 0
@@ -425,6 +430,7 @@ class PriorModel(AbstractPriorModel):
         self.cls = cls
         self.config = (config if config is not None else Config("{}/../config".format(path)))
 
+        # TODO: Fix this
         arg_spec = inspect.getargspec(cls.__init__)
 
         try:
@@ -458,6 +464,11 @@ class PriorModel(AbstractPriorModel):
 
     @property
     def tuple_priors(self):
+        """
+        Returns
+        -------
+        tuple_prior_tuples: [(String, TuplePrior)]
+        """
         return list(filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.items()))
 
     @property
@@ -487,13 +498,15 @@ class PriorModel(AbstractPriorModel):
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
         return self.cls(**model_arguments)
 
-    def gaussian_prior_model_for_arguments(self, prior_arguments):
+    def gaussian_prior_model_for_arguments(self, arguments):
         new_model = PriorModel(self.cls, self.config)
 
+        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
+
         for tuple_prior in self.tuple_priors:
-            setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(prior_arguments))
+            setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(arguments))
         for prior in self.direct_priors:
-            setattr(new_model, prior[0], prior_arguments[prior[0]])
+            setattr(new_model, prior[0], model_arguments[prior[0]])
 
         return new_model
 
@@ -506,10 +519,10 @@ class TuplePrior(object):
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
 
-    def gaussian_tuple_prior_for_arguments(self, prior_arguments):
+    def gaussian_tuple_prior_for_arguments(self, arguments):
         tuple_prior = TuplePrior()
         for prior in self.priors:
-            setattr(tuple_prior, prior[0], prior_arguments[prior[0]])
+            setattr(tuple_prior, prior[0], arguments[prior[1]])
         return tuple_prior
 
 
