@@ -240,7 +240,7 @@ class ModelMapper(object):
 
         return self.instance_from_arguments(arguments)
 
-    def prior_results_for_gaussian_tuples(self, tuples):
+    def mapper_from_gaussian_tuples(self, tuples):
         model_instance = ModelInstance()
 
         new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
