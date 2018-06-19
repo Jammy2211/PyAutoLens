@@ -1,5 +1,7 @@
 from auto_lens.analysis import analysis as an
 from auto_lens.analysis import galaxy_prior
+from auto_lens.analysis import model_mapper
+from auto_lens.analysis import galaxy
 from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens import instrumentation as inst
 from auto_lens.analysis import non_linear
@@ -45,11 +47,11 @@ def source_only_pipeline(image, mask, instrumentation):
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the galaxy priors to the optimizer
-    optimizer_1.add("source_galaxies", [source_galaxy_prior])
-    optimizer_1.add("lens_galaxies", [lens_galaxy_prior])
+    optimizer_1.source_galaxies = [source_galaxy_prior]
+    optimizer_1.lens_galaxies = [lens_galaxy_prior]
 
     # Analyse the system with constant instrumentation
-    result_1 = analysis.analyse(optimizer_1, instrumentation=instrumentation)
+    result_1 = optimizer_1.fit(analysis, instrumentation=instrumentation)
 
     # Add the result of the first analysis to the list
     results.append(result_1)
@@ -69,15 +71,15 @@ def source_only_pipeline(image, mask, instrumentation):
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
 
     # Add the galaxy priors to the optimizer
-    optimizer_2.add("lens_galaxies", [lens_galaxy_prior])
-    optimizer_2.add("source_galaxies", [source_galaxy_prior])
+    optimizer_2.lens_galaxies = [lens_galaxy_prior]
+    optimizer_2.source_galaxies = [source_galaxy_prior]
 
     # Associate priors founds in the first analysis with the new galaxy priors
     lens_galaxy_prior.spherical_mass_profile = result_1.priors.spherical_mass_profile
     lens_galaxy_prior.shear_mass_profile = result_1.priors.shear_mass_profile
 
     # Analyse the system
-    result_2 = analysis.analyse(optimizer_2)
+    result_2 = optimizer_2.fit(analysis)
 
     # Add the result of the second analysis to the list
     results.append(result_2)
@@ -95,14 +97,14 @@ def source_only_pipeline(image, mask, instrumentation):
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.VoronoiPixelization)
 
     #  Add the variable pixelization and instrumentation to the optimizer
-    optimizer_2h.add("source_galaxy", source_galaxy_prior)
-    optimizer_2h.add("instrumentation", inst.Instrumentation)
+    optimizer_2h.source_galaxies = [source_galaxy_prior]
+    optimizer_2h.instrumentation = model_mapper.PriorModel(inst.Instrumentation)
 
     # Set the regularization prior using results from analysis 2
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
 
     # Analyse the system
-    result_2h = analysis.analyse(optimizer_2h, lens_galaxies=result_2.lens_galaxies)
+    result_2h = optimizer_2h.fit(analysis, lens_galaxies=result_2.lens_galaxies)
 
     # Add the result of analysis 2h to the results
     results.append(result_2h)
@@ -119,16 +121,18 @@ def source_only_pipeline(image, mask, instrumentation):
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the lens galaxy prior to the optimizer
-    optimizer_a.add("lens_galaxy", lens_galaxy_prior)
+    optimizer_a.lens_galaxies = [lens_galaxy_prior]
 
     # Set some lens galaxy priors using results from analysis 2
     lens_galaxy_prior.shear_mass_profile = result_2.prior.shear_mass_profile
     lens_galaxy_prior.spherical_power_law_mass_profile.centre = result_2.prior.spherical_mass_profile.centre
 
+    # TODO: Should the whole galaxy be passed in? How do results work?
+    # source_galaxy = galaxy.Galaxy(pixelization=result_2h.pixelization)
+
     # Analysis the system
-    result_a = analysis.analyse(optimizer_a, instrumentation=result_2h.instrumentation,
-                                pixelization=result_2h.pixelization)
-    
+    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instrumentation, pixelization=result_2h.pixelization)
+
     # Add the result of the main analysis to the results
     results.append(result_a)
 
