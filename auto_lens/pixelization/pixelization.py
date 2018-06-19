@@ -103,6 +103,7 @@ class Pixelization(object):
         reg_coeff = self.regularization_coefficients[0] ** 2.0
 
         for i in range(self.pixels):
+            regularization_matrix[i ,i] += 1e-8
             for j in source_neighbors[i]:
                 regularization_matrix[i, i] += reg_coeff
                 regularization_matrix[i, j] -= reg_coeff
