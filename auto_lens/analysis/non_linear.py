@@ -107,10 +107,6 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def compute_gaussian_priors(self, sigma_limit):
-        pass
-        # TODO
-
     def __init__(self, config_path, path=default_path):
         super(DownhillSimplex, self).__init__(config_path, path, False)
 
@@ -126,12 +122,16 @@ class DownhillSimplex(NonLinearOptimizer):
             result = analysis.run(**args)
             return result.likelihood
 
-        return scipy.optimize.fmin(fitness_function, x0=initial_model)
+        scipy.optimize.fmin(fitness_function, x0=initial_model)
+        # output = scipy.optimize.fmin(fitness_function, x0=initial_model)
+
+        # TODO: use output to generate model instance
+        return result
 
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, config_path=None, path=default_path, check_model=True):
+    def __init__(self, config_path=None, path=default_path, check_model=True, sigma_limit=3):
         """Class to setup and run a MultiNest analysis and output the MultiNest files.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -147,6 +147,8 @@ class MultiNest(NonLinearOptimizer):
 
         self.file_summary = self.path + 'summary.txt'
         self.file_weighted_samples = self.path + 'multinest.txt'
+        self._weighted_sample_model = None
+        self.sigma_limit = sigma_limit
 
     @property
     def pdf(self):
@@ -170,6 +172,8 @@ class MultiNest(NonLinearOptimizer):
 
         pymultinest.run(fitness_function, prior, self.total_parameters,
                         outputfiles_basename=self.path)
+
+        result.priors = self.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
         return result
 
@@ -248,6 +252,7 @@ class MultiNest(NonLinearOptimizer):
         uppers = self.compute_model_at_upper_limit(sigma_limit)
         lowers = self.compute_model_at_lower_limit(sigma_limit)
 
+        # noinspection PyArgumentList
         sigmas = list(map(lambda mean, upper, lower: max([upper - mean, mean - lower]), means, uppers, lowers))
 
         return list(map(lambda mean, sigma: (mean, sigma), means, sigmas))
