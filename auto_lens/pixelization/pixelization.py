@@ -313,7 +313,7 @@ class ClusterPixelization(VoronoiPixelization):
         source-coordinates (i.e. traced image-pixels) are mapped to them.
 
         For this pixelization, a set of cluster-pixels (defined in the image-plane as a sparse uniform grid of \
-        image-pixels) are used to determine the source-pixel centers .
+        image-pixels) determine the source-pixel centers .
 
         Parameters
         ----------
