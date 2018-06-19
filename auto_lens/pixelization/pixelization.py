@@ -85,10 +85,38 @@ class Pixelization(object):
         source-pixel"""
         return np.full(shape=(self.pixels), fill_value=self.regularization_coefficients[0])
 
-    def create_regularization_matrix(self, regularization_weights, source_neighbors):
+    def create_constant_regularization_matrix(self, source_neighbors):
         """
-        Setup a new regularization matrix, bypassing matrix multiplication by exploiting a list of source pixel \
-        neighbors.
+        Setup a constant regularization matrix, where source-pixels are regularized with one another in 1 direction
+        with 1 constant regularization coefficient.
+
+        Matrix multiplication is bypassed by exploiting a list of source pixel neighbors.
+
+        Parameters
+        ----------
+        source_neighbors : [[]]
+            A list of the neighbors of each source pixel.
+        """
+
+        regularization_matrix = np.zeros(shape=(self.pixels, self.pixels))
+
+        reg_coeff = self.regularization_coefficients[0] ** 2.0
+
+        print(source_neighbors)
+
+        for i in range(self.pixels):
+            for j in source_neighbors[i]:
+                regularization_matrix[i, i] += reg_coeff
+                regularization_matrix[i, j] -= reg_coeff
+
+        return regularization_matrix
+
+    def create_weighted_regularization_matrix(self, regularization_weights, source_neighbors):
+        """
+        Setup a weighted regularization matrix, where all source-pixels are regularized with one another in both
+        directions different effective regularization coefficients.
+
+        Matrix multiplication is bypassed by exploiting a list of source pixel neighbors.
 
         Parameters
         ----------
@@ -100,7 +128,7 @@ class Pixelization(object):
 
         regularization_matrix = np.zeros(shape=(self.pixels, self.pixels))
 
-        reg_weight = regularization_weights ** 2
+        reg_weight = regularization_weights ** 2.0
 
         for i in range(self.pixels):
             for j in source_neighbors[i]:
@@ -332,8 +360,8 @@ class ClusterPixelization(VoronoiPixelization):
 
         regularization_weights = self.compute_regularization_weights()
 
-        return self.create_mapping_matrix(sub_to_source), self.create_regularization_matrix(regularization_weights,
-                                                                                            source_neighbors)
+        return self.create_mapping_matrix(sub_to_source), self.create_weighted_regularization_matrix(regularization_weights,
+                                                                                                     source_neighbors)
 
 
 class AmorphousPixelization(VoronoiPixelization):
@@ -384,8 +412,8 @@ class AmorphousPixelization(VoronoiPixelization):
 
         regularization_weights = self.compute_regularization_weights()
 
-        return self.create_mapping_matrix(sub_to_source), self.create_regularization_matrix(regularization_weights,
-                                                                                            source_neighbors)
+        return self.create_mapping_matrix(sub_to_source), self.create_weighted_regularization_matrix(regularization_weights,
+                                                                                                     source_neighbors)
 
     def kmeans_cluster(self, cluster_coordinates):
         """Perform k-means clustering on the cluster_coordinates to compute the k-means clusters which represent \
