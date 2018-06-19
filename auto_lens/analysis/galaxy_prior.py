@@ -20,7 +20,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     @DynamicAttrs
     """
 
-    def __init__(self, align_centres=False, align_orientations=False, config=None, **kwargs):
+    def __init__(self, align_centres=False, align_orientations=False, redshift=None, config=None, **kwargs):
         """
         Parameters
         ----------
@@ -62,9 +62,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 for profile_model in profile_models:
                     profile_model.phi = phi
 
-        if "redshift" in kwargs:
-            self.redshift = kwargs["redshift"]
-        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
+        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config) if redshift is None else redshift
         self.config = config
 
     @property
