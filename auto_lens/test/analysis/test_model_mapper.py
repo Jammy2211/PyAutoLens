@@ -504,20 +504,20 @@ class TestUtility(object):
 class TestPriorReplacement(object):
     def test_prior_replacement(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClass)
-        result = mapper.prior_results_for_gaussian_tuples(
+        result = mapper.mapper_from_gaussian_tuples(
             [(10, 3), (5, 3)])
 
         assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
     def test_replace_priors_with_gaussians_from_tuples(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClass)
-        result = mapper.prior_results_for_gaussian_tuples([(10, 3), (5, 3)])
+        result = mapper.mapper_from_gaussian_tuples([(10, 3), (5, 3)])
 
         assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
     def test_replacing_priors_for_profile(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockProfile)
-        result = mapper.prior_results_for_gaussian_tuples(
+        result = mapper.mapper_from_gaussian_tuples(
             [(10, 3), (5, 3), (5, 3)])
 
         assert isinstance(result.mock_class.centre.priors[0][1], model_mapper.GaussianPrior)
@@ -527,7 +527,7 @@ class TestPriorReplacement(object):
     def test_replace_priors_for_two_classes(self):
         mapper = model_mapper.ModelMapper(MockConfig(), one=MockClass, two=MockClass)
 
-        result = mapper.prior_results_for_gaussian_tuples([(1, 1), (2, 1), (3, 1), (4, 1)])
+        result = mapper.mapper_from_gaussian_tuples([(1, 1), (2, 1), (3, 1), (4, 1)])
 
         assert result.one.one.mean == 1
         assert result.one.two.mean == 2
@@ -573,9 +573,7 @@ def make_list_prior_model():
 
 
 class TestListPriorModel(object):
-    def test_list_prior_model(self, list_prior_model):
-        list_prior_model = list_prior_model
-
+    def test_instance_from_physical_vector(self, list_prior_model):
         mapper = model_mapper.ModelMapper(MockConfig())
         mapper.list = list_prior_model
 
@@ -587,3 +585,16 @@ class TestListPriorModel(object):
         assert instance.list[0].two == 2
         assert instance.list[1].one == 3
         assert instance.list[1].two == 4
+
+    def test_prior_results_for_gaussian_tuples(self, list_prior_model):
+        mapper = model_mapper.ModelMapper(MockConfig())
+        mapper.list = list_prior_model
+
+        gaussian_mapper = mapper.mapper_from_gaussian_tuples([(1, 1), (2, 1), (3, 1), (4, 1)])
+
+        assert isinstance(gaussian_mapper.list, list)
+        assert len(gaussian_mapper.list) == 2
+        assert gaussian_mapper.list[0].one.mean == 1
+        assert gaussian_mapper.list[0].two.mean == 2
+        assert gaussian_mapper.list[1].one.mean == 3
+        assert gaussian_mapper.list[1].two.mean == 4
