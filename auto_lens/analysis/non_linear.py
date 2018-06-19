@@ -78,9 +78,6 @@ class NonLinearOptimizer(mm.ModelMapper):
     def fit(self, analysis, **constants):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
-    def compute_gaussian_priors(self, sigma_limit):
-        raise NotImplementedError("Gaussian priors function must be overridden by non linear optimizers")
-
     def create_param_names(self):
         """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
 
@@ -105,8 +102,8 @@ class NonLinearOptimizer(mm.ModelMapper):
         param_names.close()
 
 
-# TODO : Integratioin tests for this?? Hard to test as a unit test.
-# TODO : Need to think how this interfaces with Prior intialization.
+# TODO : Integration tests for this?? Hard to test as a unit test.
+# TODO : Need to think how this interfaces with Prior initialization.
 
 class DownhillSimplex(NonLinearOptimizer):
 
