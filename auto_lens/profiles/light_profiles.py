@@ -6,6 +6,7 @@ from itertools import count
 
 
 class LightProfileSettings(object):
+    # TODO: yuck. This functionality needs moving.
 
     def __init__(self, iterative_image_plane=True, iterative_precision=1e-4, sub_grid_plane=True,
                  image_plane_override=False):

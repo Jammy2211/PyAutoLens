@@ -9,7 +9,9 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 class ModelMapper(object):
-    """A collection of priors formed by passing in classes to be reconstructed"""
+    """A collection of priors formed by passing in classes to be reconstructed
+        @DynamicAttrs
+    """
 
     def __init__(self, config=None, **classes):
         """
@@ -408,7 +410,9 @@ class AbstractPriorModel:
 
 
 class PriorModel(AbstractPriorModel):
-    """Object comprising class and associated priors"""
+    """Object comprising class and associated priors
+        @DynamicAttrs
+    """
 
     def __init__(self, cls, config=None):
         """
@@ -510,6 +514,9 @@ class TuplePrior(object):
 
 
 class ModelInstance(object):
+    """
+    @DynamicAttrs
+    """
     pass
 
 
