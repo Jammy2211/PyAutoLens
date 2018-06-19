@@ -21,7 +21,3 @@ class CoordinatesException(Exception):
 
 class PixelizationException(Exception):
     pass
-
-
-class PipelineException(Exception):
-    pass

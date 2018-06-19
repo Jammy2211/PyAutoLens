@@ -9,7 +9,9 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 class ModelMapper(object):
-    """A collection of priors formed by passing in classes to be reconstructed"""
+    """A collection of priors formed by passing in classes to be reconstructed
+        @DynamicAttrs
+    """
 
     def __init__(self, config=None, **classes):
         """
@@ -68,19 +70,18 @@ class ModelMapper(object):
         """
         super(ModelMapper, self).__init__()
 
-        self.class_dict = classes
-
         self.config = (config if config is not None else Config("{}/../config".format(path)))
 
         for name, cls in classes.items():
             self.add_class(name, cls)
 
-    def make_prior(self, attribute_name, cls):
-        config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
-        if config_arr[0] == "u":
-            return UniformPrior(config_arr[1], config_arr[2])
-        elif config_arr[0] == "g":
-            return GaussianPrior(config_arr[1], config_arr[2])
+        self.total_parameters = len(self.priors_ordered_by_id)
+
+    def add_classes(self, **kwargs):
+        for key, value in kwargs.items():
+            self.add_class(key, value)
+
+        self.total_parameters = len(self.priors_ordered_by_id)
 
     def add_class(self, name, cls):
         """
@@ -99,39 +100,22 @@ class ModelMapper(object):
         prior_model: PriorModel
             A prior_model instance for this class
         """
+        if hasattr(self, name):
+            raise exc.PriorException("Model mapper already has a prior model called {}".format(name))
 
-        arg_spec = inspect.getargspec(cls.__init__)
-
-        try:
-            defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
-        except TypeError:
-            defaults = {}
-
-        args = arg_spec.args[1:]
-
-        if 'settings' in defaults:
-            del defaults['settings']
-        if 'settings' in args:
-            args.remove('settings')
-
-        prior_model = PriorModel(cls)
-
-        for arg in args:
-            if arg in defaults and isinstance(defaults[arg], tuple):
-                tuple_prior = TuplePrior()
-                for i in range(len(defaults[arg])):
-                    attribute_name = "{}_{}".format(arg, i)
-                    setattr(tuple_prior, attribute_name, self.make_prior(attribute_name, cls))
-                setattr(prior_model, arg, tuple_prior)
-            else:
-                setattr(prior_model, arg, self.make_prior(arg, cls))
+        prior_model = PriorModel(cls, self.config)
 
         setattr(self, name, prior_model)
         return prior_model
 
     @property
     def prior_models(self):
-        return list(filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.items()))
+        """
+        Returns
+        -------
+        prior_model_tuples: [(String, PriorModel)]
+        """
+        return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
     def prior_set(self):
@@ -141,7 +125,9 @@ class ModelMapper(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        return {prior[1]: prior for _, prior_model in self.prior_models for prior in
+        # return {"{}_{}".format(name, prior[1]): prior for name, prior_model in self.prior_models for prior in
+        #         prior_model.priors}.values()
+        return {prior[1]: prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
 
     @property
@@ -179,7 +165,7 @@ class ModelMapper(object):
         return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
 
     def physical_values_ordered_by_class(self, hypercube_vector):
-        model_instance = self.from_unit_vector(hypercube_vector)
+        model_instance = self.instance_from_unit_vector(hypercube_vector)
         result = []
         for instance_key in sorted(model_instance.__dict__.keys()):
             instance = model_instance.__dict__[instance_key]
@@ -192,7 +178,7 @@ class ModelMapper(object):
                     result.append(value)
         return result
 
-    def from_prior_medians(self):
+    def physical_values_from_prior_medians(self):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -205,9 +191,9 @@ class ModelMapper(object):
             An object containing reconstructed model_mapper instances
 
         """
-        return self.from_unit_vector(unit_vector=[0.5] * len(self.prior_set))
+        return self.instance_from_unit_vector(unit_vector=[0.5] * len(self.prior_set))
 
-    def from_unit_vector(self, unit_vector):
+    def instance_from_unit_vector(self, unit_vector):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -229,9 +215,9 @@ class ModelMapper(object):
         arguments = dict(
             map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, unit_vector))
 
-        return self.model_instance(arguments)
+        return self.instance_from_arguments(arguments)
 
-    def from_physical_vector(self, physical_vector):
+    def instance_from_physical_vector(self, physical_vector):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -252,9 +238,20 @@ class ModelMapper(object):
         arguments = dict(
             map(lambda prior, physical_unit: (prior[1], physical_unit), self.priors_ordered_by_id, physical_vector))
 
-        return self.model_instance(arguments)
+        return self.instance_from_arguments(arguments)
 
-    def model_instance(self, arguments):
+    def prior_results_for_gaussian_tuples(self, tuples):
+        model_instance = ModelInstance()
+
+        new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
+        arguments = dict(map(lambda prior, new_prior: (prior[1], new_prior), self.priors_ordered_by_id, new_priors))
+
+        for prior_model in self.prior_models:
+            setattr(model_instance, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
+
+        return model_instance
+
+    def instance_from_arguments(self, arguments):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
         to this instance.
@@ -322,15 +319,6 @@ class ModelMapper(object):
                 'existing in the files. Parameter = ')
 
         model_info_check.close()
-
-    def replace_priors(self, new_priors):
-        arguments = dict(
-            map(lambda prior, new_prior: (prior[0], new_prior), self.priors_ordered_by_id, new_priors))
-        for prior_model in self.prior_models:
-            prior_model[1].replace_priors(arguments)
-
-    def replace_priors_with_gaussians_from_tuples(self, tuples):
-        self.replace_priors(map(lambda t: GaussianPrior(t[0], t[1]), tuples))
 
 
 prior_number = 0
@@ -422,20 +410,65 @@ class GaussianPrior(Prior):
         return 'GaussianPrior, mean = ' + str(self.mean) + ', sigma = ' + str(self.sigma)
 
 
-class PriorModel(object):
-    """Object comprising class and associated priors"""
+class AbstractPriorModel:
+    pass
 
-    def __init__(self, cls):
+
+class PriorModel(AbstractPriorModel):
+    """Object comprising class and associated priors
+        @DynamicAttrs
+    """
+
+    def __init__(self, cls, config=None):
         """
         Parameters
         ----------
         cls: class
             The class associated with this instance
         """
+
         self.cls = cls
+        self.config = (config if config is not None else Config("{}/../config".format(path)))
+
+        # TODO: Fix this
+        arg_spec = inspect.getargspec(cls.__init__)
+
+        try:
+            defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
+        except TypeError:
+            defaults = {}
+
+        args = arg_spec.args[1:]
+
+        if 'settings' in defaults:
+            del defaults['settings']
+        if 'settings' in args:
+            args.remove('settings')
+
+        for arg in args:
+            if arg in defaults and isinstance(defaults[arg], tuple):
+                tuple_prior = TuplePrior()
+                for i in range(len(defaults[arg])):
+                    attribute_name = "{}_{}".format(arg, i)
+                    setattr(tuple_prior, attribute_name, self.make_prior(attribute_name, cls))
+                setattr(self, arg, tuple_prior)
+            else:
+                setattr(self, arg, self.make_prior(arg, cls))
+
+    def make_prior(self, attribute_name, cls):
+        config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
+        if config_arr[0] == "u":
+            return UniformPrior(config_arr[1], config_arr[2])
+        elif config_arr[0] == "g":
+            return GaussianPrior(config_arr[1], config_arr[2])
 
     @property
     def tuple_priors(self):
+        """
+        Returns
+        -------
+        tuple_prior_tuples: [(String, TuplePrior)]
+        """
         return list(filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.items()))
 
     @property
@@ -465,12 +498,17 @@ class PriorModel(object):
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
         return self.cls(**model_arguments)
 
-    def replace_priors(self, prior_arguments):
-        # TODO: Need to figure out tuple priors here...
+    def gaussian_prior_model_for_arguments(self, arguments):
+        new_model = PriorModel(self.cls, self.config)
+
+        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
+
         for tuple_prior in self.tuple_priors:
-            tuple_prior[1].replace_priors(prior_arguments)
+            setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(arguments))
         for prior in self.direct_priors:
-            setattr(self, prior[0], prior_arguments[prior[0]])
+            setattr(new_model, prior[0], model_arguments[prior[0]])
+
+        return new_model
 
 
 class TuplePrior(object):
@@ -481,12 +519,17 @@ class TuplePrior(object):
     def value_for_arguments(self, arguments):
         return tuple([arguments[prior[1]] for prior in self.priors])
 
-    def replace_priors(self, prior_arguments):
+    def gaussian_tuple_prior_for_arguments(self, arguments):
+        tuple_prior = TuplePrior()
         for prior in self.priors:
-            setattr(self, prior[0], prior_arguments[prior[0]])
+            setattr(tuple_prior, prior[0], arguments[prior[1]])
+        return tuple_prior
 
 
 class ModelInstance(object):
+    """
+    @DynamicAttrs
+    """
     pass
 
 
@@ -539,10 +582,14 @@ class Config(object):
         for family_cls in family(cls):
             if self.has(family_cls.__module__, family_cls.__name__, attribute_name):
                 return self.get(family_cls.__module__, family_cls.__name__, attribute_name)
+
+        ini_filename = cls.__module__.split(".")[-1]
         raise exc.PriorException(
-            "The prior config for {}.{} and the prior configs of its parents do no contain {}".format(cls.__module__,
-                                                                                                      cls.__name__,
-                                                                                                      attribute_name))
+            "The prior config at {}/{} does not contain {} in {} or any of its parents".format(self.path,
+                                                                                               ini_filename,
+                                                                                               attribute_name,
+                                                                                               cls.__name__
+                                                                                               ))
 
     def get(self, module_name, class_name, attribute_name):
         """
