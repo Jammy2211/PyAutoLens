@@ -511,6 +511,19 @@ class PriorModel(AbstractPriorModel):
         return new_model
 
 
+class ListPriorModel(AbstractPriorModel):
+    def __init__(self, prior_models, config=None):
+        self.config = config
+        self.prior_models = prior_models
+
+    def instance_for_arguments(self, arguments):
+        return [prior_model.instance_for_arguments(arguments) for prior_model in self.prior_models]
+
+    @property
+    def priors(self):
+        return set([prior for prior_model in self.prior_models for prior in prior_model.priors])
+
+
 class TuplePrior(object):
     @property
     def priors(self):
