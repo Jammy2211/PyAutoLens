@@ -78,7 +78,7 @@ class ModelMapper(object):
         self.total_parameters = len(self.priors_ordered_by_id)
 
     def __setattr__(self, key, value):
-        if isinstance(value, list):
+        if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
             value = ListPriorModel(value)
         super(ModelMapper, self).__setattr__(key, value)
 
