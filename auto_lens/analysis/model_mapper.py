@@ -185,15 +185,12 @@ class ModelMapper(object):
 
     def physical_values_from_prior_medians(self):
         """
-        Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel attributed
-        to this instance.
-
-        This method uses the prior median values to setup the model_mapper instance.
+        Creates a list of physical values from the median values of the priors.
 
         Returns
         -------
-        model_instance : ModelInstance
-            An object containing reconstructed model_mapper instances
+        physical_values : [float]
+            A list of physical values
 
         """
         return self.instance_from_unit_vector(unit_vector=[0.5] * len(self.prior_set))

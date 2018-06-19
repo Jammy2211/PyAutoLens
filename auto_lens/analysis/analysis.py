@@ -102,7 +102,7 @@ class Analysis(object):
         for key, value in kwargs.items():
             setattr(run, key, value)
 
-        self.non_linear_optimizer.run(run.fitness_function)
+        self.non_linear_optimizer.fit(run.fitness_function)
 
         return self.__class__.Result(run)
 
