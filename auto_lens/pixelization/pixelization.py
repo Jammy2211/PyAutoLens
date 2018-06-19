@@ -102,8 +102,6 @@ class Pixelization(object):
 
         reg_coeff = self.regularization_coefficients[0] ** 2.0
 
-        print(source_neighbors)
-
         for i in range(self.pixels):
             for j in source_neighbors[i]:
                 regularization_matrix[i, i] += reg_coeff
@@ -358,10 +356,7 @@ class ClusterPixelization(VoronoiPixelization):
         # TODO : WE have to compute regularization matrix here as tey both use source_neighbors. Can we make source
         # TODO : neigbors a class property so these are separate functions (that doon't repeat the calculation?)
 
-        regularization_weights = self.compute_regularization_weights()
-
-        return self.create_mapping_matrix(sub_to_source), self.create_weighted_regularization_matrix(regularization_weights,
-                                                                                                     source_neighbors)
+        return self.create_mapping_matrix(sub_to_source), self.create_constant_regularization_matrix(source_neighbors)
 
 
 class AmorphousPixelization(VoronoiPixelization):
@@ -410,10 +405,7 @@ class AmorphousPixelization(VoronoiPixelization):
         sub_to_source = self.compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors,
                                                    mapper_cluster.image_to_cluster, source_to_cluster)
 
-        regularization_weights = self.compute_regularization_weights()
-
-        return self.create_mapping_matrix(sub_to_source), self.create_weighted_regularization_matrix(regularization_weights,
-                                                                                                     source_neighbors)
+        return self.create_mapping_matrix(sub_to_source), self.create_constant_regularization_matrix(source_neighbors)
 
     def kmeans_cluster(self, cluster_coordinates):
         """Perform k-means clustering on the cluster_coordinates to compute the k-means clusters which represent \
