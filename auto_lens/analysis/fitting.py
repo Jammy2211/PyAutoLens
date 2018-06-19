@@ -88,8 +88,8 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
     cov_matrix = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, grid_data.noise)
     d_vector = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, grid_data.image, grid_data.noise)
 
-    print(cov_matrix)
     print(regularization_matrix)
+    print(np.sum(regularization_matrix))
 
     cov_reg_matrix = cov_matrix + regularization_matrix
 
@@ -141,13 +141,13 @@ def compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matri
     print((compute_chi_sq_term(image, noise, model_image),
            compute_regularization_term(s_vector, regularization_matrix),
             compute_log_determinant_of_matrix_cholesky(cov_reg_matrix),
-              compute_log_determinant_of_matrix(regularization_matrix),
+              compute_log_determinant_of_matrix_cholesky(regularization_matrix),
               compute_noise_term(noise)))
 
     return -0.5 * (compute_chi_sq_term(image, noise, model_image)
                    + compute_regularization_term(s_vector, regularization_matrix)
                    + compute_log_determinant_of_matrix_cholesky(cov_reg_matrix)
-                   - compute_log_determinant_of_matrix(regularization_matrix)
+                   - compute_log_determinant_of_matrix_cholesky(regularization_matrix)
                    + compute_noise_term(noise))
 
 def compute_chi_sq_term(image, noise, model_image):

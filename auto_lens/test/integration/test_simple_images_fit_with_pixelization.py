@@ -108,63 +108,63 @@ class TestCase:
                                                   tracer=ray_trace, mapper_cluster=mapper_cluster) == \
         pytest.approx(evidence_expected,1e-4)
 
-    # def test_image_all_1s__each_amorphous_source_pixel_maps_to_each_image_pixel__perfect_fit_even_with_regularization(self):
-    #
-    #     im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-    #                    [0.0, 1.0, 1.0, 1.0, 0.0],
-    #                    [0.0, 1.0, 1.0, 1.0, 0.0],
-    #                    [0.0, 1.0, 1.0, 1.0, 0.0],
-    #                    [0.0, 0.0, 0.0, 0.0, 0.0]])
-    #
-    #     ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
-    #
-    #     image_grid = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_size=(3,3))
-    #     grid_datas = grids.GridDataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
-    #                                                     exposure_time=np.ones(im.shape))
-    #     mapper_cluster = grids.GridMapperCluster.from_mask(mask=ma, cluster_grid_size=1)
-    #
-    #     ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
-    #
-    #     pix = pixelization.AmorphousPixelization(pixels=len(mapper_cluster.cluster_to_image),
-    #                                            regularization_coefficients=(2000.0,))
-    #
-    #     frame = frame_convolution.FrameMaker(mask=ma)
-    #     convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3))
-    #     # This PSF leads to no blurring, so equivalent to being off.
-    #     kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
-    #                                                                        [0., 1., 0.],
-    #                                                                        [0., 0., 0.]]))
-    #
-    #     cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                            [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                            [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-    #                            [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-    #                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-    #                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-    #                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
-    #
-    #     reg_matrix = np.array([[ 3.6e5, -1.8e5,     0., -1.8e5,       0.,     0.,     0.,     0.,     0.],
-    #                            [-1.8e5,  5.4e5, -1.8e5,      0.,  -1.8e5,     0.,     0.,     0.,     0.],
-    #                            [    0., -1.8e5,  3.6e5,      0.,      0., -1.8e5,     0.,     0.,     0.],
-    #                            [-1.8e5,      0.,    0.,   5.4e5,  -1.8e5,     0., -1.8e5,     0.,     0.],
-    #                            [    0., -1.8e5,     0.,  -1.8e5,   7.2e5, -1.8e5,     0., -1.8e5,     0.],
-    #                            [    0.,     0., -1.8e5,       0., -1.8e5,  5.4e5,     0.,     0., -1.8e5],
-    #                            [    0.,     0.,     0.,  -1.8e5,      0.,     0.,  3.6e5, -1.8e5,     0.],
-    #                            [    0.,     0.,     0.,       0., -1.8e5,     0., -1.8e5,  5.4e5, -1.8e5],
-    #                            [    0.,     0.,     0.,       0.,     0., -1.8e5,     0., -1.8e5,  3.6e5]])
-    #
-    #     cov_reg_matrix = cov_matrix + reg_matrix
-    #
-    #     chi_sq_term = 0.0
-    #     gl_term = 0.0
-    #     det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
-    #     det_reg_term = np.log(np.linalg.det(reg_matrix))
-    #     noise_term = 9.0*np.log(2 * np.pi * 1.0 ** 2.0)
-    #
-    #     evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
-    #
-    #     assert fitting.fit_data_with_pixelization(grid_data=grid_datas, pix=pix, kernel_convolver=kernel_convolver,
-    #                                               tracer=ray_trace, mapper_cluster=mapper_cluster) == \
-    #     pytest.approx(evidence_expected,1e-4)
+    def test_image_all_1s__each_amorphous_source_pixel_maps_to_each_image_pixel__perfect_fit_even_with_regularization(self):
+
+        im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                       [0.0, 1.0, 1.0, 1.0, 0.0],
+                       [0.0, 1.0, 1.0, 1.0, 0.0],
+                       [0.0, 1.0, 1.0, 1.0, 0.0],
+                       [0.0, 0.0, 0.0, 0.0, 0.0]])
+
+        ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+
+        image_grid = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_size=(3,3))
+        grid_datas = grids.GridDataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
+                                                        exposure_time=np.ones(im.shape))
+        mapper_cluster = grids.GridMapperCluster.from_mask(mask=ma, cluster_grid_size=1)
+
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
+
+        pix = pixelization.AmorphousPixelization(pixels=len(mapper_cluster.cluster_to_image),
+                                               regularization_coefficients=(2000.0,))
+
+        frame = frame_convolution.FrameMaker(mask=ma)
+        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3))
+        # This PSF leads to no blurring, so equivalent to being off.
+        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
+                                                                           [0., 1., 0.],
+                                                                           [0., 0., 0.]]))
+
+        cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                               [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                               [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                               [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                               [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                               [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+                               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+                               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
+
+        reg_matrix = np.array([[ 3.6e5, -1.8e5,     0., -1.8e5,       0.,     0.,     0.,     0.,     0.],
+                               [-1.8e5,  5.4e5, -1.8e5,      0.,  -1.8e5,     0.,     0.,     0.,     0.],
+                               [    0., -1.8e5,  3.6e5,      0.,      0., -1.8e5,     0.,     0.,     0.],
+                               [-1.8e5,      0.,    0.,   5.4e5,  -1.8e5,     0., -1.8e5,     0.,     0.],
+                               [    0., -1.8e5,     0.,  -1.8e5,   7.2e5, -1.8e5,     0., -1.8e5,     0.],
+                               [    0.,     0., -1.8e5,       0., -1.8e5,  5.4e5,     0.,     0., -1.8e5],
+                               [    0.,     0.,     0.,  -1.8e5,      0.,     0.,  3.6e5, -1.8e5,     0.],
+                               [    0.,     0.,     0.,       0., -1.8e5,     0., -1.8e5,  5.4e5, -1.8e5],
+                               [    0.,     0.,     0.,       0.,     0., -1.8e5,     0., -1.8e5,  3.6e5]])
+
+        cov_reg_matrix = cov_matrix + reg_matrix
+
+        chi_sq_term = 0.0
+        gl_term = 0.0
+        det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
+        det_reg_term = np.log(np.linalg.det(reg_matrix))
+        noise_term = 9.0*np.log(2 * np.pi * 1.0 ** 2.0)
+
+        evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
+
+        assert fitting.fit_data_with_pixelization(grid_data=grid_datas, pix=pix, kernel_convolver=kernel_convolver,
+                                                  tracer=ray_trace, mapper_cluster=mapper_cluster) == \
+        pytest.approx(evidence_expected,1e-4)
