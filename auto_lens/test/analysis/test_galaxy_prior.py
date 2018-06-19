@@ -119,3 +119,12 @@ class TestNamedProfiles:
         galaxy_prior.light_profile = mm.PriorModel(light_profiles.LightProfile)
 
         assert 8 == len(mapper.priors_ordered_by_id)
+
+
+class TestResultForArguments:
+    def test_simple_instance_for_arguments(self):
+        galaxy_prior = gp.GalaxyPrior()
+        arguments = {galaxy_prior.redshift.redshift: 0.5}
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.redshift == 0.5
