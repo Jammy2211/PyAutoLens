@@ -4,6 +4,7 @@ import scipy.spatial
 
 from auto_lens import exc
 
+
 class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,)):
@@ -103,13 +104,17 @@ class Pixelization(object):
 
         for i in range(self.pixels):
             for j in source_neighbors[i]:
-
-                regularization_matrix[i,i] += reg_weight[j]
-                regularization_matrix[j,j] += reg_weight[j]
-                regularization_matrix[i,j] -= reg_weight[j]
-                regularization_matrix[j,i] -= reg_weight[j]
+                regularization_matrix[i, i] += reg_weight[j]
+                regularization_matrix[j, j] += reg_weight[j]
+                regularization_matrix[i, j] -= reg_weight[j]
+                regularization_matrix[j, i] -= reg_weight[j]
 
         return regularization_matrix
+
+
+class SquarePixelization(Pixelization):
+    # TODO: Implement me
+    pass
 
 
 class VoronoiPixelization(Pixelization):
@@ -127,6 +132,7 @@ class VoronoiPixelization(Pixelization):
         pixels : int
             The number of source pixels in the pixelization.
         """
+
         super(VoronoiPixelization, self).__init__(pixels, regularization_coefficients)
 
     @staticmethod
@@ -139,7 +145,7 @@ class VoronoiPixelization(Pixelization):
             The x and y image_grid to derive the Voronoi grid_coords.
         """
         return scipy.spatial.Voronoi(source_coordinates, qhull_options='Qbb Qc Qx Qm')
-    
+
     def compute_source_neighbors(self, ridge_points):
         """Compute the neighbors of every source-pixel, where the neighbor is a list of every source-pixel a given \
         source-pixel shares a vertex with. The ridge points of the Voronoi grid are used to derive this.
@@ -152,7 +158,6 @@ class VoronoiPixelization(Pixelization):
         source_neighbors = [[] for _ in range(self.pixels)]
 
         for pair in reversed(ridge_points):
-
             source_neighbors[pair[0]].append(pair[1])
             source_neighbors[pair[1]].append(pair[0])
 
@@ -255,8 +260,8 @@ class VoronoiPixelization(Pixelization):
                 while True:
 
                     source_sub_to_sparse_source_distance = compute_source_sub_to_nearest_sparse_source(source_centers,
-                                                                                         sub_coordinate,
-                                                                                         nearest_sparse_source)
+                                                                                                       sub_coordinate,
+                                                                                                       nearest_sparse_source)
 
                     neighboring_source_index, sub_to_neighboring_source_distance = \
                         compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers,
