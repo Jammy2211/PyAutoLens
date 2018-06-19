@@ -1,15 +1,17 @@
 from auto_lens.analysis import galaxy
-from auto_lens import exc
+import inspect
 from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens.analysis import model_mapper
 
 
-def is_light_profile(cls):
-    return issubclass(cls, light_profiles.LightProfile) and not issubclass(cls, mass_profiles.MassProfile)
+def is_light_profile_class(cls):
+    return inspect.isclass(cls) and issubclass(
+        cls, light_profiles.LightProfile) and not issubclass(
+        cls, mass_profiles.MassProfile)
 
 
-def is_mass_profile(cls):
-    return issubclass(cls, mass_profiles.MassProfile)
+def is_mass_profile_class(cls):
+    return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
 
 
 class GalaxyPrior(model_mapper.AbstractPriorModel):
@@ -35,9 +37,9 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         """
 
         self.light_profile_dict = {key: value for key, value in kwargs.items() if
-                                   is_light_profile(value)}
+                                   is_light_profile_class(value)}
         self.mass_profile_dict = {key: value for key, value in kwargs.items() if
-                                  is_mass_profile(value)}
+                                  is_mass_profile_class(value)}
 
         self.align_centres = align_centres
         self.align_orientations = align_orientations
@@ -49,15 +51,16 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             profile_models.append(model)
             setattr(self, name, model)
 
-        if self.align_centres:
-            centre = profile_models[0].centre
-            for profile_model in profile_models:
-                profile_model.centre = centre
+        if len(profile_models) > 0:
+            if self.align_centres:
+                centre = profile_models[0].centre
+                for profile_model in profile_models:
+                    profile_model.centre = centre
 
-        if self.align_orientations:
-            phi = profile_models[0].phi
-            for profile_model in profile_models:
-                profile_model.phi = phi
+            if self.align_orientations:
+                phi = profile_models[0].phi
+                for profile_model in profile_models:
+                    profile_model.phi = phi
 
         if "redshift" in kwargs:
             self.redshift = kwargs["redshift"]
@@ -80,12 +83,12 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     @property
     def light_profile_prior_models(self):
         return filter(
-            lambda prior_model: is_light_profile(prior_model.cls), self.prior_models)
+            lambda prior_model: is_light_profile_class(prior_model.cls), self.prior_models)
 
     @property
     def mass_profile_prior_models(self):
         return filter(
-            lambda prior_model: is_mass_profile(prior_model.cls), self.prior_models)
+            lambda prior_model: is_mass_profile_class(prior_model.cls), self.prior_models)
 
     @property
     def priors(self):
@@ -120,7 +123,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         redshift_prior_model = self.redshift.instance_for_arguments(arguments)
 
         new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
-                                config=self.config)
+                                config=self.config, redshift=redshift_prior_model)
 
         # TODO
 
