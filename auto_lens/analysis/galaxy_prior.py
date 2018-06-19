@@ -15,6 +15,7 @@ def is_mass_profile(cls):
 class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
+    @DynamicAttrs
     """
 
     def __init__(self, align_centres=False, align_orientations=False, config=None, **kwargs):
@@ -58,7 +59,10 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             for profile_model in profile_models:
                 profile_model.phi = phi
 
+        if "redshift" in kwargs:
+            self.redshift = kwargs["redshift"]
         self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
+        self.config = config
 
     @property
     def light_profile_names(self):
@@ -108,12 +112,19 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return galaxy.Galaxy(light_profiles=instance_light_profiles, mass_profiles=instance_mass_profiles,
                              redshift=instance_redshift.redshift)
 
-    # def gaussian_prior_model_for_arguments(self, prior_arguments):
-    #     new_model = PriorModel(self.cls, self.config)
-    #
-    #     for tuple_prior in self.tuple_priors:
-    #         setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(prior_arguments))
-    #     for prior in self.direct_priors:
-    #         setattr(new_model, prior[0], prior_arguments[prior[0]])
-    #
-    #     return new_model
+    def gaussian_prior_model_for_arguments(self, arguments):
+        light_profile_prior_models = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
+                                              self.light_profile_prior_models))
+        mass_profile_prior_models = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
+                                             self.mass_profile_prior_models))
+        redshift_prior_model = self.redshift.instance_for_arguments(arguments)
+
+        new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
+                                config=self.config)
+
+        # TODO
+
+        # for prior in self.prior_models:
+        #     setattr(new_model, prior[0], prior_arguments[prior[0]])
+
+        return new_model
