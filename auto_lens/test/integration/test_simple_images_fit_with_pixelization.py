@@ -96,10 +96,12 @@ class TestCase:
                                    [ 0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  3.0, -1.0],
                                    [ 0.0,  0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  2.0]])
 
+            reg_matrix = reg_matrix + 1e-8 * np.identity(9)
+
             cov_reg_matrix = cov_matrix + reg_matrix
 
             chi_sq_term = 0.0
-            gl_term = 0.0
+            gl_term = 0.0008
             det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
             print(reg_matrix)
             det_reg_term = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
