@@ -433,7 +433,15 @@ class TestComputeRegularizationTerm:
 
 class TestLogDetMatrix:
 
-    def test__simple_example_positive_definite_matrix(self):
+    def test__determinant_of_ordinary_matrix(self):
+
+        matrix = np.array([[2.0, -3.0,  1.0],
+                           [2.0,  0.0, -1.0],
+                           [1.0,  4.0,  5.0]])
+
+        assert fitting.compute_log_determinant_of_matrix(matrix) == pytest.approx(np.log(49), 1e-4)
+
+    def test__determinant_of_positive_definite_matrix_via_cholesky(self):
 
         matrix = np.array([[1.0, 0.0, 0.0],
                            [0.0, 1.0, 0.0],
@@ -441,9 +449,9 @@ class TestLogDetMatrix:
 
         log_determinant = np.log(np.linalg.det(matrix))
 
-        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix(matrix), 1e-4)
+        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix_cholesky(matrix), 1e-4)
 
-    def test__simple_example_positive_definite_matrix_2(self):
+    def test__determinant_of_positive_definite_matrix_2_via_cholesky(self):
 
         matrix = np.array([[ 2.0, -1.0,  0.0],
                            [-1.0,  2.0, -1.0],
@@ -451,7 +459,18 @@ class TestLogDetMatrix:
 
         log_determinant = np.log(np.linalg.det(matrix))
 
-        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix(matrix), 1e-4)
+        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix_cholesky(matrix), 1e-4)
+
+    def test__determinant_of_positive_definite_matrix_compare_normal_and_cholesky_routines(self):
+
+        matrix = np.array([[ 2.0, -1.0,  0.0],
+                           [-1.0,  2.0, -1.0],
+                           [ 0.0, -1.0,  2.0]])
+
+        log_determinant = fitting.compute_log_determinant_of_matrix(matrix)
+        log_determinant_chol = fitting.compute_log_determinant_of_matrix_cholesky(matrix)
+
+        assert log_determinant == pytest.approx(log_determinant_chol, 1e-4)
 
 
 class TestPixModelImageFromSVector:
@@ -565,8 +584,8 @@ class TestBayesianEvidence:
 
         chi_sq_term = fitting.compute_chi_sq_term(image, noise, model_image)
         reg_term = fitting.compute_regularization_term(s_vector, reg_matrix)
-        log_det_cov_reg = fitting.compute_log_determinant_of_matrix(cov_reg_matrix)
-        log_det_reg = fitting.compute_log_determinant_of_matrix(reg_matrix)
+        log_det_cov_reg = fitting.compute_log_determinant_of_matrix_cholesky(cov_reg_matrix)
+        log_det_reg = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
         noise_term = fitting.compute_noise_term(noise)
 
         assert evidence == pytest.approx(-0.5*(chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term), 1e-4)
