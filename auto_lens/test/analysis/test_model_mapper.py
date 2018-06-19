@@ -598,3 +598,10 @@ class TestListPriorModel(object):
         assert gaussian_mapper.list[0].two.mean == 2
         assert gaussian_mapper.list[1].one.mean == 3
         assert gaussian_mapper.list[1].two.mean == 4
+
+    def test_automatic_boxing(self):
+        mapper = model_mapper.ModelMapper(MockConfig())
+        mapper.list = [model_mapper.PriorModel(MockClass, MockConfig()),
+                       model_mapper.PriorModel(MockClass, MockConfig())]
+
+        assert isinstance(mapper.list, model_mapper.ListPriorModel)
