@@ -582,3 +582,8 @@ class TestListPriorModel(object):
         instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
 
         assert isinstance(instance.list, list)
+        assert len(instance.list) == 2
+        assert instance.list[0].one == 1
+        assert instance.list[0].two == 2
+        assert instance.list[1].one == 3
+        assert instance.list[1].two == 4
