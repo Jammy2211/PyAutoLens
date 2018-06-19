@@ -77,6 +77,11 @@ class ModelMapper(object):
 
         self.total_parameters = len(self.priors_ordered_by_id)
 
+    def __setattr__(self, key, value):
+        if isinstance(value, list):
+            value = ListPriorModel(value)
+        super(ModelMapper, self).__setattr__(key, value)
+
     def add_classes(self, **kwargs):
         for key, value in kwargs.items():
             self.add_class(key, value)
@@ -512,17 +517,15 @@ class PriorModel(AbstractPriorModel):
 
 
 class ListPriorModel(list, AbstractPriorModel):
-    def __init__(self, prior_models, config=None):
+    def __init__(self, prior_models):
         super().__init__(prior_models)
-        self.config = config
 
     def instance_for_arguments(self, arguments):
         return [prior_model.instance_for_arguments(arguments) for prior_model in self]
 
     def gaussian_prior_model_for_arguments(self, arguments):
         return ListPriorModel(
-            [prior_model.gaussian_prior_model_for_arguments(arguments) for prior_model in self],
-            self.config)
+            [prior_model.gaussian_prior_model_for_arguments(arguments) for prior_model in self])
 
     @property
     def priors(self):
