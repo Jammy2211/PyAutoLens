@@ -1,16 +1,26 @@
-import random
-import string
 from auto_lens.analysis import galaxy
-from auto_lens import exc
+import inspect
+from auto_lens.profiles import light_profiles, mass_profiles
+from auto_lens.analysis import model_mapper
 
 
-class GalaxyPrior:
+def is_light_profile_class(cls):
+    return inspect.isclass(cls) and issubclass(
+        cls, light_profiles.LightProfile) and not issubclass(
+        cls, mass_profiles.MassProfile)
+
+
+def is_mass_profile_class(cls):
+    return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
+
+
+class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
+    @DynamicAttrs
     """
 
-    def __init__(self, light_profile_classes=None, mass_profile_classes=None, align_centres=False,
-                 align_orientations=False):
+    def __init__(self, align_centres=False, align_orientations=False, config=None, **kwargs):
         """
         Parameters
         ----------
@@ -25,103 +35,89 @@ class GalaxyPrior:
             If True the same prior will be used for all the profiles orientations such that any generated profiles
             always have the same orientation
         """
-        self.id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
-        self.light_profile_classes = light_profile_classes if light_profile_classes is not None else []
-        self.mass_profile_classes = mass_profile_classes if mass_profile_classes is not None else []
+        self.light_profile_dict = {key: value for key, value in kwargs.items() if
+                                   is_light_profile_class(value)}
+        self.mass_profile_dict = {key: value for key, value in kwargs.items() if
+                                  is_mass_profile_class(value)}
+
         self.align_centres = align_centres
         self.align_orientations = align_orientations
 
-    def attach_to_model_mapper(self, model_mapper):
-        """
-        Associate this instance with a given model_mapper, passing its internal classes to the model mapper to become
-        priors.
-
-        Parameters
-        ----------
-        model_mapper: ModelMapper
-            A class used to generated instances from non-linear search hypercube vectors.
-
-        Returns
-        -------
-        prior_models: [PriorModel]
-            The prior models created to generate instances of the classes
-        """
         profile_models = []
 
-        for name, cls in zip(self.light_profile_names, self.light_profile_classes):
-            profile_models.append(model_mapper.add_class(name, cls))
+        for name, cls in kwargs.items():
+            model = model_mapper.PriorModel(cls, config)
+            profile_models.append(model)
+            setattr(self, name, model)
 
-        for name, cls in zip(self.mass_profile_names, self.mass_profile_classes):
-            profile_models.append(model_mapper.add_class(name, cls))
+        if len(profile_models) > 0:
+            if self.align_centres:
+                centre = profile_models[0].centre
+                for profile_model in profile_models:
+                    profile_model.centre = centre
 
-        if self.align_centres:
-            centre = profile_models[0].centre
-            for profile_model in profile_models:
-                profile_model.centre = centre
+            if self.align_orientations:
+                phi = profile_models[0].phi
+                for profile_model in profile_models:
+                    profile_model.phi = phi
 
-        if self.align_orientations:
-            phi = profile_models[0].phi
-            for profile_model in profile_models:
-                profile_model.phi = phi
-
-        prior_models = profile_models + [model_mapper.add_class(self.redshift_name.format(self.id), galaxy.Redshift)]
-
-        return prior_models
+        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
+        self.config = config
 
     @property
     def light_profile_names(self):
-        """
-        Returns
-        -------
-        light_profile_names: [String]
-            A list of names associated with the light profiles of this galaxy
-        """
-        return ["{}_light_profile_{}".format(self.id, num) for num in range(len(self.light_profile_classes))]
+        return list(self.light_profile_dict.keys())
 
     @property
     def mass_profile_names(self):
-        """
-        Returns
-        -------
-        mass_profile_names: [String]
-            A list of names associated with the mass profiles of this galaxy
-        """
-        return ["{}_mass_profile_{}".format(self.id, num) for num in range(len(self.mass_profile_classes))]
+        return list(self.mass_profile_dict.keys())
 
     @property
-    def redshift_name(self):
-        """
-        Returns
-        -------
-        redshift_name: String
-            The name of the prior associated with redshift for this galaxy.
-        """
-        return "{}_redshift".format(self.id)
+    def prior_models(self):
+        return [value for _, value in
+                filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items())]
 
-    def galaxy_for_model_instance(self, model_instance):
+    @property
+    def light_profile_prior_models(self):
+        return filter(
+            lambda prior_model: is_light_profile_class(prior_model.cls), self.prior_models)
+
+    @property
+    def mass_profile_prior_models(self):
+        return filter(
+            lambda prior_model: is_mass_profile_class(prior_model.cls), self.prior_models)
+
+    @property
+    def priors(self):
+        return [prior for prior_model in self.prior_models for prior in prior_model.priors]
+
+    def instance_for_arguments(self, arguments):
         """
-        Create a galaxy from a model instance that was generated by the associated model mapper.
+        Create an instance of the associated class for a set of arguments
 
         Parameters
         ----------
-        model_instance: ModelInstance
-            A model instance comprising the class instances generated by the model mapper.
+        arguments: {Prior: value}
+            Dictionary mapping priors to attribute name and value pairs
 
         Returns
         -------
-        galaxy: Galaxy
-            A galaxy generated for this GalaxyPrior
+            An instance of the class
         """
-        light_profiles = []
-        mass_profiles = []
-        try:
-            for name in self.light_profile_names:
-                light_profiles.append(getattr(model_instance, name))
-            for name in self.mass_profile_names:
-                mass_profiles.append(getattr(model_instance, name))
-            redshift = getattr(model_instance, self.redshift_name).redshift
-        except AttributeError as e:
-            raise exc.PriorException(*e.args)
+        instance_light_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
+                                           self.light_profile_prior_models))
+        instance_mass_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
+                                          self.mass_profile_prior_models))
+        instance_redshift = self.redshift.instance_for_arguments(arguments)
+        return galaxy.Galaxy(light_profiles=instance_light_profiles, mass_profiles=instance_mass_profiles,
+                             redshift=instance_redshift.redshift)
 
-        return galaxy.Galaxy(light_profiles=light_profiles, mass_profiles=mass_profiles, redshift=redshift)
+    def gaussian_prior_model_for_arguments(self, arguments):
+        new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
+                                config=self.config)
+
+        for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
+            setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
+
+        return new_model
