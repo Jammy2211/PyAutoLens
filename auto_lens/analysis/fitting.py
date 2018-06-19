@@ -88,6 +88,9 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
     cov_matrix = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, grid_data.noise)
     d_vector = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, grid_data.image, grid_data.noise)
 
+    print(cov_matrix)
+    print(regularization_matrix)
+
     cov_reg_matrix = cov_matrix + regularization_matrix
 
     s_vector = np.linalg.solve(cov_reg_matrix, d_vector)
@@ -134,9 +137,16 @@ def compute_likelihood(image, noise, model_image):
     return -0.5 * (compute_chi_sq_term(image, noise, model_image) + compute_noise_term(noise))
 
 def compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, regularization_matrix):
+
+    print((compute_chi_sq_term(image, noise, model_image),
+           compute_regularization_term(s_vector, regularization_matrix),
+            compute_log_determinant_of_matrix_cholesky(cov_reg_matrix),
+              compute_log_determinant_of_matrix(regularization_matrix),
+              compute_noise_term(noise)))
+
     return -0.5 * (compute_chi_sq_term(image, noise, model_image)
                    + compute_regularization_term(s_vector, regularization_matrix)
-                   + compute_log_determinant_of_matrix(cov_reg_matrix)
+                   + compute_log_determinant_of_matrix_cholesky(cov_reg_matrix)
                    - compute_log_determinant_of_matrix(regularization_matrix)
                    + compute_noise_term(noise))
 
@@ -190,7 +200,6 @@ def compute_regularization_term(s_vector, regularizaton_matrix):
      """
     return np.matmul(s_vector.T, np.matmul(regularizaton_matrix, s_vector))
 
-# TODO : Cholesky decomposition can also use source pixel neighbors list to skip sparsity.
 def compute_log_determinant_of_matrix(matrix):
     """There are two terms in the pixelization's Bayesian likelihood funcition which require the log determinant of \
     a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
@@ -198,7 +207,24 @@ def compute_log_determinant_of_matrix(matrix):
     ln[det(F + H)] = ln[det(cov_reg_matrix)]
     ln[det(H)]     = ln[det(regularization_matrix)]
 
-    Both of the above matrices are positive-definite, which means their log_determinant can be computed efficiently \
+    The regularization matrix is not necessarily positive-definite, thus its log determinant must be computed directly.
+
+    Parameters
+    -----------
+    matrix : ndarray
+        The positive-definite matrix the log determinant is computed for.
+    """
+    return np.sum(np.log(np.linalg.det(matrix)))
+
+# TODO : Cholesky decomposition can also use source pixel neighbors list to skip sparsity.
+def compute_log_determinant_of_matrix_cholesky(matrix):
+    """There are two terms in the pixelization's Bayesian likelihood funcition which require the log determinant of \
+    a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
+
+    ln[det(F + H)] = ln[det(cov_reg_matrix)]
+    ln[det(H)]     = ln[det(regularization_matrix)]
+
+    The cov_reg_matrix is positive-definite, which means its log_determinant can be computed efficiently \
     (compared to using np.det) by using a Cholesky decomposition first and summing the log of each diagonal term.
 
     Parameters
