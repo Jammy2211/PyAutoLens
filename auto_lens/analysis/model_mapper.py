@@ -511,17 +511,22 @@ class PriorModel(AbstractPriorModel):
         return new_model
 
 
-class ListPriorModel(AbstractPriorModel):
+class ListPriorModel(list, AbstractPriorModel):
     def __init__(self, prior_models, config=None):
+        super().__init__(prior_models)
         self.config = config
-        self.prior_models = prior_models
 
     def instance_for_arguments(self, arguments):
-        return [prior_model.instance_for_arguments(arguments) for prior_model in self.prior_models]
+        return [prior_model.instance_for_arguments(arguments) for prior_model in self]
+
+    def gaussian_prior_model_for_arguments(self, arguments):
+        return ListPriorModel(
+            [prior_model.gaussian_prior_model_for_arguments(arguments) for prior_model in self],
+            self.config)
 
     @property
     def priors(self):
-        return set([prior for prior_model in self.prior_models for prior in prior_model.priors])
+        return set([prior for prior_model in self for prior in prior_model.priors])
 
 
 class TuplePrior(object):
