@@ -1,0 +1,10 @@
+EllipticalSersic
+
+centre_0: UniformPrior, lower_limit = -1.0, upper_limit = 1.0
+centre_1: UniformPrior, lower_limit = -1.0, upper_limit = 1.0
+axis_ratio: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+phi: UniformPrior, lower_limit = 0.0, upper_limit = 180.0
+intensity: UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+effective_radius: UniformPrior, lower_limit = 0.0, upper_limit = 3.0
+sersic_index: UniformPrior, lower_limit = 0.6, upper_limit = 8.0
+
