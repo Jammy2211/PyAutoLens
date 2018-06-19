@@ -564,3 +564,21 @@ class TestIndependentPriorModel(object):
 
         assert instance.prior_model.one == 1
         assert instance.prior_model.two == 2
+
+
+@pytest.fixture(name="list_prior_model")
+def make_list_prior_model():
+    return model_mapper.ListPriorModel(
+        [model_mapper.PriorModel(MockClass, MockConfig()), model_mapper.PriorModel(MockClass, MockConfig())])
+
+
+class TestListPriorModel(object):
+    def test_list_prior_model(self, list_prior_model):
+        list_prior_model = list_prior_model
+
+        mapper = model_mapper.ModelMapper(MockConfig())
+        mapper.list = list_prior_model
+
+        instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
+
+        assert isinstance(instance.list, list)
