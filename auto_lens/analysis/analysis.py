@@ -5,8 +5,6 @@ from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 import logging
 
-# TODO: Pipelines that modify images, pipeline with or without hyper_image, pipeline with prior modification
-
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
