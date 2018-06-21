@@ -1,4 +1,5 @@
 from auto_lens.analysis import galaxy_prior as gp
+from auto_lens.pixelization import pixelization
 from auto_lens.profiles import mass_profiles, light_profiles
 from auto_lens.analysis import model_mapper as mm
 import pytest
@@ -169,3 +170,17 @@ class TestResultForArguments:
         assert gaussian_galaxy_prior_model.redshift.redshift == redshift_prior
         assert gaussian_galaxy_prior_model.mass_profile.einstein_radius == einstein_radius_prior
         assert gaussian_galaxy_prior_model.light_profile.intensity == intensity_prior
+
+
+class TestPixelization(object):
+    def test_pixelization(self, test_config):
+        galaxy_prior = gp.GalaxyPrior(pixelization=pixelization.VoronoiPixelization, config=test_config)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0,
+                     galaxy_prior.pixelization.pixels: 10,
+                     galaxy_prior.pixelization.regularization_coefficients.regularization_coefficients_0: 5}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.pixelization.pixels == 10
+        assert galaxy.pixelization.regularization_coefficients == (5,)
