@@ -1,6 +1,7 @@
 from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
+from auto_lens.pixelization import frame_convolution
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -27,6 +28,13 @@ class Analysis(object):
         self.mask = mask
         self.image_grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
                                                                           blurring_shape=image.psf.shape)
+
+        self.grid_coords = grids.GridCoordsCollection.from_mask(mask=mask, grid_size_sub=1,
+                                                                blurring_shape=image.psf.shape)
+        self.grid_image = grids.GridDataCollection.from_mask(mask=mask, image=image, noise=image.background_noise,
+                                                             exposure_time=image.effective_exposure_time)
+        self.mappers = grids.GridMapperCollection.from_mask(mask=mask)
+        self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
     def run(self, lens_galaxies, source_galaxies, instrumentation):
         """

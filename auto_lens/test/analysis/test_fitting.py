@@ -51,7 +51,7 @@ class TestFitData:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
@@ -82,7 +82,7 @@ class TestFitData:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 1.0, 0.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [0.0, 1.0, 0.0]]))
@@ -120,7 +120,7 @@ class TestGenerateBlurredLightProfileImage:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
@@ -151,7 +151,7 @@ class TestGenerateBlurredLightProfileImage:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
@@ -186,7 +186,7 @@ class TestGenerateBlurredLightProfileImage:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 3.0, 0.0],
                                                                            [0.0, 2.0, 1.0],
                                                                            [0.0, 0.0, 0.0]]))
@@ -235,7 +235,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
@@ -263,7 +263,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                             [1.0, 1.0, 1.0],
                                                                             [1.0, 1.0, 1.0]]))
@@ -291,7 +291,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                             blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                             [0.0, 1.0, 0.0],
                                                                             [0.0, 0.0, 0.0]]))
@@ -318,7 +318,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernal_shape=(3, 3)))
+                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                             [1.0, 1.0, 1.0],
                                                                             [1.0, 1.0, 1.0]]))
