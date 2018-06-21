@@ -4,6 +4,7 @@ from auto_lens.imaging import scaled_array
 from auto_lens.analysis import pipeline
 import os
 
+# Load up the data
 lens_name = 'source_only_pipeline'
 data_dir = "../data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -18,6 +19,8 @@ data = im.Image(array=image, effective_exposure_time=exposure_time, pixel_scale=
 
 mask = msk.Mask.circular(shape_arc_seconds=data.shape_arc_seconds, pixel_scale=data.pixel_scale, radius_mask=2.0)
 
+# Run the primary pipeline
 results = pipeline.source_only_pipeline(image, mask)
 
+# Print results
 print(results)
