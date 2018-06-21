@@ -111,4 +111,4 @@ class TestCase:
 
             assert fitting.fit_data_with_pixelization(grid_data=grid_datas, pix=pix, kernel_convolver=kernel_convolver,
                                                       tracer=ray_trace, mapper_cluster=mapper_cluster) == \
-            pytest.approx(evidence_expected,1e-4)
+                   pytest.approx(evidence_expected,1e-4)
