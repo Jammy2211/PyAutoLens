@@ -121,7 +121,7 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
-        initial_model = self.instance_from_prior_medians()
+        initial_vector = self.physical_vector_from_prior_medians
 
         result = None
 
@@ -134,7 +134,7 @@ class DownhillSimplex(NonLinearOptimizer):
             return -2 * result.likelihood
 
         logger.info("Running DownhillSimplex...")
-        scipy.optimize.fmin(fitness_function, x0=initial_model)
+        scipy.optimize.fmin(fitness_function, x0=initial_vector)
         logger.info("DownhillSimplex complete")
         # output = scipy.optimize.fmin(fitness_function, x0=initial_model)
 
