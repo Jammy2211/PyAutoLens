@@ -6,9 +6,6 @@ from auto_lens import instrumentation as inst
 from auto_lens.analysis import non_linear
 from auto_lens.pixelization import pixelization
 
-# Defines how wide gaussian prior should be
-SIGMA_LIMIT = 3
-
 
 def source_only_pipeline(image, mask, instrumentation):
     """
@@ -87,7 +84,8 @@ def source_only_pipeline(image, mask, instrumentation):
     results.append(result_2)
 
     """
-    2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
+    2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization 
+        as well)
         Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
         Source: 'noisy' pixelization
         NLO: MN
