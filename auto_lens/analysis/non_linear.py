@@ -4,6 +4,7 @@ import math
 import os
 import pymultinest
 import scipy.optimize
+from auto_lens.imaging import hyper_image
 
 from auto_lens.analysis import model_mapper as mm
 
@@ -39,7 +40,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class NonLinearOptimizer(mm.ModelMapper):
 
-    def __init__(self, config_path=None, path=default_path, check_model=True, **classes):
+    def __init__(self, include_hyper_image=False, config_path=None, path=default_path, check_model=True, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
@@ -62,6 +63,10 @@ class NonLinearOptimizer(mm.ModelMapper):
 
         self.file_param_names = self.path + 'multinest.paramnames'
         self.file_model_info = self.path + 'model.info'
+
+        # If the include_hyper_image flag is set to True make this an additional prior model
+        if include_hyper_image:
+            self.hyper_image = mm.PriorModel(hyper_image.HyperImage)
 
     def save_model_info(self):
         print("making dir {}".format(self.path))
