@@ -1,5 +1,6 @@
 import numpy as np
 from auto_lens.pixelization import frame_convolution
+from auto_lens.imaging import mask, scaled_array
 import pytest
 from auto_lens import exc
 
@@ -164,6 +165,19 @@ class TestBlurringRegionMask(object):
 
 
 class TestConvolution(object):
+    def test_shortcut(self):
+        msk = mask.Mask.circular((10, 10), 1, 2)
+        psf = scaled_array.ScaledArray.single_value(0.1, (3, 3))
+        frame = frame_convolution.FrameMaker(mask=msk)
+        kernel_convolver_shortcut = frame.convolver_for_kernel(psf)
+        kernel_convolver = frame.convolver_for_kernel_shape(kernel_shape=psf.shape,
+                                                            blurring_region_mask=msk.compute_blurring_mask(
+                                                                kernel_shape=psf.shape)).convolver_for_kernel(
+            kernel=psf)
+
+        assert len(kernel_convolver.frame_array) == len(kernel_convolver.frame_array)
+        assert (kernel_convolver.frame_array[0] == kernel_convolver_shortcut.frame_array[0]).all()
+
     def test_simple_convolution(self, simple_frame_array, simple_kernel):
         convolver = frame_convolution.Convolver(simple_frame_array, [])
 
