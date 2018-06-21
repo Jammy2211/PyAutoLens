@@ -9,11 +9,11 @@ logger.level = logging.DEBUG
 
 
 class Analysis(object):
-    def __init__(self, image, mask):
+    def __init__(self, image, mask, grid_size_sub=4):
         self.image = image
         self.mask = mask
-        self.image_grid_collection = grids.GridCoordsCollection.from_mask(mask)  # TODO: how do we determine other
-        # TODO:  arguments?
+        self.image_grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
+                                                                          blurring_shape=image.psf.shape)
 
     def run(self, lens_galaxies, source_galaxies, instrumentation):
         """

@@ -26,7 +26,7 @@ class GridCoordsCollection(object):
         self.blurring = blurring
 
     @classmethod
-    def from_mask(cls, mask, grid_size_sub, blurring_size):
+    def from_mask(cls, mask, grid_size_sub, blurring_shape):
         """Setup the collection of coordinate grids using an image mask.
 
         Parameters
@@ -36,13 +36,13 @@ class GridCoordsCollection(object):
             grids.
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
-        blurring_size : (int, int)
+        blurring_shape : (int, int)
            The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
         """
 
         image = GridCoordsImage.from_mask(mask)
         sub = GridCoordsImageSub.from_mask(mask, grid_size_sub)
-        blurring = GridCoordsBlurring.from_mask(mask, blurring_size)
+        blurring = GridCoordsBlurring.from_mask(mask, blurring_shape)
 
         return GridCoordsCollection(image, sub, blurring)
 
