@@ -283,13 +283,13 @@ class Mask(scaled_array.ScaledArray):
 
         return border_pixels
 
-    def compute_blurring_mask(self, kernal_shape):
-        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a \
+    def compute_blurring_mask(self, kernel_shape):
+        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
         fraction of their light will be blurring in the image.
 
         Parameters
         ----------
-        kernal_shape : (int, int)
+        kernel_shape : (int, int)
            The size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
@@ -298,8 +298,8 @@ class Mask(scaled_array.ScaledArray):
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
-                    for y1 in range((-kernal_shape[1] + 1) // 2, (kernal_shape[1] + 1) // 2):
-                        for x1 in range((-kernal_shape[0] + 1) // 2, (kernal_shape[0] + 1) // 2):
+                    for y1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
+                        for x1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
                             if 0 <= x + x1 <= self.shape[0] - 1 \
                                     and 0 <= y + y1 <= self.shape[1] - 1:
                                 if self[x + x1, y + y1]:
