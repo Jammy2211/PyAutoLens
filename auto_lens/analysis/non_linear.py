@@ -7,6 +7,10 @@ import scipy.optimize
 from auto_lens.imaging import hyper_image
 
 from auto_lens.analysis import model_mapper as mm
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -114,6 +118,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, config_path=None, path=default_path):
         super(DownhillSimplex, self).__init__(include_hyper_image, config_path, path, False)
+        logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
         initial_model = self.physical_values_from_prior_medians()
@@ -128,7 +133,9 @@ class DownhillSimplex(NonLinearOptimizer):
             # Return Chi squared
             return -2 * result.likelihood
 
+        logger.info("Running DownhillSimplex...")
         scipy.optimize.fmin(fitness_function, x0=initial_model)
+        logger.info("DownhillSimplex complete")
         # output = scipy.optimize.fmin(fitness_function, x0=initial_model)
 
         # TODO: use output to generate model instance
@@ -156,6 +163,8 @@ class MultiNest(NonLinearOptimizer):
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
+        logger.debug("Creating MultiNest NLO")
+
     @property
     def pdf(self):
         return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
@@ -176,8 +185,10 @@ class MultiNest(NonLinearOptimizer):
             result = analysis.run(**args)
             return result.likelihood
 
+        logger.info("Running MultiNest...")
         pymultinest.run(fitness_function, prior, self.total_parameters,
                         outputfiles_basename=self.path)
+        logger.info("MultiNest complete")
 
         result.priors = self.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
