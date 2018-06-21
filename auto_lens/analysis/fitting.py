@@ -5,10 +5,6 @@ from auto_lens.analysis import ray_tracing
 from auto_lens.pixelization import pixelization
 from auto_lens.pixelization import covariance_matrix
 
-def likelihood_for_image_tracer_and_instrumentation(image, tracer, instrumentation):
-    # TODO: This function should take a tracer and return a likelihood. The ModelAnalysis class in the pipeline module
-    # TODO: will construct the tracer using a non linear optimiser and priors.
-    return 1.0
 
 def fit_data_with_profiles(grid_data, kernel_convolver, tracer):
     """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
@@ -25,6 +21,7 @@ def fit_data_with_profiles(grid_data, kernel_convolver, tracer):
     blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
     return compute_likelihood(grid_data.image, grid_data.noise, blurred_model_image)
 
+
 def generate_blurred_light_profile_image(tracer, kernel_convolver):
     """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
     PSF.
@@ -40,6 +37,7 @@ def generate_blurred_light_profile_image(tracer, kernel_convolver):
     blurring_image_light_profile = tracer.generate_blurring_image_of_galaxy_light_profiles()
     return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile, kernel_convolver)
 
+
 def blur_image_including_blurring_region(image, blurring_image, kernel_convolver):
     """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
 
@@ -53,6 +51,7 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
         The 2D Point Spread Function (PSF).
     """
     return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
+
 
 def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
@@ -81,7 +80,7 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
     # Go over every column of mapping matrix, perform blurring
     blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
     for i in range(mapping_matrix.shape[1]):
-        blurred_mapping_matrix[:,i] = kernel_convolver.convolve_array(mapping_matrix[:,i])
+        blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(mapping_matrix[:, i])
 
     # TODO : Use fast routines once ready.
 
@@ -97,16 +96,18 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
     return compute_bayesian_evidence(grid_data.image, grid_data.noise, model_image, s_vector, cov_reg_matrix,
                                      regularization_matrix)
 
+
 # TODO : Put this here for now as it uses the blurred mapping matrix (and thus the PSF). Move to pixelization?
 def pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix):
     """ Map the reconstructioon source s_vecotr back to the image-plane to compute the pixelization's model-image.
     """
-    pixelization_model_image  = np.zeros(blurred_mapping_matrix.shape[0])
+    pixelization_model_image = np.zeros(blurred_mapping_matrix.shape[0])
     for i in range(blurred_mapping_matrix.shape[0]):
         for j in range(len(s_vector)):
-            pixelization_model_image[i] += s_vector[j] * blurred_mapping_matrix[i,j]
+            pixelization_model_image[i] += s_vector[j] * blurred_mapping_matrix[i, j]
 
     return pixelization_model_image
+
 
 def compute_likelihood(image, noise, model_image):
     """Compute the likelihood of a model image's fit to the data, by taking the difference between the observed \
@@ -133,13 +134,14 @@ def compute_likelihood(image, noise, model_image):
     """
     return -0.5 * (compute_chi_sq_term(image, noise, model_image) + compute_noise_term(noise))
 
-def compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, regularization_matrix):
 
+def compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, regularization_matrix):
     return -0.5 * (compute_chi_sq_term(image, noise, model_image)
                    + compute_regularization_term(s_vector, regularization_matrix)
                    + compute_log_determinant_of_matrix_cholesky(cov_reg_matrix)
                    - compute_log_determinant_of_matrix_cholesky(regularization_matrix)
                    + compute_noise_term(noise))
+
 
 def compute_chi_sq_term(image, noise, model_image):
     """Compute the chi-squared of a model image's fit to the data, by taking the difference between the observed \
@@ -158,6 +160,7 @@ def compute_chi_sq_term(image, noise, model_image):
     """
     return np.sum(((image - model_image) / noise) ** 2.0)
 
+
 def compute_noise_term(noise):
     """Compute the noise normalization term of an image, which is computed by summing the noise in every pixel:
 
@@ -169,6 +172,7 @@ def compute_noise_term(noise):
         The noise in each pixel.
     """
     return np.sum(np.log(2 * np.pi * noise ** 2.0))
+
 
 # TODO : Speed this up using source_pixel neighbors list to skip sparsity (see regularization matrix calculation)
 def compute_regularization_term(s_vector, regularizaton_matrix):
@@ -191,6 +195,7 @@ def compute_regularization_term(s_vector, regularizaton_matrix):
      """
     return np.matmul(s_vector.T, np.matmul(regularizaton_matrix, s_vector))
 
+
 def compute_log_determinant_of_matrix(matrix):
     """There are two terms in the pixelization's Bayesian likelihood funcition which require the log determinant of \
     a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
@@ -206,6 +211,7 @@ def compute_log_determinant_of_matrix(matrix):
         The positive-definite matrix the log determinant is computed for.
     """
     return np.sum(np.log(np.linalg.det(matrix)))
+
 
 # TODO : Cholesky decomposition can also use source pixel neighbors list to skip sparsity.
 def compute_log_determinant_of_matrix_cholesky(matrix):
@@ -223,4 +229,10 @@ def compute_log_determinant_of_matrix_cholesky(matrix):
     matrix : ndarray
         The positive-definite matrix the log determinant is computed for.
     """
-    return 2.0*np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
+    return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
+
+
+def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, kernel_convolver, tracer,
+                                            mapper_cluster):
+    return -1
+    # TODO: implement me
