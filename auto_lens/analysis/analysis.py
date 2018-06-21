@@ -73,15 +73,15 @@ class Analysis(object):
 
         tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coords_data_collection)
 
-        galaxies = [lens_galaxies + source_galaxies]
+        galaxies = lens_galaxies + source_galaxies
 
         is_profile = True in map(lambda galaxy: galaxy.has_profile, galaxies)
-        is_pixelization = True in map(lambda galaxy: galaxy.is_pixelization, galaxies)
+        is_pixelization = True in map(lambda galaxy: galaxy.has_pixelization, galaxies)
 
         likelihood = None
 
         if is_pixelization:
-            pixelized_galaxies = list(filter(lambda galaxy: galaxy.is_pixelization, galaxies))
+            pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, galaxies))
             if len(pixelized_galaxies) > 0:
                 raise exc.PriorException("Only one galaxy should have a pixelization")
             pixelized_galaxy = pixelized_galaxies[0]
