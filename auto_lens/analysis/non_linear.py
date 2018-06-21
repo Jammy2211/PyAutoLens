@@ -112,8 +112,8 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, config_path=None, path=default_path):
-        super(DownhillSimplex, self).__init__(config_path, path, False)
+    def __init__(self, include_hyper_image=False, config_path=None, path=default_path):
+        super(DownhillSimplex, self).__init__(include_hyper_image, config_path, path, False)
 
     def fit(self, analysis, **constants):
         initial_model = self.physical_values_from_prior_medians()
@@ -137,7 +137,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, config_path=None, path=default_path, check_model=True, sigma_limit=3):
+    def __init__(self, include_hyper_image=False, config_path=None, path=default_path, check_model=True, sigma_limit=3):
         """Class to setup and run a MultiNest analysis and output the MultiNest files.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -149,7 +149,7 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear files are stored.
         """
 
-        super(MultiNest, self).__init__(config_path, path, check_model)
+        super(MultiNest, self).__init__(include_hyper_image, config_path, path, check_model)
 
         self.file_summary = self.path + 'summary.txt'
         self.file_weighted_samples = self.path + 'multinest.txt'
