@@ -28,7 +28,7 @@ class TestCase:
 
         # Create a model instance. All the instances of the profile classes are created here. Normally we would do this
         # using the output of a non linear search but in this case we are using the median values from the priors.
-        instance = mapper.physical_values_from_prior_medians()
+        instance = mapper.instance_from_prior_medians()
 
         # Recover galaxy instances. We can pass the model instance to galaxy priors to recover a fully constructed
         # galaxy
