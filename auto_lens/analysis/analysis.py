@@ -13,7 +13,7 @@ empty_array = []
 
 
 class Analysis(object):
-    def __init__(self, image, mask, grid_size_sub=4):
+    def __init__(self, image, mask, grid_size_sub=4, cluster_grid_size=3):
         """
         An analysis object. Once set up with an image and mask it takes a set of objects describing a model and
         determines how well they fit the image.
@@ -26,6 +26,9 @@ class Analysis(object):
             A mask describing the region of the image to be modelled
         grid_size_sub: int
             The size of the sub-pixel grid for which values should be calculated
+        cluster_grid_size: int:
+            The sparsity of pixels to be used in clustering. Specifies the number of pixels to jump, meaning a higher
+            number gives a lower density.
         """
         self.image = image
         self.mask = mask
@@ -34,8 +37,7 @@ class Analysis(object):
         self.coords_data_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
                                                                            blurring_shape=image.psf.shape)
 
-        # TODO: cluster size
-        self.mapper_cluster = grids.GridMapperCluster.from_mask(mask)
+        self.mapper_cluster = grids.GridMapperCluster.from_mask(mask, cluster_grid_size)
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
