@@ -11,6 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 def source_only_pipeline(image, mask):
+    """
+    Fit a source-only image (i.e. no lens light component)
+
+    Parameters
+    ----------
+    image: Image
+        An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
+    mask: Mask
+        A mask describing which parts of the image should be excluded from the analysis
+
+    Returns
+    -------
+    result: [Result]
+        An array of results, one for each stage of the analysis
+    """
+
     logger.info(
         """
         Pipeline 1:
@@ -151,3 +167,60 @@ def source_only_pipeline(image, mask):
 
     # Return the results
     return results
+
+
+def lens_and_source_pipeline(image, mask):
+    """
+    Pipeline 2:
+
+PURPOSE - Fit a lens light + source image (mass model does not decomposed the light and dark matter)
+
+PREPROCESSING:
+
+- Mark the brightest regions / multiple images of the source.
+- Draw a circle around the source (Einstein Radius / center)
+- Mark the centre of the lens light.
+- Draw circle / ellipse for mask containing the lens galaxy.
+- Draw annulus for mask containing the source (excludes central regions of image where lens is).
+
+INITIALIZATION PHASES:
+
+1) Image: Observed image, includes lens+source.
+   Mask: Circle / Ellipse containing entire lens galaxy.
+   Light: Sersic (This phase simply subtracts the lens light from the image - the source is present and disrupts the fit
+   NLO: LM        but we choose not to care)
+   Purpose: Provides lens subtracted image for subsequent phases.
+
+2) Image: The lens light subtracted image from phase 1.
+   Mask: Annulus mask containing just source
+   Light: None
+   Mass: SIE+Shear
+   Source; Sersic
+   NLO: LM
+   Purpose: Provides mass model priors for next phase.
+
+3) Image: The lens light subtracted image from phase 1.
+   Mask: Circle / Ellipse containing entire lens galaxy.
+   Light: None
+   Mass: SIE+Shear (priors from phase 2)
+   Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+   NLO: LM
+   Purpose: Refines mass model and sets up the source-plane pixelization regularization.
+
+4) Image: Observed image, includes lens+source.
+   Mask: Circle / Ellipse containing entire lens galaxy.
+   Light: Sersic + Exponential (shared centre / phi, include Instrumentation lens light noise scaling parameters in model)
+   Mass: SIE+Shear (fixed to results from phase 3)
+   Source: 'smooth' pixelization (include regularization parameter(s) in the model, using previous phase prior)
+   NLO: LM
+   Purpose: To fit a complex light profile, we need to do so simultaneously with the source reconstruction to avoid
+            systematics. Thus, this rather confusing phase sets it up so that the mass profile is fixed whilst we
+            get ourselves a good multi-component light profile.
+
+4H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
+    Image: The lens light subtracted image from phase 1.
+    Mask: Circle / Ellipse containing entire lens galaxy.
+    Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
+    Source: 'noisy' pixelization
+    NLO: MN.
+    """
