@@ -434,7 +434,7 @@ class TestModelInstancesRealClasses(object):
             test_config,
             profile_1=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.physical_values_from_prior_medians()
+        model_map = collection.instance_from_prior_medians()
 
         model_2 = collection.instance_from_unit_vector([0.5, 0.5, 0.5, 0.5])
 
@@ -448,7 +448,7 @@ class TestModelInstancesRealClasses(object):
             profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
             profile_3=geometry_profiles.EllipticalProfile)
 
-        model_map = collection.physical_values_from_prior_medians()
+        model_map = collection.instance_from_prior_medians()
 
         model_2 = collection.instance_from_unit_vector([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
 
@@ -469,13 +469,19 @@ class TestModelInstancesRealClasses(object):
 
         collection.profile_1.axis_ratio = collection.profile_1.phi
 
-        model_map = collection.physical_values_from_prior_medians()
+        model_map = collection.instance_from_prior_medians()
 
         model_2 = collection.instance_from_unit_vector([0.5, 0.5, 0.5])
 
         assert model_map.profile_1.centre == model_2.profile_1.centre == (0.5, 0.5)
         assert model_map.profile_1.axis_ratio == model_2.profile_1.axis_ratio == 1.0
         assert model_map.profile_1.phi == model_2.profile_1.phi == 1.0
+
+    def test_physical_vector_from_prior_medians(self, test_config):
+        mapper = model_mapper.ModelMapper()
+        mapper.mock_class = model_mapper.PriorModel(MockClass, test_config)
+
+        assert mapper.physical_vector_from_prior_medians == [0.5, 0.5]
 
 
 class TestUtility(object):
