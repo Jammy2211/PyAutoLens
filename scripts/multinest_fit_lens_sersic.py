@@ -35,7 +35,7 @@ data = image.Image(array=im, effective_exposure_time=exposure_time, pixel_scale=
 
 msk = mask.Mask.circular(shape_arc_seconds=data.shape_arc_seconds, pixel_scale=data.pixel_scale, radius_mask=2.0)
 
-grid_coords = grids.GridCoordsCollection.from_mask(mask=msk, grid_size_sub=1, blurring_size=psf.shape)
+grid_coords = grids.GridCoordsCollection.from_mask(mask=msk, grid_size_sub=1, blurring_shape=psf.shape)
 grid_data = grids.GridDataCollection.from_mask(mask=msk, image=data, noise=data.background_noise,
                                                exposure_time=data.effective_exposure_time)
 mappers = grids.GridMapperCollection.from_mask(mask=msk)
