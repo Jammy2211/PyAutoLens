@@ -81,7 +81,7 @@ class TestGridCoordsCollection(object):
             sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
             blurring_grid = mask.compute_grid_coords_blurring(psf_size=(3, 3))
 
-            grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=2, blurring_size=(3, 3))
+            grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=2, blurring_shape=(3, 3))
 
             assert (grid_collection.image == image_grid).all()
             assert (grid_collection.sub == sub_grid).all()

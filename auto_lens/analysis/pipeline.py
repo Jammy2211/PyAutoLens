@@ -1,7 +1,6 @@
 from auto_lens.analysis import analysis as an
 from auto_lens.analysis import galaxy_prior
 from auto_lens.analysis import model_mapper
-from auto_lens.analysis import galaxy
 from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens import instrumentation as inst
 from auto_lens.analysis import non_linear
