@@ -23,6 +23,10 @@ class Galaxy(object):
         self.mass_profiles = mass_profiles if mass_profiles is not None else []
         self.pixelization = pixelization
 
+    @property
+    def has_pixelization(self):
+        return self.pixelization is not None
+
     def __repr__(self):
         return "<Galaxy redshift={}>".format(self.redshift)
 
