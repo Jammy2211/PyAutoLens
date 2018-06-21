@@ -26,14 +26,29 @@ class Galaxy(object):
 
     @property
     def has_pixelization(self):
+        """
+        Returns
+        -------
+        True iff this galaxy has an associated pixelization
+        """
         return self.pixelization is not None
 
     @property
     def has_hyper_galaxy(self):
+        """
+        Returns
+        -------
+        True iff this galaxy has an associated hyper galaxy
+        """
         return self.hyper_galaxy is not None
 
     @property
     def has_profile(self):
+        """
+        Returns
+        -------
+        True iff there is one or more mass or light profiles associated with this galaxy
+        """
         return len(self.mass_profiles) + len(self.light_profiles) > 0
 
     def __repr__(self):
