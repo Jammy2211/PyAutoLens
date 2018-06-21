@@ -7,7 +7,7 @@ class Galaxy(object):
     profiles
     """
 
-    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None):
+    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None, pixelization=None):
         """
         Parameters
         ----------
@@ -21,6 +21,7 @@ class Galaxy(object):
         self.redshift = redshift
         self.light_profiles = light_profiles if light_profiles is not None else []
         self.mass_profiles = mass_profiles if mass_profiles is not None else []
+        self.pixelization = pixelization
 
     def __repr__(self):
         return "<Galaxy redshift={}>".format(self.redshift)
@@ -372,6 +373,7 @@ class HyperGalaxy(object):
             The galaxy contribution map.
         """
         return noise + (self.noise_factor * (noise * contributions) ** self.noise_power)
+
 
 class Redshift(object):
     def __init__(self, redshift):
