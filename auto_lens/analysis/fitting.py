@@ -5,7 +5,7 @@ from auto_lens.analysis import ray_tracing
 from auto_lens.pixelization import pixelization
 from auto_lens.pixelization import covariance_matrix
 
-def likelihood_for_image_tracer_pixelization_and_instrumentation(image, tracer, pixelization, instrumentation):
+def likelihood_for_image_tracer_and_instrumentation(image, tracer, instrumentation):
     # TODO: This function should take a tracer and return a likelihood. The ModelAnalysis class in the pipeline module
     # TODO: will construct the tracer using a non linear optimiser and priors.
     return 1.0
