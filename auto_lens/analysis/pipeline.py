@@ -94,8 +94,8 @@ def source_only_pipeline(image, mask):
 
     logger.info(
         """
-        2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization 
-            as well)
+        2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase 
+            regularization as well)
             Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
             Source: 'noisy' pixelization
             NLO: MN
