@@ -10,6 +10,19 @@ logger.level = logging.DEBUG
 
 class Analysis(object):
     def __init__(self, image, mask, grid_size_sub=4):
+        """
+        An analysis object. Once set up with an image and mask it takes a set of objects describing a model and
+        determines how well they fit the image.
+
+        Parameters
+        ----------
+        image: Image
+            An image of a lens with associated metadata
+        mask: Mask
+            A mask describing the region of the image to be modelled
+        grid_size_sub: int
+            The size of the sub-pixel grid for which values should be calculated
+        """
         self.image = image
         self.mask = mask
         self.image_grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
@@ -17,8 +30,7 @@ class Analysis(object):
 
     def run(self, lens_galaxies, source_galaxies, instrumentation):
         """
-        Runs the analysis. Any model classes corresponding to model instances required in the analysis that were not
-        passed into the constructor must be passed in here as keyword arguments.
+        Runs the analysis. Determines how well the supplied model fits the image.
 
         Parameters
         ----------
