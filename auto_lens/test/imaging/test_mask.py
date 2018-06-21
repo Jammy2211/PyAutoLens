@@ -696,7 +696,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False],
                                                [False, True, False],
@@ -713,7 +713,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 3))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
                                                [True, True, True, True, True, True, True],
@@ -734,7 +734,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(5, 5))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(5, 5))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True],
                                                [True, False, False, False, False, False, True],
@@ -755,7 +755,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(5, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(5, 3))
 
             assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True],
                                                         [True, True, True, True, True, True, True],
@@ -776,7 +776,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 5))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 5))
 
             assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True],
                                                         [True, True, False, False, False, True, True],
@@ -797,7 +797,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False],
                                                [False, True, False, True, False, True, False],
@@ -820,7 +820,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(5, 5))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(5, 5))
 
             assert (blurring_mask == np.array([[False, False, False, False, False, False, False, False, False],
                                                [False, False, False, False, False, False, False, False, False],
@@ -846,7 +846,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(5, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(5, 3))
 
             assert (blurring_mask == np.rot90(np.array([[True, True, True, True, True, True, True, True, True],
                                                         [False, False, False, False, False, False, False, False, False],
@@ -871,7 +871,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 5))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 5))
 
             assert (blurring_mask == np.rot90(np.array([[True, False, False, False, True, False, False, False, True],
                                                         [True, False, False, False, True, False, False, False, True],
@@ -896,7 +896,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
                                                [False, True, False, True, False, True, False, True],
@@ -919,7 +919,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(5, 5))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(5, 5))
 
             assert (blurring_mask == np.array([[True, True, True, True, True, True, True, True],
                                                [True, True, True, True, True, True, True, True],
@@ -942,7 +942,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True, True],
                                                [False, True, False, True, False, True, False, True, True],
@@ -966,7 +966,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_mask = msk.compute_blurring_mask(kernal_shape=(3, 3))
+            blurring_mask = msk.compute_blurring_mask(kernel_shape=(3, 3))
 
             assert (blurring_mask == np.array([[False, False, False, True, False, False, False, True],
                                                [False, True, False, True, False, True, False, True],
@@ -990,7 +990,7 @@ class TestMask(object):
             msk = mask.Mask(msk, pixel_scale=3.0)
 
             with pytest.raises(exc.MaskException):
-                msk.compute_blurring_mask(kernal_shape=(5, 5))
+                msk.compute_blurring_mask(kernel_shape=(5, 5))
 
     class TestComputeBorderPixels(object):
 

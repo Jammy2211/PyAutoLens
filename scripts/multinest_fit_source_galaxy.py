@@ -44,7 +44,8 @@ mappers = grids.GridMapperCollection.from_mask(mask=msk)
 
 frame = frame_convolution.FrameMaker(mask=msk)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=data.psf.shape,
-                                             blurring_region_mask=msk.compute_blurring_mask(kernal_shape=data.psf.shape))
+                                             blurring_region_mask=msk.compute_blurring_mask(
+                                                 kernel_shape=data.psf.shape))
 kernel_convolver = convolver.convolver_for_kernel(kernel=data.psf)
 
 # NON LINEAR ANALYSIS #
@@ -72,8 +73,7 @@ def likelihood(physical_cube, ndim, n_params, model_mapper, grid_coords, grid_da
     ray_trace = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                    image_plane_grids=grid_coords)
 
-    return fitting.fit_data_with_profiles(grid_data=grid_data, grid_mappers=grid_mappers,
-                                          kernel_convolver=kernel_convolver, tracer=ray_trace)
+    return fitting.fit_data_with_profiles(grid_data=grid_data, kernel_convolver=kernel_convolver, tracer=ray_trace)
 
 prior_pass = partial(prior, model_mapper=model_map)
 likelihood_pass = partial(likelihood, model_mapper=model_map, grid_coords=grid_coords, grid_data=grid_data,

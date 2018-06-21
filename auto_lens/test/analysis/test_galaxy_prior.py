@@ -1,4 +1,5 @@
 from auto_lens.analysis import galaxy_prior as gp
+from auto_lens.analysis import galaxy as g
 from auto_lens.pixelization import pixelization
 from auto_lens.profiles import mass_profiles, light_profiles
 from auto_lens.analysis import model_mapper as mm
@@ -184,3 +185,19 @@ class TestPixelization(object):
 
         assert galaxy.pixelization.pixels == 10
         assert galaxy.pixelization.regularization_coefficients == (5,)
+
+
+class TestHyperGalaxy(object):
+    def test_hyper_galaxy(self, test_config):
+        galaxy_prior = gp.GalaxyPrior(hyper_galaxy=g.HyperGalaxy, config=test_config)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0,
+                     galaxy_prior.hyper_galaxy.contribution_factor: 1,
+                     galaxy_prior.hyper_galaxy.noise_factor: 2,
+                     galaxy_prior.hyper_galaxy.noise_power: 3}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.hyper_galaxy.contribution_factor == 1
+        assert galaxy.hyper_galaxy.noise_factor == 2
+        assert galaxy.hyper_galaxy.noise_power == 3
