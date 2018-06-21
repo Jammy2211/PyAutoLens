@@ -906,6 +906,10 @@ class TestBooleanProperties(object):
         assert galaxy.Galaxy().has_pixelization is False
         assert galaxy.Galaxy(pixelization=object()).has_pixelization is True
 
+    def test_has_hyper_galaxy(self):
+        assert galaxy.Galaxy().has_pixelization is False
+        assert galaxy.Galaxy(hyper_galaxy=object()).has_hyper_galaxy is True
+
     def test_has_profile(self):
         assert galaxy.Galaxy().has_profile is False
         assert galaxy.Galaxy(light_profiles=[object()]).has_profile is True
