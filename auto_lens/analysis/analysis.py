@@ -2,6 +2,7 @@ from auto_lens.analysis import fitting
 from auto_lens.imaging import grids
 from auto_lens.analysis import ray_tracing
 from auto_lens.pixelization import frame_convolution
+from auto_lens import exc
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -26,14 +27,12 @@ class Analysis(object):
         """
         self.image = image
         self.mask = mask
-        self.image_grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
-                                                                          blurring_shape=image.psf.shape)
+        self.grid_data_collection = grids.GridDataCollection.from_mask(mask, image, image.background_noise,
+                                                                       image.effective_exposure_time)
+        self.coords_data_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
+                                                                           blurring_shape=image.psf.shape)
+        self.mapper_cluster = grids.GridMapperCluster.from_mask(mask)
 
-        self.grid_coords = grids.GridCoordsCollection.from_mask(mask=mask, grid_size_sub=1,
-                                                                blurring_shape=image.psf.shape)
-        self.grid_image = grids.GridDataCollection.from_mask(mask=mask, image=image, noise=image.background_noise,
-                                                             exposure_time=image.effective_exposure_time)
-        self.mappers = grids.GridMapperCollection.from_mask(mask=mask)
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
     def run(self, lens_galaxies, source_galaxies, instrumentation):
@@ -55,8 +54,36 @@ class Analysis(object):
             An object comprising the final model instances generated and a corresponding likelihood
         """
 
-        tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.image_grid_collection)
-        likelihood = fitting.likelihood_for_image_tracer_and_instrumentation(self.image, tracer, instrumentation)
+        tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coords_data_collection)
+
+        galaxies = [lens_galaxies + source_galaxies]
+
+        is_profile = True in map(lambda galaxy: galaxy.has_profile, galaxies)
+        is_pixelization = True in map(lambda galaxy: galaxy.is_pixelization, galaxies)
+
+        likelihood = None
+
+        if is_pixelization:
+            pixelized_galaxies = list(filter(lambda galaxy: galaxy.is_pixelization, galaxies))
+            if len(pixelized_galaxies) > 0:
+                raise exc.PriorException("Only one galaxy should have a pixelization")
+            pixelized_galaxy = pixelized_galaxies[0]
+            if pixelized_galaxy.has_profile:
+                raise exc.PriorException("Galaxies should have either a pixelization or a profile")
+            pixelization = pixelized_galaxy.pixelization
+            if is_profile:
+                likelihood = fitting.fit_data_with_pixelization_and_profiles(self.grid_data_collection, pixelization,
+                                                                             self.kernel_convolver, tracer,
+                                                                             self.mapper_cluster)
+            else:
+                likelihood = fitting.fit_data_with_pixelization(self.grid_data_collection, pixelization,
+                                                                self.kernel_convolver, tracer, self.mapper_cluster)
+        elif is_profile:
+            likelihood = fitting.fit_data_with_profiles(self.grid_data_collection, self.kernel_convolver, tracer)
+
+        if likelihood is None:
+            raise exc.PriorException("No galaxy has a profile or pixelization")
+
         return Analysis.Result(likelihood, lens_galaxies, source_galaxies, instrumentation)
 
     class Result(object):
