@@ -69,8 +69,8 @@ class FrameMaker(object):
         Class to create number array and frames used in 1D convolution
         Parameters
         ----------
-        mask: ndarray
-                A mask where 0 eliminates data
+        mask: Mask
+                A mask where True eliminates data
         """
         self.mask = mask
 
@@ -183,6 +183,11 @@ class FrameMaker(object):
                          self.make_blurring_frame_array(
                              kernel_shape,
                              blurring_region_mask) if blurring_region_mask is not None else None)
+
+    def convolver_for_kernel(self, psf):
+        return self.convolver_for_kernel_shape(kernel_shape=psf.shape,
+                                               blurring_region_mask=self.mask.compute_blurring_mask(
+                                                   kernel_shape=psf.shape)).convolver_for_kernel(kernel=psf)
 
 
 class Convolver(object):
