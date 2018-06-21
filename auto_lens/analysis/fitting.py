@@ -6,11 +6,12 @@ from auto_lens.pixelization import pixelization
 from auto_lens.pixelization import covariance_matrix
 
 
-def fit_data_with_profiles(grid_data, kernel_convolver, tracer):
+def fit_data_with_profiles(grid_data, kernel_convolver, tracer, image=None):
     """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
     Parameters
     ----------
+    image
     grid_data : grids.GridDataCollection
         The collection of grid data-sets (image, noise, etc.)
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
@@ -53,11 +54,12 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
 
 
-def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster):
+def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster, image=None):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
     Parameters
     ----------
+    image
     grid_data : grids.GridDataCollection
         The collection of grid data-sets (image, noise, etc.)
     pix : pixelization.Pixelization
@@ -233,6 +235,6 @@ def compute_log_determinant_of_matrix_cholesky(matrix):
 
 
 def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, kernel_convolver, tracer,
-                                            mapper_cluster):
+                                            mapper_cluster, image=None):
     return -1
     # TODO: implement me
