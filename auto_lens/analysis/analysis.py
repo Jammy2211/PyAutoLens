@@ -98,3 +98,7 @@ class Analysis(object):
             self.lens_galaxies = lens_galaxies
             self.source_galaxies = source_galaxies
             self.instrumentation = hyper_image
+
+        def __str__(self):
+            return "Analysis Result:\n{}".format(
+                "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
