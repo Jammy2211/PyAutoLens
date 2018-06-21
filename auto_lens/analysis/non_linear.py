@@ -120,7 +120,8 @@ class DownhillSimplex(NonLinearOptimizer):
             instance = self.instance_from_physical_vector(vector)
             args = {**constants, **instance.__dict__}
             result = analysis.run(**args)
-            return result.likelihood
+            # Return Chi squared
+            return -2 * result.likelihood
 
         scipy.optimize.fmin(fitness_function, x0=initial_model)
         # output = scipy.optimize.fmin(fitness_function, x0=initial_model)
