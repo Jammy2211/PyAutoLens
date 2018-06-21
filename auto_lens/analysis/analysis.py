@@ -9,6 +9,8 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
+empty_array = []
+
 
 class Analysis(object):
     def __init__(self, image, mask, grid_size_sub=4):
@@ -31,11 +33,13 @@ class Analysis(object):
                                                                        image.effective_exposure_time)
         self.coords_data_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
                                                                            blurring_shape=image.psf.shape)
+
+        # TODO: cluster size
         self.mapper_cluster = grids.GridMapperCluster.from_mask(mask)
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
-    def run(self, lens_galaxies, source_galaxies, instrumentation):
+    def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
         """
         Runs the analysis. Determines how well the supplied model fits the image.
 
@@ -45,7 +49,7 @@ class Analysis(object):
             A collection of galaxies that form the lens
         source_galaxies: [Galaxy]
             A collection of galaxies that are being lensed
-        instrumentation: Instrumentation
+        hyper_image: HyperImage
             A class describing instrumental effects
 
         Returns
@@ -74,21 +78,23 @@ class Analysis(object):
             if is_profile:
                 likelihood = fitting.fit_data_with_pixelization_and_profiles(self.grid_data_collection, pixelization,
                                                                              self.kernel_convolver, tracer,
-                                                                             self.mapper_cluster)
+                                                                             self.mapper_cluster, hyper_image)
             else:
                 likelihood = fitting.fit_data_with_pixelization(self.grid_data_collection, pixelization,
-                                                                self.kernel_convolver, tracer, self.mapper_cluster)
+                                                                self.kernel_convolver, tracer, self.mapper_cluster,
+                                                                hyper_image)
         elif is_profile:
-            likelihood = fitting.fit_data_with_profiles(self.grid_data_collection, self.kernel_convolver, tracer)
+            likelihood = fitting.fit_data_with_profiles(self.grid_data_collection, self.kernel_convolver, tracer,
+                                                        hyper_image)
 
         if likelihood is None:
             raise exc.PriorException("No galaxy has a profile or pixelization")
 
-        return Analysis.Result(likelihood, lens_galaxies, source_galaxies, instrumentation)
+        return Analysis.Result(likelihood, lens_galaxies, source_galaxies, hyper_image)
 
     class Result(object):
-        def __init__(self, likelihood, lens_galaxies, source_galaxies, instrumentation):
+        def __init__(self, likelihood, lens_galaxies, source_galaxies, hyper_image):
             self.likelihood = likelihood
             self.lens_galaxies = lens_galaxies
             self.source_galaxies = source_galaxies
-            self.instrumentation = instrumentation
+            self.instrumentation = hyper_image
