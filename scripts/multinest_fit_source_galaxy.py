@@ -44,7 +44,8 @@ mappers = grids.GridMapperCollection.from_mask(mask=msk)
 
 frame = frame_convolution.FrameMaker(mask=msk)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=data.psf.shape,
-                                             blurring_region_mask=msk.compute_blurring_mask(kernal_shape=data.psf.shape))
+                                             blurring_region_mask=msk.compute_blurring_mask(
+                                                 kernel_shape=data.psf.shape))
 kernel_convolver = convolver.convolver_for_kernel(kernel=data.psf)
 
 # NON LINEAR ANALYSIS #
