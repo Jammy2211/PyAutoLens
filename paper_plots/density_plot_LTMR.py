@@ -55,9 +55,6 @@ bulge_densities = []
 halo_densities = []
 dark_densities = []
 
-print(lens_galaxy.dimensionless_mass_within_circles_individual(radius=300.0))
-stop
-
 for r in range(number_bins):
 
     annuli_area = (math.pi * radii[r + 1] ** 2 - math.pi * radii[r] ** 2)
