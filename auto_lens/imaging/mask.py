@@ -2,6 +2,11 @@ from auto_lens.imaging import scaled_array
 from auto_lens import exc
 import numpy as np
 
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+
 
 class Mask(scaled_array.ScaledArray):
 
@@ -97,8 +102,8 @@ class Mask(scaled_array.ScaledArray):
             raise exc.KernelException("PSF Kernel must be odd and square")
 
         ma = cls.unmasked(shape_arc_seconds, pixel_scale)
-        pad_size = (int(psf_size[0]/2)+1, int(psf_size[1]/2)+1)
-        return ma.pad(new_dimensions=(ma.shape[0]+pad_size[0], ma.shape[1]+pad_size[1]), pad_value=1)
+        pad_size = (int(psf_size[0] / 2) + 1, int(psf_size[1] / 2) + 1)
+        return ma.pad(new_dimensions=(ma.shape[0] + pad_size[0], ma.shape[1] + pad_size[1]), pad_value=1)
 
     @property
     def pixels_in_mask(self):
@@ -121,9 +126,9 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
-        print("assert (image_grid == np.array({})).all()".format(
-            str(grid).replace("0. ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
-                                                                                                               ''))
+        # print("assert (image_grid == np.array({})).all()".format(
+        #     str(grid).replace("0. ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
+        #                                                                                                        ''))
 
         return grid
 
@@ -160,9 +165,9 @@ class Mask(scaled_array.ScaledArray):
 
                     image_pixel_count += 1
 
-        print("assert (image_sub_grid == np.array({})).all()".format(
-            str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
-                                                                                                                ''))
+        # print("assert (image_sub_grid == np.array({})).all()".format(
+        #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
+        #                                                                                                         ''))
 
         return grid
 
@@ -182,8 +187,8 @@ class Mask(scaled_array.ScaledArray):
         blurring_mask = self.compute_blurring_mask(psf_size)
         blurring_grid = blurring_mask.compute_grid_coords_image()
 
-        print("assert (blurring_grid == np.array({})).all()".format(
-            str(blurring_grid).replace("  ", ",").replace(" -", ",-").replace("\n", ",")))
+        # print("assert (blurring_grid == np.array({})).all()".format(
+        #     str(blurring_grid).replace("  ", ",").replace(" -", ",-").replace("\n", ",")))
 
         return blurring_grid
 
@@ -250,13 +255,13 @@ class Mask(scaled_array.ScaledArray):
         """
 
         sparse_mask = self.compute_sparse_uniform_mask(sparse_grid_size)
-        print("sparse_mask = {}".format(sparse_mask))
+        logger.debug("sparse_mask = {}".format(sparse_mask))
         sparse_index_image = self.compute_sparse_index_image(sparse_mask)
-        print("sparse_index_image = {}".format(sparse_index_image))
+        logger.debug("sparse_index_image = {}".format(sparse_index_image))
         sparse_to_image = self.compute_sparse_to_image(sparse_mask)
-        print("sparse_to_image = {}".format(sparse_to_image))
+        logger.debug("sparse_to_image = {}".format(sparse_to_image))
         image_to_sparse = self.compute_image_to_sparse(sparse_mask, sparse_index_image)
-        print("image_to_sparse = {}".format(image_to_sparse))
+        logger.debug("image_to_sparse = {}".format(image_to_sparse))
 
         return sparse_to_image, image_to_sparse
 
