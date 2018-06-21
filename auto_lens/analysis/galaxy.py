@@ -345,12 +345,12 @@ class Galaxy(object):
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
 
-# TODO : Is should galaxy image and minimum value be in the constructor (they arn't free parameters)?
+# TODO : Should galaxy image and minimum value be in the constructor (they aren't free parameters)?
 
 class HyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """Class for scaling the noise in the different galaixe of an image (e.g. the lens, source).
+        """Class for scaling the noise in the different galaxies of an image (e.g. the lens, source).
 
         Parameters
         -----------
