@@ -20,7 +20,8 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     @DynamicAttrs
     """
 
-    def __init__(self, align_centres=False, align_orientations=False, pixelization=None, config=None, **kwargs):
+    def __init__(self, align_centres=False, align_orientations=False, pixelization=None, hyper_galaxy=None, config=None,
+                 **kwargs):
         """
         Parameters
         ----------
@@ -64,6 +65,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
 
         self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
         self.pixelization = model_mapper.PriorModel(pixelization, config) if pixelization is not None else None
+        self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if hyper_galaxy is not None else None
         self.config = config
 
     @property
@@ -110,10 +112,13 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                                            self.light_profile_prior_models))
         instance_mass_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
                                           self.mass_profile_prior_models))
+
         instance_redshift = self.redshift.instance_for_arguments(arguments)
         pixelization = self.pixelization.instance_for_arguments(arguments) if self.pixelization is not None else None
+        hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) if self.hyper_galaxy is not None else None
+
         return galaxy.Galaxy(light_profiles=instance_light_profiles, mass_profiles=instance_mass_profiles,
-                             redshift=instance_redshift.redshift, pixelization=pixelization)
+                             redshift=instance_redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy)
 
     def gaussian_prior_model_for_arguments(self, arguments):
         new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,

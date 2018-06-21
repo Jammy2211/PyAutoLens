@@ -1,29 +1,34 @@
 from auto_lens.analysis import analysis as an
 from auto_lens.analysis import galaxy_prior
-from auto_lens.analysis import model_mapper
 from auto_lens.profiles import light_profiles, mass_profiles
-from auto_lens import instrumentation as inst
 from auto_lens.analysis import non_linear
 from auto_lens.pixelization import pixelization
 
+import logging
 
-def source_only_pipeline(image, mask, instrumentation):
-    """
-    Pipeline 1:
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
-    PURPOSE - Fit a source-only image (i.e. no lens light component)
 
-    PREPROCESSING:
-
-    - Mark the brightest regions / multiple images of the source.
-    - Draw a circle tracing the source (Einstein Radius / centre)
-    - Draw circle / ellipse for the mask.
-
-    NOTES:
-
-    Image: Observed image used throughout.
-    Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
-    """
+def source_only_pipeline(image, mask):
+    logger.info(
+        """
+        Pipeline 1:
+    
+        PURPOSE - Fit a source-only image (i.e. no lens light component)
+    
+        PREPROCESSING:
+    
+        - Mark the brightest regions / multiple images of the source.
+        - Draw a circle tracing the source (Einstein Radius / centre)
+        - Draw circle / ellipse for the mask.
+    
+        NOTES:
+    
+        Image: Observed image used throughout.
+        Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
+        """
+    )
 
     # Create an array in which to store results
     results = []
@@ -31,11 +36,13 @@ def source_only_pipeline(image, mask, instrumentation):
     # Create an analysis object for the image and mask
     analysis = an.Analysis(image, mask)
 
-    """
-    1) Mass: SIE+Shear
-       Source: Sersic
-       NLO: LM
-    """
+    logger.info(
+        """
+        1) Mass: SIE+Shear
+           Source: Sersic
+           NLO: LM
+        """
+    )
     # Create an optimizer
     optimizer_1 = non_linear.DownhillSimplex()
 
@@ -48,17 +55,19 @@ def source_only_pipeline(image, mask, instrumentation):
     optimizer_1.source_galaxies = [source_galaxy_prior]
     optimizer_1.lens_galaxies = [lens_galaxy_prior]
 
-    # Analyse the system with constant instrumentation
-    result_1 = optimizer_1.fit(analysis, instrumentation=instrumentation)
+    # Analyse the system
+    result_1 = optimizer_1.fit(analysis)
 
     # Add the result of the first analysis to the list
     results.append(result_1)
 
-    """
-    2) Mass: SIE+Shear (priors from phase 1)
-       Source: 'smooth' pixelization (include regularization parameter(s) in the model)
-       NLO: LM
-    """
+    logger.info(
+        """
+        2) Mass: SIE+Shear (priors from phase 1)
+           Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+           NLO: LM
+        """
+    )
     # Create an optimizer
     optimizer_2 = non_linear.DownhillSimplex()
 
@@ -83,22 +92,23 @@ def source_only_pipeline(image, mask, instrumentation):
     # Add the result of the second analysis to the list
     results.append(result_2)
 
-    """
-    2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization 
-        as well)
-        Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
-        Source: 'noisy' pixelization
-        NLO: MN
-    """
+    logger.info(
+        """
+        2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase 
+            regularization as well)
+            Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
+            Source: 'noisy' pixelization
+            NLO: MN
+        """
+    )
     # Create an optimizer
     optimizer_2h = non_linear.MultiNest()
 
     # Define a single galaxy prior that is a pixelized galaxy
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.VoronoiPixelization)
 
-    #  Add the variable pixelization and instrumentation to the optimizer
+    #  Add the variable pixelization to the optimizer
     optimizer_2h.source_galaxies = [source_galaxy_prior]
-    optimizer_2h.instrumentation = model_mapper.PriorModel(inst.Instrumentation)
 
     # Set the regularization prior using results from analysis 2
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
@@ -109,10 +119,12 @@ def source_only_pipeline(image, mask, instrumentation):
     # Add the result of analysis 2h to the results
     results.append(result_2h)
 
-    """
-    a) Mass: SPLE+Shear (priors from Init phase 2)
-       Source: 'noisy' pixelization (Fixed to init 2H hyper-parameters)
-    """
+    logger.info(
+        """
+        a) Mass: SPLE+Shear (priors from Init phase 2)
+           Source: 'noisy' pixelization (Fixed to init 2H hyper-parameters)
+        """
+    )
     # Create an optimizer
     optimizer_a = non_linear.MultiNest()
 
@@ -134,6 +146,8 @@ def source_only_pipeline(image, mask, instrumentation):
 
     # Add the result of the main analysis to the results
     results.append(result_a)
+
+    logger.info("Pipeline complete")
 
     # Return the results
     return results
