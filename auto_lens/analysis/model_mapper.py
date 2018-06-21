@@ -183,7 +183,11 @@ class ModelMapper(object):
                     result.append(value)
         return result
 
-    def physical_values_from_prior_medians(self):
+    @property
+    def physical_vector_from_prior_medians(self):
+        return self.physical_vector_from_hypercube_vector([0.5] * len(self.prior_set))
+
+    def instance_from_prior_medians(self):
         """
         Creates a list of physical values from the median values of the priors.
 
