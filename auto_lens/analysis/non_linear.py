@@ -121,7 +121,7 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
-        initial_model = self.physical_values_from_prior_medians()
+        initial_model = self.instance_from_prior_medians()
 
         result = None
 
