@@ -1,13 +1,11 @@
 from auto_lens.analysis import analysis as an
 from auto_lens.analysis import galaxy_prior
-from auto_lens.analysis import model_mapper
 from auto_lens.profiles import light_profiles, mass_profiles
-from auto_lens import instrumentation as inst
 from auto_lens.analysis import non_linear
 from auto_lens.pixelization import pixelization
 
 
-def source_only_pipeline(image, mask, instrumentation):
+def source_only_pipeline(image, mask):
     """
     Pipeline 1:
 
@@ -48,8 +46,8 @@ def source_only_pipeline(image, mask, instrumentation):
     optimizer_1.source_galaxies = [source_galaxy_prior]
     optimizer_1.lens_galaxies = [lens_galaxy_prior]
 
-    # Analyse the system with constant instrumentation
-    result_1 = optimizer_1.fit(analysis, instrumentation=instrumentation)
+    # Analyse the system
+    result_1 = optimizer_1.fit(analysis)
 
     # Add the result of the first analysis to the list
     results.append(result_1)
@@ -96,9 +94,8 @@ def source_only_pipeline(image, mask, instrumentation):
     # Define a single galaxy prior that is a pixelized galaxy
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.VoronoiPixelization)
 
-    #  Add the variable pixelization and instrumentation to the optimizer
+    #  Add the variable pixelization to the optimizer
     optimizer_2h.source_galaxies = [source_galaxy_prior]
-    optimizer_2h.instrumentation = model_mapper.PriorModel(inst.Instrumentation)
 
     # Set the regularization prior using results from analysis 2
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
