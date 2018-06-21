@@ -28,7 +28,9 @@ def source_only_pipeline(image, mask, instrumentation):
     Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
     """
 
+    # Create an array in which to store results
     results = []
+
     # Create an analysis object for the image and mask
     analysis = an.Analysis(image, mask)
 
@@ -128,11 +130,9 @@ def source_only_pipeline(image, mask, instrumentation):
     lens_galaxy_prior.shear_mass_profile = lens_galaxy_prior_result.shear_mass_profile
     lens_galaxy_prior.spherical_power_law_mass_profile.centre = lens_galaxy_prior_result.spherical_mass_profile.centre
 
-    # TODO: Should the whole galaxy be passed in? How do results work?
-    # source_galaxy = galaxy.Galaxy(pixelization=result_2h.pixelization)
-
     # Analysis the system
-    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instrumentation, pixelization=result_2h.pixelization)
+    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instrumentation,
+                               source_galaxies=result_2h.source_galaxies)
 
     # Add the result of the main analysis to the results
     results.append(result_a)
