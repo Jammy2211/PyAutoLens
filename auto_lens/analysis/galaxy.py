@@ -7,7 +7,7 @@ class Galaxy(object):
     profiles
     """
 
-    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None, pixelization=None):
+    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None, pixelization=None, hyper_galaxy=None):
         """
         Parameters
         ----------
@@ -22,10 +22,15 @@ class Galaxy(object):
         self.light_profiles = light_profiles if light_profiles is not None else []
         self.mass_profiles = mass_profiles if mass_profiles is not None else []
         self.pixelization = pixelization
+        self.hyper_galaxy = hyper_galaxy
 
     @property
     def has_pixelization(self):
         return self.pixelization is not None
+
+    @property
+    def has_hyper_galaxy(self):
+        return self.hyper_galaxy is not None
 
     @property
     def has_profile(self):
