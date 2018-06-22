@@ -8,52 +8,6 @@ import colorsys
 from auto_lens import exc
 
 
-def plot(func, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
-    """
-    Draws a plot from a function that accepts coordinates . Upper normalisation limit determined by taking mean plus one
-    standard deviation. Creates colour plot if the input function returns a tuple.
-
-    func
-    ----------
-    function: (float, float) -> float OR (float, float)
-    pixel_scale : float
-        The arcsecond (") size of each pixel
-    x_min : int
-        The minimum x bound
-    y_min : int
-        The minimum y bound
-    x_max : int
-        The maximum x bound
-    y_max : int
-        The maximum y bound
-
-    """
-
-    def absolute(vector):
-        return math.sqrt(vector[0] ** 2 + vector[1] ** 2)
-
-    arr = array_function(function)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max, pixel_scale=pixel_scale)
-
-    if isinstance(arr[0][0], float):
-        pyplot.imshow(arr)
-        pyplot.clim(vmax=np.mean(func) + np.std(func))
-    else:
-        absolute_values = [absolute(t) for line in arr for t in line]
-        max_value = np.mean(absolute_values) + np.std(absolute_values)
-
-        def vector_to_color(vector):
-            hue = (cmath.phase(complex(vector[0], vector[1])) + math.pi) / 2 * math.pi
-            saturation = absolute(vector) / max_value
-            brightness = saturation
-            return map(lambda i: i if i > 0 else 0, colorsys.hsv_to_rgb(hue, saturation, brightness))
-
-        result = []
-        for row in arr:
-            result.append(map(vector_to_color, row))
-        pyplot.imshow(np.array(result))
-    pyplot.show()
-
-
 def nan_tuple(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -167,67 +121,6 @@ def iterative_subgrid(subgrid_func):
                 return next_result
             last_result = next_result
             grid_size += 1
-
-    return wrapper
-
-
-# TODO: Has this been superseded by the grids module?
-def array_function(func):
-    """
-
-    Parameters
-    ----------
-    func : function(coordinates)
-            A function that takes coordinates and returns a value
-
-    Returns
-    -------
-        A function that takes bounds, a pixel scale and mask and returns an array
-    """
-
-    @wraps(func)
-    def wrapper(x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=1., mask=None):
-        """
-
-        Parameters
-        ----------
-        mask : Mask
-            An object that has an is_masked method which returns True if (x, y) coordinates should be masked (i.e. not
-            return a value)
-        x_min : float
-            The minimum x bound
-        y_min : float
-            The minimum y bound
-        x_max : float
-            The maximum x bound
-        y_max : float
-            The maximum y bound
-        pixel_scale : float
-            The arcsecond (") size of each pixel
-
-        Returns
-        -------
-        array: []
-            A 2D numpy array of values returned by the function at each coordinate
-        """
-        x_size = side_length(x_min, x_max, pixel_scale)
-        y_size = side_length(y_min, y_max, pixel_scale)
-
-        array = []
-
-        for i in range(x_size):
-            row = []
-            for j in range(y_size):
-                x = pixel_to_coordinate(x_min, pixel_scale, i)
-                y = pixel_to_coordinate(y_min, pixel_scale, j)
-
-                if mask is not None and not mask[i][j]:
-                    row.append(None)
-                else:
-                    row.append(func((x, y)))
-            array.append(row)
-        # This conversion was to resolve a bug with putting tuples in the array. It might increase execution time.
-        return np.array(array)
 
     return wrapper
 

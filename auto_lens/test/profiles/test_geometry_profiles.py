@@ -6,12 +6,9 @@ from auto_lens.profiles import geometry_profiles
 
 
 class TestEllipticalProfile(object):
-
-
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=0.0)
 
             cos_phi, sin_phi = elliptical_profile.cos_and_sin_from_x_axis()
@@ -20,7 +17,6 @@ class TestEllipticalProfile(object):
             assert sin_phi == 0.0
 
         def test__profile_angle_phi_is_45__cosine_and_sin_of_phi_follow_trig__therefore_half_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=45.0)
 
             cos_phi, sin_phi = elliptical_profile.cos_and_sin_from_x_axis()
@@ -29,7 +25,6 @@ class TestEllipticalProfile(object):
             assert sin_phi == pytest.approx(0.707, 1e-3)
 
         def test__profile_angle_phi_is_60__cosine_and_sin_of_phi_follow_trig(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=60.0)
 
             cos_phi, sin_phi = elliptical_profile.cos_and_sin_from_x_axis()
@@ -38,7 +33,6 @@ class TestEllipticalProfile(object):
             assert sin_phi == pytest.approx(0.866, 1e-3)
 
         def test__profile_angle_phi_is_225__cosine_and_sin_of_phi_follow_trig__therefore_negative_half_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=225.0)
 
             cos_phi, sin_phi = elliptical_profile.cos_and_sin_from_x_axis()
@@ -46,11 +40,9 @@ class TestEllipticalProfile(object):
             assert cos_phi == pytest.approx(-0.707, 1e-3)
             assert sin_phi == pytest.approx(-0.707, 1e-3)
 
-
     class TestCoordinatesToCentre(object):
 
         def test__profile_centre_x_0_y_0__coordinates_are_x_0_y_0__no_shift_so_shifted_coordinates_are_x_0_y_0(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
             coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -59,7 +51,6 @@ class TestEllipticalProfile(object):
             assert coordinates_shift[1] == 0.0
 
         def test__profile_centre_x_05_y_0__coordinates_are_x_0_y_0__so_x_shifts_to_negative_05(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.5, 0.0), axis_ratio=1.0, phi=0.0)
 
             coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -68,7 +59,6 @@ class TestEllipticalProfile(object):
             assert coordinates_shift[1] == 0.0
 
         def test__profile_centre_x_0_y_05__coordinates_are_x_0_y_0__so_y_shift_to_negative_05(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.5), axis_ratio=1.0, phi=0.0)
 
             coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -77,7 +67,6 @@ class TestEllipticalProfile(object):
             assert coordinates_shift[1] == -0.5
 
         def test__profile_centre_x_05_y_05__coordinates_are_x_0_y_0__x_and_y_both_shift_to_negative_05(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.5, 0.5), axis_ratio=1.0, phi=0.0)
 
             coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -86,7 +75,6 @@ class TestEllipticalProfile(object):
             assert coordinates_shift[1] == -0.5
 
         def test__use_different_profile_centre_and_coordinates(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1.0, 0.5), axis_ratio=1.0, phi=0.0)
 
             coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([0.2, 0.4]))
@@ -94,47 +82,39 @@ class TestEllipticalProfile(object):
             assert coordinates_shift[0] == -0.8
             assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
 
-
     class TestCoordinatesToRadius(object):
 
         def test__profile_centre_x_0_y_0__coordinates_x_0_y_0___overlap_profile_so_radial_distance_r_is_0(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
             assert elliptical_profile.coordinates_to_radius(coordinates=np.array([0.0, 0.0])) == 0.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_0__therefore_radial_distance_r_is_1(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
             assert elliptical_profile.coordinates_to_radius(coordinates=np.array([1.0, 0.0])) == 1.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_1__therefore_radial_distance_r_is_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
             assert elliptical_profile.coordinates_to_radius(coordinates=np.array([1.0, 1.0])) == \
-                                                                    pytest.approx(np.sqrt(2), 1e-5)
+                   pytest.approx(np.sqrt(2), 1e-5)
 
         def test__profile_centre_x_negative_1_y_0__coordinates_x_1_y_0__shifts_x_to_2_so_r_is_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(-1.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-            assert elliptical_profile.coordinates_to_radius(coordinates=np.array([1.0, 0.0])) ==\
+            assert elliptical_profile.coordinates_to_radius(coordinates=np.array([1.0, 0.0])) == \
                    pytest.approx(2.0, 1e-5)
 
         def test__profile_centre_x_2_y_2__coordinates_x_3_y_3__shifts_x_and_y_to_1_so_r_is_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(centre=(2.0, 2.0), axis_ratio=1.0, phi=0.0)
 
-            assert elliptical_profile.coordinates_to_radius(coordinates=np.array([3.0, 3.0])) ==\
+            assert elliptical_profile.coordinates_to_radius(coordinates=np.array([3.0, 3.0])) == \
                    pytest.approx(np.sqrt(2.0), 1e-5)
-
 
     class TestCoordinatesAngleFromX(object):
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_0__therefore_angle_from_positive_x_is_0(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 0.0]))
@@ -142,7 +122,6 @@ class TestEllipticalProfile(object):
             assert theta_from_x == 0.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_1__therefore_angle_from_positive_x_is_45(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.0]))
@@ -150,7 +129,6 @@ class TestEllipticalProfile(object):
             assert theta_from_x == 45.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_1dot732__angle_from_positive_x_is_60(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.7320]))
@@ -158,7 +136,6 @@ class TestEllipticalProfile(object):
             assert theta_from_x == pytest.approx(60.0, 1e-3)
 
         def test__profile_centre_x_0_y_0__coordinates_in_top_left_quandrant__angle_goes_above_90(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([-1.0, 1.0]))
@@ -166,7 +143,6 @@ class TestEllipticalProfile(object):
             assert theta_from_x == 135.0
 
         def test__profile_centre_x_0_y_0__coordinates_in_bottom_left_quandrant__angle_flips_to_negative_135(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             coordinates_shift = elliptical_profile.coordinates_to_centre(coordinates=np.array([-1.0, -1.0]))
@@ -176,7 +152,6 @@ class TestEllipticalProfile(object):
             assert theta_from_x == -135
 
         def test__profile_centre_x_0_y_0__coordinates_in_bottom_right_quandrant__angle_flips_to_negative_45(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, -1.0]))
@@ -184,18 +159,15 @@ class TestEllipticalProfile(object):
             assert theta_from_x == -45.0
 
         def test__profile_centre_x_2_y_1__coordinates_x_4_y_3__shift_to_x_2_y_2__angle_therefore_45(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(2.0, 1.0))
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([4.0, 3.0]))
 
             assert theta_from_x == 45.0
 
-
     class TestCoordinatesAngleToProfile(object):
 
         def test__profile_angle_phi_and_coordinates_are_both_0__cos_0_and_sin_0_give_1_and_0(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 0.0]))
@@ -206,7 +178,6 @@ class TestEllipticalProfile(object):
             assert sin_theta == 0.0
 
         def test__profile_angle_phi_and_coordinates_are_both_45___cos_0_and_sin_0_give_1_and_0(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=45.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.0]))
@@ -217,7 +188,6 @@ class TestEllipticalProfile(object):
             assert sin_theta == pytest.approx(0.0, 1e-3)
 
         def test__profile_angle_phi_0__coordinates_angle_45__sin_45_and_cos_45_give_half_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.0]))
@@ -228,7 +198,6 @@ class TestEllipticalProfile(object):
             assert sin_theta == pytest.approx(0.707, 1e-3)
 
         def test__profile_angle_phi_60__coordinates_angle_0__so_sin_and_cos_negative_60(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=60.0)
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 0.0]))
@@ -239,7 +208,6 @@ class TestEllipticalProfile(object):
             assert sin_theta == np.sin(np.radians(-60)) == pytest.approx(-0.866, 1e-3)
 
         def test__include_profile_centre_offset__is_used_to_compute_coordinate_angle_from_x(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(3.0, 2.0))
 
             theta_from_x = elliptical_profile.coordinates_angle_from_x(coordinates=np.array([4.0, 3.0]))
@@ -249,11 +217,9 @@ class TestEllipticalProfile(object):
             assert cos_theta == pytest.approx(0.707, 1e-3)
             assert sin_theta == pytest.approx(0.707, 1e-3)
 
-
     class TestTransformToEllipticalReferenceFrame(object):
 
         def test__profile_angle_phi_is_0__coordinates_x_1_y_1__returns_same_coordinates_so_x_1_y_1(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             coordinates = np.array([1.0, 1.0])
@@ -264,7 +230,6 @@ class TestEllipticalProfile(object):
             assert y == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_90__coordinates_x_1_y_1__rotated_coordinates_clockwise_so_x_1_y_negative_1(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0)
 
             coordinates = np.array([1.0, 1.0])
@@ -275,7 +240,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
         def test__profile_angle_phi_180__coordinates_x_1_y_1__rotated_coordinates_clockwise_so_x_and_y_negative_1(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=180.0)
 
             coordinates = np.array([1.0, 1.0])
@@ -286,7 +250,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
         def test__profile_angle_phi_270__coordinates_x_1_y_1__rotated_coordinates_clockwise_so_x_negative_1_y_1(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=270.0)
 
             coordinates = np.array([1.0, 1.0])
@@ -297,7 +260,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_360__rotated_coordinates_are_original_coordinates_x_1_y_(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=360.0)
 
             coordinates = np.array([1.0, 1.0])
@@ -308,7 +270,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_315__coordinates_x_1_y_1__rotated_coordinates_clockwise_so_x_0_y_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=315.0)
 
             coordinates = np.array([1.0, 1.0])
@@ -319,7 +280,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(2 ** 0.5, 1e-3)
 
         def test__include_profile_centre_offset__is_used_before_rotation_is_performed(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0, centre=(2.0, 3.0))
 
             coordinates = np.array([3.0, 4.0])
@@ -329,11 +289,9 @@ class TestEllipticalProfile(object):
             assert coordinates[0] == pytest.approx(1.0, 1e-3)
             assert coordinates[1] == pytest.approx(-1.0, 1e-3)
 
-
     class TestTransformCoordinatesBackToCartesian(object):
 
         def test___profile_angle_phi_0__therefore_no_rotation_and_coordinates_are_unchanged(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             coordinates_elliptical = geometry_profiles.TransformedCoordinates(np.array([1.0, 1.0]))
@@ -344,7 +302,6 @@ class TestEllipticalProfile(object):
             assert y == 1.0
 
         def test__profile_angle_phi_90__coordinates_x_1_y_1__rotated_counter_clockwise_to_x_negative_1_y_1(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=90.0)
 
             coordinates_elliptical = geometry_profiles.TransformedCoordinates(np.array([1.0, 1.0]))
@@ -355,7 +312,6 @@ class TestEllipticalProfile(object):
             assert y == 1.0
 
         def test___profile_angle_phi_45__coordinates_x_1_y_1__rotated_counter_clockwise_to_x_0_y_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=45.0)
 
             coordinates_elliptical = geometry_profiles.TransformedCoordinates(np.array([1.0, 1.0]))
@@ -365,11 +321,9 @@ class TestEllipticalProfile(object):
             assert x == pytest.approx(0.0, 1e-3)
             assert y == pytest.approx(2 ** 0.5, 1e-3)
 
-
     class TestCoordinateMovements(object):
 
         def test__coordinates_and_centres_of_two_lenses_are_equivalent__coordinates_are_equivalent(self):
-
             elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(0, 0))
             coordinates1 = np.array([1.0, 1.0])
             coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
@@ -382,7 +336,6 @@ class TestEllipticalProfile(object):
             assert coordinates1[1] == coordinates2[1]
 
         def test__same_as_above_but_include_angle_phi_as_55__coordinates_are_equivalent(self):
-
             elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(0, 0))
             coordinates1 = np.array([1.0, 1.0])
             coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
@@ -395,7 +348,6 @@ class TestEllipticalProfile(object):
             assert coordinates1[1] == coordinates2[1]
 
         def test__coordinates_are_again_the_same_after_centre_shift__coordinates_equivalent(self):
-
             elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(1, 1))
             coordinates1 = np.array([1.0, 1.0])
             coordinates1 = elliptical_profile1.transform_to_reference_frame(coordinates1)
@@ -407,11 +359,9 @@ class TestEllipticalProfile(object):
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
 
-
     class TestRotateCoordinatesThenBackToCartesian(object):
 
         def test__coordinates_are_transformed_to_and_from_reference_frame__equal_to_original_values(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=315.0)
 
             coordinates_original = np.array([5.2221, 2.6565])
@@ -424,7 +374,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
 
         def test__same_as_above_different_values(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=160.232)
 
             coordinates_original = np.array([3.2, -76.6])
@@ -437,7 +386,6 @@ class TestEllipticalProfile(object):
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
         def test__same_again_another_set_of_values(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=174.342)
 
             coordinates_original = np.array([-42.2, -93.6])
@@ -449,11 +397,9 @@ class TestEllipticalProfile(object):
             assert coordinates[0] == pytest.approx(coordinates_original[0], 1e-2)
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-2)
 
-
     class TestTransformedCoordinatesToEccentricRadius(object):
 
         def test__profile_axis_ratio_1__r_is_root_2__therefore_ecccentric_radius_is_elliptical_radius_is_root_2(self):
-
             elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             coordinates_elliptical = geometry_profiles.TransformedCoordinates(np.array([1.0, 1.0]))
@@ -463,7 +409,6 @@ class TestEllipticalProfile(object):
             assert eccentric_radius == pytest.approx(2.0 ** 0.5, 1e-3)
 
         def test__same_as_above_but_axis_ratio_is_05__r_follows_elliptical_coordinate_equation(self):
-
             # eccentric_radius = sqrt(axis_ratio) * sqrt(  x**2 +   (y**2 / axis_ratio**2))
             # eccentric_radius =        sqrt(0.5) * sqrt(1.0**2 + (1.0**2 /        0.5**2))
             # eccentric radius =        sqrt(0.5) * sqrt( 5 ) = 1.58113
@@ -478,12 +423,9 @@ class TestEllipticalProfile(object):
 
 
 class TestSphericalProfile(object):
-
-
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(1, 1))
 
             cos_phi, sin_phi = spherical_profile.cos_and_sin_from_x_axis()
@@ -491,11 +433,9 @@ class TestSphericalProfile(object):
             assert cos_phi == 1.0
             assert sin_phi == 0.0
 
-
     class TestCoordinatesToCentre(object):
 
         def test__profile_centre_x_0_y_0__coordinates_are_x_0_y_0__no_shift_so_shifted_coordinates_are_x_0_y_0(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             coordinates_shift = spherical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -504,7 +444,6 @@ class TestSphericalProfile(object):
             assert coordinates_shift[1] == 0.0
 
         def test__profile_centre_x_05_y_0__coordinates_are_x_0_y_0__so_x_shifts_to_negative_05(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.5, 0.0))
 
             coordinates_shift = spherical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -513,7 +452,6 @@ class TestSphericalProfile(object):
             assert coordinates_shift[1] == 0.0
 
         def test__profile_centre_x_0_y_05__coordinates_are_x_0_y_0__so_y_shift_to_negative_05(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.5))
 
             coordinates_shift = spherical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -522,7 +460,6 @@ class TestSphericalProfile(object):
             assert coordinates_shift[1] == -0.5
 
         def test__profile_centre_x_05_y_05__coordinates_are_x_0_y_0__x_and_y_both_shift_to_negative_05(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.5, 0.5))
 
             coordinates_shift = spherical_profile.coordinates_to_centre(coordinates=np.array([0.0, 0.0]))
@@ -531,7 +468,6 @@ class TestSphericalProfile(object):
             assert coordinates_shift[1] == -0.5
 
         def test__use_different_profile_centre_and_coordinates(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(1.0, 0.5))
 
             coordinates_shift = spherical_profile.coordinates_to_centre(coordinates=np.array([0.2, 0.4]))
@@ -539,47 +475,39 @@ class TestSphericalProfile(object):
             assert coordinates_shift[0] == -0.8
             assert coordinates_shift[1] == pytest.approx(-0.1, 1e-5)
 
-
     class TestCoordinatesToRadius(object):
 
         def test__profile_centre_x_0_y_0__coordinates_x_0_y_0___overlap_profile_so_radial_distance_r_is_0(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             assert spherical_profile.coordinates_to_radius(coordinates=np.array([0.0, 0.0])) == 0.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_0__therefore_radial_distance_r_is_1(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             assert spherical_profile.coordinates_to_radius(coordinates=np.array([1.0, 0.0])) == 1.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_1__therefore_radial_distance_r_is_root_2(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             assert spherical_profile.coordinates_to_radius(coordinates=np.array([1.0, 1.0])) == \
-                                                                    pytest.approx(np.sqrt(2), 1e-5)
+                   pytest.approx(np.sqrt(2), 1e-5)
 
         def test__profile_centre_x_negative_1_y_0__coordinates_x_1_y_0__shifts_x_to_2_so_r_is_2(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(-1.0, 0.0))
 
-            assert spherical_profile.coordinates_to_radius(coordinates=np.array([1.0, 0.0])) ==\
+            assert spherical_profile.coordinates_to_radius(coordinates=np.array([1.0, 0.0])) == \
                    pytest.approx(2.0, 1e-5)
 
         def test__profile_centre_x_2_y_2__coordinates_x_3_y_3__shifts_x_and_y_to_1_so_r_is_root_2(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(2.0, 2.0))
 
-            assert spherical_profile.coordinates_to_radius(coordinates=np.array([3.0, 3.0])) ==\
+            assert spherical_profile.coordinates_to_radius(coordinates=np.array([3.0, 3.0])) == \
                    pytest.approx(np.sqrt(2.0), 1e-5)
-
 
     class TestCoordinatesAngleFromX(object):
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_0__therefore_angle_from_positive_x_is_0(self):
-
             spherical_profile = geometry_profiles.SphericalProfile()
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 0.0]))
@@ -587,7 +515,6 @@ class TestSphericalProfile(object):
             assert theta_from_x == 0.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_1__therefore_angle_from_positive_x_is_45(self):
-
             spherical_profile = geometry_profiles.SphericalProfile()
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.0]))
@@ -595,7 +522,6 @@ class TestSphericalProfile(object):
             assert theta_from_x == 45.0
 
         def test__profile_centre_x_0_y_0__coordinates_x_1_y_1dot732__angle_from_positive_x_is_60(self):
-
             spherical_profile = geometry_profiles.SphericalProfile()
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.7320]))
@@ -603,7 +529,6 @@ class TestSphericalProfile(object):
             assert theta_from_x == pytest.approx(60.0, 1e-3)
 
         def test__profile_centre_x_0_y_0__coordinates_in_top_left_quandrant__angle_goes_above_90(self):
-
             spherical_profile = geometry_profiles.SphericalProfile()
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([-1.0, 1.0]))
@@ -611,7 +536,6 @@ class TestSphericalProfile(object):
             assert theta_from_x == 135.0
 
         def test__profile_centre_x_0_y_0__coordinates_in_bottom_left_quandrant__angle_flips_to_negative_135(self):
-
             spherical_profile = geometry_profiles.SphericalProfile()
 
             coordinates_shift = spherical_profile.coordinates_to_centre(coordinates=np.array([-1.0, -1.0]))
@@ -621,7 +545,6 @@ class TestSphericalProfile(object):
             assert theta_from_x == -135
 
         def test__profile_centre_x_0_y_0__coordinates_in_bottom_right_quandrant__angle_flips_to_negative_45(self):
-
             spherical_profile = geometry_profiles.SphericalProfile()
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, -1.0]))
@@ -629,18 +552,15 @@ class TestSphericalProfile(object):
             assert theta_from_x == -45.0
 
         def test__profile_centre_x_2_y_1__coordinates_x_4_y_3__shift_to_x_2_y_2__angle_therefore_45(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(2.0, 1.0))
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([4.0, 3.0]))
 
             assert theta_from_x == 45.0
 
-
     class TesCoordinatestAngleToProfile(object):
 
         def test__profile_angle_phi_and_coordinates_are_both_0__cos_0_and_sin_0_give_1_and_0(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 0.0]))
@@ -651,7 +571,6 @@ class TestSphericalProfile(object):
             assert sin_theta == 0.0
 
         def test__profile_angle_phi_and_coordinates_are_both_45___cos_0_and_sin_0_give_1_and_0(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([1.0, 1.0]))
@@ -662,7 +581,6 @@ class TestSphericalProfile(object):
             assert sin_theta == pytest.approx(0.707, 1e-3)
 
         def test__include_profile_centre_offset__is_used_to_compute_coordinate_angle_from_x(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(1.0, 1.0))
 
             theta_from_x = spherical_profile.coordinates_angle_from_x(coordinates=np.array([2.0, 2.0]))
@@ -672,11 +590,9 @@ class TestSphericalProfile(object):
             assert cos_theta == pytest.approx(0.707, 1e-3)
             assert sin_theta == pytest.approx(0.707, 1e-3)
 
-
     class TestCoordinatesMovement(object):
 
         def test__profile_cenre_x_0_y_0__coordinates_x_1_y_1__no_coordinate_movement_so_x_1_y_1(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             coordinates_spherical = geometry_profiles.TransformedCoordinates((1.0, 1.0))
@@ -687,7 +603,6 @@ class TestSphericalProfile(object):
             assert y == 1.0
 
         def test__coordinates_and_centres_of_two_lenses_are_equivalent__coordinates_are_equivalent(self):
-
             spherical_profile1 = geometry_profiles.SphericalProfile(centre=(0, 0))
             coordinates1 = np.array([1.0, 1.0])
             coordinates1 = spherical_profile1.transform_to_reference_frame(coordinates1)
@@ -700,7 +615,6 @@ class TestSphericalProfile(object):
             assert coordinates1[1] == coordinates2[1]
 
         def test__coordinates_are_again_the_same_after_centre_shift__coordinates_equivalent(self):
-
             spherical_profile1 = geometry_profiles.SphericalProfile(centre=(1, 1))
             coordinates1 = np.array([1.0, 1.0])
             coordinates1 = spherical_profile1.transform_to_reference_frame(coordinates1)
@@ -711,7 +625,6 @@ class TestSphericalProfile(object):
 
             assert coordinates1[0] == coordinates2[0]
             assert coordinates1[1] == coordinates2[1]
-
 
     class TestTransformCoordinatesAndThenBackToCartesian(object):
 
@@ -726,7 +639,6 @@ class TestSphericalProfile(object):
             assert y == pytest.approx(1.0, 1e-3)
 
         def test__coordinates_are_transformed_to_and_from_reference_frame__equal_to_original_values(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             coordinates_original = np.array([5.2221, 2.6565])
@@ -739,7 +651,6 @@ class TestSphericalProfile(object):
             assert coordinates[1] == pytest.approx(coordinates_original[1], 1e-5)
 
         def test__same_as_above_different_coordinates__equal_to_original_value(self):
-
             spherical_profile = geometry_profiles.SphericalProfile(centre=(0.0, 0.0))
 
             coordinates_original = np.array([3.2, -76.6])
@@ -802,7 +713,8 @@ class TestDecorators(object):
 
         coordinates = return_coords((-2.0, 3.0), pixel_scale=0.1, grid_size=4)
 
-        coordinates = list(map(lambda coords: (pytest.approx(coords[0], 1e-2), pytest.approx(coords[1], 1e-2)), coordinates))
+        coordinates = list(
+            map(lambda coords: (pytest.approx(coords[0], 1e-2), pytest.approx(coords[1], 1e-2)), coordinates))
 
         assert coordinates == [(-2.03, 2.97), (-2.03, 2.99), (-2.03, 3.01), (-2.03, 3.03),
                                (-2.01, 2.97), (-2.01, 2.99), (-2.01, 3.01), (-2.01, 3.03),
@@ -825,19 +737,6 @@ class TestDecorators(object):
 
         assert one_over_grid(None, None, 0.51) == pytest.approx(0.5)
         assert one_over_grid(None, None, 0.21) == pytest.approx(0.2)
-
-    def test_mask(self):
-        mask_array = np.ones((10, 10))
-        mask_array[0][5] = 0
-        mask_array[5][5] = 0
-        mask_array[6][5] = 0
-        array = geometry_profiles.array_function(lambda coordinates: 1)(-5, -5, 5, 5, 1, mask=np.ma.make_mask(mask_array))
-
-        assert array[5][5] is None
-        assert array[5][6] is not None
-        assert array[6][5] is None
-        assert array[0][0] is not None
-        assert array[0][5] is None
 
 
 class TestAuxiliary(object):
@@ -878,22 +777,20 @@ class TestTransform(object):
         assert mock_profile.is_transformed(np.array([0, 0]))
         assert (mock_profile.return_coordinates(np.array([0, 0])) == np.array([1, 1])).all()
         assert mock_profile.return_coordinates(geometry_profiles.TransformedCoordinates(np.array([0, 0]))) == \
-        geometry_profiles.TransformedCoordinates((np.array([0, 0])))
+               geometry_profiles.TransformedCoordinates((np.array([0, 0])))
 
     def test_symmetry(self):
-        p = geometry_profiles.EllipticalProfile((3,5), 2, 2)
+        p = geometry_profiles.EllipticalProfile((3, 5), 2, 2)
         assert (p.transform_from_reference_frame(p.transform_to_reference_frame((5, 7))) == (5, 7)).all()
 
 
 class TestFromProfile(object):
 
     def test__profile_from_profile__centre_x_1_y_1_is_passed(self):
-
         p = geometry_profiles.Profile(centre=(1, 1))
         assert geometry_profiles.Profile.from_profile(p).centre == (1, 1)
 
     def test__elliptical_profile_from_profile__centre_x_1_y_1__axis_ratio_1__phi_2__all_are_passed(self):
-
         p = geometry_profiles.Profile(centre=(1, 1))
         elliptical_profile = geometry_profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
         assert elliptical_profile.__class__ == geometry_profiles.EllipticalProfile
@@ -902,14 +799,12 @@ class TestFromProfile(object):
         assert elliptical_profile.phi == 2
 
     def test__profile_from_elliptical_profile__centre_x_1_y_1_is_passed(self):
-
         elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1, phi=2)
         p = geometry_profiles.Profile.from_profile(elliptical_profile)
         assert p.__class__ == geometry_profiles.Profile
         assert p.centre == (1, 1)
 
     def test__elliptcal_profile_from_elliptical_profile__optionally_override_axis_ratio_with_3(self):
-
         elliptical_profile = geometry_profiles.EllipticalProfile(axis_ratio=1, phi=2)
         new_geometry_profile = geometry_profiles.EllipticalProfile.from_profile(elliptical_profile, axis_ratio=3)
         assert new_geometry_profile.phi == 2
