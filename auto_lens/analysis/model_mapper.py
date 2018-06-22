@@ -467,6 +467,8 @@ class PriorModel(AbstractPriorModel):
             return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":
             return GaussianPrior(config_arr[1], config_arr[2])
+        elif config_arr[0] == "c":
+            return Constant(config_arr[1])
 
     @property
     def tuple_priors(self):
