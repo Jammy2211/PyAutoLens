@@ -4252,14 +4252,3 @@ class TestMassIntegral(object):
             intensity_integral = gnfw.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
             assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.04)
-
-
-class TestArray(object):
-
-    def test__deflection_angle_array(self):
-        mp = mass_profiles.EllipticalIsothermal(centre=(0, 0), axis_ratio=0.5, phi=45.0,
-                                                einstein_radius=2.0)
-
-        # noinspection PyTypeChecker
-        assert all(geometry_profiles.array_function(mp.deflections_at_coordinates)(-1, -1, -0.5, -0.5, 0.1)[0][
-                       0] == mp.deflections_at_coordinates((-1, -1)))
