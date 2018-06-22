@@ -638,3 +638,16 @@ class TestConstant(object):
 
         assert instance.mock_class.one == 3
         assert instance.mock_class.two == 5
+
+    def test_constant_in_config(self):
+        mapper = model_mapper.ModelMapper()
+        config = MockConfig({"MockClass": {"one": ["c", 3]}})
+
+        mock_with_constant = model_mapper.PriorModel(MockClass, config)
+
+        mapper.mock_class = mock_with_constant
+
+        instance = mapper.instance_from_arguments({mock_with_constant.two: 5})
+
+        assert instance.mock_class.one == 3
+        assert instance.mock_class.two == 5
