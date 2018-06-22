@@ -65,9 +65,10 @@ class Analysis(object):
             An object comprising the final model instances generated and a corresponding likelihood
         """
         logger.debug(
-            "Running analysis for lens galaxies:\n{}\nsource galaxies:\n{}\n".format("\n".join(map(str, lens_galaxies)),
-                                                                                     "\n".join(
-                                                                                         map(str, source_galaxies))))
+            "\nRunning analysis for... \n\nLens Galaxies:\n{}\n\nSource Galaxies:\n{}\n\n".format(
+                "\n\n".join(map(str, lens_galaxies)),
+                "\n\n".join(
+                    map(str, source_galaxies))))
         if hyper_image is not None:
             logger.debug("Hyper Image:\n{}".format(hyper_image))
 
