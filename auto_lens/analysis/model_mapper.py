@@ -486,6 +486,16 @@ class PriorModel(AbstractPriorModel):
         return [prior for tuple_prior in self.tuple_priors for prior in
                 tuple_prior[1].priors] + self.direct_priors
 
+    @property
+    def constants(self):
+        """
+        Returns
+        -------
+        constants: [(String, Constant)]
+            A list of constants
+        """
+        return list(filter(lambda t: isinstance(t[1], Constant), self.__dict__.items()))
+
     def instance_for_arguments(self, arguments):
         """
         Create an instance of the associated class for a set of arguments
@@ -502,7 +512,10 @@ class PriorModel(AbstractPriorModel):
         model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
         for tuple_prior in self.tuple_priors:
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
-        return self.cls(**model_arguments)
+
+        constant_arguments = {t[0]: t[1].value for t in self.constants}
+
+        return self.cls(**{**model_arguments, **constant_arguments})
 
     def gaussian_prior_model_for_arguments(self, arguments):
         new_model = PriorModel(self.cls, self.config)
@@ -652,3 +665,8 @@ class Config(object):
         """
         self.read(module_name)
         return self.parser.has_option(class_name, attribute_name)
+
+
+class Constant(object):
+    def __init__(self, value):
+        self.value = value
