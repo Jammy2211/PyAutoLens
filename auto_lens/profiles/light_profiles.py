@@ -67,32 +67,6 @@ class LightProfile(object):
         """
         raise AssertionError("Flux at image_grid should be overridden")
 
-    def plot(self, x_min=-5, y_min=-5, x_max=5, y_max=5, pixel_scale=0.1):
-        """
-        Draws a plot of this light profiles. Upper normalisation limit determined by taking mean plus one standard
-        deviation
-
-        Parameters
-        ----------
-        pixel_scale : float
-            The arcsecond (") size of each pixel
-        x_min : int
-            The minimum x bound
-        y_min : int
-            The minimum y bound
-        x_max : int
-            The maximum x bound
-        y_max : int
-            The maximum y bound
-
-        """
-        # array = profiles.array_function(self.flux_at_coordinates)(x_min=x_min, y_min=y_min, x_max=x_max, y_max=y_max,
-        #                                                          pixel_scale=pixel_scale)
-        # pyplot.imshow(array)
-        # pyplot.clim(vmax=np.mean(array) + np.std(array))
-        # pyplot.show()
-        geometry_profiles.plot(self.intensity_at_coordinates, x_min, y_min, x_max, y_max, pixel_scale)
-
 
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""

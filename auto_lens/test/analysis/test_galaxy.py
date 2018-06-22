@@ -364,19 +364,6 @@ class TestLightProfiles(object):
             assert galaxy_sersic.intensity_at_coordinates(np.array([49.0, 49.0])) == pytest.approx(
                 galaxy_sersic.intensity_at_coordinates(np.array([51.0, 51.0])), 1e-5)
 
-        def test_combined_array(self):
-            sersic_1 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                       sersic_index=4.0)
-
-            sersic_2 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                       sersic_index=4.0)
-
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profiles=[sersic_1, sersic_2])
-
-            assert all(map(lambda i: i == 2,
-                           geometry_profiles.array_function(galaxy_sersic.intensity_at_coordinates)().flatten() /
-                           geometry_profiles.array_function(sersic_1.intensity_at_coordinates)().flatten()))
-
 
 class TestMassProfiles(object):
     class TestSurfaceDensity:
