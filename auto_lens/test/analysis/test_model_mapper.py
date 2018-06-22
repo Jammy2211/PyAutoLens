@@ -611,3 +611,30 @@ class TestListPriorModel(object):
                        model_mapper.PriorModel(MockClass, MockConfig())]
 
         assert isinstance(mapper.list, model_mapper.ListPriorModel)
+
+
+@pytest.fixture(name="mock_with_constant")
+def make_mock_with_constant():
+    mock_with_constant = model_mapper.PriorModel(MockClass, MockConfig())
+    mock_with_constant.one = model_mapper.Constant(3)
+    return mock_with_constant
+
+
+class TestConstant(object):
+    def test_constant_prior_count(self, mock_with_constant):
+        mapper = model_mapper.ModelMapper()
+        mapper.mock_class = mock_with_constant
+
+        assert len(mapper.prior_set) == 1
+
+    def test_retrieve_constants(self, mock_with_constant):
+        assert len(mock_with_constant.constants) == 1
+
+    def test_constant_prior_reconstruction(self, mock_with_constant):
+        mapper = model_mapper.ModelMapper()
+        mapper.mock_class = mock_with_constant
+
+        instance = mapper.instance_from_arguments({mock_with_constant.two: 5})
+
+        assert instance.mock_class.one == 3
+        assert instance.mock_class.two == 5
