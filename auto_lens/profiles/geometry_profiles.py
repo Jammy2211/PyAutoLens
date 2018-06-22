@@ -317,6 +317,10 @@ class Profile(object):
         shifted_coordinates = self.coordinates_to_centre(coordinates)
         return np.sqrt(np.sum(shifted_coordinates ** 2.0))
 
+    def __repr__(self):
+        return '{}\n{}'.format(self.__class__.__name__,
+                               '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
+
 
 class EllipticalProfile(Profile):
 
