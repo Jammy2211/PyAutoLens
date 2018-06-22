@@ -52,15 +52,15 @@ class Galaxy(object):
         return len(self.mass_profiles) + len(self.light_profiles) > 0
 
     def __repr__(self):
-        string = "Galaxy redshift={}".format(self.redshift)
+        string = "Redshift: {}".format(self.redshift)
         if self.pixelization:
             string += str(self.pixelization)
         if self.hyper_galaxy:
             string += str(self.hyper_galaxy)
         if self.light_profiles:
-            string += "Light Profiles:\n{}".format("\n".join(map(str, self.light_profiles)))
+            string += "\nLight Profiles:\n{}".format("\n".join(map(str, self.light_profiles)))
         if self.mass_profiles:
-            string += "Mass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
+            string += "\nMass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
         return string
 
     def intensity_at_coordinates(self, coordinates):
