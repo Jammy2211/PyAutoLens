@@ -543,6 +543,7 @@ class TestPriorReplacement(object):
 
 class TestArguments(object):
     def test_same_argument_name(self, test_config):
+
         mapper = model_mapper.ModelMapper()
 
         mapper.one = model_mapper.PriorModel(MockClass, test_config)

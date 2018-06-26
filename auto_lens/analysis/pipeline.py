@@ -64,7 +64,7 @@ def source_only_pipeline(image, mask):
 
     # Define galaxy priors
     source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.SphericalIsothermal,
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the galaxy priors to the optimizer
@@ -88,7 +88,7 @@ def source_only_pipeline(image, mask):
     optimizer_2 = non_linear.DownhillSimplex()
 
     # Define galaxy priors
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.SphericalIsothermal,
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
     # The source galaxy is now represented by a pixelization
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
