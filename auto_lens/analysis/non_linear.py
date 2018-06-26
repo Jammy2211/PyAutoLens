@@ -1,4 +1,6 @@
 import getdist
+
+import auto_lens.config.config
 from auto_lens import exc
 import math
 import os
@@ -62,7 +64,7 @@ class NonLinearOptimizer(mm.ModelMapper):
             Check whether the model.info file corresponds to the model_mapper passed in.
         """
 
-        super().__init__(config=mm.Config(
+        super().__init__(config=auto_lens.config.config.Config(
             "{}/../config".format(os.path.dirname(os.path.realpath(__file__))) if config_path is None else config_path))
         self.path = path
         self.check_model = check_model
