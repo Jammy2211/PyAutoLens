@@ -12,7 +12,7 @@ def fit_data_with_profiles(grid_data, kernel_convolver, tracer, image=None):
     Parameters
     ----------
     image
-    grid_data : grids.GridDataCollection
+    grid_data : grids.DataCollection
         The collection of grid data-sets (image, noise, etc.)
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
@@ -60,7 +60,7 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
     Parameters
     ----------
     image
-    grid_data : grids.GridDataCollection
+    grid_data : grids.DataCollection
         The collection of grid data-sets (image, noise, etc.)
     pix : pixelization.Pixelization
         The pixelization used to fit the data.
