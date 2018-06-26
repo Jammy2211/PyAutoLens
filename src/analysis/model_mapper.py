@@ -270,6 +270,19 @@ class ModelMapper(object):
         return self.instance_from_arguments(arguments)
 
     def mapper_from_prior_arguments(self, arguments):
+        """
+        Creates a new model mapper from a dictionary mapping existing priors to new priors.
+
+        Parameters
+        ----------
+        arguments: {Prior: Prior}
+            A dictionary mapping priors to priors
+
+        Returns
+        -------
+        model_mapper: ModelMapper
+            A new model mapper with updated priors.
+        """
         mapper = ModelMapper(config=self.config, width_config=self.width_config)
 
         for prior_model in self.prior_models:
@@ -284,8 +297,8 @@ class ModelMapper(object):
 
         Parameters
         ----------
-        tuples: (float, float)
-            A tuple containing the mean and sigma of the gaussian priors.
+        tuples: [(float, float)]
+            A list of tuples containing the mean and sigma of the gaussian priors.
 
         Returns
         -------
@@ -298,6 +311,21 @@ class ModelMapper(object):
         return self.mapper_from_prior_arguments(arguments)
 
     def mapper_from_gaussian_means(self, means):
+        """
+        Creates a new model mapper from a list of floats describing the mean values of gaussian priors. The widths of
+        the new priors are taken from the width_config. The new gaussian priors must be provided in the same order as
+        the priors associated with model.
+
+        Parameters
+        ----------
+        means: [float]
+            A list containing the means of the gaussian priors.
+
+        Returns
+        -------
+        mapper: ModelMapper
+            A new model mapper with all priors replaced by gaussian priors.
+        """
         priors = self.priors_ordered_by_id
         prior_class_dict = self.prior_class_dict
         arguments = {}
