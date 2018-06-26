@@ -7,7 +7,7 @@ from auto_lens.profiles import light_profiles, mass_profiles
 from auto_lens import exc
 
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
-config_path = path + 'test_files/config'
+config_path = path + 'test_files/config/priors/default'
 
 
 def create_summary_4_parameters(path):
