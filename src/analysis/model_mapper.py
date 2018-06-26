@@ -635,6 +635,8 @@ class PriorModel(AbstractPriorModel):
             setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(arguments))
         for prior in self.direct_priors:
             setattr(new_model, prior[0], model_arguments[prior[0]])
+        for constant in self.constants:
+            setattr(new_model, constant[0], constant[1])
 
         return new_model
 
