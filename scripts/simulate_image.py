@@ -3,14 +3,14 @@ sys.path.append("../")
 import os
 import numpy as np
 
-from auto_lens.imaging import image
-from auto_lens.imaging import mask
-from auto_lens.imaging import grids
-from auto_lens.profiles import light_profiles as lp
-from auto_lens.profiles import mass_profiles as mp
-from auto_lens.analysis import ray_tracing
-from auto_lens.analysis import galaxy
-from auto_lens.tools import arrays
+from src.imaging import image
+from src.imaging import mask
+from src.imaging import grids
+from src.profiles import light_profiles as lp
+from src.profiles import mass_profiles as mp
+from src.analysis import ray_tracing
+from src.analysis import galaxy
+from src.tools import arrays
 
 output_dir = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
