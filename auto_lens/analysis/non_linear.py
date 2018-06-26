@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
 
+SIMPLEX_TUPLE_WIDTH = 0.1
+
 
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
@@ -134,11 +136,17 @@ class DownhillSimplex(NonLinearOptimizer):
             return -2 * result.likelihood
 
         logger.info("Running DownhillSimplex...")
-        scipy.optimize.fmin(fitness_function, x0=initial_vector)
+        output = scipy.optimize.fmin(fitness_function, x0=initial_vector)
         logger.info("DownhillSimplex complete")
-        # output = scipy.optimize.fmin(fitness_function, x0=initial_model)
 
-        # TODO: use output to generate model instance
+        # Get the solution provided by Downhill Simplex
+        means = output[0]
+        # Create Gaussian tuples with a hardcoded width of 0.1
+        tuples = [(mean, SIMPLEX_TUPLE_WIDTH) for mean in means]
+
+        # Create a set of Gaussian priors from this result and associate them with the result object.
+        result.priors = self.mapper_from_gaussian_tuples(tuples)
+
         return result
 
 
