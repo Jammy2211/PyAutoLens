@@ -4,6 +4,7 @@ from src.profiles import light_profiles, mass_profiles
 from src.analysis import non_linear
 from src.pixelization import pixelization
 from src.analysis import model_mapper
+from src.analysis import galaxy
 
 import logging
 
@@ -287,14 +288,27 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     full_light_analysis = an.Analysis(image, combined_mask)
 
-    optimizer_4 = non_linear.DownhillSimplex()
+    optimizer_4 = non_linear.DownhillSimplex(include_hyper_image=True)
 
-    # lens_galaxy =
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.sie_mass_profile,
+                                           shear_mass_profile=result_3.shear_mass_profile,
+                                           sersic_light_profile=light_profiles.EllipticalSersic,
+                                           exponential_light_profile=light_profiles.EllipticalExponential,
+                                           hyper_galaxy=galaxy.HyperGalaxy)
+
+    lens_galaxy.sersic_light_profile.centre = lens_galaxy.exponential_light_profile.centre
+    lens_galaxy.sersic_light_profile.phi = lens_galaxy.exponential_light_profile.phi
+
     source_galaxy = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
 
     pixelization_result = result_3.priors.pixelization
     source_galaxy.pixelization.pixels = pixelization_result.pixels
     source_galaxy.pixelization.regularization_coefficients = pixelization_result.regularization_coefficients
+
+    optimizer_4.lens_galaxies = [lens_galaxy]
+    optimizer_4.source_galaxies = [source_galaxy]
+
+    optimizer_4.fit(full_light_analysis)
 
 
 """
