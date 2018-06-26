@@ -1,5 +1,8 @@
 import sys
 import os
+
+import auto_lens.config.config
+
 sys.path.append("../")
 
 from auto_lens.analysis import model_mapper, non_linear
@@ -10,7 +13,7 @@ results_path = path + '../files/SLACS03/'
 
 image_name = 'SLACSJ0252+0039'
 
-mapper = model_mapper.ModelMapper(config=model_mapper.Config(config_folder_path=results_path),
+mapper = model_mapper.ModelMapper(config=auto_lens.config.config.Config(config_folder_path=results_path),
                                   stellar_bulge=mp.EllipticalSersicMass, stellar_envelope=mp.EllipticalExponentialMass,
                                   dark_matter_halo=mp.SphericalNFW, shear=mp.ExternalShear)
 

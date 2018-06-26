@@ -1,3 +1,4 @@
+import auto_lens.config.config
 from auto_lens.analysis import model_mapper
 import pytest
 from auto_lens.profiles import geometry_profiles, light_profiles, mass_profiles
@@ -18,7 +19,7 @@ def make_uniform_half():
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return model_mapper.Config(
+    return auto_lens.config.config.Config(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
@@ -41,7 +42,7 @@ class MockClass(object):
         self.two = two
 
 
-class MockConfig(model_mapper.Config):
+class MockConfig(auto_lens.config.config.Config):
     def __init__(self, d=None):
         super(MockConfig, self).__init__("")
         if d is not None:
