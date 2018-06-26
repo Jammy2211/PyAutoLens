@@ -653,3 +653,16 @@ class TestConstant(object):
 
         assert instance.mock_class.one == 3
         assert instance.mock_class.two == 5
+
+
+@pytest.fixture(name="width_config")
+def make_width_config():
+    return src.config.config.WidthConfig(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
+                                             "test_files/config/priors/width"))
+
+
+class TestGaussianWidthConfig(object):
+    def test_config(self, width_config):
+        assert 1 == width_config.get('test_model_mapper', 'MockClass', 'one')
+        assert 2 == width_config.get('test_model_mapper', 'MockClass', 'two')
