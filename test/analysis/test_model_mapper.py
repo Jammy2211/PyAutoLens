@@ -653,3 +653,57 @@ class TestConstant(object):
 
         assert instance.mock_class.one == 3
         assert instance.mock_class.two == 5
+
+    def test_constant_exchange(self, mock_with_constant, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.mock_class = mock_with_constant
+
+        new_mapper = mapper.mapper_from_gaussian_means([1])
+
+        assert len(new_mapper.mock_class.constants) == 1
+
+
+@pytest.fixture(name="width_config")
+def make_width_config():
+    return src.config.config.WidthConfig(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
+                                             "test_files/config/priors/width"))
+
+
+class TestGaussianWidthConfig(object):
+    def test_config(self, width_config):
+        assert 1 == width_config.get('test_model_mapper', 'MockClass', 'one')
+        assert 2 == width_config.get('test_model_mapper', 'MockClass', 'two')
+
+    def test_prior_classes(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+
+        assert mapper.prior_class_dict == {mapper.one.one: MockClass, mapper.one.two: MockClass}
+
+    def test_basic_gaussian_for_mean(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+
+        gaussian_mapper = mapper.mapper_from_gaussian_means([3, 4])
+
+        assert gaussian_mapper.one.one.sigma == 1
+        assert gaussian_mapper.one.two.sigma == 2
+        assert gaussian_mapper.one.one.mean == 3
+        assert gaussian_mapper.one.two.mean == 4
+
+    def test_gaussian_for_mean(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+        mapper.two = model_mapper.PriorModel(MockClass, config=test_config)
+
+        gaussian_mapper = mapper.mapper_from_gaussian_means([3, 4, 5, 6])
+
+        assert gaussian_mapper.one.one.sigma == 1
+        assert gaussian_mapper.one.two.sigma == 2
+        assert gaussian_mapper.two.one.sigma == 1
+        assert gaussian_mapper.two.two.sigma == 2
+        assert gaussian_mapper.one.one.mean == 3
+        assert gaussian_mapper.one.two.mean == 4
+        assert gaussian_mapper.two.one.mean == 5
+        assert gaussian_mapper.two.two.mean == 6
