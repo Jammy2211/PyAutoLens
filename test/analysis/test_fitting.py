@@ -58,8 +58,8 @@ class TestFitData:
 
         # Setup the grids as collections
 
-        grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time)
-        grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+        grid_datas = grids.DataCollection(image=image, noise=noise, exposure_time=exposure_time)
+        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -93,8 +93,8 @@ class TestFitData:
 
         # Setup the grids as collections
 
-        grid_datas = grids.GridDataCollection(image=image, noise=noise, exposure_time=exposure_time)
-        grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+        grid_datas = grids.DataCollection(image=image, noise=noise, exposure_time=exposure_time)
+        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -127,7 +127,7 @@ class TestGenerateBlurredLightProfileImage:
 
         # Setup the image and blurring coordinate grids
 
-        grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
                                        image_plane_grids=grid_collection)
@@ -158,7 +158,7 @@ class TestGenerateBlurredLightProfileImage:
 
         # Setup the image and blurring coordinate grids
 
-        grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
                                        image_plane_grids=grid_collection)
@@ -193,7 +193,7 @@ class TestGenerateBlurredLightProfileImage:
 
         # Setup the image and blurring coordinate grids
 
-        grid_collection = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
                                        image_plane_grids=grid_collection)
