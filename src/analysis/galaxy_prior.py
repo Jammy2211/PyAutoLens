@@ -14,6 +14,14 @@ def is_mass_profile_class(cls):
     return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
 
 
+def is_light_profile(obj):
+    return isinstance(obj, light_profiles.LightProfile) and not isinstance(obj, mass_profiles.MassProfile)
+
+
+def is_mass_profile(obj):
+    return isinstance(obj, mass_profiles.MassProfile)
+
+
 class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
@@ -48,9 +56,12 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         profile_models = []
 
         for name, cls in kwargs.items():
-            model = model_mapper.PriorModel(cls, config)
-            profile_models.append(model)
-            setattr(self, name, model)
+            if is_mass_profile_class(cls) or is_light_profile_class(cls):
+                model = model_mapper.PriorModel(cls, config)
+                profile_models.append(model)
+                setattr(self, name, model)
+            else:
+                setattr(self, name, cls)
 
         if len(profile_models) > 0:
             if self.align_centres:
@@ -67,6 +78,14 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         self.pixelization = model_mapper.PriorModel(pixelization, config) if pixelization is not None else None
         self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if hyper_galaxy is not None else None
         self.config = config
+
+    @property
+    def fixed_light_profiles(self):
+        return [value for value in self.__dict__.values() if is_light_profile(value)]
+
+    @property
+    def fixed_mass_profiles(self):
+        return [value for value in self.__dict__.values() if is_mass_profile(value)]
 
     @property
     def light_profile_names(self):
@@ -109,9 +128,9 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             An instance of the class
         """
         instance_light_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
-                                           self.light_profile_prior_models))
+                                           self.light_profile_prior_models)) + self.fixed_light_profiles
         instance_mass_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
-                                          self.mass_profile_prior_models))
+                                          self.mass_profile_prior_models)) + self.fixed_mass_profiles
 
         instance_redshift = self.redshift.instance_for_arguments(arguments)
         pixelization = self.pixelization.instance_for_arguments(arguments) if self.pixelization is not None else None
