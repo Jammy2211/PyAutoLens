@@ -123,6 +123,23 @@ class ModelMapper(object):
         return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
+    def list_prior_models(self):
+        """
+        Returns
+        -------
+        list_prior_model_tuples: [(String, ListPriorModel)]
+        """
+        return list(filter(lambda t: isinstance(t[1], ListPriorModel), self.__dict__.items()))
+
+    @property
+    def flat_prior_models(self):
+        prior_models = list(filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.items()))
+        # noinspection PyTypeChecker
+        return prior_models + [("{}_{}".format(list_prior_model[0], i), prior_model) for list_prior_model in
+                               self.list_prior_models for i, prior_model in
+                               enumerate(list_prior_model[1].prior_models)]
+
+    @property
     def prior_set(self):
         """
         Returns
@@ -130,8 +147,6 @@ class ModelMapper(object):
         prior_set: set()
             The set of all priors associated with this collection
         """
-        # return {"{}_{}".format(name, prior[1]): prior for name, prior_model in self.prior_models for prior in
-        #         prior_model.priors}.values()
         return {prior[1]: prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
 
@@ -292,7 +307,7 @@ class ModelMapper(object):
 
         model_info = ''
 
-        for prior_name, prior_model in self.prior_models:
+        for prior_name, prior_model in self.flat_prior_models:
 
             model_info += prior_model.cls.__name__ + '\n' + '\n'
 
@@ -615,6 +630,7 @@ class TuplePrior(object):
     """
     A prior comprising one or more priors in a tuple
     """
+
     @property
     def priors(self):
         """
