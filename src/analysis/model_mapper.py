@@ -13,7 +13,7 @@ class ModelMapper(object):
         @DynamicAttrs
     """
 
-    def __init__(self, config=None, **classes):
+    def __init__(self, config=None, width_config=None, **classes):
         """
         Parameters
         ----------
@@ -70,7 +70,9 @@ class ModelMapper(object):
         """
         super(ModelMapper, self).__init__()
 
-        self.config = (config if config is not None else DefaultPriorConfig("{}/../config".format(path)))
+        self.config = (config if config is not None else DefaultPriorConfig("{}/../config/priors/default".format(path)))
+        self.width_config = (
+            width_config if width_config is not None else DefaultPriorConfig("{}/../config/priors/width".format(path)))
 
         for name, cls in classes.items():
             self.add_class(name, cls)
@@ -149,6 +151,11 @@ class ModelMapper(object):
         """
         return {prior[1]: prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
+
+    @property
+    def prior_class_dict(self):
+        return {prior[1]: prior_model.cls for name, prior_model in self.prior_models for prior in
+                prior_model.priors}
 
     @property
     def priors_ordered_by_id(self):
@@ -262,16 +269,45 @@ class ModelMapper(object):
 
         return self.instance_from_arguments(arguments)
 
-    def mapper_from_gaussian_tuples(self, tuples):
-        model_instance = ModelInstance()
+    def mapper_from_prior_arguments(self, arguments):
+        mapper = ModelMapper(config=self.config, width_config=self.width_config)
 
+        for prior_model in self.prior_models:
+            setattr(mapper, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
+
+        return mapper
+
+    def mapper_from_gaussian_tuples(self, tuples):
+        """
+        Creates a new model mapper from a list of tuples describing the mean and width values of gaussian priors. The
+        new gaussian priors must be provided in the same order as the priors associated with model.
+
+        Parameters
+        ----------
+        tuples: (float, float)
+            A tuple containing the mean and sigma of the gaussian priors.
+
+        Returns
+        -------
+        mapper: ModelMapper
+            A new model mapper with all priors replaced by gaussian priors.
+        """
         new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
         arguments = dict(map(lambda prior, new_prior: (prior[1], new_prior), self.priors_ordered_by_id, new_priors))
 
-        for prior_model in self.prior_models:
-            setattr(model_instance, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
+        return self.mapper_from_prior_arguments(arguments)
 
-        return model_instance
+    def mapper_from_gaussian_means(self, means):
+        priors = self.priors_ordered_by_id
+        prior_class_dict = self.prior_class_dict
+        arguments = {}
+
+        for i, prior in enumerate(priors):
+            cls = prior_class_dict[prior[1]]
+            width = self.width_config.get_for_nearest_ancestor(cls, prior[0])
+            arguments[prior[1]] = GaussianPrior(means[i], width)
+
+        return self.mapper_from_prior_arguments(arguments)
 
     def instance_from_arguments(self, arguments):
         """
