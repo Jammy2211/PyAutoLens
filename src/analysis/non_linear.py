@@ -130,6 +130,16 @@ class DownhillSimplex(NonLinearOptimizer):
     def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
                                               prior_config_path=prior_config_path, path=path, check_model=False)
+
+        self.xtol = self.nlo_config.get("xtol", float)
+        self.ftol = self.nlo_config.get("ftol", float)
+        self.maxiter = self.nlo_config.get("maxiter", int)
+        self.maxfun = self.nlo_config.get("maxfun", int)
+
+        self.full_output = self.nlo_config.get("full_output", int)
+        self.disp = self.nlo_config.get("disp", int)
+        self.retall = self.nlo_config.get("retall", int)
+
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
