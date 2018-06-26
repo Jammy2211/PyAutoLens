@@ -127,6 +127,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
         def fitness_function(vector):
             global result
+            print(vector)
             instance = self.instance_from_physical_vector(vector)
             args = {**constants, **instance.__dict__}
             result = analysis.run(**args)
@@ -198,7 +199,8 @@ class MultiNest(NonLinearOptimizer):
 
         summary = open(self.file_summary)
 
-        expected_parameters = (len(summary.readline()) - 57) / 56
+        expected_parameters = (len(summary.readline()) - 113) / 112
+
         if expected_parameters != self.total_parameters:
             raise exc.MultiNestException(
                 'The file_summary file has a different number of parameters than the input model')
@@ -238,13 +240,13 @@ class MultiNest(NonLinearOptimizer):
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
         """
-        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=28)
+        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=56)
 
     def compute_max_likelihood(self):
-        return self.read_vector_from_summary(number_entries=2, offset=56)[0]
+        return self.read_vector_from_summary(number_entries=2, offset=112)[0]
 
     def compute_max_log_likelihood(self):
-        return self.read_vector_from_summary(number_entries=2, offset=56)[1]
+        return self.read_vector_from_summary(number_entries=2, offset=112)[1]
 
     def create_most_probable_model_instance(self):
         most_probable = self.compute_most_probable()
