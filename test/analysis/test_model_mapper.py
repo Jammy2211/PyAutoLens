@@ -683,3 +683,19 @@ class TestGaussianWidthConfig(object):
         assert gaussian_mapper.one.two.sigma == 2
         assert gaussian_mapper.one.one.mean == 3
         assert gaussian_mapper.one.two.mean == 4
+
+    def test_gaussian_for_mean(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+        mapper.two = model_mapper.PriorModel(MockClass, config=test_config)
+
+        gaussian_mapper = mapper.mapper_from_gaussian_means([3, 4, 5, 6])
+
+        assert gaussian_mapper.one.one.sigma == 1
+        assert gaussian_mapper.one.two.sigma == 2
+        assert gaussian_mapper.two.one.sigma == 1
+        assert gaussian_mapper.two.two.sigma == 2
+        assert gaussian_mapper.one.one.mean == 3
+        assert gaussian_mapper.one.two.mean == 4
+        assert gaussian_mapper.two.one.mean == 5
+        assert gaussian_mapper.two.two.mean == 6
