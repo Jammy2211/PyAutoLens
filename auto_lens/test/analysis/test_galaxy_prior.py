@@ -31,7 +31,8 @@ class MockModelInstance:
 @pytest.fixture(name='test_config')
 def make_test_config():
     return mm.Config(
-        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config"))
+        config_folder_path="{}/../{}/priors/default".format(os.path.dirname(os.path.realpath(__file__)),
+                                                            "test_files/config"))
 
 
 @pytest.fixture(name="mapper")

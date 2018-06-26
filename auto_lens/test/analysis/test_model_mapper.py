@@ -19,7 +19,8 @@ def make_uniform_half():
 @pytest.fixture(name='test_config')
 def make_test_config():
     return model_mapper.Config(
-        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config"))
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
+                                             "test_files/config/priors/default"))
 
 
 class TestUniformPrior(object):
@@ -543,7 +544,6 @@ class TestPriorReplacement(object):
 
 class TestArguments(object):
     def test_same_argument_name(self, test_config):
-
         mapper = model_mapper.ModelMapper()
 
         mapper.one = model_mapper.PriorModel(MockClass, test_config)
