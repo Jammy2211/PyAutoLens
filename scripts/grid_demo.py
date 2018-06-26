@@ -1,8 +1,8 @@
 import numpy as np
 
-from auto_lens.profiles import light_profiles, mass_profiles
-from auto_lens.imaging import grids
-from auto_lens.analysis import ray_tracing, galaxy
+from src.profiles import light_profiles, mass_profiles
+from src.imaging import grids
+from src.analysis import ray_tracing, galaxy
 
 # Note: you can run this by typing python -m scripts.grid_demo whilst in the autolens directory.
 
