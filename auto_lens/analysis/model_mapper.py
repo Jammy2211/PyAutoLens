@@ -437,8 +437,7 @@ class PriorModel(AbstractPriorModel):
         self.cls = cls
         self.config = (config if config is not None else Config("{}/../config/priors/default".format(path)))
 
-        # TODO: Fix this
-        arg_spec = inspect.getargspec(cls.__init__)
+        arg_spec = inspect.getfullargspec(cls.__init__)
 
         try:
             defaults = dict(zip(arg_spec.args[-len(arg_spec.defaults):], arg_spec.defaults))
