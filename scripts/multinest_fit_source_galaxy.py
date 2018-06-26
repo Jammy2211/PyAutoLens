@@ -1,22 +1,22 @@
 import sys
 
-import auto_lens.config.config
+import src.config.config
 
 sys.path.append("../")
 import os
 
-from auto_lens.imaging import scaled_array
-from auto_lens.imaging import image
-from auto_lens.imaging import mask
-from auto_lens.imaging import grids
-from auto_lens.profiles import light_profiles as lp
-from auto_lens.profiles import mass_profiles as mp
-from auto_lens.pixelization import frame_convolution
-from auto_lens.analysis import model_mapper
-from auto_lens.analysis import non_linear
-from auto_lens.analysis import ray_tracing
-from auto_lens.analysis import galaxy
-from auto_lens.analysis import fitting
+from src.imaging import scaled_array
+from src.imaging import image
+from src.imaging import mask
+from src.imaging import grids
+from src.profiles import light_profiles as lp
+from src.profiles import mass_profiles as mp
+from src.pixelization import frame_convolution
+from src.analysis import model_mapper
+from src.analysis import non_linear
+from src.analysis import ray_tracing
+from src.analysis import galaxy
+from src.analysis import fitting
 
 import numpy as np
 from functools import partial
@@ -53,7 +53,7 @@ kernel_convolver = convolver.convolver_for_kernel(kernel=data.psf)
 
 # NON LINEAR ANALYSIS #
 
-config = auto_lens.config.config.Config(config_folder_path='../auto_lens/config')
+config = src.config.config.Config(config_folder_path='../src/config')
 model_map = model_mapper.ModelMapper(config=config, mass_profile=mp.EllipticalIsothermal,
                                      light_profile=lp.EllipticalSersic)
 multinest = non_linear.MultiNest(path='../results/', obj_name='test_fit', model_mapper=model_map)
