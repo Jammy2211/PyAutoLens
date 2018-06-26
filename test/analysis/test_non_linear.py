@@ -839,7 +839,7 @@ class TestMultiNest(object):
 
 
 class TestConfig(object):
-    def test_default(self):
+    def test_multinest_default(self):
         multinest = non_linear.MultiNest()
 
         assert multinest.importance_nested_sampling is True
@@ -868,3 +868,15 @@ class TestConfig(object):
 
         assert multinest.max_iter == 0
         assert multinest.init_MPI is False
+
+    def test_downhill_simplex_default(self):
+        downhill_simplex = non_linear.DownhillSimplex()
+
+        assert downhill_simplex.xtol == 1e-4
+        assert downhill_simplex.ftol == 1e-4
+        assert downhill_simplex.maxiter is None
+        assert downhill_simplex.maxfun is None
+
+        assert downhill_simplex.full_output == 0
+        assert downhill_simplex.disp == 1
+        assert downhill_simplex.retall == 0
