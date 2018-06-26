@@ -47,7 +47,7 @@ kernel_convolver = convolver.convolver_for_kernel(kernel=data.psf)
 
 # NON LINEAR ANALYSIS #
 
-config = src.config.config.Config(config_folder_path='../src/config')
+config = src.config.config.DefaultPriorConfig(config_folder_path='../src/config')
 model_map = model_mapper.ModelMapper(config=config, light_profile=lp.EllipticalSersic)
 
 def likelihood(params, model_mapper, grid_coords, grid_data, grid_mappers, kernel_convolver):
