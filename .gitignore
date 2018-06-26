@@ -21,3 +21,9 @@ multinest
 .DS_Store
 test_files/non_linear/files
 MultiNest/
+non_linear/files/setup/model.info
+non_linear/files/setup/multinest.paramnames
+non_linear/files/setupmultinest.paramnames
+non_linear/files/setup/
+test/test_files/non_linear/files/setup/multinest.paramnames
+test/test_files/non_linear/files/setupmultinest.paramnames
