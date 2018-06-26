@@ -19,7 +19,7 @@ def make_uniform_half():
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return src.config.config.Config(
+    return src.config.config.DefaultPriorConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
@@ -42,7 +42,7 @@ class MockClass(object):
         self.two = two
 
 
-class MockConfig(src.config.config.Config):
+class MockConfig(src.config.config.DefaultPriorConfig):
     def __init__(self, d=None):
         super(MockConfig, self).__init__("")
         if d is not None:

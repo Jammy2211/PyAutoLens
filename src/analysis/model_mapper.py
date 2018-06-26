@@ -3,7 +3,7 @@ from scipy.special import erfinv
 import inspect
 import os
 from src import exc
-from src.config.config import Config
+from src.config.config import DefaultPriorConfig
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -70,7 +70,7 @@ class ModelMapper(object):
         """
         super(ModelMapper, self).__init__()
 
-        self.config = (config if config is not None else Config("{}/../config".format(path)))
+        self.config = (config if config is not None else DefaultPriorConfig("{}/../config".format(path)))
 
         for name, cls in classes.items():
             self.add_class(name, cls)
@@ -454,7 +454,7 @@ class PriorModel(AbstractPriorModel):
         """
 
         self.cls = cls
-        self.config = (config if config is not None else Config("{}/../config/priors/default".format(path)))
+        self.config = (config if config is not None else DefaultPriorConfig("{}/../config/priors/default".format(path)))
 
         arg_spec = inspect.getfullargspec(cls.__init__)
 
