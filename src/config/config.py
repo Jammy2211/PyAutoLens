@@ -123,3 +123,24 @@ class DefaultPriorConfig(Config):
         """
         arr = super(DefaultPriorConfig, self).get(module_name, class_name, attribute_name).replace(" ", "").split(",")
         return [arr[0]] + list(map(float, arr[1:]))
+
+
+class WidthConfig(Config):
+    def get(self, module_name, class_name, attribute_name):
+        """
+
+        Parameters
+        ----------
+        module_name: String
+            The name of the module
+        class_name: String
+            The name of the class
+        attribute_name: String
+            The name of the attribute
+
+        Returns
+        -------
+        width: float
+            The default width of a gaussian prior for this attribute
+        """
+        return float(super(WidthConfig, self).get(module_name, class_name, attribute_name))
