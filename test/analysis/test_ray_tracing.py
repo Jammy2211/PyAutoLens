@@ -31,7 +31,7 @@ def all_grids():
     sub_grid = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
     blurring_grid = grids.GridCoordsBlurring(blurring_grid_coords)
 
-    all_grids = grids.GridCoordsCollection(grid, sub_grid, blurring_grid)
+    all_grids = grids.CoordsCollection(grid, sub_grid, blurring_grid)
 
     return all_grids
 
