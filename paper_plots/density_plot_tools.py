@@ -6,8 +6,8 @@ import numpy as np
 from astropy import cosmology
 import matplotlib.pyplot as plt
 
-from auto_lens.analysis import galaxy
-from auto_lens.profiles import mass_profiles
+from src.analysis import galaxy
+from src.profiles import mass_profiles
 
 def weighted_avg_and_std(values, weights):
     """
