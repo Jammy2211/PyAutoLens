@@ -24,6 +24,7 @@ covariance limit.
 
 """
 
+
 def compute_covariance_matrix_exact(blurred_mapping_matrix, noise_vector):
     """ Compute the covariance matrix directly - used to integration test that our covariance matrix generator approach
     truly works."""
@@ -32,23 +33,23 @@ def compute_covariance_matrix_exact(blurred_mapping_matrix, noise_vector):
     for i in range(blurred_mapping_matrix.shape[0]):
         for jx in range(blurred_mapping_matrix.shape[1]):
             for jy in range(blurred_mapping_matrix.shape[1]):
-
-                covariance_matrix[jx,jy] += blurred_mapping_matrix[i, jx] * blurred_mapping_matrix[i, jy] \
-                                           / (noise_vector[i] ** 2.0)
+                covariance_matrix[jx, jy] += blurred_mapping_matrix[i, jx] * blurred_mapping_matrix[i, jy] \
+                                             / (noise_vector[i] ** 2.0)
 
     return covariance_matrix
+
 
 def compute_d_vector_exact(blurred_mapping_matrix, image_vector, noise_vector):
     """ Compute the covariance matrix directly - used to integration test that our covariance matrix generator approach
     truly works."""
-    d_matrix = np.zeros((blurred_mapping_matrix.shape[1]))
+    d_matrix = np.zeros((blurred_mapping_matrix.shape[1],))
 
     for i in range(blurred_mapping_matrix.shape[0]):
         for j in range(blurred_mapping_matrix.shape[1]):
-
-                d_matrix[j] += image_vector[i] * blurred_mapping_matrix[i, j] / (noise_vector[i] ** 2.0)
+            d_matrix[j] += image_vector[i] * blurred_mapping_matrix[i, j] / (noise_vector[i] ** 2.0)
 
     return d_matrix
+
 
 def create_d_matrix(pixel_maps, noise_vector, image_vector):
     """
