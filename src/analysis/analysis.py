@@ -32,12 +32,14 @@ class Analysis(object):
         """
         self.image = image
         self.mask = mask
-        self.grid_data_collection = grids.GridDataCollection.from_mask(mask, image, image.background_noise,
-                                                                       image.effective_exposure_time)
-        self.coords_data_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
-                                                                           blurring_shape=image.psf.shape)
+        
+        self.data_collection = grids.DataCollection.from_mask(mask, image, image.background_noise,
+                                                              image.effective_exposure_time)
+        self.coords_collection = grids.CoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
+                                                                  blurring_shape=image.psf.shape)
+        self.mapper_collection = grids.MapperCollection.from_mask(mask, cluster_grid_size)
 
-        self.mapper_cluster = grids.GridMapperCluster.from_mask(mask, cluster_grid_size)
+        self.mapper_cluster = grids.MapperCluster.from_mask(mask, cluster_grid_size)
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
@@ -72,7 +74,7 @@ class Analysis(object):
         if hyper_image is not None:
             logger.debug("Hyper Image:\n{}".format(hyper_image))
 
-        tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coords_data_collection)
+        tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coords_collection)
 
         galaxies = lens_galaxies + source_galaxies
 
@@ -91,17 +93,17 @@ class Analysis(object):
             pixelization = pixelized_galaxy.pixelization
             if is_profile:
                 logger.debug("Fitting for pixelization and profiles")
-                likelihood = fitting.fit_data_with_pixelization_and_profiles(self.grid_data_collection, pixelization,
+                likelihood = fitting.fit_data_with_pixelization_and_profiles(self.data_collection, pixelization,
                                                                              self.kernel_convolver, tracer,
                                                                              self.mapper_cluster, hyper_image)
             else:
                 logger.debug("Fitting for pixelization")
-                likelihood = fitting.fit_data_with_pixelization(self.grid_data_collection, pixelization,
+                likelihood = fitting.fit_data_with_pixelization(self.data_collection, pixelization,
                                                                 self.kernel_convolver, tracer, self.mapper_cluster,
                                                                 hyper_image)
         elif is_profile:
             logger.debug("Fitting for profiles")
-            likelihood = fitting.fit_data_with_profiles(self.grid_data_collection, self.kernel_convolver, tracer,
+            likelihood = fitting.fit_data_with_profiles(self.data_collection, self.kernel_convolver, tracer,
                                                         hyper_image)
 
         if likelihood is None:

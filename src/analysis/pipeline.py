@@ -3,6 +3,7 @@ from src.analysis import galaxy_prior
 from src.profiles import light_profiles, mass_profiles
 from src.analysis import non_linear
 from src.pixelization import pixelization
+from src.analysis import model_mapper
 
 import logging
 
@@ -169,53 +170,134 @@ def source_only_pipeline(image, mask):
     return results
 
 
-def lens_and_source_pipeline(image, mask):
+def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     """
     Pipeline 2:
 
-PURPOSE - Fit a lens light + source image (mass model does not decomposed the light and dark matter)
+    PURPOSE - Fit a lens light + source image (mass model does not decomposed the light and dark matter)
 
-PREPROCESSING:
+    PREPROCESSING:
 
-- Mark the brightest regions / multiple images of the source.
-- Draw a circle around the source (Einstein Radius / center)
-- Mark the centre of the lens light.
-- Draw circle / ellipse for mask containing the lens galaxy.
-- Draw annulus for mask containing the source (excludes central regions of image where lens is).
+    - Mark the brightest regions / multiple images of the source.
+    - Draw a circle around the source (Einstein Radius / center)
+    - Mark the centre of the lens light.
+    - Draw circle / ellipse for mask containing the lens galaxy.
+    - Draw annulus for mask containing the source (excludes central regions of image where lens is).
+    """
 
-INITIALIZATION PHASES:
+    # Create an array in which to store results
+    results = []
+    """
+    
+    1) Image: Observed image, includes lens+source.
+       Mask: Circle / Ellipse containing entire lens galaxy.
+       Light: Sersic (This phase simply subtracts the lens light from the image - the source is present and disrupts the 
+       NLO: LM        fit but we choose not to care)
+       Purpose: Provides lens subtracted image for subsequent phases.
+       
+    """
+    # Create an analysis object for the image and a mask that means only lens light is visible
+    lens_light_analysis = an.Analysis(image, lens_mask)
 
-1) Image: Observed image, includes lens+source.
-   Mask: Circle / Ellipse containing entire lens galaxy.
-   Light: Sersic (This phase simply subtracts the lens light from the image - the source is present and disrupts the fit
-   NLO: LM        but we choose not to care)
-   Purpose: Provides lens subtracted image for subsequent phases.
+    optimizer_1 = non_linear.DownhillSimplex()
 
-2) Image: The lens light subtracted image from phase 1.
-   Mask: Annulus mask containing just source
-   Light: None
-   Mass: SIE+Shear
-   Source; Sersic
-   NLO: LM
-   Purpose: Provides mass model priors for next phase.
+    lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
+    lens_galaxy.redshift = model_mapper.Constant(1)
 
-3) Image: The lens light subtracted image from phase 1.
-   Mask: Circle / Ellipse containing entire lens galaxy.
-   Light: None
-   Mass: SIE+Shear (priors from phase 2)
-   Source: 'smooth' pixelization (include regularization parameter(s) in the model)
-   NLO: LM
-   Purpose: Refines mass model and sets up the source-plane pixelization regularization.
+    optimizer_1.lens_galaxies = [lens_galaxy]
 
-4) Image: Observed image, includes lens+source.
-   Mask: Circle / Ellipse containing entire lens galaxy.
-   Light: Sersic + Exponential (shared centre / phi, include Instrumentation lens light noise scaling parameters in model)
-   Mass: SIE+Shear (fixed to results from phase 3)
-   Source: 'smooth' pixelization (include regularization parameter(s) in the model, using previous phase prior)
-   NLO: LM
-   Purpose: To fit a complex light profile, we need to do so simultaneously with the source reconstruction to avoid
-            systematics. Thus, this rather confusing phase sets it up so that the mass profile is fixed whilst we
-            get ourselves a good multi-component light profile.
+    result_1 = optimizer_1.fit(lens_light_analysis)
+
+    results.append(result_1)
+
+    light_grid = result_1.lens_galaxies[0].light_profile.intensity_at_coordinates(
+        lens_light_analysis.coords_collection.image)
+
+    source_image = image - lens_light_analysis.mapper_collection.data_to_pixel.map_to_2d(light_grid)
+
+    """
+    2) Image: The lens light subtracted image from phase 1.
+       Mask: Annulus mask containing just source
+       Light: None
+       Mass: SIE+Shear
+       Source: Sersic
+       NLO: LM
+       Purpose: Provides mass model priors for next phase.
+    """
+
+    source_analysis = an.Analysis(source_image, source_mask)
+
+    optimizer_2 = non_linear.DownhillSimplex()
+
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermal,
+                                           shear_mass_profile=mass_profiles.ExternalShear)
+    source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
+
+    source_analysis.lens_galaxies = [lens_galaxy]
+    source_analysis.source_galaxies = [source_galaxy]
+
+    result_2 = optimizer_2.fit(source_analysis)
+
+    results.append(result_2)
+
+    """
+    3) Image: The lens light subtracted image from phase 1.
+       Mask: Circle / Ellipse containing entire lens galaxy.
+       Light: None
+       Mass: SIE+Shear (priors from phase 2)
+       Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+       NLO: LM
+       Purpose: Refines mass model and sets up the source-plane pixelization regularization.
+    """
+
+    pixelized_source_analysis = an.Analysis(source_image, combined_mask)
+
+    optimizer_3 = non_linear.DownhillSimplex()
+
+    source_galaxy = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermal,
+                                           shear_mass_profile=mass_profiles.ExternalShear)
+
+    lens_galaxy_result = result_2.priors.lens_galaxies[0]
+
+    lens_galaxy.sie_mass_profile.centre = lens_galaxy_result.sie_mass_profile.centre
+    lens_galaxy.sie_mass_profile.einstein_radius = lens_galaxy_result.sie_mass_profile.einstein_radius
+
+    lens_galaxy.shear_mass_profile.magnitude = lens_galaxy_result.shear_mass_profile.magnitude
+    lens_galaxy.shear_mass_profile.phi = lens_galaxy_result.shear_mass_profile.phi
+
+    optimizer_3.lens_galaxies = [lens_galaxy]
+    optimizer_3.source_galaxies = [source_galaxy]
+
+    result_3 = optimizer_3.fit(pixelized_source_analysis)
+    results.append(result_3)
+
+    """
+    4) Image: Observed image, includes lens+source.
+       Mask: Circle / Ellipse containing entire lens galaxy.
+       Light: Sersic + Exponential (shared centre / phi, include Instrumentation lens light noise scaling parameters in 
+              model)
+       Mass: SIE+Shear (fixed to results from phase 3)
+       Source: 'smooth' pixelization (include regularization parameter(s) in the model, using previous phase prior)
+       NLO: LM
+       Purpose: To fit a complex light profile, we need to do so simultaneously with the source reconstruction to avoid
+                systematics. Thus, this rather confusing phase sets it up so that the mass profile is fixed whilst we
+                get ourselves a good multi-component light profile.
+    """
+
+    full_light_analysis = an.Analysis(image, combined_mask)
+
+    optimizer_4 = non_linear.DownhillSimplex()
+
+    # lens_galaxy =
+    source_galaxy = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
+
+    pixelization_result = result_3.priors.pixelization
+    source_galaxy.pixelization.pixels = pixelization_result.pixels
+    source_galaxy.pixelization.regularization_coefficients = pixelization_result.regularization_coefficients
+
+
+"""
 
 4H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
     Image: The lens light subtracted image from phase 1.

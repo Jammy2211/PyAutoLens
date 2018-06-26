@@ -47,7 +47,7 @@ class TestGridCoordsCollection(object):
             blurring_grid = grids.GridCoordsBlurring(np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
                                                                [1.0, 1.0]]))
 
-            grid_collection = grids.GridCoordsCollection(image_grid, sub_grid, blurring_grid)
+            grid_collection = grids.CoordsCollection(image_grid, sub_grid, blurring_grid)
 
             assert (grid_collection.image[0] == np.array([1.0, 1.0])).all()
             assert (grid_collection.image[1] == np.array([2.0, 2.0])).all()
@@ -81,7 +81,7 @@ class TestGridCoordsCollection(object):
             sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
             blurring_grid = mask.compute_grid_coords_blurring(psf_size=(3, 3))
 
-            grid_collection = grids.GridCoordsCollection.from_mask(mask, grid_size_sub=2, blurring_shape=(3, 3))
+            grid_collection = grids.CoordsCollection.from_mask(mask, grid_size_sub=2, blurring_shape=(3, 3))
 
             assert (grid_collection.image == image_grid).all()
             assert (grid_collection.sub == sub_grid).all()
@@ -98,7 +98,7 @@ class TestGridCoordsCollection(object):
             sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
             deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
 
@@ -117,7 +117,7 @@ class TestGridCoordsCollection(object):
             sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
             deflections = ray_trace_grid.deflection_grids_for_galaxies(
                 [galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
@@ -139,7 +139,7 @@ class TestGridCoordsCollection(object):
 
             lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
             deflections = ray_trace_grid.deflection_grids_for_galaxies([lens_sis_x3])
 
@@ -165,7 +165,7 @@ class TestGridCoordsCollection(object):
 
             lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
 
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
             deflections = ray_trace_grid.deflection_grids_for_galaxies([lens_galaxy])
 
@@ -198,7 +198,7 @@ class TestGridCoordsCollection(object):
             sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
-            ray_trace_grid = grids.GridCoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
             deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
 
@@ -843,8 +843,8 @@ class TestGridDataCollection(object):
             grid_exposure_time = np.array([7, 8, 9])
             grid_exposure_time = grids.GridData(grid_exposure_time)
 
-            grid_collection = grids.GridDataCollection(image=grid_image, noise=grid_noise,
-                                                       exposure_time=grid_exposure_time)
+            grid_collection = grids.DataCollection(image=grid_image, noise=grid_noise,
+                                                   exposure_time=grid_exposure_time)
 
             assert (grid_collection.image == np.array([1, 2, 3])).all()
             assert (grid_collection.noise == np.array([4, 5, 6])).all()
@@ -874,8 +874,8 @@ class TestGridDataCollection(object):
                                       [1, 1, 1]])
             exposure_time = img.ScaledArray(array=exposure_time, pixel_scale=1.0)
 
-            grid_collection = grids.GridDataCollection.from_mask(mask=mask, image=image, noise=noise,
-                                                                 exposure_time=exposure_time)
+            grid_collection = grids.DataCollection.from_mask(mask=mask, image=image, noise=noise,
+                                                             exposure_time=exposure_time)
 
             assert (grid_collection.image == np.array([2, 4, 5, 6, 8])).all()
             assert (grid_collection.noise == np.array([2, 5, 5, 5, 8])).all()
@@ -928,9 +928,9 @@ class TestGridMapperCollection(object):
         cluster_to_image = np.array([1, 2, 3, 5])
         image_to_cluster = np.array([6, 7, 2, 3])
 
-        mapper_clustering = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
+        mapper_clustering = grids.MapperCluster(cluster_to_image, image_to_cluster)
 
-        mappers = grids.GridMapperCollection(data_to_pixel=mapper_2d, clustering=mapper_clustering)
+        mappers = grids.MapperCollection(data_to_pixel=mapper_2d, clustering=mapper_clustering)
 
         assert (mappers.data_to_pixel == mapper_2d).all()
 
@@ -950,9 +950,9 @@ class TestGridMapperCollection(object):
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
-            mapper_clustering = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
+            mapper_clustering = grids.MapperCluster(cluster_to_image, image_to_cluster)
 
-            mappers = grids.GridMapperCollection.from_mask(mask, cluster_grid_size=1)
+            mappers = grids.MapperCollection.from_mask(mask, cluster_grid_size=1)
 
             assert mappers.data_to_pixel.dimensions_2d == (5, 5)
             assert mappers.data_to_pixel.dimensions_1d == 5
@@ -1117,7 +1117,7 @@ class TestGridMapperCluster(object):
             cluster_to_image = np.array([1, 2, 3, 5])
             image_to_cluster = np.array([6, 7, 2, 3])
 
-            mapper = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
+            mapper = grids.MapperCluster(cluster_to_image, image_to_cluster)
 
             assert (mapper.cluster_to_image == np.array([1, 2, 3, 5])).all()
             assert (mapper.image_to_cluster == np.array([6, 7, 2, 3])).all()
@@ -1133,9 +1133,9 @@ class TestGridMapperCluster(object):
 
             cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
 
-            mapper = grids.GridMapperCluster(cluster_to_image, image_to_cluster)
+            mapper = grids.MapperCluster(cluster_to_image, image_to_cluster)
 
-            mapper_from_mask = grids.GridMapperCluster.from_mask(mask, cluster_grid_size=1)
+            mapper_from_mask = grids.MapperCluster.from_mask(mask, cluster_grid_size=1)
 
             assert (mapper.cluster_to_image == mapper_from_mask.cluster_to_image).all()
             assert (mapper.image_to_cluster == mapper_from_mask.image_to_cluster).all()
