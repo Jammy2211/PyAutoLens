@@ -17,8 +17,8 @@ output_dir = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 ### Setup mask + grid of this image ###
 
 ma = mask.Mask.for_simulate(shape_arc_seconds=(5.0, 5.0), pixel_scale=0.1, psf_size=(3,3))
-image_grids = grids.GridCoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
-mappers = grids.GridMapperCollection.from_mask(mask=ma)
+image_grids = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+mappers = grids.MapperCollection.from_mask(mask=ma)
 
 ### Setup the ray tracing model, and use to generate the 2D galaxy image ###
 
