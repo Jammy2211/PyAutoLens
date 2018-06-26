@@ -144,11 +144,9 @@ class DownhillSimplex(NonLinearOptimizer):
 
         # Get the solution provided by Downhill Simplex
         means = output[0]
-        # Create Gaussian tuples with a hardcoded width of 0.1
-        tuples = [(mean, SIMPLEX_TUPLE_WIDTH) for mean in means]
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
-        result.priors = self.mapper_from_gaussian_tuples(tuples)
+        result.priors = self.mapper_from_gaussian_means(means)
 
         return result
 

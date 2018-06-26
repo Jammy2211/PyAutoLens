@@ -836,7 +836,3 @@ class TestMultiNest(object):
                                                                                           1e-2)
             assert results.compute_model_at_lower_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93],
                                                                                           1e-2)
-
-class TestGaussianWidthConfig(object):
-    def test_config(self):
-        pass
