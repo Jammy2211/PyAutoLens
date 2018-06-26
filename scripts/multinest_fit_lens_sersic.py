@@ -1,4 +1,7 @@
 import sys
+
+import auto_lens.config.config
+
 sys.path.append("../")
 import os
 
@@ -48,7 +51,7 @@ kernel_convolver = convolver.convolver_for_kernel(kernel=data.psf)
 
 # NON LINEAR ANALYSIS #
 
-config = model_mapper.Config(config_folder_path='../auto_lens/config')
+config = auto_lens.config.config.Config(config_folder_path='../auto_lens/config')
 model_map = model_mapper.ModelMapper(config=config, light_profile=lp.EllipticalSersic)
 multinest = non_linear.MultiNest(path='../results/', obj_name='test_fit', model_mapper=model_map)
 

@@ -1,3 +1,4 @@
+import auto_lens.config.config
 from auto_lens.analysis import galaxy_prior as gp
 from auto_lens.analysis import galaxy as g
 from auto_lens.pixelization import pixelization
@@ -30,7 +31,7 @@ class MockModelInstance:
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return mm.Config(
+    return auto_lens.config.config.Config(
         config_folder_path="{}/../{}/priors/default".format(os.path.dirname(os.path.realpath(__file__)),
                                                             "test_files/config"))
 
