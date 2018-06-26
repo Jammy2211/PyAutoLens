@@ -3,7 +3,57 @@ import configparser
 from src import exc
 
 
-class Config(object):
+class NamedConfig(object):
+    """Parses generic config"""
+
+    def __init__(self, config_path, section_name):
+        """
+        Parameters
+        ----------
+        config_path: String
+            The path to the config file
+        """
+        self.path = config_path
+        self.section_name = section_name
+        self.parser = configparser.ConfigParser()
+        self.parser.read(self.path)
+
+    def get(self, attribute_name, attribute_type=str):
+        """
+
+        Parameters
+        ----------
+        attribute_type: type
+            The type to which the value should be cast
+        attribute_name: String
+            The name of the attribute
+
+        Returns
+        -------
+        prior_array: []
+            An array describing a prior
+        """
+        string_value = self.parser.get(self.section_name, attribute_name)
+        if attribute_type is bool:
+            return string_value == "True"
+        return attribute_type(string_value)
+
+    def has(self, attribute_name):
+        """
+        Parameters
+        ----------
+        attribute_name: String
+            The name of the attribute
+
+        Returns
+        -------
+        has_prior: bool
+            True iff a prior exists for the module, class and attribute
+        """
+        return self.parser.has_option(self.section_name, attribute_name)
+
+
+class AncestorConfig(object):
     """Parses prior config"""
 
     def __init__(self, config_folder_path):
@@ -101,7 +151,7 @@ class Config(object):
         return self.parser.has_option(class_name, attribute_name)
 
 
-class DefaultPriorConfig(Config):
+class DefaultPriorConfig(AncestorConfig):
     """Parses prior config"""
 
     def get(self, module_name, class_name, attribute_name):
@@ -125,7 +175,7 @@ class DefaultPriorConfig(Config):
         return [arr[0]] + list(map(float, arr[1:]))
 
 
-class WidthConfig(Config):
+class WidthConfig(AncestorConfig):
     def get(self, module_name, class_name, attribute_name):
         """
 
