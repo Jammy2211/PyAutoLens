@@ -79,8 +79,7 @@ class Config(object):
             An array describing a prior
         """
         self.read(module_name)
-        arr = self.parser.get(class_name, attribute_name).replace(" ", "").split(",")
-        return [arr[0]] + list(map(float, arr[1:]))
+        return self.parser.get(class_name, attribute_name)
 
     def has(self, module_name, class_name, attribute_name):
         """
@@ -100,3 +99,27 @@ class Config(object):
         """
         self.read(module_name)
         return self.parser.has_option(class_name, attribute_name)
+
+
+class DefaultPriorConfig(Config):
+    """Parses prior config"""
+
+    def get(self, module_name, class_name, attribute_name):
+        """
+
+        Parameters
+        ----------
+        module_name: String
+            The name of the module
+        class_name: String
+            The name of the class
+        attribute_name: String
+            The name of the attribute
+
+        Returns
+        -------
+        prior_array: []
+            An array describing a prior
+        """
+        arr = super(DefaultPriorConfig, self).get(module_name, class_name, attribute_name).replace(" ", "").split(",")
+        return [arr[0]] + list(map(float, arr[1:]))
