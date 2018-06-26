@@ -34,6 +34,8 @@ class NamedConfig(object):
             An array describing a prior
         """
         string_value = self.parser.get(self.section_name, attribute_name)
+        if string_value == "None":
+            return None
         if attribute_type is bool:
             return string_value == "True"
         return attribute_type(string_value)
