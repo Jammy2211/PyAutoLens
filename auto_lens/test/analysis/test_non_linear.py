@@ -147,8 +147,6 @@ class TestNonLinearOptimizer(object):
 
             nlo.add_classes(light_profile=light_profiles.EllipticalSersic)
 
-            nlo.save_model_info()
-
             assert nlo.total_parameters == 7
 
         def test__nlo_multiple_light_and_mass_profiles__correct_directory(self):
