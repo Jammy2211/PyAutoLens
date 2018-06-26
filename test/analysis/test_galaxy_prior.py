@@ -203,3 +203,52 @@ class TestHyperGalaxy(object):
         assert galaxy.hyper_galaxy.contribution_factor == 1
         assert galaxy.hyper_galaxy.noise_factor == 2
         assert galaxy.hyper_galaxy.noise_power == 3
+
+
+class TestFixedProfiles(object):
+    def test_fixed_light_property(self):
+        galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalSersic())
+
+        assert len(galaxy_prior.fixed_light_profiles) == 1
+
+    def test_fixed_light(self):
+        galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalSersic())
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert len(galaxy.light_profiles) == 1
+
+    def test_fixed_mass_property(self):
+        galaxy_prior = gp.GalaxyPrior(mass_profile=mass_profiles.SphericalNFW())
+
+        assert len(galaxy_prior.fixed_mass_profiles) == 1
+
+    def test_fixed_mass(self):
+        galaxy_prior = gp.GalaxyPrior(nass_profile=mass_profiles.SphericalNFW())
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert len(galaxy.mass_profiles) == 1
+
+    def test_fixed_and_variable(self):
+        galaxy_prior = gp.GalaxyPrior(mass_profile=mass_profiles.SphericalNFW(),
+                                      light_profile=light_profiles.EllipticalSersic(),
+                                      variable_light=light_profiles.EllipticalSersic)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0,
+                     galaxy_prior.variable_light.axis_ratio: 4.0,
+                     galaxy_prior.variable_light.phi: 5.0,
+                     galaxy_prior.variable_light.intensity: 6.0,
+                     galaxy_prior.variable_light.effective_radius: 7.0,
+                     galaxy_prior.variable_light.sersic_index: 8.0,
+                     galaxy_prior.variable_light.centre.centre_0: 0,
+                     galaxy_prior.variable_light.centre.centre_1: 0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert len(galaxy.light_profiles) == 2
+        assert len(galaxy.mass_profiles) == 1
