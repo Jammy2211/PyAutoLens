@@ -654,6 +654,14 @@ class TestConstant(object):
         assert instance.mock_class.one == 3
         assert instance.mock_class.two == 5
 
+    def test_constant_exchange(self, mock_with_constant, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.mock_class = mock_with_constant
+
+        new_mapper = mapper.mapper_from_gaussian_means([1])
+
+        assert len(new_mapper.mock_class.constants) == 1
+
 
 @pytest.fixture(name="width_config")
 def make_width_config():
