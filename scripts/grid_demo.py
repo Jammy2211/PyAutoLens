@@ -45,7 +45,7 @@ print('grid_coords coordinates = ', image_grid, '\n')
 
 # We can have multiple grids (which are different to the image grid_coords we're using here). Thus, before ray-tracing,
 # we combine all of our grids into a grid_coords collection. This doesn't change any of aspect of this tutorial.
-grid_collection = grids.GridCoordsCollection(image=image_grid)
+grid_collection = grids.CoordsCollection(image=image_grid)
 print('--- VALUES OF GRID COLLECTION COORDINATES [(1.0, 1.0), (2.0, 2.0)] ---')
 print('grid_coords collection coordinates = ', grid_collection.image, '\n')
 
