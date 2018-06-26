@@ -223,11 +223,17 @@ class MultiNest(NonLinearOptimizer):
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
-            return map(lambda p, c: p(c), self.total_parameters, cube)
+
+            phys_cube = self.physical_vector_from_hypercube_vector(hypercube_vector=cube)
+
+            for i in range(self.total_parameters):
+                cube[i] = phys_cube[i]
+
+            return cube
 
         result = None
 
-        def fitness_function(vector):
+        def fitness_function(vector, ndim, nparams):
             global result
             instance = self.instance_from_physical_vector(vector)
             args = {**constants, **instance.__dict__}
