@@ -1,12 +1,12 @@
 import getdist
 
-import src.config.config
 from src import exc
 import math
 import os
 import pymultinest
 import scipy.optimize
 from src.imaging import hyper_image
+from src.config import config
 
 from src.analysis import model_mapper as mm
 import logging
@@ -15,6 +15,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
 
@@ -48,7 +49,8 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class NonLinearOptimizer(mm.ModelMapper):
 
-    def __init__(self, include_hyper_image=False, config_path=None, path=default_path, check_model=True, **classes):
+    def __init__(self, include_hyper_image=False, prior_config_path=None, config_path=None, path=default_path,
+                 check_model=True, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
@@ -64,8 +66,13 @@ class NonLinearOptimizer(mm.ModelMapper):
             Check whether the model.info file corresponds to the model_mapper passed in.
         """
 
-        super().__init__(config=src.config.config.DefaultPriorConfig(
-            "{}/../config".format(os.path.dirname(os.path.realpath(__file__))) if config_path is None else config_path))
+        super().__init__(config=config.DefaultPriorConfig(
+            "{}/../config/priors/default".format(
+                dir_path) if prior_config_path is None else prior_config_path))
+        self.nlo_config = config.NamedConfig(
+            "{}/../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
+            self.__class__.__name__)
+
         self.path = path
         self.check_model = check_model
 
@@ -120,8 +127,9 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, config_path=None, path=default_path):
-        super(DownhillSimplex, self).__init__(include_hyper_image, config_path, path, False)
+    def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path):
+        super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
+                                              prior_config_path=prior_config_path, path=path, check_model=False)
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
@@ -153,7 +161,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, config_path=None, path=default_path, check_model=True, sigma_limit=3):
+    def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path, check_model=True,
+                 sigma_limit=3):
         """Class to setup and run a MultiNest analysis and output the MultiNest files.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -165,12 +174,33 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear files are stored.
         """
 
-        super(MultiNest, self).__init__(include_hyper_image, config_path, path, check_model)
+        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, prior_config_path=prior_config_path,
+                                        path=path, check_model=check_model)
 
         self.file_summary = self.path + 'summary.txt'
         self.file_weighted_samples = self.path + 'multinest.txt'
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
+
+        self.importance_nested_sampling = self.nlo_config.get('importance_nested_sampling', bool)
+        self.multimodal = self.nlo_config.get('multimodal', bool)
+        self.const_efficiency_mode = self.nlo_config.get('const_efficiency_mode', bool)
+        self.n_live_points = self.nlo_config.get('n_live_points', int)
+        self.evidence_tolerance = self.nlo_config.get('evidence_tolerance', float)
+        self.sampling_efficiency = self.nlo_config.get('sampling_efficiency', float)
+        self.n_iter_before_update = self.nlo_config.get('n_iter_before_update', int)
+        self.null_log_evidence = self.nlo_config.get('null_log_evidence', float)
+        self.max_modes = self.nlo_config.get('max_modes', int)
+        self.mode_tolerance = self.nlo_config.get('mode_tolerance', float)
+        self.outputfiles_basename = self.nlo_config.get('outputfiles_basename', str)
+        self.seed = self.nlo_config.get('seed', int)
+        self.verbose = self.nlo_config.get('verbose', bool)
+        self.resume = self.nlo_config.get('resume', bool)
+        self.context = self.nlo_config.get('context', int)
+        self.write_output = self.nlo_config.get('write_output', bool)
+        self.log_zero = self.nlo_config.get('log_zero', float)
+        self.max_iter = self.nlo_config.get('max_iter', int)
+        self.init_MPI = self.nlo_config.get('init_MPI', bool)
 
         logger.debug("Creating MultiNest NLO")
 
