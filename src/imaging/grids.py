@@ -3,7 +3,7 @@ from src import exc
 from src.profiles import geometry_profiles
 
 
-class GridCoordsCollection(object):
+class CoordsCollection(object):
 
     def __init__(self, image, sub, blurring):
         """A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
@@ -44,7 +44,7 @@ class GridCoordsCollection(object):
         sub = GridCoordsImageSub.from_mask(mask, grid_size_sub)
         blurring = GridCoordsBlurring.from_mask(mask, blurring_shape)
 
-        return GridCoordsCollection(image, sub, blurring)
+        return CoordsCollection(image, sub, blurring)
 
     def deflection_grids_for_galaxies(self, galaxies):
         """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies) \
@@ -54,7 +54,7 @@ class GridCoordsCollection(object):
         sub = self.sub.setup_deflections_grid(galaxies)
         blurring = self.blurring.setup_deflections_grid(galaxies)
 
-        return GridCoordsCollection(image, sub, blurring)
+        return CoordsCollection(image, sub, blurring)
 
     def traced_grids_for_deflections(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
@@ -62,7 +62,7 @@ class GridCoordsCollection(object):
         sub = self.sub.setup_traced_grid(deflections.sub)
         blurring = self.blurring.setup_traced_grid(deflections.blurring)
 
-        return GridCoordsCollection(image, sub, blurring)
+        return CoordsCollection(image, sub, blurring)
 
 
 class GridCoords(np.ndarray):
@@ -468,7 +468,7 @@ class GridCoordsBlurring(GridCoordsRegular):
 # TODO : 'GridImageLensSubtracted', etc.
 
 
-class GridDataCollection(object):
+class DataCollection(object):
 
     def __init__(self, image, noise, exposure_time):
         """A collection of grids which contain the data (image, noise, exposure times, psf).
@@ -508,7 +508,7 @@ class GridDataCollection(object):
         image = GridData.from_mask(image, mask)
         noise = GridData.from_mask(noise, mask)
         exposure_time = GridData.from_mask(exposure_time, mask)
-        return GridDataCollection(image, noise, exposure_time)
+        return DataCollection(image, noise, exposure_time)
 
 
 class GridData(np.ndarray):
@@ -587,7 +587,7 @@ class GridData(np.ndarray):
         return GridData(mask.compute_grid_data(data))
 
 
-class GridMapperCollection(object):
+class MapperCollection(object):
 
     def __init__(self, data_to_pixel, clustering=None):
         """A collection of mappers, which map between data on different grids.
@@ -596,9 +596,7 @@ class GridMapperCollection(object):
         -----------
         data_to_pixel : GridMapperDataToPixel
             Mapper between 1D image *GridData* and its 2D image coordinates.
-        blurring_to_pixel : GridMapperDataToPixel
-            Mapper between 1D blurrinng region *GridData* and its 2D image coordinates.
-        clustering : GridMapperCluster
+        clustering : MapperCluster
             Mapper between image data_to_pixel and the clustering grid data_to_pixel.
         """
 
@@ -611,18 +609,16 @@ class GridMapperCollection(object):
 
         Parameters
         -----------
+        cluster_grid_size
         mask : mask.Mask
             A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of grids.
-        grid_size_sub : int
-            The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
-        blurring_size : (int, int)
-           The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
+
         """
 
         image_to_pixel = GridMapperDataToPixel.from_mask(mask)
-        clustering = GridMapperCluster.from_mask(mask, cluster_grid_size) if cluster_grid_size is not None else None
+        clustering = MapperCluster.from_mask(mask, cluster_grid_size) if cluster_grid_size is not None else None
 
-        return GridMapperCollection(image_to_pixel, clustering)
+        return MapperCollection(image_to_pixel, clustering)
 
 
 class GridMapperDataToPixel(np.ndarray):
@@ -722,7 +718,7 @@ class GridMapperDataToPixel(np.ndarray):
         return data_1d
 
 
-class GridMapperCluster(object):
+class MapperCluster(object):
 
     def __init__(self, cluster_to_image, image_to_cluster):
         """ The KMeans clustering used to derive an amorphous pixeliation uses a set of image-grid coordinates. For \
@@ -759,7 +755,7 @@ class GridMapperCluster(object):
             The image mask containing the data_to_pixel the blurring grid_coords is computed for and the image's data grid_coords.
         """
         cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(cluster_grid_size)
-        return GridMapperCluster(cluster_to_image, image_to_cluster)
+        return MapperCluster(cluster_to_image, image_to_cluster)
 
 
 class GridBorder(geometry_profiles.Profile):
