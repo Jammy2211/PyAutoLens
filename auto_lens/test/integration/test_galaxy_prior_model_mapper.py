@@ -1,3 +1,4 @@
+import auto_lens.config.config
 from auto_lens.analysis import model_mapper as mm
 from auto_lens.analysis import galaxy_prior as gp
 from auto_lens.profiles import light_profiles, mass_profiles
@@ -6,7 +7,7 @@ import os
 
 class TestCase:
     def test_integration(self):
-        config = mm.Config(
+        config = auto_lens.config.config.Config(
             "{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config/priors/default"))
 
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
