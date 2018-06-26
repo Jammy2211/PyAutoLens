@@ -60,7 +60,7 @@ def source_only_pipeline(image, mask):
         """
     )
     # Create an optimizer
-    optimizer_1 = non_linear.DownhillSimplex()
+    optimizer_1 = non_linear.MultiNest()
 
     # Define galaxy priors
     source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)

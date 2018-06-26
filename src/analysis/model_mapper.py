@@ -373,6 +373,8 @@ class ModelMapper(object):
 
         for prior_name, prior_model in self.flat_prior_models:
 
+            print(prior_model)
+
             model_info += prior_model.cls.__name__ + '\n' + '\n'
 
             for i, prior in enumerate(prior_model.priors):
