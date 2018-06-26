@@ -666,3 +666,20 @@ class TestGaussianWidthConfig(object):
     def test_config(self, width_config):
         assert 1 == width_config.get('test_model_mapper', 'MockClass', 'one')
         assert 2 == width_config.get('test_model_mapper', 'MockClass', 'two')
+
+    def test_prior_classes(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+
+        assert mapper.prior_class_dict == {mapper.one.one: MockClass, mapper.one.two: MockClass}
+
+    def test_basic_gaussian_for_mean(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+
+        gaussian_mapper = mapper.mapper_from_gaussian_means([3, 4])
+
+        assert gaussian_mapper.one.one.sigma == 1
+        assert gaussian_mapper.one.two.sigma == 2
+        assert gaussian_mapper.one.one.mean == 3
+        assert gaussian_mapper.one.two.mean == 4
