@@ -73,8 +73,8 @@ class Image(ScaledArray):
 
         if psf is not None:
             array = psf.convolve(array)
-
         # TODO : Could create image at this point and use properties?
+
         if include_poisson_noise is True:
             array += generate_poisson_noise(array, effective_exposure_time, seed)
             # The poisson noise map does not include the background sky, so this estimate below removes it
