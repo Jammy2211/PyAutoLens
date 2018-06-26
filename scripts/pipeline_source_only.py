@@ -2,10 +2,10 @@ import sys
 
 sys.path.append("../")
 
-from auto_lens.imaging import image as im
-from auto_lens.imaging import mask as msk
-from auto_lens.imaging import scaled_array
-from auto_lens.analysis import pipeline
+from src.imaging import image as im
+from src.imaging import mask as msk
+from src.imaging import scaled_array
+from src.analysis import pipeline
 import os
 
 # Load up the data
