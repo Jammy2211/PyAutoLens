@@ -5,11 +5,23 @@ from itertools import count
 from src.analysis import model_mapper, non_linear
 from src.profiles import light_profiles, mass_profiles
 from src import exc
+from functools import wraps
 
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 config_path = path + 'test_files/config/priors/default'
 
 
+def create_path(func):
+    @wraps(func)
+    def wrapper(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return func(path)
+
+    return wrapper
+
+
+@create_path
 def create_summary_4_parameters(path):
     summary = open(path + 'summary.txt', 'w')
     summary.write('    0.100000000000000000E+01   -0.200000000000000000E+01    0.300000000000000000E+01'
@@ -30,6 +42,7 @@ def create_summary_4_parameters(path):
     summary.close()
 
 
+@create_path
 def create_summary_10_parameters(path):
     summary = open(path + 'summary.txt', 'w')
     summary.write('    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01'
@@ -66,6 +79,7 @@ def create_summary_10_parameters(path):
     summary.close()
 
 
+@create_path
 def create_gaussian_prior_summary_4_parameters(path):
     summary = open(path + 'summary.txt', 'w')
     summary.write('    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01'
@@ -86,22 +100,23 @@ def create_gaussian_prior_summary_4_parameters(path):
     summary.close()
 
 
+@create_path
 def create_weighted_samples_4_parameters(path):
-    weighted_samples = open(path + 'multinest.txt', 'w')
-    weighted_samples.write(
-        '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01\n'
-        '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01\n'
-        '    0.010000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.050000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.200000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
-        '    0.300000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01')
-    weighted_samples.close()
+    with open(path + 'multinest.txt', 'w+') as weighted_samples:
+        weighted_samples.write(
+            '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01\n'
+            '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01\n'
+            '    0.010000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.050000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.100000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.200000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01\n'
+            '    0.300000000000000000E+00    0.999999990000000000E+07    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01    0.400000000000000000E+01')
 
 
+@create_path
 def create_weighted_samples_10_parameters(path):
     weighted_samples = open(path + 'multinest.txt', 'w')
     weighted_samples.write(
@@ -119,15 +134,13 @@ def create_weighted_samples_10_parameters(path):
 
 
 class TestNonLinearOptimizer(object):
-
     class TestDirectorySetup(object):
 
         def test__input_path_sets_up_correct_directory(self):
-
             if os.path.exists(path + 'test_files/non_linear/files/setup/'):
                 shutil.rmtree(path + 'test_files/non_linear/files/setup/')
 
-            nlo = non_linear.NonLinearOptimizer(config_path=config_path, 
+            nlo = non_linear.NonLinearOptimizer(config_path=config_path,
                                                 path=path + 'test_files/non_linear/files/setup/')
 
             nlo.add_classes(light_profile=light_profiles.EllipticalSersic)
@@ -143,7 +156,7 @@ class TestNonLinearOptimizer(object):
                 shutil.rmtree(path + 'test_files/non_linear/files/setup/')
 
             nlo = non_linear.NonLinearOptimizer(config_path=config_path,
-                                                         path=path + 'test_files/non_linear/files/setup')
+                                                path=path + 'test_files/non_linear/files/setup')
 
             nlo.add_classes(light_profile=light_profiles.EllipticalSersic)
 
@@ -160,10 +173,10 @@ class TestNonLinearOptimizer(object):
                                                 path=path + 'test_files/non_linear/files/setup/')
 
             nlo.add_classes(light_profile=light_profiles.EllipticalSersic,
-                                         light_profile_2=light_profiles.EllipticalSersic,
-                                         light_profile_3=light_profiles.EllipticalSersic,
-                                         mass_profile=mass_profiles.SphericalNFW,
-                                         mass_profile_2=mass_profiles.SphericalNFW)
+                            light_profile_2=light_profiles.EllipticalSersic,
+                            light_profile_3=light_profiles.EllipticalSersic,
+                            mass_profile=mass_profiles.SphericalNFW,
+                            mass_profile_2=mass_profiles.SphericalNFW)
 
             nlo.save_model_info()
 
@@ -297,9 +310,9 @@ class TestNonLinearOptimizer(object):
                                                 path=path + 'test_files/non_linear/files/model_info/')
 
             nlo.add_classes(light_profile_0=light_profiles.EllipticalSersic,
-                                         light_profile_1=light_profiles.EllipticalExponential,
-                                         mass_profile_0=mass_profiles.SphericalIsothermal,
-                                         mass_profile_1=mass_profiles.SphericalNFW)
+                            light_profile_1=light_profiles.EllipticalExponential,
+                            mass_profile_0=mass_profiles.SphericalIsothermal,
+                            mass_profile_1=mass_profiles.SphericalNFW)
 
             nlo.save_model_info()
 
@@ -342,7 +355,6 @@ class TestNonLinearOptimizer(object):
     class TestCheckModelInfo(object):
 
         def test__single_model__prior_changed_from_input_model__raises_error(self):
-
             if os.path.exists(path + 'test_files/non_linear/files/wrong_model_info/*'):
                 shutil.rmtree(path + 'test_files/non_linear/files/wrong_model_info/*')
 
@@ -357,8 +369,6 @@ class TestNonLinearOptimizer(object):
 
 
 class TestMultiNest(object):
-
-
     class TestReadFromSummary:
 
         def test__1_profile__read_most_probable_vector__via_summary(self):
@@ -431,7 +441,7 @@ class TestMultiNest(object):
                                          check_model=False)
 
             files.add_classes(light_profile=light_profiles.EllipticalExponential,
-                                           mass_profile=mass_profiles.SphericalNFW)
+                              mass_profile=mass_profiles.SphericalNFW)
 
             files.save_model_info()
 
@@ -472,7 +482,7 @@ class TestMultiNest(object):
                                          check_model=False)
 
             files.add_classes(light_profile=light_profiles.EllipticalExponential,
-                                           mass_profile=mass_profiles.SphericalNFW)
+                              mass_profile=mass_profiles.SphericalNFW)
 
             files.save_model_info()
 
@@ -495,7 +505,7 @@ class TestMultiNest(object):
                                              path=path + 'test_files/non_linear/multinest/summary/multiple_profiles/',
                                              check_model=False)
             multinest.add_classes(light_profile=light_profiles.EllipticalExponential,
-                                               mass_profile=mass_profiles.SphericalNFW)
+                                  mass_profile=mass_profiles.SphericalNFW)
 
             multinest.save_model_info()
 
@@ -522,7 +532,6 @@ class TestMultiNest(object):
             assert most_likely.mass_profile.kappa_s == 29.0
             assert most_likely.mass_profile.scale_radius == 30.0
 
-
     class TestGaussianPriors(object):
 
         def test__1_profile__gaussian_priors_at_3_sigma_confidence(self):
@@ -530,8 +539,8 @@ class TestMultiNest(object):
             if os.path.exists(path + 'test_files/non_linear/multinest/gaussian_priors/*'):
                 shutil.rmtree(path + 'test_files/non_linear/multinest/gaussian_priors/*')
 
-            create_gaussian_prior_summary_4_parameters(path+'test_files/non_linear/multinest/gaussian_priors/')
-            create_weighted_samples_4_parameters(path+'test_files/non_linear/multinest/gaussian_priors/')
+            create_gaussian_prior_summary_4_parameters(path + 'test_files/non_linear/multinest/gaussian_priors/')
+            create_weighted_samples_4_parameters(path + 'test_files/non_linear/multinest/gaussian_priors/')
 
             results = non_linear.MultiNest(config_path=config_path,
                                            path=path + 'test_files/non_linear/multinest/gaussian_priors/',
@@ -557,8 +566,8 @@ class TestMultiNest(object):
             if os.path.exists(path + 'test_files/non_linear/multinest/gaussian_priors/*'):
                 shutil.rmtree(path + 'test_files/non_linear/multinest/gaussian_priors/*')
 
-            create_gaussian_prior_summary_4_parameters(path+'test_files/non_linear/multinest/gaussian_priors/')
-            create_weighted_samples_4_parameters(path+'test_files/non_linear/multinest/gaussian_priors/')
+            create_gaussian_prior_summary_4_parameters(path + 'test_files/non_linear/multinest/gaussian_priors/')
+            create_weighted_samples_4_parameters(path + 'test_files/non_linear/multinest/gaussian_priors/')
 
             results = non_linear.MultiNest(config_path=config_path,
                                            path=path + 'test_files/non_linear/multinest/gaussian_priors/',
@@ -582,7 +591,6 @@ class TestMultiNest(object):
             assert gaussian_priors[1][1] == pytest.approx(2.0 - lower_sigmas[1], 5e-2)
             assert gaussian_priors[2][1] == pytest.approx(3.0 - lower_sigmas[2], 5e-2)
             assert gaussian_priors[3][1] == pytest.approx(4.1 - lower_sigmas[3], 5e-2)
-
 
     class TestWeightedSamples(object):
 
@@ -635,7 +643,7 @@ class TestMultiNest(object):
                 shutil.rmtree(
                     path + 'test_files/non_linear/multinest/weighted_samples/*')
 
-            create_weighted_samples_10_parameters(path+'test_files/non_linear/multinest/weighted_samples/')
+            create_weighted_samples_10_parameters(path + 'test_files/non_linear/multinest/weighted_samples/')
 
             results = non_linear.MultiNest(config_path=config_path,
                                            path=path + 'test_files/non_linear/multinest/weighted_samples/',
@@ -658,7 +666,7 @@ class TestMultiNest(object):
                 shutil.rmtree(
                     path + 'test_files/non_linear/multinest/weighted_samples/*')
 
-            create_weighted_samples_10_parameters(path+'test_files/non_linear/multinest/weighted_samples/')
+            create_weighted_samples_10_parameters(path + 'test_files/non_linear/multinest/weighted_samples/')
 
             results = non_linear.MultiNest(config_path=config_path,
                                            path=path + 'test_files/non_linear/multinest/weighted_samples/',
@@ -732,7 +740,7 @@ class TestMultiNest(object):
                 shutil.rmtree(
                     path + 'test_files/non_linear/multinest/weighted_samples/*')
 
-            create_weighted_samples_10_parameters(path+'test_files/non_linear/multinest/weighted_samples/')
+            create_weighted_samples_10_parameters(path + 'test_files/non_linear/multinest/weighted_samples/')
 
             results = non_linear.MultiNest(config_path=config_path,
                                            path=path + 'test_files/non_linear/multinest/weighted_samples/',
@@ -763,7 +771,7 @@ class TestMultiNest(object):
                 shutil.rmtree(
                     path + 'test_files/non_linear/multinest/weighted_samples/*')
 
-            create_weighted_samples_10_parameters(path+'test_files/non_linear/multinest/weighted_samples/')
+            create_weighted_samples_10_parameters(path + 'test_files/non_linear/multinest/weighted_samples/')
 
             results = non_linear.MultiNest(config_path=config_path,
                                            path=path + 'test_files/non_linear/multinest/weighted_samples/',
@@ -788,7 +796,6 @@ class TestMultiNest(object):
             assert weighted_sample_model.mass_profile.centre == (-7.0, -8.0)
             assert weighted_sample_model.mass_profile.kappa_s == 9.0
             assert weighted_sample_model.mass_profile.scale_radius == 10.0
-
 
     class TestLimits(object):
 
