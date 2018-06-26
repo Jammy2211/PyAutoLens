@@ -418,6 +418,10 @@ class GaussianPrior(Prior):
 
 
 class AbstractPriorModel:
+    """
+    Abstract model that maps a set of priors to a particular class. Must be overridden by any prior model so that the
+    model mapper recognises its prior model attributes.
+    """
     pass
 
 
@@ -481,10 +485,20 @@ class PriorModel(AbstractPriorModel):
 
     @property
     def direct_priors(self):
+        """
+        Returns
+        -------
+        direct_priors: [(String, Prior)]
+        """
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     @property
     def priors(self):
+        """
+        Returns
+        -------
+        priors: [(String, Union(Prior, TuplePrior))]
+        """
         return [prior for tuple_prior in self.tuple_priors for prior in
                 tuple_prior[1].priors] + self.direct_priors
 
@@ -520,6 +534,20 @@ class PriorModel(AbstractPriorModel):
         return self.cls(**{**model_arguments, **constant_arguments})
 
     def gaussian_prior_model_for_arguments(self, arguments):
+        """
+        Create a new instance of model mapper with a set of Gaussian priors based on tuples provided by a previous
+        nonlinear search.
+
+        Parameters
+        ----------
+        arguments: [(float, float)]
+            Tuples providing the mean and sigma of gaussians
+
+        Returns
+        -------
+        new_model: ModelMapper
+            A new model mapper populated with Gaussian priors
+        """
         new_model = PriorModel(self.cls, self.config)
 
         model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
@@ -534,29 +562,95 @@ class PriorModel(AbstractPriorModel):
 
 class ListPriorModel(list, AbstractPriorModel):
     def __init__(self, prior_models):
+        """
+        A prior model used to represent a list of prior models for convenience.
+
+        Parameters
+        ----------
+        prior_models: [PriorModel]
+            A list of prior models
+        """
         super().__init__(prior_models)
 
     def instance_for_arguments(self, arguments):
+        """
+        Parameters
+        ----------
+        arguments: {Prior: float}
+            A dictionary of arguments
+
+        Returns
+        -------
+        model_instances: [object]
+            A list of instances constructed from the list of prior models.
+        """
         return [prior_model.instance_for_arguments(arguments) for prior_model in self]
 
     def gaussian_prior_model_for_arguments(self, arguments):
+        """
+        Parameters
+        ----------
+        arguments: {Prior: float}
+            A dictionary of arguments
+
+        Returns
+        -------
+        prior_models: [PriorModel]
+            A new list of prior models with gaussian priors
+        """
         return ListPriorModel(
             [prior_model.gaussian_prior_model_for_arguments(arguments) for prior_model in self])
 
     @property
     def priors(self):
+        """
+        Returns
+        -------
+        priors: [(String, Union(Prior, TuplePrior))]
+        """
         return set([prior for prior_model in self for prior in prior_model.priors])
 
 
 class TuplePrior(object):
+    """
+    A prior comprising one or more priors in a tuple
+    """
     @property
     def priors(self):
+        """
+        Returns
+        -------
+        priors: [Prior]
+            A list of priors contained in this tuple
+        """
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     def value_for_arguments(self, arguments):
+        """
+        Parameters
+        ----------
+        arguments: {Prior: float}
+            A dictionary of arguments
+
+        Returns
+        -------
+        tuple: (float,...)
+            A tuple of float values
+        """
         return tuple([arguments[prior[1]] for prior in self.priors])
 
     def gaussian_tuple_prior_for_arguments(self, arguments):
+        """
+        Parameters
+        ----------
+        arguments: {Prior: float}
+            A dictionary of arguments
+
+        Returns
+        -------
+        tuple_prior: TuplePrior
+            A new tuple prior with gaussian priors
+        """
         tuple_prior = TuplePrior()
         for prior in self.priors:
             setattr(tuple_prior, prior[0], arguments[prior[1]])
@@ -565,6 +659,8 @@ class TuplePrior(object):
 
 class ModelInstance(object):
     """
+    An object to hold model instances produced by providing arguments to a model mapper.
+
     @DynamicAttrs
     """
     pass
@@ -671,4 +767,13 @@ class Config(object):
 
 class Constant(object):
     def __init__(self, value):
+        """
+        Represents a constant value. No prior is added to the model mapper for constants reducing the dimensionality
+        of the nonlinear search.
+
+        Parameters
+        ----------
+        value: float
+            The value this constant should take.
+        """
         self.value = value
