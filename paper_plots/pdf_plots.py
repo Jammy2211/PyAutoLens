@@ -9,7 +9,7 @@ from src.analysis import model_mapper, non_linear
 from src.profiles import mass_profiles as mp
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
-results_path = path + '../files/SLACS03/'
+results_path = path + '../nlo/SLACS03/'
 
 image_name = 'SLACSJ0252+0039'
 

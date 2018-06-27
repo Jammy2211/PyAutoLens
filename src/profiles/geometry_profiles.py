@@ -69,7 +69,7 @@ def subgrid(func):
         Returns
         -------
         result : [value] or [(value, value)]
-            A list of files
+            A list of nlo
         """
 
         half = pixel_scale / 2
@@ -87,7 +87,7 @@ def subgrid(func):
 
 def iterative_subgrid(subgrid_func):
     """
-    Decorator to iteratively increase the grid_coords size until the difference between files reaches a defined threshold
+    Decorator to iteratively increase the grid_coords size until the difference between nlo reaches a defined threshold
     Parameters
     ----------
     subgrid_func : function(coordinates, pixel_scale, grid_size) -> value
@@ -111,7 +111,7 @@ def iterative_subgrid(subgrid_func):
             The minimum difference between the result at two different grid_coords sizes
         Returns
         -------
-            The last result calculated once the difference between two files becomes lower than the threshold
+            The last result calculated once the difference between two nlo becomes lower than the threshold
         """
         last_result = None
         grid_size = 1
