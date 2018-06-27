@@ -23,7 +23,7 @@ SIMPLEX_TUPLE_WIDTH = 0.1
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
 
-    This is used for the param names file and outputting the files of a run to a latex table.
+    This is used for the param names file and outputting the nlo of a run to a latex table.
 
     Parameters
     ----------
@@ -53,13 +53,13 @@ class NonLinearOptimizer(mm.ModelMapper):
                  check_model=True, **classes):
         """Abstract base class for non-linear optimizers.
 
-        This class sets up the file structure for the non-linear optimizer files, which are standardized across all \
+        This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
         non-linear optimizers.
 
         Parameters
         ------------
         path : str
-            The path where the non-linear analysis files are stored.
+            The path where the non-linear analysis nlo are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
         check_model : bool
@@ -173,7 +173,7 @@ class MultiNest(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path, check_model=True,
                  sigma_limit=3):
-        """Class to setup and run a MultiNest analysis and output the MultiNest files.
+        """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
         are passed to each iteration of MultiNest.
@@ -181,7 +181,7 @@ class MultiNest(NonLinearOptimizer):
         Parameters
         ------------
         path : str
-            The path where the non_linear files are stored.
+            The path where the non_linear nlo are stored.
         """
 
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, prior_config_path=prior_config_path,
@@ -277,7 +277,7 @@ class MultiNest(NonLinearOptimizer):
 
     def compute_most_probable(self):
         """
-        Read the most probable or most likely model values from the 'obj_summary.txt' file which files from a \
+        Read the most probable or most likely model values from the 'obj_summary.txt' file which nlo from a \
         multinest analysis.
 
         This file stores the parameters of the most probable model in the first half of entries and the most likely
@@ -288,7 +288,7 @@ class MultiNest(NonLinearOptimizer):
 
     def compute_most_likely(self):
         """
-        Read the most probable or most likely model values from the 'obj_summary.txt' file which files from a \
+        Read the most probable or most likely model values from the 'obj_summary.txt' file which nlo from a \
         multinest analysis.
 
         This file stores the parameters of the most probable model in the first half of entries and the most likely
@@ -336,7 +336,7 @@ class MultiNest(NonLinearOptimizer):
         return list(map(lambda p: p.getLimits(limit), densities_1d))
 
     def compute_model_at_upper_limit(self, sigma_limit):
-        """Setup 1D vectors of the upper and lower limits of the multinest files.
+        """Setup 1D vectors of the upper and lower limits of the multinest nlo.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
         each parameter estimate
@@ -350,7 +350,7 @@ class MultiNest(NonLinearOptimizer):
         return list(map(lambda param: param[1], self.compute_model_at_limit(sigma_limit)))
 
     def compute_model_at_lower_limit(self, sigma_limit):
-        """Setup 1D vectors of the upper and lower limits of the multinest files.
+        """Setup 1D vectors of the upper and lower limits of the multinest nlo.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
         each parameter estimate
