@@ -300,7 +300,7 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
 
 def setup_random_seed(seed):
     """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is positive,
-    that seed is used for all runs, thereby giving reproducible files
+    that seed is used for all runs, thereby giving reproducible nlo
 
     Parameters
     ----------
