@@ -134,15 +134,52 @@ class TestPixelization:
                    [0.1875, 0.1875, 0.1875, 0.1875, 0.125, 0.125]])).all()
 
 
-    class TestComputeRegularizationWeights:
+    class TestComputeSourceFluxes:
 
-        def test__constant_regularization_schemes__weights_are_array_of_size_pixels_with_regularization_value(self):
+        def test__x3_image_pixels_signals_1s__source_scale_1__source_signals_all_1s(self):
 
-            pix = pixelization.Pixelization(pixels=4, regularization_coefficients=(10.0,))
+            pix = pixelization.Pixelization(pixels=3, source_signal_scale=1.0)
 
-            weights = pix.compute_regularization_weights()
+            image_to_source = np.array([0, 1, 2])
+            galaxy_image = np.array([1.0, 1.0, 1.0])
 
-            assert (weights == np.array([10.0, 10.0, 10.0, 10.0])).all()
+            source_signals = pix.compute_source_signals(image_to_source, galaxy_image)
+
+            assert (source_signals == np.array([1.0, 1.0, 1.0])).all()
+
+        def test__x4_image_pixels_signals_1s__source_signals_still_all_1s(self):
+
+            pix = pixelization.Pixelization(pixels=3, source_signal_scale=1.0)
+
+            image_to_source = np.array([0, 1, 2, 0])
+            galaxy_image = np.array([1.0, 1.0, 1.0, 1.0])
+
+            source_signals = pix.compute_source_signals(image_to_source, galaxy_image)
+
+            assert (source_signals == np.array([1.0, 1.0, 1.0])).all()
+
+        def test__galaxy_flux_in_a_source_pixel_is_double_the_others__source_signal_is_1_others_a_half(self):
+
+            pix = pixelization.Pixelization(pixels=3, source_signal_scale=1.0)
+
+            image_to_source = np.array([0, 1, 2])
+            galaxy_image = np.array([2.0, 1.0, 1.0])
+
+            source_signals = pix.compute_source_signals(image_to_source, galaxy_image)
+
+            assert (source_signals == np.array([1.0, 0.5, 0.5])).all()
+
+        def test__same_as_above_but_source_scale_2__scales_source_signals(self):
+
+            pix = pixelization.Pixelization(pixels=3,  source_signal_scale=2.0)
+
+            image_to_source = np.array([0, 1, 2])
+            galaxy_image = np.array([2.0, 1.0, 1.0])
+
+            source_signals = pix.compute_source_signals(image_to_source, galaxy_image)
+
+            assert (source_signals == np.array([1.0, 0.25, 0.25])).all()
+
 
 
     class TestRegularizationMatrix(object):
