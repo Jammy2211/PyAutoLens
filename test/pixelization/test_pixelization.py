@@ -4,6 +4,49 @@ import pytest
 import numpy as np
 import math
 
+def image_coordinates_to_source_pixels_via_nearest_neighbour(image_coordinates, source_centers):
+    """ Match a set of image_grid image_grid-pixel image_grid to their closest source-data_to_pixel, using the source-pixel centers (x,y).
+
+        This method uses a nearest neighbour search between every image_image-pixel coordinate and set of source-pixel \
+        centers, thus it is slow when the number of image_grid image_grid-pixel image_grid or source-data_to_pixel is large. However, it
+        is probably the fastest routine for low numbers of image_grid image_grid-data_to_pixel and source-data_to_pixel.
+
+        Parameters
+        ----------
+        image_coordinates : [(float, float)]
+            The x and y image_grid image_grid-pixel image_grid to be matched to the source-pixel centers.
+        image_total : int
+            The total number of image_grid data_to_pixel in the image_grid.
+        image_total : int
+            The total number of image_grid data_to_pixel in the image_grid image_grid-grid_coords.
+        source_centers: [(float, float)
+            The source-data_to_pixel centers the image_grid image_grid-pixel image_grid are matched with.
+
+        Returns
+        ----------
+        image_image_to_source : [int, int]
+            The index in source_pixel_centers each image_grid and image_grid-image_coordinate is matched with. (e.g. if the fifth
+            image_coordinate of the third image_grid pixel is closest to the 3rd source-pixel in source_pixel_centers,
+            image_image_to_source[2,4] = 2).
+
+     """
+
+    def compute_squared_separation(coordinate1, coordinate2):
+        """Computes the squared separation of two image_grid (no square root for efficiency)"""
+        return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+
+    image_pixels = image_coordinates.shape[0]
+
+    image_to_source = np.zeros((image_pixels))
+
+    for image_index, image_coordinate in enumerate(image_coordinates):
+
+        distances = list(map(lambda centers: compute_squared_separation(image_coordinate, centers),
+                             source_centers))
+
+        image_to_source[image_index] = (np.argmin(distances))
+
+    return image_to_source
 
 def sub_coordinates_to_source_pixels_via_nearest_neighbour(sub_coordinates, source_centers):
     """ Match a set of sub_grid image_grid-pixel image_grid to their closest source-data_to_pixel, using the source-pixel centers (x,y).
@@ -828,6 +871,53 @@ class TestVoronoiPixelization:
             assert set(neighbors[8]) == set([5, 7])
 
 
+    class TestImageToSourceViaNearestNeighborsForTesting:
+
+        def test__image_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
+
+            source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+            image_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
+
+            image_to_source = image_coordinates_to_source_pixels_via_nearest_neighbour(image_coordinates, source_pixels)
+
+            assert image_to_source[0] == 0
+            assert image_to_source[1] == 1
+            assert image_to_source[2] == 2
+            assert image_to_source[3] == 3
+
+        def test__image_coordinates_to_source_pixels_via_nearest_neighbour___case2__correct_pairs(self):
+
+            source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+            image_coordinates = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
+                                         [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
+
+            image_to_source = image_coordinates_to_source_pixels_via_nearest_neighbour(image_coordinates, source_pixels)
+
+            assert image_to_source[0] == 0
+            assert image_to_source[1] == 1
+            assert image_to_source[2] == 2
+            assert image_to_source[3] == 3
+            assert image_to_source[4] == 3
+            assert image_to_source[5] == 2
+            assert image_to_source[6] == 1
+            assert image_to_source[7] == 0
+
+        def test__image_coordinates_to_source_pixels_via_nearest_neighbour___case3__correct_pairs(self):
+
+            source_pixels = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
+            image_coordinates = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49],
+                                        [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
+
+            image_to_source = image_coordinates_to_source_pixels_via_nearest_neighbour(image_coordinates, source_pixels)
+
+            assert image_to_source[0] == 4
+            assert image_to_source[1] == 4
+            assert image_to_source[2] == 4
+            assert image_to_source[3] == 0
+            assert image_to_source[4] == 0
+            assert image_to_source[5] == 5
+
+
     class TestSubToSourceViaNearestNeighborsForTesting:
 
         def test__sub_coordinates_to_source_pixels_via_nearest_neighbour__case1__correct_pairs(self):
@@ -873,6 +963,65 @@ class TestVoronoiPixelization:
             assert image_sub_to_source[1, 2] == 5
 
 
+    class TestImageToSource:
+
+        def test__coordinates_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs(self):
+
+            # The cluster_grid coordinates are not required by the pairing routine routine below,
+            # but included here for clarity
+            image_coordinates = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
+            cluster_coordinates = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
+            image_to_cluster = np.array([0, 1, 2])
+
+            source_coordinates = np.array([[-1.0, 1.0], [0.0, 0.0], [-1.0, -1.0]])
+            source_centers = np.array([[-1.0, 1.0], [1.0, 1.0],
+                                              [0.0, 0.0],
+                                       [-1.0, -1.0], [1.0, -1.0]])
+            cluster_to_source = np.array([0, 2, 4])
+
+            # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
+
+
+
+            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
+            voronoi = pix.compute_voronoi_grid(source_centers)
+            source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
+
+            image_to_source_via_nearest_neighbour = image_coordinates_to_source_pixels_via_nearest_neighbour(
+                source_coordinates, source_centers)
+
+            image_to_source_via_pairs = pix.compute_image_to_source(source_coordinates, source_centers,
+                                                                    source_neighbors, image_to_cluster, cluster_to_source)
+
+            assert (image_to_source_via_nearest_neighbour == image_to_source_via_pairs).all()
+
+        def test__image_coordinates_to_source_pixels_via_cluster_pairs__grid_of_source_pixels__correct_pairs(self):
+
+            source_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
+                                       [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+
+            source_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
+                                          [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+
+            pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
+            voronoi = pix.compute_voronoi_grid(source_centers)
+            source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
+
+            image_image_to_source_via_nearest_neighbour = image_coordinates_to_source_pixels_via_nearest_neighbour(
+                source_coordinates, source_centers)
+
+            # The cluster_grid coordinates are not required by the pairing routine routine below, but included here for clarity
+            cluster_coordinates = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
+
+            image_to_cluster = np.array([0, 1, 2, 1, 1, 2])
+            cluster_to_source = np.array([3, 4, 5])
+
+            image_image_to_source_via_pairs = pix.compute_image_to_source(
+                source_coordinates, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
+
+            assert (image_image_to_source_via_nearest_neighbour == image_image_to_source_via_pairs).all()
+            
+
     class TestComputeSubToSource:
 
         def test__sub_coordinates_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs(self):
@@ -883,11 +1032,11 @@ class TestVoronoiPixelization:
 
             # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
 
-            sub_coordinates = np.array([[[-1.1, 1.1], [-0.9, 1.1], [-1.1, 0.9], [-0.9, 0.9]],
+            source_sub_coordinates = np.array([[[-1.1, 1.1], [-0.9, 1.1], [-1.1, 0.9], [-0.9, 0.9]],
                                         [[-0.1, 0.1], [0.1, 0.1], [-0.1, -0.1], [0.1, -0.1]],
                                         [[0.9, 1.1], [1.1, 1.1], [0.9, 0.9], [1.1, 0.9]]])
 
-            image_coordinates = np.array([[-1.0, 1.0],
+            source_coordinates = np.array([[-1.0, 1.0],
                                           [0.0, 0.0],
                                           [1.0, 1.0]])
 
@@ -896,7 +1045,7 @@ class TestVoronoiPixelization:
             source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
             image_sub_to_source_via_nearest_neighbour = sub_coordinates_to_source_pixels_via_nearest_neighbour(
-                sub_coordinates, source_centers)
+                source_sub_coordinates, source_centers)
 
             # The cluster_grid coordinates are not required by the pairing routine routine below,
             # but included here for clarity
@@ -907,7 +1056,7 @@ class TestVoronoiPixelization:
             cluster_to_source = np.array([1, 2, 4])
 
             image_sub_to_source_via_pairs = pix.compute_sub_to_source(
-                sub_coordinates, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
+                source_sub_coordinates, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
 
             assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
 
@@ -916,14 +1065,14 @@ class TestVoronoiPixelization:
             source_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                        [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
 
-            sub_coordinates = np.array([[[0.05, 0.15], [0.15, 0.15], [0.05, 0.05], [0.15, 0.05]],
+            source_sub_coordinates = np.array([[[0.05, 0.15], [0.15, 0.15], [0.05, 0.05], [0.15, 0.05]],
                                         [[1.05, 0.15], [1.15, 0.15], [1.05, 0.05], [1.15, 0.05]],
                                         [[2.05, 0.15], [2.15, 0.15], [2.05, 0.05], [2.15, 0.05]],
                                         [[0.05, 1.15], [0.15, 1.15], [0.05, 1.05], [0.15, 1.05]],
                                         [[1.05, 1.15], [1.15, 1.15], [1.05, 1.05], [1.15, 1.05]],
                                         [[2.05, 1.15], [2.15, 1.15], [2.05, 1.05], [2.15, 1.05]]])
 
-            image_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
+            source_coordinates = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                           [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
@@ -931,7 +1080,7 @@ class TestVoronoiPixelization:
             source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
             image_sub_to_source_via_nearest_neighbour = sub_coordinates_to_source_pixels_via_nearest_neighbour(
-                sub_coordinates, source_centers)
+                source_sub_coordinates, source_centers)
 
             # The cluster_grid coordinates are not required by the pairing routine routine below, but included here for clarity
             cluster_coordinates = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
@@ -940,7 +1089,7 @@ class TestVoronoiPixelization:
             cluster_to_source = np.array([3, 4, 5])
 
             image_sub_to_source_via_pairs = pix.compute_sub_to_source(
-                sub_coordinates, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
+                source_sub_coordinates, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
 
             assert (image_sub_to_source_via_nearest_neighbour == image_sub_to_source_via_pairs).all()
 
