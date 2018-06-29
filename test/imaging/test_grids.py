@@ -20,22 +20,27 @@ def galaxy_no_profiles():
 @pytest.fixture(scope='function')
 def galaxy_mass_sis():
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
-    return galaxy.Galaxy(mass_profiles=[sis])
+    return galaxy.Galaxy(mass_profile=sis)
 
 
 @pytest.fixture(scope='function')
 def galaxy_light_sersic():
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
-    return galaxy.Galaxy(light_profiles=[sersic])
+    return galaxy.Galaxy(light_profile=sersic)
+
+
+@pytest.fixture(name='lens_sis_x3')
+def make_lens_sis_x3():
+    mass_profile = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+    return galaxy.Galaxy(mass_profile_1=mass_profile, mass_profile_2=mass_profile,
+                         mass_profile_3=mass_profile)
 
 
 class TestGridCoordsCollection(object):
-
     class TestConstructor(object):
 
         def test__simple_grid_input__all_grids_used__sets_up_attributes(self):
-
             image_grid = grids.GridCoordsImage(np.array([[1.0, 1.0],
                                                          [2.0, 2.0],
                                                          [3.0, 3.0]]))
@@ -70,7 +75,6 @@ class TestGridCoordsCollection(object):
     class TestFromMask(object):
 
         def test__all_grids_from_masks__correct_grids_setup(self):
-
             mask = np.array([[True, True, True],
                              [True, False, True],
                              [True, True, True]])
@@ -128,7 +132,7 @@ class TestGridCoordsCollection(object):
             assert deflections.sub.grid_size_sub == 2
             assert deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             image_grid = np.array([[1.0, 1.0]])
             sub_grid = np.array([[[1.0, 1.0], [1.0, 0.0]]])
             blurring_grid = np.array([[1.0, 0.0]])
@@ -137,7 +141,7 @@ class TestGridCoordsCollection(object):
             sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
             blurring_grid = grids.GridCoordsBlurring(blurring_grid)
 
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
+            mass_profile = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
             ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
@@ -163,7 +167,7 @@ class TestGridCoordsCollection(object):
 
             nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
 
-            lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profiles=[power_law, nfw])
+            lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profile_1=power_law, mass_profile_2=nfw)
 
             ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
@@ -212,7 +216,6 @@ class TestGridCoordsCollection(object):
 
 
 class TestGridCoordsRegular(object):
-
     class TestConstructor:
 
         def test__simple_grid_input__sets_up_grid_correctly_in_attributes(self):
@@ -531,12 +534,10 @@ class TestGridCoordsImage(object):
 
             assert grid_deflections == pytest.approx(np.array([[3.0 * 0.707, 3.0 * 0.707]]), 1e-3)
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             grid_image = np.array([[1.0, 1.0]])
 
             grid_image = grids.GridCoordsImage(grid_image)
-
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             grid_deflections = grid_image.setup_deflections_grid(galaxies=[lens_sis_x3])
 
@@ -569,12 +570,10 @@ class TestGridCoordsImage(object):
 
             assert grid_traced == pytest.approx(np.array([[1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]]), 1e-3)
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
             grid_image = grids.GridCoordsImage(regular_grid_coords)
-
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             deflections = grid_image.setup_deflections_grid(galaxies=[lens_sis_x3])
 
@@ -651,13 +650,11 @@ class TestGridCoordsImageSub(object):
 
             assert deflections.grid_size_sub == 2
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
             grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
-
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             deflections = grid_image_sub.setup_deflections_grid(galaxies=[lens_sis_x3])
 
@@ -705,13 +702,11 @@ class TestGridCoordsImageSub(object):
 
             assert grid_traced.grid_size_sub == 2
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
             grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
-
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             deflections = grid_image_sub.setup_deflections_grid(galaxies=[lens_sis_x3])
 
@@ -777,12 +772,10 @@ class TestGridCoordsBlurring(object):
 
             assert grid_deflections == pytest.approx(np.array([[3.0 * 0.707, 3.0 * 0.707]]), 1e-3)
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
             grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
-
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             grid_deflections = grid_blurring.setup_deflections_grid(galaxies=[lens_sis_x3])
 
@@ -815,12 +808,10 @@ class TestGridCoordsBlurring(object):
 
             assert traced == pytest.approx(np.array([[1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]]), 1e-3)
 
-        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self):
+        def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
             grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
-
-            lens_sis_x3 = galaxy.Galaxy(mass_profiles=3 * [mass_profiles.SphericalIsothermal(einstein_radius=1.0)])
 
             deflections = grid_blurring.setup_deflections_grid(galaxies=[lens_sis_x3])
 
@@ -833,7 +824,6 @@ class TestGridDataCollection(object):
     class TestConstructor:
 
         def test__all_grid_datas_entered__sets_up_attributes(self):
-
             grid_image = np.array([1, 2, 3])
             grid_image = grids.GridData(grid_image)
 
@@ -853,7 +843,6 @@ class TestGridDataCollection(object):
     class TestFromMask:
 
         def test__cross_mask__all_data_setup_as_mask(self):
-
             mask = np.array([[True, False, True],
                              [False, False, False],
                              [True, False, True]])
@@ -917,7 +906,6 @@ class TestGridData(object):
 
 
 class TestGridMapperCollection(object):
-
     class TestConstructor:
         data_to_pixel = np.array([[0, 0],
                                   [0, 1],
@@ -940,7 +928,6 @@ class TestGridMapperCollection(object):
     class TestFromMask:
 
         def test__all_mappers__setup_all_mappers_correctly(self):
-
             mask = np.array([[True, True, True, True, True],
                              [True, True, False, True, True],
                              [True, False, False, False, True],
