@@ -7,7 +7,7 @@ from src import exc
 
 class Pixelization(object):
 
-    def __init__(self, pixels, regularization_coefficients=(1.0,)):
+    def __init__(self, pixels, regularization_coefficients=(1.0,), source_signal_scale=1.0):
         """
         Abstract base class for a pixelization, which discretizes a set of image (sub-)coordinates into groups of \
         source-pixels thus determining the mappings between image (sub-)coordinates and source-pixels.
@@ -33,6 +33,7 @@ class Pixelization(object):
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
+        self.source_signal_scale = source_signal_scale
 
     def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
         raise exc.PixelizationException('compute_mapping_matrix must be over-riden by a Pixelization.')
@@ -75,16 +76,6 @@ class Pixelization(object):
 
         return mapping_matrix
 
-    # TODO : The routine below assumes 1 regularization coefficient which is applied to all source-pixels equally.
-    # TODO : This will change to an adaptive regularization scheme with multple regularization coefficents.
-    # TODO: Ideally, all pixelizations will be able to use either regularization scheme, thus changing the
-    # TODO : size of the regularization_weights tuple in their constructor appropriately...
-
-    def compute_regularization_weights(self):
-        """Compute the regularization weights, which represent the effective regularizatio coefficient of every \
-        source-pixel"""
-        return np.full(shape=(self.pixels), fill_value=self.regularization_coefficients[0])
-
     def create_constant_regularization_matrix(self, source_neighbors):
         """
         Setup a constant regularization matrix, where source-pixels are regularized with one another in 1 direction
@@ -109,6 +100,26 @@ class Pixelization(object):
                 regularization_matrix[i, j] -= reg_coeff
 
         return regularization_matrix
+
+    def compute_source_signals(self, image_to_source, galaxy_image):
+        """Compute the regularization weights, which represent the effective regularizatio coefficient of every \
+        source-pixel"""
+        source_signals = np.zeros((self.pixels))
+        source_sizes = np.zeros((self.pixels))
+
+        for image_pixel in range(galaxy_image.shape[0]):
+            source_signals[image_to_source[image_pixel]] += galaxy_image[image_pixel]
+            source_sizes[image_to_source[image_pixel]] += 1
+
+        source_signals /= source_sizes
+        source_signals /= max(source_signals)
+        return source_signals ** self.source_signal_scale
+
+    def compute_regularization_weights(self, source_fluxes):
+        """Compute the regularization weights, which represent the effective regularizatio coefficient of every \
+        source-pixel"""
+        return (self.regularization_coefficients[0] * source_fluxes +
+                self.regularization_coefficients[1] * (1.0-source_fluxes) ) ** 2.0
 
     def create_weighted_regularization_matrix(self, regularization_weights, source_neighbors):
         """
