@@ -171,7 +171,7 @@ class TestPixelization:
 
         def test__same_as_above_but_source_scale_2__scales_source_signals(self):
 
-            pix = pixelization.Pixelization(pixels=3, source_signal_scale=2.0)
+            pix = pixelization.Pixelization(pixels=3,  source_signal_scale=2.0)
 
             image_to_source = np.array([0, 1, 2])
             galaxy_image = np.array([2.0, 1.0, 1.0])
