@@ -458,25 +458,9 @@ def profiles_pipeline(paths, image, mask):
     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
 
     # Define galaxy priors
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic,
-                                                 hyper_galaxy=galaxy.HyperGalaxy)
-
-    lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((0.0, 0.0))
-    lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(0.8)
-    lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(90.0)
-    lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(0.5)
-    lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(1.3)
-    lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(3.0)
-
-    # TODO : Wanted to use previous phase results, just wasnt working for me.
-
-    # lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.centre)
-    # lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.axis_ratio)
-    # lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.phi)
-    # lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.intensity)
-    # lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(
-    #     result_1.most_likely.lens_galaxies[0].sersic_light_profile.effective_radius)
-    # lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.sersic_index)
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(
+        sersic_light_profile=result_1.instance.lens_galaxies[0].sersic_light_profile,
+        hyper_galaxy=galaxy.HyperGalaxy)
 
     # Add the galaxy priors to the optimizer
     optimizer_1.variable.lens_galaxies = [lens_galaxy_prior]
