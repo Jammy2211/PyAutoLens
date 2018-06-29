@@ -120,9 +120,9 @@ class Pixelization(object):
         source_signals = np.zeros((self.pixels))
         source_sizes = np.zeros((self.pixels))
 
-        for image_pixel in range(galaxy_image.shape[0]):
-            source_signals[image_to_source[image_pixel]] += galaxy_image[image_pixel]
-            source_sizes[image_to_source[image_pixel]] += 1
+        for image_index in range(galaxy_image.shape[0]):
+            source_signals[image_to_source[image_index]] += galaxy_image[image_index]
+            source_sizes[image_to_source[image_index]] += 1
 
         source_signals /= source_sizes
         source_signals /= max(source_signals)
@@ -221,8 +221,80 @@ class VoronoiPixelization(Pixelization):
 
         return source_neighbors
 
-    @staticmethod
-    def compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors, image_to_cluster,
+    # TODO : refactor two functions below to not repeat code.
+
+    def compute_image_to_source(self, source_coordinates, source_centers, source_neighbors, image_to_cluster,
+                                source_to_cluster):
+        """ Compute the mappings between a set of source sub-pixels and source-pixels, using the sub-coordinates and
+        source-pixel centers.
+
+        For the Voronoi pixelizations, a sparse set of 'cluster-pixels' are used to determine the source pixelization. \
+        These provide the mappings between only a sub-set of sub-pixels / image-pixels and source-pixels.
+
+        To determine the complete set of sub-pixel to source-pixel mappings, we must therefore pair every sub-pixel to \
+        its nearest source-pixel (using the sub-pixel's source-plane coordinate and source-pixel center). Using a full \
+        nearest neighbor search to do this is slow, thus the source-pixel neighbors (derived via the Voronoi grid) \
+        is used to localize each nearest neighbor search.
+
+        In this routine, some variables and function names refer to a 'sparse_source_'. This term describes a \
+        source-pixel that we have paired to a sub_coordinate using the sparse_coordinate of an image coordinate. \
+        Thus, it may not actually be that sub_coordinate's closest source-pixel (the routine will eventually
+        determine this).
+
+        Parameters
+        ----------
+        source_sub_coordinates : [[float, float]]
+            The x and y source sub-grid coordinates which are to be matched with their closest source-pixels.
+        source_centers: [[float, float]]
+            The coordinate of the center of every source-pixel.
+        source_neighbors : [[]]
+            The neighboring source_pixels of each source_pixel, computed via the Voronoi grid_coords. \
+            (e.g. if the fifth source_pixel neighbors source_pixels 7, 9 and 44, source_neighbors[4] = [6, 8, 43])
+        image_to_cluster : [int]
+            The index in the image-grid each sparse cluster-pixel is closest too (e.g. if the fifth image-pixel \
+            is closest to the 3rd cluster-pixel, image_to_sparse[4] = 2).
+        source_to_cluster : [int]
+            The mapping between every source-pixel and cluster-pixel (e.g. if the fifth source-pixel maps to \
+            the 3rd cluster_pixel, source_to_cluster[4] = 2).
+
+        Returns
+        ----------
+        sub_to_source : [int, int]
+            The mapping between every sub-pixel and source-pixel. (e.g. if the fifth sub-pixel of the third \
+            image-pixel maps to the 3rd source-pixel, sub_to_source[2,4] = 2).
+
+         """
+
+        image_pixels = source_coordinates.shape[0]
+
+        image_to_source = np.zeros((image_pixels), dtype=int)
+
+        for image_index, source_coordinate in enumerate(source_coordinates):
+
+            nearest_sparse = image_to_cluster[image_index]
+            nearest_sparse_source = source_to_cluster[nearest_sparse]
+
+            while True:
+
+                source_to_sparse_source_distance = self.compute_distance_to_nearest_sparse_source(source_centers,
+                                                                                                  source_coordinate,
+                                                                                                  nearest_sparse_source)
+
+                neighboring_source_index, source_to_neighboring_source_distance = \
+                    self.compute_nearest_neighboring_source_and_distance(source_coordinate, source_centers,
+                                                                    source_neighbors[nearest_sparse_source])
+
+                if source_to_sparse_source_distance < source_to_neighboring_source_distance:
+                    break
+                else:
+                    nearest_sparse_source = neighboring_source_index
+
+            # If this pixel is closest to the original pixel, it has been paired successfully with its nearest neighbor.
+            image_to_source[image_index] = nearest_sparse_source
+
+        return image_to_source
+
+    def compute_sub_to_source(self, source_sub_coordinates, source_centers, source_neighbors, image_to_cluster,
                               source_to_cluster):
         """ Compute the mappings between a set of source sub-pixels and source-pixels, using the sub-coordinates and
         source-pixel centers.
@@ -264,45 +336,6 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        def compute_source_sub_to_nearest_sparse_source(source_centers, sub_coordinate, source_pixel):
-            nearest_sparse_source_pixel_center = source_centers[source_pixel]
-            return compute_squared_separation(sub_coordinate, nearest_sparse_source_pixel_center)
-
-        def compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers, source_neighbors):
-            """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
-            our input coordinaates.
-
-            Parameters
-            ----------
-            sub_coordinate : (float, float)
-                The x and y coordinate to be matched with the neighboring set of source_pixels.
-            source_centers: [(float, float)
-                The source_pixel centers the image_grid are matched with.
-            source_neighbors : list
-                The neighboring source_pixels of the sparse_grid source_pixel the coordinate is currently matched with
-
-            Returns
-            ----------
-            source_pixel_neighbor_index : int
-                The index in source_pixel_centers of the closest source_pixel neighbor.
-            source_pixel_neighbor_separation : float
-                The separation between the input coordinate and closest source_pixel neighbor
-
-            """
-
-            separation_from_neighbor = list(map(lambda neighbors:
-                                                compute_squared_separation(sub_coordinate, source_centers[neighbors]),
-                                                source_neighbors))
-
-            closest_separation_index = min(range(len(separation_from_neighbor)),
-                                           key=separation_from_neighbor.__getitem__)
-
-            return source_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
-
-        def compute_squared_separation(coordinate1, coordinate2):
-            """Computes the squared separation of two image_grid (no square root for efficiency)"""
-            return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
-
         image_pixels = source_sub_coordinates.shape[0]
         sub_pixels = source_sub_coordinates.shape[1]
 
@@ -317,12 +350,12 @@ class VoronoiPixelization(Pixelization):
 
                 while True:
 
-                    source_sub_to_sparse_source_distance = compute_source_sub_to_nearest_sparse_source(source_centers,
-                                                                                                       sub_coordinate,
-                                                                                                       nearest_sparse_source)
+                    source_sub_to_sparse_source_distance = self.compute_distance_to_nearest_sparse_source(source_centers,
+                                                                                                          sub_coordinate,
+                                                                                                          nearest_sparse_source)
 
                     neighboring_source_index, sub_to_neighboring_source_distance = \
-                        compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers,
+                        self.compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers,
                                                                         source_neighbors[nearest_sparse_source])
 
                     if source_sub_to_sparse_source_distance < sub_to_neighboring_source_distance:
@@ -335,6 +368,46 @@ class VoronoiPixelization(Pixelization):
                 sub_index += 1
 
         return sub_to_source
+
+    def compute_distance_to_nearest_sparse_source(self, source_centers, coordinate, source_pixel):
+        nearest_sparse_source_pixel_center = source_centers[source_pixel]
+        return self.compute_squared_separation(coordinate, nearest_sparse_source_pixel_center)
+
+    def compute_nearest_neighboring_source_and_distance(self, coordinate, source_centers, source_neighbors):
+        """For a given source_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
+        our input coordinaates.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y coordinate to be matched with the neighboring set of source_pixels.
+        source_centers: [(float, float)
+            The source_pixel centers the image_grid are matched with.
+        source_neighbors : list
+            The neighboring source_pixels of the sparse_grid source_pixel the coordinate is currently matched with
+
+        Returns
+        ----------
+        source_pixel_neighbor_index : int
+            The index in source_pixel_centers of the closest source_pixel neighbor.
+        source_pixel_neighbor_separation : float
+            The separation between the input coordinate and closest source_pixel neighbor
+
+        """
+
+        separation_from_neighbor = list(map(lambda neighbors:
+                                            self.compute_squared_separation(coordinate, source_centers[neighbors]),
+                                            source_neighbors))
+
+        closest_separation_index = min(range(len(separation_from_neighbor)),
+                                       key=separation_from_neighbor.__getitem__)
+
+        return source_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
+
+    @staticmethod
+    def compute_squared_separation(coordinate1, coordinate2):
+        """Computes the squared separation of two image_grid (no square root for efficiency)"""
+        return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
 
 
 class ClusterPixelization(VoronoiPixelization):
