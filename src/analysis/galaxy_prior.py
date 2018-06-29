@@ -14,6 +14,12 @@ def is_mass_profile_class(cls):
     return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
 
 
+def is_profile_class(cls):
+    return inspect.isclass(cls) \
+           and issubclass(cls, mass_profiles.MassProfile) \
+           or issubclass(cls, light_profiles.LightProfile)
+
+
 # TODO : Add in init a 'vary redshift' bool which is default False
 
 class GalaxyPrior(model_mapper.AbstractPriorModel):
@@ -38,11 +44,6 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             If True the same prior will be used for all the profiles orientations such that any generated profiles
             always have the same orientation
         """
-
-        self.light_profile_dict = {key: value for key, value in kwargs.items() if
-                                   is_light_profile_class(value)}
-        self.mass_profile_dict = {key: value for key, value in kwargs.items() if
-                                  is_mass_profile_class(value)}
 
         self.align_centres = align_centres
         self.align_orientations = align_orientations
@@ -91,27 +92,28 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return [value for value in self.__dict__.values() if galaxy.is_mass_profile(value)]
 
     @property
-    def light_profile_names(self):
-        return list(self.light_profile_dict.keys())
-
-    @property
-    def mass_profile_names(self):
-        return list(self.mass_profile_dict.keys())
-
-    @property
     def prior_models(self):
         return [value for _, value in
                 filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items())]
 
     @property
-    def light_profile_prior_models(self):
-        return filter(
-            lambda prior_model: is_light_profile_class(prior_model.cls), self.prior_models)
+    def profile_prior_model_dict(self):
+        return {key: value for key, value in
+                filter(lambda t: isinstance(t[1], model_mapper.PriorModel) and is_profile_class(t[1].cls),
+                       self.__dict__.items())}
 
     @property
-    def mass_profile_prior_models(self):
-        return filter(
-            lambda prior_model: is_mass_profile_class(prior_model.cls), self.prior_models)
+    def fixed_profile_dict(self):
+        return {key: value for key, value in self.__dict__.items() if
+                galaxy.is_light_profile(value) or galaxy.is_mass_profile(value)}
+
+    @property
+    def light_profile_prior_model_dict(self):
+        return {key: value for key, value in self.prior_model_dict.items() if is_light_profile_class(value.cls)}
+
+    @property
+    def mass_profile_prior_model_dict(self):
+        return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
     @property
     def priors(self):
@@ -130,17 +132,16 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         -------
             An instance of the class
         """
-        instance_light_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
-                                           self.light_profile_prior_models)) + self.fixed_light_profiles
-        instance_mass_profiles = list(map(lambda prior_model: prior_model.instance_for_arguments(arguments),
-                                          self.mass_profile_prior_models)) + self.fixed_mass_profiles
+        profiles = {**{key: value.instance_for_arguments(arguments)
+                       for key, value
+                       in self.profile_prior_model_dict.items()}, **self.fixed_profile_dict}
 
         instance_redshift = self.redshift.instance_for_arguments(arguments)
         pixelization = self.pixelization.instance_for_arguments(arguments) if self.pixelization is not None else None
         hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) if self.hyper_galaxy is not None else None
 
-        return galaxy.Galaxy(light_profiles=instance_light_profiles, mass_profiles=instance_mass_profiles,
-                             redshift=instance_redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy)
+        return galaxy.Galaxy(redshift=instance_redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
+                             **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
         new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
