@@ -249,6 +249,7 @@ class MultiNest(NonLinearOptimizer):
 
         result = None
 
+        # noinspection PyUnusedLocal
         def fitness_function(vector, ndim, nparams):
             global result
             instance = self.instance_from_physical_vector(vector)
