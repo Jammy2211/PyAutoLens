@@ -252,3 +252,16 @@ class TestFixedProfiles(object):
 
         assert len(galaxy.light_profiles) == 2
         assert len(galaxy.mass_profiles) == 1
+
+
+class TestRedshift(object):
+    def test_set_redshift_class(self):
+        galaxy_prior = gp.GalaxyPrior()
+        galaxy_prior.redshift = g.Redshift(3)
+        assert galaxy_prior.redshift.redshift == 3
+
+    def test_set_redshift_float(self):
+        galaxy_prior = gp.GalaxyPrior()
+        galaxy_prior.redshift = 3
+        # noinspection PyUnresolvedReferences
+        assert galaxy_prior.redshift.redshift == 3
