@@ -399,8 +399,8 @@ def profiles_pipeline(paths, image, mask):
     lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(90.0)
     lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(0.5)
     lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(1.3)
-    # TODO : Can we get rid of the x2 redshift?
-    lens_galaxy_prior.redshift.redshift = model_mapper.Constant(1.0)
+
+    lens_galaxy_prior.redshift = model_mapper.Constant(1.0)
 
     # Add the galaxy priors to the optimizer
     optimizer_1.lens_galaxies = [lens_galaxy_prior]
