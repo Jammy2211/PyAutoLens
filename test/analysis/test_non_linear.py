@@ -783,8 +783,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path, check_model=False)
 
             results.light_profile = model_mapper.PriorModel(light_profiles.EllipticalExponential)
             results.mass_profile = model_mapper.PriorModel(mass_profiles.SphericalNFW)

@@ -22,6 +22,8 @@ def is_mass_profile(obj):
     return isinstance(obj, mass_profiles.MassProfile)
 
 
+# TODO : Add in init a 'vary redshift' bool which is default False
+
 class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     Class to produce Galaxy instances from sets of profile classes using the model mapper
