@@ -16,25 +16,16 @@ output_dir = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 ### Setup mask + grid of this image ###
 
-ma = mask.Mask.for_simulate(shape_arc_seconds=(5.0, 5.0), pixel_scale=0.1, psf_size=(3,3))
+ma = mask.Mask.for_simulate(shape_arc_seconds=(5.0, 5.0), pixel_scale=0.08, psf_size=(3,3))
 image_grids = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 mappers = grids.MapperCollection.from_mask(mask=ma)
 
 ### Setup the ray tracing model, and use to generate the 2D galaxy image ###
 
-# lens_name = 'lens_sersic'
-#gal = galaxy.Galaxy(light_profiles=[lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.7,
-#                    phi=90.0, intensity=0.5, effective_radius=1.0, sersic_index=4.0)])
-#ray_trace = ray_tracing.Tracer(lens_galaxies=[gal], source_galaxies=[], image_plane_grids=image_grids)
-
-lens_name = 'source_sersic'
-lens_galaxy = galaxy.Galaxy(mass_profiles=[mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.7, phi=90.0,
-                                                                   einstein_radius=1.0)])
-source_galaxy = galaxy.Galaxy(light_profiles=[lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.7,
-                                                        phi=90.0, intensity=0.5, effective_radius=1.0,
-                                                        sersic_index=2.0)])
-ray_trace = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                               image_plane_grids=image_grids)
+lens_name = 'lens_sersic'
+gal = galaxy.Galaxy(light_profiles=[lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.5,
+                                                        effective_radius=1.3, sersic_index=3.0)])
+ray_trace = ray_tracing.Tracer(lens_galaxies=[gal], source_galaxies=[], image_plane_grids=image_grids)
 
 galaxy_image_1d = ray_trace.generate_image_of_galaxy_light_profiles()
 galaxy_image_2d = mappers.data_to_pixel.map_to_2d(galaxy_image_1d)
