@@ -4,7 +4,6 @@ import pytest
 from src.analysis import fitting, ray_tracing, galaxy
 from src.imaging import grids
 from src.imaging import mask as mask
-from src.imaging import image as img
 from src.profiles import light_profiles
 from src.pixelization import frame_convolution
 
@@ -18,7 +17,7 @@ def make_no_galaxies():
 def make_galaxy_light_sersic():
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
-    return galaxy.Galaxy(light_profiles=[sersic])
+    return galaxy.Galaxy(light_profile=sersic)
 
 
 @pytest.fixture(name="image_1x1", scope='function')
@@ -117,7 +116,7 @@ class TestFitData:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
+        mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
@@ -133,7 +132,7 @@ class TestFitData:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
+        mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
