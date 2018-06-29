@@ -71,8 +71,8 @@ def source_only_pipeline(image, mask):
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the galaxy priors to the optimizer
-    optimizer_1.source_galaxies = [source_galaxy_prior]
-    optimizer_1.lens_galaxies = [lens_galaxy_prior]
+    optimizer_1.variable.source_galaxies = [source_galaxy_prior]
+    optimizer_1.variable.lens_galaxies = [lens_galaxy_prior]
 
     # Analyse the system
     result_1 = optimizer_1.fit(analysis)
@@ -97,8 +97,8 @@ def source_only_pipeline(image, mask):
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
 
     # Add the galaxy priors to the optimizer
-    optimizer_2.lens_galaxies = [lens_galaxy_prior]
-    optimizer_2.source_galaxies = [source_galaxy_prior]
+    optimizer_2.variable.lens_galaxies = [lens_galaxy_prior]
+    optimizer_2.variable.source_galaxies = [source_galaxy_prior]
 
     # Associate priors found in the first analysis with the new galaxy priors
     lens_galaxy_prior_result = result_1.priors.lens_galaxies[0]
@@ -127,13 +127,16 @@ def source_only_pipeline(image, mask):
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.VoronoiPixelization)
 
     #  Add the variable pixelization to the optimizer
-    optimizer_2h.source_galaxies = [source_galaxy_prior]
+    optimizer_2h.variable.source_galaxies = [source_galaxy_prior]
 
     # Set the regularization prior using results from analysis 2
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
 
+    # Set a constant lens galaxy from the previous result
+    optimizer_2h.constant.lens_galaxies = result_2.instance.lens_galaxies
+
     # Analyse the system
-    result_2h = optimizer_2h.fit(analysis, lens_galaxies=result_2.lens_galaxies)
+    result_2h = optimizer_2h.fit(analysis)
 
     # Add the result of analysis 2h to the results
     results.append(result_2h)
@@ -152,16 +155,18 @@ def source_only_pipeline(image, mask):
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the lens galaxy prior to the optimizer
-    optimizer_a.lens_galaxies = [lens_galaxy_prior]
+    optimizer_a.variable.lens_galaxies = [lens_galaxy_prior]
 
     # Set some lens galaxy priors using results from analysis 2
     lens_galaxy_prior_result = result_2.priors.lens_galaxies[0]
     lens_galaxy_prior.shear_mass_profile = lens_galaxy_prior_result.shear_mass_profile
     lens_galaxy_prior.spherical_power_law_mass_profile.centre = lens_galaxy_prior_result.spherical_mass_profile.centre
 
+    # Set a source galaxy with a fixed pixelization from analysis 2
+    optimizer_a.constant.source_galaxies = result_2h.instance.source_galaxies
+
     # Analyse the system
-    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instrumentation,
-                               source_galaxies=result_2h.source_galaxies)
+    result_a = optimizer_a.fit(analysis)
 
     # Add the result of the main analysis to the results
     results.append(result_a)
@@ -206,12 +211,13 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
     lens_galaxy.redshift = model_mapper.Constant(1)
 
-    optimizer_1.lens_galaxies = [lens_galaxy]
+    optimizer_1.variable.lens_galaxies = [lens_galaxy]
 
     result_1 = optimizer_1.fit(lens_light_analysis)
 
     results.append(result_1)
 
+    # TODO: simplify this stage of the process
     light_grid = result_1.lens_galaxies[0].light_profile.intensity_at_coordinates(
         lens_light_analysis.coords_collection.image)
 
@@ -235,8 +241,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
                                            shear_mass_profile=mass_profiles.ExternalShear)
     source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
 
-    source_analysis.lens_galaxies = [lens_galaxy]
-    source_analysis.source_galaxies = [source_galaxy]
+    optimizer_2.variable.lens_galaxies = [lens_galaxy]
+    optimizer_2.variable.source_galaxies = [source_galaxy]
 
     result_2 = optimizer_2.fit(source_analysis)
 
@@ -268,8 +274,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     lens_galaxy.shear_mass_profile.magnitude = lens_galaxy_result.shear_mass_profile.magnitude
     lens_galaxy.shear_mass_profile.phi = lens_galaxy_result.shear_mass_profile.phi
 
-    optimizer_3.lens_galaxies = [lens_galaxy]
-    optimizer_3.source_galaxies = [source_galaxy]
+    optimizer_3.variable.lens_galaxies = [lens_galaxy]
+    optimizer_3.variable.source_galaxies = [source_galaxy]
 
     result_3 = optimizer_3.fit(pixelized_source_analysis)
     results.append(result_3)
@@ -291,8 +297,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_4 = non_linear.DownhillSimplex(include_hyper_image=True)
 
-    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.sie_mass_profile,
-                                           shear_mass_profile=result_3.shear_mass_profile,
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.instance.sie_mass_profile,
+                                           shear_mass_profile=result_3.instance.shear_mass_profile,
                                            sersic_light_profile=light_profiles.EllipticalSersic,
                                            exponential_light_profile=light_profiles.EllipticalExponential,
                                            hyper_galaxy=galaxy.HyperGalaxy)
@@ -306,8 +312,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     source_galaxy.pixelization.pixels = pixelization_result.pixels
     source_galaxy.pixelization.regularization_coefficients = pixelization_result.regularization_coefficients
 
-    optimizer_4.lens_galaxies = [lens_galaxy]
-    optimizer_4.source_galaxies = [source_galaxy]
+    optimizer_4.variable.lens_galaxies = [lens_galaxy]
+    optimizer_4.variable.source_galaxies = [source_galaxy]
 
     optimizer_4.fit(full_light_analysis)
 
