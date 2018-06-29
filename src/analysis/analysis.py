@@ -53,7 +53,7 @@ class Analysis(object):
                                                                                       grid_size_sub,
                                                                                       cluster_grid_size))
 
-    def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None, hyper_galaxies=None):
+    def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
         """
         Runs the analysis. Determines how well the supplied model fits the image.
 
@@ -85,6 +85,7 @@ class Analysis(object):
 
         is_profile = True in map(lambda galaxy: galaxy.has_profile, galaxies)
         is_pixelization = True in map(lambda galaxy: galaxy.has_pixelization, galaxies)
+        is_hyper_galaxy = True in map(lambda galaxy : galaxy.has_hyper_galaxy, galaxies)
 
         likelihood = None
 
@@ -107,13 +108,19 @@ class Analysis(object):
                                                                 self.kernel_convolver, tracer, self.mapper_cluster,
                                                                 hyper_image)
         elif is_profile:
-            if hyper_galaxies is None:
+            if not is_hyper_galaxy:
                 logger.debug("Fitting for profiles (no hyper galaxy)")
                 likelihood = fitting.fit_data_with_profiles(self.data_collection, self.kernel_convolver, tracer,
                                                         hyper_image)
-            elif hyper_galaxies is not None:
+            elif is_hyper_galaxy:
+                logger.debug("Fitting for profiles (includes hyper galaxy)")
+
+                # TODO : Extract list of hyper galaixes elegent (not all galaxies are necessary hyper gals)
+
+                hyper_galaxies = [galaxies[0].hyper_galaxy]
+
                 likelihood = fitting.fit_data_with_profiles_hyper_galaxies(self.data_collection, self.kernel_convolver,
-                       tracer, hyper_image, self.model_image, self.galaxy_images, self.minimum_values, hyper_galaxies)
+                       tracer, self.model_image, self.galaxy_images, self.minimum_values, hyper_galaxies)
 
         if likelihood is None:
             raise exc.PriorException("No galaxy has a profile or pixelization")
