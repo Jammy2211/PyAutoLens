@@ -77,7 +77,9 @@ class ModelMapper(object):
         for name, cls in classes.items():
             self.add_class(name, cls)
 
-        self.total_parameters = len(self.priors_ordered_by_id)
+    @property
+    def total_parameters(self):
+        return len(self.priors_ordered_by_id)
 
     def __setattr__(self, key, value):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
@@ -87,8 +89,6 @@ class ModelMapper(object):
     def add_classes(self, **kwargs):
         for key, value in kwargs.items():
             self.add_class(key, value)
-
-        self.total_parameters = len(self.priors_ordered_by_id)
 
     def add_class(self, name, cls):
         """
