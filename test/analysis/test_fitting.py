@@ -21,6 +21,59 @@ def make_galaxy_light_sersic():
     return galaxy.Galaxy(light_profiles=[sersic])
 
 
+@pytest.fixture(name="image_1x1", scope='function')
+def make_1x1_image():
+
+    class Im(object):
+        pass
+
+    im = Im()
+
+    im.ma = np.array([[True, True, True],
+                   [True, False, True],
+                   [True, True, True]])
+    im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
+
+    im.image = grids.GridData(grid_data=np.array([1.0]))
+    im.noise = grids.GridData(grid_data=np.array([1.0]))
+    im.exposure_time = grids.GridData(grid_data=np.array([1.0]))
+
+    im.frame = frame_convolution.FrameMaker(mask=im.ma)
+    im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
+                                                 blurring_region_mask=im.ma.compute_blurring_mask(kernel_shape=(3, 3)))
+
+    im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
+    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, grid_size_sub=1, blurring_shape=(3, 3))
+
+    return im
+
+@pytest.fixture(name="image_2x2", scope='function')
+def make_2x2_image():
+
+    class Im(object):
+        pass
+
+    im = Im()
+
+    im.ma = np.array([[True, True, True, True],
+                       [True, False, False, True],
+                       [True, False, False, True],
+                       [True, True, True, True]])
+    im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
+
+    im.image = grids.GridData(grid_data=np.array([1.0]))
+    im.noise = grids.GridData(grid_data=np.array([1.0]))
+    im.exposure_time = grids.GridData(grid_data=np.array([1.0]))
+
+    im.frame = frame_convolution.FrameMaker(mask=im.ma)
+    im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
+                                                 blurring_region_mask=im.ma.compute_blurring_mask(kernel_shape=(3, 3)))
+
+    im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
+    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, grid_size_sub=1, blurring_shape=(3, 3))
+
+    return im
+
 # noinspection PyUnusedLocal
 class MockLightProfile(object):
 
@@ -34,105 +87,72 @@ class MockLightProfile(object):
         return self.value
 
 
+class MockHyperGalaxy(object):
+
+    def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
+        self.contribution_factor = contribution_factor
+        self.noise_factor = noise_factor
+        self.noise_power = noise_power
+
+    def compute_contributions(self, model_image, galaxy_image, minimum_value):
+        contributions = galaxy_image / (model_image + self.contribution_factor)
+        contributions = contributions / np.max(contributions)
+        contributions[contributions < minimum_value] = 0.0
+        return contributions
+
+    def compute_scaled_noise(self, noise, contributions):
+        return self.noise_factor * (noise * contributions) ** self.noise_power
+
+
 class TestFitData:
 
-    def test__image_is_1__noise_is_1__galaxy_returns_1__psf_doesnt_blur__lh_is_noise_term(self, no_galaxies):
+    def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self, image_1x1, no_galaxies):
 
         # Setup the mask, grid data and PSF
 
-        ma = np.array([[True, True, True],
-                         [True, False, True],
-                         [True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
-
-        image = grids.GridData(grid_data=np.array([1.0]))
-        noise = grids.GridData(grid_data=np.array([1.0]))
-        exposure_time = grids.GridData(grid_data=np.array([1.0]))
-
-        frame = frame_convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
+        kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
 
-        # Setup the grids as collections
-
-        grid_datas = grids.DataCollection(image=image, noise=noise, exposure_time=exposure_time)
-        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
-
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       image_plane_grids=grid_collection)
+                                       image_plane_grids=image_1x1.grid_collection)
 
-        likelihood = fitting.fit_data_with_profiles(grid_datas, kernel_convolver, ray_trace)
+        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-    def test__image_is_1__noise_is_1__galaxy_returns_1__psf_blurs_model_to_5__lh_is_correct(self, no_galaxies):
+    def test___1x1_image__tracing_fits_data_perfectly__psf_blurs_model_to_5__lh_is_chi_sq_plus_noise(self, image_1x1,
+                                                                                            no_galaxies):
 
-        # Setup the mask, grid data and PSF
-
-        ma = np.array([[True, True, True],
-                         [True, False, True],
-                         [True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
-
-        frame = frame_convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 1.0, 0.0],
+        kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 1.0, 0.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [0.0, 1.0, 0.0]]))
-
-        image = grids.GridData(grid_data=np.array([1.0]))
-        noise = grids.GridData(grid_data=np.array([1.0]))
-        exposure_time = grids.GridData(grid_data=np.array([1.0]))
-
-        # Setup the grids as collections
-
-        grid_datas = grids.DataCollection(image=image, noise=noise, exposure_time=exposure_time)
-        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
 
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       image_plane_grids=grid_collection)
+                                       image_plane_grids=image_1x1.grid_collection)
 
-        likelihood = fitting.fit_data_with_profiles(grid_datas, kernel_convolver, ray_trace)
+        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace)
 
         assert likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
 
 class TestGenerateBlurredLightProfileImage:
 
-    def test__simple_1_pixel_image__no_psf_blurring_into_mask_from_region(self, galaxy_light_sersic, no_galaxies):
+    def test__1x1_image__no_psf_blurring_into_mask_from_region(self, image_1x1,
+                                                                          galaxy_light_sersic, no_galaxies):
 
-        # Setup the Image and blurring masks
-
-        ma = np.array([[True, True, True],
-                         [True, False, True],
-                         [True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
-
-        frame = frame_convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
+        kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
 
-        # Setup the image and blurring coordinate grids
-
-        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
-
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       image_plane_grids=grid_collection)
-
-        # For this PSF, the blurring region does not blur any flux into the central pixel.
+                                       image_plane_grids=image_1x1.grid_collection)
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles()
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
@@ -140,28 +160,14 @@ class TestGenerateBlurredLightProfileImage:
 
         assert non_blurred_value == blurred_value
 
-    def test__simple_image_1_pixel__psf_all_1s_so_blurs_into_image(self, galaxy_light_sersic, no_galaxies):
+    def test__1x1_image__psf_all_1s_so_blurs_into_image(self, image_1x1, galaxy_light_sersic, no_galaxies):
 
-        # Setup the Image and blurring masks
-
-        ma = np.array([[True, True, True],
-                         [True, False, True],
-                         [True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
-
-        frame = frame_convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
+        kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        # Setup the image and blurring coordinate grids
-
-        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
-
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       image_plane_grids=grid_collection)
+                                       image_plane_grids=image_1x1.grid_collection)
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace, kernel_convolver=kernel_convolver)
 
@@ -174,29 +180,14 @@ class TestGenerateBlurredLightProfileImage:
 
         assert blurred_value[0] == pytest.approx(blurred_value_manual[0], 1e-6)
 
-    def test__image_is_2x2__psf_is_non_symmetric_l_shape(self, galaxy_light_sersic, no_galaxies):
+    def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, image_2x2, galaxy_light_sersic, no_galaxies):
 
-        # Setup the Image and blurring masks
-
-        ma = np.array([[True, True, True, True],
-                         [True, False, False, True],
-                         [True, False, False, True],
-                         [True, True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
-
-        frame = frame_convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 3.0, 0.0],
-                                                                           [0.0, 2.0, 1.0],
-                                                                           [0.0, 0.0, 0.0]]))
-
-        # Setup the image and blurring coordinate grids
-
-        grid_collection = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+        kernel_convolver = image_2x2.convolver.convolver_for_kernel(kernel=np.array([[0.0, 3.0, 0.0],
+                                                                                     [0.0, 2.0, 1.0],
+                                                                                     [0.0, 0.0, 0.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       image_plane_grids=grid_collection)
+                                       image_plane_grids=image_2x2.grid_collection)
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
                                                                      kernel_convolver=kernel_convolver)
@@ -215,6 +206,34 @@ class TestGenerateBlurredLightProfileImage:
         assert blurred_value_manual_1 == pytest.approx(blurred_value[1], 1e-6)
         assert blurred_value_manual_2 == pytest.approx(blurred_value[2], 1e-6)
         assert blurred_value_manual_3 == pytest.approx(blurred_value[3], 1e-6)
+
+
+class TestFitDataWithProfilesHyperGalaxy:
+
+    def test__chi_sq_is_0__hyper_galaxy_adds_to_noise_term(self, image_1x1, no_galaxies):
+
+        kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
+                                                                           [0.0, 1.0, 0.0],
+                                                                           [0.0, 0.0, 0.0]]))
+
+        # Setup as a ray trace instance, using a light profile for the lens
+
+        mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
+
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=image_1x1.grid_collection)
+
+        model_image = np.array([1.0])
+        galaxy_images = [np.array([1.0]), np.array([1.0])]
+        minimum_values = [0.0, 0.0]
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0),
+                          MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)]
+
+        likelihood = fitting.fit_data_with_profiles_hyper_galaxies(image_1x1.grid_datas, kernel_convolver, ray_trace,
+                                                          model_image, galaxy_images, minimum_values, hyper_galaxies)
+
+        assert likelihood == -0.5 * np.log(2 * np.pi * 4.0**2.0) # should be 1
 
 
 class TestComputeBlurredImages:
@@ -330,6 +349,134 @@ class TestComputeBlurredImages:
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
 
         assert (blurred_image == np.array([9.0, 9.0, 9.0, 9.0])).all()
+
+
+class TestGenerateContributions:
+
+    def test__x1_hyper_galaxy__model_image_is_galaxy_image__contributions_all_1(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
+
+        model_image = np.array([[1.0, 1.0, 1.0]])
+
+        galaxy_images = [np.array([[1.0, 1.0, 1.0]])]
+
+        minimum_values = [0.0]
+
+        contributions = fitting.generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+
+        assert (contributions[0] == np.array([[1.0, 1.0, 1.0]])).all()
+
+    def test__x1_hyper_galaxy__model_image_and_galaxy_image_different_contributions_change(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
+
+        model_image = np.array([[0.5, 1.0, 1.5]])
+
+        galaxy_images = [np.array([[0.5, 1.0, 1.5]])]
+
+        minimum_values = [0.6]
+
+        contributions = fitting.generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+
+        assert (contributions[0] == np.array([[0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0]])).all()
+
+    def test__x2_hyper_galaxy__model_image_and_galaxy_image_different_contributions_change(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
+                          MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
+
+        model_image = np.array([[0.5, 1.0, 1.5]])
+
+        galaxy_images = [np.array([[0.5, 1.0, 1.5]]), np.array([[0.5, 1.0, 1.5]])]
+
+        minimum_values = [0.5, 0.6]
+
+        contributions = fitting.generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+
+        assert (contributions[0] == np.array([[1.0, 1.0, 1.0]])).all()
+        assert (contributions[1] == np.array([[0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0]])).all()
+
+    def test__x2_hyper_galaxy__same_as_above_use_real_hyper_galaxy(self):
+
+        hyper_galaxies = [galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
+                          galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
+
+        model_image = np.array([[0.5, 1.0, 1.5]])
+
+        galaxy_images = [np.array([[0.5, 1.0, 1.5]]), np.array([[0.5, 1.0, 1.5]])]
+
+        minimum_values = [0.5, 0.6]
+
+        contributions = fitting.generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+
+        assert (contributions[0] == np.array([[1.0, 1.0, 1.0]])).all()
+        assert (contributions[1] == np.array([[0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0]])).all()
+
+
+class TestGenerateScaledNoise:
+
+    def test__x1_hyper_galaxy__noise_factor_is_0__scaled_noise_is_input_noise(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
+
+        noise = np.array([1.0, 1.0, 1.0])
+
+        contributions = np.array([1.0, 1.0, 2.0])
+
+        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+
+        assert (scaled_noise == noise).all()
+
+    def test__x1_hyper_galaxy__noise_factor_and_power_are_1__scaled_noise_added_to_input_noise(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)]
+
+        noise = np.array([1.0, 1.0, 1.0])
+
+        contributions = [np.array([1.0, 1.0, 0.5])]
+
+        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+
+        assert (scaled_noise == np.array([2.0, 2.0, 1.5])).all()
+
+    def test__x1_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)]
+
+        noise = np.array([1.0, 1.0, 1.0])
+
+        contributions = [np.array([1.0, 1.0, 0.5])]
+
+        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+
+        assert (scaled_noise == np.array([2.0, 2.0, 1.25])).all()
+
+    def test__x2_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
+
+        hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
+                          MockHyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
+
+        noise = np.array([1.0, 1.0, 1.0])
+
+        contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
+
+        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+
+        assert (scaled_noise == np.array([2.5, 2.5, 1.75])).all()
+
+    def test__x2_hyper_galaxy__same_as_above_but_use_real_hyper_galaxy(self):
+
+        hyper_galaxies = [galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
+                          galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
+
+        noise = np.array([1.0, 1.0, 1.0])
+
+        contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
+
+        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+
+        assert (scaled_noise == np.array([2.5, 2.5, 1.75])).all()
 
 
 class TestLikelihood:
