@@ -766,7 +766,7 @@ class Constant(object):
 
         Parameters
         ----------
-        value: float
+        value: Union(float, tuple)
             The value this constant should take.
         """
         self.value = value
