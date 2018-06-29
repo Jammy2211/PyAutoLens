@@ -191,8 +191,12 @@ class DownhillSimplex(NonLinearOptimizer):
         # Get the solution provided by Downhill Simplex
         means = output[0]
 
+        result = Result
+
         # Create a set of Gaussian priors from this result and associate them with the result object.
-        result.priors = self.mapper_from_gaussian_means(means)
+        result.most_likely = self.instance_from_physical_vector([means])
+        # TODO : still not working
+       # result.priors = self.mapper_from_gaussian_means(means)
 
         return result
 
