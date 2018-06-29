@@ -33,17 +33,17 @@ def source_only_pipeline(image, mask):
     logger.info(
         """
         Pipeline 1:
-    
+
         PURPOSE - Fit a source-only image (i.e. no lens light component)
-    
+
         PREPROCESSING:
-    
+
         - Mark the brightest regions / multiple images of the source.
         - Draw a circle tracing the source (Einstein Radius / centre)
         - Draw circle / ellipse for the mask.
-    
+
         NOTES:
-    
+
         Image: Observed image used throughout.
         Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
         """
@@ -133,7 +133,7 @@ def source_only_pipeline(image, mask):
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
 
     # Analyse the system
-    result_2h = optimizer_2h.fit(analysis, lens_galaxies=result_2.instance.lens_galaxies)
+    result_2h = optimizer_2h.fit(analysis, lens_galaxies=result_2.lens_galaxies)
 
     # Add the result of analysis 2h to the results
     results.append(result_2h)
@@ -160,8 +160,8 @@ def source_only_pipeline(image, mask):
     lens_galaxy_prior.spherical_power_law_mass_profile.centre = lens_galaxy_prior_result.spherical_mass_profile.centre
 
     # Analyse the system
-    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instance.instrumentation,
-                               source_galaxies=result_2h.instance.source_galaxies)
+    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instrumentation,
+                               source_galaxies=result_2h.source_galaxies)
 
     # Add the result of the main analysis to the results
     results.append(result_a)
@@ -190,13 +190,13 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     # Create an array in which to store results
     results = []
     """
-    
+
     1) Image: Observed image, includes lens+source.
        Mask: Circle / Ellipse containing entire lens galaxy.
        Light: Sersic (This phase simply subtracts the lens light from the image - the source is present and disrupts the 
        NLO: LM        fit but we choose not to care)
        Purpose: Provides lens subtracted image for subsequent phases.
-       
+
     """
     # Create an analysis object for the image and a mask that means only lens light is visible
     lens_light_analysis = an.Analysis(image, lens_mask)
@@ -291,8 +291,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_4 = non_linear.DownhillSimplex(include_hyper_image=True)
 
-    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.instance.sie_mass_profile,
-                                           shear_mass_profile=result_3.instance.shear_mass_profile,
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.sie_mass_profile,
+                                           shear_mass_profile=result_3.shear_mass_profile,
                                            sersic_light_profile=light_profiles.EllipticalSersic,
                                            exponential_light_profile=light_profiles.EllipticalExponential,
                                            hyper_galaxy=galaxy.HyperGalaxy)
@@ -312,21 +312,21 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     optimizer_4.fit(full_light_analysis)
 
 
-
 default_config_path = '{}/../../config/'.format(os.path.dirname(os.path.realpath(__file__)))
 default_data_path = '{}/../../data/'.format(os.path.dirname(os.path.realpath(__file__)))
 # default_results_path = '{}/../../../results/'.format(os.path.dirname(os.path.realpath(__file__)))
 default_results_path = '/home/jammy/results/'
 
+
 class PipelinePaths(object):
 
     def __init__(self, data_name, config_path=default_config_path, data_path=default_data_path,
                  results_path=default_results_path):
-
         self.data_name = data_name
-        self.config_path=config_path
-        self.data_path=data_path+data_name+'/'
+        self.config_path = config_path
+        self.data_path = data_path + data_name + '/'
         self.results_path = results_path
+
 
 def profiles_pipeline(paths, image, mask):
     """
@@ -363,8 +363,8 @@ def profiles_pipeline(paths, image, mask):
     )
 
     pipeline_name = 'Hyper_Lens'
-    pipeline_path = paths.results_path+pipeline_name+'/'
-    pipeline_data_path = pipeline_path+paths.data_name+'/'
+    pipeline_path = paths.results_path + pipeline_name + '/'
+    pipeline_data_path = pipeline_path + paths.data_name + '/'
     if not os.path.exists(pipeline_path): os.mkdir(pipeline_path)
     if not os.path.exists(pipeline_data_path): os.mkdir(pipeline_data_path)
 
@@ -388,6 +388,10 @@ def profiles_pipeline(paths, image, mask):
     # Define galaxy priors
     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
     lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((0.0, 0.0))
+    lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(0.8)
+    lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(90.0)
+    lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(0.5)
+    lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(1.3)
     # TODO : Can we get rid of the x2 redshift?
     lens_galaxy_prior.redshift.redshift = model_mapper.Constant(1.0)
 
@@ -420,8 +424,20 @@ def profiles_pipeline(paths, image, mask):
     # Create an array in which to store results
     results = []
 
+    # TODO : These images should come from the results of the previous phase
+
+    import numpy as np
+
+    model_image = np.ones((mask.pixels_in_mask))
+    galaxy_images = [np.ones((mask.pixels_in_mask))]
+
+    # TODO : minimum value hsould be 0 if the galaxy was a profile, and 0.02 if it was a pixelization.
+
+    minimum_values = [0.0]
+
     # Create an analysis object for the image and mask
-    analysis = an.Analysis(image, mask)
+    analysis = an.Analysis(image, mask, model_image=model_image, galaxy_images=galaxy_images,
+                           minimum_values=minimum_values)
 
     logger.info(
         """
@@ -437,12 +453,23 @@ def profiles_pipeline(paths, image, mask):
     # Define galaxy priors
     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic,
                                                  hyper_galaxy=galaxy.HyperGalaxy)
-    lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant(result_1.most_likely.centre)
-    lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(result_1.most_likely.axis_ratio)
-    lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(result_1.most_likely.phi)
-    lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(result_1.most_likely.intensity)
-    lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(result_1.most_likely.effective_radius)
-    lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(result_1.most_likely.sersic_index)
+
+    lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((0.0, 0.0))
+    lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(0.8)
+    lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(90.0)
+    lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(0.5)
+    lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(1.3)
+    lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(3.0)
+
+    # TODO : Wanted to use previous phase results, just wasnt working for me.
+
+    # lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.centre)
+    # lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.axis_ratio)
+    # lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.phi)
+    # lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.intensity)
+    # lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(
+    #     result_1.most_likely.lens_galaxies[0].sersic_light_profile.effective_radius)
+    # lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.sersic_index)
 
     # Add the galaxy priors to the optimizer
     optimizer_1.lens_galaxies = [lens_galaxy_prior]
@@ -452,6 +479,7 @@ def profiles_pipeline(paths, image, mask):
 
     # Add the result of the second analysis to the list
     results.append(result_1)
+
 
 # def profiles_pipeline(paths, image, mask):
 #     """
