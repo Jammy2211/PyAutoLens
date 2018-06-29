@@ -85,7 +85,7 @@ class Analysis(object):
 
         is_profile = True in map(lambda galaxy: galaxy.has_profile, galaxies)
         is_pixelization = True in map(lambda galaxy: galaxy.has_pixelization, galaxies)
-        is_hyper_galaxy = True in map(lambda galaxy : galaxy.has_hyper_galaxy, galaxies)
+        is_hyper_galaxy = True in map(lambda galaxy: galaxy.has_hyper_galaxy, galaxies)
 
         likelihood = None
 
@@ -111,7 +111,7 @@ class Analysis(object):
             if not is_hyper_galaxy:
                 logger.debug("Fitting for profiles (no hyper galaxy)")
                 likelihood = fitting.fit_data_with_profiles(self.data_collection, self.kernel_convolver, tracer,
-                                                        hyper_image)
+                                                            hyper_image)
             elif is_hyper_galaxy:
                 logger.debug("Fitting for profiles (includes hyper galaxy)")
 
@@ -120,7 +120,8 @@ class Analysis(object):
                 hyper_galaxies = [galaxies[0].hyper_galaxy]
 
                 likelihood = fitting.fit_data_with_profiles_hyper_galaxies(self.data_collection, self.kernel_convolver,
-                       tracer, self.model_image, self.galaxy_images, self.minimum_values, hyper_galaxies)
+                                                                           tracer, self.model_image, self.galaxy_images,
+                                                                           self.minimum_values, hyper_galaxies)
 
         if likelihood is None:
             raise exc.PriorException("No galaxy has a profile or pixelization")
