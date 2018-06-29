@@ -154,8 +154,8 @@ class ModelMapper(object):
 
     @property
     def prior_class_dict(self):
-        return {prior[1]: prior_model.cls for name, prior_model in self.prior_models for prior in
-                prior_model.priors}
+        return {prior: cls for prior_model in self.prior_models for prior, cls in
+                prior_model[1].prior_class_dict.items()}
 
     @property
     def priors_ordered_by_id(self):
@@ -593,6 +593,10 @@ class PriorModel(AbstractPriorModel):
         """
         return list(filter(lambda t: isinstance(t[1], Constant), self.__dict__.items()))
 
+    @property
+    def prior_class_dict(self):
+        return {prior[1]: self.cls for prior in self.priors}
+
     def instance_for_arguments(self, arguments):
         """
         Create an instance of the associated class for a set of arguments
@@ -692,6 +696,10 @@ class ListPriorModel(list, AbstractPriorModel):
         priors: [(String, Union(Prior, TuplePrior))]
         """
         return set([prior for prior_model in self for prior in prior_model.priors])
+
+    @property
+    def prior_class_dict(self):
+        return {prior: cls for prior_model in self for prior, cls in prior_model.prior_class_dict.items()}
 
 
 class TuplePrior(object):
