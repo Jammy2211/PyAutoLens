@@ -27,3 +27,4 @@ non_linear/files/setupmultinest.paramnames
 non_linear/files/setup/
 test/test_files/non_linear/files/setup/multinest.paramnames
 test/test_files/non_linear/files/setupmultinest.paramnames
+src/output/
