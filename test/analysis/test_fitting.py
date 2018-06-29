@@ -116,7 +116,7 @@ class TestFitData:
 
         # Setup as a ray trace instance, using a light profile for the lens
 
-        mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
+        mock_galaxy = galaxy.Galaxy(light_profiles=[MockLightProfile(value=1.0)])
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
