@@ -82,7 +82,11 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         self.config = config
 
     def __setattr__(self, key, value):
-        if key == "redshift" and (isinstance(value, float) or isinstance(value, int)):
+        if key == "redshift" \
+                and (isinstance(value, float)
+                     or isinstance(value, int)
+                     or isinstance(value, model_mapper.Prior)
+                     or isinstance(value, model_mapper.Constant)):
             value = galaxy.Redshift(value)
         super(GalaxyPrior, self).__setattr__(key, value)
 
