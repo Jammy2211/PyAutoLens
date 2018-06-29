@@ -171,22 +171,28 @@ class DownhillSimplex(NonLinearOptimizer):
     def fit(self, analysis, **constants):
         initial_vector = self.physical_vector_from_prior_medians
 
-        result = None
+        class Fitness(object):
+            def __init__(self, instance_from_physical_vector):
+                self.result = None
+                self.instance_from_physical_vector = instance_from_physical_vector
 
-        def fitness_function(vector):
-            global result
-            instance = self.instance_from_physical_vector(vector)
-            args = {**constants, **instance.__dict__}
-            likelihood = analysis.run(**args)
+            def __call__(self, vector):
+                instance = self.instance_from_physical_vector(vector)
+                for key, value in constants.items():
+                    setattr(instance, key, value)
 
-            result = Result(instance, likelihood)
+                likelihood = analysis.run(**instance.__dict__)
+                self.result = Result(instance, likelihood)
 
-            # Return Chi squared
-            return -2 * likelihood
+                # Return Chi squared
+                return -2 * likelihood
+
+        fitness_function = Fitness(self.instance_from_physical_vector)
 
         logger.info("Running DownhillSimplex...")
         output = self.fmin(fitness_function, x0=initial_vector)
         logger.info("DownhillSimplex complete")
+        result = fitness_function.result
 
         # Get the solution provided by Downhill Simplex
         means = output[0]
