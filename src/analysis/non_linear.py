@@ -48,10 +48,22 @@ def generate_parameter_latex(parameters, subscript=''):
 
 
 class Result(object):
-    def __init__(self, instance, likelihood):
+    def __init__(self, instance, likelihood, priors=None):
+        """
+        The result of an optimization.
+
+        Parameters
+        ----------
+        instance: model_mapper.ModelInstance
+            An instance object comprising the class instances that gave the optimal fit
+        likelihood: float
+            A value indicating the likelihood given by the optimal fit
+        priors: model_mapper.ModelMapper
+            An object comprising priors determined by this stage of the analysis
+        """
         self.instance = instance
         self.likelihood = likelihood
-        self.priors = None
+        self.priors = priors
 
     def __str__(self):
         return "Analysis Result:\n{}".format(
