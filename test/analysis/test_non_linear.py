@@ -927,18 +927,36 @@ def make_downhill_simplex(test_config, width_config):
 
 
 class TestFitting(object):
-    def test_constant_downhill_simplex(self, downhill_simplex):
-        downhill_simplex.constant.mock_class = MockClass()
-        result = downhill_simplex.fit(MockAnalysis())
+    class TestDownhillSimplex(object):
+        def test_constant(self, downhill_simplex):
+            downhill_simplex.constant.mock_class = MockClass()
+            result = downhill_simplex.fit(MockAnalysis())
 
-        assert result.instance.mock_class.one == 1
-        assert result.instance.mock_class.two == 2
-        assert result.likelihood == 1
+            assert result.instance.mock_class.one == 1
+            assert result.instance.mock_class.two == 2
+            assert result.likelihood == 1
 
-    def test_variable_downhill_simplex(self, downhill_simplex, test_config):
-        downhill_simplex.variable.mock_class = model_mapper.PriorModel(MockClass, test_config)
-        result = downhill_simplex.fit(MockAnalysis())
+        def test_variable(self, downhill_simplex, test_config):
+            downhill_simplex.variable.mock_class = model_mapper.PriorModel(MockClass, test_config)
+            result = downhill_simplex.fit(MockAnalysis())
 
-        assert result.instance.mock_class.one == 0.5
-        assert result.instance.mock_class.two == 0.5
-        assert result.likelihood == 1
+            assert result.instance.mock_class.one == 0.5
+            assert result.instance.mock_class.two == 0.5
+            assert result.likelihood == 1
+
+            assert result.priors.mock_class.one.mean == 0.5
+            assert result.priors.mock_class.two.mean == 0.5
+
+        def test_constant_and_variable(self, downhill_simplex, test_config):
+            downhill_simplex.constant.constant = MockClass()
+            downhill_simplex.variable.variable = model_mapper.PriorModel(MockClass, test_config)
+
+            result = downhill_simplex.fit(MockAnalysis())
+
+            assert result.instance.constant.one == 1
+            assert result.instance.constant.two == 2
+            assert result.instance.variable.one == 0.5
+            assert result.instance.variable.two == 0.5
+            assert result.priors.variable.one.mean == 0.5
+            assert result.priors.variable.two.mean == 0.5
+            assert result.likelihood == 1
