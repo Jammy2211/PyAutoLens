@@ -81,6 +81,11 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if hyper_galaxy is not None else None
         self.config = config
 
+    def __setattr__(self, key, value):
+        if key == "redshift" and (isinstance(value, float) or isinstance(value, int)):
+            value = galaxy.Redshift(value)
+        super(GalaxyPrior, self).__setattr__(key, value)
+
     @property
     def fixed_light_profiles(self):
         return [value for value in self.__dict__.values() if is_light_profile(value)]

@@ -340,6 +340,7 @@ def profiles_pipeline(paths, image, mask):
 
      Parameters
      ----------
+     paths
      image: Image
          An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
      mask: Mask
