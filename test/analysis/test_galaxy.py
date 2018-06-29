@@ -826,9 +826,11 @@ class TestMassProfiles(object):
 
 
 class TestHyperGalaxy(object):
+
     class TestContributionMaps(object):
 
         def test__model_image_all_1s__factor_is_0__contributions_all_1s(self):
+
             galaxy_image = np.ones((3))
 
             hyp = galaxy.HyperGalaxy(contribution_factor=0.0)
@@ -847,6 +849,7 @@ class TestHyperGalaxy(object):
             assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
         def test__different_values__threshold_is_1_minimum_threshold_included__wipes_1st_value_to_0(self):
+
             galaxy_image = np.array([0.5, 1.0, 1.5])
 
             hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
@@ -858,6 +861,7 @@ class TestHyperGalaxy(object):
     class TestScaledNoise(object):
 
         def test__contribution_all_1s__noise_factor_2__noise_adds_double(self):
+
             noise = np.array([1.0, 2.0, 3.0])
             galaxy_contributions = np.ones((3, 1))
 
@@ -865,7 +869,7 @@ class TestHyperGalaxy(object):
 
             scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
 
-            assert (scaled_noise == np.array([3.0, 6.0, 9.0])).all()
+            assert (scaled_noise == np.array([2.0, 4.0, 6.0])).all()
 
         def test__same_as_above_but_contributions_vary(self):
             noise = np.array([1.0, 2.0, 3.0])
@@ -875,9 +879,10 @@ class TestHyperGalaxy(object):
 
             scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
 
-            assert (scaled_noise == np.array([1.0, 4.0, 9.0])).all()
+            assert (scaled_noise == np.array([0.0, 2.0, 6.0])).all()
 
         def test__same_as_above_but_change_noise_scale_terms(self):
+
             noise = np.array([1.0, 2.0, 3.0])
             galaxy_contributions = np.array([[0.0, 0.5, 1.0]])
 
@@ -885,7 +890,7 @@ class TestHyperGalaxy(object):
 
             scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
 
-            assert (scaled_noise == np.array([1.0, 4.0, 21.0])).all()
+            assert (scaled_noise == np.array([0.0, 2.0, 18.0])).all()
 
 
 class TestBooleanProperties(object):

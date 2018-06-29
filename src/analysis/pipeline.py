@@ -6,6 +6,7 @@ from src.pixelization import pixelization
 from src.analysis import model_mapper
 from src.analysis import galaxy
 
+import os
 import logging
 
 logging.basicConfig()
@@ -310,6 +311,275 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_4.fit(full_light_analysis)
 
+
+
+default_config_path = '{}/../../config/'.format(os.path.dirname(os.path.realpath(__file__)))
+default_data_path = '{}/../../data/'.format(os.path.dirname(os.path.realpath(__file__)))
+# default_results_path = '{}/../../../results/'.format(os.path.dirname(os.path.realpath(__file__)))
+default_results_path = '/home/jammy/results/'
+
+class PipelinePaths(object):
+
+    def __init__(self, data_name, config_path=default_config_path, data_path=default_data_path,
+                 results_path=default_results_path):
+
+        self.data_name = data_name
+        self.config_path=config_path
+        self.data_path=data_path+data_name+'/'
+        self.results_path = results_path
+
+def profiles_pipeline(paths, image, mask):
+    """
+     Fit an image with profiles, gradually adding extra profiles.
+
+     Parameters
+     ----------
+     image: Image
+         An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
+     mask: Mask
+         A mask describing which parts of the image should be excluded from the analysis
+
+     Returns
+     -------
+     result: [Result]
+         An array of results, one for each stage of the analysis
+     """
+
+    logger.info(
+        """
+        Pipeline Profiles:
+
+        PURPOSE - Fit profiles to an image.
+
+        PREPROCESSING:
+
+        - N/A
+
+        NOTES:
+
+        Image: Observed image used throughout.
+        Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
+        """
+    )
+
+    pipeline_name = 'Hyper_Lens'
+    pipeline_path = paths.results_path+pipeline_name+'/'
+    pipeline_data_path = pipeline_path+paths.data_name+'/'
+    if not os.path.exists(pipeline_path): os.mkdir(pipeline_path)
+    if not os.path.exists(pipeline_data_path): os.mkdir(pipeline_data_path)
+
+    # Create an array in which to store results
+    results = []
+
+    # Create an analysis object for the image and mask
+    analysis = an.Analysis(image, mask)
+
+    logger.info(
+        """
+        1) Light: Elliptical Sersic x1
+        """
+    )
+
+    analysis_path = pipeline_data_path + '1_lens_init/'
+
+    # Create an optimizer
+    optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
+
+    # Define galaxy priors
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
+    lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((0.0, 0.0))
+    # TODO : Can we get rid of the x2 redshift?
+    lens_galaxy_prior.redshift.redshift = model_mapper.Constant(1.0)
+
+    # Add the galaxy priors to the optimizer
+    optimizer_1.lens_galaxies = [lens_galaxy_prior]
+
+    # Analyse the system
+    result_1 = optimizer_1.fit(analysis)
+
+    # Add the result of the second analysis to the list
+    results.append(result_1)
+
+    logger.info(
+        """
+        Pipeline Profiles:
+
+        PURPOSE - Fit profiles to an image.
+
+        PREPROCESSING:
+
+        - N/A
+
+        NOTES:
+
+        Image: Observed image used throughout.
+        Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
+        """
+    )
+
+    # Create an array in which to store results
+    results = []
+
+    # Create an analysis object for the image and mask
+    analysis = an.Analysis(image, mask)
+
+    logger.info(
+        """
+        2) Light: Elliptical Sersic x2 (The results of the first Sersic are fixed)
+        """
+    )
+
+    analysis_path = pipeline_data_path + '1h_lens/'
+
+    # Create an optimizer
+    optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
+
+    # Define galaxy priors
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic,
+                                                 hyper_galaxy=galaxy.HyperGalaxy)
+    lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant(result_1.most_likely.centre)
+    lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(result_1.most_likely.axis_ratio)
+    lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(result_1.most_likely.phi)
+    lens_galaxy_prior.sersic_light_profile.intensity = model_mapper.Constant(result_1.most_likely.intensity)
+    lens_galaxy_prior.sersic_light_profile.effective_radius = model_mapper.Constant(result_1.most_likely.effective_radius)
+    lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(result_1.most_likely.sersic_index)
+
+    # Add the galaxy priors to the optimizer
+    optimizer_1.lens_galaxies = [lens_galaxy_prior]
+
+    # Analyse the system
+    result_1 = optimizer_1.fit(analysis)
+
+    # Add the result of the second analysis to the list
+    results.append(result_1)
+
+# def profiles_pipeline(paths, image, mask):
+#     """
+#      Fit an image with profiles, gradually adding extra profiles.
+#
+#      Parameters
+#      ----------
+#      image: Image
+#          An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
+#      mask: Mask
+#          A mask describing which parts of the image should be excluded from the analysis
+#
+#      Returns
+#      -------
+#      result: [Result]
+#          An array of results, one for each stage of the analysis
+#      """
+#
+#     logger.info(
+#         """
+#         Pipeline Profiles:
+#
+#         PURPOSE - Fit profiles to an image.
+#
+#         PREPROCESSING:
+#
+#         - N/A
+#
+#         NOTES:
+#
+#         Image: Observed image used throughout.
+#         Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
+#         """
+#     )
+#
+#     pipeline_name = 'Profiles'
+#     pipeline_path = paths.results_path+pipeline_name+'/'
+#     pipeline_data_path = pipeline_path+paths.data_name+'/'
+#     if not os.path.exists(pipeline_path): os.mkdir(pipeline_path)
+#     if not os.path.exists(pipeline_data_path): os.mkdir(pipeline_data_path)
+#
+#     # Create an array in which to store results
+#     results = []
+#
+#     # Create an analysis object for the image and mask
+#     analysis = an.Analysis(image, mask)
+#
+#     logger.info(
+#         """
+#         1) Light: Elliptical Sersic x1
+#         """
+#     )
+#
+#     analysis_path = pipeline_data_path + '1_profile_1st/'
+#
+#     # Create an optimizer
+#     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
+#
+#     # Define galaxy priors
+#     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
+#     lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((1.0, 1.0))
+#     # TODO : Can we get rid of the x2 redshift?
+#     lens_galaxy_prior.redshift.redshift = model_mapper.Constant(1.0)
+#
+#     # Add the galaxy priors to the optimizer
+#     print(lens_galaxy_prior)
+#     stop
+#     optimizer_1.lens_galaxies = [lens_galaxy_prior]
+#
+#     # Analyse the system
+#     result_1 = optimizer_1.fit(analysis)
+#
+#     # Add the result of the second analysis to the list
+#     results.append(result_1)
+#
+#     logger.info(
+#         """
+#         Pipeline Profiles:
+#
+#         PURPOSE - Fit profiles to an image.
+#
+#         PREPROCESSING:
+#
+#         - N/A
+#
+#         NOTES:
+#
+#         Image: Observed image used throughout.
+#         Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
+#         """
+#     )
+#
+#     pipeline_name = 'Profiles'
+#     pipeline_path = paths.results_path+pipeline_name+'/'
+#     pipeline_data_path = pipeline_path+paths.data_name+'/'
+#     if not os.path.exists(pipeline_path): os.mkdir(pipeline_path)
+#     if not os.path.exists(pipeline_data_path): os.mkdir(pipeline_data_path)
+#
+#     # Create an array in which to store results
+#     results = []
+#
+#     # Create an analysis object for the image and mask
+#     analysis = an.Analysis(image, mask)
+#
+#     logger.info(
+#         """
+#         2) Light: Elliptical Sersic x2 (The results of the first Sersic are fixed)
+#         """
+#     )
+#
+#     analysis_path = pipeline_data_path + '1_profile_1st/'
+#
+#     # Create an optimizer
+#     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
+#
+#     # Define galaxy priors
+#     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
+#     lens_galaxy_prior.sersic_light_profile.centre.centre_0 = model_mapper.GaussianPrior(1.0, 1.0)
+#     lens_galaxy_prior.sersic_light_profile.centre.centre_1 = model_mapper.GaussianPrior(1.0, 1.0)
+#
+#     # Add the galaxy priors to the optimizer
+#     optimizer_1.lens_galaxies = [lens_galaxy_prior]
+#
+#     # Analyse the system
+#     result_1 = optimizer_1.fit(analysis)
+#
+#     # Add the result of the second analysis to the list
+#     results.append(result_1)
 
 """
 

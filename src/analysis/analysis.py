@@ -13,7 +13,8 @@ empty_array = []
 
 
 class Analysis(object):
-    def __init__(self, image, mask, grid_size_sub=4, cluster_grid_size=3):
+    def __init__(self, image, mask, grid_size_sub=4, cluster_grid_size=3, model_image=None, galaxy_images=None,
+                 minimum_values=None):
         """
         An analysis object. Once set up with an image and mask it takes a set of objects describing a model and
         determines how well they fit the image.
@@ -43,12 +44,16 @@ class Analysis(object):
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
+        self.model_image = model_image
+        self.galaxy_images = galaxy_images
+        self.minimum_values = minimum_values
+
         logger.info("Analysis created for image "
                     "with shape {}, grid_sub_size {} and cluster_grid_size {}".format(image.shape,
                                                                                       grid_size_sub,
                                                                                       cluster_grid_size))
 
-    def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
+    def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None, hyper_galaxies=None):
         """
         Runs the analysis. Determines how well the supplied model fits the image.
 
@@ -102,9 +107,13 @@ class Analysis(object):
                                                                 self.kernel_convolver, tracer, self.mapper_cluster,
                                                                 hyper_image)
         elif is_profile:
-            logger.debug("Fitting for profiles")
-            likelihood = fitting.fit_data_with_profiles(self.data_collection, self.kernel_convolver, tracer,
+            if hyper_galaxies is None:
+                logger.debug("Fitting for profiles (no hyper galaxy)")
+                likelihood = fitting.fit_data_with_profiles(self.data_collection, self.kernel_convolver, tracer,
                                                         hyper_image)
+            elif hyper_galaxies is not None:
+                likelihood = fitting.fit_data_with_profiles_hyper_galaxies(self.data_collection, self.kernel_convolver,
+                       tracer, hyper_image, self.model_image, self.galaxy_images, self.minimum_values, hyper_galaxies)
 
         if likelihood is None:
             raise exc.PriorException("No galaxy has a profile or pixelization")
