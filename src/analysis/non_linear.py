@@ -72,7 +72,7 @@ class Result(object):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, model_mapper=mm.ModelMapper(), include_hyper_image=False,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(),
                  config_path=None, path=default_path,
                  check_model=True, **classes):
         """Abstract base class for non-linear optimizers.
@@ -205,7 +205,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper() , path=default_path, check_model=True,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=True,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
