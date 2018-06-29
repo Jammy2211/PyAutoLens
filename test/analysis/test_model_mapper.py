@@ -670,35 +670,55 @@ def make_width_config():
                                              "test_files/config/priors/width"))
 
 
+@pytest.fixture(name="mapper_with_one")
+def make_mapper_with_one(test_config, width_config):
+    mapper = model_mapper.ModelMapper(width_config=width_config)
+    mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+    return mapper
+
+
+@pytest.fixture(name="mapper_with_list")
+def make_mapper_with_list(test_config, width_config):
+    mapper = model_mapper.ModelMapper(width_config=width_config)
+    mapper.list = [model_mapper.PriorModel(MockClass, config=test_config),
+                   model_mapper.PriorModel(MockClass, config=test_config)]
+    return mapper
+
+
 class TestGaussianWidthConfig(object):
     def test_config(self, width_config):
         assert 1 == width_config.get('test_model_mapper', 'MockClass', 'one')
         assert 2 == width_config.get('test_model_mapper', 'MockClass', 'two')
 
-    def test_prior_classes(self, test_config, width_config):
-        mapper = model_mapper.ModelMapper(width_config=width_config)
-        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
+    def test_prior_classes(self, mapper_with_one):
+        assert mapper_with_one.prior_class_dict == {mapper_with_one.one.one: MockClass,
+                                                    mapper_with_one.one.two: MockClass}
 
-        assert mapper.prior_class_dict == {mapper.one.one: MockClass, mapper.one.two: MockClass}
+    def test_prior_classes_list(self, mapper_with_list):
+        assert mapper_with_list.prior_class_dict == {mapper_with_list.list[0].one: MockClass,
+                                                     mapper_with_list.list[0].two: MockClass,
+                                                     mapper_with_list.list[1].one: MockClass,
+                                                     mapper_with_list.list[1].two: MockClass}
 
-    def test_prior_classes_list(self, test_config, width_config):
-        mapper = model_mapper.ModelMapper(width_config=width_config)
-        mapper.list = [model_mapper.PriorModel(MockClass, config=test_config),
-                       model_mapper.PriorModel(MockClass, config=test_config)]
-
-        assert mapper.prior_class_dict == {mapper.list[0].one: MockClass, mapper.list[0].two: MockClass,
-                                           mapper.list[1].one: MockClass, mapper.list[1].two: MockClass}
-
-    def test_basic_gaussian_for_mean(self, test_config, width_config):
-        mapper = model_mapper.ModelMapper(width_config=width_config)
-        mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
-
-        gaussian_mapper = mapper.mapper_from_gaussian_means([3, 4])
+    def test_basic_gaussian_for_mean(self, mapper_with_one):
+        gaussian_mapper = mapper_with_one.mapper_from_gaussian_means([3, 4])
 
         assert gaussian_mapper.one.one.sigma == 1
         assert gaussian_mapper.one.two.sigma == 2
         assert gaussian_mapper.one.one.mean == 3
         assert gaussian_mapper.one.two.mean == 4
+
+    def test_gaussian_mean_for_list(self, mapper_with_list):
+        gaussian_mapper = mapper_with_list.mapper_from_gaussian_means([3, 4, 5, 6])
+
+        assert gaussian_mapper.list[0].one.sigma == 1
+        assert gaussian_mapper.list[0].two.sigma == 2
+        assert gaussian_mapper.list[1].one.sigma == 1
+        assert gaussian_mapper.list[1].two.sigma == 2
+        assert gaussian_mapper.list[0].one.mean == 3
+        assert gaussian_mapper.list[0].two.mean == 4
+        assert gaussian_mapper.list[1].one.mean == 5
+        assert gaussian_mapper.list[1].two.mean == 6
 
     def test_gaussian_for_mean(self, test_config, width_config):
         mapper = model_mapper.ModelMapper(width_config=width_config)
