@@ -134,7 +134,7 @@ class TestPixelization:
                    [0.1875, 0.1875, 0.1875, 0.1875, 0.125, 0.125]])).all()
 
 
-    class TestComputeSourceFluxes:
+    class TestComputeSourceSignals:
 
         def test__x3_image_pixels_signals_1s__source_scale_1__source_signals_all_1s(self):
 
@@ -179,6 +179,49 @@ class TestPixelization:
             source_signals = pix.compute_source_signals(image_to_source, galaxy_image)
 
             assert (source_signals == np.array([1.0, 0.25, 0.25])).all()
+
+
+    class TestComputeRegularizationWeights(object):
+
+        def test__source_signals_all_1s__coefficients_all_1s__weights_all_1s(self):
+
+            pix = pixelization.Pixelization(pixels=3,  regularization_coefficients=(1.0, 1.0))
+
+            source_signals = np.array([1.0, 1.0, 1.0])
+
+            weights = pix.compute_regularization_weights(source_signals)
+
+            assert (weights == np.array([1.0, 1.0, 1.0])).all()
+
+        def test__source_signals_vary__coefficents_all_1s__weights_still_all_1s(self):
+
+            pix = pixelization.Pixelization(pixels=3,  regularization_coefficients=(1.0, 1.0))
+
+            source_signals = np.array([0.25, 0.5, 0.75])
+
+            weights = pix.compute_regularization_weights(source_signals)
+
+            assert (weights == np.array([1.0, 1.0, 1.0])).all()
+
+        def test__source_signals_vary__coefficents_1_and_0__weights_are_source_signals_squared(self):
+
+            pix = pixelization.Pixelization(pixels=3,  regularization_coefficients=(1.0, 0.0))
+
+            source_signals = np.array([0.25, 0.5, 0.75])
+
+            weights = pix.compute_regularization_weights(source_signals)
+
+            assert (weights == np.array([0.25**2.0, 0.5**2.0, 0.75**2.0])).all()
+
+        def test__source_signals_vary__coefficents_0_and_1__weights_are_1_minus_source_signals_squared(self):
+
+            pix = pixelization.Pixelization(pixels=3,  regularization_coefficients=(0.0, 1.0))
+
+            source_signals = np.array([0.25, 0.5, 0.75])
+
+            weights = pix.compute_regularization_weights(source_signals)
+
+            assert (weights == np.array([0.75**2.0, 0.5**2.0, 0.25**2.0])).all()
 
 
 
