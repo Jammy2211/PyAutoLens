@@ -781,16 +781,16 @@ class TestMultiNest(object):
                                                                                                       mn_samples_path):
             create_weighted_samples_10_parameters(mn_samples_path)
 
-            results = non_linear.MultiNest(
+            nlo = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
                 path=mn_samples_path, check_model=False)
 
-            results.light_profile = model_mapper.PriorModel(light_profiles.EllipticalExponential)
-            results.mass_profile = model_mapper.PriorModel(mass_profiles.SphericalNFW)
+            nlo.variable.light_profile = model_mapper.PriorModel(light_profiles.EllipticalExponential)
+            nlo.variable.mass_profile = model_mapper.PriorModel(mass_profiles.SphericalNFW)
 
-            results.save_model_info()
+            nlo.save_model_info()
 
-            weighted_sample_model, weight, likelihood = results.create_weighted_sample_model_instance(index=5)
+            weighted_sample_model, weight, likelihood = nlo.create_weighted_sample_model_instance(index=5)
 
             assert weight == 0.1
             assert likelihood == -0.5 * 9999999.9
