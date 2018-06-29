@@ -409,7 +409,7 @@ class HyperGalaxy(object):
         contributions : ndarray
             The galaxy contribution map.
         """
-        return noise + (self.noise_factor * (noise * contributions) ** self.noise_power)
+        return self.noise_factor * (noise * contributions) ** self.noise_power
 
 
 class Redshift(object):

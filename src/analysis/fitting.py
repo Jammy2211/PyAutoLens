@@ -6,6 +6,67 @@ from src.pixelization import pixelization
 from src.pixelization import covariance_matrix
 
 
+# TODO : Can we make model_immage, galaxy_images, minimum_Values a part of hyper galaxies?
+
+def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, model_image, galaxy_images,
+                                          minimum_values, hyper_galaxies):
+    """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
+
+    Parameters
+    ----------
+    image
+    grid_data : grids.DataCollection
+        The collection of grid data-sets (image, noise, etc.)
+    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+        The 2D Point Spread Function (PSF).
+    tracer : ray_tracing.Tracer
+        The ray-tracing configuration of the model galaxies and their profiles.
+    model_image : ndarray
+        The best-fit model image to the data, from a previous phase of the pipeline
+    galaxy_images : [ndarray]
+        The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+    hyper_galaxies : [galaxy.HyperGalaxy]
+        Each hyper-galaxy which is used to determine its contributions.
+    """
+    contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+    scaled_noise = generate_scaled_noise(grid_data.noise, contributions, hyper_galaxies)
+    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
+    return compute_likelihood(grid_data.image, scaled_noise, blurred_model_image)
+
+def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values):
+    """Use the model image and galaxy image (computed in the previous phase of the pipeline) to determine the
+    contributions of each hyper galaxy.
+
+    Parameters
+    -----------
+    model_image : ndarray
+        The best-fit model image to the data, from a previous phase of the pipeline
+    galaxy_images : [ndarray]
+        The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+    hyper_galaxies : [galaxy.HyperGalaxy]
+        Each hyper-galaxy which is used to determine its contributions.
+    """
+    return list(map(lambda hyper, galaxy_image, minimum_value :
+                    hyper.compute_contributions(model_image, galaxy_image, minimum_value),
+                    hyper_galaxies, galaxy_images, minimum_values))
+
+def generate_scaled_noise(noise, contributions, hyper_galaxies):
+    """Use the contributions of each hyper galaxy to compute the scaled noise.
+
+    Parameters
+    -----------
+    noise : grids.GridData
+        The (unscaled) noise in each pixel.
+    contributions : [ndarray]
+        The contribution of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
+    hyper_galaxies : [galaxy.HyperGalaxy]
+        Each hyper-galaxy which is used to scale the noise.
+    """
+    scaled_noises = list(map(lambda hyper, contribution : hyper.compute_scaled_noise(noise, contribution),
+                             hyper_galaxies, contributions))
+
+    return noise + sum(scaled_noises)
+
 def fit_data_with_profiles(grid_data, kernel_convolver, tracer, image=None):
     """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
