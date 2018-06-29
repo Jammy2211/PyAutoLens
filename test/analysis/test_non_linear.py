@@ -935,6 +935,7 @@ def make_multi_nest(test_config, width_config):
         fitness_function([1 for _ in range(total_parameters)], total_parameters, total_parameters)
 
     create_summary_4_parameters(non_linear.default_path)
+    create_weighted_samples_4_parameters(non_linear.default_path)
 
     return non_linear.MultiNest(run=run, model_mapper=model_mapper.ModelMapper(config=test_config,
                                                                                width_config=width_config),
