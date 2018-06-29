@@ -1,4 +1,13 @@
 import numpy as np
+from src.profiles import light_profiles as lps, mass_profiles as mps
+
+
+def is_light_profile(obj):
+    return isinstance(obj, lps.LightProfile) and not isinstance(obj, mps.MassProfile)
+
+
+def is_mass_profile(obj):
+    return isinstance(obj, mps.MassProfile)
 
 
 class Galaxy(object):
@@ -7,7 +16,7 @@ class Galaxy(object):
     profiles
     """
 
-    def __init__(self, redshift=None, light_profiles=None, mass_profiles=None, pixelization=None, hyper_galaxy=None):
+    def __init__(self, redshift=None, pixelization=None, hyper_galaxy=None, **kwargs):
         """
         Parameters
         ----------
@@ -19,10 +28,20 @@ class Galaxy(object):
             A list of mass profiles describing the mass profiles of this galaxy
         """
         self.redshift = redshift
-        self.light_profiles = light_profiles if light_profiles is not None else []
-        self.mass_profiles = mass_profiles if mass_profiles is not None else []
+
+        for name, val in kwargs.items():
+            setattr(self, name, val)
+
         self.pixelization = pixelization
         self.hyper_galaxy = hyper_galaxy
+
+    @property
+    def light_profiles(self):
+        return [value for value in self.__dict__.values() if is_light_profile(value)]
+
+    @property
+    def mass_profiles(self):
+        return [value for value in self.__dict__.values() if is_mass_profile(value)]
 
     @property
     def has_pixelization(self):
@@ -198,7 +217,7 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates : (float, float)
             The x and y image_grid of the image_grid
 
         Returns
@@ -232,7 +251,7 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates : Union(ndarray, (float, float))
             The x and y image_grid of the image_grid
 
         Returns
@@ -269,7 +288,7 @@ class Galaxy(object):
 
         Parameters
         ----------
-        coordinates : (float, float)
+        coordinates : Union(np.ndarray, (float, float))
             The x and y image_grid of the image_grid
 
         Returns
@@ -310,7 +329,7 @@ class Galaxy(object):
 
         Returns
         -------
-        dimensionless_mass : float
+        dimensionless_mass : ndarray
             The total dimensionless mass within the specified circle.
         """
         return np.asarray(list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
@@ -348,7 +367,7 @@ class Galaxy(object):
 
         Returns
         -------
-        dimensionless_mass : float
+        dimensionless_mass : ndarray
             The total dimensionless mass within the specified circle.
         """
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
