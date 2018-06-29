@@ -48,6 +48,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 
 class Result(object):
+
     def __init__(self, instance, likelihood, priors=None):
         """
         The result of an optimization.
