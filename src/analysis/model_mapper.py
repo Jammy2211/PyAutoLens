@@ -404,7 +404,7 @@ class ModelMapper(object):
         if str(model_info_check.read()) != model_info:
             raise exc.PriorException(
                 'The model_mapper input to MultiNest has a different prior for a parameter than the model_mapper '
-                'existing in the nlo. Parameter = ')
+                'existing in the nlo. filename = {}'.format(filename))
 
         model_info_check.close()
 
