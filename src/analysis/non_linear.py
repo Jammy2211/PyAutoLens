@@ -143,13 +143,13 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
+
         initial_vector = self.physical_vector_from_prior_medians
 
         result = None
 
         def fitness_function(vector):
             global result
-            print(vector)
             instance = self.instance_from_physical_vector(vector)
             args = {**constants, **instance.__dict__}
             result = analysis.run(**args)
@@ -164,6 +164,7 @@ class DownhillSimplex(NonLinearOptimizer):
         means = output[0]
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
+        result.most_likely = means
         result.priors = self.mapper_from_gaussian_means(means)
 
         return result
@@ -241,10 +242,12 @@ class MultiNest(NonLinearOptimizer):
             return result.likelihood
 
         logger.info("Running MultiNest...")
-        pymultinest.run(fitness_function, prior, self.total_parameters,
-                        outputfiles_basename=self.path)
+        pymultinest.run(fitness_function, prior, self.total_parameters, outputfiles_basename=self.path)
         logger.info("MultiNest complete")
 
+        result = analysis.Result
+
+        result.most_likely = self.create_most_likely_model_instance()
         result.priors = self.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
         return result
