@@ -257,6 +257,22 @@ class MultiNest(NonLinearOptimizer):
     def fit(self, analysis):
         self.save_model_info()
 
+        class Fitness(object):
+            def __init__(self, instance_from_physical_vector, constant):
+                self.result = None
+                self.instance_from_physical_vector = instance_from_physical_vector
+                self.constant = constant
+
+            def __call__(self, vector, ndim, nparams):
+                instance = self.instance_from_physical_vector(vector)
+                for key, value in self.constant.__dict__.items():
+                    setattr(instance, key, value)
+
+                likelihood = analysis.run(**instance.__dict__)
+                self.result = Result(instance, likelihood)
+
+                return likelihood
+
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
             phys_cube = self.variable.physical_vector_from_hypercube_vector(hypercube_vector=cube)
@@ -266,23 +282,14 @@ class MultiNest(NonLinearOptimizer):
 
             return cube
 
-        result = None
-
-        # noinspection PyUnusedLocal
-        def fitness_function(vector, ndim, nparams):
-            global result
-            instance = self.variable.instance_from_physical_vector(vector)
-            args = {**self.constant.__dict__, **instance.__dict__}
-            likelihood = analysis.run(**args)
-
-            result = Result(instance, likelihood)
-
-            return likelihood
+        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
         logger.info("Running MultiNest...")
         self.run(fitness_function, prior, self.variable.total_parameters,
                  outputfiles_basename=self.path)
         logger.info("MultiNest complete")
+
+        result = fitness_function.result
 
         result.priors = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
