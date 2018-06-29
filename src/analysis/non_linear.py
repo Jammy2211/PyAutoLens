@@ -71,9 +71,10 @@ class Result(object):
             "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
 
 
-class NonLinearOptimizer(mm.ModelMapper):
+class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, prior_config_path=None, config_path=None, path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(),
+                 config_path=None, path=default_path,
                  check_model=True, **classes):
         """Abstract base class for non-linear optimizers.
 
@@ -89,23 +90,21 @@ class NonLinearOptimizer(mm.ModelMapper):
         check_model : bool
             Check whether the model.info file corresponds to the model_mapper passed in.
         """
-
-        super().__init__(config=config.DefaultPriorConfig(
-            "{}/../config/priors/default".format(
-                dir_path) if prior_config_path is None else prior_config_path))
         self.nlo_config = config.NamedConfig(
             "{}/../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
             self.__class__.__name__)
 
         self.path = path
         self.check_model = check_model
+        self.variable = model_mapper
+        self.constant = mm.ModelInstance()
 
         self.file_param_names = self.path + 'multinest.paramnames'
         self.file_model_info = self.path + 'model.info'
 
         # If the include_hyper_image flag is set to True make this an additional prior model
         if include_hyper_image:
-            self.hyper_image = mm.PriorModel(hyper_image.HyperImage)
+            self.hyper_image = mm.PriorModel(hyper_image.HyperImage, config=self.variable.config)
 
     def save_model_info(self):
         print("making dir {}".format(self.path))
@@ -114,12 +113,12 @@ class NonLinearOptimizer(mm.ModelMapper):
         if not resume:
             os.makedirs(self.path)  # Create results folder if doesnt exist
             self.create_param_names()
-            self.output_model_info(self.file_model_info)
+            self.variable.output_model_info(self.file_model_info)
 
         elif self.check_model:
-            self.check_model_info(self.file_model_info)
+            self.variable.check_model_info(self.file_model_info)
 
-    def fit(self, analysis, **constants):
+    def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
     def create_param_names(self):
@@ -129,7 +128,7 @@ class NonLinearOptimizer(mm.ModelMapper):
         properties of each model class."""
         param_names = open(self.file_param_names, 'w')
 
-        for prior_name, prior_model in self.prior_models:
+        for prior_name, prior_model in self.variable.prior_models:
 
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
@@ -137,7 +136,7 @@ class NonLinearOptimizer(mm.ModelMapper):
 
             param_labels = generate_parameter_latex(param_labels, subscript)
 
-            for param_no, param in enumerate(self.class_priors_dict[prior_name]):
+            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
                 line = prior_name + '_' + param[0]
                 line += ' ' * (40 - len(line)) + param_labels[param_no]
 
@@ -151,10 +150,10 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
                  fmin=scipy.optimize.fmin):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              prior_config_path=prior_config_path, path=path, check_model=False)
+                                              model_mapper=model_mapper, path=path, check_model=False)
 
         self.xtol = self.nlo_config.get("xtol", float)
         self.ftol = self.nlo_config.get("ftol", float)
@@ -169,42 +168,45 @@ class DownhillSimplex(NonLinearOptimizer):
 
         logger.debug("Creating DownhillSimplex NLO")
 
-    def fit(self, analysis, **constants):
-        initial_vector = self.physical_vector_from_prior_medians
+    def fit(self, analysis):
+        initial_vector = self.variable.physical_vector_from_prior_medians
 
-        result = None
+        class Fitness(object):
+            def __init__(self, instance_from_physical_vector, constant):
+                self.result = None
+                self.instance_from_physical_vector = instance_from_physical_vector
+                self.constant = constant
 
-        def fitness_function(vector):
-            global result
-            instance = self.instance_from_physical_vector(vector)
-            args = {**constants, **instance.__dict__}
-            likelihood = analysis.run(**args)
+            def __call__(self, vector):
+                instance = self.instance_from_physical_vector(vector)
+                for key, value in self.constant.__dict__.items():
+                    setattr(instance, key, value)
 
-            result = Result(instance, likelihood)
+                likelihood = analysis.run(**instance.__dict__)
+                self.result = Result(instance, likelihood)
 
-            # Return Chi squared
-            return -2 * likelihood
+                # Return Chi squared
+                return -2 * likelihood
+
+        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
         logger.info("Running DownhillSimplex...")
         output = self.fmin(fitness_function, x0=initial_vector)
         logger.info("DownhillSimplex complete")
+        res = fitness_function.result
 
         # Get the solution provided by Downhill Simplex
         means = output[0]
 
-        result = Result
-
         # Create a set of Gaussian priors from this result and associate them with the result object.
-        result.most_likely = self.instance_from_physical_vector([means])
-        # TODO : still not working
-       # result.priors = self.mapper_from_gaussian_means(means)
+        res.priors = self.variable.mapper_from_gaussian_means(means)
 
-        return result
+        return res
 
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path, check_model=True,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=True,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
@@ -217,7 +219,7 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear nlo are stored.
         """
 
-        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, prior_config_path=prior_config_path,
+        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper,
                                         path=path, check_model=check_model)
 
         self.file_summary = self.path + 'summary.txt'
@@ -252,14 +254,14 @@ class MultiNest(NonLinearOptimizer):
     def pdf(self):
         return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-    def fit(self, analysis, **constants):
+    def fit(self, analysis):
         self.save_model_info()
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
-            phys_cube = self.physical_vector_from_hypercube_vector(hypercube_vector=cube)
+            phys_cube = self.variable.physical_vector_from_hypercube_vector(hypercube_vector=cube)
 
-            for i in range(self.total_parameters):
+            for i in range(self.variable.total_parameters):
                 cube[i] = phys_cube[i]
 
             return cube
@@ -269,8 +271,8 @@ class MultiNest(NonLinearOptimizer):
         # noinspection PyUnusedLocal
         def fitness_function(vector, ndim, nparams):
             global result
-            instance = self.instance_from_physical_vector(vector)
-            args = {**constants, **instance.__dict__}
+            instance = self.variable.instance_from_physical_vector(vector)
+            args = {**self.constant.__dict__, **instance.__dict__}
             likelihood = analysis.run(**args)
 
             result = Result(instance, likelihood)
@@ -278,11 +280,11 @@ class MultiNest(NonLinearOptimizer):
             return likelihood
 
         logger.info("Running MultiNest...")
-        self.run(fitness_function, prior, self.total_parameters,
+        self.run(fitness_function, prior, self.variable.total_parameters,
                  outputfiles_basename=self.path)
         logger.info("MultiNest complete")
 
-        result.priors = self.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
+        result.priors = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
         return result
 
@@ -292,7 +294,7 @@ class MultiNest(NonLinearOptimizer):
 
         expected_parameters = (len(summary.readline()) - 113) / 112
 
-        if expected_parameters != self.total_parameters:
+        if expected_parameters != self.variable.total_parameters:
             raise exc.MultiNestException(
                 'The file_summary file has a different number of parameters than the input model')
 
@@ -303,7 +305,7 @@ class MultiNest(NonLinearOptimizer):
         summary = self.open_summary_file()
 
         summary.seek(0)
-        summary.read(2 + offset * self.total_parameters)
+        summary.read(2 + offset * self.variable.total_parameters)
         vector = []
         for param in range(number_entries):
             vector.append(float(summary.read(28)))
@@ -321,7 +323,7 @@ class MultiNest(NonLinearOptimizer):
         model in the second half of entries. The offset parameter is used to start at the desired model.
 
         """
-        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=0)
+        return self.read_vector_from_summary(number_entries=self.variable.total_parameters, offset=0)
 
     def compute_most_likely(self):
         """
@@ -331,7 +333,7 @@ class MultiNest(NonLinearOptimizer):
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
         """
-        return self.read_vector_from_summary(number_entries=self.total_parameters, offset=56)
+        return self.read_vector_from_summary(number_entries=self.variable.total_parameters, offset=56)
 
     def compute_max_likelihood(self):
         return self.read_vector_from_summary(number_entries=2, offset=112)[0]
@@ -341,11 +343,11 @@ class MultiNest(NonLinearOptimizer):
 
     def create_most_probable_model_instance(self):
         most_probable = self.compute_most_probable()
-        return self.instance_from_physical_vector(most_probable)
+        return self.variable.instance_from_physical_vector(most_probable)
 
     def create_most_likely_model_instance(self):
         most_likely = self.compute_most_likely()
-        return self.instance_from_physical_vector(most_likely)
+        return self.variable.instance_from_physical_vector(most_likely)
 
     def compute_gaussian_priors(self, sigma_limit):
         """Compute the Gaussian Priors these results should be initialzed with in the next phase, by taking their \
@@ -412,7 +414,7 @@ class MultiNest(NonLinearOptimizer):
 
         self._weighted_sample_model = model
 
-        return self.instance_from_physical_vector(model), weight, likelihood
+        return self.variable.instance_from_physical_vector(model), weight, likelihood
 
     def compute_weighted_sample_model(self, index):
         """From a weighted sample return the model, weight and likelihood hood.
