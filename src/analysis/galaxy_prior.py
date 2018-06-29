@@ -14,14 +14,6 @@ def is_mass_profile_class(cls):
     return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
 
 
-def is_light_profile(obj):
-    return isinstance(obj, light_profiles.LightProfile) and not isinstance(obj, mass_profiles.MassProfile)
-
-
-def is_mass_profile(obj):
-    return isinstance(obj, mass_profiles.MassProfile)
-
-
 # TODO : Add in init a 'vary redshift' bool which is default False
 
 class GalaxyPrior(model_mapper.AbstractPriorModel):
@@ -92,11 +84,11 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
 
     @property
     def fixed_light_profiles(self):
-        return [value for value in self.__dict__.values() if is_light_profile(value)]
+        return [value for value in self.__dict__.values() if galaxy.is_light_profile(value)]
 
     @property
     def fixed_mass_profiles(self):
-        return [value for value in self.__dict__.values() if is_mass_profile(value)]
+        return [value for value in self.__dict__.values() if galaxy.is_mass_profile(value)]
 
     @property
     def light_profile_names(self):
