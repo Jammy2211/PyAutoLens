@@ -139,7 +139,7 @@ class ModelMapper(object):
         # noinspection PyTypeChecker
         return prior_models + [("{}_{}".format(list_prior_model[0], i), prior_model) for list_prior_model in
                                self.list_prior_models for i, prior_model in
-                               enumerate(list_prior_model[1].prior_models)]
+                               enumerate(list_prior_model[1])]
 
     @property
     def prior_set(self):
