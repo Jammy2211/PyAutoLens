@@ -929,16 +929,16 @@ def make_downhill_simplex(test_config, width_config):
 
 
 @pytest.fixture(name="multi_nest")
-def make_multi_nest(test_config, width_config):
+def make_multi_nest(test_config, width_config, mn_samples_path):
+    create_weighted_samples_4_parameters(mn_samples_path)
+
     # noinspection PyUnusedLocal
     def run(fitness_function, prior, total_parameters, outputfiles_basename):
         fitness_function([1 for _ in range(total_parameters)], total_parameters, total_parameters)
 
-    create_summary_4_parameters(non_linear.default_path)
-    create_weighted_samples_4_parameters(non_linear.default_path)
-
-    return non_linear.MultiNest(run=run, model_mapper=model_mapper.ModelMapper(config=test_config,
-                                                                               width_config=width_config),
+    create_summary_4_parameters(mn_samples_path)
+    return non_linear.MultiNest(run=run, path=mn_samples_path,
+                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config),
                                 check_model=False)
 
 
@@ -978,24 +978,16 @@ class TestFitting(object):
             assert result.likelihood == 1
 
     class TestMultiNest(object):
-        # def test_constant(self, multi_nest):
-        #     multi_nest.constant.mock_class = MockClass()
-        #     result = multi_nest.fit(MockAnalysis())
-        #
-        #     assert result.instance.mock_class.one == 1
-        #     assert result.instance.mock_class.two == 2
-        #     assert result.likelihood == 1
-
         def test_variable(self, multi_nest, test_config):
             multi_nest.variable.mock_class = model_mapper.PriorModel(MockClass, test_config)
             result = multi_nest.fit(MockAnalysis())
 
-            assert result.instance.mock_class.one == 0.5
-            assert result.instance.mock_class.two == 0.5
+            assert result.instance.mock_class.one == 1
+            assert result.instance.mock_class.two == 1
             assert result.likelihood == 1
 
-            assert result.priors.mock_class.one.mean == 0.5
-            assert result.priors.mock_class.two.mean == 0.5
+            assert result.priors.mock_class.one.mean == 1
+            assert result.priors.mock_class.two.mean == -2
 
         def test_constant_and_variable(self, multi_nest, test_config):
             multi_nest.constant.constant = MockClass()
@@ -1005,8 +997,8 @@ class TestFitting(object):
 
             assert result.instance.constant.one == 1
             assert result.instance.constant.two == 2
-            assert result.instance.variable.one == 0.5
-            assert result.instance.variable.two == 0.5
-            assert result.priors.variable.one.mean == 0.5
-            assert result.priors.variable.two.mean == 0.5
+            assert result.instance.variable.one == 1
+            assert result.instance.variable.two == 1
+            assert result.priors.variable.one.mean == 1
+            assert result.priors.variable.two.mean == -2
             assert result.likelihood == 1
