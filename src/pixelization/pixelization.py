@@ -102,8 +102,21 @@ class Pixelization(object):
         return regularization_matrix
 
     def compute_source_signals(self, image_to_source, galaxy_image):
-        """Compute the regularization weights, which represent the effective regularizatio coefficient of every \
-        source-pixel"""
+        """Compute the (scaled) signal in each source-pixel, where the signal is the sum of its image-pixel fluxes. \
+        These source-signals are then used to compute the effective regularization weight of each source-pixel.
+
+        The source signals are scaled in the following ways:
+
+        1) Divided by the number of image pixels in the source-pixel, to ensure all source-pixels have the same \
+        'relative' signal (i.e. a source pixel with 10 images pixels doesn't have x2 the signal of one with 5).
+
+        2) Divided by the maximum source-signal, so that all signals vary between 0 and 1. This ensures that the \
+        regularizations weights they're used to compute are well defined.
+
+        3) Raised to the power of the hyper-parameter *source_signal_scale*, so the method can control the relative \
+        contribution of the diffrent regions of regularization.
+        """
+
         source_signals = np.zeros((self.pixels))
         source_sizes = np.zeros((self.pixels))
 
@@ -113,13 +126,20 @@ class Pixelization(object):
 
         source_signals /= source_sizes
         source_signals /= max(source_signals)
+
         return source_signals ** self.source_signal_scale
 
-    def compute_regularization_weights(self, source_fluxes):
-        """Compute the regularization weights, which represent the effective regularizatio coefficient of every \
-        source-pixel"""
-        return (self.regularization_coefficients[0] * source_fluxes +
-                self.regularization_coefficients[1] * (1.0-source_fluxes) ) ** 2.0
+    def compute_regularization_weights(self, source_signals):
+        """Compute the regularization weights, which represent the effective regularization coefficient of every \
+        source-pixel. These are computed using the (scaled) source-signal in each source-pixel.
+
+        Two regularization coefficients are used which map to:
+
+        1) source_signals - This regularizes source-plane pixels with a high source-signal (i.e. where the source is).
+        2) 1.0 - source_signals - This regularizes source-plane pixels with a low source-signal (i.e. background sky)
+        """
+        return (self.regularization_coefficients[0] * source_signals +
+                self.regularization_coefficients[1] * (1.0 - source_signals)) ** 2.0
 
     def create_weighted_regularization_matrix(self, regularization_weights, source_neighbors):
         """
