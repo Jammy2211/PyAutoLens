@@ -47,6 +47,17 @@ def generate_parameter_latex(parameters, subscript=''):
     return latex
 
 
+class Result(object):
+    def __init__(self, instance, likelihood):
+        self.instance = instance
+        self.likelihood = likelihood
+        self.priors = None
+
+    def __str__(self):
+        return "Analysis Result:\n{}".format(
+            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
+
+
 class NonLinearOptimizer(mm.ModelMapper):
 
     def __init__(self, include_hyper_image=False, prior_config_path=None, config_path=None, path=default_path,
@@ -127,7 +138,8 @@ class NonLinearOptimizer(mm.ModelMapper):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path):
+    def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path,
+                 fmin=scipy.optimize.fmin):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
                                               prior_config_path=prior_config_path, path=path, check_model=False)
 
@@ -140,6 +152,8 @@ class DownhillSimplex(NonLinearOptimizer):
         self.disp = self.nlo_config.get("disp", int)
         self.retall = self.nlo_config.get("retall", int)
 
+        self.fmin = fmin
+
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis, **constants):
@@ -149,15 +163,17 @@ class DownhillSimplex(NonLinearOptimizer):
 
         def fitness_function(vector):
             global result
-            print(vector)
             instance = self.instance_from_physical_vector(vector)
             args = {**constants, **instance.__dict__}
-            result = analysis.run(**args)
+            likelihood = analysis.run(**args)
+
+            result = Result(instance, likelihood)
+
             # Return Chi squared
-            return -2 * result.likelihood
+            return -2 * likelihood
 
         logger.info("Running DownhillSimplex...")
-        output = scipy.optimize.fmin(fitness_function, x0=initial_vector)
+        output = self.fmin(fitness_function, x0=initial_vector)
         logger.info("DownhillSimplex complete")
 
         # Get the solution provided by Downhill Simplex
@@ -172,7 +188,7 @@ class DownhillSimplex(NonLinearOptimizer):
 class MultiNest(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, prior_config_path=None, path=default_path, check_model=True,
-                 sigma_limit=3):
+                 sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -211,6 +227,7 @@ class MultiNest(NonLinearOptimizer):
         self.log_zero = self.nlo_config.get('log_zero', float)
         self.max_iter = self.nlo_config.get('max_iter', int)
         self.init_MPI = self.nlo_config.get('init_MPI', bool)
+        self.run = run
 
         logger.debug("Creating MultiNest NLO")
 
@@ -223,7 +240,6 @@ class MultiNest(NonLinearOptimizer):
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
-
             phys_cube = self.physical_vector_from_hypercube_vector(hypercube_vector=cube)
 
             for i in range(self.total_parameters):
@@ -237,12 +253,15 @@ class MultiNest(NonLinearOptimizer):
             global result
             instance = self.instance_from_physical_vector(vector)
             args = {**constants, **instance.__dict__}
-            result = analysis.run(**args)
-            return result.likelihood
+            likelihood = analysis.run(**args)
+
+            result = Result(instance, likelihood)
+
+            return likelihood
 
         logger.info("Running MultiNest...")
-        pymultinest.run(fitness_function, prior, self.total_parameters,
-                        outputfiles_basename=self.path)
+        self.run(fitness_function, prior, self.total_parameters,
+                 outputfiles_basename=self.path)
         logger.info("MultiNest complete")
 
         result.priors = self.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
