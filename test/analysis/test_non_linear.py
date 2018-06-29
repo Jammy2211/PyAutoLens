@@ -417,7 +417,6 @@ class TestNonLinearOptimizer(object):
 
 
 class TestMultiNest(object):
-    
     class TestReadFromSummary:
 
         def test__1_profile__read_most_probable_vector__via_summary(self, config_path, mn_summary_path):
@@ -834,3 +833,35 @@ class TestConfig(object):
         assert downhill_simplex.full_output == 0
         assert downhill_simplex.disp == 1
         assert downhill_simplex.retall == 0
+
+
+class MockAnalysis(object):
+    def __init__(self):
+        self.kwargs = None
+
+    def run(self, **kwargs):
+        self.kwargs = kwargs
+        return 1
+
+
+class MockClass(object):
+    def __init__(self, one=1, two=2):
+        self.one = one
+        self.two = two
+
+
+class TestFitting(object):
+    def test_downhill_simplex(self):
+        def fmin(fitness_function, x0):
+            print("fmin")
+            fitness_function(x0)
+            return [x0]
+
+        analysis = MockAnalysis()
+
+        dhs = non_linear.DownhillSimplex(fmin=fmin)
+        result = dhs.fit(analysis, mock_class=MockClass())
+
+        assert result.instance.mock_class.one == 1
+        assert result.instance.mock_class.two == 2
+        assert result.likelihood == 1
