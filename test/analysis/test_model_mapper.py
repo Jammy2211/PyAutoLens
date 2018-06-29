@@ -681,6 +681,14 @@ class TestGaussianWidthConfig(object):
 
         assert mapper.prior_class_dict == {mapper.one.one: MockClass, mapper.one.two: MockClass}
 
+    def test_prior_classes_list(self, test_config, width_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.list = [model_mapper.PriorModel(MockClass, config=test_config),
+                       model_mapper.PriorModel(MockClass, config=test_config)]
+
+        assert mapper.prior_class_dict == {mapper.list[0].one: MockClass, mapper.list[0].two: MockClass,
+                                           mapper.list[1].one: MockClass, mapper.list[1].two: MockClass}
+
     def test_basic_gaussian_for_mean(self, test_config, width_config):
         mapper = model_mapper.ModelMapper(width_config=width_config)
         mapper.one = model_mapper.PriorModel(MockClass, config=test_config)
