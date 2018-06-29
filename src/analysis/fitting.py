@@ -33,6 +33,7 @@ def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, m
     blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
     return compute_likelihood(grid_data.image, scaled_noise, blurred_model_image)
 
+
 def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values):
     """Use the model image and galaxy image (computed in the previous phase of the pipeline) to determine the
     contributions of each hyper galaxy.
@@ -46,9 +47,10 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
     hyper_galaxies : [galaxy.HyperGalaxy]
         Each hyper-galaxy which is used to determine its contributions.
     """
-    return list(map(lambda hyper, galaxy_image, minimum_value :
+    return list(map(lambda hyper, galaxy_image, minimum_value:
                     hyper.compute_contributions(model_image, galaxy_image, minimum_value),
                     hyper_galaxies, galaxy_images, minimum_values))
+
 
 def generate_scaled_noise(noise, contributions, hyper_galaxies):
     """Use the contributions of each hyper galaxy to compute the scaled noise.
@@ -62,10 +64,11 @@ def generate_scaled_noise(noise, contributions, hyper_galaxies):
     hyper_galaxies : [galaxy.HyperGalaxy]
         Each hyper-galaxy which is used to scale the noise.
     """
-    scaled_noises = list(map(lambda hyper, contribution : hyper.compute_scaled_noise(noise, contribution),
+    scaled_noises = list(map(lambda hyper, contribution: hyper.compute_scaled_noise(noise, contribution),
                              hyper_galaxies, contributions))
 
     return noise + sum(scaled_noises)
+
 
 def fit_data_with_profiles(grid_data, kernel_convolver, tracer, image=None):
     """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
