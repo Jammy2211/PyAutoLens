@@ -403,7 +403,7 @@ def profiles_pipeline(paths, image, mask):
     lens_galaxy_prior.redshift = model_mapper.Constant(1.0)
 
     # Add the galaxy priors to the optimizer
-    optimizer_1.lens_galaxies = [lens_galaxy_prior]
+    optimizer_1.variable.lens_galaxies = [lens_galaxy_prior]
 
     # Analyse the system
     result_1 = optimizer_1.fit(analysis)
@@ -435,8 +435,8 @@ def profiles_pipeline(paths, image, mask):
 
     import numpy as np
 
-    model_image = np.ones((mask.pixels_in_mask))
-    galaxy_images = [np.ones((mask.pixels_in_mask))]
+    model_image = np.ones((mask.pixels_in_mask,))
+    galaxy_images = [np.ones((mask.pixels_in_mask,))]
 
     # TODO : minimum value hsould be 0 if the galaxy was a profile, and 0.02 if it was a pixelization.
 
@@ -479,7 +479,7 @@ def profiles_pipeline(paths, image, mask):
     # lens_galaxy_prior.sersic_light_profile.sersic_index = model_mapper.Constant(result_1.most_likely.lens_galaxies[0].sersic_light_profile.sersic_index)
 
     # Add the galaxy priors to the optimizer
-    optimizer_1.lens_galaxies = [lens_galaxy_prior]
+    optimizer_1.variable.lens_galaxies = [lens_galaxy_prior]
 
     # Analyse the system
     result_1 = optimizer_1.fit(analysis)
