@@ -95,13 +95,6 @@ class TestGalaxyPrior:
 
 
 class TestNamedProfiles:
-    def test_constructor(self, test_config):
-        galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalSersic,
-                                      mass_profile=mass_profiles.EllipticalGeneralizedNFW, config=test_config)
-
-        assert len(galaxy_prior.light_profile_names) == 1
-        assert len(galaxy_prior.mass_profile_names) == 1
-
     def test_get_prior_model(self):
         galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.EllipticalSersicMass)
