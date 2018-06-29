@@ -33,7 +33,7 @@ class Analysis(object):
         """
         self.image = image
         self.mask = mask
-        
+
         self.data_collection = grids.DataCollection.from_mask(mask, image, image.background_noise,
                                                               image.effective_exposure_time)
         self.coords_collection = grids.CoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
@@ -118,15 +118,4 @@ class Analysis(object):
         if likelihood is None:
             raise exc.PriorException("No galaxy has a profile or pixelization")
 
-        return Analysis.Result(likelihood, lens_galaxies, source_galaxies, hyper_image)
-
-    class Result(object):
-        def __init__(self, likelihood, lens_galaxies, source_galaxies, hyper_image):
-            self.likelihood = likelihood
-            self.lens_galaxies = lens_galaxies
-            self.source_galaxies = source_galaxies
-            self.instrumentation = hyper_image
-
-        def __str__(self):
-            return "Analysis Result:\n{}".format(
-                "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
+        return likelihood
