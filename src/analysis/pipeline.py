@@ -133,7 +133,7 @@ def source_only_pipeline(image, mask):
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
 
     # Analyse the system
-    result_2h = optimizer_2h.fit(analysis, lens_galaxies=result_2.lens_galaxies)
+    result_2h = optimizer_2h.fit(analysis, lens_galaxies=result_2.instance.lens_galaxies)
 
     # Add the result of analysis 2h to the results
     results.append(result_2h)
@@ -160,8 +160,8 @@ def source_only_pipeline(image, mask):
     lens_galaxy_prior.spherical_power_law_mass_profile.centre = lens_galaxy_prior_result.spherical_mass_profile.centre
 
     # Analyse the system
-    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instrumentation,
-                               source_galaxies=result_2h.source_galaxies)
+    result_a = optimizer_a.fit(analysis, instrumentation=result_2h.instance.instrumentation,
+                               source_galaxies=result_2h.instance.source_galaxies)
 
     # Add the result of the main analysis to the results
     results.append(result_a)
@@ -291,8 +291,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_4 = non_linear.DownhillSimplex(include_hyper_image=True)
 
-    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.sie_mass_profile,
-                                           shear_mass_profile=result_3.shear_mass_profile,
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.instance.sie_mass_profile,
+                                           shear_mass_profile=result_3.instance.shear_mass_profile,
                                            sersic_light_profile=light_profiles.EllipticalSersic,
                                            exponential_light_profile=light_profiles.EllipticalExponential,
                                            hyper_galaxy=galaxy.HyperGalaxy)
