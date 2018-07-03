@@ -1031,7 +1031,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
 class ExternalShear(geometry_profiles.EllipticalProfile):
     """An external shear term, to model the line-of-sight contribution of other galaxies / satellites."""
 
-    def __init__(self, magnitude, phi):
+    def __init__(self, magnitude=0.2, phi=0.0):
         """ Setup an external shear.
 
         Parameters
