@@ -1,7 +1,7 @@
 import numpy as np
 
-subgrid = np.load("subgrid.npy")
-subgrid_result = np.load("subgrid_result.npy")
+grid = np.load("grid.npy")
+grid_result = np.load("grid_result.npy")
 
-print(subgrid)
-print(subgrid_result)
+print(grid)
+print(grid_result)
