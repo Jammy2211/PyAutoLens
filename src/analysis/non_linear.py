@@ -128,7 +128,7 @@ class NonLinearOptimizer(object):
         properties of each model class."""
         param_names = open(self.file_param_names, 'w')
 
-        for prior_name, prior_model in self.variable.prior_models:
+        for prior_name, prior_model in self.variable.flat_prior_models:
 
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
@@ -206,7 +206,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=True,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=False,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
@@ -263,8 +263,8 @@ class MultiNest(NonLinearOptimizer):
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = constant
 
-            def __call__(self, vector, ndim, nparams):
-                instance = self.instance_from_physical_vector(vector)
+            def __call__(self, cube, ndim, nparams, lnew):
+                instance = self.instance_from_physical_vector(cube)
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
