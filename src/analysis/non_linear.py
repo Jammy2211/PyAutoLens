@@ -263,8 +263,8 @@ class MultiNest(NonLinearOptimizer):
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = constant
 
-            def __call__(self, vector, ndim, nparams):
-                instance = self.instance_from_physical_vector(vector)
+            def __call__(self, cube, ndim, nparams, lnew):
+                instance = self.instance_from_physical_vector(cube)
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
