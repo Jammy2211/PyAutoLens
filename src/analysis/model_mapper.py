@@ -135,11 +135,8 @@ class ModelMapper(object):
 
     @property
     def flat_prior_models(self):
-        prior_models = list(filter(lambda t: isinstance(t[1], PriorModel), self.__dict__.items()))
-        # noinspection PyTypeChecker
-        return prior_models + [("{}_{}".format(list_prior_model[0], i), prior_model) for list_prior_model in
-                               self.list_prior_models for i, prior_model in
-                               enumerate(list_prior_model[1])]
+        return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
+                prior_model[1].flat_prior_models]
 
     @property
     def prior_set(self):
@@ -373,8 +370,6 @@ class ModelMapper(object):
 
         for prior_name, prior_model in self.flat_prior_models:
 
-            print(prior_model)
-
             model_info += prior_model.cls.__name__ + '\n' + '\n'
 
             for i, prior in enumerate(prior_model.priors):
@@ -503,13 +498,26 @@ class AbstractPriorModel:
     Abstract model that maps a set of priors to a particular class. Must be overridden by any prior model so that the
     model mapper recognises its prior model attributes.
     """
-    pass
+
+    @property
+    def flat_prior_models(self):
+        """
+        Returns
+        -------
+        prior_models: [(str, AbstractPriorModel)]
+            A list of prior models associated with this instance
+        """
+        raise NotImplementedError("PriorModels must implement the flat_prior_models property")
 
 
 class PriorModel(AbstractPriorModel):
     """Object comprising class and associated priors
         @DynamicAttrs
     """
+
+    @property
+    def flat_prior_models(self):
+        return [self]
 
     def __init__(self, cls, config=None):
         """
@@ -648,6 +656,10 @@ class PriorModel(AbstractPriorModel):
 
 
 class ListPriorModel(list, AbstractPriorModel):
+    @property
+    def flat_prior_models(self):
+        return [flat_prior_model for prior_model in self for flat_prior_model in prior_model.flat_prior_models]
+
     def __init__(self, prior_models):
         """
         A prior model used to represent a list of prior models for convenience.
