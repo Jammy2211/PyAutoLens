@@ -182,7 +182,7 @@ class ModelMapper(object):
         class_priors_dict: {String: [Prior]}
             A dictionary mapping the names of reconstructable class instances to lists of associated priors
         """
-        return {name: prior_model.priors for name, prior_model in self.prior_models}
+        return {name: list(prior_model.priors) for name, prior_model in self.prior_models}
 
     def physical_vector_from_hypercube_vector(self, hypercube_vector):
         """
@@ -378,6 +378,8 @@ class ModelMapper(object):
 
         model_info = ''
 
+        print(self.class_priors_dict)
+
         for prior_name, prior_model in self.flat_prior_models:
 
             model_info += prior_model.cls.__name__ + '\n' + '\n'
@@ -403,8 +405,10 @@ class ModelMapper(object):
         info file on the hard-disk (e.g. from a previous non-linear search)."""
 
         model_info = self.generate_model_info()
+        print(model_info)
 
         model_info_check = open(filename, 'r')
+        print(model_info_check)
 
         if str(model_info_check.read()) != model_info:
             raise exc.PriorException(
