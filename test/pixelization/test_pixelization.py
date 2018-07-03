@@ -726,6 +726,117 @@ class TestPixelization:
                 assert (regularization_matrix == test_regularization_matrix).all()
 
 
+class TestRectangularPixelization:
+
+    class TestConstructor:
+
+        def test__number_of_pixels_and_regularization_set_up_correctly(self):
+
+            pix = pixelization.RectangularPixelization(shape=(2,3), regularization_coefficients=(2.0,))
+
+            assert pix.shape == (2,3)
+            assert pix.pixels == 6
+            assert pix.regularization_coefficients == (2.0,)
+
+    class TestComputeSourceNeighbors:
+
+        def test__compute_source_neighbors__3x3_grid(self):
+
+            # |0|1|2|
+            # |3|4|5|
+            # |6|7|8|
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            source_neighbors = pix.compute_source_neighbors()
+
+            assert source_neighbors[0] == [1, 3]
+            assert source_neighbors[1] == [0, 2, 4]
+            assert source_neighbors[2] == [1, 5]
+            assert source_neighbors[3] == [0, 4, 6]
+            assert source_neighbors[4] == [1, 3, 5, 7]
+            assert source_neighbors[5] == [2, 4, 8]
+            assert source_neighbors[6] == [3, 7]
+            assert source_neighbors[7] == [4, 6, 8]
+            assert source_neighbors[8] == [5, 7]
+
+        def test__compute_source_neighbors__3x4_grid(self):
+
+            # |0|1| 2| 3|
+            # |4|5| 6| 7|
+            # |8|9|10|11|
+
+            pix = pixelization.RectangularPixelization(shape=(3,4), regularization_coefficients=(1.0,))
+
+            source_neighbors = pix.compute_source_neighbors()
+
+            assert source_neighbors[0] == [1, 4]
+            assert source_neighbors[1] == [0, 2, 5]
+            assert source_neighbors[2] == [1, 3, 6]
+            assert source_neighbors[3] == [2, 7]
+            assert source_neighbors[4] == [0, 5, 8]
+            assert source_neighbors[5] == [1, 4, 6, 9]
+            assert source_neighbors[6] == [2, 5, 7, 10]
+            assert source_neighbors[7] == [3, 6, 11]
+            assert source_neighbors[8] == [4, 9]
+            assert source_neighbors[9] == [5, 8, 10]
+            assert source_neighbors[10] == [6, 9, 11]
+            assert source_neighbors[11] == [7, 10]
+
+        def test__compute_source_neighbors__4x3_grid(self):
+
+            # |0| 1| 2|
+            # |3| 4| 5|
+            # |6| 7| 8|
+            # |9|10|11|
+
+
+            pix = pixelization.RectangularPixelization(shape=(4,3), regularization_coefficients=(1.0,))
+
+            source_neighbors = pix.compute_source_neighbors()
+
+            assert source_neighbors[0] == [1, 3]
+            assert source_neighbors[1] == [0, 2, 4]
+            assert source_neighbors[2] == [1, 5]
+            assert source_neighbors[3] == [0, 4, 6]
+            assert source_neighbors[4] == [1, 3, 5, 7]
+            assert source_neighbors[5] == [2, 4, 8]
+            assert source_neighbors[6] == [3, 7, 9]
+            assert source_neighbors[7] == [4, 6, 8, 10]
+            assert source_neighbors[8] == [5, 7, 11]
+            assert source_neighbors[9] == [6, 10]
+            assert source_neighbors[10] == [7, 9, 11]
+            assert source_neighbors[11] == [8, 10]
+
+        def test__compute_source_neighbors__4x4_grid(self):
+
+            # |0 | 1| 2| 3|
+            # |4 | 5| 6| 7|
+            # |8 | 9|10|11|
+            # |12|13|14|15|
+
+
+            pix = pixelization.RectangularPixelization(shape=(4,4), regularization_coefficients=(1.0,))
+
+            source_neighbors = pix.compute_source_neighbors()
+
+            assert source_neighbors[0] == [1, 4]
+            assert source_neighbors[1] == [0, 2, 5]
+            assert source_neighbors[2] == [1, 3, 6]
+            assert source_neighbors[3] == [2, 7]
+            assert source_neighbors[4] == [0, 5, 8]
+            assert source_neighbors[5] == [1, 4, 6, 9]
+            assert source_neighbors[6] == [2, 5, 7, 10]
+            assert source_neighbors[7] == [3, 6, 11]
+            assert source_neighbors[8] == [4, 9, 12]
+            assert source_neighbors[9] == [5, 8, 10, 13]
+            assert source_neighbors[10] == [6, 9, 11, 14]
+            assert source_neighbors[11] == [7, 10, 15]
+            assert source_neighbors[12] == [8, 13]
+            assert source_neighbors[13] == [9, 12, 14]
+            assert source_neighbors[14] == [10, 13, 15]
+            assert source_neighbors[15] == [11, 14]
+
 class TestVoronoiPixelization:
 
 
@@ -978,10 +1089,6 @@ class TestVoronoiPixelization:
                                               [0.0, 0.0],
                                        [-1.0, -1.0], [1.0, -1.0]])
             cluster_to_source = np.array([0, 2, 4])
-
-            # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
-
-
 
             pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(source_centers)
