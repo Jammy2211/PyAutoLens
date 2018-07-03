@@ -206,7 +206,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=True,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=False,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
