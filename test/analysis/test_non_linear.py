@@ -934,7 +934,7 @@ def make_multi_nest(test_config, width_config, mn_samples_path):
 
     # noinspection PyUnusedLocal
     def run(fitness_function, prior, total_parameters, outputfiles_basename):
-        fitness_function([1 for _ in range(total_parameters)], total_parameters, total_parameters)
+        fitness_function([1 for _ in range(total_parameters)], total_parameters, total_parameters, None)
 
     create_summary_4_parameters(mn_samples_path)
     return non_linear.MultiNest(run=run, path=mn_samples_path,
