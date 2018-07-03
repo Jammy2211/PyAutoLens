@@ -6,7 +6,7 @@ from src.imaging import mask as msk
 from src.imaging import scaled_array
 import os
 
-repeats = 10
+repeats = 1
 
 # Load up the data
 lens_name = 'source_sersic'
