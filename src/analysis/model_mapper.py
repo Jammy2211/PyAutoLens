@@ -414,6 +414,41 @@ class ModelMapper(object):
         model_info_check.close()
 
 
+class ModelInstance(object):
+    """
+    An object to hold model instances produced by providing arguments to a model mapper.
+
+    @DynamicAttrs
+    """
+    pass
+
+
+class Constant(object):
+    def __init__(self, value):
+        """
+        Represents a constant value. No prior is added to the model mapper for constants reducing the dimensionality
+        of the nonlinear search.
+
+        Parameters
+        ----------
+        value: Union(float, tuple)
+            The value this constant should take.
+        """
+        self.value = value
+
+    def __eq__(self, other):
+        return self.value == other
+
+    def __gt__(self, other):
+        return self.value > other
+
+    def __lt__(self, other):
+        return self.value < other
+
+    def __ne__(self, other):
+        return self.value != other
+
+
 prior_number = 0
 
 
@@ -501,6 +536,53 @@ class GaussianPrior(Prior):
     def model_info(self):
         """The line of text describing this prior for the model_mapper.info file"""
         return 'GaussianPrior, mean = ' + str(self.mean) + ', sigma = ' + str(self.sigma)
+
+
+class TuplePrior(object):
+    """
+    A prior comprising one or more priors in a tuple
+    """
+
+    @property
+    def priors(self):
+        """
+        Returns
+        -------
+        priors: [(String, Prior)]
+            A list of priors contained in this tuple
+        """
+        return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
+
+    def value_for_arguments(self, arguments):
+        """
+        Parameters
+        ----------
+        arguments: {Prior: float}
+            A dictionary of arguments
+
+        Returns
+        -------
+        tuple: (float,...)
+            A tuple of float values
+        """
+        return tuple([arguments[prior[1]] for prior in self.priors])
+
+    def gaussian_tuple_prior_for_arguments(self, arguments):
+        """
+        Parameters
+        ----------
+        arguments: {Prior: float}
+            A dictionary of arguments
+
+        Returns
+        -------
+        tuple_prior: TuplePrior
+            A new tuple prior with gaussian priors
+        """
+        tuple_prior = TuplePrior()
+        for prior in self.priors:
+            setattr(tuple_prior, prior[0], arguments[prior[1]])
+        return tuple_prior
 
 
 class AbstractPriorModel:
@@ -722,85 +804,3 @@ class ListPriorModel(list, AbstractPriorModel):
     @property
     def prior_class_dict(self):
         return {prior: cls for prior_model in self for prior, cls in prior_model.prior_class_dict.items()}
-
-
-class TuplePrior(object):
-    """
-    A prior comprising one or more priors in a tuple
-    """
-
-    @property
-    def priors(self):
-        """
-        Returns
-        -------
-        priors: [(String, Prior)]
-            A list of priors contained in this tuple
-        """
-        return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
-
-    def value_for_arguments(self, arguments):
-        """
-        Parameters
-        ----------
-        arguments: {Prior: float}
-            A dictionary of arguments
-
-        Returns
-        -------
-        tuple: (float,...)
-            A tuple of float values
-        """
-        return tuple([arguments[prior[1]] for prior in self.priors])
-
-    def gaussian_tuple_prior_for_arguments(self, arguments):
-        """
-        Parameters
-        ----------
-        arguments: {Prior: float}
-            A dictionary of arguments
-
-        Returns
-        -------
-        tuple_prior: TuplePrior
-            A new tuple prior with gaussian priors
-        """
-        tuple_prior = TuplePrior()
-        for prior in self.priors:
-            setattr(tuple_prior, prior[0], arguments[prior[1]])
-        return tuple_prior
-
-
-class ModelInstance(object):
-    """
-    An object to hold model instances produced by providing arguments to a model mapper.
-
-    @DynamicAttrs
-    """
-    pass
-
-
-class Constant(object):
-    def __init__(self, value):
-        """
-        Represents a constant value. No prior is added to the model mapper for constants reducing the dimensionality
-        of the nonlinear search.
-
-        Parameters
-        ----------
-        value: Union(float, tuple)
-            The value this constant should take.
-        """
-        self.value = value
-
-    def __eq__(self, other):
-        return self.value == other
-
-    def __gt__(self, other):
-        return self.value > other
-
-    def __lt__(self, other):
-        return self.value < other
-
-    def __ne__(self, other):
-        return self.value != other
