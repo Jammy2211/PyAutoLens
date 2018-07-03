@@ -6,10 +6,21 @@ import os
 import numba
 
 path = os.path.dirname(os.path.realpath(__file__))
-grid = np.load("{}/grid.npy".format(path))
-grid_result = np.load("{}/grid_result.npy".format(path))
 
-lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profiles.EllipticalIsothermal(axis_ratio=0.9),
+
+def load(name):
+    return np.load("{}/{}.npy".format(path, name))
+
+
+grid = load("grid")
+deflection_result = load("deflection_result")
+transformed_coordinates = load("transformed_coords")
+
+print(transformed_coordinates)
+
+mass_profile = mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
+
+lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
                             shear_mass_profile=mass_profiles.ExternalShear())
 
 repeats = 10
@@ -18,10 +29,9 @@ repeats = 10
 def tick_toc(func):
     def wrapper():
         start = time.time()
-        result = None
         for _ in range(repeats):
-            result = func()
-        assert (result == grid_result).all()
+            func()
+
         diff = time.time() - start
         print("{}: {}".format(func.__name__, diff))
 
@@ -35,7 +45,7 @@ def current_solution():
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = lens_galaxy.deflections_at_coordinates(coordinates=coordinate)
 
-    return grid_values
+        assert (grid_values == deflection_result).all()
 
 
 @tick_toc
@@ -46,9 +56,18 @@ def with_numba():
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = lens_galaxy.deflections_at_coordinates(coordinates=coordinate)
 
-    return grid_values
+    assert (grid_values == deflection_result).all()
+
+
+@tick_toc
+def current_transform_to_reference_frame():
+    grid_values = np.zeros(grid.shape)
+
+    for pixel_no, coordinate in enumerate(grid):
+        grid_values[pixel_no] = mass_profile.transform_to_reference_frame(coordinates=coordinate)
+
+    assert (grid_values == transformed_coordinates).all()
 
 
 if __name__ == "__main__":
-    current_solution()
-    with_numba()
+    current_transform_to_reference_frame()
