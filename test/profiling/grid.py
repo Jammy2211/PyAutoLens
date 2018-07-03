@@ -76,6 +76,12 @@ def new_transform_to_reference_frame():
     assert (result == transformed_coordinates).all()
 
 
+@tick_toc
+def new_solution_with_grid_transformation():
+    result = mass_profile.deflections_from_coordinate_grid(grid)
+
+    assert (result == deflection_result).all()
+
+
 if __name__ == "__main__":
-    current_transform_to_reference_frame()
-    new_transform_to_reference_frame()
+    new_solution_with_grid_transformation()
