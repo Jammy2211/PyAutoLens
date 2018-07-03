@@ -135,8 +135,18 @@ class ModelMapper(object):
 
     @property
     def flat_prior_models(self):
-        return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
-                prior_model[1].flat_prior_models]
+        """
+        Returns
+        -------
+        prior_model_tuples: [(String, PriorModel)]
+            A list of tuples with the names of prior models and associated prior models. Names are fully qualified by
+            all objects in which they are embedded.
+        """
+        return [("{}".format(prior_model_name), flat_prior_model) for
+                prior_model_name, prior_model in
+                self.prior_models for
+                flat_prior_model_name, flat_prior_model in
+                prior_model.flat_prior_models]
 
     @property
     def prior_set(self):
@@ -517,7 +527,7 @@ class PriorModel(AbstractPriorModel):
 
     @property
     def flat_prior_models(self):
-        return [self]
+        return [("", self)]
 
     def __init__(self, cls, config=None):
         """
@@ -724,7 +734,7 @@ class TuplePrior(object):
         """
         Returns
         -------
-        priors: [Prior]
+        priors: [(String, Prior)]
             A list of priors contained in this tuple
         """
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
