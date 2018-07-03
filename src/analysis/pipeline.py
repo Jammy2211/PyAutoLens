@@ -94,7 +94,7 @@ def source_only_pipeline(image, mask):
     lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
     # The source galaxy is now represented by a pixelization
-    source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
+    source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.RectangularPixelization)
 
     # Add the galaxy priors to the optimizer
     optimizer_2.variable.lens_galaxies = [lens_galaxy_prior]
