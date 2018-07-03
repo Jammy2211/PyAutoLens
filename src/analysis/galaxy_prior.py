@@ -33,8 +33,8 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
                 prior_model.flat_prior_models]
 
-    def __init__(self, align_centres=False, align_orientations=False, pixelization=None, hyper_galaxy=None, config=None,
-                 **kwargs):
+    def __init__(self, align_centres=False, align_orientations=False, variable_redshift=False, pixelization=None,
+                 hyper_galaxy=None, config=None, **kwargs):
         """
         Parameters
         ----------
@@ -74,7 +74,8 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 for profile_model in profile_models:
                     profile_model.phi = phi
 
-        self.redshift = model_mapper.PriorModel(galaxy.Redshift, config)
+        self.redshift = model_mapper.PriorModel(galaxy.Redshift,
+                                                config) if variable_redshift else model_mapper.Constant(1)
         self.pixelization = model_mapper.PriorModel(pixelization, config) if pixelization is not None else None
         self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if hyper_galaxy is not None else None
         self.config = config
@@ -141,11 +142,14 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                        for key, value
                        in self.profile_prior_model_dict.items()}, **self.fixed_profile_dict}
 
-        instance_redshift = self.redshift.instance_for_arguments(arguments)
+        if isinstance(self.redshift, model_mapper.Constant):
+            redshift = self.redshift.value
+        else:
+            redshift = self.redshift.instance_for_arguments(arguments).redshift
         pixelization = self.pixelization.instance_for_arguments(arguments) if self.pixelization is not None else None
         hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) if self.hyper_galaxy is not None else None
 
-        return galaxy.Galaxy(redshift=instance_redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
+        return galaxy.Galaxy(redshift=redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
                              **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
