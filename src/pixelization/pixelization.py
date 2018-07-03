@@ -30,6 +30,10 @@ class Pixelization(object):
         ----------
         pixels : int
             The number of source pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the source reconstruction.
+        source_signal_scale : float
+            A hyper-parameter which scales the signal attributed to each source-pixel, used for weight regularization.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
@@ -169,11 +173,108 @@ class Pixelization(object):
 
         return regularization_matrix
 
+    def compute_source_neighbors(self):
+        raise NotImplementedError("compute_source_neighbors must be over-riden by a Pixelization")
 
-class SquarePixelization(Pixelization):
-    # TODO: Implement me
-    pass
+    def compute_image_to_source(self):
+        raise NotImplementedError("compute_image_to_source must be over-riden by a Pixelization")
 
+    def compute_sub_to_source(self):
+        raise NotImplementedError("compute_sub_to_source must be over-riden by a Pixelization")
+
+class RectangularPixelization(Pixelization):
+
+    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+        """A rectangular and Cartesian pixelization, which represents source-pixels on a uniform rectangular grid
+        of size x_pixels x y_pixels.
+
+        Like image's, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+
+        Parameters
+        -----------
+        shape : (int, int)
+            The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the source reconstruction.
+        """
+        
+        if shape[0] <= 2 or shape[1] <= 2:
+            raise exc.PixelizationException('The recentgular pixelization must be at least dimensions 3x3')
+
+        super(RectangularPixelization, self).__init__(shape[0]*shape[1], regularization_coefficients)
+
+        self.shape = shape
+
+    def compute_source_neighbors(self):
+        """Compute the neighbors of every source-pixel as a list of the source-pixel index's each source-pixel \
+        shares a vertex with.
+
+        The regular uniform grid geometry is used to compute this.
+        """
+
+        def compute_corner_neighbors(source_neighbors):
+
+            source_neighbors[0] = [1, self.shape[1]]
+            source_neighbors[self.shape[1]-1] = [self.shape[1]-2, self.shape[1]+self.shape[1]-1]
+            source_neighbors[self.pixels-self.shape[1]] = [self.pixels-self.shape[1]*2 ,self.pixels-self.shape[1]+1]
+            source_neighbors[self.pixels-1] = [self.pixels-self.shape[1]-1, self.pixels-2]
+
+            return source_neighbors
+
+        def compute_top_edge_neighbors(source_neighbors):
+
+            for pix in range(1, self.shape[1]-1):
+                pixel_index = pix
+                source_neighbors[pixel_index] = [pixel_index-1, pixel_index+1, pixel_index+self.shape[1]]
+
+            return source_neighbors
+
+        def compute_left_edge_neighbors(source_neighbors):
+
+            for pix in range(1, self.shape[0]-1):
+                pixel_index = pix*self.shape[1]
+                source_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index+1, pixel_index+self.shape[1]]
+
+            return source_neighbors
+
+        def compute_right_edge_neighbors(source_neighbors):
+
+            for pix in range(1, self.shape[0] - 1):
+                pixel_index = pix*self.shape[1] + self.shape[1] - 1
+                source_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index-1, pixel_index+self.shape[1]]
+                
+            return source_neighbors
+
+        def compute_bottom_edge_neighbors(source_neighbors):
+
+            for pix in range(1, self.shape[1]-1):
+                pixel_index = self.pixels - pix - 1
+                source_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index-1, pixel_index+1]
+
+            return source_neighbors
+        
+        def compute_central_neighbors(source_neighbors):
+            
+            for y in range(1, self.shape[1]-1):
+                for x in range(1, self.shape[0]-1):
+
+
+                    pixel_index = x*self.shape[1] + y
+                    source_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index-1, pixel_index+1,
+                                                     pixel_index+self.shape[1]]
+
+            return source_neighbors
+
+        source_neighbors = [[] for _ in range(self.pixels)]
+    
+        source_neighbors = compute_corner_neighbors(source_neighbors)
+        source_neighbors = compute_top_edge_neighbors(source_neighbors)
+        source_neighbors = compute_left_edge_neighbors(source_neighbors)
+        source_neighbors = compute_right_edge_neighbors(source_neighbors)
+        source_neighbors = compute_bottom_edge_neighbors(source_neighbors)
+        source_neighbors = compute_central_neighbors(source_neighbors)
+        
+        return source_neighbors
 
 class VoronoiPixelization(Pixelization):
 
@@ -189,6 +290,8 @@ class VoronoiPixelization(Pixelization):
         ----------
         pixels : int
             The number of source pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the source reconstruction.
         """
 
         super(VoronoiPixelization, self).__init__(pixels, regularization_coefficients)
@@ -205,8 +308,10 @@ class VoronoiPixelization(Pixelization):
         return scipy.spatial.Voronoi(source_coordinates, qhull_options='Qbb Qc Qx Qm')
 
     def compute_source_neighbors(self, ridge_points):
-        """Compute the neighbors of every source-pixel, where the neighbor is a list of every source-pixel a given \
-        source-pixel shares a vertex with. The ridge points of the Voronoi grid are used to derive this.
+        """Compute the neighbors of every source-pixel as a list of the source-pixel index's each source-pixel \
+        shares a vertex with.
+
+        The ridge points of the Voronoi grid are used to derive this.
 
         Parameters
         ----------
@@ -220,8 +325,6 @@ class VoronoiPixelization(Pixelization):
             source_neighbors[pair[1]].append(pair[0])
 
         return source_neighbors
-
-    # TODO : refactor two functions below to not repeat code.
 
     def compute_image_to_source(self, source_coordinates, source_centers, source_neighbors, image_to_cluster,
                                 source_to_cluster):
@@ -424,6 +527,8 @@ class ClusterPixelization(VoronoiPixelization):
         ----------
         pixels : int
             The number of source pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the source reconstruction.
         """
         super(ClusterPixelization, self).__init__(pixels, regularization_coefficients)
 
@@ -480,6 +585,8 @@ class AmorphousPixelization(VoronoiPixelization):
         ----------
         pixels : int
             The number of source pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the source reconstruction.
         """
         super(AmorphousPixelization, self).__init__(pixels, regularization_coefficients)
 
