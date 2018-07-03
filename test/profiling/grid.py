@@ -16,14 +16,14 @@ grid = load("grid")
 deflection_result = load("deflection_result")
 transformed_coordinates = load("transformed_coords")
 
-print(transformed_coordinates)
+# print(transformed_coordinates)
 
 mass_profile = mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 
 lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
                             shear_mass_profile=mass_profiles.ExternalShear())
 
-repeats = 10
+repeats = 100
 
 
 def tick_toc(func):
@@ -69,5 +69,13 @@ def current_transform_to_reference_frame():
     assert (grid_values == transformed_coordinates).all()
 
 
+@tick_toc
+def new_transform_to_reference_frame():
+    result = mass_profile.transform_grid_to_reference_frame(grid)
+
+    assert (result == transformed_coordinates).all()
+
+
 if __name__ == "__main__":
     current_transform_to_reference_frame()
+    new_transform_to_reference_frame()
