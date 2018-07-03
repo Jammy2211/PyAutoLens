@@ -74,8 +74,7 @@ class Result(object):
 class NonLinearOptimizer(object):
 
     def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(),
-                 config_path=None, path=default_path,
-                 check_model=True, **classes):
+                 config_path=None, path=default_path, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -87,15 +86,12 @@ class NonLinearOptimizer(object):
             The path where the non-linear analysis nlo are stored.
         obj_name : str
             Unique identifier of the data being analysed (e.g. the name of the data set)
-        check_model : bool
-            Check whether the model.info file corresponds to the model_mapper passed in.
         """
         self.nlo_config = config.NamedConfig(
             "{}/../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
             self.__class__.__name__)
 
         self.path = path
-        self.check_model = check_model
         self.variable = model_mapper
         self.constant = mm.ModelInstance()
 
@@ -110,13 +106,12 @@ class NonLinearOptimizer(object):
         print("making dir {}".format(self.path))
         resume = os.path.exists(self.path)  # resume True if results path already exists
 
-        if not resume:
+        if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
-            self.create_param_names()
-            self.variable.output_model_info(self.file_model_info)
 
-        elif self.check_model:
-            self.variable.check_model_info(self.file_model_info)
+        self.create_param_names()
+        self.variable.output_model_info(self.file_model_info)
+        self.variable.check_model_info(self.file_model_info)
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
@@ -128,19 +123,20 @@ class NonLinearOptimizer(object):
         properties of each model class."""
         param_names = open(self.file_param_names, 'w')
 
-        for prior_name, prior_model in self.variable.flat_prior_models:
-
-            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
-            component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
-
-            param_labels = generate_parameter_latex(param_labels, subscript)
-
-            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-                line = prior_name + '_' + param[0]
-                line += ' ' * (40 - len(line)) + param_labels[param_no]
-
-                param_names.write(line + '\n')
+        # for prior_name, prior_model in self.variable.flat_prior_models:
+        #
+        #     param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
+        #     component_number = prior_model.cls().component_number
+        #     subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+        #
+        #     param_labels = generate_parameter_latex(param_labels, subscript)
+        #
+        #     for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+        #
+        #         line = prior_name + '_' + param[0]
+        #         line += ' ' * (40 - len(line)) + param_labels[param_no]
+        #
+        #         param_names.write(line + '\n')
 
         param_names.close()
 
@@ -153,7 +149,7 @@ class DownhillSimplex(NonLinearOptimizer):
     def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
                  fmin=scipy.optimize.fmin):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              model_mapper=model_mapper, path=path, check_model=False)
+                                              model_mapper=model_mapper, path=path)
 
         self.xtol = self.nlo_config.get("xtol", float)
         self.ftol = self.nlo_config.get("ftol", float)
@@ -206,7 +202,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path, check_model=False,
+    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
@@ -220,7 +216,7 @@ class MultiNest(NonLinearOptimizer):
         """
 
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper,
-                                        path=path, check_model=check_model)
+                                        path=path)
 
         self.file_summary = self.path + 'summary.txt'
         self.file_weighted_samples = self.path + 'multinest.txt'
@@ -264,6 +260,7 @@ class MultiNest(NonLinearOptimizer):
                 self.constant = constant
 
             def __call__(self, cube, ndim, nparams, lnew):
+
                 instance = self.instance_from_physical_vector(cube)
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
@@ -275,17 +272,19 @@ class MultiNest(NonLinearOptimizer):
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
+
             phys_cube = self.variable.physical_vector_from_hypercube_vector(hypercube_vector=cube)
 
             for i in range(self.variable.total_parameters):
                 cube[i] = phys_cube[i]
+
 
             return cube
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
         logger.info("Running MultiNest...")
-        self.run(fitness_function, prior, self.variable.total_parameters,
+        self.run(fitness_function.__call__, prior, self.variable.total_parameters,
                  outputfiles_basename=self.path)
         logger.info("MultiNest complete")
 
