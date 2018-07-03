@@ -4,6 +4,7 @@ import math
 from scipy.integrate import quad
 from scipy import special
 from itertools import count
+import numpy as np
 
 
 # noinspection PyMethodMayBeStatic
@@ -292,6 +293,31 @@ class EllipticalIsothermal(EllipticalPowerLaw):
                        math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        """
+        Calculate the deflection angle at a given set of image_grid plane image_grid
+
+        Parameters
+        ----------
+        grid
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those image_grid
+        """
+
+        # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
+        # TODO: throw an assertion error if the inputs causing the error are invalid?
+
+        psi = math.sqrt((self.axis_ratio ** 2) * (np.square(grid[0]) + np.square(grid[1])))
+        deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
+                       math.atan((math.sqrt(1 - self.axis_ratio ** 2) * grid[0]) / psi)
+        deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
+                       math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * grid[1]) / psi)
+
+        return self.rotate_grid_from_profile(np.vstack((deflection_x, deflection_y)).T)
 
 
 class SphericalIsothermal(EllipticalIsothermal):
@@ -710,7 +736,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         integral_y = quad(self.integral_y, a=0.0, b=1.0, args=radius)[0]
 
         return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * (
-                    (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
+                (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
 
     def potential_func_ell(self, u, coordinates):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
@@ -1005,7 +1031,6 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Tau']
-
 
     def surface_density_at_radius(self, radius):
         return self.mass_to_light_ratio * (
