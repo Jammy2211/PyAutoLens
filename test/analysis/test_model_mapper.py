@@ -749,7 +749,7 @@ class TestFlatPriorModel(object):
         from src.analysis import galaxy
 
         mapper = model_mapper.ModelMapper(width_config=width_config)
-        mapper.list = [galaxy_prior.GalaxyPrior()]
+        mapper.list = [galaxy_prior.GalaxyPrior(variable_redshift=True)]
 
         assert len(mapper.flat_prior_models) == 1
         assert mapper.flat_prior_models[0][1].cls == galaxy.Redshift

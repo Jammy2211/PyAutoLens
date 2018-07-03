@@ -15,13 +15,13 @@ class TestCase:
 
         # Create a galaxy prior for the source galaxy. Here we are describing only the light profile of the source
         # galaxy which comprises an elliptical exponential and elliptical sersic light profile.
-        source_galaxy_prior = gp.GalaxyPrior(
-            light_profile_one=light_profiles.EllipticalExponential,
-            light_profile_2=light_profiles.EllipticalSersic, config=config)
+        source_galaxy_prior = gp.GalaxyPrior(variable_redshift=True,
+                                             light_profile_one=light_profiles.EllipticalExponential,
+                                             light_profile_2=light_profiles.EllipticalSersic, config=config)
 
         # Create a galaxy prior for the source galaxy. Here we are describing both the light and mass profiles. We've
         # also stipulated that the centres of any galaxies generated using the galaxy prior should match.
-        lens_galaxy_prior = gp.GalaxyPrior(light_profile=light_profiles.EllipticalExponential,
+        lens_galaxy_prior = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalExponential,
                                            mass_profile=mass_profiles.EllipticalExponentialMass,
                                            align_centres=True, config=config)
 
