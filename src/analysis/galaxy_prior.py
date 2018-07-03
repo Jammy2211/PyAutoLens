@@ -142,14 +142,14 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                        for key, value
                        in self.profile_prior_model_dict.items()}, **self.fixed_profile_dict}
 
-        if isinstance(self.redshift, model_mapper.Constant):
-            redshift = self.redshift.value
+        if isinstance(self.redshift, galaxy.Redshift):
+            redshift = self.redshift
         else:
-            redshift = self.redshift.instance_for_arguments(arguments).redshift
+            redshift = self.redshift.instance_for_arguments(arguments)
         pixelization = self.pixelization.instance_for_arguments(arguments) if self.pixelization is not None else None
         hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) if self.hyper_galaxy is not None else None
 
-        return galaxy.Galaxy(redshift=redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
+        return galaxy.Galaxy(redshift=redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
                              **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
