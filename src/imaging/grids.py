@@ -188,20 +188,20 @@ class GridCoordsRegular(GridCoords):
 class GridCoordsSub(GridCoords):
 
     def __new__(cls, grid_coords, grid_size_sub):
-        """Abstract class for a sub of coordinates. On a sub-grid, each pixel's is sub-gridded into a uniform grid of \
+        """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
          sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
-        Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+        Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner of an
+        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
         also counted from the top-left.
 
-        A sub *grid_coords* is a NumPy array of dimensions_2d [image_pixels, sub_grid_pixels, 2]. Therefore, the first \
-        element maps to the image pixel index, the second element to the sub-pixel index and third element to that \
-        sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's \
+        A sub *grid_coords* is a NumPy array of dimensions_2d [image_pixels, sub_grid_pixels, 2]. Therefore, the first
+        element maps to the image pixel index, the second element to the sub-pixel index and third element to that
+        sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
         7th sub-pixel's y coordinate.
 
-        Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from \
-        the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just \
+        Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
+        the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
         2 data_to_pixel, to keep the illustration brief.
 
         |x|x|x|x|x|x|x|x|x|x|
