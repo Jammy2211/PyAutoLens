@@ -3,6 +3,7 @@ from src.analysis import model_mapper
 import pytest
 from src.profiles import geometry_profiles, light_profiles, mass_profiles
 import os
+from src.analysis import galaxy_prior
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -735,3 +736,20 @@ class TestGaussianWidthConfig(object):
         assert gaussian_mapper.one.two.mean == 4
         assert gaussian_mapper.two.one.mean == 5
         assert gaussian_mapper.two.two.mean == 6
+
+
+class TestFlatPriorModel(object):
+    def test_flatten_list(self, width_config, test_config):
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.list = [model_mapper.PriorModel(MockClass, config=test_config)]
+
+        assert len(mapper.flat_prior_models) == 1
+
+    def test_flatten_galaxy_prior_list(self, width_config):
+        from src.analysis import galaxy
+
+        mapper = model_mapper.ModelMapper(width_config=width_config)
+        mapper.list = [galaxy_prior.GalaxyPrior()]
+
+        assert len(mapper.flat_prior_models) == 1
+        assert mapper.flat_prior_models[0][1].cls == galaxy.Redshift
