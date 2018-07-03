@@ -434,3 +434,11 @@ class HyperGalaxy(object):
 class Redshift(object):
     def __init__(self, redshift):
         self.redshift = redshift
+
+    @property
+    def parameter_labels(self):
+        return 'z'
+
+    @property
+    def subscript(self):
+        return 'g'
