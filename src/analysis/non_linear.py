@@ -104,8 +104,6 @@ class NonLinearOptimizer(object):
 
     def save_model_info(self):
         print("making dir {}".format(self.path))
-        resume = os.path.exists(self.path)  # resume True if results path already exists
-
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
