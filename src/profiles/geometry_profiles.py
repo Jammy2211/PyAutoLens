@@ -186,6 +186,49 @@ def transform_coordinates(func):
     return wrapper
 
 
+def transform_grid(func):
+    """
+    Wrap the function in a function that checks whether the coordinates have been transformed. If they have not been \
+    transformed then they are transformed. If coordinates are returned they are returned in the coordinate system in \
+    which they were passed in.
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requires transformed coordinates
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : Profile
+            The profiles that owns the function
+        grid : ndarray
+            PlaneCoordinates in either cartesian or profiles coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+        if not hasattr(grid, "is_transformed") or not getattr(grid, "is_transformed"):
+            result = func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
+            if isinstance(result, TransformedCoordinates):
+                result = profile.transform_from_reference_frame(result)
+            return np.asarray(result)
+        return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
 class Profile(object):
 
     def __init__(self, centre=(0.0, 0.0)):
@@ -209,7 +252,13 @@ class Profile(object):
         ----------
         The coordinates after the elliptical translation
         """
-        raise AssertionError("Transform to reference frame should be overridden")
+        raise NotImplemented("Transform to reference frame should be overridden")
+
+    def transform_grid_to_reference_frame(self, grid):
+        raise NotImplemented()
+
+    def transform_grid_from_reference_frame(self, grid):
+        raise NotImplemented()
 
     @classmethod
     def from_profile(cls, profile, **kwargs):
@@ -500,8 +549,10 @@ class EllipticalProfile(Profile):
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
         theta_coordinate_to_profile = np.radians(
             np.degrees(np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0])) - self.phi)
-        return np.vstack(
+        transformed = np.vstack(
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
+        transformed.is_transformed = True
+        return transformed
 
     def transform_to_reference_frame(self, coordinates):
         """ Translate Cartesian coordinates to the profiles's reference frame.
