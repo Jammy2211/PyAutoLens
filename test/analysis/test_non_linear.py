@@ -439,8 +439,7 @@ class TestMultiNest(object):
 
             files = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'profile',
-                check_model=False)
+                path=mn_summary_path + 'profile')
 
             files.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
@@ -455,8 +454,7 @@ class TestMultiNest(object):
 
             files = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'multi_profile',
-                check_model=False)
+                path=mn_summary_path + 'multi_profile')
 
             files.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
                                        mass_profile=mass_profiles.SphericalNFW)
@@ -472,8 +470,7 @@ class TestMultiNest(object):
 
             files = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'profile',
-                check_model=False)
+                path=mn_summary_path + 'profile')
 
             files.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
@@ -488,8 +485,7 @@ class TestMultiNest(object):
 
             files = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'multi_profile',
-                check_model=False)
+                path=mn_summary_path + 'multi_profile')
 
             files.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
                                        mass_profile=mass_profiles.SphericalNFW)
@@ -505,8 +501,7 @@ class TestMultiNest(object):
 
             files = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'profile',
-                check_model=False)
+                path=mn_summary_path + 'profile')
 
             files.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
@@ -523,8 +518,7 @@ class TestMultiNest(object):
 
             files = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'multi_profile',
-                check_model=False)
+                path=mn_summary_path + 'multi_profile')
 
             files.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
                                        mass_profile=mass_profiles.SphericalNFW)
@@ -543,8 +537,7 @@ class TestMultiNest(object):
 
             multinest = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + 'multi_profile',
-                check_model=False)
+                path=mn_summary_path + 'multi_profile')
             multinest.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
                                            mass_profile=mass_profiles.SphericalNFW)
 
@@ -581,7 +574,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_priors_path, check_model=False)
+                path=mn_priors_path)
             results.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
             results.save_model_info()
@@ -604,8 +597,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_priors_path,
-                check_model=False)
+                path=mn_priors_path)
 
             results.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
@@ -635,8 +627,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
             results.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
             results.save_model_info()
@@ -653,8 +644,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
 
             results.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
 
@@ -672,8 +662,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
             results.variable.add_class("light_profile", light_profiles.EllipticalExponential)
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
 
@@ -691,8 +680,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
 
             results.variable.add_class("light_profile", light_profiles.EllipticalSersic)
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
@@ -711,8 +699,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
 
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
 
@@ -733,8 +720,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
 
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
 
@@ -755,8 +741,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
 
             results.variable.add_class("light_profile", light_profiles.EllipticalExponential)
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
@@ -783,7 +768,7 @@ class TestMultiNest(object):
 
             nlo = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path, check_model=False)
+                path=mn_samples_path)
 
             nlo.variable.light_profile = model_mapper.PriorModel(light_profiles.EllipticalExponential)
             nlo.variable.mass_profile = model_mapper.PriorModel(mass_profiles.SphericalNFW)
@@ -814,8 +799,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
 
             results.save_model_info()
@@ -831,8 +815,7 @@ class TestMultiNest(object):
 
             results = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_samples_path,
-                check_model=False)
+                path=mn_samples_path)
             results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
 
             results.save_model_info()
@@ -897,12 +880,22 @@ class MockAnalysis(object):
 
 
 class MockClass(object):
+
+    component_number = 1
+
     def __init__(self, one=1, two=2, three=3, four=4):
         self.one = one
         self.two = two
         self.three = three
         self.four = four
 
+    @property
+    def subscript(self):
+        return '_'
+
+    @property
+    def parameter_labels(self):
+        return 'test'
 
 @pytest.fixture(name='test_config')
 def make_test_config():
@@ -938,8 +931,7 @@ def make_multi_nest(test_config, width_config, mn_samples_path):
 
     create_summary_4_parameters(mn_samples_path)
     return non_linear.MultiNest(run=run, path=mn_samples_path,
-                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config),
-                                check_model=False)
+                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config))
 
 
 class TestFitting(object):

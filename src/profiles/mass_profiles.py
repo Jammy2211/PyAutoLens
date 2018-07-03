@@ -1046,6 +1046,10 @@ class ExternalShear(geometry_profiles.EllipticalProfile):
         self.magnitude = magnitude
 
     @property
+    def subscript(self):
+        return 'sh'
+
+    @property
     def parameter_labels(self):
         return [r'\gamma', r'\theta']
 
