@@ -28,6 +28,11 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     @DynamicAttrs
     """
 
+    @property
+    def flat_prior_models(self):
+        return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
+                prior_model.flat_prior_models]
+
     def __init__(self, align_centres=False, align_orientations=False, pixelization=None, hyper_galaxy=None, config=None,
                  **kwargs):
         """
