@@ -128,7 +128,7 @@ class NonLinearOptimizer(object):
         properties of each model class."""
         param_names = open(self.file_param_names, 'w')
 
-        for prior_name, prior_model in self.variable.prior_models:
+        for prior_name, prior_model in self.variable.flat_prior_models:
 
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
