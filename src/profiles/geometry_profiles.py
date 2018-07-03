@@ -1,10 +1,6 @@
-import math
-import cmath
 import numpy as np
 from functools import wraps
 import inspect
-from matplotlib import pyplot
-import colorsys
 from src import exc
 
 
@@ -498,6 +494,14 @@ class EllipticalProfile(Profile):
 
         x, y = self.rotate_coordinates_from_profile(coordinates_elliptical)
         return self.coordinates_from_centre((x, y))
+
+    def transform_grid_to_reference_frame(self, grid):
+        shifted_coordinates = np.subtract(grid, self.centre)
+        radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
+        theta_coordinate_to_profile = np.radians(
+            np.degrees(np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0])) - self.phi)
+        return np.vstack(
+            (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
 
     def transform_to_reference_frame(self, coordinates):
         """ Translate Cartesian coordinates to the profiles's reference frame.
