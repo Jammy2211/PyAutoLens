@@ -47,7 +47,7 @@ class CoordsCollection(object):
         return CoordsCollection(image, sub, blurring)
 
     def deflection_grids_for_galaxies(self, galaxies):
-        """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies) \
+        """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies)
         and set these up as a new collection of grids."""
 
         image = self.image.setup_deflections_grid(galaxies)
@@ -77,9 +77,9 @@ class GridCoords(np.ndarray):
         a fraction of their light is blurred into the masked region by the PSF.
 
         Each grid is stored as a structured array of coordinates, chosen for efficient ray-tracing \
-        calculations. Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
-        also counted from the top-left.
+        calculations. Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner
+        of an image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes
+        are also counted from the top-left.
 
         See *GridCoordsRegular* and *GridCoordsSub* for an illustration of each grid.
         """
@@ -112,7 +112,7 @@ class GridCoordsRegular(GridCoords):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted \
+    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
     around the image.
 
     pixel_scale = 1.0"
@@ -129,11 +129,6 @@ class GridCoordsRegular(GridCoords):
     |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[7] = [-0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
-
-    Parameters
-    -----------
-    grid_coords : np.ndarray
-        The coordinates of the regular grid.
     """
 
     def intensities_via_grid(self, galaxies):
@@ -247,8 +242,8 @@ class GridCoordsSub(GridCoords):
         |2|3|  grid_coords[0,2] = [-1.66, 0.33]
                grid_coords[0,3] = [-1.33, 0.33]
 
-        Now, we'd normally sub-grid all data_to_pixel using the same *grid_size_sub*, but for this illustration lets pretend \
-        we used a size of 3x3 for pixel 1:
+        Now, we'd normally sub-grid all data_to_pixel using the same *grid_size_sub*, but for this illustration lets
+        pretend we used a size of 3x3 for pixel 1:
 
                  grid_coords[0,0] = [-0.75, 0.75]
                  grid_coords[0,1] = [-0.5,  0.75]
@@ -326,11 +321,6 @@ class GridCoordsImage(GridCoordsRegular):
     """The coordinates of each pixel in an image, stored using a regular grid.
 
     See *GridCoordsRegular* for more details.
-
-    Parameters
-    -----------
-    grid_coords : np.ndarray
-        The coordinates of the image, on a regular grid.
     """
 
     @classmethod
@@ -367,13 +357,6 @@ class GridCoordsImage(GridCoordsRegular):
 
 class GridCoordsImageSub(GridCoordsSub):
     """The sub-coordinates of each pixel in an image, stored using a sub-grid.
-
-    Parameters
-    -----------
-    grid_coords : np.ndarray
-        The coordinates of the image sub-grid, on a sub-grid.
-    grid_size_sub : int
-        The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
     """
 
     @classmethod
@@ -481,8 +464,6 @@ class DataCollection(object):
             A data-grid of the observed image noise estimates (standard deviations, electrons per second)
         exposure_time : GridData
             A data-grid of the exposure time in each pixel (seconds)
-        psf : imaging.PSF
-            The 2D Point Spread Function (PSF).
         """
         self.image = image
         self.noise = noise
@@ -495,15 +476,14 @@ class DataCollection(object):
         Parameters
         -----------
         mask : mask.Mask
-            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of grids.
+            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of
+            grids.
         image : imaging.Image
             A data-grid of the observed image fluxes (electrons per second)
         noise : imaging.Noise
             A data-grid of the observed image noise estimates (standard deviations, electrons per second)
         exposure_time : imaging.ExposureTime
             A data-grid of the exposure time in each pixel (seconds)
-        psf : imaging.PSF
-            The 2D Point Spread Function (PSF).
         """
         image = GridData.from_mask(image, mask)
         noise = GridData.from_mask(noise, mask)
@@ -569,7 +549,7 @@ class GridData(np.ndarray):
         Notes
         ----------
 
-        The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image. \
+        The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image.
         The easiest way to ensure this is to generate them all from the same mask.
 
         """
@@ -581,6 +561,7 @@ class GridData(np.ndarray):
 
         Parameters
         ----------
+        data
         mask : mask.Mask
             The image mask containing the data_to_pixel the data-grid is computed for.
         """
@@ -611,7 +592,8 @@ class MapperCollection(object):
         -----------
         cluster_grid_size
         mask : mask.Mask
-            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of grids.
+            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of
+            grids.
 
         """
 
@@ -649,8 +631,8 @@ class GridMapperDataToPixel(np.ndarray):
         8   |x|x|x|x|x|x|x|x|x|x|
         9   |x|x|x|x|x|x|x|x|x|x|
 
-        Remembering that we count data_to_pixel rightwards from the top left corner (see *GridRegular), the data_to_pixel \
-        vector will read:
+        Remembering that we count data_to_pixel rightwards from the top left corner (see *GridRegular),
+        the data_to_pixel vector will read:
 
         data_to_pixel[0] = [3,4]
         data_to_pixel[1] = [3,5]
@@ -734,11 +716,12 @@ class MapperCluster(object):
         of coordinates that the algorithm uses.
 
         By giving the KMeans algorithm only clustering-grid coordinates, it will only tell us the mappings between \
-        source-data_to_pixel and clustering-data_to_pixel. However, to perform the source reconstruction, we need to know all of the \
-        mappings between source data_to_pixel and image data_to_pixel / sub-image data_to_pixel.This would require a (computationally \
-        expensive) nearest-neighbor search (over all clustering data_to_pixel and image / sub data_to_pixel) to calculate. The \
-        calculation can be sped-up by using the attribute *image_to_cluster*, which maps every image-pixel to its \
-        closest pixel on the clustering grid (see *pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs*).
+        source-data_to_pixel and clustering-data_to_pixel. However, to perform the source reconstruction, we need to
+        know all of the mappings between source data_to_pixel and image data_to_pixel / sub-image data_to_pixel. This
+        would require a (computationally expensive) nearest-neighbor search (over all clustering data_to_pixel and
+        image / sub data_to_pixel) to calculate. The calculation can be sped-up by using the attribute
+        *image_to_cluster*, which maps every image-pixel to its closest pixel on the clustering grid (see
+        *pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs*).
         """
 
         self.cluster_to_image = cluster_to_image
@@ -751,8 +734,10 @@ class MapperCluster(object):
 
         Parameters
         ----------
+        cluster_grid_size
         mask : mask.Mask
-            The image mask containing the data_to_pixel the blurring grid_coords is computed for and the image's data grid_coords.
+            The image mask containing the data_to_pixel the blurring grid_coords is computed for and the image's data
+            grid_coords.
         """
         cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(cluster_grid_size)
         return MapperCluster(cluster_to_image, image_to_cluster)
@@ -766,7 +751,7 @@ class GridBorder(geometry_profiles.Profile):
     def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
         """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
 
-        This is required to ensure highly demagnified data_to_pixel in the centre of an image do not bias a source \
+        This is required to ensure highly demagnified data_to_pixel in the centre of an image do not bias a source
         pixelization.
 
         Parameters
@@ -783,8 +768,12 @@ class GridBorder(geometry_profiles.Profile):
         self.polynomial_degree = polynomial_degree
         self.centre = centre
 
+        self.thetas = None
+        self.radii = None
+        self.polynomial = None
+
     def relocate_coordinates_outside_border(self, coordinates):
-        """For an input set of coordinates, return a new set of coordinates where every coordinate outside the border \
+        """For an input set of coordinates, return a new set of coordinates where every coordinate outside the border
         is relocated to its edge.
 
         Parameters
@@ -803,7 +792,8 @@ class GridBorder(geometry_profiles.Profile):
         return relocated_coordinates
 
     def relocate_sub_coordinates_outside_border(self, coordinates, sub_coordinates):
-        """For an input sub-coordinates, return a coordinates where all sub-coordinates outside the border are relocated to its edge.
+        """For an input sub-coordinates, return a coordinates where all sub-coordinates outside the border are relocated
+        to its edge.
         """
 
         # TODO : integrate these as functions into GridCoords and SubGrid, or pass in a GridCoords / SubGrid?
@@ -824,7 +814,7 @@ class GridBorder(geometry_profiles.Profile):
 
         Parameters
         ----------
-        coordinates : ndarray
+        coordinates : Union((float, float), ndarray)
             The x and y image_grid of the plane.
 
         Returns
@@ -851,9 +841,9 @@ class GridBorder(geometry_profiles.Profile):
 
     def move_factor(self, coordinate):
         """Get the move factor of a coordinate.
-         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order to lie on it.
-         PlaneCoordinates already within the setup_border_pixels return a move-factor of 1.0, signifying they are already within the \
-         setup_border_pixels.
+         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order
+         to lie on it. PlaneCoordinates already within the setup_border_pixels return a move-factor of 1.0, signifying
+         they are already within the setup_border_pixels.
 
         Parameters
         ----------
