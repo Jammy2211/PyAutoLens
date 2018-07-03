@@ -732,7 +732,7 @@ class TestRectangularPixelization:
 
         def test__number_of_pixels_and_regularization_set_up_correctly(self):
 
-            pix = pixelization.RectangularPixelization(shape=(2,3), regularization_coefficients=(2.0,))
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(2.0,))
 
             assert pix.shape == (2,3)
             assert pix.pixels == 6
