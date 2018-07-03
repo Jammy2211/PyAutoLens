@@ -18,8 +18,10 @@ repeats = 10
 def tick_toc(func):
     def wrapper():
         start = time.time()
+        result = None
         for _ in range(repeats):
-            func()
+            result = func()
+        assert (result == grid_result).all()
         diff = time.time() - start
         print("{}: {}".format(func.__name__, diff))
 
@@ -33,7 +35,7 @@ def current_solution():
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = lens_galaxy.deflections_at_coordinates(coordinates=coordinate)
 
-    assert (grid_values == grid_result).all()
+    return grid_values
 
 
 @tick_toc
@@ -44,7 +46,7 @@ def with_numba():
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = lens_galaxy.deflections_at_coordinates(coordinates=coordinate)
 
-    assert (grid_values == grid_result).all()
+    return grid_values
 
 
 if __name__ == "__main__":
