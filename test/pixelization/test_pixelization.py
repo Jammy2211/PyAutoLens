@@ -809,6 +809,171 @@ class TestRectangularPixelization:
             assert source_neighbors[14] == [10, 13, 15]
             assert source_neighbors[15] == [11, 14]
 
+    class TestComputeImageToSource:
+
+        def test__3x3_grid_of_source_coordinates__1_coordinate_per_square_source_pixel__in_centre_of_pixels(self):
+
+            #   _ _ _
+            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
+            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
+            #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
+
+            source_coordinates = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                           [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
+                                           [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+
+        def test__3x3_grid_of_source_coordinates__1_coordinate_per_square_source_pixel__near_edges_of_pixels(self):
+
+            #   _ _ _
+            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
+            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
+            #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
+
+            source_coordinates = np.array([[-0.34, -0.34], [-0.34, 0.325], [-1.0, 1.0],
+                                           [ -0.32, -1.0], [-0.32, 0.32], [ 0.0, 1.0],
+                                           [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+
+        def test__3x3_grid_of_source_coordinates__add_multiple_coordinates_to_1_source_pixel(self):
+
+            #                  _ _ _
+            # -1.0 to -(1/3)  |_|_|_|
+            # -(1/3) to (1/3) |_|_|_|
+            #  (1/3) to 1.0   |_|_|_|
+
+            source_coordinates = np.array([[-1.0, -1.0], [0.0, 0.0], [-1.0, 1.0],
+                                           [ 0.0,  0.0], [0.0, 0.0], [ 0.0, 0.0],
+                                           [ 1.0, -1.0], [0.0, 0.0], [ 1.0, 1.0]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
+
+        def test__4x3_grid_of_source_coordinates__1_coordinate_in_each_pixel(self):
+
+            #   _ _ _
+            #  |_|_|_|
+            #  |_|_|_|
+            #  |_|_|_|
+            #  |_|_|_|
+
+            # Boundaries for column pixel 0 -1.0 to -(1/3)
+            # Boundaries for column pixel 1 -(1/3) to (1/3)
+            # Boundaries for column pixel 2  (1/3) to 1.0
+
+            # Bounadries for row pixel 0 -1.0 to -0.5
+            # Bounadries for row pixel 1 -0.5 to 0.0
+            # Bounadries for row pixel 2  0.0 to 0.5
+            # Bounadries for row pixel 3  0.5 to 1.0
+
+            source_coordinates = np.array([[-1.0, -1.0], [-1.0, -0.32], [-1.0, 0.34], [-0.49, -1.0],
+                                           [0.01, 0.34], [1.0, 1.0]])
+
+            pix = pixelization.RectangularPixelization(shape=(4,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 2, 3, 8, 11])).all()
+
+        def test__3x4_grid_of_source_coordinates__1_coordinate_in_each_pixel(self):
+
+            #   _ _ _ _
+            #  |_|_|_|_|
+            #  |_|_|_|_|
+            #  |_|_|_|_|
+
+            # Boundaries for row pixel 0 -1.0 to -(1/3)
+            # Boundaries for row pixel 1 -(1/3) to (1/3)
+            # Boundaries for row pixel 2  (1/3) to 1.0
+
+            # Bounadries for column pixel 0 -1.0 to -0.5
+            # Bounadries for column pixel 1 -0.5 to 0.0
+            # Bounadries for column pixel 2  0.0 to 0.5
+            # Bounadries for column pixel 3  0.5 to 1.0
+
+            source_coordinates = np.array([[-1.0, -1.0], [-1.0, -0.49], [-1.0, 0.01], [-0.32, 0.01],
+                                           [0.34, -0.01], [1.0, 1.0]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,4), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 2, 6, 9, 11])).all()
+
+        def test__3x3_grid__change_arcsecond_dimensions_size__grid_adapts_accordingly(self):
+
+            #   _ _ _
+            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
+            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
+            #  |_|_|_| Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
+
+            source_coordinates = np.array([[-1.5, -1.5], [-1.0, 0.0], [-1.0, 0.6], [1.4, 0.0], [1.5, 1.5]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 2, 7, 8])).all()
+
+        def test__3x3_grid__change_arcsecond_dimensions__not_symmetric(self):
+
+            #   _ _ _
+            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
+            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
+            #  |_|_|_| Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
+
+            source_coordinates = np.array([[-1.0, -1.5], [-1.0, -0.49], [-0.32, -1.5], [-0.32, 0.51], [1.0, 1.5]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 3, 5, 8])).all()
+
+        def test__4x3_grid__change_arcsecond_dimensions__not_symmetric(self):
+
+            #   _ _ _
+            #  |_|_|_|
+            #  |_|_|_|
+            #  |_|_|_|
+            #  |_|_|_|
+
+            source_coordinates = np.array([[-1.0, -1.5], [-1.0, -0.49], [-0.49, -1.5], [0.6, 0.0], [1.0, 1.5]])
+
+            pix = pixelization.RectangularPixelization(shape=(4,3), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 3, 10, 11])).all()
+
+        def test__3x4_grid__change_arcsecond_dimensions__not_symmetric(self):
+
+            #   _ _ _ _
+            #  |_|_|_|_|
+            #  |_|_|_|_|
+            #  |_|_|_|_|
+
+            source_coordinates = np.array([[-1.0, -1.5], [-1.0, -0.49], [-0.32, -1.5], [0.34, 0.49], [1.0, 1.5]])
+
+            pix = pixelization.RectangularPixelization(shape=(3,4), regularization_coefficients=(1.0,))
+
+            image_to_source = pix.compute_image_to_source(source_coordinates)
+
+            assert (image_to_source == np.array([0, 1, 4, 10, 11])).all()
+
 
 class TestVoronoiPixelization:
     class TestComputeVoronoi:
