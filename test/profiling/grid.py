@@ -1,3 +1,6 @@
+import sys
+
+sys.path.append("../../")
 import numpy as np
 from src.analysis import galaxy
 from src.profiles import mass_profiles
@@ -44,6 +47,8 @@ def current_solution():
 
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = lens_galaxy.deflections_at_coordinates(coordinates=coordinate)
+
+        print(grid_values[pixel_no], deflection_result[pixel_no])
 
         assert (grid_values == deflection_result).all()
 
