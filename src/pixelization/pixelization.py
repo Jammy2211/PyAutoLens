@@ -276,6 +276,44 @@ class RectangularPixelization(Pixelization):
         
         return source_neighbors
 
+    @staticmethod
+    def compute_dimensions(coordinates):
+        return np.min(coordinates[:,0]) - 1e-8,  np.max(coordinates[:,0]) + 1e-8, \
+               np.min(coordinates[:,1]) - 1e-8, np.max(coordinates[:,1]) + 1e-8
+
+    def compute_source_pixel_scale(self, y_min, y_max, x_min, x_max):
+        return (y_max-y_min) / self.shape[0], (x_max - x_min) / self.shape[1]
+
+    @staticmethod
+    def arc_second_to_pixel_index(coordinate, shift, pixel_scale):
+        return np.floor((coordinate - shift) / pixel_scale)
+
+    # TODO : must make sure that image_to_source and sub_to_source use the same coordinates to define x_min, y_min etc.
+    # TODO : Pass as input to function, maybe as a class, with own unit tests?
+
+    def compute_image_to_source(self, source_coordinates):
+        """Compute the mappings between a set of image pixels and source-pixels, using the image-plane coordinate's \
+        traced source-plane coordinates and the rectangular grid's geometry.
+
+        Parameters
+        ----------
+        source_coordinates : [float, float]
+            The x and y source coordinates which are to be matched with their closest source-pixels.
+         """
+        image_to_source = np.zeros(source_coordinates.shape[0], dtype='int')
+
+        y_min, y_max, x_min, x_max = self.compute_dimensions(source_coordinates)
+        y_pixel_scale, x_pixel_scale = self.compute_source_pixel_scale(y_min, y_max, x_min, x_max)
+
+        for index, source_coordinate in enumerate(source_coordinates):
+
+            y_pixel = self.arc_second_to_pixel_index(source_coordinate[0], y_min, y_pixel_scale)
+            x_pixel = self.arc_second_to_pixel_index(source_coordinate[1], x_min, x_pixel_scale)
+
+            image_to_source[index] = y_pixel*self.shape[1] + x_pixel
+
+        return image_to_source
+
 class VoronoiPixelization(Pixelization):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,)):
@@ -328,8 +366,8 @@ class VoronoiPixelization(Pixelization):
 
     def compute_image_to_source(self, source_coordinates, source_centers, source_neighbors, image_to_cluster,
                                 source_to_cluster):
-        """ Compute the mappings between a set of source sub-pixels and source-pixels, using the sub-coordinates and
-        source-pixel centers.
+        """ Compute the mappings between a set of image sub-pixels and source-pixels, using the sub-coordinates \
+         traced source-plane coordinates and the source-pixel centers.
 
         For the Voronoi pixelizations, a sparse set of 'cluster-pixels' are used to determine the source pixelization. \
         These provide the mappings between only a sub-set of sub-pixels / image-pixels and source-pixels.
@@ -399,8 +437,8 @@ class VoronoiPixelization(Pixelization):
 
     def compute_sub_to_source(self, source_sub_coordinates, source_centers, source_neighbors, image_to_cluster,
                               source_to_cluster):
-        """ Compute the mappings between a set of source sub-pixels and source-pixels, using the sub-coordinates and
-        source-pixel centers.
+        """Compute the mappings between a set of image sub-pixels and source-pixels, using the sub-coordinates \
+         traced source-plane coordinates and the source-pixel centers.
 
         For the Voronoi pixelizations, a sparse set of 'cluster-pixels' are used to determine the source pixelization. \
         These provide the mappings between only a sub-set of sub-pixels / image-pixels and source-pixels.
