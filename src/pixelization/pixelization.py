@@ -39,10 +39,11 @@ class Pixelization(object):
         self.regularization_coefficients = regularization_coefficients
         self.source_signal_scale = source_signal_scale
 
-    def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
+    def compute_pixelization_matrices(self, source_coordinates, source_sub_coordinates, sub_to_image,
+                                      image_pixels, sub_grid_size, mapper_cluster=None):
         raise exc.PixelizationException('compute_mapping_matrix must be over-riden by a Pixelization.')
 
-    def create_mapping_matrix(self, sub_to_source):
+    def create_mapping_matrix(self, sub_to_source, sub_to_image, image_pixels, sub_grid_size):
         """
         Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
         image-pixel and source pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
@@ -64,19 +65,24 @@ class Pixelization(object):
         Parameters
         ----------
         sub_to_source : [int, int]
-            The source_pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
-            sub-pixel of the third image-pixel is matched with the 3rd source-pixel, sub_to_source[2,4] = 2).
+            The source-pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
+            sub-pixel is matched with the 3rd source-pixel, sub_to_source[4] = 2).
+        sub_to_image : [int, int]
+            The image-pixel index each image pixel and sub-image pixel is matched with (e.g. if the fifth sub-pixel is
+            inside the 2nd image pixel, sub_to_image[4] = 1)
+        image_pixels : int
+            The number of image pixels in the masked image the pixelization is fitting.
+        sub_grid_size : int
+            The size of the sub-grid.
         """
 
-        image_pixels = sub_to_source.shape[0]
-        sub_pixels = sub_to_source.shape[1]
-        sub_grid_fraction = (1.0 / sub_pixels)
+        sub_pixels = sub_to_source.shape[0]
+        sub_grid_fraction = (1.0 / sub_grid_size ** 2.0)
 
         mapping_matrix = np.zeros((image_pixels, self.pixels))
 
-        for image_pixel in range(image_pixels):
-            for sub_pixel in range(sub_pixels):
-                mapping_matrix[image_pixel, sub_to_source[image_pixel, sub_pixel]] += sub_grid_fraction
+        for sub_index in range(sub_pixels):
+            mapping_matrix[sub_to_image[sub_index], sub_to_source[sub_index]] += sub_grid_fraction
 
         return mapping_matrix
 
@@ -176,11 +182,6 @@ class Pixelization(object):
     def compute_source_neighbors(self):
         raise NotImplementedError("compute_source_neighbors must be over-riden by a Pixelization")
 
-    def compute_image_to_source(self):
-        raise NotImplementedError("compute_image_to_source must be over-riden by a Pixelization")
-
-    def compute_sub_to_source(self):
-        raise NotImplementedError("compute_sub_to_source must be over-riden by a Pixelization")
 
 class RectangularPixelization(Pixelization):
 
@@ -204,6 +205,33 @@ class RectangularPixelization(Pixelization):
         super(RectangularPixelization, self).__init__(shape[0]*shape[1], regularization_coefficients)
 
         self.shape = shape
+
+    class Geometry(object):
+
+        def __init__(self, y_min, y_max, x_min, x_max, y_pixel_scale, x_pixel_scale):
+            self.y_min = y_min
+            self.y_max = y_max
+            self.x_min = x_min
+            self.x_max = x_max
+            self.y_pixel_scale = y_pixel_scale
+            self.x_pixel_scale = x_pixel_scale
+
+        def arc_second_to_pixel_index_x(self, coordinate):
+            return np.floor((coordinate - self.x_min) / self.x_pixel_scale)
+
+        def arc_second_to_pixel_index_y(self, coordinate):
+            return np.floor((coordinate - self.y_min) / self.y_pixel_scale)
+
+    def compute_geometry(self, coordinates, buffer=1e-8):
+
+        y_min = np.min(coordinates[:,0]) - buffer
+        y_max = np.max(coordinates[:,0]) + buffer
+        x_min = np.min(coordinates[:,1]) - buffer
+        x_max = np.max(coordinates[:,1]) + buffer
+        y_pixel_scale = (y_max - y_min) / self.shape[0]
+        x_pixel_scale = (x_max - x_min) / self.shape[1]
+
+        return self.Geometry(y_min, y_max, x_min, x_max, y_pixel_scale, x_pixel_scale)
 
     def compute_source_neighbors(self):
         """Compute the neighbors of every source-pixel as a list of the source-pixel index's each source-pixel \
@@ -276,43 +304,56 @@ class RectangularPixelization(Pixelization):
         
         return source_neighbors
 
-    @staticmethod
-    def compute_dimensions(coordinates):
-        return np.min(coordinates[:,0]) - 1e-8,  np.max(coordinates[:,0]) + 1e-8, \
-               np.min(coordinates[:,1]) - 1e-8, np.max(coordinates[:,1]) + 1e-8
-
-    def compute_source_pixel_scale(self, y_min, y_max, x_min, x_max):
-        return (y_max-y_min) / self.shape[0], (x_max - x_min) / self.shape[1]
-
-    @staticmethod
-    def arc_second_to_pixel_index(coordinate, shift, pixel_scale):
-        return np.floor((coordinate - shift) / pixel_scale)
-
-    # TODO : must make sure that image_to_source and sub_to_source use the same coordinates to define x_min, y_min etc.
-    # TODO : Pass as input to function, maybe as a class, with own unit tests?
-
-    def compute_image_to_source(self, source_coordinates):
-        """Compute the mappings between a set of image pixels and source-pixels, using the image-plane coordinate's \
-        traced source-plane coordinates and the rectangular grid's geometry.
+    def compute_pixel_to_source(self, source_coordinates, geometry):
+        """Compute the mappings between a set of image pixels (or sub-pixels) and source-pixels, using the image's
+        traced source-plane coordinates (or sub-coordinates) and the uniform rectangular pixelization's geometry.
 
         Parameters
         ----------
-        source_coordinates : [float, float]
-            The x and y source coordinates which are to be matched with their closest source-pixels.
-         """
-        image_to_source = np.zeros(source_coordinates.shape[0], dtype='int')
-
-        y_min, y_max, x_min, x_max = self.compute_dimensions(source_coordinates)
-        y_pixel_scale, x_pixel_scale = self.compute_source_pixel_scale(y_min, y_max, x_min, x_max)
+        source_coordinates : [[float, float]]
+            The x and y source coordinates (or sub-coordinaates) which are to be matched with their source-pixels.
+        geometry : Geometry
+            The rectangular pixel grid's geometry.
+        """
+        pixel_to_source = np.zeros(source_coordinates.shape[0], dtype='int')
 
         for index, source_coordinate in enumerate(source_coordinates):
 
-            y_pixel = self.arc_second_to_pixel_index(source_coordinate[0], y_min, y_pixel_scale)
-            x_pixel = self.arc_second_to_pixel_index(source_coordinate[1], x_min, x_pixel_scale)
+            y_pixel = geometry.arc_second_to_pixel_index_y(source_coordinate[0])
+            x_pixel = geometry.arc_second_to_pixel_index_x(source_coordinate[1])
 
-            image_to_source[index] = y_pixel*self.shape[1] + x_pixel
+            pixel_to_source[index] = y_pixel*self.shape[1] + x_pixel
 
-        return image_to_source
+        return pixel_to_source
+
+    def compute_pixelization_matrices(self, source_coordinates, source_sub_coordinates, sub_to_image,
+                                      image_pixels, sub_grid_size, mapper_cluster=None):
+        """
+        Compute the pixelization matrices of the rectangular pixelization by following these steps:
+
+        1) Setup the rectangular grid geometry, by making its corner appear at the higher / lowest x and y source sub-
+        coordinates.
+        2) Pair image and sub-image pixels to the rectangular grid using their traced coordinates and its geometry.
+
+        Parameters
+        ----------
+        source_coordinates : [[float, float]]
+            The x and y source-coordinates.
+        source_sub_coordinates : [[float, float]]
+            The x and y sub-coordinates.
+        mapper_cluster : auto_lens.imaging.grids.GridMapperCluster
+            The mapping between cluster-pixels and image / source pixels.
+        """
+
+        geometry = self.compute_geometry(source_sub_coordinates)
+        source_neighbors = self.compute_source_neighbors()
+        image_to_source = self.compute_pixel_to_source(source_coordinates, geometry)
+        sub_to_source = self.compute_pixel_to_source(source_sub_coordinates, geometry)
+
+        mapping_matrix =  self.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels, sub_grid_size)
+        regularization_matrix = self.create_constant_regularization_matrix(source_neighbors)
+
+        return PixelizationMatrices(mapping_matrix, regularization_matrix)
 
 class VoronoiPixelization(Pixelization):
 
@@ -366,8 +407,8 @@ class VoronoiPixelization(Pixelization):
 
     def compute_image_to_source(self, source_coordinates, source_centers, source_neighbors, image_to_cluster,
                                 source_to_cluster):
-        """ Compute the mappings between a set of image sub-pixels and source-pixels, using the sub-coordinates \
-         traced source-plane coordinates and the source-pixel centers.
+        """ Compute the mappings between a set of image pixels and source-pixels, using the image's traced \
+        source-plane coordinates and the source-pixel centers.
 
         For the Voronoi pixelizations, a sparse set of 'cluster-pixels' are used to determine the source pixelization. \
         These provide the mappings between only a sub-set of sub-pixels / image-pixels and source-pixels.
@@ -406,39 +447,22 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        image_pixels = source_coordinates.shape[0]
-
-        image_to_source = np.zeros((image_pixels), dtype=int)
+        image_to_source = np.zeros((source_coordinates.shape[0]), dtype=int)
 
         for image_index, source_coordinate in enumerate(source_coordinates):
 
-            nearest_sparse = image_to_cluster[image_index]
-            nearest_sparse_source = source_to_cluster[nearest_sparse]
+            nearest_cluster = image_to_cluster[image_index]
 
-            while True:
-
-                source_to_sparse_source_distance = self.compute_distance_to_nearest_sparse_source(source_centers,
-                                                                                                  source_coordinate,
-                                                                                                  nearest_sparse_source)
-
-                neighboring_source_index, source_to_neighboring_source_distance = \
-                    self.compute_nearest_neighboring_source_and_distance(source_coordinate, source_centers,
-                                                                    source_neighbors[nearest_sparse_source])
-
-                if source_to_sparse_source_distance < source_to_neighboring_source_distance:
-                    break
-                else:
-                    nearest_sparse_source = neighboring_source_index
-
-            # If this pixel is closest to the original pixel, it has been paired successfully with its nearest neighbor.
-            image_to_source[image_index] = nearest_sparse_source
+            image_to_source[image_index] = self.pair_coordinate_and_pixel(source_coordinate, nearest_cluster,
+                                                         source_centers, source_neighbors, source_to_cluster)
 
         return image_to_source
 
-    def compute_sub_to_source(self, source_sub_coordinates, source_centers, source_neighbors, image_to_cluster,
-                              source_to_cluster):
-        """Compute the mappings between a set of image sub-pixels and source-pixels, using the sub-coordinates \
-         traced source-plane coordinates and the source-pixel centers.
+    def compute_sub_to_source(self, source_sub_coordinates, source_centers, source_neighbors,
+                              sub_to_image, image_to_cluster, source_to_cluster):
+        """ Compute the mappings between a set of sub-image pixels and source-pixels, using the image's traced \
+        source-plane sub-coordinates and the source-pixel centers. This uses the source-neighbors to perform a graph \
+        search when pairing pixels, for efficiency.
 
         For the Voronoi pixelizations, a sparse set of 'cluster-pixels' are used to determine the source pixelization. \
         These provide the mappings between only a sub-set of sub-pixels / image-pixels and source-pixels.
@@ -462,6 +486,9 @@ class VoronoiPixelization(Pixelization):
         source_neighbors : [[]]
             The neighboring source_pixels of each source_pixel, computed via the Voronoi grid_coords. \
             (e.g. if the fifth source_pixel neighbors source_pixels 7, 9 and 44, source_neighbors[4] = [6, 8, 43])
+        sub_to_image : [int, int]
+            The image-pixel index each image pixel and sub-image pixel is matched with (e.g. if the fifth sub-pixel is
+            inside the 2nd image pixel, sub_to_image[4] = 1)
         image_to_cluster : [int]
             The index in the image-grid each sparse cluster-pixel is closest too (e.g. if the fifth image-pixel \
             is closest to the 3rd cluster-pixel, image_to_sparse[4] = 2).
@@ -477,38 +504,67 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        image_pixels = source_sub_coordinates.shape[0]
-        sub_pixels = source_sub_coordinates.shape[1]
+        sub_to_source = np.zeros((source_sub_coordinates.shape[0]), dtype=int)
 
-        sub_to_source = np.zeros((image_pixels, sub_pixels), dtype=int)
+        for sub_index, sub_coordinate in enumerate(source_sub_coordinates):
 
-        for image_index in range(len(source_sub_coordinates)):
-            sub_index = 0
-            for sub_coordinate in source_sub_coordinates[image_index]:
+            nearest_cluster = image_to_cluster[sub_to_image[sub_index]]
 
-                nearest_sparse = image_to_cluster[image_index]
-                nearest_sparse_source = source_to_cluster[nearest_sparse]
-
-                while True:
-
-                    source_sub_to_sparse_source_distance = self.compute_distance_to_nearest_sparse_source(source_centers,
-                                                                                                          sub_coordinate,
-                                                                                                          nearest_sparse_source)
-
-                    neighboring_source_index, sub_to_neighboring_source_distance = \
-                        self.compute_nearest_neighboring_source_and_distance(sub_coordinate, source_centers,
-                                                                        source_neighbors[nearest_sparse_source])
-
-                    if source_sub_to_sparse_source_distance < sub_to_neighboring_source_distance:
-                        break
-                    else:
-                        nearest_sparse_source = neighboring_source_index
-
-                # If this pixel is closest to the original pixel, it has been paired successfully with its nearest neighbor.
-                sub_to_source[image_index, sub_index] = nearest_sparse_source
-                sub_index += 1
+            sub_to_source[sub_index] = self.pair_coordinate_and_pixel(sub_coordinate, nearest_cluster, source_centers,
+                                                                      source_neighbors, source_to_cluster)
 
         return sub_to_source
+
+    def pair_coordinate_and_pixel(self, coordinate, nearest_cluster, source_centers, source_neighbors, source_to_cluster):
+        """ Compute the mappings between a set of sub-image pixels and source-pixels, using the image's traced \
+        source-plane sub-coordinates and the source-pixel centers. This uses the source-neighbors to perform a graph \
+        search when pairing pixels, for efficiency.
+
+        For the Voronoi pixelizations, a sparse set of 'cluster-pixels' are used to determine the source pixelization. \
+        These provide the mappings between only a sub-set of sub-pixels / image-pixels and source-pixels.
+
+        To determine the complete set of sub-pixel to source-pixel mappings, we must therefore pair every sub-pixel to \
+        its nearest source-pixel (using the sub-pixel's source-plane coordinate and source-pixel center). Using a full \
+        nearest neighbor search to do this is slow, thus the source-pixel neighbors (derived via the Voronoi grid) \
+        is used to localize each nearest neighbor search.
+
+        In this routine, some variables and function names refer to a 'sparse_source_'. This term describes a \
+        source-pixel that we have paired to a sub_coordinate using the sparse_coordinate of an image coordinate. \
+        Thus, it may not actually be that sub_coordinate's closest source-pixel (the routine will eventually
+        determine this).
+
+        Parameters
+        ----------
+        coordinate : [float, float]
+            The x and y source sub-grid coordinates which are to be matched with their closest source-pixels.
+        nearest_cluster : int
+            The nearest source-pixel defined on the cluster-pixel grid.
+        source_centers: [[float, float]]
+            The coordinate of the center of every source-pixel.
+        source_neighbors : [[]]
+            The neighboring source_pixels of each source_pixel, computed via the Voronoi grid_coords. \
+            (e.g. if the fifth source_pixel neighbors source_pixels 7, 9 and 44, source_neighbors[4] = [6, 8, 43])
+        source_to_cluster : [int]
+            The mapping between every source-pixel and cluster-pixel (e.g. if the fifth source-pixel maps to \
+            the 3rd cluster_pixel, source_to_cluster[4] = 2).
+         """
+
+        nearest_sparse_source = source_to_cluster[nearest_cluster]
+
+        while True:
+
+            source_sub_to_sparse_source_distance = self.compute_distance_to_nearest_sparse_source(source_centers,
+                                                                                                  coordinate,
+                                                                                                  nearest_sparse_source)
+
+            neighboring_source_index, sub_to_neighboring_source_distance = \
+                self.compute_nearest_neighboring_source_and_distance(coordinate, source_centers,
+                                                                     source_neighbors[nearest_sparse_source])
+
+            if source_sub_to_sparse_source_distance < sub_to_neighboring_source_distance:
+                return nearest_sparse_source
+            else:
+                nearest_sparse_source = neighboring_source_index
 
     def compute_distance_to_nearest_sparse_source(self, source_centers, coordinate, source_pixel):
         nearest_sparse_source_pixel_center = source_centers[source_pixel]
@@ -570,7 +626,8 @@ class ClusterPixelization(VoronoiPixelization):
         """
         super(ClusterPixelization, self).__init__(pixels, regularization_coefficients)
 
-    def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
+    def compute_pixelization_matrices(self, source_coordinates, source_sub_coordinates, mapper_cluster, sub_to_image,
+                                      image_pixels, sub_grid_size):
         """
         Compute the mapping matrix of the cluster pixelization by following these steps:
 
@@ -599,12 +656,12 @@ class ClusterPixelization(VoronoiPixelization):
         voronoi = self.compute_voronoi_grid(source_centers)
         source_neighbors = self.compute_source_neighbors(voronoi.ridge_points)
         sub_to_source = self.compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors,
-                                                   mapper_cluster.image_to_cluster, source_to_image)
+                                                   sub_to_image, mapper_cluster.image_to_cluster, source_to_image)
 
-        # TODO : WE have to compute regularization matrix here as tey both use source_neighbors. Can we make source
-        # TODO : neigbors a class property so these are separate functions (that doon't repeat the calculation?)
+        mapping_matrix =  self.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels, sub_grid_size)
+        regularization_matrix = self.create_constant_regularization_matrix(source_neighbors)
 
-        return self.create_mapping_matrix(sub_to_source), self.create_constant_regularization_matrix(source_neighbors)
+        return PixelizationMatrices(mapping_matrix, regularization_matrix)
 
 
 class AmorphousPixelization(VoronoiPixelization):
@@ -628,7 +685,8 @@ class AmorphousPixelization(VoronoiPixelization):
         """
         super(AmorphousPixelization, self).__init__(pixels, regularization_coefficients)
 
-    def compute_mapping_and_regularization_matrix(self, source_coordinates, source_sub_coordinates, mapper_cluster):
+    def compute_pixelization_matrices(self, source_coordinates, source_sub_coordinates, mapper_cluster, sub_to_image,
+                                      image_pixels, sub_grid_size):
         """
         Compute the mapping matrix of the amorphous pixelization by following these steps:
 
@@ -653,9 +711,11 @@ class AmorphousPixelization(VoronoiPixelization):
         voronoi = self.compute_voronoi_grid(source_centers)
         source_neighbors = self.compute_source_neighbors(voronoi.ridge_points)
         sub_to_source = self.compute_sub_to_source(source_sub_coordinates, source_centers, source_neighbors,
-                                                   mapper_cluster.image_to_cluster, source_to_cluster)
+                                                   sub_to_image, mapper_cluster.image_to_cluster, source_to_cluster)
+        mapping_matrix =  self.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels, sub_grid_size)
+        regularization_matrix = self.create_constant_regularization_matrix(source_neighbors)
 
-        return self.create_mapping_matrix(sub_to_source), self.create_constant_regularization_matrix(source_neighbors)
+        return PixelizationMatrices(mapping_matrix, regularization_matrix)
 
     def kmeans_cluster(self, cluster_coordinates):
         """Perform k-means clustering on the cluster_coordinates to compute the k-means clusters which represent \
@@ -669,3 +729,11 @@ class AmorphousPixelization(VoronoiPixelization):
         kmeans = sklearn.cluster.KMeans(self.pixels)
         km = kmeans.fit(cluster_coordinates)
         return km.cluster_centers_, km.labels_
+
+
+class PixelizationMatrices(object):
+
+    def __init__(self, mapping, regularization):
+
+        self.mapping = mapping
+        self.regularization = regularization
