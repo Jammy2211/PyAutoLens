@@ -248,7 +248,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
     density distribution for the value slope=2.0"""
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=0.9, phi=0.0, einstein_radius=1.0):
         """
         Parameters
         ----------
@@ -580,12 +580,13 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
     def potential_func(self, u, coordinates):
         eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
         return (self.axis_ratio / 2.0) * (eta / u) * ((math.log(eta / 2.0) + self.coord_func(eta)) / eta) / (
-                (1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+                (1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
 
     @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
-        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane image_grid.
+        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane
+        image_grid.
 
         Parameters
         ----------
