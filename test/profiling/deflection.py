@@ -6,6 +6,7 @@ import os
 import numba
 from numpy.testing import assert_almost_equal
 import inspect
+import logging
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,14 +27,14 @@ mass_profile = mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
                             shear_mass_profile=mass_profiles.ExternalShear())
 
-repeats = 100
+repeats = 1
 
 
 def tick_toc(func):
-    def wrapper():
+    def wrapper(*args, **kwargs):
         start = time.time()
         for _ in range(repeats):
-            func()
+            func(*args, **kwargs)
 
         diff = time.time() - start
         print("{}: {}".format(func.__name__, diff))
@@ -114,22 +115,46 @@ def new_deflection_elliptical_isothermal():
     assert (result == elliptical_isothermal_deflection_result).all()
 
 
-def generate_examples():
+def all_mass_profiles(func):
     mass_profile_classes = [value for value in mass_profiles.__dict__.values()
                             if inspect.isclass(value)
                             and issubclass(value, mass_profiles.MassProfile)
                             and value not in (mass_profiles.MassProfile, mass_profiles.EllipticalMassProfile)]
 
-    instances = map(lambda cls: cls(), mass_profile_classes)
-    for instance in instances:
-        print(instance.__class__.__name__)
-        grid_values = np.zeros(grid.shape)
+    def wrapper():
+        instances = map(lambda cls: cls(), mass_profile_classes)
+        for instance in instances:
+            tick_toc(func)(instance)
 
-        for pixel_no, coordinate in enumerate(grid):
-            grid_values[pixel_no] = instance.deflections_at_coordinates(coordinates=coordinate)
+    return wrapper
 
-        np.save(instance.__class__.__name__, grid_values)
+
+@all_mass_profiles
+def save_example_deflection(instance):
+    grid_values = np.zeros(grid.shape)
+
+    for pixel_no, coordinate in enumerate(grid):
+        grid_values[pixel_no] = instance.deflections_at_coordinates(coordinates=coordinate)
+
+    np.save(instance.__class__.__name__, grid_values)
+
+
+@all_mass_profiles
+def test_deflections_from_coordinate_grid(instance):
+    name = instance.__class__.__name__
+    example = load(name)
+    try:
+        result = instance.deflections_from_coordinate_grid(grid)
+        if (result == example).all():
+            logging.info("{} gives the correct result")
+        else:
+            logging.warning("{} does not give the correct result".format(name))
+
+    except AttributeError:
+        logging.warning("{} has no deflections_from_coordinate_grid function".format(name))
+    except ZeroDivisionError:
+        logging.warning("{} throws a zero division error".format(name))
 
 
 if __name__ == "__main__":
-    generate_examples()
+    test_deflections_from_coordinate_grid()
