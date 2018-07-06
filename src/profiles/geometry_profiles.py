@@ -429,6 +429,10 @@ class EllipticalProfile(Profile):
         theta_coordinate_to_profile = np.radians(theta - self.phi)
         return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
+    def grid_angle_to_profile(self, theta_grid):
+        theta_coordinate_to_profile = np.radians(np.add(theta_grid, - self.phi))
+        return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
+
     def coordinates_angle_from_x(self, coordinates):
         """ Compute the angle between the coordinates (shifted to the profile centre) and the positive x-axis, \
         defined counter-clockwise.
@@ -501,6 +505,23 @@ class EllipticalProfile(Profile):
         """
         return np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
+    @transform_grid
+    def grid_to_elliptical_radius(self, grid):
+        """
+        Convert coordinates to an elliptical radius.
+
+        If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
+
+        Parameters
+        ----------
+        grid
+
+        Returns
+        -------
+        The radius at those coordinates
+        """
+        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(np.divide(grid[:, 1], self.axis_ratio))))
+
     @transform_coordinates
     def coordinates_to_eccentric_radius(self, coordinates):
         """ Convert the coordinates to an eccentric radius.
@@ -539,6 +560,11 @@ class EllipticalProfile(Profile):
         theta_from_x = np.degrees(np.arctan2(coordinates[1], coordinates[0]))
         cos_theta, sin_theta = self.cos_and_sin_of_angle_to_profile(theta_from_x)
         return radius * cos_theta, radius * sin_theta
+
+    def grid_radius_to_cartesian(self, grid, radius):
+        theta_grid = np.degrees(np.arctan2(grid[:, 1], grid[:, 0]))
+        cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
+        return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
 
     def transform_from_reference_frame(self, coordinates_elliptical):
         """ Transform elliptical coordinates from their profile's reference frame back to the original Cartesian \
