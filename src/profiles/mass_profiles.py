@@ -11,16 +11,19 @@ import numpy as np
 class MassProfile(object):
 
     def surface_density_at_radius(self, eta):
-        raise NotImplementedError("Surface density at radius should be overridden")
+        raise NotImplementedError("surface_density_at_radius should be overridden")
 
     def surface_density_at_coordinates(self, coordinates):
-        raise NotImplementedError("Surface density at image_grid should be overridden")
+        raise NotImplementedError("surface_density_at_coordinates should be overridden")
 
     def potential_at_coordinates(self, coordinates):
-        raise NotImplementedError("Potential at image_grid should be overridden")
+        raise NotImplementedError("potential_at_coordinates should be overridden")
 
     def deflections_at_coordinates(self, coordinates):
-        raise NotImplementedError("Deflection angles at image_grid should be overridden")
+        raise NotImplementedError("deflections_at_coordinates should be overridden")
+
+    def deflections_from_coordinate_grid(self, grid):
+        raise NotImplementedError("deflections_from_coordinate_grid should be overridden")
 
 
 # noinspection PyAbstractClass
@@ -880,6 +883,15 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         deflection_r = 4.0 * self.kappa_s * self.scale_radius * self.deflection_func_sph(eta)
 
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
+
+    # @geometry_profiles.transform_grid
+    # def deflections_from_coordinate_grid(self, grid):
+    #     eta = np.multiply((1. / self.scale_radius), self.grid_to_elliptical_radius(grid))
+    #     deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph_grid(grid))
+    #
+    # def deflection_func_sph_grid(self, grid):
+    #     # TODO
+    #     pass
 
 
 class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfile):
