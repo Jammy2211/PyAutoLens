@@ -1110,5 +1110,5 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     @geometry_profiles.transform_grid
     def deflections_from_coordinate_grid(self, grid):
         deflection_x = np.multiply(self.magnitude, grid[:, 0])
-        deflection_y = np.multiply(self.magnitude, grid[:, 1])
+        deflection_y = -np.multiply(self.magnitude, grid[:, 1])
         return self.rotate_grid_from_profile(np.vstack((deflection_x, deflection_y)).T)
