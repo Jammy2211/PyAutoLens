@@ -28,14 +28,21 @@ lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
 repeats = 1
 
 
+class InvalidRun(Exception):
+    pass
+
+
 def tick_toc(func):
     def wrapper(*args, **kwargs):
         start = time.time()
-        for _ in range(repeats):
-            func(*args, **kwargs)
+        try:
+            for _ in range(repeats):
+                func(*args, **kwargs)
 
-        diff = time.time() - start
-        print("{}: {}".format(func.__name__, diff))
+            diff = time.time() - start
+            print("{}: {}".format(func.__name__, diff))
+        except InvalidRun:
+            pass
 
     return wrapper
 
@@ -143,6 +150,7 @@ def test_deflections_from_coordinate_grid(instance):
         result = instance.deflections_from_coordinate_grid(grid)
         if (result == example).all():
             logging.info("{} gives the correct result")
+            return
         else:
             logging.warning("{} does not give the correct result".format(name))
 
@@ -152,6 +160,8 @@ def test_deflections_from_coordinate_grid(instance):
         logging.exception(e)
     except ZeroDivisionError:
         logging.warning("{} throws a zero division error".format(name))
+
+    raise InvalidRun
 
 
 if __name__ == "__main__":
