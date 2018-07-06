@@ -701,6 +701,16 @@ class SphericalNFW(EllipticalNFW):
     def deflection_func_sph(self, eta):
         return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
 
+    @staticmethod
+    def deflection_func_sph_grid(eta):
+        conditional_eta = np.copy(eta)
+        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
+                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
+        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
+                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
+
+        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
+
     @geometry_profiles.transform_coordinates
     def deflections_at_coordinates(self, coordinates):
         """
@@ -719,6 +729,13 @@ class SphericalNFW(EllipticalNFW):
         deflection_r = 4.0 * self.kappa_s * self.scale_radius * self.deflection_func_sph(eta)
 
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
+
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_elliptical_radius(grid))
+        deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph_grid(eta))
+
+        return self.grid_radius_to_cartesian(grid, deflection_r)
 
 
 class EllipticalGeneralizedNFW(EllipticalNFW):
