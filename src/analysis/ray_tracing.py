@@ -88,3 +88,5 @@ class Plane(object):
         """Generate the image of the galaxies in this plane."""
         if self.grids.blurring is not None:
             return self.grids.blurring.intensities_via_grid(self.galaxies)
+
+    # def generate_pixelization_matrices_of_galaxies(self, mapper_cluster, sub_to_image, image_pixels, sub_grid_size):

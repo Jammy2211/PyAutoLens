@@ -118,8 +118,7 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
 
 
-def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster, sub_to_image,
-                               image_pixels, sub_grid_size, image=None):
+def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=None):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
     Parameters

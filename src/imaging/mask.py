@@ -141,29 +141,22 @@ class Mask(scaled_array.ScaledArray):
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
 
-        image_pixels = self.pixels_in_mask
-        image_pixel_count = 0
-
-        grid = np.zeros(shape=(image_pixels, grid_size_sub ** 2, 2))
+        grid = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2, 2))
+        sub_pixel_count = 0
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
-                    x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
 
-                    sub_pixel_count = 0
+                    x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
 
                     for x1 in range(grid_size_sub):
                         for y1 in range(grid_size_sub):
-                            grid[image_pixel_count, sub_pixel_count, 0] = \
-                                self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
 
-                            grid[image_pixel_count, sub_pixel_count, 1] = \
-                                self.sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
+                            grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
+                            grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
 
                             sub_pixel_count += 1
-
-                    image_pixel_count += 1
 
         # print("assert (image_sub_grid == np.array({})).all()".format(
         #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
