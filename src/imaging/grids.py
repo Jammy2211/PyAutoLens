@@ -151,8 +151,7 @@ class GridCoordsRegular(GridCoords):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                 output_shape=self.shape), galaxies))
+        return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(self), galaxies))
 
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
