@@ -290,17 +290,17 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         The deflection angles [alpha(eta)] (x and y components) at those image_grid
         """
 
-        # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
-        # TODO: throw an assertion error if the inputs causing the error are invalid?
+        try:
+            psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
 
-        psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
+            deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
+                1 - self.axis_ratio ** 2) * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
+            deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
+                1 - self.axis_ratio ** 2) * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
-        deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
-            1 - self.axis_ratio ** 2) * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
-        deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
-            1 - self.axis_ratio ** 2) * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
-
-        return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+            return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+        except ZeroDivisionError:
+            return self.coordinates_radius_to_x_and_y(coordinates, 2.0 * self.einstein_radius_rescaled)
 
     @geometry_profiles.transform_grid
     def deflections_from_coordinate_grid(self, grid):
@@ -316,16 +316,17 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         The deflection angles [alpha(eta)] (x and y components) at those image_grid
         """
 
-        # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
-        # TODO: throw an assertion error if the inputs causing the error are invalid?
-        factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2)
+        try:
+            factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2)
 
-        psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 0])), np.square(grid[:, 1])))
+            psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 0])), np.square(grid[:, 1])))
 
-        deflection_x = factor * np.arctan(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
-        deflection_y = factor * np.arctanh(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
+            deflection_x = np.arctan(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
+            deflection_y = np.arctanh(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
 
-        return self.rotate_grid_from_profile(np.vstack((deflection_x, deflection_y)).T)
+            return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_x, deflection_y)).T))
+        except ZeroDivisionError:
+            return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
 class SphericalIsothermal(EllipticalIsothermal):
@@ -381,6 +382,10 @@ class SphericalIsothermal(EllipticalIsothermal):
         The deflection angles [alpha(eta)] (x and y components) at those image_grid
         """
         return self.coordinates_radius_to_x_and_y(coordinates, 2.0 * self.einstein_radius_rescaled)
+
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
 class EllipticalCoredPowerLaw(EllipticalPowerLaw):
