@@ -131,6 +131,7 @@ def pixel_to_coordinate(dim_min, pixel_scale, pixel_coordinate):
 
 class TransformedCoordinates(tuple):
 
+    # noinspection PyUnusedLocal
     def __init__(self, coordinates):
         """This class tracks whether a set of coordinates have been transformed to the center and rotation angle of a \
         geometry profile.
@@ -293,7 +294,6 @@ class Profile(object):
         arguments = {argument[0]: argument[1] for argument in arguments.items() if argument[0] in init_args}
         return cls(**arguments)
 
-    # noinspection PyMethodMayBeStatic
     def transform_from_reference_frame(self, coordinates):
         """ Transform coordinates from a profile's reference frame to the original Cartesian grid_coords.
 
@@ -307,7 +307,7 @@ class Profile(object):
         coordinates: (float, float)
             Coordinates that are in the original reference frame.
         """
-        raise AssertionError("Transform from reference frame should be overridden")
+        raise NotImplementedError("Transform from reference frame should be overridden")
 
     @property
     def x_cen(self):
