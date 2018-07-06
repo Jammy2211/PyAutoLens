@@ -8,6 +8,8 @@ from numpy.testing import assert_almost_equal
 import inspect
 import logging
 
+logging.level = logging.DEBUG
+
 path = os.path.dirname(os.path.realpath(__file__))
 
 
@@ -129,7 +131,7 @@ def all_mass_profiles(func):
     def wrapper():
         instances = map(lambda cls: cls(), mass_profile_classes)
         for instance in instances:
-            tick_toc(func)(instance)
+            func(instance)
 
     return wrapper
 
@@ -146,14 +148,22 @@ def test_deflections_at_coordinates(instance):
 def test_deflections_from_coordinate_grid(instance):
     name = instance.__class__.__name__
     example = load(name)
+    result = None
     try:
         result = instance.deflections_from_coordinate_grid(grid)
-        if (result == example).all():
-            logging.info("{} gives the correct result")
-            return
-        else:
-            logging.warning("{} does not give the correct result".format(name))
-
+        assert_almost_equal(result, example)
+        print("{} gives the correct result".format(name))
+        return
+    except AssertionError as e:
+        if result is None:
+            raise e
+        logging.warning("{} does not give the correct result".format(name))
+        print(example.shape)
+        print(result.shape)
+        print(example[0])
+        print(result[0])
+        print(example[-1])
+        print(result[-1])
     except AttributeError:
         logging.warning("{} has no deflections_from_coordinate_grid function".format(name))
     except NotImplementedError as e:
@@ -161,7 +171,18 @@ def test_deflections_from_coordinate_grid(instance):
     except ZeroDivisionError:
         logging.warning("{} throws a zero division error".format(name))
 
-    raise InvalidRun
+
+def compare_single_coordinates_for_class(mass_profile_class):
+    instance = mass_profile_class()
+    coordinates = np.array([0.7, 0.6])
+    coordinates_grid = np.array([coordinates])
+
+    print("\ndeflections_at_coordinates")
+    result = instance.deflections_at_coordinates(coordinates)
+    print("result = {}".format(result))
+    print("\ndeflections_from_coordinate_grid")
+    grid_result = instance.deflections_from_coordinate_grid(coordinates_grid)[0]
+    print("grid_result = {}".format(grid_result))
 
 
 if __name__ == "__main__":
