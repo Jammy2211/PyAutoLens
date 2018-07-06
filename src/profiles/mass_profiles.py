@@ -243,6 +243,13 @@ class SphericalPowerLaw(EllipticalPowerLaw):
                 3.0 - self.slope)
         return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        eta = self.grid_to_elliptical_radius(grid)
+        deflection_r = np.divide(np.power(eta, (3.0 - self.slope)),
+                                 2.0 * self.einstein_radius_rescaled * np.multiply((3.0 - self.slope), eta))
+        return self.grid_radius_to_cartesian(grid, deflection_r)
+
 
 class EllipticalIsothermal(EllipticalPowerLaw):
     """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
