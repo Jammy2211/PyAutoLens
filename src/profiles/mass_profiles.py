@@ -7,7 +7,6 @@ from itertools import count
 import numpy as np
 
 
-# noinspection PyMethodMayBeStatic
 class MassProfile(object):
 
     def surface_density_at_radius(self, eta):
@@ -28,12 +27,11 @@ class MassProfile(object):
 
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
-    """Abstract class for elliptical light profiles"""
-
     _ids = count()
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """
+        Abstract class for elliptical light profiles
 
         Parameters
         ----------
@@ -99,10 +97,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
 
 class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
-    """Represents an elliptical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0):
         """
+        Represents an elliptical power-law density distribution
 
         Parameters
         ----------
@@ -208,10 +206,11 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
 
 
 class SphericalPowerLaw(EllipticalPowerLaw):
-    """Represents a spherical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0):
         """
+        Represents a spherical power-law density distribution
+
         Parameters
         ----------
         centre: (float, float)
@@ -256,11 +255,12 @@ class SphericalPowerLaw(EllipticalPowerLaw):
 
 
 class EllipticalIsothermal(EllipticalPowerLaw):
-    """Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
-    density distribution for the value slope=2.0"""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=0.9, phi=0.0, einstein_radius=1.0):
         """
+        Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
+        density distribution for the value slope=2.0
+
         Parameters
         ----------
         centre: (float, float)
@@ -334,11 +334,11 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
 
 class SphericalIsothermal(EllipticalIsothermal):
-    """Represents a spherical isothermal density distribution, which is equivalent to the spherical power-law
-    density distribution for the value slope=2.0"""
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0):
         """
+        Represents a spherical isothermal density distribution, which is equivalent to the spherical power-law
+        density distribution for the value slope=2.0
 
         Parameters
         ----------
@@ -393,10 +393,10 @@ class SphericalIsothermal(EllipticalIsothermal):
 
 
 class EllipticalCoredPowerLaw(EllipticalPowerLaw):
-    """Represents a cored elliptical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0, core_radius=0.05):
         """
+        Represents a cored elliptical power-law density distribution
 
         Parameters
         ----------
@@ -432,10 +432,10 @@ class EllipticalCoredPowerLaw(EllipticalPowerLaw):
 
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
-    """Represents a cored spherical power-law density distribution"""
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, core_radius=0.05):
         """
+        Represents a cored spherical power-law density distribution
 
         Parameters
         ----------
@@ -485,11 +485,10 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
 
 class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
-    """Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
-    density distribution for the value slope=2.0"""
-
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, core_radius=0.05):
         """
+        Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
+        density distribution for the value slope=2.0
 
         Parameters
         ----------
@@ -514,11 +513,10 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
 
 
 class SphericalCoredIsothermal(SphericalCoredPowerLaw):
-    """Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
-    density distribution for the value slope=2.0"""
-
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.05):
         """
+        Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
+        density distribution for the value slope=2.0
 
         Parameters
         ----------
@@ -538,10 +536,10 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
 
 
 class EllipticalNFW(EllipticalMassProfile, MassProfile):
-    """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
-        """ Setup a NFW dark matter profiles.
+        """
+        The elliptical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
@@ -655,10 +653,10 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
 
 
 class SphericalNFW(EllipticalNFW):
-    """The spherical NFW profiles, used to fit the dark matter halo of the lens."""
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
-        """ Setup a NFW dark matter profiles.
+        """
+        The spherical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
@@ -742,10 +740,9 @@ class SphericalNFW(EllipticalNFW):
 
 
 class EllipticalGeneralizedNFW(EllipticalNFW):
-    """The elliptical NFW profiles, used to fit the dark matter halo of the lens."""
-
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
-        """ Setup a NFW dark matter profiles.
+        """
+        The elliptical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
@@ -842,10 +839,9 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
 
 
 class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
-    """The spherical NFW profiles, used to fit the dark matter halo of the lens."""
-
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
-        """ Setup a NFW dark matter profiles.
+        """
+        The spherical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
@@ -895,13 +891,11 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
 
 class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfile):
-    """The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
-     galaxy's light."""
-
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
         """
-        Setup a Sersic mass and light profiles.
+        The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+        galaxy's light.
 
         Parameters
         ----------
@@ -980,13 +974,11 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
 
 
 class EllipticalExponentialMass(EllipticalSersicMass):
-    """The EllipticalExponentialMass mass profile, the mass profiles of the light profiles that are used to fit and
-    subtract the lens galaxy's light."""
-
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        Setup an EllipticalExponentialMass mass and light profile.
+        The EllipticalExponentialMass mass profile, the mass profiles of the light profiles that are used to fit and
+        subtract the lens galaxy's light.
 
         Parameters
         ----------
@@ -1017,13 +1009,11 @@ class EllipticalExponentialMass(EllipticalSersicMass):
 
 
 class EllipticalDevVaucouleursMass(EllipticalSersicMass):
-    """The EllipticalDevVaucouleursMass mass profile, the mass profiles of the light profiles that are used to fit and
-    subtract the lens galaxy's light."""
-
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        Setup a EllipticalDevVaucouleursMass mass and light profile.
+        The EllipticalDevVaucouleursMass mass profile, the mass profiles of the light profiles that are used to fit and
+        subtract the lens galaxy's light.
 
         Parameters
         ----------
@@ -1109,10 +1099,9 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
 
 
 class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
-    """An external shear term, to model the line-of-sight contribution of other galaxies / satellites."""
-
     def __init__(self, magnitude=0.2, phi=0.0):
-        """ Setup an external shear.
+        """
+        An external shear term, to model the line-of-sight contribution of other galaxies / satellites.
 
         Parameters
         ----------
