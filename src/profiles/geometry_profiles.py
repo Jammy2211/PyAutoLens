@@ -466,6 +466,23 @@ class EllipticalProfile(Profile):
         y = (+x_elliptical * self.sin_phi + coordinates_elliptical[1] * self.cos_phi)
         return x, y
 
+    def rotate_grid_from_profile(self, grid_elliptical):
+        """ Rotate elliptical coordinates from the reference frame of the profile back to the coordinates original \
+         Cartesian grid_coords (coordinates are not shifted back to their original centre).
+
+        Parameters
+        ----------
+        grid_elliptical : TransformedGrid(ndarray)
+            The (x, y) coordinates in the reference frame of an elliptical profile.
+
+        Returns
+        ----------
+        The coordinates rotated back to their original Cartesian grid_coords.
+         """
+        x = np.add(np.multiply(grid_elliptical[:, 0], self.cos_phi), - np.multiply(grid_elliptical[:, 1], self.sin_phi))
+        y = np.add(np.multiply(grid_elliptical[:, 0], self.sin_phi), np.multiply(grid_elliptical[:, 1], self.cos_phi))
+        return np.vstack((x, y)).T
+
     @transform_coordinates
     def coordinates_to_elliptical_radius(self, coordinates):
         """
