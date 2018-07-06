@@ -103,5 +103,4 @@ def new_solution_with_grid_transformation():
 
 
 if __name__ == "__main__":
-    current_transform_and_back()
-    new_transform_and_back()
+    new_solution_with_grid_transformation()
