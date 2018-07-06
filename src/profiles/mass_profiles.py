@@ -288,10 +288,10 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
 
-        deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
-                       math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
-        deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
-                       math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
+        deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
+            1 - self.axis_ratio ** 2) * math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
+        deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
+            1 - self.axis_ratio ** 2) * math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[1]) / psi)
 
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
@@ -661,7 +661,8 @@ class SphericalNFW(EllipticalNFW):
     @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
-        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane image_grid.
+        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane
+        image_grid.
 
         Parameters
         ----------
@@ -747,7 +748,8 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
     @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
         """
-        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane image_grid.
+        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane
+        image_grid.
 
         Parameters
         ----------
@@ -762,7 +764,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         return 4.0 * self.kappa_s * self.scale_radius * self.axis_ratio / 2.0 * potential
 
     def deflection_func_sph(self, eta):
-        integral_y_2 = quad(self.integral_y_2, a=0.0, b=1.0, args=(eta))[0]
+        integral_y_2 = quad(self.integral_y_2, a=0.0, b=1.0, args=eta)[0]
         return eta ** (2 - self.inner_slope) * (
                 (1.0 / (3 - self.inner_slope)) *
                 special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, -eta) + integral_y_2)
@@ -927,8 +929,8 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
 
 
 class EllipticalExponentialMass(EllipticalSersicMass):
-    """The EllipticalExponentialMass mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
-     galaxy's light."""
+    """The EllipticalExponentialMass mass profile, the mass profiles of the light profiles that are used to fit and
+    subtract the lens galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
@@ -964,8 +966,8 @@ class EllipticalExponentialMass(EllipticalSersicMass):
 
 
 class EllipticalDevVaucouleursMass(EllipticalSersicMass):
-    """The EllipticalDevVaucouleursMass mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
-     galaxy's light."""
+    """The EllipticalDevVaucouleursMass mass profile, the mass profiles of the light profiles that are used to fit and
+    subtract the lens galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
