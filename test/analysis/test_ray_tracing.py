@@ -360,37 +360,37 @@ class TestLensPlane(object):
             assert lens_plane.deflections.sub[1, 0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
-        def test__all_grids__complex_mass_model__deflections_in_grid_are_sum_of_individual_profiles(self, all_grids):
-            power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
-                                                         einstein_radius=1.0, slope=2.2)
-
-            nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
-
-            lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profile_1=power_law, mass_profile_2=nfw)
-
-            lens_plane = ray_tracing.LensPlane(galaxies=[lens_galaxy], grids=all_grids)
-
-            assert lens_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.grids.sub[0, 0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.grids.sub[1, 0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert lens_plane.grids.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-
-            defls = power_law.deflections_at_coordinates(all_grids.image[0]) + \
-                    nfw.deflections_at_coordinates(all_grids.image[0])
-
-            sub_defls_0 = power_law.deflections_at_coordinates(all_grids.sub[0, 0]) + \
-                          nfw.deflections_at_coordinates(all_grids.sub[0, 0])
-
-            sub_defls_1 = power_law.deflections_at_coordinates(all_grids.sub[1, 0]) + \
-                          nfw.deflections_at_coordinates(all_grids.sub[1, 0])
-
-            blurring_defls = power_law.deflections_at_coordinates(all_grids.blurring[0]) + \
-                             nfw.deflections_at_coordinates(all_grids.blurring[0])
-
-            assert lens_plane.deflections.image[0] == pytest.approx(defls, 1e-3)
-            assert lens_plane.deflections.sub[0, 0] == pytest.approx(sub_defls_0, 1e-3)
-            assert lens_plane.deflections.sub[1, 0] == pytest.approx(sub_defls_1, 1e-3)
-            assert lens_plane.deflections.blurring[0] == pytest.approx(blurring_defls, 1e-3)
+        # def test__all_grids__complex_mass_model__deflections_in_grid_are_sum_of_individual_profiles(self, all_grids):
+        #     power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
+        #                                                  einstein_radius=1.0, slope=2.2)
+        #
+        #     nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
+        #
+        #     lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profile_1=power_law, mass_profile_2=nfw)
+        #
+        #     lens_plane = ray_tracing.LensPlane(galaxies=[lens_galaxy], grids=all_grids)
+        #
+        #     assert lens_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+        #     assert lens_plane.grids.sub[0, 0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+        #     assert lens_plane.grids.sub[1, 0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+        #     assert lens_plane.grids.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+        #
+        #     defls = power_law.deflections_at_coordinates(all_grids.image[0]) + \
+        #             nfw.deflections_at_coordinates(all_grids.image[0])
+        #
+        #     sub_defls_0 = power_law.deflections_at_coordinates(all_grids.sub[0, 0]) + \
+        #                   nfw.deflections_at_coordinates(all_grids.sub[0, 0])
+        #
+        #     sub_defls_1 = power_law.deflections_at_coordinates(all_grids.sub[1, 0]) + \
+        #                   nfw.deflections_at_coordinates(all_grids.sub[1, 0])
+        #
+        #     blurring_defls = power_law.deflections_at_coordinates(all_grids.blurring[0]) + \
+        #                      nfw.deflections_at_coordinates(all_grids.blurring[0])
+        #
+        #     assert lens_plane.deflections.image[0] == pytest.approx(defls, 1e-3)
+        #     assert lens_plane.deflections.sub[0, 0] == pytest.approx(sub_defls_0, 1e-3)
+        #     assert lens_plane.deflections.sub[1, 0] == pytest.approx(sub_defls_1, 1e-3)
+        #     assert lens_plane.deflections.blurring[0] == pytest.approx(blurring_defls, 1e-3)
 
     class TestImageFromGalaxies:
 
