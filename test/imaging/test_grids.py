@@ -153,43 +153,43 @@ class TestGridCoordsCollection(object):
             assert deflections.sub.grid_size_sub == 4
             assert deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
-        def test__complex_mass_model(self):
-            image_grid = np.array([[1.0, 1.0]])
-            sub_grid = np.array([[[1.0, 1.0], [1.0, 0.0]]])
-            blurring_grid = np.array([[1.0, 0.0]])
-
-            image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
-            blurring_grid = grids.GridCoordsBlurring(blurring_grid)
-
-            power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
-                                                         einstein_radius=1.0, slope=2.2)
-
-            nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
-
-            lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profile_1=power_law, mass_profile_2=nfw)
-
-            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
-
-            deflections = ray_trace_grid.deflection_grids_for_galaxies([lens_galaxy])
-
-            defls = power_law.deflections_at_coordinates(image_grid[0]) + \
-                    nfw.deflections_at_coordinates(image_grid[0])
-
-            sub_defls_0 = power_law.deflections_at_coordinates(sub_grid[0, 0]) + \
-                          nfw.deflections_at_coordinates(sub_grid[0, 0])
-
-            sub_defls_1 = power_law.deflections_at_coordinates(sub_grid[0, 1]) + \
-                          nfw.deflections_at_coordinates(sub_grid[0, 1])
-
-            blurring_defls = power_law.deflections_at_coordinates(blurring_grid[0]) + \
-                             nfw.deflections_at_coordinates(blurring_grid[0])
-
-            assert deflections.image[0] == pytest.approx(defls, 1e-3)
-            assert deflections.sub[0, 0] == pytest.approx(sub_defls_0, 1e-3)
-            assert deflections.sub[0, 1] == pytest.approx(sub_defls_1, 1e-3)
-            assert deflections.sub.grid_size_sub == 4
-            assert deflections.blurring[0] == pytest.approx(blurring_defls, 1e-3)
+        # def test__complex_mass_model(self):
+        #     image_grid = np.array([[1.0, 1.0]])
+        #     sub_grid = np.array([[[1.0, 1.0], [1.0, 0.0]]])
+        #     blurring_grid = np.array([[1.0, 0.0]])
+        #
+        #     image_grid = grids.GridCoordsImage(image_grid)
+        #     sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
+        #     blurring_grid = grids.GridCoordsBlurring(blurring_grid)
+        #
+        #     power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
+        #                                                  einstein_radius=1.0, slope=2.2)
+        #
+        #     nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
+        #
+        #     lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profile_1=power_law, mass_profile_2=nfw)
+        #
+        #     ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+        #
+        #     deflections = ray_trace_grid.deflection_grids_for_galaxies([lens_galaxy])
+        #
+        #     defls = power_law.deflections_at_coordinates(image_grid[0]) + \
+        #             nfw.deflections_at_coordinates(image_grid[0])
+        #
+        #     sub_defls_0 = power_law.deflections_at_coordinates(sub_grid[0, 0]) + \
+        #                   nfw.deflections_at_coordinates(sub_grid[0, 0])
+        #
+        #     sub_defls_1 = power_law.deflections_at_coordinates(sub_grid[0, 1]) + \
+        #                   nfw.deflections_at_coordinates(sub_grid[0, 1])
+        #
+        #     blurring_defls = power_law.deflections_at_coordinates(blurring_grid[0]) + \
+        #                      nfw.deflections_at_coordinates(blurring_grid[0])
+        #
+        #     assert deflections.image[0] == pytest.approx(defls, 1e-3)
+        #     assert deflections.sub[0, 0] == pytest.approx(sub_defls_0, 1e-3)
+        #     assert deflections.sub[0, 1] == pytest.approx(sub_defls_1, 1e-3)
+        #     assert deflections.sub.grid_size_sub == 4
+        #     assert deflections.blurring[0] == pytest.approx(blurring_defls, 1e-3)
 
     class TestSetupTracedGrids(object):
 
