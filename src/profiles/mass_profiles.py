@@ -1064,7 +1064,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
         return self.surface_density_at_radius(self.coordinates_to_eccentric_radius(coordinates))
 
 
-class ExternalShear(geometry_profiles.EllipticalProfile):
+class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     """An external shear term, to model the line-of-sight contribution of other galaxies / satellites."""
 
     def __init__(self, magnitude=0.2, phi=0.0):
@@ -1106,3 +1106,9 @@ class ExternalShear(geometry_profiles.EllipticalProfile):
         deflection_x = self.magnitude * coordinates[0]
         deflection_y = -self.magnitude * coordinates[1]
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        deflection_x = np.multiply(self.magnitude, grid[:, 0])
+        deflection_y = np.multiply(self.magnitude, grid[:, 1])
+        return self.rotate_grid_from_profile(np.vstack((deflection_x, deflection_y)).T)
