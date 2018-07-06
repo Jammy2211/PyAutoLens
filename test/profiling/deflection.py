@@ -97,7 +97,7 @@ def new_transform_and_back():
 
 
 @tick_toc
-def current_deflection_with_grid_transformation():
+def current_deflection_elliptical_isothermal():
     grid_values = np.zeros(grid.shape)
 
     for pixel_no, coordinate in enumerate(grid):
@@ -107,18 +107,12 @@ def current_deflection_with_grid_transformation():
 
 
 @tick_toc
-def new_deflection_with_grid_transformation():
+def new_deflection_elliptical_isothermal():
     result = mass_profile.deflections_from_coordinate_grid(grid)
-
-    for i in range(result.shape[0]):
-        print("")
-        print(result[i])
-        print(elliptical_isothermal_deflection_result[i])
-        print(result[i] - elliptical_isothermal_deflection_result[i])
 
     assert (result == elliptical_isothermal_deflection_result).all()
 
 
 if __name__ == "__main__":
-    current_deflection_with_grid_transformation()
-    new_deflection_with_grid_transformation()
+    current_deflection_elliptical_isothermal()
+    new_deflection_elliptical_isothermal()

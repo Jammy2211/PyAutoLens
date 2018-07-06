@@ -55,7 +55,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def dimensionless_mass_within_circle(self, radius):
         """
-        Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is performed via \
+        Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is performed via
         integration of the surface density profiles and is centred on the mass model_mapper.
 
         Parameters
@@ -72,13 +72,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def dimensionless_mass_within_ellipse(self, major_axis):
         """
-        Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is performed \
-        via integration of the surface density profiles and is centred and rotationally aligned with the mass model_mapper.
+        Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is performed
+        via integration of the surface density profiles and is centred and rotationally aligned with the mass
+        model_mapper.
 
         Parameters
         ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
+        major_axis
 
         Returns
         -------
@@ -126,7 +126,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
 
     @property
     def einstein_radius_rescaled(self):
-        """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profiles \
+        """Rescale the einstein radius by slope and axis_ratio, to reduce its degeneracy with other mass-profiles
         parameters"""
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
@@ -154,7 +154,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
     def potential_func(self, u, coordinates):
         eta = self.eta_u(u, coordinates)
         return (eta / u) * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (3.0 - self.slope) / \
-               ((1 - (1 - self.axis_ratio ** 2) * u) ** (0.5))
+               ((1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
 
     @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
@@ -287,6 +287,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         # TODO: throw an assertion error if the inputs causing the error are invalid?
 
         psi = math.sqrt((self.axis_ratio ** 2) * (coordinates[0] ** 2) + coordinates[1] ** 2)
+
         deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
                        math.atan((math.sqrt(1 - self.axis_ratio ** 2) * coordinates[0]) / psi)
         deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
@@ -310,17 +311,14 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
         # TODO: throw an assertion error if the inputs causing the error are invalid?
-        factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
-            1 - self.axis_ratio ** 2) * math.atan((math.sqrt(1 - self.axis_ratio ** 2)))
+        factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2)
 
-        deflection = np.divide(np.multiply(factor, grid), np.sqrt(
-            np.multiply(self.axis_ratio ** 2, np.add(np.square(grid[:, 0]), np.square(grid[:, 1]))))[:, None])
-        # deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
-        #                math.atan((math.sqrt(1 - self.axis_ratio ** 2) * grid[0]) / psi)
-        # deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
-        #                math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * grid[1]) / psi)
+        psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 0])), np.square(grid[:, 1])))
 
-        return self.rotate_grid_from_profile(deflection)
+        deflection_x = factor * np.arctan(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
+        deflection_y = factor * np.arctanh(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
+
+        return self.rotate_grid_from_profile(np.vstack((deflection_x, deflection_y)).T)
 
 
 class SphericalIsothermal(EllipticalIsothermal):
