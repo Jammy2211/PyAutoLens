@@ -20,8 +20,6 @@ deflection_result = load("deflection_result")
 transformed_coordinates = load("transformed_coords")
 elliptical_isothermal_deflection_result = load("elliptical_isothermal_deflection_result")
 
-# print(transformed_coordinates)
-
 mass_profile = mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 
 lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
