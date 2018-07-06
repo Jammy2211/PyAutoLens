@@ -280,6 +280,16 @@ class Galaxy(object):
         else:
             return np.array([0.0, 0.0])
 
+    def deflections_from_coordinate_grid(self, grid):
+        if self.mass_profiles is not None and len(self.mass_profiles) > 0:
+
+            deflections = sum(map(lambda p: p.deflections_from_coordinate_grid(grid), self.mass_profiles))
+
+            # return sum(map(lambda p: p.deflections_from_coordinate_grid(grid), self.mass_profiles))
+            return deflections
+        else:
+            return np.full((grid.shape[0], 2), 0.0)
+
     def deflection_angles_at_coordinates_individual(self, coordinates):
         """
         Compute the individual deflection angles of the galaxy's mass profiles at a given set of image_grid.
