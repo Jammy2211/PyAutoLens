@@ -219,14 +219,18 @@ def transform_grid(func):
         -------
             A value or coordinate in the same coordinate system as those passed in.
         """
-        if not hasattr(grid, "is_transformed") or not getattr(grid, "is_transformed"):
+        if not isinstance(grid, TransformedGrid):
             result = func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
-            if isinstance(result, TransformedCoordinates):
-                result = profile.transform_from_reference_frame(result)
+            if isinstance(result, TransformedGrid):
+                result = profile.transform_grid_from_reference_frame(result)
             return np.asarray(result)
         return func(profile, grid, *args, **kwargs)
 
     return wrapper
+
+
+class TransformedGrid(np.ndarray):
+    pass
 
 
 class Profile(object):
@@ -551,8 +555,15 @@ class EllipticalProfile(Profile):
             np.degrees(np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0])) - self.phi)
         transformed = np.vstack(
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
-        transformed.is_transformed = True
-        return transformed
+        return transformed.view(TransformedGrid)
+
+    def transform_grid_from_reference_frame(self, grid):
+        x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),
+                   self.centre[0])
+        y = np.add(
+            np.add(np.multiply(grid[:, 0], self.sin_phi), np.multiply(grid[:, 1], self.cos_phi) - self.centre[1]),
+            self.centre[1])
+        return np.vstack((x, y)).T
 
     def transform_to_reference_frame(self, coordinates):
         """ Translate Cartesian coordinates to the profiles's reference frame.
