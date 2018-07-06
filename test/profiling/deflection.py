@@ -4,6 +4,7 @@ from src.profiles import mass_profiles
 import time
 import os
 import numba
+from numpy.testing import assert_almost_equal
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -77,6 +78,24 @@ def new_transform_to_reference_frame():
 
 
 @tick_toc
+def current_transform_and_back():
+    grid_values = np.zeros(grid.shape)
+
+    for pixel_no, coordinate in enumerate(grid):
+        grid_values[pixel_no] = mass_profile.transform_from_reference_frame(
+            mass_profile.transform_to_reference_frame(coordinates=coordinate))
+
+    assert (grid_values == transformed_coordinates).all()
+
+
+@tick_toc
+def new_transform_and_back():
+    result = mass_profile.transform_grid_from_reference_frame(mass_profile.transform_grid_to_reference_frame(grid))
+
+    assert_almost_equal(result, grid)
+
+
+@tick_toc
 def new_solution_with_grid_transformation():
     result = mass_profile.deflections_from_coordinate_grid(grid)
 
@@ -84,4 +103,5 @@ def new_solution_with_grid_transformation():
 
 
 if __name__ == "__main__":
-    new_solution_with_grid_transformation()
+    current_transform_and_back()
+    new_transform_and_back()
