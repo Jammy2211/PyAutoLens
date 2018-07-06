@@ -27,7 +27,7 @@ mass_profile = mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
                             shear_mass_profile=mass_profiles.ExternalShear())
 
-repeats = 1
+repeats = 100
 
 
 class InvalidRun(Exception):
@@ -43,6 +43,7 @@ def tick_toc(func):
 
             diff = time.time() - start
             print("{}: {}".format(func.__name__, diff))
+            return diff
         except InvalidRun:
             pass
 
@@ -183,5 +184,39 @@ def compare_single_coordinates_for_class(mass_profile_class):
     print("grid_result = {}".format(grid_result))
 
 
+def tick_toc_comparison_for_class(mass_profile_class):
+    print("")
+    print(mass_profile_class.__name__)
+    instance = mass_profile_class()
+
+    @tick_toc
+    def old_method():
+        grid_values = np.zeros(grid.shape)
+
+        for pixel_no, coordinate in enumerate(grid):
+            grid_values[pixel_no] = instance.transform_from_reference_frame(
+                instance.transform_to_reference_frame(coordinates=coordinate))
+
+    @tick_toc
+    def new_method():
+        instance.deflections_from_coordinate_grid(grid)
+
+    old = old_method()
+    new = new_method()
+    print("x faster: {}".format(old / new))
+
+
+def tick_toc_comparison_for_classes():
+    mass_profile_classes = [mass_profiles.SphericalPowerLaw,
+                            mass_profiles.EllipticalIsothermal,
+                            mass_profiles.SphericalIsothermal,
+                            mass_profiles.SphericalCoredPowerLaw,
+                            mass_profiles.SphericalCoredIsothermal,
+                            mass_profiles.ExternalShear, ]
+
+    for mass_profile_class in mass_profile_classes:
+        tick_toc_comparison_for_class(mass_profile_class)
+
+
 if __name__ == "__main__":
-    test_deflections_from_coordinate_grid()
+    tick_toc_comparison_for_classes()
