@@ -310,14 +310,17 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         # TODO: psi sometimes throws a division by zero error. May need to check value of psi, try/except or even
         # TODO: throw an assertion error if the inputs causing the error are invalid?
+        factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(
+            1 - self.axis_ratio ** 2) * math.atan((math.sqrt(1 - self.axis_ratio ** 2)))
 
-        psi = math.sqrt((self.axis_ratio ** 2) * (np.square(grid[0]) + np.square(grid[1])))
-        deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
-                       math.atan((math.sqrt(1 - self.axis_ratio ** 2) * grid[0]) / psi)
-        deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
-                       math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * grid[1]) / psi)
+        deflection = np.divide(np.multiply(factor, grid), np.sqrt(
+            np.multiply(self.axis_ratio ** 2, np.add(np.square(grid[:, 0]), np.square(grid[:, 1]))))[:, None])
+        # deflection_x = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
+        #                math.atan((math.sqrt(1 - self.axis_ratio ** 2) * grid[0]) / psi)
+        # deflection_y = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2) * \
+        #                math.atanh((math.sqrt(1 - self.axis_ratio ** 2) * grid[1]) / psi)
 
-        return self.rotate_grid_from_profile(np.vstack((deflection_x, deflection_y)).T)
+        return self.rotate_grid_from_profile(deflection)
 
 
 class SphericalIsothermal(EllipticalIsothermal):
