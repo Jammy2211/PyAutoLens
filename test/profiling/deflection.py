@@ -114,6 +114,7 @@ def new_deflection_with_grid_transformation():
         print("")
         print(result[i])
         print(elliptical_isothermal_deflection_result[i])
+        print(result[i] - elliptical_isothermal_deflection_result[i])
 
     assert (result == elliptical_isothermal_deflection_result).all()
 
