@@ -5,6 +5,7 @@ import time
 import os
 import numba
 from numpy.testing import assert_almost_equal
+import inspect
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -113,6 +114,22 @@ def new_deflection_elliptical_isothermal():
     assert (result == elliptical_isothermal_deflection_result).all()
 
 
+def generate_examples():
+    mass_profile_classes = [value for value in mass_profiles.__dict__.values()
+                            if inspect.isclass(value)
+                            and issubclass(value, mass_profiles.MassProfile)
+                            and value not in (mass_profiles.MassProfile, mass_profiles.EllipticalMassProfile)]
+
+    instances = map(lambda cls: cls(), mass_profile_classes)
+    for instance in instances:
+        print(instance.__class__.__name__)
+        grid_values = np.zeros(grid.shape)
+
+        for pixel_no, coordinate in enumerate(grid):
+            grid_values[pixel_no] = instance.deflections_at_coordinates(coordinates=coordinate)
+
+        np.save(instance.__class__.__name__, grid_values)
+
+
 if __name__ == "__main__":
-    current_deflection_elliptical_isothermal()
-    new_deflection_elliptical_isothermal()
+    generate_examples()
