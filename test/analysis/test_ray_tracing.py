@@ -27,7 +27,7 @@ def galaxy_mass_sis():
 @pytest.fixture(scope='function')
 def all_grids():
     regular_grid_coords = np.array([[1.0, 1.0]])
-    sub_grid_coords = np.array([[[1.0, 1.0]], [[1.0, 0.0]]])
+    sub_grid_coords = np.array([[1.0, 1.0], [1.0, 0.0]])
     blurring_grid_coords = np.array([[1.0, 0.0]])
 
     grid = grids.GridCoordsImage(regular_grid_coords)
@@ -62,6 +62,7 @@ class TestTraceImageAndSoure(object):
     class TestSetup:
 
         def test__image_grid__no_galaxy__image_and_source_planes_setup__same_coordinates(self, all_grids, no_galaxies):
+
             ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
 
@@ -190,6 +191,15 @@ class TestTraceImageAndSoure(object):
             ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
+
+    # class TestPixelizationMatriesfromGalaxies:
+    #
+    #     def test__1_galaxy_with_rectangular_pixeliation__returns_correct_matrices(self, all_grids, no_galaxies):
+    #
+    #         # Update sub-grid to give a more predictable mapping_matrix
+    #
+    #         all_grids.sub =
+
 
 
 class TestPlane(object):
