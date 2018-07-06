@@ -11,16 +11,16 @@ import numpy as np
 class MassProfile(object):
 
     def surface_density_at_radius(self, eta):
-        raise AssertionError("Surface density at radius should be overridden")
+        raise NotImplementedError("Surface density at radius should be overridden")
 
     def surface_density_at_coordinates(self, coordinates):
-        raise AssertionError("Surface density at image_grid should be overridden")
+        raise NotImplementedError("Surface density at image_grid should be overridden")
 
     def potential_at_coordinates(self, coordinates):
-        raise AssertionError("Potential at image_grid should be overridden")
+        raise NotImplementedError("Potential at image_grid should be overridden")
 
     def deflections_at_coordinates(self, coordinates):
-        raise AssertionError("Deflection angles at image_grid should be overridden")
+        raise NotImplementedError("Deflection angles at image_grid should be overridden")
 
 
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):

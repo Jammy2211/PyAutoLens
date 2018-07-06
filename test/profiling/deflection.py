@@ -148,6 +148,8 @@ def test_deflections_from_coordinate_grid(instance):
 
     except AttributeError:
         logging.warning("{} has no deflections_from_coordinate_grid function".format(name))
+    except NotImplementedError as e:
+        logging.exception(e)
     except ZeroDivisionError:
         logging.warning("{} throws a zero division error".format(name))
 
