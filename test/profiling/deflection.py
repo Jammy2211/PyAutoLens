@@ -16,6 +16,7 @@ def load(name):
 grid = load("grid")
 deflection_result = load("deflection_result")
 transformed_coordinates = load("transformed_coords")
+elliptical_isothermal_deflection_result = load("elliptical_isothermal_deflection_result")
 
 # print(transformed_coordinates)
 
@@ -46,7 +47,7 @@ def current_solution():
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = lens_galaxy.deflections_at_coordinates(coordinates=coordinate)
 
-        assert (grid_values == deflection_result).all()
+    assert (grid_values == deflection_result).all()
 
 
 @tick_toc
@@ -96,11 +97,27 @@ def new_transform_and_back():
 
 
 @tick_toc
-def new_solution_with_grid_transformation():
+def current_deflection_with_grid_transformation():
+    grid_values = np.zeros(grid.shape)
+
+    for pixel_no, coordinate in enumerate(grid):
+        grid_values[pixel_no] = mass_profile.deflections_at_coordinates(coordinates=coordinate)
+
+    assert (grid_values == elliptical_isothermal_deflection_result).all()
+
+
+@tick_toc
+def new_deflection_with_grid_transformation():
     result = mass_profile.deflections_from_coordinate_grid(grid)
 
-    assert (result == deflection_result).all()
+    for i in range(result.shape[0]):
+        print("")
+        print(result[i])
+        print(elliptical_isothermal_deflection_result[i])
+
+    assert (result == elliptical_isothermal_deflection_result).all()
 
 
 if __name__ == "__main__":
-    new_solution_with_grid_transformation()
+    current_deflection_with_grid_transformation()
+    new_deflection_with_grid_transformation()
