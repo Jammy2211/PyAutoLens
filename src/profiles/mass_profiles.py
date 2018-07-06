@@ -23,8 +23,9 @@ class MassProfile(object):
         raise NotImplementedError("Deflection angles at image_grid should be overridden")
 
 
+# noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
-    """Generic class for an elliptical light profiles"""
+    """Abstract class for elliptical light profiles"""
 
     _ids = count()
 
