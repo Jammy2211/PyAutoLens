@@ -12,7 +12,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 def load(name):
-    return np.load("{}/{}.npy".format(path, name))
+    return np.load("{}/data/{}.npy".format(path, name))
 
 
 grid = load("grid")
@@ -130,13 +130,11 @@ def all_mass_profiles(func):
 
 
 @all_mass_profiles
-def save_example_deflection(instance):
+def test_deflections_at_coordinates(instance):
     grid_values = np.zeros(grid.shape)
 
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = instance.deflections_at_coordinates(coordinates=coordinate)
-
-    np.save(instance.__class__.__name__, grid_values)
 
 
 @all_mass_profiles
