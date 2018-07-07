@@ -185,6 +185,36 @@ class Mask(scaled_array.ScaledArray):
 
         return blurring_grid
 
+    def compute_grid_sub_to_image(self, grid_size_sub):
+        """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
+
+        Parameters
+        ----------
+        grid_size_sub : int
+            The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
+        """
+
+        grid = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2))
+        image_pixel_count = 0
+        sub_pixel_count = 0
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    for x1 in range(grid_size_sub):
+                        for y1 in range(grid_size_sub):
+
+                            grid[sub_pixel_count] = image_pixel_count
+                            sub_pixel_count += 1
+
+                    image_pixel_count += 1
+
+        # print("assert (image_sub_grid == np.array({})).all()".format(
+        #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
+        #                                                                                                         ''))
+
+        return grid
+
     def compute_grid_data(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
 
