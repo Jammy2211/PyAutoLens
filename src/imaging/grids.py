@@ -2,6 +2,10 @@ import numpy as np
 from src import exc
 from src.profiles import geometry_profiles
 
+# TODO : I removed grid_mapper and made the mapping from 1D to 2D / sub-grid to image-grid inbuilt in the classes.
+# TODO : Thiss makes the code a lot cleaner, but could lead to significant memory use if we have lots of SubCoordinateGrid's
+# TODO : being made for a large ray tracing?
+
 
 class CoordsCollection(object):
 
@@ -26,7 +30,7 @@ class CoordsCollection(object):
         self.blurring = blurring
 
     @classmethod
-    def from_mask(cls, mask, grid_size_sub, blurring_shape):
+    def from_mask(cls, mask, sub_grid_size, blurring_shape):
         """Setup the collection of coordinate grids using an image mask.
 
         Parameters
@@ -34,14 +38,14 @@ class CoordsCollection(object):
         mask : mask.Mask
             A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
             grids.
-        grid_size_sub : int
-            The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
+        sub_grid_size : int
+            The (sub_grid_size x sub_grid_size) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
         blurring_shape : (int, int)
            The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
         """
 
         image = mask.coordinate_grid
-        sub = mask.compute_grid_coords_image_sub(grid_size_sub)
+        sub = mask.compute_grid_coords_image_sub(sub_grid_size)
         blurring = mask.blurring_coordinate_grid(blurring_shape)
 
         return CoordsCollection(image, sub, blurring)
@@ -213,100 +217,87 @@ class CoordinateGrid(AbstractCoordinateGrid):
 
 
 class SubCoordinateGrid(AbstractCoordinateGrid):
+    """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
+     sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
-    def __new__(cls, grid_coords, grid_size_sub, sub_to_image, image_pixels):
-        """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
-         sub-coordinates, which are used to perform over-sampling in the lens analysis.
+    Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
+    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
+    also counted from the top-left.
 
-        Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
-        also counted from the top-left.
+    A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
+    element maps to the image pixel index, the second element to the sub-pixel index and third element to that
+    sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
+    7th sub-pixel's y coordinate.
 
-        A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
-        element maps to the image pixel index, the second element to the sub-pixel index and third element to that
-        sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
-        7th sub-pixel's y coordinate.
+    Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
+    the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
+    2 data_to_image, to keep the illustration brief.
 
-        Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
-        the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
-        2 data_to_image, to keep the illustration brief.
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
+    |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
-        |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+    Our regular-grid looks like it did before:
 
-        Our regular-grid looks like it did before:
+    pixel_scale = 1.0"
 
-        pixel_scale = 1.0"
+    <--- -ve  x  +ve -->
 
-        <--- -ve  x  +ve -->
+    |x|x|x|x|x|x|x|x|x|x|  ^
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x| +ve  grid_coords[0] = [-1.5,  0.5]
+    |x|x|x|0|1|x|x|x|x|x|  y   grid_coords[1] = [-0.5,  0.5]
+    |x|x|x|x|x|x|x|x|x|x| -ve
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x| \/
+    |x|x|x|x|x|x|x|x|x|x|
 
-        |x|x|x|x|x|x|x|x|x|x|  ^
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x| +ve  grid_coords[0] = [-1.5,  0.5]
-        |x|x|x|0|1|x|x|x|x|x|  y   grid_coords[1] = [-0.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x| -ve
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x| \/
-        |x|x|x|x|x|x|x|x|x|x|
+    However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
+    if *sub_grid_size=2*, we use a 2x2 sub-grid:
 
-        However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
-        if *grid_size_sub=2*, we use a 2x2 sub-grid:
+    Pixel 0 - (2x2):
 
-        Pixel 0 - (2x2):
+           grid_coords[0,0] = [-1.66, 0.66]
+    |0|1|  grid_coords[0,1] = [-1.33, 0.66]
+    |2|3|  grid_coords[0,2] = [-1.66, 0.33]
+           grid_coords[0,3] = [-1.33, 0.33]
 
-               grid_coords[0,0] = [-1.66, 0.66]
-        |0|1|  grid_coords[0,1] = [-1.33, 0.66]
-        |2|3|  grid_coords[0,2] = [-1.66, 0.33]
-               grid_coords[0,3] = [-1.33, 0.33]
+    Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
+    pretend we used a size of 3x3 for pixel 1:
 
-        Now, we'd normally sub-grid all data_to_image using the same *grid_size_sub*, but for this illustration lets
-        pretend we used a size of 3x3 for pixel 1:
+             grid_coords[0,0] = [-0.75, 0.75]
+             grid_coords[0,1] = [-0.5,  0.75]
+             grid_coords[0,2] = [-0.25, 0.75]
+    |0|1|2|  grid_coords[0,3] = [-0.75,  0.5]
+    |3|4|5|  grid_coords[0,4] = [-0.5,   0.5]
+    |6|7|8|  grid_coords[0,5] = [-0.25,  0.5]
+             grid_coords[0,6] = [-0.75, 0.25]
+             grid_coords[0,7] = [-0.5,  0.25]
+             grid_coords[0,8] = [-0.25, 0.25]
 
-                 grid_coords[0,0] = [-0.75, 0.75]
-                 grid_coords[0,1] = [-0.5,  0.75]
-                 grid_coords[0,2] = [-0.25, 0.75]
-        |0|1|2|  grid_coords[0,3] = [-0.75,  0.5]
-        |3|4|5|  grid_coords[0,4] = [-0.5,   0.5]
-        |6|7|8|  grid_coords[0,5] = [-0.25,  0.5]
-                 grid_coords[0,6] = [-0.75, 0.25]
-                 grid_coords[0,7] = [-0.5,  0.25]
-                 grid_coords[0,8] = [-0.25, 0.25]
+    Parameters
+    -----------
+    grid_coords : np.ndarray
+        The coordinates of the sub-grid.
+    sub_grid_size : int
+        The (sub_grid_size x sub_grid_size) size of each sub-grid for each pixel.
+    """
 
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the sub-grid.
-        grid_size_sub : int
-            The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel.
-        """
-        coords = super(SubCoordinateGrid, cls).__new__(cls, grid_coords)
-        coords.image_pixels = image_pixels
-        coords.sub_pixels = coords.shape[0]
-        coords.grid_size_sub = grid_size_sub
-        coords.grid_size_sub_squared = grid_size_sub ** 2.0
-        coords.sub_to_image = sub_to_image
-        return coords
+    def __new__(cls, grid_coords, sub_grid_size):
+        grid = super(SubCoordinateGrid, cls).__new__(cls, grid_coords)
+        grid.sub_grid_size = sub_grid_size
+        return grid
 
-    def map_data_to_image_grid(self, data_sub):
-
-        data_image = np.zeros((self.image_pixels))
-
-        for sub_pixel in range(self.sub_pixels):
-            data_image[self.sub_to_image[sub_pixel]] += data_sub[sub_pixel]
-
-        return data_image / self.grid_size_sub_squared
-
-    def intensities_via_grid(self, galaxies):
+    def intensities_via_grid(self, galaxies, mapping):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
 
         Parameters
@@ -317,10 +308,10 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
 
         sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
                                                                              output_shape=self.shape[0]), galaxies))
-        return self.map_data_to_image_grid(sub_intensities)
+        return mapping.map_data_to_image_grid(sub_intensities)
 
     def new_from_array(self, array):
-        return __class__(array, self.grid_size_sub, self.sub_to_image, self.image_pixels)
+        return __class__(array, self.sub_grid_size)
 
 
 class DataCollection(object):
@@ -365,7 +356,7 @@ class DataCollection(object):
 
 class GridData(np.ndarray):
 
-    def __new__(cls, grid_data, data_to_image, image_shape):
+    def __new__(cls, grid_data):
         """The grid storing the value in each unmasked pixel of a data-set (e.g. an image, noise, exposure times, etc.).
 
         Data values are defined from the top-left corner, such that data_to_image in the top-left corner of an \
@@ -463,9 +454,6 @@ class GridData(np.ndarray):
 
         """
         data = np.array(grid_data).view(cls)
-        data.data_to_image = data_to_image
-        data.image_shape = image_shape
-        data.image_pixels = data.shape[0]
         return data
 
     @classmethod
@@ -478,7 +466,50 @@ class GridData(np.ndarray):
         mask : mask.Mask
             The image mask containing the data_to_image the data-grid is computed for.
         """
-        return GridData(mask.compute_grid_data(data), mask.compute_grid_data_to_pixel(), mask.shape)
+        return GridData(mask.compute_grid_data(data))
+
+
+class GridMapping(object):
+
+    def __init__(self, image_shape, image_pixels, data_to_image, sub_grid_size, sub_to_image, cluster=None):
+
+        self.image_shape = image_shape
+        self.image_pixels = image_pixels
+        self.data_to_image = data_to_image
+        self.sub_pixels = sub_to_image.shape[0]
+        self.sub_grid_size = sub_grid_size
+        self.sub_grid_size_squared = sub_grid_size ** 2.0
+        self.sub_to_image = sub_to_image
+        self.cluster = cluster
+
+    @classmethod
+    def from_mask(cls, mask, sub_grid_size, cluster_grid_size=None):
+        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
+
+        Parameters
+        ----------
+        data
+        mask : mask.Mask
+            The image mask containing the data_to_image the data-grid is computed for.
+        """
+        data_to_image = mask.compute_grid_data_to_pixel()
+        sub_to_image = mask.compute_grid_sub_to_image(sub_grid_size)
+
+        if cluster_grid_size is not None:
+            cluster = GridClusterPixelization.from_mask(mask, cluster_grid_size)
+        else:
+            cluster = None
+
+        return GridMapping(mask.shape, mask.pixels_in_mask, data_to_image, sub_grid_size, sub_to_image, cluster)
+
+    def map_data_to_image_grid(self, data_sub):
+
+        data_image = np.zeros((self.image_pixels))
+
+        for sub_pixel in range(self.sub_pixels):
+            data_image[self.sub_to_image[sub_pixel]] += data_sub[sub_pixel]
+
+        return data_image / self.sub_grid_size_squared
 
     def map_to_2d(self, grid_data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
