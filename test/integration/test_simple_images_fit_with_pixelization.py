@@ -18,7 +18,7 @@ import pytest
 @pytest.fixture(name='sim_grid_9x9', scope='function')
 def sim_grid_9x9():
     sim_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(5.5, 5.5), pixel_scale=0.5, psf_size=(3, 3))
-    sim_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=sim_grid_9x9.ma, grid_size_sub=1,
+    sim_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=sim_grid_9x9.ma, sub_grid_size=1,
                                                                blurring_shape=(3, 3))
     sim_grid_9x9.mappers = grids.MapperCollection.from_mask(mask=sim_grid_9x9.ma)
     return sim_grid_9x9
@@ -27,7 +27,7 @@ def sim_grid_9x9():
 def fit_grid_9x9():
     fit_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(4.5, 4.5), pixel_scale=0.5, psf_size=(5, 5))
     fit_grid_9x9.ma = mask.Mask(array=fit_grid_9x9.ma, pixel_scale=1.0)
-    fit_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=fit_grid_9x9.ma, grid_size_sub=2,
+    fit_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=fit_grid_9x9.ma, sub_grid_size=2,
                                                                blurring_shape=(3, 3))
     fit_grid_9x9.mappers = grids.MapperCollection.from_mask(mask=fit_grid_9x9.ma)
     return fit_grid_9x9
@@ -59,7 +59,7 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            image_grid = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+            image_grid = grids.CoordsCollection.from_mask(mask=ma, sub_grid_size=1, blurring_shape=(3, 3))
             grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
                                                         exposure_time=np.ones(im.shape))
             mapper_cluster = grids.GridClusterPixelization.from_mask(mask=ma, cluster_grid_size=1)
@@ -123,7 +123,7 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            image_grid = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+            image_grid = grids.CoordsCollection.from_mask(mask=ma, sub_grid_size=1, blurring_shape=(3, 3))
             grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
                                                         exposure_time=np.ones(im.shape))
             mapper_cluster = grids.GridClusterPixelization.from_mask(mask=ma, cluster_grid_size=1)
