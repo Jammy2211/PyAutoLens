@@ -81,7 +81,7 @@ class TestGridCoordsCollection(object):
 
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            image_grid = mask.compute_grid_coords_image()
+            image_grid = mask.coordinate_grid
             sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
             blurring_grid = mask.blurring_coordinate_grid(psf_size=(3, 3))
 
