@@ -85,6 +85,50 @@ class GridCoords(np.ndarray):
         """
         return np.array(grid_coords).view(cls)
 
+    def deflections_on_grid(self, galaxies):
+        """Compute the deflection angle for each coordinate on the grid, using the mass-profile(s) of a set of \
+         galaxies.
+
+        Parameters
+        -----------
+        galaxies : [galaxy.Galaxy]
+            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
+        """
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                 output_shape=self.shape), galaxies))
+
+    # TODO : I'll let you make this efficienctly call the profiles
+
+    def evaluate_func_on_grid(self, func, output_shape):
+        """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
+        mass profile for each coordinate on a regular grid.
+
+        NOTES
+        ----------
+
+        The output shape is included as an input because:
+
+        - For deflection angles, the output array's shape is the same as the grid (e.g. the input grid is \
+        [image_pixels, 2] and output grid is [image_pixels, 2]).
+
+        - For intensities, surface-densities and potentials, the output array's shape loses the second dimension \
+        (e.g. the input grid is [image_pixels, 2] and output grid is [image_pixels]).
+
+        Parameters
+        -----------
+        func : func
+            The *LightProfile* or *MassProfile* calculation function (e.g. intensity_at_coordinates).
+        output_shape : (int, int)
+            The output dimensions_2d of the evaluated values.
+
+        """
+        grid_values = np.zeros(output_shape)
+
+        for pixel_no, coordinate in enumerate(self):
+            grid_values[pixel_no] = func(coordinates=coordinate)
+
+        return grid_values
+
 
 class GridCoordsRegular(GridCoords):
     """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
@@ -130,7 +174,6 @@ class GridCoordsRegular(GridCoords):
     |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
-
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
 
@@ -142,52 +185,10 @@ class GridCoordsRegular(GridCoords):
         return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
                                                                  output_shape=self.shape[0]), galaxies))
 
-    def deflections_on_grid(self, galaxies):
-        """Compute the deflection angle for each coordinate on the grid, using the mass-profile(s) of a set of \
-         galaxies.
-
-        Parameters
-        -----------
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
-        """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                 output_shape=self.shape), galaxies))
-
-    def evaluate_func_on_grid(self, func, output_shape):
-        """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
-        mass profile for each coordinate on a regular grid.
-
-        NOTES
-        ----------
-
-        The output shape is included as an input because:
-
-        - For deflection angles, the output array's shape is the same as the grid (e.g. the input grid is \
-        [image_pixels, 2] and output grid is [image_pixels, 2]).
-
-        - For intensities, surface-densities and potentials, the output array's shape loses the second dimension \
-        (e.g. the input grid is [image_pixels, 2] and output grid is [image_pixels]).
-
-        Parameters
-        -----------
-        func : func
-            The *LightProfile* or *MassProfile* calculation function (e.g. intensity_at_coordinates).
-        output_shape : (int, int)
-            The output dimensions_2d of the evaluated values.
-
-        """
-        grid_values = np.zeros(output_shape)
-
-        for pixel_no, coordinate in enumerate(self):
-            grid_values[pixel_no] = func(coordinates=coordinate)
-
-        return grid_values
-
 
 class GridCoordsSub(GridCoords):
 
-    def __new__(cls, grid_coords, grid_size_sub):
+    def __new__(cls, grid_coords, grid_size_sub, sub_to_image):
         """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
          sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
@@ -264,58 +265,21 @@ class GridCoordsSub(GridCoords):
         """
         coords = super(GridCoordsSub, cls).__new__(cls, grid_coords)
         coords.grid_size_sub = grid_size_sub
-        coords.grid_size_sub_squared = grid_size_sub ** 2.0
+        coords.sub_to_image = sub_to_image
         return coords
 
     def intensities_via_grid(self, galaxies):
-        """Compute the intensity for each coordinate on the sub-grid, using the light-profile(s) of a set of galaxies.
-
-        For each sub-pixel, after computing the intensities at each sub coordinate, the mean is taken to compute \
-        the overall intensity of that pixel.
+        """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
 
         Parameters
         -----------
         galaxies : [galaxy.Galaxy]
-            The list of galaxies whose light profiles are used to compute the intensity at the grid coordinates.
+            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-
         sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                            output_shape=self.shape[0:2]), galaxies))
+                                                                 output_shape=self.shape[0]), galaxies))
 
-        intensities = np.zeros(self.shape[0])
-
-        for pixel_no, intensities_sub_pixel in enumerate(sub_intensities):
-            intensities[pixel_no] = np.sum(intensities_sub_pixel) / self.grid_size_sub_squared
-
-        return intensities
-
-    def deflections_on_grid(self, galaxies):
-        """Compute the intensity for each coordinate on the sub-grid, using the mass-profile(s) of a set of galaxies.
-
-        Deflection angles are not averaged over a sub-pixel. Instead, the individual coordinates at each sub-pixel \
-        are used to trace coordinates to the next plane.
-
-        Parameters
-        -----------
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
-        """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                 output_shape=self.shape), galaxies))
-
-    def evaluate_func_on_grid(self, func, output_shape):
-        """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
-        coordinates defined by a sub-grid_coords.
-        """
-
-        sub_grid_values = np.zeros(output_shape)
-
-        for pixel_no, pixel_sub_grid in enumerate(self):
-            for sub_pixel_no, sub_coordinate in enumerate(pixel_sub_grid):
-                sub_grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
-
-        return sub_grid_values
-
+        
 
 class GridCoordsImage(GridCoordsRegular):
     """The coordinates of each pixel in an image, stored using a regular grid.
@@ -365,12 +329,14 @@ class GridCoordsImageSub(GridCoordsSub):
         its center.
 
         Parameters
+        -----------
         mask : mask.Mask
             A mask describing which data_to_pixel the sub-coordinates are computed for to setup the image sub-grid.
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
-        return GridCoordsImageSub(mask.compute_grid_coords_image_sub(grid_size_sub), grid_size_sub)
+        return GridCoordsImageSub(mask.compute_grid_coords_image_sub(grid_size_sub), grid_size_sub,
+                                  mask.compute_grid_sub_to_image)
 
     def setup_deflections_grid(self, galaxies):
         """ Setup a new image sub-grid of coordinates, corresponding to the deflection angles computed from the mass \
