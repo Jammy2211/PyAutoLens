@@ -116,8 +116,9 @@ class AbstractCoordinateGrid(np.ndarray):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
         """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                 output_shape=self.shape), galaxies))
+        return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(self), galaxies))
+
+    # TODO : Make galaxy.intensitites_from_coordinate_grid as above
 
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
@@ -134,7 +135,34 @@ class AbstractCoordinateGrid(np.ndarray):
         return self.__class__(array)
 
     def evaluate_func_on_grid(self, func, output_shape):
-        raise NotImplementedError()
+        """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
+        mass profile for each coordinate on a regular grid.
+
+        NOTES
+        ----------
+
+        The output shape is included as an input because:
+
+        - For deflection angles, the output array's shape is the same as the grid (e.g. the input grid is \
+        [image_pixels, 2] and output grid is [image_pixels, 2]).
+
+        - For intensities, surface-densities and potentials, the output array's shape loses the second dimension \
+        (e.g. the input grid is [image_pixels, 2] and output grid is [image_pixels]).
+
+        Parameters
+        -----------
+        func : func
+            The *LightProfile* or *MassProfile* calculation function (e.g. intensity_at_coordinates).
+        output_shape : (int, int)
+            The output dimensions_2d of the evaluated values.
+
+        """
+        grid_values = np.zeros(output_shape)
+
+        for pixel_no, coordinate in enumerate(self):
+            grid_values[pixel_no] = func(coordinates=coordinate)
+
+        return grid_values
 
 
 class CoordinateGrid(AbstractCoordinateGrid):
@@ -181,36 +209,7 @@ class CoordinateGrid(AbstractCoordinateGrid):
     |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
-
-    def evaluate_func_on_grid(self, func, output_shape):
-        """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
-        mass profile for each coordinate on a regular grid.
-
-        NOTES
-        ----------
-
-        The output shape is included as an input because:
-
-        - For deflection angles, the output array's shape is the same as the grid (e.g. the input grid is \
-        [image_pixels, 2] and output grid is [image_pixels, 2]).
-
-        - For intensities, surface-densities and potentials, the output array's shape loses the second dimension \
-        (e.g. the input grid is [image_pixels, 2] and output grid is [image_pixels]).
-
-        Parameters
-        -----------
-        func : func
-            The *LightProfile* or *MassProfile* calculation function (e.g. intensity_at_coordinates).
-        output_shape : (int, int)
-            The output dimensions_2d of the evaluated values.
-
-        """
-        grid_values = np.zeros(output_shape)
-
-        for pixel_no, coordinate in enumerate(self):
-            grid_values[pixel_no] = func(coordinates=coordinate)
-
-        return grid_values
+    pass
 
 
 class SubCoordinateGrid(AbstractCoordinateGrid):
@@ -317,11 +316,11 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         """
 
         sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                 output_shape=self.shape[0]), galaxies))
+                                                                             output_shape=self.shape[0]), galaxies))
+        return self.map_data_to_image_grid(sub_intensities)
 
     def new_from_array(self, array):
-        return __class__(array, self.grid_size_sub)
-
+        return __class__(array, self.grid_size_sub, self.sub_to_image, self.image_pixels)
 
 # TODO : We'll probably end up splitting 'GridData' into different data-types .e.g 'GridImage', 'GridNoise',
 # TODO : 'GridImageLensSubtracted', etc.
