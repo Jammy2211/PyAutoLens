@@ -42,7 +42,7 @@ def make_1x1_image():
                                                            kernel_shape=(3, 3)))
 
     im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
-    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, grid_size_sub=1, blurring_shape=(3, 3))
+    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, sub_grid_size=1, blurring_shape=(3, 3))
 
     return im
 
@@ -74,7 +74,7 @@ def make_2x2_image():
                                                            kernel_shape=(3, 3)))
 
     im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
-    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, grid_size_sub=1, blurring_shape=(3, 3))
+    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, sub_grid_size=1, blurring_shape=(3, 3))
 
     return im
 

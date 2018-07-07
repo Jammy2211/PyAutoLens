@@ -36,7 +36,7 @@ class Analysis(object):
 
         self.data_collection = grids.DataCollection.from_mask(mask, image, image.background_noise,
                                                               image.effective_exposure_time)
-        self.coords_collection = grids.CoordsCollection.from_mask(mask, grid_size_sub=grid_size_sub,
+        self.coords_collection = grids.CoordsCollection.from_mask(mask, sub_grid_size=grid_size_sub,
                                                                   blurring_shape=image.psf.shape)
         self.mapper_collection = grids.MapperCollection.from_mask(mask, cluster_grid_size)
 
