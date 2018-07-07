@@ -16,7 +16,7 @@ A set of values in a corresponding image_grid might be represented in a 1D array
 
 [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
-This module allows us to find the relationships between data_to_pixel in a mask for a kernel of a given size so that
+This module allows us to find the relationships between data_to_image in a mask for a kernel of a given size so that
 convolutions can be efficiently applied to reduced arrays such as the one above.
 
 A FrameMaker can be created for a given mask:
@@ -244,7 +244,7 @@ class KernelConvolver(object):
         Returns
         -------
         convolved_array: [float]
-            A matrix representing the mapping of source data_to_pixel to image_grid data_to_pixel accounting for
+            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
             convolution
         """
         return map(self.convolve_array, array, blurring_array)

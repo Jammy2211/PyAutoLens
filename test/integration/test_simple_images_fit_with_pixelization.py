@@ -62,7 +62,7 @@ class TestCase:
             image_grid = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
             grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
                                                         exposure_time=np.ones(im.shape))
-            mapper_cluster = grids.MapperCluster.from_mask(mask=ma, cluster_grid_size=1)
+            mapper_cluster = grids.GridClusterPixelization.from_mask(mask=ma, cluster_grid_size=1)
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
 
@@ -126,7 +126,7 @@ class TestCase:
             image_grid = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
             grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
                                                         exposure_time=np.ones(im.shape))
-            mapper_cluster = grids.MapperCluster.from_mask(mask=ma, cluster_grid_size=1)
+            mapper_cluster = grids.GridClusterPixelization.from_mask(mask=ma, cluster_grid_size=1)
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
 
