@@ -1675,6 +1675,7 @@ class TestProfiles(object):
 
         class TestDeflections(object):
             def test__compare_to_elliptical_isothermal__same_value(self):
+
                 isothermal = mass_profiles.EllipticalIsothermal(centre=(0.9, 0.5), axis_ratio=0.99999,
                                                                 phi=0.0,
                                                                 einstein_radius=4.0)

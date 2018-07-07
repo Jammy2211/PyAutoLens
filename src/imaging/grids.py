@@ -1,4 +1,5 @@
 import numpy as np
+from src import exc
 from src.profiles import geometry_profiles
 
 
@@ -214,7 +215,7 @@ class CoordinateGrid(AbstractCoordinateGrid):
 
 class SubCoordinateGrid(AbstractCoordinateGrid):
 
-    def __new__(cls, grid_coords, grid_size_sub):
+    def __new__(cls, grid_coords, grid_size_sub, sub_to_image, image_pixels):
         """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
          sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
@@ -290,15 +291,24 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
             The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel.
         """
         coords = super(SubCoordinateGrid, cls).__new__(cls, grid_coords)
+        coords.image_pixels = image_pixels
+        coords.sub_pixels = coords.shape[0]
         coords.grid_size_sub = grid_size_sub
         coords.grid_size_sub_squared = grid_size_sub ** 2.0
+        coords.sub_to_image = sub_to_image
         return coords
 
-    def intensities_via_grid(self, galaxies):
-        """Compute the intensity for each coordinate on the sub-grid, using the light-profile(s) of a set of galaxies.
+    def map_data_to_image_grid(self, data_sub):
 
-        For each sub-pixel, after computing the intensities at each sub coordinate, the mean is taken to compute \
-        the overall intensity of that pixel.
+        data_image = np.zeros((self.image_pixels))
+
+        for sub_pixel in range(self.sub_pixels):
+            data_image[self.sub_to_image[sub_pixel]] += data_sub[sub_pixel]
+
+        return data_image / self.grid_size_sub_squared
+
+    def intensities_via_grid(self, galaxies):
+        """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
 
         Parameters
         -----------
@@ -307,27 +317,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         """
 
         sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                            output_shape=self.shape[0:2]), galaxies))
-
-        intensities = np.zeros(self.shape[0])
-
-        for pixel_no, intensities_sub_pixel in enumerate(sub_intensities):
-            intensities[pixel_no] = np.sum(intensities_sub_pixel) / self.grid_size_sub_squared
-
-        return intensities
-
-    def evaluate_func_on_grid(self, func, output_shape):
-        """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
-        coordinates defined by a sub-grid_coords.
-        """
-
-        sub_grid_values = np.zeros(output_shape)
-
-        for pixel_no, pixel_sub_grid in enumerate(self):
-            for sub_pixel_no, sub_coordinate in enumerate(pixel_sub_grid):
-                sub_grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
-
-        return sub_grid_values
+                                                                 output_shape=self.shape[0]), galaxies))
 
     def new_from_array(self, array):
         return __class__(array, self.grid_size_sub)
