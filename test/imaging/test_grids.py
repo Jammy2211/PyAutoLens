@@ -82,7 +82,7 @@ class TestGridCoordsCollection(object):
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
             image_grid = mask.coordinate_grid
-            sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
+            sub_grid = mask.sub_coordinate_grid_with_size(size=2)
             blurring_grid = mask.blurring_coordinate_grid(psf_size=(3, 3))
 
             grid_collection = grids.CoordsCollection.from_mask(mask, grid_size_sub=2, blurring_shape=(3, 3))
@@ -590,7 +590,7 @@ def make_grid_image_sub():
                      [True, True, True]])
 
     mask = msk.Mask(array=mask, pixel_scale=3.0)
-    return mask.compute_grid_coords_image_sub(grid_size_sub=2)
+    return mask.sub_coordinate_grid_with_size(grid_size_sub=2)
 
 
 class TestSubCoordinateGrid(object):
@@ -620,11 +620,11 @@ class TestSubCoordinateGrid(object):
 
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            sub_grid_coords = mask.compute_grid_coords_image_sub(grid_size_sub=2)
+            sub_grid_coords = mask.sub_coordinate_grid_with_size(size=2)
 
             grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
-            grid_from_mask = mask.compute_grid_coords_image_sub(grid_size_sub=2)
+            grid_from_mask = mask.sub_coordinate_grid_with_size(size=2)
 
             assert (grid_image_sub == grid_from_mask).all()
 
