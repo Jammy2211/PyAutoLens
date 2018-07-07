@@ -47,6 +47,70 @@ def galaxy_light_sersic():
 
 class TestCase:
 
+    class TestRectangularPixelization:
+
+        def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
+            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0]])
+
+            ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+
+            image_grid = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
+            grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
+                                                        exposure_time=np.ones(im.shape))
+            mapper_cluster = grids.MapperCluster.from_mask(mask=ma, cluster_grid_size=1)
+
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
+
+            pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            frame = frame_convolution.FrameMaker(mask=ma)
+            convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3))
+            # This PSF leads to no blurring, so equivalent to being off.
+            kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
+                                                                               [0., 1., 0.],
+                                                                               [0., 0., 0.]]))
+
+            cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
+
+            reg_matrix = np.array([[ 2.0, -1.0,  0.0, -1.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+                                   [-1.0,  3.0, -1.0,  0.0, -1.0,  0.0,  0.0,  0.0,  0.0],
+                                   [ 0.0, -1.0,  2.0,  0.0,  0.0, -1.0,  0.0,  0.0,  0.0],
+                                   [-1.0,  0.0,  0.0,  3.0, -1.0,  0.0, -1.0,  0.0,  0.0],
+                                   [ 0.0, -1.0,  0.0, -1.0,  4.0, -1.0,  0.0, -1.0,  0.0],
+                                   [ 0.0,  0.0, -1.0,  0.0, -1.0,  3.0,  0.0,  0.0,- 1.0],
+                                   [ 0.0,  0.0,  0.0, -1.0,  0.0,  0.0,  2.0, -1.0,  0.0],
+                                   [ 0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  3.0, -1.0],
+                                   [ 0.0,  0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  2.0]])
+
+            reg_matrix = reg_matrix + 1e-8 * np.identity(9)
+
+            cov_reg_matrix = cov_matrix + reg_matrix
+
+            chi_sq_term = 0.0
+            gl_term = 0.0008
+            det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
+            det_reg_term = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
+            noise_term = 9.0*np.log(2 * np.pi * 1.0 ** 2.0)
+
+            evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
+
+            assert fitting.fit_data_with_pixelization(grid_data=grid_datas, pix=pix, kernel_convolver=kernel_convolver,
+                                                      tracer=ray_trace, mapper_cluster=mapper_cluster) == \
+                   pytest.approx(evidence_expected,1e-4)
+
     class TestClusterPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
