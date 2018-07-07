@@ -6,22 +6,22 @@ import math
 
 
 def coordinates_to_source_pixels_via_nearest_neighbour(coordinates, source_centers):
-    """ Match a set of image_grid image_grid-pixel image_grid to their closest source-data_to_pixel, using the source-pixel centers (x,y).
+    """ Match a set of image_grid image_grid-pixel image_grid to their closest source-data_to_image, using the source-pixel centers (x,y).
 
         This method uses a nearest neighbour search between every image_image-pixel coordinate and set of source-pixel \
-        centers, thus it is slow when the number of image_grid image_grid-pixel image_grid or source-data_to_pixel is large. However, it
-        is probably the fastest routine for low numbers of image_grid image_grid-data_to_pixel and source-data_to_pixel.
+        centers, thus it is slow when the number of image_grid image_grid-pixel image_grid or source-data_to_image is large. However, it
+        is probably the fastest routine for low numbers of image_grid image_grid-data_to_image and source-data_to_image.
 
         Parameters
         ----------
         coordinates : [(float, float)]
             The x and y image_grid image_grid-pixel image_grid to be matched to the source-pixel centers.
         image_total : int
-            The total number of image_grid data_to_pixel in the image_grid.
+            The total number of image_grid data_to_image in the image_grid.
         image_total : int
-            The total number of image_grid data_to_pixel in the image_grid image_grid-grid_coords.
+            The total number of image_grid data_to_image in the image_grid image_grid-grid_coords.
         source_centers: [(float, float)
-            The source-data_to_pixel centers the image_grid image_grid-pixel image_grid are matched with.
+            The source-data_to_image centers the image_grid image_grid-pixel image_grid are matched with.
 
         Returns
         ----------

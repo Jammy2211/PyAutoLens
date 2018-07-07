@@ -252,7 +252,7 @@ class TestCalculateCovariance(object):
         assert generator.calculate_covariance(0, 1) == 2
 
     def test_no_covariance(self):
-        """Is covariance zero when two source data_to_pixel share no image_grid data_to_pixel?"""
+        """Is covariance zero when two source data_to_image share no image_grid data_to_image?"""
         generator = covariance_matrix.CovarianceMatrixGenerator([{1: 3}, {0: 1}], [1, 1], None)
 
         assert generator.calculate_covariance(0, 1) == 0

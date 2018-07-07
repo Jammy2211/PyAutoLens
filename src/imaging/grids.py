@@ -32,7 +32,7 @@ class CoordsCollection(object):
         Parameters
         -----------
         mask : mask.Mask
-            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of
+            A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
             grids.
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
@@ -77,7 +77,7 @@ class AbstractCoordinateGrid(np.ndarray):
         a fraction of their light is blurred into the masked region by the PSF.
 
         Each grid is stored as a structured array of coordinates, chosen for efficient ray-tracing \
-        calculations. Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner
+        calculations. Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner
         of an image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes
         are also counted from the top-left.
 
@@ -154,7 +154,7 @@ class AbstractCoordinateGrid(np.ndarray):
         func : func
             The *LightProfile* or *MassProfile* calculation function (e.g. intensity_at_coordinates).
         output_shape : (int, int)
-            The output dimensions_2d of the evaluated values.
+            The output image_shape of the evaluated values.
 
         """
         grid_values = np.zeros(output_shape)
@@ -169,15 +169,15 @@ class CoordinateGrid(AbstractCoordinateGrid):
     """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
     are represented by the value at the centre of the pixel.
 
-    Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
+    Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an \
     image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
     also counted from the top-left.
 
-    A regular *grid_coords* is a NumPy array of dimensions_2d [image_pixels, 2]. Therefore, the first element maps \
+    A regular *grid_coords* is a NumPy array of image_shape [image_pixels, 2]. Therefore, the first element maps \
     to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
     [3,1] gives the 4th image pixel's y coordinate.
 
-    Below is a visual illustration of a regular grid, where a total of 10 data_to_pixel are unmasked and therefore \
+    Below is a visual illustration of a regular grid, where a total of 10 data_to_image are unmasked and therefore \
     included in the grid.
 
     |x|x|x|x|x|x|x|x|x|x|
@@ -218,18 +218,18 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
          sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
-        Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner of an
+        Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
         image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
         also counted from the top-left.
 
-        A sub *grid_coords* is a NumPy array of dimensions_2d [image_pixels, sub_grid_pixels, 2]. Therefore, the first
+        A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
         element maps to the image pixel index, the second element to the sub-pixel index and third element to that
         sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
         7th sub-pixel's y coordinate.
 
         Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
         the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
-        2 data_to_pixel, to keep the illustration brief.
+        2 data_to_image, to keep the illustration brief.
 
         |x|x|x|x|x|x|x|x|x|x|
         |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
@@ -269,7 +269,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         |2|3|  grid_coords[0,2] = [-1.66, 0.33]
                grid_coords[0,3] = [-1.33, 0.33]
 
-        Now, we'd normally sub-grid all data_to_pixel using the same *grid_size_sub*, but for this illustration lets
+        Now, we'd normally sub-grid all data_to_image using the same *grid_size_sub*, but for this illustration lets
         pretend we used a size of 3x3 for pixel 1:
 
                  grid_coords[0,0] = [-0.75, 0.75]
@@ -322,9 +322,6 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
     def new_from_array(self, array):
         return __class__(array, self.grid_size_sub, self.sub_to_image, self.image_pixels)
 
-# TODO : We'll probably end up splitting 'GridData' into different data-types .e.g 'GridImage', 'GridNoise',
-# TODO : 'GridImageLensSubtracted', etc.
-
 
 class DataCollection(object):
 
@@ -351,7 +348,7 @@ class DataCollection(object):
         Parameters
         -----------
         mask : mask.Mask
-            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of
+            A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
             grids.
         image : imaging.Image
             A data-grid of the observed image fluxes (electrons per second)
@@ -368,15 +365,15 @@ class DataCollection(object):
 
 class GridData(np.ndarray):
 
-    def __new__(cls, grid_data):
+    def __new__(cls, grid_data, data_to_image, image_shape):
         """The grid storing the value in each unmasked pixel of a data-set (e.g. an image, noise, exposure times, etc.).
 
-        Data values are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
-        image (e.g. [0,0]) have the lowest index value. Therefore, the *grid_data* is a NumPy array of dimensions_2d \
+        Data values are defined from the top-left corner, such that data_to_image in the top-left corner of an \
+        image (e.g. [0,0]) have the lowest index value. Therefore, the *grid_data* is a NumPy array of image_shape \
         [image_pixels], where each element maps to its corresponding image pixel index. For example, the value \
         [3] gives the 4th pixel's data value.
 
-        Below is a visual illustration of a data-grid, where a total of 10 data_to_pixel are unmasked and therefore \
+        Below is a visual illustration of a data-grid, where a total of 10 data_to_image are unmasked and therefore \
         included in the grid.
 
         |x|x|x|x|x|x|x|x|x|x|
@@ -416,81 +413,14 @@ class GridData(np.ndarray):
         |x|x|x|x|x|x|x|x|x|x|   grid_data[8] = 1
         |x|x|x|x|x|x|x|x|x|x|   grid_data[9] = 3
 
-        Parameters
-        -----------
-        grid_data : np.ndarray
-            The data-values in the unmasked data_to_pixel of a data-set (e.g. an image, noise, exposure times).
+        This also stores the data's original 2D pixels and dimensions, so that the rebuilt data can be mapped to its \
+        original 2D array.
 
-        Notes
-        ----------
-
-        The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image.
-        The easiest way to ensure this is to generate them all from the same mask.
-
-        """
-        return np.array(grid_data).view(cls)
-
-    @classmethod
-    def from_mask(cls, data, mask):
-        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
-
-        Parameters
-        ----------
-        data
-        mask : mask.Mask
-            The image mask containing the data_to_pixel the data-grid is computed for.
-        """
-        return GridData(mask.compute_grid_data(data))
-
-
-class MapperCollection(object):
-
-    def __init__(self, data_to_pixel, clustering=None):
-        """A collection of mappers, which map between data on different grids.
-
-        Parameters
-        -----------
-        data_to_pixel : GridMapperDataToPixel
-            Mapper between 1D image *GridData* and its 2D image coordinates.
-        clustering : MapperCluster
-            Mapper between image data_to_pixel and the clustering grid data_to_pixel.
-        """
-
-        self.data_to_pixel = data_to_pixel
-        self.clustering = clustering
-
-    @classmethod
-    def from_mask(cls, mask, cluster_grid_size=None):
-        """Setup the collection of grid mappers using an image mask.
-
-        Parameters
-        -----------
-        cluster_grid_size
-        mask : mask.Mask
-            A mask describing which data_to_pixel the coordinates are computed for and used to setup the collection of
-            grids.
-
-        """
-
-        image_to_pixel = GridMapperDataToPixel.from_mask(mask)
-        clustering = MapperCluster.from_mask(mask, cluster_grid_size) if cluster_grid_size is not None else None
-
-        return MapperCollection(image_to_pixel, clustering)
-
-
-class GridMapperDataToPixel(np.ndarray):
-
-    def __new__(cls, dimensions_2d, data_to_pixel):
-        """A grid which maps every value of the *GridData* to its 2D pixel, used to rebuild 1D data-grids to 2D \
-        for visualization.
-
-        This also stores the data's original 2D dimensions_2d, so that the rebuilt image is at the original size. \
-
-        The mapper is a NumPy array of dimensions_2d [image_pixels, 2]. Therefore, the first element maps to the \
+        data_to_image is a NumPy array of image_shape [image_pixels, 2]. Therefore, the first element maps to the \
         image pixel index, and second element to its (x,y) pixel coordinates. For example, the value [3,1] gives \
         the 4th image pixel's y pixel.
 
-        Below is a visual illustration, where a total of 10 data_to_pixel are unmasked and therefore \
+        Below is a visual illustration, where a total of 10 data_to_image are unmasked and therefore \
         included in the mapper.
 
              0 1 2 3 4 5 6 7 8 9
@@ -506,43 +436,49 @@ class GridMapperDataToPixel(np.ndarray):
         8   |x|x|x|x|x|x|x|x|x|x|
         9   |x|x|x|x|x|x|x|x|x|x|
 
-        Remembering that we count data_to_pixel rightwards from the top left corner (see *GridRegular),
-        the data_to_pixel vector will read:
+        Remembering that we count data_to_image rightwards from the top left corner (see *GridRegular),
+        the data_to_image vector will read:
 
-        data_to_pixel[0] = [3,4]
-        data_to_pixel[1] = [3,5]
-        data_to_pixel[2] = [4,3]
-        data_to_pixel[3] = [4,4]
-        data_to_pixel[4] = [4,5]
-        data_to_pixel[5] = [4,6]
-        data_to_pixel[6] = [5,3]
-        data_to_pixel[7] = [5,4]
-        data_to_pixel[8] = [5,5]
-        data_to_pixel[9] = [5,6]
+        data_to_image[0] = [3,4]
+        data_to_image[1] = [3,5]
+        data_to_image[2] = [4,3]
+        data_to_image[3] = [4,4]
+        data_to_image[4] = [4,5]
+        data_to_image[5] = [4,6]
+        data_to_image[6] = [5,3]
+        data_to_image[7] = [5,4]
+        data_to_image[8] = [5,5]
+        data_to_image[9] = [5,6]
 
         Parameters
         -----------
-        dimensions_2d : (int, int)
-            The 2D dimensions_2d of the data's original image.
-        data_to_pixel : ndarray
-            Numpy array containing the pixel coordinates of each data point.
+        grid_data : np.ndarray
+            The data-values in the unmasked data_to_image of a data-set (e.g. an image, noise, exposure times).
+
+        Notes
+        ----------
+
+        The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image.
+        The easiest way to ensure this is to generate them all from the same mask.
+
         """
-        mapper = np.array(data_to_pixel).view(cls)
-        mapper.dimensions_2d = dimensions_2d
-        mapper.dimensions_1d = data_to_pixel.shape[0]
-        return mapper
+        data = np.array(grid_data).view(cls)
+        data.data_to_image = data_to_image
+        data.image_shape = image_shape
+        data.image_pixels = data.shape[0]
+        return data
 
     @classmethod
-    def from_mask(cls, mask):
-        """Using an image.Mask, setup a data to 2d mapper.
+    def from_mask(cls, data, mask):
+        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
 
         Parameters
         ----------
+        data
         mask : mask.Mask
-            The image mask containing the unmasked data_to_pixel of the data grid.
+            The image mask containing the data_to_image the data-grid is computed for.
         """
-        return GridMapperDataToPixel(dimensions_2d=mask.shape,
-                                     data_to_pixel=mask.compute_grid_mapper_data_to_pixel())
+        return GridData(mask.compute_grid_data(data), mask.compute_grid_data_to_pixel(), mask.shape)
 
     def map_to_2d(self, grid_data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
@@ -552,30 +488,15 @@ class GridMapperDataToPixel(np.ndarray):
         grid_data : ndarray
             The grid-data which is mapped to its 2D image.
         """
-        data_2d = np.zeros(self.dimensions_2d)
+        data_2d = np.zeros(self.image_shape)
 
-        for (i, pixel) in enumerate(self):
+        for (i, pixel) in enumerate(self.data_to_image):
             data_2d[pixel[0], pixel[1]] = grid_data[i]
 
         return data_2d
 
-    def map_to_1d(self, data_2d):
-        """Use mapper to map a 2D image back to its *GridData* structure.
 
-        Parameters
-        -----------
-        data_2d : ndarray
-            The image which is to be mapped back to its *GridData* structure.
-        """
-        data_1d = np.zeros(self.dimensions_1d)
-
-        for (i, pixel) in enumerate(self):
-            data_1d[i] = data_2d[pixel[0], pixel[1]]
-
-        return data_1d
-
-
-class MapperCluster(object):
+class GridClusterPixelization(object):
 
     def __init__(self, cluster_to_image, image_to_cluster):
         """ The KMeans clustering used to derive an amorphous pixeliation uses a set of image-grid coordinates. For \
@@ -584,17 +505,17 @@ class MapperCluster(object):
         Therefore, for efficiency, we define a 'clustering-grid', which is a sparsely sampled set of image-grid \
         coordinates used by the KMeans algorithm instead. However, we don't need the actual coordinates of this \
         clustering grid (as they are already calculated for the image-grid). Instead, we just need a mapper between \
-        clustering-data_to_pixel and image-data_to_pixel.
+        clustering-data_to_image and image-data_to_image.
 
         Thus, the *cluster_to_image* attribute maps every pixel on the clustering grid to its closest image pixel \
         (via the image pixel's 1D index). This is used before the KMeans clustering algorithm, to extract the sub-set \
         of coordinates that the algorithm uses.
 
         By giving the KMeans algorithm only clustering-grid coordinates, it will only tell us the mappings between \
-        source-data_to_pixel and clustering-data_to_pixel. However, to perform the source reconstruction, we need to
-        know all of the mappings between source data_to_pixel and image data_to_pixel / sub-image data_to_pixel. This
-        would require a (computationally expensive) nearest-neighbor search (over all clustering data_to_pixel and
-        image / sub data_to_pixel) to calculate. The calculation can be sped-up by using the attribute
+        source-data_to_image and clustering-data_to_image. However, to perform the source reconstruction, we need to
+        know all of the mappings between source data_to_image and image data_to_image / sub-image data_to_image. This
+        would require a (computationally expensive) nearest-neighbor search (over all clustering data_to_image and
+        image / sub data_to_image) to calculate. The calculation can be sped-up by using the attribute
         *image_to_cluster*, which maps every image-pixel to its closest pixel on the clustering grid (see
         *pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs*).
         """
@@ -605,22 +526,22 @@ class MapperCluster(object):
     @classmethod
     def from_mask(cls, mask, cluster_grid_size):
         """ Given an image.Mask, compute the clustering mapper of the image by inputting its size and finding \
-        all image data_to_pixel which are on its sparsely defined mask.
+        all image data_to_image which are on its sparsely defined mask.
 
         Parameters
         ----------
         cluster_grid_size
         mask : mask.Mask
-            The image mask containing the data_to_pixel the blurring grid_coords is computed for and the image's data
+            The image mask containing the data_to_image the blurring grid_coords is computed for and the image's data
             grid_coords.
         """
         cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(cluster_grid_size)
-        return MapperCluster(cluster_to_image, image_to_cluster)
+        return GridClusterPixelization(cluster_to_image, image_to_cluster)
 
 
 class GridBorder(geometry_profiles.Profile):
 
-    # TODO : Could speed this up by only looking and relocating image data_to_pixel within a certain radius of the image
+    # TODO : Could speed this up by only looking and relocating image data_to_image within a certain radius of the image
     # TODO : centre. This would add a central_pixels lists to the input.
 
     # TODO : Why is this a profile?
@@ -628,13 +549,13 @@ class GridBorder(geometry_profiles.Profile):
     def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
         """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
 
-        This is required to ensure highly demagnified data_to_pixel in the centre of an image do not bias a source
+        This is required to ensure highly demagnified data_to_image in the centre of an image do not bias a source
         pixelization.
 
         Parameters
         ----------
         border_pixels : np.ndarray
-            The the border source data_to_pixel, specified by their 1D index in *image_grid*.
+            The the border source data_to_image, specified by their 1D index in *image_grid*.
         polynomial_degree : int
             The degree of the polynomial used to fit the source-plane border edge.
         """

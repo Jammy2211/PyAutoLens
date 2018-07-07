@@ -1162,7 +1162,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            mapper_data_to_2d = msk.compute_grid_mapper_data_to_pixel()
+            mapper_data_to_2d = msk.compute_grid_data_to_pixel()
 
             assert (mapper_data_to_2d[0] == np.array([1, 1])).all()
 
@@ -1173,7 +1173,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            mapper_data_to_2d = msk.compute_grid_mapper_data_to_pixel()
+            mapper_data_to_2d = msk.compute_grid_data_to_pixel()
 
             assert (mapper_data_to_2d[0] == np.array([0, 1])).all()
             assert (mapper_data_to_2d[1] == np.array([1, 0])).all()
@@ -1188,7 +1188,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            mapper_data_to_2d = msk.compute_grid_mapper_data_to_pixel()
+            mapper_data_to_2d = msk.compute_grid_data_to_pixel()
 
             assert (mapper_data_to_2d[0] == np.array([0, 1])).all()
             assert (mapper_data_to_2d[1] == np.array([1, 0])).all()
@@ -1205,7 +1205,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            mapper_data_to_2d = msk.compute_grid_mapper_data_to_pixel()
+            mapper_data_to_2d = msk.compute_grid_data_to_pixel()
 
             assert (mapper_data_to_2d[0] == np.array([0, 1])).all()
             assert (mapper_data_to_2d[1] == np.array([1, 0])).all()
