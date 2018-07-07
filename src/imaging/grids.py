@@ -41,7 +41,7 @@ class CoordsCollection(object):
 
         image = mask.coordinate_grid
         sub = mask.compute_grid_coords_image_sub(grid_size_sub)
-        blurring = mask.blurring_mask_for_kernel_shape(blurring_shape)
+        blurring = mask.blurring_coordinate_grid(blurring_shape)
 
         return CoordsCollection(image, sub, blurring)
 
@@ -117,6 +117,17 @@ class AbstractCoordinateGrid(np.ndarray):
         """
         return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
                                                                  output_shape=self.shape), galaxies))
+
+    def intensities_via_grid(self, galaxies):
+        """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
+
+        Parameters
+        -----------
+        galaxies : [galaxy.Galaxy]
+            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
+        """
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                 output_shape=self.shape[0]), galaxies))
 
     def new_from_array(self, array):
         return self.__class__(array)
