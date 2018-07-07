@@ -1,5 +1,4 @@
 import numpy as np
-from src import exc
 from src.profiles import geometry_profiles
 
 
@@ -40,9 +39,9 @@ class CoordsCollection(object):
            The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
         """
 
-        image = GridCoordsImage.from_mask(mask)
-        sub = GridCoordsImageSub.from_mask(mask, grid_size_sub)
-        blurring = GridCoordsBlurring.from_mask(mask, blurring_shape)
+        image = mask.coordinate_grid
+        sub = mask.compute_grid_coords_image_sub(grid_size_sub)
+        blurring = mask.blurring_mask_for_kernel_shape(blurring_shape)
 
         return CoordsCollection(image, sub, blurring)
 
@@ -50,22 +49,22 @@ class CoordsCollection(object):
         """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies)
         and set these up as a new collection of grids."""
 
-        image = self.image.setup_deflections_grid(galaxies)
-        sub = self.sub.setup_deflections_grid(galaxies)
-        blurring = self.blurring.setup_deflections_grid(galaxies)
+        image = self.image.deflection_grid_for_galaxies(galaxies)
+        sub = self.sub.deflection_grid_for_galaxies(galaxies)
+        blurring = self.blurring.deflection_grid_for_galaxies(galaxies)
 
         return CoordsCollection(image, sub, blurring)
 
     def traced_grids_for_deflections(self, deflections):
         """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
-        image = self.image.setup_traced_grid(deflections.image)
-        sub = self.sub.setup_traced_grid(deflections.sub)
-        blurring = self.blurring.setup_traced_grid(deflections.blurring)
+        image = self.image.ray_tracing_grid_for_deflections(deflections.image)
+        sub = self.sub.ray_tracing_grid_for_deflections(deflections.sub)
+        blurring = self.blurring.ray_tracing_grid_for_deflections(deflections.blurring)
 
         return CoordsCollection(image, sub, blurring)
 
 
-class GridCoords(np.ndarray):
+class AbstractCoordinateGrid(np.ndarray):
 
     def __new__(cls, grid_coords):
         """Abstract base class for a set of grid coordinates, which store the arc-second coordinates of different \
@@ -85,8 +84,45 @@ class GridCoords(np.ndarray):
         """
         return np.array(grid_coords).view(cls)
 
+    def deflection_grid_for_galaxies(self, galaxies):
+        """ Setup a new image grid of coordinates, corresponding to the deflection angles computed from the mass \
+        profile(s) of a set of galaxies at the image grid's coordinates.
 
-class GridCoordsRegular(GridCoords):
+        galaxies : [galaxy.Galaxy]
+            The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
+        """
+        return self.__class__(self.deflections_on_grid(galaxies))
+
+    def ray_tracing_grid_for_deflections(self, grid_deflections):
+        """ Setup a new image grid of coordinates, by tracing the grid's coordinates using a set of \
+        deflection angles which are also defined on the image-grid.
+
+        Parameters
+        -----------
+        grid_deflections : GridCoordsImage
+            The grid of deflection angles used to perform the ray-tracing.
+        """
+        return self.__class__(np.subtract(self, grid_deflections))
+
+    def deflections_on_grid(self, galaxies):
+        """Compute the intensity for each coordinate on the sub-grid, using the mass-profile(s) of a set of galaxies.
+
+        Deflection angles are not averaged over a sub-pixel. Instead, the individual coordinates at each sub-pixel \
+        are used to trace coordinates to the next plane.
+
+        Parameters
+        -----------
+        galaxies : [galaxy.Galaxy]
+            The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
+        """
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
+                                                                 output_shape=self.shape), galaxies))
+
+    def evaluate_func_on_grid(self, func, output_shape):
+        raise NotImplementedError()
+
+
+class CoordinateGrid(AbstractCoordinateGrid):
     """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
     are represented by the value at the centre of the pixel.
 
@@ -131,28 +167,6 @@ class GridCoordsRegular(GridCoords):
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
 
-    def intensities_via_grid(self, galaxies):
-        """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
-
-        Parameters
-        -----------
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
-        """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                 output_shape=self.shape[0]), galaxies))
-
-    def deflections_on_grid(self, galaxies):
-        """Compute the deflection angle for each coordinate on the grid, using the mass-profile(s) of a set of \
-         galaxies.
-
-        Parameters
-        -----------
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
-        """
-        return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(self), galaxies))
-
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
         mass profile for each coordinate on a regular grid.
@@ -184,7 +198,7 @@ class GridCoordsRegular(GridCoords):
         return grid_values
 
 
-class GridCoordsSub(GridCoords):
+class SubCoordinateGrid(AbstractCoordinateGrid):
 
     def __new__(cls, grid_coords, grid_size_sub):
         """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
@@ -261,7 +275,7 @@ class GridCoordsSub(GridCoords):
         grid_size_sub : int
             The (grid_size_sub x grid_size_sub) size of each sub-grid for each pixel.
         """
-        coords = super(GridCoordsSub, cls).__new__(cls, grid_coords)
+        coords = super(SubCoordinateGrid, cls).__new__(cls, grid_coords)
         coords.grid_size_sub = grid_size_sub
         coords.grid_size_sub_squared = grid_size_sub ** 2.0
         return coords
@@ -288,20 +302,6 @@ class GridCoordsSub(GridCoords):
 
         return intensities
 
-    def deflections_on_grid(self, galaxies):
-        """Compute the intensity for each coordinate on the sub-grid, using the mass-profile(s) of a set of galaxies.
-
-        Deflection angles are not averaged over a sub-pixel. Instead, the individual coordinates at each sub-pixel \
-        are used to trace coordinates to the next plane.
-
-        Parameters
-        -----------
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
-        """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
-                                                                 output_shape=self.shape), galaxies))
-
     def evaluate_func_on_grid(self, func, output_shape):
         """Compute a set of values (e.g. intensities or deflections angles) for a light or mass profile, at the set of \
         coordinates defined by a sub-grid_coords.
@@ -314,136 +314,6 @@ class GridCoordsSub(GridCoords):
                 sub_grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
 
         return sub_grid_values
-
-
-class GridCoordsImage(GridCoordsRegular):
-    """The coordinates of each pixel in an image, stored using a regular grid.
-
-    See *GridCoordsRegular* for more details.
-    """
-
-    @classmethod
-    def from_mask(cls, mask):
-        """ Given an image.Mask, setup the grid of image coordinates using the center of every unmasked pixel.
-
-        Parameters
-        ----------
-        mask : mask.Mask
-            A mask describing which data_to_pixel the coordinates are computed for to setup the image grid.
-        """
-        return GridCoordsImage(mask.compute_grid_coords_image())
-
-    def setup_deflections_grid(self, galaxies):
-        """ Setup a new image grid of coordinates, corresponding to the deflection angles computed from the mass \
-        profile(s) of a set of galaxies at the image grid's coordinates.
-
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
-        """
-        return GridCoordsImage(self.deflections_on_grid(galaxies))
-
-    def setup_traced_grid(self, grid_deflections):
-        """ Setup a new image grid of coordinates, by tracing the grid's coordinates using a set of \
-        deflection angles which are also defined on the image-grid.
-
-        Parameters
-        -----------
-        grid_deflections : GridCoordsImage
-            The grid of deflection angles used to perform the ray-tracing.
-        """
-        return GridCoordsImage(np.subtract(self, grid_deflections))
-
-
-class GridCoordsImageSub(GridCoordsSub):
-    """The sub-coordinates of each pixel in an image, stored using a sub-grid.
-    """
-
-    @classmethod
-    def from_mask(cls, mask, grid_size_sub):
-        """ Given an image.Mask, compute the image sub-grid_coordinates by sub-gridding every unmasked pixel around \
-        its center.
-
-        Parameters
-        mask : mask.Mask
-            A mask describing which data_to_pixel the sub-coordinates are computed for to setup the image sub-grid.
-        grid_size_sub : int
-            The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
-        """
-        return GridCoordsImageSub(mask.compute_grid_coords_image_sub(grid_size_sub), grid_size_sub)
-
-    def setup_deflections_grid(self, galaxies):
-        """ Setup a new image sub-grid of coordinates, corresponding to the deflection angles computed from the mass \
-        profile(s) of a set of galaxies at the image sub-grid's coordinates.
-
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose mass profiles are used to compute the deflection angles at the sub-grid \
-            coordinates.
-        """
-        return GridCoordsImageSub(self.deflections_on_grid(galaxies), self.grid_size_sub)
-
-    def setup_traced_grid(self, grid_deflections):
-        """ Setup a new image sub-grid of coordinates, by tracing the sub-grid's coordinates using a set of \
-        deflection angles which are also defined on the image sub-grid.
-
-        Parameters
-        -----------
-        grid_deflections : GridCoordsImage
-            The grid of deflection angles used to perform the ray-tracing.
-        """
-        return GridCoordsImageSub(np.subtract(self, grid_deflections), self.grid_size_sub)
-
-
-class GridCoordsBlurring(GridCoordsRegular):
-
-    def __new__(cls, grid_coords):
-        """ The coordinates of each blurring pixel in an image, stored using a regular-grid. The blurring grid \
-        contains all data_to_pixel which are outside the mask have a fraction of their light blurred into the mask via \
-        PSF convolution.
-
-        Parameters
-        -----------
-        grid_coords : np.ndarray
-            The coordinates of the blurring regions, on a regular grid.
-        """
-        return super(GridCoordsBlurring, cls).__new__(cls, grid_coords)
-
-    @classmethod
-    def from_mask(cls, mask, psf_size):
-        """ Given an image.Mask, compute the blurring coordinates grid_coords by locating all data_to_pixel which are \
-        within the psf size of the mask.
-
-        Parameters
-        ----------
-        mask : mask.Mask
-            A mask describing which data_to_pixel the image coordinates are computed for, and therefore from which the \
-            blurring regions can be computed.
-        psf_size : (int, int)
-           The size of the psf which defines the blurring region (e.g. the shape of the PSF)
-        """
-        if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
-            raise exc.MaskException("psf_size of exterior region must be odd")
-
-        return GridCoordsBlurring(mask.compute_grid_coords_blurring(psf_size))
-
-    def setup_deflections_grid(self, galaxies):
-        """ Setup a new blurring grid of coordinates, corresponding to the deflection angles computed from the mass \
-        profile(s) of a set of galaxies at the blurring grid's coordinates.
-
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
-        """
-        return GridCoordsBlurring(self.deflections_on_grid(galaxies))
-
-    def setup_traced_grid(self, grid_deflections):
-        """ Setup a new blurring grid of coordinates, by tracing the grid's coordinates using a set of \
-        deflection angles which are also defined on the blurring-grid.
-
-        Parameters
-        -----------
-        grid_deflections : GridCoordsImage
-            The grid of deflection angles used to perform the ray-tracing.
-        """
-        return GridCoordsBlurring(np.subtract(self, grid_deflections))
 
 
 # TODO : We'll probably end up splitting 'GridData' into different data-types .e.g 'GridImage', 'GridNoise',
@@ -746,6 +616,8 @@ class GridBorder(geometry_profiles.Profile):
 
     # TODO : Could speed this up by only looking and relocating image data_to_pixel within a certain radius of the image
     # TODO : centre. This would add a central_pixels lists to the input.
+
+    # TODO : Why is this a profile?
 
     def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
         """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
