@@ -38,7 +38,7 @@ def make_1x1_image():
 
     im.frame = frame_convolution.FrameMaker(mask=im.ma)
     im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                       blurring_region_mask=im.ma.compute_blurring_mask(
+                                                       blurring_region_mask=im.ma.blurring_mask_for_kernel_shape(
                                                            kernel_shape=(3, 3)))
 
     im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
@@ -66,7 +66,7 @@ def make_2x2_image():
 
     im.frame = frame_convolution.FrameMaker(mask=im.ma)
     im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                       blurring_region_mask=im.ma.compute_blurring_mask(
+                                                       blurring_region_mask=im.ma.blurring_mask_for_kernel_shape(
                                                            kernel_shape=(3, 3)))
 
     im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
@@ -250,7 +250,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
@@ -276,7 +276,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
@@ -302,7 +302,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
@@ -327,7 +327,7 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.compute_blurring_mask(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))

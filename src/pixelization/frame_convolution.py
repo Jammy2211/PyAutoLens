@@ -186,7 +186,7 @@ class FrameMaker(object):
 
     def convolver_for_kernel(self, psf):
         return self.convolver_for_kernel_shape(kernel_shape=psf.shape,
-                                               blurring_region_mask=self.mask.compute_blurring_mask(
+                                               blurring_region_mask=self.mask.blurring_mask_for_kernel_shape(
                                                    kernel_shape=psf.shape)).convolver_for_kernel(kernel=psf)
 
 
