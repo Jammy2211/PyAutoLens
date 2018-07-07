@@ -39,11 +39,10 @@ class Pixelization(object):
         self.regularization_coefficients = regularization_coefficients
         self.source_signal_scale = source_signal_scale
 
-    def compute_pixelization_matrices(self, source_coordinates, source_sub_coordinates, sub_to_image,
-                                      image_pixels, sub_grid_size, mapper_cluster=None):
+    def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapper_cluster=None):
         raise exc.PixelizationException('compute_mapping_matrix must be over-riden by a Pixelization.')
 
-    def create_mapping_matrix(self, sub_to_source, sub_to_image, image_pixels, sub_grid_size):
+    def create_mapping_matrix(self, source_sub_grid, sub_to_source):
         """
         Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
         image-pixel and source pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
@@ -59,7 +58,7 @@ class Pixelization(object):
 
         The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
         number of sub-pixel to source-pixel mappings. For example if 3 sub-pixels from image-pixel 4 map to \
-        source-pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/grid_size_sub**2) = 3/16 = 0.1875. \
+        source-pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875. \
         See test_pixelization.py for clearer examples of this.
 
         Parameters
@@ -77,12 +76,12 @@ class Pixelization(object):
         """
 
         sub_pixels = sub_to_source.shape[0]
-        sub_grid_fraction = (1.0 / sub_grid_size ** 2.0)
+        sub_grid_fraction = (1.0 / source_sub_grid.sub_grid_size_squared)
 
-        mapping_matrix = np.zeros((image_pixels, self.pixels))
+        mapping_matrix = np.zeros((source_sub_grid.image_pixels, self.pixels))
 
         for sub_index in range(sub_pixels):
-            mapping_matrix[sub_to_image[sub_index], sub_to_source[sub_index]] += sub_grid_fraction
+            mapping_matrix[source_sub_grid.sub_to_image[sub_index], sub_to_source[sub_index]] += sub_grid_fraction
 
         return mapping_matrix
 
@@ -222,12 +221,12 @@ class RectangularPixelization(Pixelization):
         def arc_second_to_pixel_index_y(self, coordinate):
             return np.floor((coordinate - self.y_min) / self.y_pixel_scale)
 
-    def compute_geometry(self, coordinates, buffer=1e-8):
+    def compute_geometry(self, source_grid, buffer=1e-8):
 
-        y_min = np.min(coordinates[:,0]) - buffer
-        y_max = np.max(coordinates[:,0]) + buffer
-        x_min = np.min(coordinates[:,1]) - buffer
-        x_max = np.max(coordinates[:,1]) + buffer
+        y_min = np.min(source_grid[:, 0]) - buffer
+        y_max = np.max(source_grid[:, 0]) + buffer
+        x_min = np.min(source_grid[:, 1]) - buffer
+        x_max = np.max(source_grid[:, 1]) + buffer
         y_pixel_scale = (y_max - y_min) / self.shape[0]
         x_pixel_scale = (x_max - x_min) / self.shape[1]
 
@@ -304,20 +303,20 @@ class RectangularPixelization(Pixelization):
         
         return source_neighbors
 
-    def compute_pixel_to_source(self, source_coordinates, geometry):
+    def compute_pixel_to_source(self, source_grid, geometry):
         """Compute the mappings between a set of image pixels (or sub-pixels) and source-pixels, using the image's
         traced source-plane coordinates (or sub-coordinates) and the uniform rectangular pixelization's geometry.
 
         Parameters
         ----------
-        source_coordinates : [[float, float]]
+        source_grid : [[float, float]]
             The x and y source coordinates (or sub-coordinaates) which are to be matched with their source-pixels.
         geometry : Geometry
             The rectangular pixel grid's geometry.
         """
-        pixel_to_source = np.zeros(source_coordinates.shape[0], dtype='int')
+        pixel_to_source = np.zeros(source_grid.shape[0], dtype='int')
 
-        for index, source_coordinate in enumerate(source_coordinates):
+        for index, source_coordinate in enumerate(source_grid):
 
             y_pixel = geometry.arc_second_to_pixel_index_y(source_coordinate[0])
             x_pixel = geometry.arc_second_to_pixel_index_x(source_coordinate[1])
@@ -326,8 +325,7 @@ class RectangularPixelization(Pixelization):
 
         return pixel_to_source
 
-    def compute_pixelization_matrices(self, source_coordinates, source_sub_coordinates, sub_to_image,
-                                      image_pixels, sub_grid_size, mapper_cluster=None):
+    def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapper_cluster=None):
         """
         Compute the pixelization matrices of the rectangular pixelization by following these steps:
 
@@ -337,23 +335,24 @@ class RectangularPixelization(Pixelization):
 
         Parameters
         ----------
-        source_coordinates : [[float, float]]
+        source_grid : [[float, float]]
             The x and y source-coordinates.
-        source_sub_coordinates : [[float, float]]
+        source_sub_grid : [[float, float]]
             The x and y sub-coordinates.
         mapper_cluster : auto_lens.imaging.grids.GridMapperCluster
             The mapping between cluster-pixels and image / source pixels.
         """
 
-        geometry = self.compute_geometry(source_sub_coordinates)
+        geometry = self.compute_geometry(source_sub_grid)
         source_neighbors = self.compute_source_neighbors()
-        image_to_source = self.compute_pixel_to_source(source_coordinates, geometry)
-        sub_to_source = self.compute_pixel_to_source(source_sub_coordinates, geometry)
+        image_to_source = self.compute_pixel_to_source(source_grid, geometry)
+        sub_to_source = self.compute_pixel_to_source(source_sub_grid, geometry)
 
-        mapping_matrix =  self.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels, sub_grid_size)
+        mapping_matrix =  self.create_mapping_matrix(source_sub_grid, sub_to_source)
         regularization_matrix = self.create_constant_regularization_matrix(source_neighbors)
 
         return PixelizationMatrices(mapping_matrix, regularization_matrix)
+
 
 class VoronoiPixelization(Pixelization):
 
