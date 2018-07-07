@@ -149,7 +149,7 @@ class Mask(scaled_array.ScaledArray):
         image_pixels = self.pixels_in_mask
         image_pixel_count = 0
 
-        grid = np.zeros(shape=(image_pixels, size ** 2, 2))
+        grid = np.zeros(shape=(image_pixels * size ** 2, 2))
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
@@ -160,10 +160,10 @@ class Mask(scaled_array.ScaledArray):
 
                     for x1 in range(size):
                         for y1 in range(size):
-                            grid[image_pixel_count, sub_pixel_count, 0] = \
+                            grid[image_pixel_count * size ** 2 + sub_pixel_count, 0] = \
                                 self.sub_pixel_to_coordinate(x1, x_arcsec, size)
 
-                            grid[image_pixel_count, sub_pixel_count, 1] = \
+                            grid[image_pixel_count * size ** 2 + sub_pixel_count, 1] = \
                                 self.sub_pixel_to_coordinate(y1, y_arcsec, size)
 
                             sub_pixel_count += 1
