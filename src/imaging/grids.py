@@ -91,7 +91,7 @@ class AbstractCoordinateGrid(np.ndarray):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose mass profiles are used to compute the deflection angles at the grid coordinates.
         """
-        return self.__class__(self.deflections_on_grid(galaxies))
+        return self.new_from_array(self.deflections_on_grid(galaxies))
 
     def ray_tracing_grid_for_deflections(self, grid_deflections):
         """ Setup a new image grid of coordinates, by tracing the grid's coordinates using a set of \
@@ -102,7 +102,7 @@ class AbstractCoordinateGrid(np.ndarray):
         grid_deflections : GridCoordsImage
             The grid of deflection angles used to perform the ray-tracing.
         """
-        return self.__class__(np.subtract(self, grid_deflections))
+        return self.new_from_array(np.subtract(self, grid_deflections))
 
     def deflections_on_grid(self, galaxies):
         """Compute the intensity for each coordinate on the sub-grid, using the mass-profile(s) of a set of galaxies.
@@ -117,6 +117,9 @@ class AbstractCoordinateGrid(np.ndarray):
         """
         return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.deflections_at_coordinates,
                                                                  output_shape=self.shape), galaxies))
+
+    def new_from_array(self, array):
+        return self.__class__(array)
 
     def evaluate_func_on_grid(self, func, output_shape):
         raise NotImplementedError()
@@ -314,6 +317,9 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
                 sub_grid_values[pixel_no, sub_pixel_no] = func(coordinates=sub_coordinate)
 
         return sub_grid_values
+
+    def new_from_array(self, array):
+        return __class__(array, self.grid_size_sub)
 
 
 # TODO : We'll probably end up splitting 'GridData' into different data-types .e.g 'GridImage', 'GridNoise',
