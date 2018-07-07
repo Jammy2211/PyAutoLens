@@ -612,6 +612,46 @@ class TestMask(object):
                 [[-6., -3.], [-6., 0.], [-6., 3.], [-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.],
                  [3., 0.], [3., 3.], [6., -3.], [6., 0.], [6., 3.]])).all()
 
+    class TestComputeGridSubtoImage(object):
+
+        def test__3x3_mask_with_1_pixel__2x2_sub_grid__correct_sub_to_image(self):
+
+            msk = np.array([[True, True, True],
+                            [True, False, True],
+                            [True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            sub_to_image = msk.compute_grid_sub_to_image(grid_size_sub=2)
+
+            assert (sub_to_image == np.array([0, 0, 0, 0])).all()
+
+        def test__3x3_mask_with_row_of_pixels_pixel__2x2_sub_grid__correct_sub_to_image(self):
+
+            msk = np.array([[True, True, True],
+                            [False, False, False],
+                            [True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            sub_to_image = msk.compute_grid_sub_to_image(grid_size_sub=2)
+
+            assert (sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])).all()
+
+        def test__3x3_mask_with_row_of_pixels_pixel__3x3_sub_grid__correct_sub_to_image(self):
+
+            msk = np.array([[True, True, True],
+                            [False, False, False],
+                            [True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            sub_to_image = msk.compute_grid_sub_to_image(grid_size_sub=3)
+
+            assert (sub_to_image == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                              1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                              2, 2, 2, 2, 2, 2, 2, 2, 2])).all()
+
     class TestComputeGridData(object):
 
         def test__setup_3x3_data(self):

@@ -216,6 +216,7 @@ class TestGridCoordsCollection(object):
 
 
 class TestGridCoordsRegular(object):
+
     class TestConstructor:
 
         def test__simple_grid_input__sets_up_grid_correctly_in_attributes(self):
@@ -240,6 +241,7 @@ class TestGridCoordsRegular(object):
     class TestIntensityViaGrid:
 
         def test__no_galaxies__intensities_returned_as_0s(self, galaxy_no_profiles):
+
             regular_grid_coords = np.array([[1.0, 1.0],
                                             [2.0, 2.0],
                                             [3.0, 3.0]])
@@ -330,6 +332,7 @@ class TestGridCoordsRegular(object):
 
 
 class TestGridCoordsSub(object):
+
     class TestConstructor:
 
         def test__simple_grid_input__sets_up_grid_correctly_in_attributes(self):
@@ -353,8 +356,11 @@ class TestGridCoordsSub(object):
     class TestIntensitiesViaGrid:
 
         def test__no_galaxies__intensities_returned_as_0s(self, galaxy_no_profiles):
-            sub_grid_coords = np.array([[[1.0, 1.0], [0.0, 1.0], [0.0, 0.0], [0.0, 0.0]],
-                                        [[1.0, 1.0], [-1.0, 0.0], [0.0, 0.0], [0.0, 0.0]]])
+
+            sub_grid_coords = np.array([[1.0, 1.0], [0.0, 1.0], [0.0, 0.0], [0.0, 0.0],
+                                        [1.0, 1.0], [-1.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+
+            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
             grid_sub = grids.GridCoordsSub(sub_grid_coords, grid_size_sub=2)
 
