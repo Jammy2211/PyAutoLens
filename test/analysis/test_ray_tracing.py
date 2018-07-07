@@ -6,26 +6,26 @@ import pytest
 import numpy as np
 
 
-@pytest.fixture(scope='function')
-def no_galaxies():
+@pytest.fixture(name="no_galaxies", scope='function')
+def make_no_galaxies():
     return [galaxy.Galaxy()]
 
 
-@pytest.fixture(scope='function')
-def galaxy_light_sersic():
+@pytest.fixture(name="galaxy_light_sersic", scope='function')
+def make_galaxy_light_sersic():
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
     return galaxy.Galaxy(light_profile=sersic)
 
 
-@pytest.fixture(scope='function')
-def galaxy_mass_sis():
+@pytest.fixture(name="galaxy_mass_sis", scope='function')
+def make_galaxy_mass_sis():
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile=sis)
 
 
-@pytest.fixture(scope='function')
-def all_grids():
+@pytest.fixture(name="all_grids", scope='function')
+def make_all_grids():
     regular_grid_coords = np.array([[1.0, 1.0]])
     sub_grid_coords = np.array([[[1.0, 1.0]], [[1.0, 0.0]]])
     blurring_grid_coords = np.array([[1.0, 0.0]])
@@ -68,7 +68,8 @@ class TestTraceImageAndSoure(object):
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
             assert ray_trace.source_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
 
-        def test__image_grid__sis_lens__image_coordinates_are_grid_and_source_plane_is_deflected(self, all_grids,
+        def test__image_grid__sis_lens__image_coordinates_are_grid_and_source_plane_is_deflected(self, no_galaxies,
+                                                                                                 all_grids,
                                                                                                  galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
@@ -77,7 +78,8 @@ class TestTraceImageAndSoure(object):
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert ray_trace.source_plane.grids.image == pytest.approx(np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
 
-        def test__image_grid__2_sis_lenses__same_as_above_but_deflections_double(self, all_grids, galaxy_mass_sis):
+        def test__image_grid__2_sis_lenses__same_as_above_but_deflections_double(self, no_galaxies, all_grids,
+                                                                                 galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis, galaxy_mass_sis],
                                            source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
@@ -86,7 +88,7 @@ class TestTraceImageAndSoure(object):
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([1.414, 1.414]), 1e-3)
             assert ray_trace.source_plane.grids.image == pytest.approx(np.array([[1.0 - 1.414, 1.0 - 1.414]]), 1e-3)
 
-        def test__all_grids__sis_lens__planes_setup_correctly(self, all_grids, galaxy_mass_sis):
+        def test__all_grids__sis_lens__planes_setup_correctly(self, no_galaxies, all_grids, galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
 
@@ -235,7 +237,7 @@ class TestPlane(object):
             assert (image[2] == profile_intensity_2 == galaxy_intensity[2]).all()
             assert (image[3] == profile_intensity_3 == galaxy_intensity[3]).all()
 
-        def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, galaxy_light_sersic):
+        def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, all_grids, galaxy_light_sersic):
             all_grids.image = grids.CoordinateGrid([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]])
 
             sersic = galaxy_light_sersic.light_profiles[0]
@@ -292,7 +294,7 @@ class TestPlane(object):
             assert (blurring_image[2] == profile_intensity_2 == blurring_galaxy_intensity[2]).all()
             assert (blurring_image[3] == profile_intensity_3 == blurring_galaxy_intensity[3]).all()
 
-        def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, galaxy_light_sersic):
+        def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, all_grids, galaxy_light_sersic):
             all_grids.image = grids.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
             all_grids.blurring = grids.CoordinateGrid(np.array([[1.0, 1.0], [5.0, 5.0], [-2.0, -9.0], [5.0, 7.0]]))
 
