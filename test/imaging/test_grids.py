@@ -45,11 +45,11 @@ class TestGridCoordsCollection(object):
                                                          [2.0, 2.0],
                                                          [3.0, 3.0]]))
 
-            sub_grid = grids.GridCoordsImageSub(np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
+            sub_grid = grids.SubCoordinateGrid(np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
                                                           [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]]),
                                                 grid_size_sub=2)
 
-            blurring_grid = grids.GridCoordsBlurring(np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+            blurring_grid = grids.CoordinateGrid(np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
                                                                [1.0, 1.0]]))
 
             grid_collection = grids.CoordsCollection(image_grid, sub_grid, blurring_grid)
@@ -83,7 +83,7 @@ class TestGridCoordsCollection(object):
 
             image_grid = mask.compute_grid_coords_image()
             sub_grid = mask.compute_grid_coords_image_sub(grid_size_sub=2)
-            blurring_grid = mask.compute_grid_coords_blurring(psf_size=(3, 3))
+            blurring_grid = mask.blurring_coordinate_grid(psf_size=(3, 3))
 
             grid_collection = grids.CoordsCollection.from_mask(mask, grid_size_sub=2, blurring_shape=(3, 3))
 
@@ -99,8 +99,8 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
-            blurring_grid = grids.GridCoordsBlurring(blurring_grid)
+            sub_grid = grids.SubCoordinateGrid(sub_grid, grid_size_sub=2)
+            blurring_grid = grids.CoordinateGrid(blurring_grid)
 
             ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
@@ -118,8 +118,8 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
-            blurring_grid = grids.GridCoordsBlurring(blurring_grid)
+            sub_grid = grids.SubCoordinateGrid(sub_grid, grid_size_sub=2)
+            blurring_grid = grids.CoordinateGrid(blurring_grid)
 
             ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
@@ -138,8 +138,8 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
-            blurring_grid = grids.GridCoordsBlurring(blurring_grid)
+            sub_grid = grids.SubCoordinateGrid(sub_grid, grid_size_sub=4)
+            blurring_grid = grids.CoordinateGrid(blurring_grid)
 
             mass_profile = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
@@ -160,8 +160,8 @@ class TestGridCoordsCollection(object):
         #     blurring_grid = np.array([[1.0, 0.0]])
         #
         #     image_grid = grids.GridCoordsImage(image_grid)
-        #     sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=4)
-        #     blurring_grid = grids.GridCoordsBlurring(blurring_grid)
+        #     sub_grid = grids.SubCoordinateGrid(sub_grid, grid_size_sub=4)
+        #     blurring_grid = grids.CoordinateGrid(blurring_grid)
         #
         #     power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
         #                                                  einstein_radius=1.0, slope=2.2)
@@ -200,8 +200,8 @@ class TestGridCoordsCollection(object):
             blurring_grid = np.array([[1.0, 0.0]])
 
             image_grid = grids.GridCoordsImage(image_grid)
-            sub_grid = grids.GridCoordsImageSub(sub_grid, grid_size_sub=2)
-            blurring_grid = grids.GridCoordsBlurring(blurring_grid)
+            sub_grid = grids.SubCoordinateGrid(sub_grid, grid_size_sub=2)
+            blurring_grid = grids.CoordinateGrid(blurring_grid)
 
             ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
@@ -581,16 +581,26 @@ class TestGridCoordsImage(object):
             grid_traced = grid_image.ray_tracing_grid_for_deflections(deflections)
 
             assert grid_traced == pytest.approx(np.array([[1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]]), 1e-3)
+            
+            
+@pytest.fixture(name="grid_image_sub")
+def make_grid_image_sub():
+    mask = np.array([[True, True, True],
+                     [True, False, True],
+                     [True, True, True]])
+
+    mask = msk.Mask(array=mask, pixel_scale=3.0)
+    return mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
 
-class TestGridCoordsImageSub(object):
+class TestSubCoordinateGrid(object):
     class TestConstructor:
 
         def test__simple_grid_input__sets_up_grid_in_attributes(self):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]],
                                         [[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(grid_coords=sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(grid_coords=sub_grid_coords, grid_size_sub=2)
 
             assert (grid_image_sub[0, 0] == np.array([1.0, 1.0])).all()
             assert (grid_image_sub[0, 1] == np.array([1.0, 1.0])).all()
@@ -612,9 +622,9 @@ class TestGridCoordsImageSub(object):
 
             sub_grid_coords = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
-            grid_from_mask = grids.GridCoordsImageSub.from_mask(mask, grid_size_sub=2)
+            grid_from_mask = mask.compute_grid_coords_image_sub(grid_size_sub=2)
 
             assert (grid_image_sub == grid_from_mask).all()
 
@@ -624,7 +634,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.deflection_grid_for_galaxies(galaxies=[galaxy_mass_sis])
 
@@ -639,7 +649,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.deflection_grid_for_galaxies(
                 galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
@@ -655,7 +665,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.deflection_grid_for_galaxies(galaxies=[lens_sis_x3])
 
@@ -672,7 +682,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.deflection_grid_for_galaxies(galaxies=[galaxy_mass_sis])
 
@@ -689,7 +699,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.deflection_grid_for_galaxies(
                 galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
@@ -707,7 +717,7 @@ class TestGridCoordsImageSub(object):
             sub_grid_coords = np.array([[[1.0, 1.0], [1.0, 1.0]],
                                         [[-1.0, -1.0], [-1.0, -1.0]]])
 
-            grid_image_sub = grids.GridCoordsImageSub(sub_grid_coords, grid_size_sub=2)
+            grid_image_sub = grids.SubCoordinateGrid(sub_grid_coords, grid_size_sub=2)
 
             deflections = grid_image_sub.deflection_grid_for_galaxies(galaxies=[lens_sis_x3])
 
@@ -721,42 +731,25 @@ class TestGridCoordsImageSub(object):
             assert deflections.grid_size_sub == 2
 
 
-class TestGridCoordsBlurring(object):
+class TestCoordinateGrid(object):
     class TestConstructor:
 
         def test__simple_grid_input__sets_up_grid_in_attributes(self):
             regular_grid_coords = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(grid_coords=regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(grid_coords=regular_grid_coords)
 
             assert (grid_blurring[0] == np.array([1.0, 1.0])).all()
             assert (grid_blurring[0] == np.array([1.0, 1.0])).all()
             assert (grid_blurring[0] == np.array([1.0, 1.0])).all()
             assert (grid_blurring[0] == np.array([1.0, 1.0])).all()
-
-    class TestFromMask:
-
-        def test__simple_constructor__compare_to_manual_setup_via_mask(self):
-            mask = np.array([[True, True, True],
-                             [True, False, True],
-                             [True, True, True]])
-
-            mask = msk.Mask(array=mask, pixel_scale=3.0)
-
-            regular_grid_coords = mask.compute_grid_coords_blurring(psf_size=(3, 3))
-
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
-
-            grid_from_mask = grids.GridCoordsBlurring.from_mask(mask, psf_size=(3, 3))
-
-            assert (grid_blurring == grid_from_mask).all()
 
     class TestSetupDeflectionsGrid:
 
         def test__simple_sis_model__deflection_angles(self, galaxy_mass_sis):
             regular_grid_coords = np.array([[1.0, 1.0], [-1.0, -1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(regular_grid_coords)
 
             grid_deflections = grid_blurring.deflection_grid_for_galaxies(galaxies=[galaxy_mass_sis])
 
@@ -766,7 +759,7 @@ class TestGridCoordsBlurring(object):
         def test_three_identical_lenses__deflection_angles_triple(self, galaxy_mass_sis):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(regular_grid_coords)
 
             grid_deflections = grid_blurring.deflection_grid_for_galaxies(
                 galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
@@ -776,7 +769,7 @@ class TestGridCoordsBlurring(object):
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(regular_grid_coords)
 
             grid_deflections = grid_blurring.deflection_grid_for_galaxies(galaxies=[lens_sis_x3])
 
@@ -788,7 +781,7 @@ class TestGridCoordsBlurring(object):
             regular_grid_coords = np.array([[1.0, 1.0],
                                             [-1.0, -1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(regular_grid_coords)
 
             deflections = grid_blurring.deflection_grid_for_galaxies(galaxies=[galaxy_mass_sis])
 
@@ -800,7 +793,7 @@ class TestGridCoordsBlurring(object):
         def test_three_identical_lenses__deflection_angles_triple(self, galaxy_mass_sis):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(regular_grid_coords)
 
             deflections = grid_blurring.deflection_grid_for_galaxies(
                 galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis])
@@ -812,7 +805,7 @@ class TestGridCoordsBlurring(object):
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             regular_grid_coords = np.array([[1.0, 1.0]])
 
-            grid_blurring = grids.GridCoordsBlurring(regular_grid_coords)
+            grid_blurring = grids.CoordinateGrid(regular_grid_coords)
 
             deflections = grid_blurring.deflection_grid_for_galaxies(galaxies=[lens_sis_x3])
 
