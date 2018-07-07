@@ -117,20 +117,20 @@ class Mask(scaled_array.ScaledArray):
 
         pixels = self.pixels_in_mask
 
-        grid = np.zeros(shape=(pixels, 2))
+        coords_image = np.zeros(shape=(pixels, 2))
         pixel_count = 0
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
-                    grid[pixel_count, :] = coordinates[x, y]
+                    coords_image[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
         # print("assert (image_grid == np.array({})).all()".format(
         #     str(grid).replace("0. ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
         #                                                                                                        ''))
 
-        return grid
+        return coords_image
 
     def compute_grid_coords_image_sub(self, grid_size_sub):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -141,7 +141,7 @@ class Mask(scaled_array.ScaledArray):
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
 
-        grid = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2, 2))
+        coords_image_sub = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2, 2))
         sub_pixel_count = 0
 
         for x in range(self.shape[0]):
@@ -153,8 +153,8 @@ class Mask(scaled_array.ScaledArray):
                     for x1 in range(grid_size_sub):
                         for y1 in range(grid_size_sub):
 
-                            grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
-                            grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
+                            coords_image_sub[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
+                            coords_image_sub[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
 
                             sub_pixel_count += 1
 
@@ -162,7 +162,7 @@ class Mask(scaled_array.ScaledArray):
         #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
         #                                                                                                         ''))
 
-        return grid
+        return coords_image_sub
 
     def compute_grid_coords_blurring(self, psf_size):
         """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -194,7 +194,7 @@ class Mask(scaled_array.ScaledArray):
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
 
-        grid = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2))
+        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2))
         image_pixel_count = 0
         sub_pixel_count = 0
 
@@ -204,7 +204,7 @@ class Mask(scaled_array.ScaledArray):
                     for x1 in range(grid_size_sub):
                         for y1 in range(grid_size_sub):
 
-                            grid[sub_pixel_count] = image_pixel_count
+                            sub_to_image[sub_pixel_count] = image_pixel_count
                             sub_pixel_count += 1
 
                     image_pixel_count += 1
@@ -213,7 +213,7 @@ class Mask(scaled_array.ScaledArray):
         #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
         #                                                                                                         ''))
 
-        return grid
+        return sub_to_image
 
     def compute_grid_data(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
@@ -225,16 +225,16 @@ class Mask(scaled_array.ScaledArray):
         """
         pixels = self.pixels_in_mask
 
-        grid = np.zeros(shape=pixels)
+        data = np.zeros(shape=pixels)
         pixel_count = 0
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
-                    grid[pixel_count] = grid_data[x, y]
+                    data[pixel_count] = grid_data[x, y]
                     pixel_count += 1
 
-        return grid
+        return data
 
     def compute_grid_mapper_data_to_pixel(self):
         """
@@ -242,16 +242,16 @@ class Mask(scaled_array.ScaledArray):
         """
         pixels = self.pixels_in_mask
 
-        grid = np.zeros(shape=(pixels, 2), dtype='int')
+        data_to_pixel = np.zeros(shape=(pixels, 2), dtype='int')
         pixel_count = 0
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
-                    grid[pixel_count, :] = x, y
+                    data_to_pixel[pixel_count, :] = x, y
                     pixel_count += 1
 
-        return grid
+        return data_to_pixel
 
     def compute_grid_mapper_sparse(self, sparse_grid_size):
         """Given an image.Mask, compute the sparse cluster image data_to_pixels, defined as the sub-set of
