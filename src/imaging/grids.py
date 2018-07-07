@@ -40,7 +40,7 @@ class CoordsCollection(object):
         """
 
         image = mask.coordinate_grid
-        sub = mask.compute_grid_coords_image_sub(grid_size_sub)
+        sub = mask.sub_coordinate_grid_with_size(grid_size_sub)
         blurring = mask.blurring_coordinate_grid(blurring_shape)
 
         return CoordsCollection(image, sub, blurring)
