@@ -12,19 +12,19 @@ import os
 test_data_dir = "{}/../../data/test_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
-@pytest.fixture(scope='function')
-def galaxy_no_profiles():
+@pytest.fixture(name='galaxy_no_profiles', scope='function')
+def make_galaxy_no_profiles():
     return galaxy.Galaxy()
 
 
-@pytest.fixture(scope='function')
-def galaxy_mass_sis():
+@pytest.fixture(name='galaxy_mass_sis', scope='function')
+def make_galaxy_mass_sis():
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile=sis)
 
 
-@pytest.fixture(scope='function')
-def galaxy_light_sersic():
+@pytest.fixture(name='galaxy_light_sersic', scope='function')
+def make_galaxy_light_sersic():
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
     return galaxy.Galaxy(light_profile=sersic)
