@@ -32,9 +32,9 @@ def make_1x1_image():
                       [True, True, True]])
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.image = grids.GridData(grid_data=np.array([1.0]))
-    im.noise = grids.GridData(grid_data=np.array([1.0]))
-    im.exposure_time = grids.GridData(grid_data=np.array([1.0]))
+    im.image = grids.GridData(grid_data=np.array([1.0]), data_to_image=np.array([[1,1]]), image_shape=(3,3))
+    im.noise = grids.GridData(grid_data=np.array([1.0]), data_to_image=np.array([[1,1]]), image_shape=(3,3))
+    im.exposure_time = grids.GridData(grid_data=np.array([1.0]), data_to_image=np.array([[1,1]]), image_shape=(3,3))
 
     im.frame = frame_convolution.FrameMaker(mask=im.ma)
     im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
@@ -58,11 +58,15 @@ def make_2x2_image():
                       [True, False, False, True],
                       [True, False, False, True],
                       [True, True, True, True]])
+
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.image = grids.GridData(grid_data=np.array([1.0]))
-    im.noise = grids.GridData(grid_data=np.array([1.0]))
-    im.exposure_time = grids.GridData(grid_data=np.array([1.0]))
+    im.image = grids.GridData(grid_data=np.array([1.0]), data_to_image=np.array([[1,1], [1,2], [2,1], [2,2]]),
+                              image_shape=(4,4))
+    im.noise = grids.GridData(grid_data=np.array([1.0]), data_to_image=np.array([[1,1], [1,2], [2,1], [2,2]]),
+                              image_shape=(4,4))
+    im.exposure_time = grids.GridData(grid_data=np.array([1.0]), data_to_image=np.array([[1,1], [1,2], [2,1], [2,2]]),
+                              image_shape=(4,4))
 
     im.frame = frame_convolution.FrameMaker(mask=im.ma)
     im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
@@ -236,6 +240,7 @@ class TestFitDataWithProfilesHyperGalaxy:
 class TestComputeBlurredImages:
 
     def test__psf_just_central_1_so_no_blurring__no_blurring_region__image_in_is_image_out(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -256,13 +261,15 @@ class TestComputeBlurredImages:
                                                                            [0., 0., 0.]]))
 
         image = grids.GridData.from_mask(data=image_2d, mask=ma)
-        blurring_image = grids.GridData(grid_data=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+
+        blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__psf_all_1s_so_blurring_gives_4s__no_blurring_region__image_in_is_image_out(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -282,7 +289,7 @@ class TestComputeBlurredImages:
                                                                            [1.0, 1.0, 1.0]]))
 
         image = grids.GridData.from_mask(data=image_2d, mask=ma)
-        blurring_image = grids.GridData(grid_data=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+        blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
 
@@ -462,9 +469,10 @@ class TestGenerateScaledNoise:
 class TestLikelihood:
 
     def test__model_matches_data__noise_all_2s__lh_is_noise_term(self):
-        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
-        noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
-        model_image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+
+        image = np.array([10.0, 10.0, 10.0, 10.0])
+        noise = np.array([2.0, 2.0, 2.0, 2.0])
+        model_image = np.array([10.0, 10.0, 10.0, 10.0])
 
         likelihood = fitting.compute_likelihood(image, noise, model_image)
 
@@ -475,9 +483,10 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
     def test__model_data_mismatch__chi_sq_term_contributes_to_lh(self):
-        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
-        noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
-        model_image = grids.GridData(grid_data=np.array([11.0, 10.0, 9.0, 8.0]))
+
+        image = np.array([10.0, 10.0, 10.0, 10.0])
+        noise = np.array([2.0, 2.0, 2.0, 2.0])
+        model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
         likelihood = fitting.compute_likelihood(image, noise, model_image)
 
@@ -491,9 +500,10 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
-        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
-        noise = grids.GridData(grid_data=np.array([1.0, 2.0, 3.0, 4.0]))
-        model_image = grids.GridData(grid_data=np.array([11.0, 10.0, 9.0, 8.0]))
+
+        image = np.array([10.0, 10.0, 10.0, 10.0])
+        noise = np.array([1.0, 2.0, 3.0, 4.0])
+        model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
         likelihood = fitting.compute_likelihood(image, noise, model_image)
 
@@ -509,6 +519,7 @@ class TestLikelihood:
 class TestComputeRegularizationTerm:
 
     def test__s_vector_all_1s__regularization_matrix_simple(self):
+
         s_vector = np.array([1.0, 1.0, 1.0])
 
         regularization_matrix = np.array([[1.0, 0.0, 0.0],
@@ -629,9 +640,10 @@ class TestPixModelImageFromSVector:
 class TestBayesianEvidence:
 
     def test__simple_values(self):
-        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
-        noise = grids.GridData(grid_data=np.array([2.0, 2.0, 2.0, 2.0]))
-        model_image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
+
+        image = np.array([10.0, 10.0, 10.0, 10.0])
+        noise = np.array([2.0, 2.0, 2.0, 2.0])
+        model_image = np.array([10.0, 10.0, 10.0, 10.0])
 
         s_vector = np.array([1.0, 1.0, 1.0])
 
@@ -656,9 +668,10 @@ class TestBayesianEvidence:
                                          1e-4)
 
     def test__complicated_values(self):
-        image = grids.GridData(grid_data=np.array([10.0, 10.0, 10.0, 10.0]))
-        noise = grids.GridData(grid_data=np.array([1.0, 2.0, 3.0, 4.0]))
-        model_image = grids.GridData(grid_data=np.array([11.0, 10.0, 9.0, 8.0]))
+
+        image = np.array([10.0, 10.0, 10.0, 10.0])
+        noise = np.array([1.0, 2.0, 3.0, 4.0])
+        model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
         s_vector = np.array([2.0, 3.0, 5.0])
 
@@ -683,9 +696,10 @@ class TestBayesianEvidence:
                                          1e-4)
 
     def test__use_fitting_functions_to_compute_terms(self):
-        image = grids.GridData(grid_data=np.array([10.0, 100.0, 0.0, 10.0]))
-        noise = grids.GridData(grid_data=np.array([1.0, 2.0, 77.0, 4.0]))
-        model_image = grids.GridData(grid_data=np.array([11.0, 13.0, 9.0, 8.0]))
+
+        image = np.array([10.0, 100.0, 0.0, 10.0])
+        noise = np.array([1.0, 2.0, 77.0, 4.0])
+        model_image = np.array([11.0, 13.0, 9.0, 8.0])
 
         s_vector = np.array([8.0, 7.0, 3.0])
 

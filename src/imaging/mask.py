@@ -23,7 +23,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         shape_arc_seconds: (float, float)
-            The (x,y) dimensions_2d
+            The (x,y) image_shape
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         radius_mask : float
@@ -55,7 +55,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         shape_arc_seconds : (float, float)
-            The (x,y) dimensions_2d of the mask
+            The (x,y) image_shape of the mask
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         inner_radius_mask : float
@@ -89,7 +89,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         shape_arc_seconds : (float, float)
-            The (x,y) dimensions_2d of the mask
+            The (x,y) image_shape of the mask
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -231,7 +231,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grid
 
-    def compute_grid_mapper_data_to_pixel(self):
+    def compute_grid_data_to_pixel(self):
         """
         Compute the mapping of every pixel in the mask to its 2D pixel coordinates.
         """
