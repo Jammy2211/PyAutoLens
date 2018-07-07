@@ -115,7 +115,7 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
-    return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
+    return kernel_convolver.convolve_array(image, blurring_image)
 
 
 def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=None):

@@ -40,7 +40,7 @@ class Analysis(object):
                                                                   blurring_shape=image.psf.shape)
         self.mapper_collection = grids.MapperCollection.from_mask(mask, cluster_grid_size)
 
-        self.mapper_cluster = grids.MapperCluster.from_mask(mask, cluster_grid_size)
+        self.mapper_cluster = grids.GridClusterPixelization.from_mask(mask, cluster_grid_size)
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
