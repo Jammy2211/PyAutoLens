@@ -1,4 +1,5 @@
 from src.imaging import scaled_array
+from src.imaging import grids
 from src import exc
 import numpy as np
 
@@ -109,7 +110,8 @@ class Mask(scaled_array.ScaledArray):
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
 
-    def compute_grid_coords_image(self):
+    @property
+    def coordinate_grid(self):
         """
         Compute the image grid_coords grids from a mask, using the center of every unmasked pixel.
         """
@@ -126,11 +128,7 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
-        # print("assert (image_grid == np.array({})).all()".format(
-        #     str(grid).replace("0. ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
-        #                                                                                                        ''))
-
-        return grid
+        return grids.CoordinateGrid(grid)
 
     def compute_grid_coords_image_sub(self, grid_size_sub):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -165,11 +163,7 @@ class Mask(scaled_array.ScaledArray):
 
                     image_pixel_count += 1
 
-        # print("assert (image_sub_grid == np.array({})).all()".format(
-        #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
-        #                                                                                                         ''))
-
-        return grid
+        return grids.SubCoordinateGrid(grid, grid_size_sub)
 
     def compute_grid_coords_blurring(self, psf_size):
         """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -184,13 +178,12 @@ class Mask(scaled_array.ScaledArray):
            The size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
-        blurring_mask = self.compute_blurring_mask(psf_size)
-        blurring_grid = blurring_mask.compute_grid_coords_image()
+        if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
+            raise exc.MaskException("psf_size of exterior region must be odd")
 
-        # print("assert (blurring_grid == np.array({})).all()".format(
-        #     str(blurring_grid).replace("  ", ",").replace(" -", ",-").replace("\n", ",")))
+        blurring_mask = self.blurring_mask_for_kernel_shape(psf_size)
 
-        return blurring_grid
+        return blurring_mask.coordinate_grid
 
     def compute_grid_data(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
@@ -288,7 +281,7 @@ class Mask(scaled_array.ScaledArray):
 
         return border_pixels
 
-    def compute_blurring_mask(self, kernel_shape):
+    def blurring_mask_for_kernel_shape(self, kernel_shape):
         """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
         fraction of their light will be blurring in the image.
 

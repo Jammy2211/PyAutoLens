@@ -171,7 +171,7 @@ class TestConvolution(object):
         frame = frame_convolution.FrameMaker(mask=msk)
         kernel_convolver_shortcut = frame.convolver_for_kernel(psf)
         kernel_convolver = frame.convolver_for_kernel_shape(kernel_shape=psf.shape,
-                                                            blurring_region_mask=msk.compute_blurring_mask(
+                                                            blurring_region_mask=msk.blurring_mask_for_kernel_shape(
                                                                 kernel_shape=psf.shape)).convolver_for_kernel(
             kernel=psf)
 

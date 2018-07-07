@@ -360,6 +360,7 @@ class TestLensPlane(object):
             assert lens_plane.deflections.sub[1, 0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
+        # TODO: Removed to avoid testing quad galaxies. Reintroduce
         # def test__all_grids__complex_mass_model__deflections_in_grid_are_sum_of_individual_profiles(self, all_grids):
         #     power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
         #                                                  einstein_radius=1.0, slope=2.2)
