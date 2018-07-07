@@ -118,7 +118,7 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
 
 
-def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster, image=None):
+def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=None):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
     Parameters
@@ -138,15 +138,15 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
 
     # TODO : If pixelization is in galaxy or tracer, we can compute the mapping matrix from it.
 
-    mapping_matrix, regularization_matrix = pix.compute_mapping_and_regularization_matrix(
+    pixelization_matrices = pix.compute_pixelization_matrices(
         source_coordinates=tracer.source_plane.grids.image, source_sub_coordinates=tracer.source_plane.grids.sub,
-        mapper_cluster=mapper_cluster)
+        sub_to_image=sub_to_image, image_pixels=image_pixels, sub_grid_size=sub_grid_size, mapper_cluster=mapper_cluster)
 
     # TODO : Build matrix convolution into frame_convolution?
     # Go over every column of mapping matrix, perform blurring
-    blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
-    for i in range(mapping_matrix.shape[1]):
-        blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(mapping_matrix[:, i])
+    blurred_mapping_matrix = np.zeros(pixelization_matrices.mapping.shape)
+    for i in range(pixelization_matrices.shape[1]):
+        blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(pixelization_matrices.mapping[:, i])
 
     # TODO : Use fast routines once ready.
 
