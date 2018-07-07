@@ -139,29 +139,26 @@ class Mask(scaled_array.ScaledArray):
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
 
-        image_pixels = self.pixels_in_mask
-        image_pixel_count = 0
+        sub_pixel_count = 0
 
-        grid = np.zeros(shape=(image_pixels, grid_size_sub ** 2, 2))
+        grid = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2, 2))
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
                     x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
 
-                    sub_pixel_count = 0
-
                     for x1 in range(grid_size_sub):
                         for y1 in range(grid_size_sub):
 
-                            grid[image_pixel_count, sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
-                            grid[image_pixel_count, sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
+                            grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, grid_size_sub)
+                            grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, grid_size_sub)
 
                             sub_pixel_count += 1
 
-                    image_pixel_count += 1
+        sub_to_image = self.compute_grid_sub_to_image(grid_size_sub)
 
-        return grids.SubCoordinateGrid(grid, grid_size_sub)
+        return grids.SubCoordinateGrid(grid, grid_size_sub, sub_to_image, self.pixels_in_mask)
 
     def blurring_coordinate_grid(self, psf_size):
         """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
