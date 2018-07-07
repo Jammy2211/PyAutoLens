@@ -165,7 +165,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.SubCoordinateGrid(grid, grid_size_sub)
 
-    def compute_grid_coords_blurring(self, psf_size):
+    def blurring_coordinate_grid(self, psf_size):
         """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
 
         The blurring grid_coords contains all data_to_pixels which are not in the mask, but close enough to it that a
