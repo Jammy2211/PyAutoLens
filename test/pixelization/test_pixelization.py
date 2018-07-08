@@ -1626,6 +1626,7 @@ class TestClusterPixelization:
             assert (pix_matrices.image_to_source == np.array([0, 1, 2, 3, 4])).all()
             assert (pix_matrices.sub_to_source == np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])).all()
 
+
 class TestAmorphousPixelization:
 
     class TestKMeans:

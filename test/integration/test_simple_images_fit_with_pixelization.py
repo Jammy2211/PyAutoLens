@@ -17,9 +17,9 @@ import pytest
 @pytest.fixture(name='sim_grid_9x9', scope='function')
 def sim_grid_9x9():
     sim_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(5.5, 5.5), pixel_scale=0.5, psf_size=(3, 3))
-    sim_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=sim_grid_9x9.ma, grid_size_sub=1,
+    sim_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=sim_grid_9x9.ma, sub_grid_size=1, 
                                                                blurring_shape=(3, 3))
-    sim_grid_9x9.mappers = grids.MapperCollection.from_mask(mask=sim_grid_9x9.ma)
+    sim_grid_9x9.mapping = grids.GridMapping.from_mask(mask=sim_grid_9x9.ma, sub_grid_size=1, cluster_grid_size=1)
     return sim_grid_9x9
 
 
@@ -27,9 +27,9 @@ def sim_grid_9x9():
 def fit_grid_9x9():
     fit_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(4.5, 4.5), pixel_scale=0.5, psf_size=(5, 5))
     fit_grid_9x9.ma = mask.Mask(array=fit_grid_9x9.ma, pixel_scale=1.0)
-    fit_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=fit_grid_9x9.ma, grid_size_sub=2,
+    fit_grid_9x9.image_grid = grids.CoordsCollection.from_mask(mask=fit_grid_9x9.ma, sub_grid_size=2,
                                                                blurring_shape=(3, 3))
-    fit_grid_9x9.mappers = grids.MapperCollection.from_mask(mask=fit_grid_9x9.ma)
+    sim_grid_9x9.mapping = grids.GridMapping.from_mask(mask=sim_grid_9x9.ma, sub_grid_size=1, cluster_grid_size=1)
     return fit_grid_9x9
 
 
@@ -60,14 +60,17 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            image_grid = grids.CoordsCollection.from_mask(mask=ma, sub_grid_size=1, blurring_shape=(3, 3))
+            all_grids = grids.CoordsCollection.from_mask(mask=ma, sub_grid_size=1, blurring_shape=(3, 3))
             grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
                                                         exposure_time=np.ones(im.shape))
-            mapper_cluster = grids.GridClusterPixelization.from_mask(mask=ma, cluster_grid_size=1)
-
-            ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
+            mapping = grids.GridMapping.from_mask(mask=ma, sub_grid_size=1, cluster_grid_size=1)
 
             pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
+
+            galaxy_pix = galaxy.Galaxy(pixelization=pix)
+
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix],
+                                           image_plane_grids=all_grids)
 
             frame = frame_convolution.FrameMaker(mask=ma)
             convolver = frame.convolver_for_kernel_shape(kernel_shape=(3,3))
@@ -108,8 +111,8 @@ class TestCase:
 
             evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(grid_data=grid_datas, pix=pix, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapper_cluster=mapper_cluster) == \
+            assert fitting.fit_data_with_pixelization(grid_data=grid_datas, kernel_convolver=kernel_convolver,
+                                                      tracer=ray_trace, mapping=mapping) == \
                    pytest.approx(evidence_expected,1e-4)
 
     class TestClusterPixelization:
@@ -127,11 +130,11 @@ class TestCase:
             image_grid = grids.CoordsCollection.from_mask(mask=ma, grid_size_sub=1, blurring_shape=(3, 3))
             grid_datas = grids.DataCollection.from_mask(mask=ma, image=im, noise=np.ones(im.shape),
                                                         exposure_time=np.ones(im.shape))
-            mapper_cluster = grids.MapperCluster.from_mask(mask=ma, cluster_grid_size=1)
+            mapping = grids.MapperCluster.from_mask(mask=ma, cluster_grid_size=1)
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=image_grid)
 
-            pix = pixelization.ClusterPixelization(pixels=len(mapper_cluster.cluster_to_image),
+            pix = pixelization.ClusterPixelization(pixels=len(mapping.cluster_to_image),
                                                    regularization_coefficients=(1.0,))
 
             frame = frame_convolution.FrameMaker(mask=ma)
@@ -175,5 +178,5 @@ class TestCase:
             evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
             assert fitting.fit_data_with_pixelization(grid_data=grid_datas, pix=pix, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapper_cluster=mapper_cluster) == \
+                                                      tracer=ray_trace, mapping=mapping) == \
                    pytest.approx(evidence_expected,1e-4)
