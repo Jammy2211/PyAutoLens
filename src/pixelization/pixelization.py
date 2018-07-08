@@ -325,7 +325,7 @@ class RectangularPixelization(Pixelization):
 
         return pixel_to_source
 
-    def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapper_cluster=None):
+    def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapping):
         """
         Compute the pixelization matrices of the rectangular pixelization by following these steps:
 
