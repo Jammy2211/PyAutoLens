@@ -286,12 +286,7 @@ class Mask(scaled_array.ScaledArray):
 
         Returns
         -------
-        cluster_to_image : ndarray
-            The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
-            of the image pixel in the mask.
-        image_to_cluster : ndarray
-            The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D
-            index of the sparse pixel in sparse_pixel arrays.
+        GridClusterPixelization
         """
 
         sparse_mask = self.compute_sparse_uniform_mask(sparse_grid_size)
