@@ -1,5 +1,3 @@
-from src.imaging import scaled_array
-from src.imaging import image
 from src.imaging import mask
 from src.imaging import grids
 from src.profiles import light_profiles as lp
