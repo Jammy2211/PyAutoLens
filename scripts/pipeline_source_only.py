@@ -8,9 +8,9 @@ from src.imaging import scaled_array
 from src.analysis import pipeline
 import os
 
-# Load up the data
+# Load up the weighted_data
 lens_name = 'source_sersic'
-data_dir = "../data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
+data_dir = "../weighted_data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
 
 data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
