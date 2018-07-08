@@ -413,7 +413,7 @@ class HyperGalaxy(object):
         Parameters
         -----------
         model_image : ndarray
-            The model image of the observed data (from a previous analysis phase). This tells us the total light \
+            The model image of the observed weighted_data (from a previous analysis phase). This tells us the total light \
             attributed to each image pixel by the model.
         galaxy_image : ndarray
             A model image of the galaxy (e.g the lens light profile or source reconstruction) computed from a

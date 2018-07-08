@@ -106,7 +106,7 @@ class TestCase:
             chi_sq_term = 0.0
             gl_term = 0.0008
             det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
-            det_reg_term = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
+            det_reg_term = np.log(np.linalg.det(reg_matrix))
             noise_term = 9.0*np.log(2 * np.pi * 1.0 ** 2.0)
 
             evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
@@ -176,7 +176,7 @@ class TestCase:
             chi_sq_term = 0.0
             gl_term = 0.0008
             det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
-            det_reg_term = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
+            det_reg_term = np.log(np.linalg.det(reg_matrix))
             noise_term = 9.0*np.log(2 * np.pi * 1.0 ** 2.0)
 
             evidence_expected = -0.5*(chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)

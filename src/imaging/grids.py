@@ -313,16 +313,16 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
 class DataCollection(object):
 
     def __init__(self, image, noise, exposure_time):
-        """A collection of grids which contain the data (image, noise, exposure times, psf).
+        """A collection of grids which contain the weighted_data (image, noise, exposure times, psf).
 
         Parameters
         -----------
         image : GridData
-            A data-grid of the observed image fluxes (electrons per second)
+            A weighted_data-grid of the observed image fluxes (electrons per second)
         noise : GridData
-            A data-grid of the observed image noise estimates (standard deviations, electrons per second)
+            A weighted_data-grid of the observed image noise estimates (standard deviations, electrons per second)
         exposure_time : GridData
-            A data-grid of the exposure time in each pixel (seconds)
+            A weighted_data-grid of the exposure time in each pixel (seconds)
         """
         self.image = image
         self.noise = noise
@@ -330,7 +330,7 @@ class DataCollection(object):
 
     @classmethod
     def from_mask(cls, mask, image, noise, exposure_time):
-        """Setup the collection of data grids using a mask.
+        """Setup the collection of weighted_data grids using a mask.
 
         Parameters
         -----------
@@ -338,11 +338,11 @@ class DataCollection(object):
             A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
             grids.
         image : imaging.Image
-            A data-grid of the observed image fluxes (electrons per second)
+            A weighted_data-grid of the observed image fluxes (electrons per second)
         noise : imaging.Noise
-            A data-grid of the observed image noise estimates (standard deviations, electrons per second)
+            A weighted_data-grid of the observed image noise estimates (standard deviations, electrons per second)
         exposure_time : imaging.ExposureTime
-            A data-grid of the exposure time in each pixel (seconds)
+            A weighted_data-grid of the exposure time in each pixel (seconds)
         """
         image = GridData.from_mask(image, mask)
         noise = GridData.from_mask(noise, mask)
@@ -353,14 +353,14 @@ class DataCollection(object):
 class GridData(np.ndarray):
 
     def __new__(cls, grid_data):
-        """The grid storing the value in each unmasked pixel of a data-set (e.g. an image, noise, exposure times, etc.).
+        """The grid storing the value in each unmasked pixel of a weighted_data-set (e.g. an image, noise, exposure times, etc.).
 
         Data values are defined from the top-left corner, such that data_to_image in the top-left corner of an \
         image (e.g. [0,0]) have the lowest index value. Therefore, the *grid_data* is a NumPy array of image_shape \
         [image_pixels], where each element maps to its corresponding image pixel index. For example, the value \
-        [3] gives the 4th pixel's data value.
+        [3] gives the 4th pixel's weighted_data value.
 
-        Below is a visual illustration of a data-grid, where a total of 10 data_to_image are unmasked and therefore \
+        Below is a visual illustration of a weighted_data-grid, where a total of 10 data_to_image are unmasked and therefore \
         included in the grid.
 
         |x|x|x|x|x|x|x|x|x|x|
@@ -374,7 +374,7 @@ class GridData(np.ndarray):
         |x|x|x|x|x|x|x|x|x|x|
         |x|x|x|x|x|x|x|x|x|x|
 
-        Now lets pretend these are the data values of this grid:
+        Now lets pretend these are the weighted_data values of this grid:
 
         |1|6|8|3|4|5|7|4|3|2|
         |7|3|6|4|8|1|2|2|4|3|       
@@ -387,7 +387,7 @@ class GridData(np.ndarray):
         |6|5|6|9|3|4|2|0|7|4|
         |3|6|7|6|2|5|4|0|8|2|
         
-        Lets extract specifically the data which is unmasked and look at our grid_data:
+        Lets extract specifically the weighted_data which is unmasked and look at our grid_data:
         
         |x|x|x|x|x|x|x|x|x|x|   grid_data[0] = 2
         |x|x|x|x|x|x|x|x|x|x|   grid_data[1] = 8
@@ -400,7 +400,7 @@ class GridData(np.ndarray):
         |x|x|x|x|x|x|x|x|x|x|   grid_data[8] = 1
         |x|x|x|x|x|x|x|x|x|x|   grid_data[9] = 3
 
-        This also stores the data's original 2D pixels and dimensions, so that the rebuilt data can be mapped to its \
+        This also stores the weighted_data's original 2D pixels and dimensions, so that the rebuilt weighted_data can be mapped to its \
         original 2D array.
 
         data_to_image is a NumPy array of image_shape [image_pixels, 2]. Therefore, the first element maps to the \
@@ -440,7 +440,7 @@ class GridData(np.ndarray):
         Parameters
         -----------
         grid_data : np.ndarray
-            The data-values in the unmasked data_to_image of a data-set (e.g. an image, noise, exposure times).
+            The weighted_data-values in the unmasked data_to_image of a weighted_data-set (e.g. an image, noise, exposure times).
 
         Notes
         ----------
@@ -454,13 +454,13 @@ class GridData(np.ndarray):
 
     @classmethod
     def from_mask(cls, data, mask):
-        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
+        """ Given an image.Mask, setup the weighted_data-grid using the every unmasked pixel.
 
         Parameters
         ----------
         data
         mask : mask.Mask
-            The image mask containing the data_to_image the data-grid is computed for.
+            The image mask containing the data_to_image the weighted_data-grid is computed for.
         """
         return GridData(mask.compute_grid_data(data))
 
@@ -480,13 +480,13 @@ class GridMapping(object):
 
     @classmethod
     def from_mask(cls, mask, sub_grid_size, cluster_grid_size=None):
-        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
+        """ Given an image.Mask, setup the weighted_data-grid using the every unmasked pixel.
 
         Parameters
         ----------
-        data
+        weighted_data
         mask : mask.Mask
-            The image mask containing the data_to_image the data-grid is computed for.
+            The image mask containing the data_to_image the weighted_data-grid is computed for.
         """
         data_to_image = mask.compute_grid_data_to_pixel()
         sub_to_image = mask.compute_grid_sub_to_image(sub_grid_size)
@@ -508,12 +508,12 @@ class GridMapping(object):
         return data_image * self.sub_grid_fraction
 
     def map_to_2d(self, grid_data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D image.
+        """Use mapper to map an input weighted_data-set from a *GridData* to its original 2D image.
 
         Parameters
         -----------
         grid_data : ndarray
-            The grid-data which is mapped to its 2D image.
+            The grid-weighted_data which is mapped to its 2D image.
         """
         data_2d = np.zeros(self.image_shape)
 
@@ -574,7 +574,7 @@ class GridClusterPixelization(object):
         ----------
         cluster_grid_size
         mask : mask.Mask
-            The image mask containing the data_to_image the blurring grid_coords is computed for and the image's data
+            The image mask containing the data_to_image the blurring grid_coords is computed for and the image's weighted_data
             grid_coords.
         """
         cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(cluster_grid_size)
