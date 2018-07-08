@@ -26,7 +26,7 @@ class Analysis(object):
         mask: Mask
             A mask describing the region of the image to be modelled
         grid_size_sub: int
-            The size of the sub-pixel grid for which values should be calculated
+            The sub_grid_size of the sub-pixel grid for which values should be calculated
         cluster_grid_size: int:
             The sparsity of pixels to be used in clustering. Specifies the number of pixels to jump, meaning a higher
             number gives a lower density.

@@ -152,7 +152,7 @@ class ScaledArray(np.ndarray):
 
     def trim(self, new_dimensions):
         """
-        Trim the data array to a new size around its central pixel.
+        Trim the data array to a new sub_grid_size around its central pixel.
 
         NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
         (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
@@ -187,7 +187,7 @@ class ScaledArray(np.ndarray):
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
         """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and sub-grid_coords \
-        size"""
+        sub_grid_size"""
 
         half = self.pixel_scale / 2
         step = self.pixel_scale / (sub_grid_size + 1)
