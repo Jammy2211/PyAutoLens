@@ -1,5 +1,4 @@
 import numpy as np
-from src import exc
 from src.profiles import geometry_profiles
 
 
