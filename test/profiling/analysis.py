@@ -6,7 +6,7 @@ from src.imaging import mask as msk
 from src.imaging import scaled_array
 import os
 
-repeats = 1
+repeats = 10
 
 # Load up the data
 lens_name = 'source_sersic'
@@ -25,9 +25,7 @@ mask = msk.Mask.circular(shape_arc_seconds=image.shape_arc_seconds, pixel_scale=
 
 
 def repeat(func):
-    print("rpe")
     for _ in range(repeats):
-        print("repeat")
         func(_)
 
 
