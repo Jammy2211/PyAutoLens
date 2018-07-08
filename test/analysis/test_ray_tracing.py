@@ -236,11 +236,35 @@ class TestTracer(object):
 
             galaxy_no_pix = galaxy.Galaxy()
 
-            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=all_grids)
+            tracing = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_no_pix], image_plane_grids=all_grids)
 
-            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
 
             assert pix_matrix == None
+
+        def test__image_galaxy_has_pixelization__still_returns_none(self, all_grids, mapping):
+
+            galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
+            galaxy_no_pix = galaxy.Galaxy()
+
+            tracing = ray_tracing.Tracer(lens_galaxies=[galaxy_pix], source_galaxies=[galaxy_no_pix],
+                                         image_plane_grids=all_grids)
+
+            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
+
+            assert pix_matrix == None
+
+        def test__source_galaxy_has_pixelization__returns_pixelization_matrix(self, all_grids, mapping):
+
+            galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
+            galaxy_no_pix = galaxy.Galaxy()
+
+            tracing = ray_tracing.Tracer(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
+                                         image_plane_grids=all_grids)
+
+            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
+
+            assert pix_matrix == 1
 
 
 class TestPlane(object):
