@@ -120,7 +120,7 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     return kernel_convolver.convolve_array(image, blurring_image)
 
 
-def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=None):
+def fit_data_with_pixelization(grid_data, kernel_convolver, tracer, mapping, image=None):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
     Parameters
@@ -138,16 +138,12 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=N
         The mapping between cluster-pixels and image / source pixels.
     """
 
-    # TODO : If pixelization is in galaxy or tracer, we can compute the mapping matrix from it.
-
-    pixelization_matrices = pix.compute_pixelization_matrices(
-        source_coordinates=tracer.source_plane.grids.image, source_sub_coordinates=tracer.source_plane.grids.sub,
-        sub_to_image=sub_to_image, image_pixels=image_pixels, sub_grid_size=sub_grid_size, mapper_cluster=mapper_cluster)
+    pixelization_matrices = tracer.generate_pixelization_matrices_of_source_galaxy(mapping)
 
     # TODO : Build matrix convolution into frame_convolution?
     # Go over every column of mapping matrix, perform blurring
     blurred_mapping_matrix = np.zeros(pixelization_matrices.mapping.shape)
-    for i in range(pixelization_matrices.shape[1]):
+    for i in range(pixelization_matrices.mapping.shape[1]):
         blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(pixelization_matrices.mapping[:, i])
 
     # TODO : Use fast routines once ready.
@@ -155,14 +151,14 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=N
     cov_matrix = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, grid_data.noise)
     d_vector = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, grid_data.image, grid_data.noise)
 
-    cov_reg_matrix = cov_matrix + regularization_matrix
+    cov_reg_matrix = cov_matrix + pixelization_matrices.regularization
 
     s_vector = np.linalg.solve(cov_reg_matrix, d_vector)
 
     model_image = pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
 
     return compute_bayesian_evidence(grid_data.image, grid_data.noise, model_image, s_vector, cov_reg_matrix,
-                                     regularization_matrix)
+                                     pixelization_matrices.regularization)
 
 
 # TODO : Put this here for now as it uses the blurred mapping matrix (and thus the PSF). Move to pixelization?
