@@ -35,13 +35,13 @@ class CoordsCollection(object):
             A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
             grids.
         sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
+            The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
         blurring_shape : (int, int)
-           The size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
+           The sub_grid_size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
         """
 
         image = mask.coordinate_grid
-        sub = mask.compute_grid_coords_image_sub(sub_grid_size)
+        sub = mask.sub_coordinate_grid_with_size(sub_grid_size)
         blurring = mask.blurring_coordinate_grid(blurring_shape)
 
         return CoordsCollection(image, sub, blurring)
@@ -268,7 +268,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
            grid_coords[0,3] = [-1.33, 0.33]
 
     Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
-    pretend we used a size of 3x3 for pixel 1:
+    pretend we used a sub_grid_size of 3x3 for pixel 1:
 
              grid_coords[0,0] = [-0.75, 0.75]
              grid_coords[0,1] = [-0.5,  0.75]
@@ -285,7 +285,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
     grid_coords : np.ndarray
         The coordinates of the sub-grid.
     sub_grid_size : int
-        The (sub_grid_size x sub_grid_size) size of each sub-grid for each pixel.
+        The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel.
     """
 
     def __new__(cls, grid_coords, sub_grid_size):
@@ -537,6 +537,7 @@ class GridMapping(object):
 
         return data_1d
 
+
 class GridClusterPixelization(object):
 
     def __init__(self, cluster_to_image, image_to_cluster):
@@ -566,7 +567,7 @@ class GridClusterPixelization(object):
 
     @classmethod
     def from_mask(cls, mask, cluster_grid_size):
-        """ Given an image.Mask, compute the clustering mapper of the image by inputting its size and finding \
+        """ Given an image.Mask, compute the clustering mapper of the image by inputting its sub_grid_size and finding \
         all image data_to_image which are on its sparsely defined mask.
 
         Parameters

@@ -1,3 +1,5 @@
+from src import exc
+
 class Tracer(object):
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids):
@@ -30,10 +32,11 @@ class Tracer(object):
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
-        if self.image_plane.grids.blurring is not None:
-            return self.image_plane.generate_blurring_image_of_galaxy_light_profiles(
-            ) + self.source_plane.generate_blurring_image_of_galaxy_light_profiles()
+        return self.image_plane.generate_blurring_image_of_galaxy_light_profiles(
+        ) + self.source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
+    def generate_pixelization_matrices_of_galaxies(self, mapping):
+        return self.source_plane.generate_pixelization_matrices_of_galaxy(mapping)
 
 class Plane(object):
 
@@ -89,7 +92,13 @@ class Plane(object):
         return self.grids.blurring.intensities_via_grid(self.galaxies)
 
     def generate_pixelization_matrices_of_galaxy(self, mapping):
-        for galaxy in self.galaxies:
-            if galaxy.has_pixelization:
-                   return galaxy.pixelization.compute_pixelization_matrices(self.grids.image, self.grids.blurring,
-                                                                            mapping)
+
+        pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
+
+        if len(pixelized_galaxies) == 0:
+            return None
+        if len(pixelized_galaxies) == 1:
+            return pixelized_galaxies[0].pixelization.compute_pixelization_matrices(self.grids.image,
+                                                                                    self.grids.blurring, mapping)
+        elif len(pixelized_galaxies) > 1:
+            raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
