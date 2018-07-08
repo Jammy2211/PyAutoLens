@@ -1,5 +1,4 @@
 from src.analysis import fitting
-from src.imaging import grids
 from src.analysis import ray_tracing
 from src.pixelization import frame_convolution
 from src import exc
@@ -38,10 +37,8 @@ class Analysis(object):
                                                                                        image.effective_exposure_time)
         self.coords_collection = mask.coordinates_collection_for_subgrid_size_and_blurring_shape(
             sub_grid_size=grid_size_sub, blurring_shape=image.psf.shape)
-        
-        self.mapper_collection = grids.MapperCollection.from_mask(mask, cluster_grid_size)
 
-        self.mapper_cluster = grids.GridClusterPixelization.from_mask(mask, cluster_grid_size)
+        self.mapper_cluster = mask.sparse_grid_mapper_with_grid_size(cluster_grid_size)
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
