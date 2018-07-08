@@ -910,7 +910,7 @@ class TestGridMapping(object):
             grid_sub = grids.GridMapping(image_shape=(3,3), image_pixels=1, data_to_image=data_to_image,
                                          sub_grid_size=2, sub_to_image=sub_to_image)
 
-            image_data = grid_sub.map_data_to_image_grid(data_sub=np.array([1.0, 2.0, 3.0, 4.0]))
+            image_data = grid_sub.map_data_sub_to_image(data=np.array([1.0, 2.0, 3.0, 4.0]))
 
             assert image_data == (1.0+2.0+3.0+4.0)/4.0
 
@@ -923,8 +923,8 @@ class TestGridMapping(object):
             grid_sub = grids.GridMapping(image_shape=(4,4), image_pixels=4, data_to_image=data_to_image,
                                          sub_grid_size=2, sub_to_image=sub_to_image)
 
-            image_data = grid_sub.map_data_to_image_grid(data_sub=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0,
-                                                                   9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]))
+            image_data = grid_sub.map_data_sub_to_image(data=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0,
+                                                                       9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]))
 
             assert image_data[0] == (1.0+2.0+3.0+4.0)/4.0
             assert image_data[1] == (5.0+6.0+7.0+8.0)/4.0
@@ -952,12 +952,12 @@ class TestGridMapping(object):
             grid_sub = grids.GridMapping(image_shape=(4,4), image_pixels=6, data_to_image=data_to_image,
                                                sub_grid_size=3, sub_to_image=sub_to_image)
 
-            image_data = grid_sub.map_data_to_image_grid(data_sub=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                                                                            2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
-                                                                            3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0,
-                                                                            4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0,
-                                                                            5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0,
-                                                                            6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0]))
+            image_data = grid_sub.map_data_sub_to_image(data=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                                                                       2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
+                                                                       3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0,
+                                                                       4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0,
+                                                                       5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0,
+                                                                       6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0]))
 
             assert image_data[0] == (1.0*9.0)/9.0
             assert image_data[1] == (2.0*9.0)/9.0
