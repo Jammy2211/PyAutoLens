@@ -99,6 +99,6 @@ class Plane(object):
             return None
         if len(pixelized_galaxies) == 1:
             return pixelized_galaxies[0].pixelization.compute_pixelization_matrices(self.grids.image,
-                                                                                    self.grids.blurring, mapping)
+                                                                                    self.grids.sub, mapping)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
