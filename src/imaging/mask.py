@@ -23,7 +23,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         shape_arc_seconds: (float, float)
-            The (x,y) dimensions_2d
+            The (x,y) image_shape
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         radius_mask : float
@@ -55,7 +55,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         shape_arc_seconds : (float, float)
-            The (x,y) dimensions_2d of the mask
+            The (x,y) image_shape of the mask
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         inner_radius_mask : float
@@ -89,7 +89,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         shape_arc_seconds : (float, float)
-            The (x,y) dimensions_2d of the mask
+            The (x,y) image_shape of the mask
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -132,12 +132,12 @@ class Mask(scaled_array.ScaledArray):
 
     def coordinates_collection_for_subgrid_size_and_blurring_shape(self, sub_grid_size, blurring_shape):
         image = self.coordinate_grid
-        sub = self.sub_coordinate_grid_with_size(sub_grid_size)
+        sub = self.compute_grid_coords_image_sub(sub_grid_size)
         blurring = self.blurring_coordinate_grid(blurring_shape)
 
         return grids.CoordsCollection(image, sub, blurring)
 
-    def sub_coordinate_grid_with_size(self, size):
+    def compute_grid_coords_image_sub(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
 
         Parameters
@@ -146,29 +146,22 @@ class Mask(scaled_array.ScaledArray):
             The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
         """
 
-        image_pixels = self.pixels_in_mask
-        image_pixel_count = 0
+        sub_pixel_count = 0
 
-        grid = np.zeros(shape=(image_pixels * size ** 2, 2))
+        grid = np.zeros(shape=(self.pixels_in_mask * size ** 2, 2))
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
                     x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
 
-                    sub_pixel_count = 0
-
                     for x1 in range(size):
                         for y1 in range(size):
-                            grid[image_pixel_count * size ** 2 + sub_pixel_count, 0] = \
-                                self.sub_pixel_to_coordinate(x1, x_arcsec, size)
+                            grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, size)
 
-                            grid[image_pixel_count * size ** 2 + sub_pixel_count, 1] = \
-                                self.sub_pixel_to_coordinate(y1, y_arcsec, size)
+                            grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, size)
 
                             sub_pixel_count += 1
-
-                    image_pixel_count += 1
 
         return grids.SubCoordinateGrid(grid, size)
 
@@ -192,6 +185,36 @@ class Mask(scaled_array.ScaledArray):
 
         return blurring_mask.coordinate_grid
 
+    def compute_grid_sub_to_image(self, grid_size_sub):
+        """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
+
+        Parameters
+        ----------
+        grid_size_sub : int
+            The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
+        """
+
+        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2))
+        image_pixel_count = 0
+        sub_pixel_count = 0
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    for x1 in range(grid_size_sub):
+                        for y1 in range(grid_size_sub):
+
+                            sub_to_image[sub_pixel_count] = image_pixel_count
+                            sub_pixel_count += 1
+
+                    image_pixel_count += 1
+
+        # print("assert (image_sub_grid == np.array({})).all()".format(
+        #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
+        #                                                                                                         ''))
+
+        return sub_to_image
+
     def compute_grid_data(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
 
@@ -213,7 +236,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grid
 
-    def compute_grid_mapper_data_to_pixel(self):
+    def compute_grid_data_to_pixel(self):
         """
         Compute the mapping of every pixel in the mask to its 2D pixel coordinates.
         """

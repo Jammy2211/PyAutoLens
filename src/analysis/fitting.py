@@ -8,7 +8,7 @@ from src.pixelization import covariance_matrix
 
 # TODO : Can we make model_immage, galaxy_images, minimum_Values a part of hyper galaxies?
 
-def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, model_image, galaxy_images,
+def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, mapping, model_image, galaxy_images,
                                           minimum_values, hyper_galaxies):
     """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
@@ -30,7 +30,7 @@ def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, m
     """
     contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
     scaled_noise = generate_scaled_noise(grid_data.noise, contributions, hyper_galaxies)
-    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
+    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver, mapping)
     return compute_likelihood(grid_data.image, scaled_noise, blurred_model_image)
 
 
@@ -70,7 +70,7 @@ def generate_scaled_noise(noise, contributions, hyper_galaxies):
     return noise + sum(scaled_noises)
 
 
-def fit_data_with_profiles(grid_data, kernel_convolver, tracer, image=None):
+def fit_data_with_profiles(grid_data, kernel_convolver, tracer, mapping, image=None):
     """Fit the data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
     Parameters
@@ -82,12 +82,14 @@ def fit_data_with_profiles(grid_data, kernel_convolver, tracer, image=None):
         The 2D Point Spread Function (PSF).
     tracer : ray_tracing.Tracer
         The ray-tracing configuration of the model galaxies and their profiles.
+    mapping : grids.GridMapping
+        Contains arrays / functions used to map different grids.
     """
-    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver)
+    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver, mapping)
     return compute_likelihood(grid_data.image, grid_data.noise, blurred_model_image)
 
 
-def generate_blurred_light_profile_image(tracer, kernel_convolver):
+def generate_blurred_light_profile_image(tracer, kernel_convolver, mapping):
     """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
     PSF.
 
@@ -98,7 +100,7 @@ def generate_blurred_light_profile_image(tracer, kernel_convolver):
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
-    image_light_profile = tracer.generate_image_of_galaxy_light_profiles()
+    image_light_profile = tracer.generate_image_of_galaxy_light_profiles(mapping)
     blurring_image_light_profile = tracer.generate_blurring_image_of_galaxy_light_profiles()
     return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile, kernel_convolver)
 
@@ -115,10 +117,10 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
-    return grids.GridData(kernel_convolver.convolve_array(image, blurring_image))
+    return kernel_convolver.convolve_array(image, blurring_image)
 
 
-def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_cluster, image=None):
+def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=None):
     """Fit the data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
     Parameters
@@ -138,15 +140,15 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, mapper_
 
     # TODO : If pixelization is in galaxy or tracer, we can compute the mapping matrix from it.
 
-    mapping_matrix, regularization_matrix = pix.compute_mapping_and_regularization_matrix(
+    pixelization_matrices = pix.compute_pixelization_matrices(
         source_coordinates=tracer.source_plane.grids.image, source_sub_coordinates=tracer.source_plane.grids.sub,
-        mapper_cluster=mapper_cluster)
+        sub_to_image=sub_to_image, image_pixels=image_pixels, sub_grid_size=sub_grid_size, mapper_cluster=mapper_cluster)
 
     # TODO : Build matrix convolution into frame_convolution?
     # Go over every column of mapping matrix, perform blurring
-    blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
-    for i in range(mapping_matrix.shape[1]):
-        blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(mapping_matrix[:, i])
+    blurred_mapping_matrix = np.zeros(pixelization_matrices.mapping.shape)
+    for i in range(pixelization_matrices.shape[1]):
+        blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(pixelization_matrices.mapping[:, i])
 
     # TODO : Use fast routines once ready.
 
