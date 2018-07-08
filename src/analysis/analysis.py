@@ -34,10 +34,11 @@ class Analysis(object):
         self.image = image
         self.mask = mask
 
-        self.data_collection = grids.DataCollection.from_mask(mask, image, image.background_noise,
-                                                              image.effective_exposure_time)
-        self.coords_collection = grids.CoordsCollection.from_mask(mask, sub_grid_size=grid_size_sub,
-                                                                  blurring_shape=image.psf.shape)
+        self.data_collection = mask.data_collection_from_image_noise_and_exposure_time(image, image.background_noise,
+                                                                                       image.effective_exposure_time)
+        self.coords_collection = mask.coordinates_collection_for_subgrid_size_and_blurring_shape(
+            sub_grid_size=grid_size_sub, blurring_shape=image.psf.shape)
+        
         self.mapper_collection = grids.MapperCollection.from_mask(mask, cluster_grid_size)
 
         self.mapper_cluster = grids.GridClusterPixelization.from_mask(mask, cluster_grid_size)
