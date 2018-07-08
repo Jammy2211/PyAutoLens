@@ -25,7 +25,7 @@ import pymultinest
 import matplotlib.pyplot as plt
 
 lens_name = 'source_sersic'
-data_dir = "../data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
+data_dir = "../weighted_data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
 
 print(data_dir)
 

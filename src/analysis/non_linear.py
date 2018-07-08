@@ -85,7 +85,7 @@ class NonLinearOptimizer(object):
         path : str
             The path where the non-linear analysis nlo are stored.
         obj_name : str
-            Unique identifier of the data being analysed (e.g. the name of the data set)
+            Unique identifier of the weighted_data being analysed (e.g. the name of the weighted_data set)
         """
         self.nlo_config = config.NamedConfig(
             "{}/../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
@@ -189,7 +189,7 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.info("DownhillSimplex complete")
         res = fitness_function.result
 
-        # Get the solution provided by Downhill Simplex
+        # Get the reconstruction provided by Downhill Simplex
         means = output[0]
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
