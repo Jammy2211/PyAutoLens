@@ -308,7 +308,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
 
         sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
                                                                              output_shape=self.shape[0]), galaxies))
-        return mapping.map_data_to_image_grid(sub_intensities)
+        return mapping.map_data_sub_to_image(sub_intensities)
 
     def new_from_array(self, array):
         return __class__(array, self.sub_grid_size)
@@ -502,12 +502,12 @@ class GridMapping(object):
 
         return GridMapping(mask.shape, mask.pixels_in_mask, data_to_image, sub_grid_size, sub_to_image, cluster)
 
-    def map_data_to_image_grid(self, data_sub):
+    def map_data_sub_to_image(self, data):
 
         data_image = np.zeros((self.image_pixels))
 
         for sub_pixel in range(self.sub_pixels):
-            data_image[self.sub_to_image[sub_pixel]] += data_sub[sub_pixel]
+            data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
 
         return data_image / self.sub_grid_size_squared
 
