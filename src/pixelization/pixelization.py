@@ -53,7 +53,7 @@ class Pixelization(object):
         [0,2] of the mapping matrix will = 1.
 
         The mapping matrix is created using sub-gridding. Here, each observed image-pixel is divided into a finer \
-        sub_grid. For example, if the sub-grid is size 4x4, each image-pixel is split into a uniform 4 x 4 \
+        sub_grid. For example, if the sub-grid is sub_grid_size 4x4, each image-pixel is split into a uniform 4 x 4 \
         sub grid and all 16 sub-pixels are individually traced to the source-plane and paired with a source-pixel.
 
         The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
@@ -72,7 +72,7 @@ class Pixelization(object):
         image_pixels : int
             The number of image pixels in the masked image the pixelization is fitting.
         sub_grid_size : int
-            The size of the sub-grid.
+            The sub_grid_size of the sub-grid.
         """
 
         sub_pixels = sub_to_source.shape[0]
@@ -186,7 +186,7 @@ class RectangularPixelization(Pixelization):
 
     def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
         """A rectangular and Cartesian pixelization, which represents source-pixels on a uniform rectangular grid
-        of size x_pixels x y_pixels.
+        of sub_grid_size x_pixels x y_pixels.
 
         Like image's, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 

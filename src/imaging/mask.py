@@ -132,12 +132,12 @@ class Mask(scaled_array.ScaledArray):
 
     def coordinates_collection_for_subgrid_size_and_blurring_shape(self, sub_grid_size, blurring_shape):
         image = self.coordinate_grid
-        sub = self.compute_grid_coords_image_sub(sub_grid_size)
+        sub = self.sub_coordinate_grid_with_size(sub_grid_size)
         blurring = self.blurring_coordinate_grid(blurring_shape)
 
         return grids.CoordsCollection(image, sub, blurring)
 
-    def compute_grid_coords_image_sub(self, size):
+    def sub_coordinate_grid_with_size(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
 
         Parameters
@@ -170,12 +170,12 @@ class Mask(scaled_array.ScaledArray):
 
         The blurring grid_coords contains all data_to_pixels which are not in the mask, but close enough to it that a
         fraction of their will be blurred into the mask region (and therefore they are needed for the analysis). They
-        are located by scanning for all data_to_pixels which are outside the mask but within the psf size.
+        are located by scanning for all data_to_pixels which are outside the mask but within the psf sub_grid_size.
 
         Parameters
         ----------
         psf_size : (int, int)
-           The size of the psf which defines the blurring region (e.g. the shape of the PSF)
+           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
         if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
@@ -318,7 +318,7 @@ class Mask(scaled_array.ScaledArray):
         Parameters
         ----------
         kernel_shape : (int, int)
-           The size of the psf which defines the blurring region (e.g. the shape of the PSF)
+           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
         blurring_mask = np.full(self.shape, True)
@@ -334,14 +334,14 @@ class Mask(scaled_array.ScaledArray):
                                     blurring_mask[x + x1, y + y1] = False
                             else:
                                 raise exc.MaskException(
-                                    "setup_blurring_mask extends beyond the size of the mask - pad the image"
+                                    "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image"
                                     "before masking")
 
         return Mask(blurring_mask, self.pixel_scale)
 
     def compute_sparse_uniform_mask(self, sparse_grid_size):
         """Setup a two-dimensional sparse mask of image data_to_pixels, by keeping all image data_to_pixels which do not
-        give a remainder when divided by the sub-grid_coords size. """
+        give a remainder when divided by the sub-grid_coords sub_grid_size. """
         sparse_mask = np.full(self.shape, True)
 
         for x in range(self.shape[0]):
