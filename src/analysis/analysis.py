@@ -1,5 +1,4 @@
 from src.analysis import fitting
-from src.imaging import grids
 from src.analysis import ray_tracing
 from src.pixelization import frame_convolution
 from src import exc
@@ -13,7 +12,7 @@ empty_array = []
 
 
 class Analysis(object):
-    def __init__(self, image, mask, grid_size_sub=4, cluster_grid_size=3, model_image=None, galaxy_images=None,
+    def __init__(self, image, mask, sub_grid_size=4, cluster_grid_size=3, model_image=None, galaxy_images=None,
                  minimum_values=None):
         """
         An analysis object. Once set up with an image and mask it takes a set of objects describing a model and
@@ -25,7 +24,7 @@ class Analysis(object):
             An image of a lens with associated metadata
         mask: Mask
             A mask describing the region of the image to be modelled
-        grid_size_sub: int
+        sub_grid_size: int
             The sub_grid_size of the sub-pixel grid for which values should be calculated
         cluster_grid_size: int:
             The sparsity of pixels to be used in clustering. Specifies the number of pixels to jump, meaning a higher
@@ -34,13 +33,13 @@ class Analysis(object):
         self.image = image
         self.mask = mask
 
-        self.data_collection = grids.DataCollection.from_mask(mask, image, image.background_noise,
-                                                              image.effective_exposure_time)
-        self.coords_collection = grids.CoordsCollection.from_mask(mask, sub_grid_size=grid_size_sub,
-                                                                  blurring_shape=image.psf.shape)
-        self.mapper_collection = grids.MapperCollection.from_mask(mask, cluster_grid_size)
+        self.data_collection = mask.data_collection_from_image_noise_and_exposure_time(image, image.background_noise,
+                                                                                       image.effective_exposure_time)
+        self.coords_collection = mask.coordinates_collection_for_subgrid_size_and_blurring_shape(
+            sub_grid_size=sub_grid_size, blurring_shape=image.psf.shape)
 
-        self.mapper_cluster = grids.GridClusterPixelization.from_mask(mask, cluster_grid_size)
+        self.mapper_cluster = mask.sparse_grid_mapper_with_grid_size(cluster_grid_size)
+        self.mapping = mask.grid_mapping_with_sub_grid_size(sub_grid_size)
 
         self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
@@ -50,7 +49,7 @@ class Analysis(object):
 
         logger.info("Analysis created for image "
                     "with shape {}, grid_sub_size {} and cluster_grid_size {}".format(image.shape,
-                                                                                      grid_size_sub,
+                                                                                      sub_grid_size,
                                                                                       cluster_grid_size))
 
     def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
@@ -111,7 +110,7 @@ class Analysis(object):
             if not is_hyper_galaxy:
                 logger.debug("Fitting for profiles (no hyper galaxy)")
                 likelihood = fitting.fit_data_with_profiles(self.data_collection, self.kernel_convolver, tracer,
-                                                            hyper_image)
+                                                            self.mapping, hyper_image)
             elif is_hyper_galaxy:
                 logger.debug("Fitting for profiles (includes hyper galaxy)")
 
