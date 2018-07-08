@@ -223,7 +223,6 @@ class TestMask(object):
     class TestUnmasked(object):
 
         def test__3x3__input__all_are_false(self):
-
             msk = mask.Mask.unmasked(shape_arc_seconds=(3, 3), pixel_scale=1)
 
             assert msk.shape == (3, 3)
@@ -252,41 +251,37 @@ class TestMask(object):
     class TestForSimulate(object):
 
         def test__3x3_image__3x3_psf_size__5x5_image_made_border_all_masked(self):
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(3, 3))
 
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(3,3))
-
-            assert (msk == np.array([[True,  True,  True,  True, True],
+            assert (msk == np.array([[True, True, True, True, True],
                                      [True, False, False, False, True],
                                      [True, False, False, False, True],
                                      [True, False, False, False, True],
-                                     [True,  True,  True,  True, True]])).all()
+                                     [True, True, True, True, True]])).all()
 
         def test__3x3_image__5x5_psf_size__7x7_image_made_border_all_masked(self):
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(5, 5))
 
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(5,5))
-
-            assert (msk == np.array([[True, True, True,  True,  True,  True, True],
-                                     [True, True, True,  True,  True,  True, True],
+            assert (msk == np.array([[True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True],
                                      [True, True, False, False, False, True, True],
                                      [True, True, False, False, False, True, True],
                                      [True, True, False, False, False, True, True],
-                                     [True, True, True,  True,  True,  True, True],
-                                     [True, True, True,  True,  True,  True, True]])).all()
+                                     [True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True]])).all()
 
         def test__4x3_image__3x3_psf_size__6x5_image_made_border_all_masked(self):
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(3, 3))
 
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(3,3))
-
-            assert (msk == np.array([[True,  True,  True,  True, True],
+            assert (msk == np.array([[True, True, True, True, True],
                                      [True, False, False, False, True],
                                      [True, False, False, False, True],
                                      [True, False, False, False, True],
                                      [True, False, False, False, True],
-                                     [True,  True,  True,  True, True]])).all()
+                                     [True, True, True, True, True]])).all()
 
         def test__4x3_image__5x5_psf_size__8x7_image_made_border_all_masked(self):
-
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(5,5))
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(5, 5))
 
             assert (msk == np.array([[True, True, True, True, True, True, True],
                                      [True, True, True, True, True, True, True],
@@ -294,33 +289,30 @@ class TestMask(object):
                                      [True, True, False, False, False, True, True],
                                      [True, True, False, False, False, True, True],
                                      [True, True, False, False, False, True, True],
-                                     [True, True, True,   True,  True, True, True],
-                                     [True, True, True,   True,  True, True, True]])).all()
+                                     [True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True]])).all()
 
         def test__3x4_image__3x3_psf_size__5x6_image_made_border_all_masked(self):
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 4), pixel_scale=1, psf_size=(3, 3))
 
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 4), pixel_scale=1, psf_size=(3,3))
-
-            assert (msk == np.array([[True,  True,  True,  True,  True, True],
+            assert (msk == np.array([[True, True, True, True, True, True],
                                      [True, False, False, False, False, True],
                                      [True, False, False, False, False, True],
                                      [True, False, False, False, False, True],
-                                     [True,  True,  True,  True,  True, True]])).all()
+                                     [True, True, True, True, True, True]])).all()
 
         def test__3x4_image__5x5_psf_size__7x8_image_made_border_all_masked(self):
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 4), pixel_scale=1, psf_size=(5, 5))
 
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 4), pixel_scale=1, psf_size=(5,5))
-
-            assert (msk == np.array([[True, True, True,  True,  True,  True,  True, True],
-                                     [True, True, True,  True,  True,  True,  True, True],
+            assert (msk == np.array([[True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True],
                                      [True, True, False, False, False, False, True, True],
                                      [True, True, False, False, False, False, True, True],
                                      [True, True, False, False, False, False, True, True],
-                                     [True, True, True,  True,  True,  True,  True, True],
-                                     [True, True, True,  True,  True,  True,  True, True]])).all()
+                                     [True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True]])).all()
 
         def test__4x4_image__3x3_psf_size__6x6_image_made_border_all_masked(self):
-
             msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(3, 3))
 
             assert (msk == np.array([[True, True, True, True, True, True],
@@ -331,20 +323,18 @@ class TestMask(object):
                                      [True, True, True, True, True, True]])).all()
 
         def test__4x4_image__5x5_psf_size__8x8_image_made_border_all_masked(self):
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(5, 5))
 
-            msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(5,5))
-
-            assert (msk == np.array([[True, True, True,  True,  True,  True,  True, True],
-                                     [True, True, True,  True,  True,  True,  True, True],
+            assert (msk == np.array([[True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True],
                                      [True, True, False, False, False, False, True, True],
                                      [True, True, False, False, False, False, True, True],
                                      [True, True, False, False, False, False, True, True],
                                      [True, True, False, False, False, False, True, True],
-                                     [True, True, True,  True,  True,  True,  True, True],
-                                     [True, True, True,  True,  True,  True,  True, True]])).all()
+                                     [True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True]])).all()
 
         def test__non_square_psf_shape__raises_error(self):
-
             with pytest.raises(exc.KernelException):
                 msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(3, 5))
 
@@ -423,7 +413,6 @@ class TestMask(object):
             assert (image_sub_grid == np.array([[[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]]])).all()
 
         def test__3x3_mask_with_row_of_pixels__2x2_sub_grid__coordinates(self):
-
             msk = np.array([[True, True, True],
                             [False, False, False],
                             [True, True, True]])
@@ -437,7 +426,6 @@ class TestMask(object):
                                                 [-0.5, 2.5], [-0.5, 3.5], [0.5, 2.5], [0.5, 3.5]])).all()
 
         def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__coordinates(self):
-
             msk = np.array([[True, True, False],
                             [False, False, False],
                             [True, True, False]])
@@ -491,11 +479,11 @@ class TestMask(object):
             image_sub_grid = msk.sub_coordinate_grid_with_size(size=3)
 
             assert (image_sub_grid == np.array([[-2.5, 1.5], [-2.5, 2.], [-2.5, 2.5], [-2., 1.5], [-2., 2.],
-                                                 [-2., 2.5], [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5],
+                                                [-2., 2.5], [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5],
                                                 [-0.5, -0.5], [-0.5, 0.], [-0.5, 0.5], [0., -0.5], [0., 0.], [0., 0.5],
-                                                 [0.5, -0.5], [0.5, 0.], [0.5, 0.5],
+                                                [0.5, -0.5], [0.5, 0.], [0.5, 0.5],
                                                 [1.5, 1.5], [1.5, 2.], [1.5, 2.5], [2., 1.5], [2., 2.], [2., 2.5],
-                                                 [2.5, 1.5], [2.5, 2.], [2.5, 2.5]])).all()
+                                                [2.5, 1.5], [2.5, 2.], [2.5, 2.5]])).all()
 
         def test__4x4_mask_with_one_pixel__4x4_sub_grid__coordinates(self):
             msk = np.array([[True, True, True, True],
@@ -629,7 +617,6 @@ class TestMask(object):
     class TestComputeGridSubtoImage(object):
 
         def test__3x3_mask_with_1_pixel__2x2_sub_grid__correct_sub_to_image(self):
-
             msk = np.array([[True, True, True],
                             [True, False, True],
                             [True, True, True]])
@@ -641,7 +628,6 @@ class TestMask(object):
             assert (sub_to_image == np.array([0, 0, 0, 0])).all()
 
         def test__3x3_mask_with_row_of_pixels_pixel__2x2_sub_grid__correct_sub_to_image(self):
-
             msk = np.array([[True, True, True],
                             [False, False, False],
                             [True, True, True]])
@@ -653,7 +639,6 @@ class TestMask(object):
             assert (sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])).all()
 
         def test__3x3_mask_with_row_of_pixels_pixel__3x3_sub_grid__correct_sub_to_image(self):
-
             msk = np.array([[True, True, True],
                             [False, False, False],
                             [True, True, True]])
@@ -1232,10 +1217,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
-            assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
-            assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 2, 3, 4])).all()
 
         def test__7x7_circle_mask__sparse_grid_size_1(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1248,10 +1233,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
-            assert (sparse_to_image == np.arange(21)).all()
-            assert (image_to_sparse == np.arange(21)).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.arange(21)).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.arange(21)).all()
 
         def test__7x7_rectangle_mask__sparse_grid_size_1(self):
             msk = np.array([[False, False, False, False, False, False, False],
@@ -1264,10 +1249,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
-            assert (sparse_to_image == np.arange(49)).all()
-            assert (image_to_sparse == np.arange(49)).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.arange(49)).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.arange(49)).all()
 
         def test__7x7_circle_mask__sparse_grid_size_2(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1280,10 +1265,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
 
-            assert (sparse_to_image == np.array([4, 6, 14, 16])).all()
-            assert (image_to_sparse == np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([4, 6, 14, 16])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
                                                  1, 2, 2, 2, 3, 3, 2, 2, 3])).all()
 
         def test__8x8_sporadic_mask__sparse_grid_size_2(self):
@@ -1298,10 +1283,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
 
-            assert (sparse_to_image == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
-            assert (image_to_sparse == np.array([0, 0, 1, 1, 2, 0, 0, 1, 1, 1, 2, 2, 3, 3,
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 1, 1, 2, 0, 0, 1, 1, 1, 2, 2, 3, 3,
                                                  1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 4, 4, 5, 6, 6,
                                                  7, 7, 4, 4, 7, 7, 7])).all()
 
@@ -1316,10 +1301,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
 
-            assert (sparse_to_image == np.arange(16)).all()
-            assert (image_to_sparse == np.arange(16)).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.arange(16)).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.arange(16)).all()
 
         def test__7x7_circle_mask__sparse_grid_size_3(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1332,10 +1317,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
-            assert (sparse_to_image == np.array([10])).all()
-            assert (image_to_sparse == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([10])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
 
         def test__7x7_circle_mask_more_points_added__sparse_grid_size_3(self):
             msk = np.array([[False, True, True, False, True, False, False],
@@ -1348,10 +1333,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
-            assert (sparse_to_image == np.array([0, 1, 3, 14, 17, 26])).all()
-            assert (image_to_sparse == np.array([0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 1, 3, 14, 17, 26])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
                                                  3, 4, 3, 3, 3, 5])).all()
 
         def test__7x7_mask_trues_on_values_which_divide_by_3__sparse_grid_size_3(self):
@@ -1365,10 +1350,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
-            assert (sparse_to_image == np.arange(9)).all()
-            assert (image_to_sparse == np.arange(9)).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.arange(9)).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.arange(9)).all()
 
         def test__8x8_mask_trues_on_values_which_divide_by_3_and_other_values__sparse_grid_size_3(self):
             msk = np.array([[False, True, False, False, True, True, False],
@@ -1381,10 +1366,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
-            assert (sparse_to_image == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
-            assert (image_to_sparse == np.array([0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
 
         def test__8x7__five_central_pixels__sparse_grid_size_1(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1398,10 +1383,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
-            assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
-            assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 2, 3, 4])).all()
 
         def test__8x7__five_central_pixels_2__sparse_grid_size_1(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1415,10 +1400,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
-            assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
-            assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 2, 3, 4])).all()
 
         def test__8x7__five_central_pixels__sparse_grid_size_2(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1432,10 +1417,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
 
-            assert (sparse_to_image == np.array([1, 3])).all()
-            assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([1, 3])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
         def test__7x8__five_central_pixels__sparse_grid_size_1(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
@@ -1448,10 +1433,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
-            assert (sparse_to_image == np.array([0, 1, 2, 3, 4])).all()
-            assert (image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 1, 2, 3, 4])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 2, 3, 4])).all()
 
         def test__7x8__five_central_pixels__sparse_grid_size_2(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
@@ -1464,10 +1449,10 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
 
-            assert (sparse_to_image == np.array([1, 3])).all()
-            assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([1, 3])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1])).all()
 
         def test__7x8__more_central_pixels__sparse_grid_size_2(self):
             msk = np.array([[True, True, True, True, True, True, True, True],
@@ -1480,7 +1465,8 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sparse_to_image, image_to_sparse = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
+            grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=2)
 
-            assert (sparse_to_image == np.array([1, 3, 11, 13])).all()
-            assert (image_to_sparse == np.array([0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
+            assert (grid_cluster_pixelization.cluster_to_image == np.array([1, 3, 11, 13])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array(
+                [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
