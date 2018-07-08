@@ -143,7 +143,7 @@ def fit_data_with_pixelization(grid_data, kernel_convolver, tracer, mapping, ima
     # TODO : Build matrix convolution into frame_convolution?
     # Go over every column of mapping matrix, perform blurring
     blurred_mapping_matrix = np.zeros(pixelization_matrices.mapping.shape)
-    for i in range(pixelization_matrices.shape[1]):
+    for i in range(pixelization_matrices.mapping.shape[1]):
         blurred_mapping_matrix[:, i] = kernel_convolver.convolve_array(pixelization_matrices.mapping[:, i])
 
     # TODO : Use fast routines once ready.
@@ -151,14 +151,14 @@ def fit_data_with_pixelization(grid_data, kernel_convolver, tracer, mapping, ima
     cov_matrix = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping_matrix, grid_data.noise)
     d_vector = covariance_matrix.compute_d_vector_exact(blurred_mapping_matrix, grid_data.image, grid_data.noise)
 
-    cov_reg_matrix = cov_matrix + pixelization_matrices.regularization_matrix
+    cov_reg_matrix = cov_matrix + pixelization_matrices.regularization
 
     s_vector = np.linalg.solve(cov_reg_matrix, d_vector)
 
     model_image = pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
 
     return compute_bayesian_evidence(grid_data.image, grid_data.noise, model_image, s_vector, cov_reg_matrix,
-                                     pixelization_matrices.regularization_matrix)
+                                     pixelization_matrices.regularization)
 
 
 # TODO : Put this here for now as it uses the blurred mapping matrix (and thus the PSF). Move to pixelization?
