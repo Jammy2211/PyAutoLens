@@ -12,7 +12,7 @@ from src.analysis import ray_tracing
 from src.analysis import galaxy
 from src.tools import arrays
 
-output_dir = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
+output_dir = "{}/../weighted_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 ### Setup mask + grid of this image ###
 

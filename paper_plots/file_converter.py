@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_path = '/gpfs/data/pdtw24/PL_Data/RJLens4/Object_Files/RJLensPy.dat'
+data_path = '/gpfs/weighted_data/pdtw24/PL_Data/RJLens4/Object_Files/RJLensPy.dat'
 
 file = open(data_path, 'r')
 
 fileread = file.readlines()
 
-file_path = '/gpfs/data/pdtw24/PL_Data/RJLens4/Object_Files/RJLens.dat'
+file_path = '/gpfs/weighted_data/pdtw24/PL_Data/RJLens4/Object_Files/RJLens.dat'
 
 image = np.zeros((422,422))
 
