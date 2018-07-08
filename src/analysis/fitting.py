@@ -142,7 +142,7 @@ def fit_data_with_pixelization(grid_data, pix, kernel_convolver, tracer, image=N
 
     pixelization_matrices = pix.compute_pixelization_matrices(
         source_coordinates=tracer.source_plane.grids.image, source_sub_coordinates=tracer.source_plane.grids.sub,
-        sub_to_image=sub_to_image, image_pixels=image_pixels, sub_grid_size=sub_grid_size, mapper_cluster=mapper_cluster)
+        sub_to_image=sub_to_image, image_pixels=image_pixels, sub_grid_size=sub_grid_size, mapping=mapper_cluster)
 
     # TODO : Build matrix convolution into frame_convolution?
     # Go over every column of mapping matrix, perform blurring
