@@ -16,7 +16,7 @@ A set of values in a corresponding image_grid might be represented in a 1D array
 
 [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
-This module allows us to find the relationships between data_to_image in a mask for a kernel of a given size so that
+This module allows us to find the relationships between data_to_image in a mask for a kernel of a given sub_grid_size so that
 convolutions can be efficiently applied to reduced arrays such as the one above.
 
 A FrameMaker can be created for a given mask:
@@ -297,7 +297,7 @@ class KernelConvolver(object):
         new_array: ndarray
             An array into which convolved values are inserted
         sub_shape: (int, int)
-            The shape of a reduced size kernel
+            The shape of a reduced sub_grid_size kernel
 
         Returns
         -------
