@@ -1,3 +1,4 @@
+from src import exc
 from src.analysis import ray_tracing, galaxy
 from src.imaging import grids
 from src.profiles import mass_profiles, light_profiles
@@ -78,7 +79,8 @@ class MockPixelization(object):
     def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapping):
         return self.value
 
-class TestTraceImageAndSoure(object):
+
+class TestTracer(object):
 
     class TestSetup:
 
@@ -228,14 +230,17 @@ class TestTraceImageAndSoure(object):
 
             assert (plane_image == ray_trace_image).all()
 
-    # class TestPixelizationMatriesfromGalaxies:
-    #
-    #     def test__1_galaxy_with_rectangular_pixeliation__returns_correct_matrices(self, all_grids, no_galaxies):
-    #
-    #         # Update sub-grid to give a more predictable mapping_matrix
-    #
-    #         all_grids.sub =
+    class TestPixelizationFromGalaxy:
 
+        def test__no_galaxies_in_plane__returns_none(self, all_grids, mapping):
+
+            galaxy_no_pix = galaxy.Galaxy()
+
+            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=all_grids)
+
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+
+            assert pix_matrix == None
 
 
 class TestPlane(object):
@@ -481,15 +486,15 @@ class TestPlane(object):
 
     class TestPixelizationFromGalaxies:
 
-        # def test__no_galaxies_in_plane__returns_none(self, all_grids, mapping):
-        #
-        #     galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
-        #
-        #     plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=all_grids)
-        #
-        #     pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
-        #
-        #     assert pix_matrix == 1
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, all_grids, mapping):
+
+            galaxy_no_pix = galaxy.Galaxy()
+
+            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=all_grids)
+
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+
+            assert pix_matrix == None
 
         def test__1_galaxy_in_plane__it_has_pixelization__extracts_pixelization_matrix(self, all_grids, mapping):
 
@@ -501,5 +506,23 @@ class TestPlane(object):
 
             assert pix_matrix == 1
 
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_pixelization_matrix(self, all_grids, mapping):
 
+            galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
+            galaxy_no_pix = galaxy.Galaxy()
 
+            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=all_grids)
+
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+
+            assert pix_matrix == 1
+
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, all_grids, mapping):
+
+            galaxy_pix_0 = galaxy.Galaxy(pixelization=MockPixelization(value=1))
+            galaxy_pix_1 = galaxy.Galaxy(pixelization=MockPixelization(value=2))
+
+            plane = ray_tracing.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=all_grids)
+
+            with pytest.raises(exc.PixelizationException):
+                plane.generate_pixelization_matrices_of_galaxy(mapping)
