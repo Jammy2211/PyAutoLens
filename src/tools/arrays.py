@@ -14,14 +14,14 @@ def numpy_array_from_fits(file_path, hdu):
 
 def compute_residuals(observed_image, model_image):
     """ Calculate the residuals between an observed image and a model of that image, \
-    by subtracting the model from the data.
+    by subtracting the model from the weighted_data.
 
     Residuals = (Data - Model).
 
     Parameters
     ----------
     observed_image : ndarray
-        Two dimensional array containing observed image data
+        Two dimensional array containing observed image weighted_data
     model_image : nddarray
         Two dimensional array containing model_mapper of the observed image
     """
@@ -42,7 +42,7 @@ def compute_chi_sq_image(observed_image, model_image, noise):
     Parameters
     ----------
     observed_image : ndarray
-        Two dimensional array containing observed image data
+        Two dimensional array containing observed image weighted_data
     model_image : nddarray
         Two dimensional array containing model_mapper of the observed image
     noise : nddarray
@@ -64,7 +64,7 @@ def compute_likelihood(observed_image, model_image, noise):
     Parameters
     ----------
     observed_data : ndarray
-        Two dimensional array containing the observed image data
+        Two dimensional array containing the observed image weighted_data
     model_image : nddarray
         Two dimensional array containing the model of the observed image
     noise : nddarray

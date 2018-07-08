@@ -319,7 +319,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
 
 default_config_path = '{}/../../config/'.format(os.path.dirname(os.path.realpath(__file__)))
-default_data_path = '{}/../../data/'.format(os.path.dirname(os.path.realpath(__file__)))
+default_data_path = '{}/../../weighted_data/'.format(os.path.dirname(os.path.realpath(__file__)))
 # default_results_path = '{}/../../../results/'.format(os.path.dirname(os.path.realpath(__file__)))
 default_results_path = '/home/jammy/results/'
 

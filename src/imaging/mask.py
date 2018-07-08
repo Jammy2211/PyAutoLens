@@ -216,7 +216,7 @@ class Mask(scaled_array.ScaledArray):
         return sub_to_image
 
     def compute_grid_data(self, grid_data):
-        """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
+        """Compute a weighted_data grid, which represents the weighted_data values of a weighted_data-set (e.g. an image, noise, in the mask.
 
         Parameters
         ----------
