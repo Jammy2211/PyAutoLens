@@ -839,7 +839,7 @@ class TestGridMapping(object):
 
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
+            cluster_to_image, image_to_cluster = mask.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
             mapping = grids.GridMapping.from_mask(mask, sub_grid_size=2, cluster_grid_size=1)
 
@@ -991,7 +991,7 @@ class TestGridClusterPixelization(object):
 
             mask = msk.Mask(array=mask, pixel_scale=3.0)
 
-            cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(sparse_grid_size=1)
+            cluster_to_image, image_to_cluster = mask.sparse_grid_mapper_with_grid_size(sparse_grid_size=1)
 
             cluster_pix = grids.GridClusterPixelization(cluster_to_image, image_to_cluster)
 
