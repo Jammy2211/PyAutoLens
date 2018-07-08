@@ -5,6 +5,7 @@ from src.analysis import fitting, ray_tracing, galaxy
 from src.imaging import grids
 from src.imaging import mask as mask
 from src.profiles import light_profiles
+from src.pixelization import pixelization
 from src.pixelization import frame_convolution
 
 
@@ -133,7 +134,7 @@ class MockHyperGalaxy(object):
 class TestFitData:
 
     def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self, image_1x1, no_galaxies):
-        # Setup the mask, grid data and PSF
+        # Setup the mask, grid weighted_data and PSF
 
         kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                                      [0.0, 1.0, 0.0],
@@ -541,128 +542,7 @@ class TestLikelihood:
         assert likelihood == pytest.approx(-0.5 * (chi_sq_term + noise_term), 1e-4)
 
 
-class TestComputeRegularizationTerm:
-
-    def test__s_vector_all_1s__regularization_matrix_simple(self):
-
-        s_vector = np.array([1.0, 1.0, 1.0])
-
-        regularization_matrix = np.array([[1.0, 0.0, 0.0],
-                                          [0.0, 1.0, 0.0],
-                                          [0.0, 0.0, 1.0]])
-
-        # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
-
-        # G_l = s_T * H * s
-
-        # Matrix multiplication:
-
-        # s_T * H = [1.0, 1.0, 1.0] * [1.0, 1.0, 1.0] = [(1.0*1.0) + (1.0*0.0) + (1.0*0.0)] = [1.0, 1.0, 1.0]
-        #                             [1.0, 1.0, 1.0]   [(1.0*0.0) + (1.0*1.0) + (1.0*0.0)]
-        #                             [1.0, 1.0, 1.0]   [(1.0*0.0) + (1.0*0.0) + (1.0*1.0)]
-
-        # (s_T * H) * s = [1.0, 1.0, 1.0] * [1.0] = 3.0
-        #                                   [1.0]
-        #                                   [1.0]
-
-        assert fitting.compute_regularization_term(s_vector, regularization_matrix) == 3.0
-
-    def test__s_vector_and_regularization_matrix_range_of_values(self):
-        s_vector = np.array([2.0, 3.0, 5.0])
-
-        regularization_matrix = np.array([[2.0, -1.0, 0.0],
-                                          [-1.0, 2.0, -1.0],
-                                          [0.0, -1.0, 2.0]])
-
-        # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
-
-        # G_l = s_T * H * s
-
-        # Matrix multiplication:
-
-        # s_T * H = [2.0, 3.0, 5.0] * [2.0,  -1.0,  0.0] = [(2.0* 2.0) + (3.0*-1.0) + (5.0 *0.0)] = [1.0, -1.0, 7.0]
-        #                             [-1.0,  2.0, -1.0]   [(2.0*-1.0) + (3.0* 2.0) + (5.0*-1.0)]
-        #                             [ 0.0, -1.0,  2.0]   [(2.0* 0.0) + (3.0*-1.0) + (5.0 *2.0)]
-
-        # (s_T * H) * s = [1.0, -1.0, 7.0] * [2.0] = 34.0
-        #                                    [3.0]
-        #                                    [5.0]
-
-        assert fitting.compute_regularization_term(s_vector, regularization_matrix) == 34.0
-
-
-class TestLogDetMatrix:
-
-    def test__determinant_of_ordinary_matrix(self):
-        matrix = np.array([[2.0, -3.0, 1.0],
-                           [2.0, 0.0, -1.0],
-                           [1.0, 4.0, 5.0]])
-
-        assert fitting.compute_log_determinant_of_matrix(matrix) == pytest.approx(np.log(49), 1e-4)
-
-    def test__determinant_of_positive_definite_matrix_via_cholesky(self):
-        matrix = np.array([[1.0, 0.0, 0.0],
-                           [0.0, 1.0, 0.0],
-                           [0.0, 0.0, 1.0]])
-
-        log_determinant = np.log(np.linalg.det(matrix))
-
-        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix_cholesky(matrix), 1e-4)
-
-    def test__determinant_of_positive_definite_matrix_2_via_cholesky(self):
-        matrix = np.array([[2.0, -1.0, 0.0],
-                           [-1.0, 2.0, -1.0],
-                           [0.0, -1.0, 2.0]])
-
-        log_determinant = np.log(np.linalg.det(matrix))
-
-        assert log_determinant == pytest.approx(fitting.compute_log_determinant_of_matrix_cholesky(matrix), 1e-4)
-
-    def test__determinant_of_positive_definite_matrix_compare_normal_and_cholesky_routines(self):
-        matrix = np.array([[2.0, -1.0, 0.0],
-                           [-1.0, 2.0, -1.0],
-                           [0.0, -1.0, 2.0]])
-
-        log_determinant = fitting.compute_log_determinant_of_matrix(matrix)
-        log_determinant_chol = fitting.compute_log_determinant_of_matrix_cholesky(matrix)
-
-        assert log_determinant == pytest.approx(log_determinant_chol, 1e-4)
-
-
-class TestPixModelImageFromSVector:
-
-    def test__s_vector_all_1s__simple_blurred_mapping_matrix__correct_model_image(self):
-        s_vector = np.array([1.0, 1.0, 1.0, 1.0])
-
-        blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],
-                                           [1.0, 0.0, 1.0, 1.0],
-                                           [1.0, 0.0, 0.0, 0.0]])
-
-        model_image = fitting.pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
-
-        # Image pixel 0 maps to 4 sources pixxels -> value is 4.0
-        # Image pixel 1 maps to 3 sources pixxels -> value is 3.0
-        # Image pixel 2 maps to 1 sources pixxels -> value is 1.0
-
-        assert (model_image == np.array([4.0, 3.0, 1.0])).all()
-
-    def test__s_vector_different_values__simple_blurred_mapping_matrix__correct_model_image(self):
-        s_vector = np.array([1.0, 2.0, 3.0, 4.0])
-
-        blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],
-                                           [1.0, 0.0, 1.0, 1.0],
-                                           [1.0, 0.0, 0.0, 0.0]])
-
-        model_image = fitting.pixelization_model_image_from_s_vector(s_vector, blurred_mapping_matrix)
-
-        # Image pixel 0 maps to 4 sources pixxels -> value is 1.0 + 2.0 + 3.0 + 4.0 = 10.0
-        # Image pixel 1 maps to 3 sources pixxels -> value is 1.0 + 3.0 + 4.0
-        # Image pixel 2 maps to 1 sources pixxels -> value is 1.0
-
-        assert (model_image == np.array([10.0, 8.0, 1.0])).all()
-
-
-class TestBayesianEvidence:
+class TestPixelizationEvidence:
 
     def test__simple_values(self):
 
@@ -670,7 +550,7 @@ class TestBayesianEvidence:
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([10.0, 10.0, 10.0, 10.0])
 
-        s_vector = np.array([1.0, 1.0, 1.0])
+        solution = np.array([1.0, 1.0, 1.0])
 
         cov_reg_matrix = np.array([[2.0, -1.0, 0.0],
                                    [-1.0, 2.0, -1.0],
@@ -680,7 +560,11 @@ class TestBayesianEvidence:
                                [0.0, 1.0, 0.0],
                                [0.0, 0.0, 1.0]])
 
-        evidence = fitting.compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, reg_matrix)
+        pix_fit = pixelization.InversionFitted(weighted_data=None, blurred_mapping=None,
+                                               regularization=reg_matrix, covariance=None,
+                                               covariance_regularization=cov_reg_matrix, reconstruction=solution)
+
+        evidence = fitting.compute_pixelization_evidence(image, noise, model_image, pix_fit)
 
         chi_sq_term = 0
         reg_term = 3.0
@@ -698,7 +582,7 @@ class TestBayesianEvidence:
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
-        s_vector = np.array([2.0, 3.0, 5.0])
+        solution = np.array([2.0, 3.0, 5.0])
 
         cov_reg_matrix = np.array([[1.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0],
@@ -708,7 +592,11 @@ class TestBayesianEvidence:
                                [-1.0, 2.0, -1.0],
                                [0.0, -1.0, 2.0]])
 
-        evidence = fitting.compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, reg_matrix)
+        pix_fit = pixelization.InversionFitted(weighted_data=None, blurred_mapping=None,
+                                               regularization=reg_matrix, covariance=None,
+                                               covariance_regularization=cov_reg_matrix, reconstruction=solution)
+
+        evidence = fitting.compute_pixelization_evidence(image, noise, model_image, pix_fit)
 
         chi_sq_term = 1.0 + (1.0 / 9.0) + 0.25
         reg_term = 34.0
@@ -726,7 +614,7 @@ class TestBayesianEvidence:
         noise = np.array([1.0, 2.0, 77.0, 4.0])
         model_image = np.array([11.0, 13.0, 9.0, 8.0])
 
-        s_vector = np.array([8.0, 7.0, 3.0])
+        solution = np.array([8.0, 7.0, 3.0])
 
         cov_reg_matrix = np.array([[1.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0],
@@ -736,12 +624,16 @@ class TestBayesianEvidence:
                                [-1.0, 2.0, -1.0],
                                [0.0, -1.0, 2.0]])
 
-        evidence = fitting.compute_bayesian_evidence(image, noise, model_image, s_vector, cov_reg_matrix, reg_matrix)
+        pix_fit = pixelization.InversionFitted(weighted_data=None, blurred_mapping=None,
+                                               regularization=reg_matrix, covariance=None,
+                                               covariance_regularization=cov_reg_matrix, reconstruction=solution)
+
+        evidence = fitting.compute_pixelization_evidence(image, noise, model_image, pix_fit)
 
         chi_sq_term = fitting.compute_chi_sq_term(image, noise, model_image)
-        reg_term = fitting.compute_regularization_term(s_vector, reg_matrix)
-        log_det_cov_reg = fitting.compute_log_determinant_of_matrix_cholesky(cov_reg_matrix)
-        log_det_reg = fitting.compute_log_determinant_of_matrix_cholesky(reg_matrix)
+        reg_term = pix_fit.regularization_term_from_reconstruction()
+        log_det_cov_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.covariance_regularization)
+        log_det_reg =  pix_fit.log_determinant_of_matrix_cholesky(pix_fit.regularization)
         noise_term = fitting.compute_noise_term(noise)
 
         assert evidence == pytest.approx(-0.5 * (chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term),

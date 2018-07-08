@@ -21,7 +21,7 @@ from src.analysis import fitting
 import scipy.optimize
 
 lens_name = 'lens_sersic'
-data_dir = "../data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
+data_dir = "../weighted_data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
 
 im = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/image', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/noise', hdu=0, pixel_scale=0.1)

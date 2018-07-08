@@ -98,7 +98,7 @@ print('galaxy image (intensities) from all of ray-tracing (e.g. image plane + so
 # e.g. ray_trace.source_plane.compute_mapping_matrix()
 
 # Thus, from a ray_tracing instance, we can extract all the model images / pixelization mapping matrices we could ever
-# desire. These will then be used to fit in the image data in what will be the 'analysis' module.
+# desire. These will then be used to fit in the image weighted_data in what will be the 'analysis' module.
 
 
 ### POTENTIAL GRID ###
@@ -121,4 +121,4 @@ print('galaxy image (intensities) from all of ray-tracing (e.g. image plane + so
 # 1) Using the image plane, compute the potential on the potential_grid.
 # 2) Using the source plane, determine the mapping matrix or whatever quantity to needed for the potential grid_coords.
 # 3) Use the above quantities to set up the potential grid_coords mapping matrix, which is then passed to the
-# analyis_image module for fitting the data.
+# analyis_image module for fitting the weighted_data.

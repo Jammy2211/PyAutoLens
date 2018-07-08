@@ -206,12 +206,12 @@ class PSF(ScaledArray):
 
     def __init__(self, array, pixel_scale, renormalize=True):
         """
-        Class storing a 2D Point Spread Function (PSF), including its data and coordinate grid_coords.
+        Class storing a 2D Point Spread Function (PSF), including its weighted_data and coordinate grid_coords.
 
         Parameters
         ----------
         array : ndarray
-            The psf data.
+            The psf weighted_data.
         pixel_scale : float
             The arc-second to pixel conversion factor of each pixel.
         renormalize : bool
@@ -247,7 +247,7 @@ class PSF(ScaledArray):
         return psf
 
     def renormalize(self):
-        """Renormalize the PSF such that its data values sum to unity."""
+        """Renormalize the PSF such that its weighted_data values sum to unity."""
         return np.divide(self, np.sum(self))
 
     def convolve(self, array):
