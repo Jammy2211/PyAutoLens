@@ -120,17 +120,6 @@ class AbstractCoordinateGrid(np.ndarray):
 
     # TODO : Make galaxy.intensitites_from_coordinate_grid as above
 
-    def intensities_via_grid(self, galaxies):
-        """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
-
-        Parameters
-        -----------
-        galaxies : [galaxy.Galaxy]
-            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
-        """
-        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                 output_shape=self.shape[0]), galaxies))
-
     def new_from_array(self, array):
         return self.__class__(array)
 
@@ -209,7 +198,16 @@ class CoordinateGrid(AbstractCoordinateGrid):
     |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
-    pass
+    def intensities_via_grid(self, galaxies):
+        """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
+
+        Parameters
+        -----------
+        galaxies : [galaxy.Galaxy]
+            The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
+        """
+        return sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
+                                                                 output_shape=self.shape[0]), galaxies))
 
 
 class SubCoordinateGrid(AbstractCoordinateGrid):
@@ -280,15 +278,17 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
              grid_coords[0,7] = [-0.5,  0.25]
              grid_coords[0,8] = [-0.25, 0.25]
 
-    Parameters
-    -----------
-    grid_coords : np.ndarray
-        The coordinates of the sub-grid.
-    sub_grid_size : int
-        The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel.
     """
 
     def __new__(cls, grid_coords, sub_grid_size):
+        """
+        Parameters
+        -----------
+        grid_coords : np.ndarray
+            The coordinates of the sub-grid.
+        sub_grid_size : int
+            The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel.
+        """
         grid = super(SubCoordinateGrid, cls).__new__(cls, grid_coords)
         grid.sub_grid_size = sub_grid_size
         return grid
