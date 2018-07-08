@@ -801,7 +801,7 @@ class TestGridMapping(object):
             assert (grid_mapping.data_to_image[4] == np.array([2, 1])).all()
 
             assert grid_mapping.sub_grid_size == 2
-            assert grid_mapping.sub_grid_size_squared == 4
+            assert grid_mapping.sub_grid_fraction == (1.0/4.0)
 
             assert (grid_mapping.sub_to_image == np.array(
                 [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])).all()
