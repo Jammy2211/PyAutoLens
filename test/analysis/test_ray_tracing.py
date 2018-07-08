@@ -76,7 +76,7 @@ class MockPixelization(object):
 
         self.value = value
 
-    def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapping):
+    def inversion_from_pix_grids(self, source_grid, source_sub_grid, mapping):
         return self.value
 
 

@@ -70,7 +70,7 @@ class FrameMaker(object):
         Parameters
         ----------
         mask: Mask
-                A mask where True eliminates data
+                A mask where True eliminates weighted_data
         """
         self.mask = mask
 
@@ -120,8 +120,8 @@ class FrameMaker(object):
         Returns
         -------
         blurring_frame_array [ndarray]
-            A list of frames where the position corresponds to a position in the blurring region data grid and the
-            entries correspond to positions in the primary data grid
+            A list of frames where the position corresponds to a position in the blurring region weighted_data grid and the
+            entries correspond to positions in the primary weighted_data grid
         """
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
