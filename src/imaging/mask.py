@@ -137,6 +137,12 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.CoordsCollection(image, sub, blurring)
 
+    def data_collection_from_image_noise_and_exposure_time(self, image, noise, exposure_time):
+        image = self.grid_data_from_grid(image)
+        noise = self.grid_data_from_grid(noise)
+        exposure_time = self.grid_data_from_grid(exposure_time)
+        return grids.DataCollection(image, noise, exposure_time)
+
     def sub_coordinate_grid_with_size(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
 
@@ -185,7 +191,7 @@ class Mask(scaled_array.ScaledArray):
 
         return blurring_mask.coordinate_grid
 
-    def compute_grid_sub_to_image(self, grid_size_sub):
+    def sub_to_image_with_size(self, grid_size_sub):
         """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
 
         Parameters
@@ -215,7 +221,7 @@ class Mask(scaled_array.ScaledArray):
 
         return sub_to_image
 
-    def compute_grid_data(self, grid_data):
+    def grid_data_from_grid(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
 
         Parameters
@@ -234,9 +240,9 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count] = grid_data[x, y]
                     pixel_count += 1
 
-        return grid
+        return grids.GridData(grid)
 
-    def compute_grid_data_to_pixel(self):
+    def grid_to_pixel(self):
         """
         Compute the mapping of every pixel in the mask to its 2D pixel coordinates.
         """
@@ -253,7 +259,18 @@ class Mask(scaled_array.ScaledArray):
 
         return grid
 
-    def compute_grid_mapper_sparse(self, sparse_grid_size):
+    def grid_mapping_with_sub_grid_size(self, sub_grid_size, cluster_grid_size=None):
+        data_to_image = self.grid_to_pixel()
+        sub_to_image = self.sub_to_image_with_size(sub_grid_size)
+
+        if cluster_grid_size is not None:
+            cluster = self.sparse_grid_mapper_with_grid_size(cluster_grid_size)
+        else:
+            cluster = None
+
+        return grids.GridMapping(self.shape, self.pixels_in_mask, data_to_image, sub_grid_size, sub_to_image, cluster)
+
+    def sparse_grid_mapper_with_grid_size(self, sparse_grid_size):
         """Given an image.Mask, compute the sparse cluster image data_to_pixels, defined as the sub-set of
         image-data_to_pixels used to perform KMeans clustering (this is used purely for speeding up the KMeans
         clustering algorithm).
@@ -286,7 +303,7 @@ class Mask(scaled_array.ScaledArray):
         image_to_sparse = self.compute_image_to_sparse(sparse_mask, sparse_index_image)
         logger.debug("image_to_sparse = {}".format(image_to_sparse))
 
-        return sparse_to_image, image_to_sparse
+        return grids.GridClusterPixelization(sparse_to_image, image_to_sparse)
 
     def compute_grid_border(self):
         """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on its \
