@@ -25,10 +25,10 @@ def coordinates_to_source_pixels_via_nearest_neighbour(coordinates, source_cente
 
         Returns
         ----------
-        image_image_to_source : [int, int]
+        image_to_source : [int, int]
             The index in source_pixel_centers each image_grid and image_grid-image_coordinate is matched with. (e.g. if the fifth
             image_coordinate of the third image_grid pixel is closest to the 3rd source-pixel in source_pixel_centers,
-            image_image_to_source[2,4] = 2).
+            image_to_source[2,4] = 2).
 
      """
 
@@ -49,104 +49,51 @@ def coordinates_to_source_pixels_via_nearest_neighbour(coordinates, source_cente
     return image_to_source
 
 
-class MockSubGrid(np.ndarray):
+class MockMapping(object):
 
-    def __new__(cls, grid, sub_grid_size, sub_to_image, image_pixels):
-        """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
-         sub-coordinates, which are used to perform over-sampling in the lens analysis.
+    def __init__(self, image_pixels, sub_grid_size, sub_to_image, cluster=None):
 
-        Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
-        image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
-        also counted from the top-left.
+        self.image_pixels = image_pixels
+        self.sub_pixels = sub_to_image.shape[0]
+        self.sub_grid_size = sub_grid_size
+        self.sub_grid_fraction = (1.0/sub_grid_size ** 2.0)
+        self.sub_to_image = sub_to_image
+        self.cluster = cluster
 
-        A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
-        element maps to the image pixel index, the second element to the sub-pixel index and third element to that
-        sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
-        7th sub-pixel's y coordinate.
-
-        Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
-        the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
-        2 data_to_image, to keep the illustration brief.
-
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
-        |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-
-        Our regular-grid looks like it did before:
-
-        pixel_scale = 1.0"
-
-        <--- -ve  x  +ve -->
-
-        |x|x|x|x|x|x|x|x|x|x|  ^
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x| +ve  grid_coords[0] = [-1.5,  0.5]
-        |x|x|x|0|1|x|x|x|x|x|  y   grid_coords[1] = [-0.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x| -ve
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x| \/
-        |x|x|x|x|x|x|x|x|x|x|
-
-        However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
-        if *sub_grid_size=2*, we use a 2x2 sub-grid:
-
-        Pixel 0 - (2x2):
-
-               grid_coords[0,0] = [-1.66, 0.66]
-        |0|1|  grid_coords[0,1] = [-1.33, 0.66]
-        |2|3|  grid_coords[0,2] = [-1.66, 0.33]
-               grid_coords[0,3] = [-1.33, 0.33]
-
-        Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
-        pretend we used a sub_grid_size of 3x3 for pixel 1:
-
-                 grid_coords[0,0] = [-0.75, 0.75]
-                 grid_coords[0,1] = [-0.5,  0.75]
-                 grid_coords[0,2] = [-0.25, 0.75]
-        |0|1|2|  grid_coords[0,3] = [-0.75,  0.5]
-        |3|4|5|  grid_coords[0,4] = [-0.5,   0.5]
-        |6|7|8|  grid_coords[0,5] = [-0.25,  0.5]
-                 grid_coords[0,6] = [-0.75, 0.25]
-                 grid_coords[0,7] = [-0.5,  0.25]
-                 grid_coords[0,8] = [-0.25, 0.25]
-
-        Parameters
-        -----------
-        grid : np.ndarray
-            The coordinates of the sub-grid.
-        sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel.
-        """
-        coords = super(MockSubGrid, cls).__new__(cls, grid)
-        coords.image_pixels = image_pixels
-        coords.sub_pixels = coords.shape[0]
-        coords.grid_size_sub = sub_grid_size
-        coords.grid_size_sub_squared = sub_grid_size ** 2.0
-        coords.sub_to_image = sub_to_image
-        return coords
-
-    def map_data_to_image_grid(self, data_sub):
+    def map_data_sub_to_image(self, data):
 
         data_image = np.zeros((self.image_pixels))
 
         for sub_pixel in range(self.sub_pixels):
-            data_image[self.sub_to_image[sub_pixel]] += data_sub[sub_pixel]
+            data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
 
-        return data_image / self.grid_size_sub_squared
+        return data_image / self.sub_grid_size_squared
 
 
-class MockMapperCluster(object):
+class MockCluster(object):
 
     def __init__(self, cluster_to_image, image_to_cluster):
+        """ The KMeans clustering used to derive an amorphous pixeliation uses a set of image-grid coordinates. For \
+        high resolution imaging, the large number of coordinates makes KMeans clustering (unfeasibly) slow.
+
+        Therefore, for efficiency, we define a 'clustering-grid', which is a sparsely sampled set of image-grid \
+        coordinates used by the KMeans algorithm instead. However, we don't need the actual coordinates of this \
+        clustering grid (as they are already calculated for the image-grid). Instead, we just need a mapper between \
+        clustering-data_to_image and image-data_to_image.
+
+        Thus, the *cluster_to_image* attribute maps every pixel on the clustering grid to its closest image pixel \
+        (via the image pixel's 1D index). This is used before the KMeans clustering algorithm, to extract the sub-set \
+        of coordinates that the algorithm uses.
+
+        By giving the KMeans algorithm only clustering-grid coordinates, it will only tell us the mappings between \
+        source-data_to_image and clustering-data_to_image. However, to perform the source reconstruction, we need to
+        know all of the mappings between source data_to_image and image data_to_image / sub-image data_to_image. This
+        would require a (computationally expensive) nearest-neighbor search (over all clustering data_to_image and
+        image / sub data_to_image) to calculate. The calculation can be sped-up by using the attribute
+        *image_to_cluster*, which maps every image-pixel to its closest pixel on the clustering grid (see
+        *pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs*).
+        """
+
         self.cluster_to_image = cluster_to_image
         self.image_to_cluster = image_to_cluster
 
@@ -172,8 +119,10 @@ class TestPixelization:
             sub_to_source = np.array([0, 1, 2])
             sub_to_image = np.array([0, 1, 2])
 
+            mapping = MockMapping(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image)
+
             pix = pixelization.Pixelization(pixels=6)
-            mapping_matrix = pix.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels=3, sub_grid_size=1)
+            mapping_matrix = pix.create_mapping_matrix(sub_to_source, mapping)
 
             assert (mapping_matrix == np.array([[1, 0, 0, 0, 0, 0],  # Image pixel 0 maps to source pixel 0.
                                                 [0, 1, 0, 0, 0, 0],  # Image pixel 1 maps to source pixel 1.
@@ -184,8 +133,10 @@ class TestPixelization:
             sub_to_source = np.array([0, 1, 2, 7, 6])
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
+            mapping = MockMapping(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image)
+
             pix = pixelization.Pixelization(pixels=8)
-            mapping_matrix = pix.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels=5, sub_grid_size=1)
+            mapping_matrix = pix.create_mapping_matrix(sub_to_source, mapping)
 
             assert (mapping_matrix == np.array(
                 [[1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to source pixel 0.
@@ -199,8 +150,10 @@ class TestPixelization:
             sub_to_source = np.array([0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
+            mapping = MockMapping(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+
             pix = pixelization.Pixelization(pixels=8)
-            mapping_matrix = pix.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels=5, sub_grid_size=2)
+            mapping_matrix = pix.create_mapping_matrix(sub_to_source, mapping)
 
             assert (mapping_matrix == np.array(
                 [[0.25, 0.25, 0.25, 0.25, 0, 0, 0, 0],
@@ -214,8 +167,10 @@ class TestPixelization:
             sub_to_source = np.array([0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
+            mapping = MockMapping(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+
             pix = pixelization.Pixelization(pixels=8)
-            mapping_matrix = pix.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels=5, sub_grid_size=2)
+            mapping_matrix = pix.create_mapping_matrix(sub_to_source, mapping)
 
             assert (mapping_matrix == np.array(
                 [[0.75, 0.25, 0, 0, 0, 0, 0, 0],
@@ -235,8 +190,10 @@ class TestPixelization:
                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
+            mapping = MockMapping(image_pixels=3, sub_grid_size=4, sub_to_image=sub_to_image)
+
             pix = pixelization.Pixelization(pixels=6)
-            mapping_matrix = pix.create_mapping_matrix(sub_to_source, sub_to_image, image_pixels=3, sub_grid_size=4)
+            mapping_matrix = pix.create_mapping_matrix(sub_to_source, mapping)
 
             assert (mapping_matrix == np.array(
                 [[0.75, 0.25, 0, 0, 0, 0],
@@ -1124,16 +1081,18 @@ class TestRectangularPixelization:
 
             # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
             source_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
-            sub_coords = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
+            source_sub_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
+
+            sub_to_image = np.array([0, 1, 2, 3, 4])
+
+            mapping = MockMapping(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image)
 
             # There is no sub-grid, so our sub_grid are just the image coordinates (note the NumPy data structure
             # ensures this has no sub-gridding)
-            source_sub_grid = MockSubGrid(grid=sub_coords, sub_grid_size=1,
-                                          sub_to_image=np.array([0, 1, 2, 3, 4]), image_pixels=5)
 
             pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert (pix_matrices.mapping == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                       [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1150,6 +1109,9 @@ class TestRectangularPixelization:
                                                              [ 0.0,  0.0,  0.0, -1.0,  0.0,  0.0,  2.00000001, -1.0,  0.0],
                                                              [ 0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  3.00000001, -1.0],
                                                              [ 0.0,  0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  2.00000001]])).all()
+
+            assert (pix_matrices.image_to_source == np.array([0, 2, 4, 6, 8])).all()
+            assert (pix_matrices.sub_to_source == np.array([0, 2, 4, 6, 8])).all()
 
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
 
@@ -1171,11 +1133,11 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
+            mapping = MockMapping(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image)
+
             pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                             sub_to_image, image_pixels=15,
-                                                             sub_grid_size=1)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert (pix_matrices.mapping == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                       [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1193,7 +1155,6 @@ class TestRectangularPixelization:
                                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
                                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
-
             assert (pix_matrices.regularization == np.array([[2.00000001, -1.0,  0.0, -1.0,  0.0,   0.0,  0.0,  0.0,  0.0],
                                                              [-1.0,  3.00000001, -1.0,  0.0, -1.0,  0.0,  0.0,  0.0,  0.0],
                                                              [ 0.0, -1.0,  2.00000001,  0.0,  0.0, -1.0,  0.0,  0.0,  0.0],
@@ -1203,6 +1164,9 @@ class TestRectangularPixelization:
                                                              [ 0.0,  0.0,  0.0, -1.0,  0.0,  0.0,  2.00000001, -1.0,  0.0],
                                                              [ 0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  3.00000001, -1.0],
                                                              [ 0.0,  0.0,  0.0,  0.0,  0.0, -1.0,  0.0, -1.0,  2.00000001]])).all()
+
+            assert (pix_matrices.image_to_source == np.array([0, 0, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8])).all()
+            assert (pix_matrices.sub_to_source == np.array([0, 0, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6, 8, 8, 8])).all()
 
         def test__5_simple_grid__include_sub_grid__sets_up_correct_pix_matrices(self):
 
@@ -1220,10 +1184,11 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
+            mapping = MockMapping(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+
             pix = pixelization.RectangularPixelization(shape=(3,3), regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                             sub_to_image, image_pixels=5, sub_grid_size=2)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert (pix_matrices.mapping == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                       [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1240,6 +1205,9 @@ class TestRectangularPixelization:
                                                              [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.00000001, -1.0, 0.0],
                                                              [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                              [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
+
+            assert (pix_matrices.image_to_source == np.array([0, 2, 4, 6, 8])).all()
+            assert (pix_matrices.sub_to_source == np.array([0, 0, 0, 4, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 4, 8, 8, 8, 4])).all()
 
 
 class TestVoronoiPixelization:
@@ -1472,103 +1440,44 @@ class TestVoronoiPixelization:
 
     class TestImageToSource:
 
-        def test__grid_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs(self):
-            # The cluster_grid coordinates are not required by the pairing routine routine below,
-            # but included here for clarity
-            image_grid = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
-            cluster_grid = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
-            image_to_cluster = np.array([0, 1, 2])
-
-            source_grid = np.array([[-1.0, 1.0], [0.0, 0.0], [-1.0, -1.0]])
-            source_centers = np.array([[-1.0, 1.0], [1.0, 1.0],
-                                       [0.0, 0.0],
-                                       [-1.0, -1.0], [1.0, -1.0]])
-            cluster_to_source = np.array([0, 2, 4])
-
-            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
-            voronoi = pix.compute_voronoi_grid(source_centers)
-            source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
-
-            image_to_source_via_nearest_neighbour = coordinates_to_source_pixels_via_nearest_neighbour(
-                source_grid, source_centers)
-
-            image_to_source_via_pairs = pix.compute_image_to_source(source_grid, source_centers,
-                                                                    source_neighbors, image_to_cluster,
-                                                                    cluster_to_source)
-
-            assert (image_to_source_via_nearest_neighbour == image_to_source_via_pairs).all()
-
         def test__image_grid_to_source_pixels_via_cluster_pairs__grid_of_source_pixels__correct_pairs(self):
 
-            source_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
-                                       [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+            source_centers = np.array([[-1.0, -1.0], [-0.9, 0.9],
+                                       [1.0, -1.1], [1.2, 1.2]])
 
-            source_grid = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
-                                           [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+            source_grid = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                     [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                     [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+
+            image_to_source = np.array([0, 1, 1, 0, 1, 1, 2, 2, 3])
+
+            image_to_source_via_nearest_neighbour = coordinates_to_source_pixels_via_nearest_neighbour(source_grid,
+                                                                                                       source_centers)
+
+            image_to_cluster = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            cluster_to_image = np.array([0, 2, 6, 8])
+            cluster_to_source = np.array([0, 1, 2, 3])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            sub_to_image=np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+            mapping = MockMapping(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, cluster=cluster)
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(source_centers)
             source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
-            image_image_to_source_via_nearest_neighbour = coordinates_to_source_pixels_via_nearest_neighbour(
-                source_grid, source_centers)
+            image_to_source_via_pairs = pix.compute_image_to_source(source_grid, source_centers, source_neighbors,
+                                                                    mapping, cluster_to_source)
 
-            # The cluster_grid coordinates are not required by the pairing routine routine below, but included here for clarity
-            cluster_grid = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
-
-            image_to_cluster = np.array([0, 1, 2, 1, 1, 2])
-            cluster_to_source = np.array([3, 4, 5])
-
-            image_image_to_source_via_pairs = pix.compute_image_to_source(
-                source_grid, source_centers, source_neighbors, image_to_cluster, cluster_to_source)
-
-            assert (image_image_to_source_via_nearest_neighbour == image_image_to_source_via_pairs).all()
+            assert (image_to_source_via_pairs == image_to_source).all()
+            assert (image_to_source_via_pairs == image_to_source_via_nearest_neighbour).all()
 
     class TestComputeSubToSource:
-
-        def test__sub_grid_to_source_pixels_via_cluster_pairs__source_pixels_in_x_shape__correct_pairs(self):
-
-            source_centers = np.array([[-1.0, 1.0], [1.0, 1.0],
-                                       [0.0, 0.0],
-                                       [-1.0, -1.0], [1.0, -1.0]])
-
-            # Make it so the central top, left, right and bottom coordinate all pair with the central source_pixel (index=2)
-
-            source_sub_grid = np.array([[-1.1, 1.1], [-0.9, 1.1], [-1.1, 0.9], [-0.9, 0.9],
-                                               [-0.1, 0.1], [0.1, 0.1], [-0.1, -0.1], [0.1, -0.1],
-                                               [0.9, 1.1], [1.1, 1.1], [0.9, 0.9], [1.1, 0.9]])
-
-            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])
-
-            source_grid = np.array([[-1.0, 1.0],
-                                           [0.0, 0.0],
-                                           [1.0, 1.0]])
-
-            pix = pixelization.VoronoiPixelization(pixels=5, regularization_coefficients=1.0)
-            voronoi = pix.compute_voronoi_grid(source_centers)
-            source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
-
-            sub_to_source_via_nearest_neighbour = coordinates_to_source_pixels_via_nearest_neighbour(
-                source_sub_grid, source_centers)
-
-            # The cluster_grid coordinates are not required by the pairing routine routine below,
-            # but included here for clarity
-            cluster_grid = np.array([[-1.0, 1.0], [0.0, 0.0], [1.0, 1.0]])
-
-            image_to_cluster = np.array([0, 1, 2])
-
-            source_to_cluster = np.array([1, 2, 4])
-
-            sub_to_source_via_pairs = pix.compute_sub_to_source(source_sub_grid, source_centers,
-                                         source_neighbors, sub_to_image, image_to_cluster, source_to_cluster)
-
-            assert (sub_to_source_via_nearest_neighbour == sub_to_source_via_pairs).all()
 
         def test__sub_grid_to_source_pixels_via_cluster_pairs__grid_of_source_pixels__correct_pairs(self):
 
             source_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                        [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
-
             source_sub_grid = np.array([[0.05, 0.15], [0.15, 0.15], [0.05, 0.05], [0.15, 0.05],
                                                [1.05, 0.15], [1.15, 0.15], [1.05, 0.05], [1.15, 0.05],
                                                [2.05, 0.15], [2.15, 0.15], [2.05, 0.05], [2.15, 0.05],
@@ -1576,26 +1485,23 @@ class TestVoronoiPixelization:
                                                [1.05, 1.15], [1.15, 1.15], [1.05, 1.05], [1.15, 1.05],
                                                [2.05, 1.15], [2.15, 1.15], [2.05, 1.05], [2.15, 1.05]])
 
-            source_grid = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
-                                           [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
+            sub_to_source_via_nearest_neighbour = coordinates_to_source_pixels_via_nearest_neighbour(source_sub_grid,
+                                                                                                     source_centers)
+
+            image_to_cluster = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            cluster_to_image = np.array([0, 2, 6, 8])
+            cluster_to_source = np.array([0, 1, 2, 3])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
+            mapping = MockMapping(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, cluster=cluster)
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.compute_voronoi_grid(source_centers)
             source_neighbors = pix.compute_source_neighbors(voronoi.ridge_points)
 
-            sub_to_source_via_nearest_neighbour = coordinates_to_source_pixels_via_nearest_neighbour(
-                source_sub_grid, source_centers)
-
-            # The cluster_grid coordinates are not required by the pairing routine routine below, but included here for clarity
-            cluster_grid = np.array([[-0.9, -0.9], [1.0, 1.0], [2.0, 1.0]])
-
-            image_to_cluster = np.array([0, 1, 2, 1, 1, 2])
-            cluster_to_source = np.array([3, 4, 5])
-
             sub_to_source_via_pairs = pix.compute_sub_to_source(source_sub_grid, source_centers, source_neighbors,
-                                                                sub_to_image, image_to_cluster, cluster_to_source)
+                                                                mapping, cluster_to_source)
 
             assert (sub_to_source_via_nearest_neighbour == sub_to_source_via_pairs).all()
 
@@ -1605,28 +1511,20 @@ class TestClusterPixelization:
     class TestComputePixelizationMatrices:
 
         def test__5_simple_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
-            # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
-    
+
             source_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-    
-            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
-            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
-            cluster_to_image = np.array([0, 1, 2, 3, 4])
-            # We will assume that source-pixels with similar coordinates are near each other in the image.
-            image_to_cluster = np.array([0, 1, 2, 3, 4])
-    
-            # There is no sub-grid, so our sub_grid are just the image coordinates (note the NumPy data structure
-            # ensures this has no sub-gridding)
             source_sub_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
             sub_to_image = np.array([0, 1, 2, 3, 4])
-    
-            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            cluster_to_image = np.array([0, 1, 2, 3, 4])
+            image_to_cluster = np.array([0, 1, 2, 3, 4])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            mapping = MockMapping(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, cluster=cluster)
     
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                                    mapper_cluster, sub_to_image, image_pixels=5,
-                                                                    sub_grid_size=1)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
     
             assert (pix_matrices.mapping == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                 [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -1640,38 +1538,31 @@ class TestClusterPixelization:
                                                              [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                              [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
+            assert (pix_matrices.image_to_source == np.array([0, 1, 2, 3, 4])).all()
+            assert (pix_matrices.sub_to_source == np.array([0, 1, 2, 3, 4])).all()
+
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
-            # Source-plane comprises 15 coordinates, so 15 image pixels traced to the source-plane.
-    
+
+            cluster_to_image = np.array([1, 4, 7, 10, 13])
+            image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
             source_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                            [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
                                            [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
                                            [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                            [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
-    
-            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
-            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
-            cluster_to_image = np.array([1, 4, 7, 10, 13])
-            # We will assume that source-pixels with similar coordinates are near each other in the image.
-            image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-    
-            # There is no sub-grid, so our sub_grid are just the image coordinates (note the NumPy data structure
-            # ensures this has no sub-gridding)
             source_sub_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                                [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
                                                [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
                                                [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                                [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
-    
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
-    
-            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
-    
+            mapping = MockMapping(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image, cluster=cluster)
+
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
     
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                                    mapper_cluster, sub_to_image, image_pixels=15,
-                                                                    sub_grid_size=1)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
     
             assert (pix_matrices.mapping == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                 [1.0, 0.0, 0.0, 0.0, 0.0],
@@ -1694,20 +1585,18 @@ class TestClusterPixelization:
                                                              [-1.0, -1.0, 4.00000001, -1.0, -1.0],
                                                              [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                              [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
-    
+
+            assert (pix_matrices.image_to_source == np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])).all()
+            assert (pix_matrices.sub_to_source == np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])).all()
+
         def test__5_simple_grid__include_sub_grid__sets_up_correct_pix_matrices(self):
-            # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
+
             source_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-    
-            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
-            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
+
             cluster_to_image = np.array([0, 1, 2, 3, 4])
-            # We will assume that source-pixels with similar coordinates are near each other in the image.
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-    
-            # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
-            # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
-            # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the sub-grid.
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
             source_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                                [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
                                                [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
@@ -1716,13 +1605,11 @@ class TestClusterPixelization:
     
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
     
-            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            mapping = MockMapping(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, cluster=cluster)
     
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
     
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                              mapper_cluster, sub_to_image, image_pixels=5,
-                                                                    sub_grid_size=2)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert (pix_matrices.mapping == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
                                                       [0.0, 0.75, 0.25, 0.0, 0.0],
@@ -1736,14 +1623,18 @@ class TestClusterPixelization:
                                                              [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                              [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
+            assert (pix_matrices.image_to_source == np.array([0, 1, 2, 3, 4])).all()
+            assert (pix_matrices.sub_to_source == np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])).all()
+
 
 class TestAmorphousPixelization:
 
     class TestKMeans:
 
         def test__simple_points__sets_up_two_clusters(self):
+
             cluster_grid = np.array([[0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                            [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
+                                     [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
             pix = pixelization.AmorphousPixelization(pixels=2)
 
@@ -1802,28 +1693,20 @@ class TestAmorphousPixelization:
     class TestComputePixelizationMatrices:
 
         def test__5_simple_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
-            # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
 
             source_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-
-            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
-            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
-            cluster_to_image = np.array([0, 1, 2, 3, 4])
-            # We will assume that source-pixels with similar coordinates are near each other in the image.
-            image_to_cluster = np.array([0, 1, 2, 3, 4])
-
-            # There is no sub-grid, so our sub_grid are just the image coordinates (note the NumPy data structure
-            # ensures this has no sub-gridding)
             source_sub_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
-            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            cluster_to_image = np.array([0, 1, 2, 3, 4])
+            image_to_cluster = np.array([0, 1, 2, 3, 4])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+
+            mapping = MockMapping(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, cluster=cluster)
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                                    mapper_cluster, sub_to_image, image_pixels=15,
-                                                                    sub_grid_size=1)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert np.sum(pix_matrices.mapping) == 5.0
             assert np.sum(pix_matrices.mapping[:, 0]) == 1.0
@@ -1840,38 +1723,32 @@ class TestAmorphousPixelization:
             assert np.sum(np.diag(pix_matrices.regularization)) == 16.00000005
             assert np.sum(pix_matrices.regularization) - np.sum(np.diag(pix_matrices.regularization)) == -16.0
 
+            assert set(pix_matrices.image_to_source) == set(np.array([0, 1, 2, 3, 4]))
+            assert set(pix_matrices.sub_to_source) == set(np.array([0, 1, 2, 3, 4]))
+
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
-            # Source-plane comprises 15 coordinates, so 15 image pixels traced to the source-plane.
+
+            cluster_to_image = np.array([1, 4, 7, 10, 13])
+            image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
             source_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
-                                           [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
-                                           [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
-                                           [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
-                                           [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
-
-            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
-            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
-            cluster_to_image = np.array([1, 4, 7, 10, 13])
-            # We will assume that source-pixels with similar coordinates are near each other in the image.
-            image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-
-            # There is no sub-grid, so our sub_grid are just the image coordinates (note the NumPy data structure
-            # ensures this has no sub-gridding)
+                                    [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
+                                    [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
+                                    [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
+                                    [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
             source_sub_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
-                                               [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
-                                               [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
-                                               [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
-                                               [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
-
+                                        [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
+                                        [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
+                                        [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
+                                        [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            mapping = MockMapping(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image, cluster=cluster)
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                                    mapper_cluster, sub_to_image, image_pixels=15,
-                                                                    sub_grid_size=1)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert np.sum(pix_matrices.mapping) == 15.0
 
@@ -1900,34 +1777,30 @@ class TestAmorphousPixelization:
             assert np.sum(np.diag(pix_matrices.regularization)) == 16.00000005
             assert np.sum(pix_matrices.regularization) - np.sum(np.diag(pix_matrices.regularization)) == -16.0
 
+            assert set(pix_matrices.image_to_source) == set(np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]))
+            assert set(pix_matrices.sub_to_source) == set(np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]))
+
         def test__5_simple_grid__include_sub_grid__sets_up_correct_mapping_matrix(self):
-            # Source-plane comprises 5 coordinates, so 5 image pixels traced to the source-plane.
+
             source_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
 
-            # We'll use 5 cluster_pixels (and therefore source pixels), which map onto (1.0, 1.0), (-1.0, 1.0),
-            # (0.0, 0.0), (1.0, -1.0) and (-1.0, -1.0).
             cluster_to_image = np.array([0, 1, 2, 3, 4])
-            # We will assume that source-pixels with similar coordinates are near each other in the image.
             image_to_cluster = np.array([0, 1, 2, 3, 4])
+            cluster = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
-            # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
-            # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
-            # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the sub-grid.
             source_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
-                                               [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
-                                               [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
-                                               [1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
-                                               [-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]])
+                                        [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
+                                        [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
+                                        [1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
+                                        [-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]])
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            mapper_cluster = MockMapperCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            mapping = MockMapping(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, cluster=cluster)
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid,
-                                                                    mapper_cluster, sub_to_image, image_pixels=5,
-                                                                    sub_grid_size=2)
+            pix_matrices = pix.compute_pixelization_matrices(source_grid, source_sub_grid, mapping)
 
             assert np.sum(pix_matrices.mapping) == 5.0
 
@@ -1942,3 +1815,6 @@ class TestAmorphousPixelization:
 
             assert np.sum(np.diag(pix_matrices.regularization)) == 16.00000005
             assert np.sum(pix_matrices.regularization) - np.sum(np.diag(pix_matrices.regularization)) == -16.0
+
+            assert set(pix_matrices.image_to_source) == set(np.array([0, 1, 2, 3, 4]))
+            assert set(pix_matrices.sub_to_source) == set(np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2]))
