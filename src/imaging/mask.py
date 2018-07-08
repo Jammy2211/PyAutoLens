@@ -289,18 +289,18 @@ class Mask(scaled_array.ScaledArray):
         GridClusterPixelization
         """
 
-        sparse_mask = self.compute_sparse_uniform_mask(sparse_grid_size)
+        sparse_mask = self.sparse_uniform_mask_with_grid_size(sparse_grid_size)
         logger.debug("sparse_mask = {}".format(sparse_mask))
-        sparse_index_image = self.compute_sparse_index_image(sparse_mask)
+        sparse_index_image = self.sparse_index_image_from_mask(sparse_mask)
         logger.debug("sparse_index_image = {}".format(sparse_index_image))
-        sparse_to_image = self.compute_sparse_to_image(sparse_mask)
+        sparse_to_image = self.sparse_to_image_from_mask(sparse_mask)
         logger.debug("sparse_to_image = {}".format(sparse_to_image))
-        image_to_sparse = self.compute_image_to_sparse(sparse_mask, sparse_index_image)
+        image_to_sparse = self.image_to_sparse_from_mask_and_index_image(sparse_mask, sparse_index_image)
         logger.debug("image_to_sparse = {}".format(image_to_sparse))
 
         return grids.GridClusterPixelization(sparse_to_image, image_to_sparse)
 
-    def compute_grid_border(self):
+    def grid_border(self):
         """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on its \
         edge, therefore neighboring a pixel with a *True* value.
         """
@@ -351,7 +351,7 @@ class Mask(scaled_array.ScaledArray):
 
         return Mask(blurring_mask, self.pixel_scale)
 
-    def compute_sparse_uniform_mask(self, sparse_grid_size):
+    def sparse_uniform_mask_with_grid_size(self, sparse_grid_size):
         """Setup a two-dimensional sparse mask of image data_to_pixels, by keeping all image data_to_pixels which do not
         give a remainder when divided by the sub-grid_coords sub_grid_size. """
         sparse_mask = np.full(self.shape, True)
@@ -364,7 +364,7 @@ class Mask(scaled_array.ScaledArray):
 
         return Mask(sparse_mask, self.pixel_scale)
 
-    def compute_sparse_index_image(self, sparse_mask):
+    def sparse_index_image_from_mask(self, sparse_mask):
         """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
 
          This is used for computing the image_to_cluster vector, whereby each image pixel is paired to the sparse
@@ -381,7 +381,7 @@ class Mask(scaled_array.ScaledArray):
 
         return sparse_index_2d
 
-    def compute_sparse_to_image(self, sparse_mask):
+    def sparse_to_image_from_mask(self, sparse_mask):
         """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
         data_to_pixels.
 
@@ -410,7 +410,7 @@ class Mask(scaled_array.ScaledArray):
 
         return sparse_to_image
 
-    def compute_image_to_sparse(self, sparse_mask, sparse_index_image):
+    def image_to_sparse_from_mask_and_index_image(self, sparse_mask, sparse_index_image):
         """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
 
         This is performed by going to each image pixel in the *mask*, and pairing it with its nearest neighboring pixel
