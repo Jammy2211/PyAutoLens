@@ -123,10 +123,10 @@ class Image(ScaledArray):
         """
         Convolve a two-dimensional array with a two-dimensional kernel (e.g. a PSF)
 
-        NOTE1 : The PSF kernel must be size odd x odd to avoid ambiguities with convolution offsets.
+        NOTE1 : The PSF kernel must be sub_grid_size odd x odd to avoid ambiguities with convolution offsets.
 
-        NOTE2 : SciPy has multiple 'mode' options for the size of the output array (e.g. does it include zero padding).
-        We require the output array to be the same size as the input image.
+        NOTE2 : SciPy has multiple 'mode' options for the sub_grid_size of the output array (e.g. does it include zero padding).
+        We require the output array to be the same sub_grid_size as the input image.
 
         Parameters
         ----------
