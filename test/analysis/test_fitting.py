@@ -45,7 +45,8 @@ def make_1x1_image():
                                                            kernel_shape=(3, 3)))
 
     im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
-    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, sub_grid_size=1, blurring_shape=(3, 3))
+    im.grid_collection = im.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
+                                                                                          blurring_shape=(3, 3))
 
     return im
 
@@ -76,15 +77,15 @@ def make_2x2_image():
                                                            kernel_shape=(3, 3)))
 
     im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
-    im.grid_collection = grids.CoordsCollection.from_mask(mask=im.ma, sub_grid_size=1, blurring_shape=(3, 3))
+    im.grid_collection = im.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
+                                                                                          blurring_shape=(3, 3))
 
     return im
 
 
 class MockMapping(object):
 
-    def __init__(self,  image_pixels, sub_grid_size, sub_to_image):
-
+    def __init__(self, image_pixels, sub_grid_size, sub_to_image):
         self.image_pixels = image_pixels
         self.sub_pixels = sub_to_image.shape[0]
         self.sub_grid_size = sub_grid_size
@@ -134,7 +135,7 @@ class MockHyperGalaxy(object):
 class TestFitData:
 
     def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self, image_1x1, no_galaxies):
-        # Setup the mask, grid weighted_data and PSF
+        # Setup the mask, grid data and PSF
 
         kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                                      [0.0, 1.0, 0.0],
@@ -146,7 +147,8 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
-        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace, image_1x1.mapping)
+        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace,
+                                                    image_1x1.mapping)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
@@ -162,7 +164,8 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
-        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace, image_1x1.mapping)
+        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace,
+                                                    image_1x1.mapping)
 
         assert likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
@@ -179,7 +182,8 @@ class TestGenerateBlurredLightProfileImage:
                                        image_plane_grids=image_1x1.grid_collection)
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles(image_1x1.mapping)
-        blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace, kernel_convolver=kernel_convolver,
+        blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
+                                                                     kernel_convolver=kernel_convolver,
                                                                      mapping=image_1x1.mapping)
 
         assert non_blurred_value == blurred_value
@@ -194,7 +198,8 @@ class TestGenerateBlurredLightProfileImage:
                                        image_plane_grids=image_1x1.grid_collection)
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
-                                                        kernel_convolver=kernel_convolver, mapping=image_1x1.mapping)
+                                                                     kernel_convolver=kernel_convolver,
+                                                                     mapping=image_1x1.mapping)
 
         # Manually compute result of convolution, which for our PSF of all 1's is just the central value +
         # the (central value x each blurring region value).
@@ -257,7 +262,8 @@ class TestFitDataWithProfilesHyperGalaxy:
                           MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)]
 
         likelihood = fitting.fit_data_with_profiles_hyper_galaxies(image_1x1.grid_datas, kernel_convolver, ray_trace,
-                                                        image_1x1.mapping, model_image, galaxy_images, minimum_values,
+                                                                   image_1x1.mapping, model_image, galaxy_images,
+                                                                   minimum_values,
                                                                    hyper_galaxies)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 4.0 ** 2.0)  # should be 1
@@ -281,12 +287,13 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
+                                                         kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
 
-        image = grids.GridData.from_mask(data=image_2d, mask=ma)
+        image = ma.grid_data_from_grid(image_2d)
 
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -309,12 +316,13 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
+                                                         kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        image = grids.GridData.from_mask(data=image_2d, mask=ma)
+        image = ma.grid_data_from_grid(image_2d)
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
@@ -335,12 +343,13 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
+                                                         kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
 
-        image = grids.GridData.from_mask(data=image_2d, mask=ma)
+        image = ma.grid_data_from_grid(image_2d)
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
@@ -360,12 +369,14 @@ class TestComputeBlurredImages:
 
         frame = frame_convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)))
+                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
+                                                         kernel_shape=(3, 3)))
         kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        image = grids.GridData.from_mask(data=image_2d, mask=ma)
+        image = ma.grid_data_from_grid(image_2d)
+
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
