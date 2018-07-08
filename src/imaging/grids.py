@@ -2,10 +2,6 @@ import numpy as np
 from src import exc
 from src.profiles import geometry_profiles
 
-# TODO : I removed grid_mapper and made the mapping from 1D to 2D / sub-grid to image-grid inbuilt in the classes.
-# TODO : Thiss makes the code a lot cleaner, but could lead to significant memory use if we have lots of SubCoordinateGrid's
-# TODO : being made for a large ray tracing?
-
 
 class CoordsCollection(object):
 
@@ -526,6 +522,20 @@ class GridMapping(object):
 
         return data_2d
 
+    def map_to_1d(self, data_2d):
+        """Use mapper to map a 2D image back to its *GridData* structure.
+
+        Parameters
+        -----------
+        data_2d : ndarray
+            The image which is to be mapped back to its *GridData* structure.
+        """
+        data_1d = np.zeros(self.image_pixels)
+
+        for (i, pixel) in enumerate(self):
+            data_1d[i] = data_2d[pixel[0], pixel[1]]
+
+        return data_1d
 
 class GridClusterPixelization(object):
 
