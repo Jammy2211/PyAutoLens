@@ -24,27 +24,6 @@ class CoordsCollection(object):
         self.sub = sub
         self.blurring = blurring
 
-    @classmethod
-    def from_mask(cls, mask, sub_grid_size, blurring_shape):
-        """Setup the collection of coordinate grids using an image mask.
-
-        Parameters
-        -----------
-        mask : mask.Mask
-            A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
-            grids.
-        sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel, used by *GridCoordsImageSub*.
-        blurring_shape : (int, int)
-           The sub_grid_size of the psf which defines the blurring region, used by *GridCoordsBlurring*.
-        """
-
-        image = mask.coordinate_grid
-        sub = mask.sub_coordinate_grid_with_size(sub_grid_size)
-        blurring = mask.blurring_coordinate_grid(blurring_shape)
-
-        return CoordsCollection(image, sub, blurring)
-
     def deflection_grids_for_galaxies(self, galaxies):
         """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies)
         and set these up as a new collection of grids."""
@@ -197,6 +176,7 @@ class CoordinateGrid(AbstractCoordinateGrid):
     |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
+
     def intensities_via_grid(self, galaxies):
         """Compute the intensity for each coordinate on the grid, using the light-profile(s) of a set of galaxies.
 
@@ -302,7 +282,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         """
 
         sub_intensities = sum(map(lambda galaxy: self.evaluate_func_on_grid(func=galaxy.intensity_at_coordinates,
-                                                                             output_shape=self.shape[0]), galaxies))
+                                                                            output_shape=self.shape[0]), galaxies))
         return mapping.map_data_sub_to_image(sub_intensities)
 
     def new_from_array(self, array):
@@ -326,27 +306,6 @@ class DataCollection(object):
         self.image = image
         self.noise = noise
         self.exposure_time = exposure_time
-
-    @classmethod
-    def from_mask(cls, mask, image, noise, exposure_time):
-        """Setup the collection of data grids using a mask.
-
-        Parameters
-        -----------
-        mask : mask.Mask
-            A mask describing which data_to_image the coordinates are computed for and used to setup the collection of
-            grids.
-        image : imaging.Image
-            A data-grid of the observed image fluxes (electrons per second)
-        noise : imaging.Noise
-            A data-grid of the observed image noise estimates (standard deviations, electrons per second)
-        exposure_time : imaging.ExposureTime
-            A data-grid of the exposure time in each pixel (seconds)
-        """
-        image = GridData.from_mask(image, mask)
-        noise = GridData.from_mask(noise, mask)
-        exposure_time = GridData.from_mask(exposure_time, mask)
-        return DataCollection(image, noise, exposure_time)
 
 
 class GridData(np.ndarray):
@@ -451,18 +410,6 @@ class GridData(np.ndarray):
         data = np.array(grid_data).view(cls)
         return data
 
-    @classmethod
-    def from_mask(cls, data, mask):
-        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
-
-        Parameters
-        ----------
-        data
-        mask : mask.Mask
-            The image mask containing the data_to_image the data-grid is computed for.
-        """
-        return GridData(mask.compute_grid_data(data))
-
 
 class GridMapping(object):
 
@@ -477,29 +424,9 @@ class GridMapping(object):
         self.sub_to_image = sub_to_image
         self.cluster = cluster
 
-    @classmethod
-    def from_mask(cls, mask, sub_grid_size, cluster_grid_size=None):
-        """ Given an image.Mask, setup the data-grid using the every unmasked pixel.
-
-        Parameters
-        ----------
-        data
-        mask : mask.Mask
-            The image mask containing the data_to_image the data-grid is computed for.
-        """
-        data_to_image = mask.compute_grid_data_to_pixel()
-        sub_to_image = mask.compute_grid_sub_to_image(sub_grid_size)
-
-        if cluster_grid_size is not None:
-            cluster = GridClusterPixelization.from_mask(mask, cluster_grid_size)
-        else:
-            cluster = None
-
-        return GridMapping(mask.shape, mask.pixels_in_mask, data_to_image, sub_grid_size, sub_to_image, cluster)
-
     def map_data_sub_to_image(self, data):
 
-        data_image = np.zeros((self.image_pixels))
+        data_image = np.zeros((self.image_pixels,))
 
         for sub_pixel in range(self.sub_pixels):
             data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
@@ -563,21 +490,6 @@ class GridClusterPixelization(object):
 
         self.cluster_to_image = cluster_to_image
         self.image_to_cluster = image_to_cluster
-
-    @classmethod
-    def from_mask(cls, mask, cluster_grid_size):
-        """ Given an image.Mask, compute the clustering mapper of the image by inputting its sub_grid_size and finding \
-        all image data_to_image which are on its sparsely defined mask.
-
-        Parameters
-        ----------
-        cluster_grid_size
-        mask : mask.Mask
-            The image mask containing the data_to_image the blurring grid_coords is computed for and the image's data
-            grid_coords.
-        """
-        cluster_to_image, image_to_cluster = mask.compute_grid_mapper_sparse(cluster_grid_size)
-        return GridClusterPixelization(cluster_to_image, image_to_cluster)
 
 
 class GridBorder(geometry_profiles.Profile):
