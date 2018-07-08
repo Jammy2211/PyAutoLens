@@ -107,7 +107,7 @@ class MockSubGrid(np.ndarray):
                grid_coords[0,3] = [-1.33, 0.33]
 
         Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
-        pretend we used a size of 3x3 for pixel 1:
+        pretend we used a sub_grid_size of 3x3 for pixel 1:
 
                  grid_coords[0,0] = [-0.75, 0.75]
                  grid_coords[0,1] = [-0.5,  0.75]
@@ -124,7 +124,7 @@ class MockSubGrid(np.ndarray):
         grid : np.ndarray
             The coordinates of the sub-grid.
         sub_grid_size : int
-            The (sub_grid_size x sub_grid_size) size of each sub-grid for each pixel.
+            The (sub_grid_size x sub_grid_size) sub_grid_size of each sub-grid for each pixel.
         """
         coords = super(MockSubGrid, cls).__new__(cls, grid)
         coords.image_pixels = image_pixels
