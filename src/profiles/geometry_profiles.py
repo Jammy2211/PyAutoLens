@@ -83,14 +83,14 @@ def subgrid(func):
 
 def iterative_subgrid(subgrid_func):
     """
-    Decorator to iteratively increase the grid_coords size until the difference between nlo reaches a defined threshold
+    Decorator to iteratively increase the grid_coords sub_grid_size until the difference between nlo reaches a defined threshold
     Parameters
     ----------
     subgrid_func : function(coordinates, pixel_scale, grid_size) -> value
         A function decorated with subgrid and average
     Returns
     -------
-        A function that will iteratively increase grid_coords size until a desired accuracy is reached
+        A function that will iteratively increase grid_coords sub_grid_size until a desired accuracy is reached
     """
 
     @wraps(subgrid_func)
@@ -102,7 +102,7 @@ def iterative_subgrid(subgrid_func):
         coordinates
             x, y coordinates in coordinates space
         pixel_scale : float
-            The size of a pixel
+            The sub_grid_size of a pixel
         threshold : float
             The minimum difference between the result at two different grid_coords sizes
         Returns
