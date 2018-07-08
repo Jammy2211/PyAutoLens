@@ -200,7 +200,7 @@ class Mask(scaled_array.ScaledArray):
             The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
         """
 
-        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2))
+        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2), dtype=int)
         image_pixel_count = 0
         sub_pixel_count = 0
 
