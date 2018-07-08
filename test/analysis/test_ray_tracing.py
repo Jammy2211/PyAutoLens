@@ -63,6 +63,21 @@ def make_lens_sis_x3():
                          mass_profile_3=mass_profile)
 
 
+class MockMapping(object):
+
+    def __init__(self):
+        pass
+
+
+class MockPixelization(object):
+
+    def __init__(self, value):
+
+        self.value = value
+
+    def compute_pixelization_matrices(self, source_grid, source_sub_grid, mapping):
+        return self.value
+
 class TestTraceImageAndSoure(object):
 
     class TestSetup:
@@ -404,7 +419,6 @@ class TestPlane(object):
             assert (image[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
             assert (image[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
 
-
     class TestBlurringImageFromGalaxies:
 
         def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids,
@@ -464,6 +478,28 @@ class TestPlane(object):
             assert (blurring_image[1] == 3.0 * profile_intensity_1 == 3.0 * blurring_galaxy_intensity[1]).all()
             assert (blurring_image[2] == 3.0 * profile_intensity_2 == 3.0 * blurring_galaxy_intensity[2]).all()
             assert (blurring_image[3] == 3.0 * profile_intensity_3 == 3.0 * blurring_galaxy_intensity[3]).all()
+
+    class TestPixelizationFromGalaxies:
+
+        # def test__no_galaxies_in_plane__returns_none(self, all_grids, mapping):
+        #
+        #     galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
+        #
+        #     plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=all_grids)
+        #
+        #     pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+        #
+        #     assert pix_matrix == 1
+
+        def test__1_galaxy_in_plane__it_has_pixelization__extracts_pixelization_matrix(self, all_grids, mapping):
+
+            galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
+
+            plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=all_grids)
+
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+
+            assert pix_matrix == 1
 
 
 
