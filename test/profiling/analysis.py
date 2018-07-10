@@ -5,8 +5,9 @@ from src.imaging import image as im
 from src.imaging import mask as msk
 from src.imaging import scaled_array
 import os
+import time
 
-repeats = 1
+repeats = 10
 
 # Load up the data
 lens_name = 'source_sersic'
@@ -38,7 +39,9 @@ def test_analysis_1():
     lens_galaxy = g.Galaxy(spherical_mass_profile=mass_profiles.EllipticalIsothermal(axis_ratio=0.9),
                            shear_mass_profile=mass_profiles.ExternalShear())
 
+    start = time.time()
     repeat(lambda _: analysis.run(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy]))
+    print(time.time() - start)
 
 
 if __name__ == "__main__":
