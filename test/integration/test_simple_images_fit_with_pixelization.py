@@ -66,6 +66,8 @@ class TestCase:
             im.background_noise = np.ones(im.shape)
             im.exposure_time = np.ones(im.shape)
 
+            masked_image = ma.mask_image(im)
+
             mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
 
             pix = pixelization.RectangularPixelization(shape=(3, 3), regularization_coefficients=(1.0,))
@@ -114,9 +116,9 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(im, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapping=mapping) == \
-                   pytest.approx(evidence_expected, 1e-4)
+            assert fitting.fit_data_with_pixelization(masked_image, kernel_convolver=kernel_convolver,
+                                                      tracer=ray_trace, mapping=mapping) == pytest.approx(
+                evidence_expected, 1e-4)
 
     class TestClusterPixelization:
 
@@ -132,6 +134,8 @@ class TestCase:
             im.background_noise = np.ones(im.shape)
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+
+            masked_image = ma.mask_image(im)
 
             ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1, blurring_shape=(3, 3))
 
@@ -187,6 +191,6 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(im, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapping=mapping) == \
-                   pytest.approx(evidence_expected, 1e-4)
+            assert fitting.fit_data_with_pixelization(masked_image, kernel_convolver=kernel_convolver,
+                                                      tracer=ray_trace, mapping=mapping) == pytest.approx(
+                evidence_expected, 1e-4)
