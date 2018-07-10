@@ -1,5 +1,4 @@
 import numpy as np
-from src import exc
 from src.profiles import geometry_profiles
 
 
@@ -427,7 +426,7 @@ class GridMapping(object):
 
     def map_data_sub_to_image(self, data):
 
-        data_image = np.zeros((self.image_pixels))
+        data_image = np.zeros((self.image_pixels,))
 
         for sub_pixel in range(self.sub_pixels):
             data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
