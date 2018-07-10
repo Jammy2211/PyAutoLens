@@ -438,21 +438,6 @@ class GridMapping(object):
 
         return data_2d
 
-    def map_to_1d(self, data_2d):
-        """Use mapper to map a 2D image back to its *GridData* structure.
-
-        Parameters
-        -----------
-        data_2d : ndarray
-            The image which is to be mapped back to its *GridData* structure.
-        """
-        data_1d = np.zeros(self.image_pixels)
-
-        for (i, pixel) in enumerate(self):
-            data_1d[i] = data_2d[pixel[0], pixel[1]]
-
-        return data_1d
-
 
 class GridClusterPixelization(object):
 
