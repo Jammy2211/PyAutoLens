@@ -99,6 +99,12 @@ class Galaxy(object):
         """
         return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
 
+    def intensity_from_grid(self, grid):
+        if self.light_profiles is not None and len(self.light_profiles) > 0:
+            return sum(map(lambda p: p.intensity_from_grid(grid), self.light_profiles))
+        else:
+            return np.zeros((grid.shape[0],))
+
     def intensity_at_coordinates_individual(self, coordinates):
         """
         Compute the individual intensities of the galaxy's light profiles at a given set of image_grid.
