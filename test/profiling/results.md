@@ -118,3 +118,14 @@ Before changes: 34.58575987815857
 After changes: 0.5687899589538574
 
 60.81 x faster!
+
+# Misc
+
+#### map_data_sub_to_image
+
+100x analysis:
+5.609487056732178 -> 2.8315680027008057
+
+By using numpy method rather than loop
+
+about half
