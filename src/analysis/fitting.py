@@ -2,7 +2,7 @@ import numpy as np
 
 from src.imaging import grids
 from src.analysis import ray_tracing
-from src.pixelization import pixelization
+from src.pixelization import pixelization as px
 
 
 # TODO : Can we make model_immage, galaxy_images, minimum_Values a part of hyper galaxies?
@@ -39,6 +39,7 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
 
     Parameters
     -----------
+    minimum_values
     model_image : ndarray
         The best-fit model image to the weighted_data, from a previous phase of the pipeline
     galaxy_images : [ndarray]
@@ -92,6 +93,7 @@ def generate_blurred_light_profile_image(tracer, kernel_convolver, mapping):
 
     Parameters
     ----------
+    mapping
     tracer : ray_tracing.Tracer
         The ray-tracing configuration of the model galaxies and their profiles.
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
@@ -118,19 +120,18 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
 
 
 def fit_data_with_pixelization(image, kernel_convolver, tracer, mapping):
-    """Fit the weighted_data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
+    """Fit the weighted_data using the ray_tracing model, where only pixelizations are used to represent the galaxy
+    images.
 
     Parameters
     ----------
+    mapping
     image
-    pix : pixelization.Pixelization
-        The pixelization used to fit the weighted_data.
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     tracer : ray_tracing.Tracer
         The ray-tracing configuration of the model galaxies and their profiles.
-    mapper_cluster : auto_lens.imaging.grids.GridMapperCluster
-        The mapping between cluster-pixels and image / source pixels.
+
     """
 
     pix_pre_fit = tracer.generate_pixelization_matrices_of_source_galaxy(mapping)
@@ -142,10 +143,11 @@ def fit_data_with_pixelization(image, kernel_convolver, tracer, mapping):
 
 
 def compute_likelihood(image, noise, model_image):
-    """Compute the likelihood of a model image's fit to the weighted_data, by taking the difference between the observed \
+    """Compute the likelihood of a model image's fit to the weighted_data, by taking the difference between the observed
     image and model ray-tracing image. The likelihood consists of two terms:
 
-    Chi-squared term - The residuals (model - weighted_data) of every pixel divided by the noise in each pixel, all squared.
+    Chi-squared term - The residuals (model - weighted_data) of every pixel divided by the noise in each pixel, all
+    squared.
     [Chi_Squared_Term] = sum(([Residuals] / [Noise]) ** 2.0)
 
     The overall normalization of the noise is also included, by summing the log noise value in each pixel:
@@ -208,5 +210,5 @@ def compute_noise_term(noise):
 
 def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, kernel_convolver, tracer,
                                             mapper_cluster, image=None):
-    return -1
-    # TODO: implement me
+    # TODO: Implement me
+    raise NotImplementedError("fit_data_with_pixelization_and_profiles has not been implemented")

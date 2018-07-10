@@ -745,7 +745,7 @@ class Inversion(object):
         self.image_to_pix = image_to_pix
         self.sub_to_pix = sub_to_pix
 
-    def fit_image_via_inversion(self, data, noise, kernel_convolver):
+    def fit_image_via_inversion(self, image, noise, kernel_convolver):
         """Fit the image data using the inversion."""
 
         # TODO : Do faster / more cleanly
@@ -757,7 +757,7 @@ class Inversion(object):
         # TODO : Use fast routines once ready.
 
         covariance = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping, noise)
-        weighted_data = covariance_matrix.compute_d_vector_exact(blurred_mapping, data, noise)
+        weighted_data = covariance_matrix.compute_d_vector_exact(blurred_mapping, image, noise)
         cov_reg = covariance + self.regularization
         reconstruction = np.linalg.solve(cov_reg, weighted_data)
 
