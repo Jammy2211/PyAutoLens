@@ -367,3 +367,13 @@ class EllipticalCoreSersic(EllipticalSersic):
             -self.sersic_constant * ((((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
                     self.effective_radius ** self.alpha)) ** (
                                              1.0 / (self.alpha * self.sersic_index))))
+
+    def intensity_at_grid_radii(self, grid_radii):
+        return np.multiply(np.multiply(self.intensity_prime, np.power(
+            np.add(1, np.power(np.divide(self.radius_break, grid_radii), self.alpha)), (self.gamma / self.alpha))),
+                           np.exp(np.multiply(-self.sersic_constant,
+                                              (np.power(np.divide(np.add(np.power(grid_radii, self.alpha), (
+                                                      self.radius_break ** self.alpha)),
+                                                                  (self.effective_radius ** self.alpha)), (
+                                                                1.0 / (
+                                                                self.alpha * self.sersic_index)))))))
