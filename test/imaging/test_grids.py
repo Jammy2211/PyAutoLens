@@ -173,17 +173,13 @@ class TestCoordsCollection(object):
         #
         #     deflections = ray_trace_grid.deflection_grids_for_galaxies([lens_galaxy])
         #
-        #     defls = power_law.deflections_at_coordinates(image_grid[0]) + \
-        #             nfw.deflections_at_coordinates(image_grid[0])
+        #     defls = power_law.deflections_at_coordinates(image_grid[0]) +         #             nfw.deflections_at_coordinates(image_grid[0])
         #
-        #     sub_defls_0 = power_law.deflections_at_coordinates(sub_grid[0, 0]) + \
-        #                   nfw.deflections_at_coordinates(sub_grid[0, 0])
+        #     sub_defls_0 = power_law.deflections_at_coordinates(sub_grid[0, 0]) +         #                   nfw.deflections_at_coordinates(sub_grid[0, 0])
         #
-        #     sub_defls_1 = power_law.deflections_at_coordinates(sub_grid[0, 1]) + \
-        #                   nfw.deflections_at_coordinates(sub_grid[0, 1])
+        #     sub_defls_1 = power_law.deflections_at_coordinates(sub_grid[0, 1]) +         #                   nfw.deflections_at_coordinates(sub_grid[0, 1])
         #
-        #     blurring_defls = power_law.deflections_at_coordinates(blurring_grid[0]) + \
-        #                      nfw.deflections_at_coordinates(blurring_grid[0])
+        #     blurring_defls = power_law.deflections_at_coordinates(blurring_grid[0]) +         #                      nfw.deflections_at_coordinates(blurring_grid[0])
         #
         #     assert deflections.image[0] == pytest.approx(defls, 1e-3)
         #     assert deflections.sub[0] == pytest.approx(sub_defls_0, 1e-3)
@@ -528,8 +524,6 @@ class TestSubCoordinateGrid(object):
             sub_grid_coords = np.array([[1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0],
                                         [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0]])
 
-            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1])
-
             grid_sub = grids.SubCoordinateGrid(sub_grid_coords, sub_grid_size=2)
 
             deflections = grid_sub.deflection_grid_for_galaxies(
@@ -549,8 +543,6 @@ class TestSubCoordinateGrid(object):
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             sub_grid_coords = np.array([[1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0],
                                         [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0]])
-
-            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
             grid_sub = grids.SubCoordinateGrid(sub_grid_coords, sub_grid_size=2)
 
@@ -573,8 +565,6 @@ class TestSubCoordinateGrid(object):
             sub_grid_coords = np.array([[1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0],
                                         [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0]])
 
-            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1])
-
             grid_sub = grids.SubCoordinateGrid(sub_grid_coords, sub_grid_size=2)
 
             deflections = grid_sub.deflection_grid_for_galaxies(galaxies=[galaxy_mass_sis])
@@ -595,8 +585,6 @@ class TestSubCoordinateGrid(object):
         def test_three_identical_lenses__deflection_angles_triple(self, galaxy_mass_sis):
             sub_grid_coords = np.array([[1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0],
                                         [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0]])
-
-            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
             grid_sub = grids.SubCoordinateGrid(sub_grid_coords, sub_grid_size=2)
 
@@ -619,8 +607,6 @@ class TestSubCoordinateGrid(object):
         def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, lens_sis_x3):
             sub_grid_coords = np.array([[1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0],
                                         [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, -1.0]])
-
-            sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1])
 
             grid_sub = grids.SubCoordinateGrid(sub_grid_coords, sub_grid_size=2)
 
@@ -746,7 +732,6 @@ class TestGridData(object):
 
         def test__simple_grid_input__sets_up_grid_correctly_in_attributes(self):
             grid_data = np.array([1, 2, 3])
-            data_to_image = np.array([[0, 0], [0, 1], [0, 2]])
 
             grid_data = grid_data
 
@@ -777,7 +762,6 @@ class TestGridData(object):
 
 
 class TestGridMapping(object):
-
     class TestFromMask:
 
         def test__setup_mappings_using_mask(self):
@@ -799,7 +783,7 @@ class TestGridMapping(object):
             assert (grid_mapping.data_to_image[4] == np.array([2, 1])).all()
 
             assert grid_mapping.sub_grid_size == 2
-            assert grid_mapping.sub_grid_fraction == (1.0/4.0)
+            assert grid_mapping.sub_grid_fraction == (1.0 / 4.0)
 
             assert (grid_mapping.sub_to_image == np.array(
                 [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])).all()
@@ -807,7 +791,6 @@ class TestGridMapping(object):
     class TestMapDataTo2d:
 
         def test__3x3_dataset_in_2d__mask_is_all_false__maps_back_to_original_data(self):
-
             data = np.array([[0, 1, 2],
                              [3, 4, 5],
                              [6, 7, 8]])
@@ -834,7 +817,6 @@ class TestGridMapping(object):
                                          [6, 7, 8]])).all()
 
         def test__3x3_dataset_in_2d__mask_has_trues_in_it__zeros_where_mask_is_true(self):
-
             data = np.array([[0, 1, 2],
                              [3, 4, 5],
                              [6, 7, 8]])
@@ -889,20 +871,6 @@ class TestGridMapping(object):
 
         def test__3x3_sub_grid__image_is_6_pixels(self):
             data_to_image = np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]])
-
-            coords = np.array(
-                [[1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0],
-                 [0.0, 0.0],
-                 [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0],
-                 [0.0, 0.0],
-                 [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0],
-                 [0.0, 0.0],
-                 [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0],
-                 [0.0, 0.0],
-                 [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0],
-                 [0.0, 0.0],
-                 [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [0.0, 0.0],
-                 [0.0, 0.0]])
 
             sub_to_image = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,
                                      1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1056,8 +1024,7 @@ class TestGridBorder(object):
                                     [-1.0, 0.0], [-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)],
                                     [0.0, -1.0], [0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]])
 
-            border = grids.GridBorder(border_pixels=
-                                      np.arange(8), polynomial_degree=3)
+            border = grids.GridBorder(border_pixels=np.arange(8), polynomial_degree=3)
             border.polynomial_fit_to_border(coordinates)
 
             assert border.radius_at_theta(theta=0.0) == pytest.approx(1.0, 1e-3)
@@ -1124,17 +1091,17 @@ class TestGridBorder(object):
             border = grids.GridBorder(border_pixels=np.arange(32), polynomial_degree=3)
             border.polynomial_fit_to_border(coordinates)
 
-            assert border.relocated_coordinate(coordinate=np.array([0.1, 0.0])) == \
-                   pytest.approx(np.array([0.1, 0.0]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([0.1, 0.0])) == pytest.approx(np.array([0.1, 0.0]),
+                                                                                                 1e-3)
 
-            assert border.relocated_coordinate(coordinate=np.array([-0.2, -0.3])) == \
-                   pytest.approx(np.array([-0.2, -0.3]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([-0.2, -0.3])) == pytest.approx(
+                np.array([-0.2, -0.3]), 1e-3)
 
-            assert border.relocated_coordinate(coordinate=np.array([0.5, 0.4])) == \
-                   pytest.approx(np.array([0.5, 0.4]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([0.5, 0.4])) == pytest.approx(np.array([0.5, 0.4]),
+                                                                                                 1e-3)
 
-            assert border.relocated_coordinate(coordinate=np.array([0.7, -0.1])) == \
-                   pytest.approx(np.array([0.7, -0.1]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([0.7, -0.1])) == pytest.approx(np.array([0.7, -0.1]),
+                                                                                                  1e-3)
 
         def test__outside_border_simple_cases__relocates_to_source_border(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 32)
@@ -1143,17 +1110,17 @@ class TestGridBorder(object):
             border = grids.GridBorder(border_pixels=np.arange(32), polynomial_degree=3)
             border.polynomial_fit_to_border(coordinates)
 
-            assert border.relocated_coordinate(coordinate=np.array([2.5, 0.0])) == \
-                   pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([2.5, 0.0])) == pytest.approx(np.array([1.0, 0.0]),
+                                                                                                 1e-3)
 
-            assert border.relocated_coordinate(coordinate=np.array([0.0, 3.0])) == \
-                   pytest.approx(np.array([0.0, 1.0]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([0.0, 3.0])) == pytest.approx(np.array([0.0, 1.0]),
+                                                                                                 1e-3)
 
-            assert border.relocated_coordinate(coordinate=np.array([-2.5, 0.0])) == \
-                   pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([-2.5, 0.0])) == pytest.approx(np.array([-1.0, 0.0]),
+                                                                                                  1e-3)
 
-            assert border.relocated_coordinate(coordinate=np.array([-5.0, 5.0])) == \
-                   pytest.approx(np.array([-0.707, 0.707]), 1e-3)
+            assert border.relocated_coordinate(coordinate=np.array([-5.0, 5.0])) == pytest.approx(
+                np.array([-0.707, 0.707]), 1e-3)
 
         def test__outside_border_simple_cases_2__relocates_to_source_border(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
@@ -1170,17 +1137,17 @@ class TestGridBorder(object):
 
             assert border.relocated_coordinate(coordinate=(0.0, -1.0)) == pytest.approx((0.0, -1.0), 1e-3)
 
-            assert border.relocated_coordinate(coordinate=(1.0, 1.0)) == \
-                   pytest.approx((0.5 * np.sqrt(2), 0.5 * np.sqrt(2)), 1e-3)
+            assert border.relocated_coordinate(coordinate=(1.0, 1.0)) == pytest.approx(
+                (0.5 * np.sqrt(2), 0.5 * np.sqrt(2)), 1e-3)
 
-            assert border.relocated_coordinate(coordinate=(-1.0, 1.0)) == \
-                   pytest.approx((-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)), 1e-3)
+            assert border.relocated_coordinate(coordinate=(-1.0, 1.0)) == pytest.approx(
+                (-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)), 1e-3)
 
-            assert border.relocated_coordinate(coordinate=(-1.0, -1.0)) == \
-                   pytest.approx((-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)), 1e-3)
+            assert border.relocated_coordinate(coordinate=(-1.0, -1.0)) == pytest.approx(
+                (-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)), 1e-3)
 
-            assert border.relocated_coordinate(coordinate=(1.0, -1.0)) == \
-                   pytest.approx((0.5 * np.sqrt(2), -0.5 * np.sqrt(2)), 1e-3)
+            assert border.relocated_coordinate(coordinate=(1.0, -1.0)) == pytest.approx(
+                (0.5 * np.sqrt(2), -0.5 * np.sqrt(2)), 1e-3)
 
     class TestRelocateAllCoordinatesOutsideBorder(object):
 
@@ -1274,8 +1241,9 @@ class TestGridBorder(object):
         def test__change_pixel_order_and_border_pixels__works_as_above(self):
             thetas = np.linspace(0.0, 2.0 * np.pi, 16)
             circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-            coordinates = np.asarray([(-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)] + circle + \
-                                     [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5), (-0.5, 0.5)])
+            coordinates = np.asarray(
+                [(-2.0, 0.0), (-1.0, -1.0), (0.0, -2.0), (1.0, -1.0)] + circle + [(0.5, 0.0), (0.5, 0.5), (0.0, 0.5),
+                                                                                  (-0.5, 0.5)])
 
             border_pixels = np.array([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
             border = grids.GridBorder(border_pixels, polynomial_degree=3)
