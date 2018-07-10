@@ -7,7 +7,7 @@ from src.imaging import scaled_array
 import os
 import time
 
-repeats = 10
+repeats = 100
 
 # Load up the weighted_data
 lens_name = 'source_sersic'
