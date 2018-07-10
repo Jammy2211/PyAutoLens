@@ -14,7 +14,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 
 
 def load(name):
-    return np.load("{}/weighted_data/{}.npy".format(path, name))
+    return np.load("{}/data/{}.npy".format(path, name))
 
 
 grid = load("grid")
