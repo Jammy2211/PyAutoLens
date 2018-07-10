@@ -216,14 +216,17 @@ class Mask(scaled_array.ScaledArray):
 
         return sub_to_image
 
-    def grid_data_from_grid(self, grid_data):
+    def masked_1d_array_from_2d_array(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
 
         Parameters
         ----------
-        grid_data
+        grid_data: ndarray | float
 
         """
+        if isinstance(grid_data, float):
+            return grid_data
+
         pixels = self.pixels_in_mask
 
         grid = np.zeros(shape=pixels)
@@ -461,8 +464,12 @@ class Mask(scaled_array.ScaledArray):
         masked_image: MaskedImage
         """
 
-        return MaskedImage(image, image.effective_exposure_time, image.pixel_scale, image.psf, image.background_noise,
-                           image.poisson_noise)
+        return MaskedImage(self.masked_1d_array_from_2d_array(image),
+                           self.masked_1d_array_from_2d_array(image.effective_exposure_time),
+                           image.pixel_scale,
+                           image.psf,
+                           self.masked_1d_array_from_2d_array(image.background_noise),
+                           self.masked_1d_array_from_2d_array(image.poisson_noise))
 
 
 class MaskedImage(im.AbstractImage):
