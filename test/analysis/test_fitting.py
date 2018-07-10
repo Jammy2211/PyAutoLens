@@ -33,9 +33,9 @@ def make_1x1_image():
                       [True, True, True]])
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.image = grids.GridData(grid_data=np.array([1.0]))
-    im.noise = grids.GridData(grid_data=np.array([1.0]))
-    im.exposure_time = grids.GridData(grid_data=np.array([1.0]))
+    im.image = np.array([1.0])
+    im.noise = np.array([1.0])
+    im.exposure_time = np.array([1.0])
 
     im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
 
@@ -65,9 +65,9 @@ def make_2x2_image():
 
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.image = grids.GridData(grid_data=np.array([1.0, 1.0, 1.0, 1.0]))
-    im.noise = grids.GridData(grid_data=np.array([1.0, 1.0, 1.0, 1.0]))
-    im.exposure_time = grids.GridData(grid_data=np.array([1.0, 1.0, 1.0, 1.0]))
+    im.image = np.array([1.0, 1.0, 1.0, 1.0])
+    im.noise = np.array([1.0, 1.0, 1.0, 1.0])
+    im.exposure_time = np.array([1.0, 1.0, 1.0, 1.0])
 
     im.mapping = MockMapping(image_pixels=4, sub_grid_size=1, sub_to_image=np.array([0, 1, 2, 3]))
 
@@ -93,7 +93,7 @@ class MockMapping(object):
         self.sub_to_image = sub_to_image
 
     def map_data_sub_to_image(self, data):
-        data_image = np.zeros((self.image_pixels))
+        data_image = np.zeros((self.image_pixels,))
 
         for sub_pixel in range(self.sub_pixels):
             data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
