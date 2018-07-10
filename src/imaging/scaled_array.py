@@ -13,7 +13,7 @@ class ScaledArray(np.ndarray):
     Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
     """
 
-    def __new__(cls, array, pixel_scale=1, **kwargs):
+    def __new__(cls, array, pixel_scale=1, *args, **kwargs):
         return np.array(array).view(cls)
 
     # noinspection PyUnusedLocal
