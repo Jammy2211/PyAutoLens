@@ -109,3 +109,12 @@ old_method: 1.2265520095825195
 new_method: 0.017539024353027344
 
 x faster: 69.93273883964983
+
+
+# Analysis
+
+Before changes: 34.58575987815857
+
+After changes: 0.5687899589538574
+
+60.81 x faster!
