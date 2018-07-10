@@ -780,6 +780,7 @@ class TestGridData(object):
 
 
 class TestGridMapping(object):
+
     class TestFromMask:
 
         def test__setup_mappings_using_mask(self):
@@ -809,6 +810,7 @@ class TestGridMapping(object):
     class TestMapDataTo2d:
 
         def test__3x3_dataset_in_2d__mask_is_all_false__maps_back_to_original_data(self):
+
             data = np.array([[0, 1, 2],
                              [3, 4, 5],
                              [6, 7, 8]])
@@ -830,11 +832,12 @@ class TestGridMapping(object):
 
             assert (data == data_2d).all()
 
-            assert (data == np.array([[0, 1, 2],
-                                      [3, 4, 5],
-                                      [6, 7, 8]])).all()
+            assert (data_2d == np.array([[0, 1, 2],
+                                         [3, 4, 5],
+                                         [6, 7, 8]])).all()
 
         def test__3x3_dataset_in_2d__mask_has_trues_in_it__zeros_where_mask_is_true(self):
+
             data = np.array([[0, 1, 2],
                              [3, 4, 5],
                              [6, 7, 8]])
