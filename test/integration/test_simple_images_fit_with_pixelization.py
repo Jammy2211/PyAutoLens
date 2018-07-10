@@ -64,7 +64,10 @@ class TestCase:
                                                                                       blurring_shape=(3, 3))
 
             im.background_noise = np.ones(im.shape)
-            im.exposure_time = np.ones(im.shape)
+            im.effective_exposure_time = np.ones(im.shape)
+            im.pixel_scale = 1.
+            im.psf = None
+            im.poisson_noise = 1.
 
             masked_image = ma.mask_image(im)
 
