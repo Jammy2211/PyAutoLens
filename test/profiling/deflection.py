@@ -194,8 +194,7 @@ def tick_toc_comparison_for_class(mass_profile_class):
         grid_values = np.zeros(grid.shape)
 
         for pixel_no, coordinate in enumerate(grid):
-            grid_values[pixel_no] = instance.transform_from_reference_frame(
-                instance.transform_to_reference_frame(coordinates=coordinate))
+            grid_values[pixel_no] = instance.deflections_at_coordinates(coordinate)
 
     @tick_toc
     def new_method():
