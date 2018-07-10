@@ -394,9 +394,10 @@ class ModelMapper(object):
         """Output a model information file, which lists the information of the model mapper (e.g. parameters, priors,
          etc.) """
         model_info = self.generate_model_info()
-        with open(filename, 'w') as file:
-            file.write(model_info)
-        file.close()
+        if not os.path.isfile(filename):
+            with open(filename, 'w') as file:
+                file.write(model_info)
+            file.close()
 
     def check_model_info(self, filename):
         """Check whether the priors in this instance of the model_mapper are identical to those output into a model \
