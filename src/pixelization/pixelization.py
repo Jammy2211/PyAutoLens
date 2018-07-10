@@ -772,15 +772,15 @@ class InversionFitted(object):
 
         Parameters
         -----------
-        weighted_data : ndarray
+        weighted_data : ndarray | None
             The 1D vector representing the data, weighted by its noise in a chi squared sense, which is fitted by the \
             inversion (D).
-        blurred_mapping : ndarray
+        blurred_mapping : ndarray | None
             The matrix representing the mapping between reconstruction-pixels and data-pixels, including a \
             blurring operation (f).
         regularization : ndarray
             The matrix defining how the reconstruction's pixels are regularized with one another (H).
-        covariance : ndarray
+        covariance : ndarray | None
             The covariance between each reconstruction pixel and all other reconstruction pixels (F).
         covariance_regularization : ndarray
             The covariance + regularizationo matrix.

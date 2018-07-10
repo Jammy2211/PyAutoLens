@@ -240,7 +240,7 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count] = grid_data[x, y]
                     pixel_count += 1
 
-        return grids.GridData(grid)
+        return grid
 
     def grid_to_pixel(self):
         """
