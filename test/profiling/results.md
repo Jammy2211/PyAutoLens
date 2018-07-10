@@ -1,6 +1,6 @@
 # Deflection
 
-Running 100 tests on mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
+Running 100 calls on mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 
 #### Original Coordinate Transformation
 looping numpy array and applying function to each coordinate pair
@@ -57,3 +57,14 @@ x faster: 45.93962706176592
 old_method: 1.3890931606292725
 new_method: 0.016950130462646484
 x faster: 81.95176808169465
+
+
+# Intensity
+
+#### To Eccentric Radius
+
+Running 100 calls on EllipticalProfile.to_eccentric_radius.
+
+classic_grid_to_eccentric_radius: 0.9260859489440918
+new_grid_to_eccentric_radius:   0.011136054992675781
+
