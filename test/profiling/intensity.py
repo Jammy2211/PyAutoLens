@@ -2,8 +2,11 @@ import inspect
 import numpy as np
 import os
 import time
-from src.profiles import light_profiles, geometry_profiles
+from src.profiles import light_profiles
+import logging
 from numpy.testing import assert_almost_equal
+
+logging.level = logging.DEBUG
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -38,12 +41,11 @@ def all_light_profiles(func):
 def tick_toc(func):
     def wrapper(*args, **kwargs):
         start = time.time()
-        result = None
         for _ in range(repeats):
-            result = func(*args, **kwargs)
+            func(*args, **kwargs)
         diff = time.time() - start
         print("{}: {}".format(func.__name__, diff))
-        return result
+        return diff
 
     return wrapper
 
@@ -57,33 +59,37 @@ def classic_method(func):
     return grid_values
 
 
-def grid_to_eccentric_radius():
-    profile = geometry_profiles.EllipticalProfile()
-
-    @tick_toc
-    def classic_grid_to_eccentric_radius():
-        grid_values = np.zeros(grid.shape[0])
-
-        for pixel_no, coordinate in enumerate(grid):
-            grid_values[pixel_no] = profile.coordinates_to_eccentric_radius(coordinate)
-
-        return grid_values
-
-    @tick_toc
-    def new_grid_to_eccentric_radius():
-        return profile.grid_to_eccentric_radius(grid)
-
-    classic = classic_grid_to_eccentric_radius()
-    new = new_grid_to_eccentric_radius()
-
-    assert_almost_equal(classic, new)
-
-
 @all_light_profiles
 def save_light_profile_intensity(profile):
     result = classic_method(profile.intensity_at_coordinates)
     save(profile.__class__.__name__, result)
 
 
+@all_light_profiles
+def test_deflections_from_coordinate_grid(instance):
+    name = instance.__class__.__name__
+    example = load(name)
+    result = None
+    try:
+        result = instance.intensity_from_grid(grid)
+        assert_almost_equal(result, example)
+        print("{} gives the correct result".format(name))
+        return
+    except AssertionError as e:
+        if result is None:
+            raise e
+        logging.warning("{} does not give the correct result".format(name))
+        print(example.shape)
+        print(result.shape)
+        print(example[0])
+        print(result[0])
+        print(example[-1])
+        print(result[-1])
+    except NotImplementedError:
+        logging.warning("{} has no deflections_from_coordinate_grid function".format(name))
+    except ZeroDivisionError:
+        logging.warning("{} throws a zero division error".format(name))
+
+
 if __name__ == "__main__":
-    grid_to_eccentric_radius()
+    test_deflections_from_coordinate_grid()
