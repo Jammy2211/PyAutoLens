@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 from src.analysis import fitting, ray_tracing, galaxy
-from src.imaging import grids
 from src.imaging import mask as mask
 from src.profiles import light_profiles
 from src.pixelization import pixelization
