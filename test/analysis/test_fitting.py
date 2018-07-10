@@ -32,7 +32,7 @@ def make_1x1_image():
                       [True, True, True]])
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.noise = np.array([1.0])
+    im.background_noise = np.array([1.0])
     im.exposure_time = np.array([1.0])
 
     im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
@@ -62,7 +62,7 @@ def make_2x2_image():
 
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.noise = np.array([1.0, 1.0, 1.0, 1.0])
+    im.background_noise = np.array([1.0, 1.0, 1.0, 1.0])
     im.exposure_time = np.array([1.0, 1.0, 1.0, 1.0])
 
     im.mapping = MockMapping(image_pixels=4, sub_grid_size=1, sub_to_image=np.array([0, 1, 2, 3]))
