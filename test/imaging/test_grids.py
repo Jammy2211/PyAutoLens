@@ -698,14 +698,11 @@ class TestDataCollection(object):
 
         def test__all_grid_datas_entered__sets_up_attributes(self):
             grid_image = np.array([1, 2, 3])
-            data_to_image = np.array([[0, 1], [0, 2], [0, 3]])
-            grid_image = grids.GridData(grid_image)
 
             grid_noise = np.array([4, 5, 6])
-            grid_noise = grids.GridData(grid_noise)
+            grid_noise = grid_noise
 
             grid_exposure_time = np.array([7, 8, 9])
-            grid_exposure_time = grids.GridData(grid_exposure_time)
 
             grid_collection = grids.DataCollection(image=grid_image, noise=grid_noise,
                                                    exposure_time=grid_exposure_time)
@@ -751,7 +748,7 @@ class TestGridData(object):
             grid_data = np.array([1, 2, 3])
             data_to_image = np.array([[0, 0], [0, 1], [0, 2]])
 
-            grid_data = grids.GridData(grid_data)
+            grid_data = grid_data
 
             assert (grid_data[0] == np.array([1])).all()
             assert (grid_data[1] == np.array([2])).all()
