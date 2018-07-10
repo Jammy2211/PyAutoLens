@@ -422,13 +422,7 @@ class GridMapping(object):
         self.cluster = cluster
 
     def map_data_sub_to_image(self, data):
-
-        data_image = np.zeros((self.image_pixels,))
-
-        for sub_pixel in range(self.sub_pixels):
-            data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
-
-        return data_image * self.sub_grid_fraction
+        return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_size ** 2).sum(axis=1))
 
     def map_to_2d(self, grid_data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
