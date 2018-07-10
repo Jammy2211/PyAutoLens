@@ -96,8 +96,6 @@ class AbstractCoordinateGrid(np.ndarray):
         """
         return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(self), galaxies))
 
-    # TODO : Make galaxy.intensitites_from_coordinate_grid as above
-
     def new_from_array(self, array):
         return self.__class__(array)
 
@@ -276,6 +274,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
 
         Parameters
         -----------
+        mapping
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at the grid coordinates.
         """
