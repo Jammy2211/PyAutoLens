@@ -2,6 +2,7 @@ from src.imaging import scaled_array
 from src.imaging import grids
 from src import exc
 import numpy as np
+from collections import namedtuple
 
 import logging
 
@@ -136,12 +137,6 @@ class Mask(scaled_array.ScaledArray):
         blurring = self.blurring_coordinate_grid(blurring_shape)
 
         return grids.CoordsCollection(image, sub, blurring)
-
-    def data_collection_from_image_noise_and_exposure_time(self, image, noise, exposure_time):
-        image = self.grid_data_from_grid(image)
-        noise = self.grid_data_from_grid(noise)
-        exposure_time = self.grid_data_from_grid(exposure_time)
-        return grids.DataCollection(image, noise, exposure_time)
 
     def sub_coordinate_grid_with_size(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -298,7 +293,9 @@ class Mask(scaled_array.ScaledArray):
         image_to_sparse = self.image_to_sparse_from_mask_and_index_image(sparse_mask, sparse_index_image)
         logger.debug("image_to_sparse = {}".format(image_to_sparse))
 
-        return grids.GridClusterPixelization(sparse_to_image, image_to_sparse)
+        SparseMapperTuple = namedtuple("SparseMapperTuple", ["cluster_to_image", "image_to_cluster"])
+
+        return SparseMapperTuple(sparse_to_image, image_to_sparse)
 
     def grid_border(self):
         """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on its \

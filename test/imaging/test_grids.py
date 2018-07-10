@@ -3,7 +3,6 @@ import pytest
 import numpy as np
 from src.imaging import grids
 from src.imaging import mask as msk
-from src.imaging import image as img
 
 from src.analysis import galaxy
 from src.profiles import light_profiles, mass_profiles
@@ -679,54 +678,6 @@ class TestSubCoordinateGrid(object):
             assert deflections[7] == pytest.approx(3.0 * np.array([0.0, -1.0]), 1e-2)
 
 
-class TestDataCollection(object):
-    class TestConstructor:
-
-        def test__all_grid_datas_entered__sets_up_attributes(self):
-            grid_image = np.array([1, 2, 3])
-
-            grid_noise = np.array([4, 5, 6])
-            grid_noise = grid_noise
-
-            grid_exposure_time = np.array([7, 8, 9])
-
-            grid_collection = grids.DataCollection(image=grid_image, noise=grid_noise,
-                                                   exposure_time=grid_exposure_time)
-
-            assert (grid_collection.image == np.array([1, 2, 3])).all()
-            assert (grid_collection.noise == np.array([4, 5, 6])).all()
-            assert (grid_collection.exposure_time == np.array([7, 8, 9])).all()
-
-    class TestFromMask:
-
-        def test__cross_mask__all_data_setup_as_mask(self):
-            mask = np.array([[True, False, True],
-                             [False, False, False],
-                             [True, False, True]])
-            mask = msk.Mask(array=mask, pixel_scale=1.0)
-
-            image = np.array([[1, 2, 3],
-                              [4, 5, 6],
-                              [7, 8, 9]])
-            image = img.Image(array=image, pixel_scale=1.0)
-
-            noise = np.array([[2, 2, 2],
-                              [5, 5, 5],
-                              [8, 8, 8]])
-            noise = img.ScaledArray(array=noise, pixel_scale=1.0)
-
-            exposure_time = np.array([[1, 1, 1],
-                                      [1, 1, 1],
-                                      [1, 1, 1]])
-            exposure_time = img.ScaledArray(array=exposure_time, pixel_scale=1.0)
-
-            data_collection = mask.data_collection_from_image_noise_and_exposure_time(image, noise, exposure_time)
-
-            assert (data_collection.image == np.array([2, 4, 5, 6, 8])).all()
-            assert (data_collection.noise == np.array([2, 5, 5, 5, 8])).all()
-            assert (data_collection.exposure_time == np.array([1, 1, 1, 1, 1])).all()
-
-
 class TestGridData(object):
     class TestConstructor:
 
@@ -895,19 +846,6 @@ class TestGridMapping(object):
             assert image_data[3] == (4.0 * 9.0) / 9.0
             assert image_data[4] == (5.0 * 9.0) / 9.0
             assert image_data[5] == (6.0 * 9.0) / 9.0
-
-
-class TestGridClusterPixelization(object):
-    class TestConstructor:
-
-        def test__simple_mapper_input__sets_up_grid_in_attributes(self):
-            cluster_to_image = np.array([1, 2, 3, 5])
-            image_to_cluster = np.array([6, 7, 2, 3])
-
-            cluster_pix = grids.GridClusterPixelization(cluster_to_image, image_to_cluster)
-
-            assert (cluster_pix.cluster_to_image == np.array([1, 2, 3, 5])).all()
-            assert (cluster_pix.image_to_cluster == np.array([6, 7, 2, 3])).all()
 
 
 class TestGridBorder(object):
