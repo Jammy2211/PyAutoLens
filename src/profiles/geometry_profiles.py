@@ -545,7 +545,7 @@ class EllipticalProfile(Profile):
         return np.sqrt(self.axis_ratio) * np.sqrt(coordinates[0] ** 2 + (coordinates[1] / self.axis_ratio) ** 2)
 
     @transform_grid
-    def grid_to_eccentric_radius(self, grid):
+    def grid_to_eccentric_radii(self, grid):
         return np.multiply(np.sqrt(self.axis_ratio),
                            np.sqrt(np.add(np.square(grid[:, 0]),
                                           np.square(np.divide(grid[:, 1], self.axis_ratio))))).view(np.ndarray)
