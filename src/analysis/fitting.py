@@ -5,10 +5,9 @@ from src.analysis import ray_tracing
 from src.pixelization import pixelization
 
 
-
 # TODO : Can we make model_immage, galaxy_images, minimum_Values a part of hyper galaxies?
 
-def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, mapping, model_image, galaxy_images,
+def fit_data_with_profiles_hyper_galaxies(image, kernel_convolver, tracer, mapping, model_image, galaxy_images,
                                           minimum_values, hyper_galaxies):
     """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
@@ -29,9 +28,9 @@ def fit_data_with_profiles_hyper_galaxies(grid_data, kernel_convolver, tracer, m
         Each hyper-galaxy which is used to determine its contributions.
     """
     contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
-    scaled_noise = generate_scaled_noise(grid_data.noise, contributions, hyper_galaxies)
+    scaled_noise = generate_scaled_noise(image.background_noise, contributions, hyper_galaxies)
     blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver, mapping)
-    return compute_likelihood(grid_data.image, scaled_noise, blurred_model_image)
+    return compute_likelihood(image, scaled_noise, blurred_model_image)
 
 
 def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values):
@@ -70,14 +69,12 @@ def generate_scaled_noise(noise, contributions, hyper_galaxies):
     return noise + sum(scaled_noises)
 
 
-def fit_data_with_profiles(grid_data, kernel_convolver, tracer, mapping, image=None):
+def fit_data_with_profiles(image, kernel_convolver, tracer, mapping):
     """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
     Parameters
     ----------
     image
-    grid_data : grids.DataCollection
-        The collection of grid weighted_data-sets (image, noise, etc.)
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     tracer : ray_tracing.Tracer
@@ -86,7 +83,7 @@ def fit_data_with_profiles(grid_data, kernel_convolver, tracer, mapping, image=N
         Contains arrays / functions used to map different grids.
     """
     blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver, mapping)
-    return compute_likelihood(grid_data.image, grid_data.noise, blurred_model_image)
+    return compute_likelihood(image, image.background_noise, blurred_model_image)
 
 
 def generate_blurred_light_profile_image(tracer, kernel_convolver, mapping):
@@ -120,14 +117,12 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
     return kernel_convolver.convolve_array(image, blurring_image)
 
 
-def fit_data_with_pixelization(grid_data, kernel_convolver, tracer, mapping, image=None):
+def fit_data_with_pixelization(image, kernel_convolver, tracer, mapping):
     """Fit the weighted_data using the ray_tracing model, where only pixelizations are used to represent the galaxy images.
 
     Parameters
     ----------
     image
-    grid_data : grids.DataCollection
-        The collection of grid weighted_data-sets (image, noise, etc.)
     pix : pixelization.Pixelization
         The pixelization used to fit the weighted_data.
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
@@ -139,11 +134,11 @@ def fit_data_with_pixelization(grid_data, kernel_convolver, tracer, mapping, ima
     """
 
     pix_pre_fit = tracer.generate_pixelization_matrices_of_source_galaxy(mapping)
-    pix_fit = pix_pre_fit.fit_image_via_inversion(grid_data.image, grid_data.noise, kernel_convolver)
+    pix_fit = pix_pre_fit.fit_image_via_inversion(image, image.background_noise, kernel_convolver)
 
     model_image = pix_fit.model_image_from_reconstruction()
 
-    return compute_pixelization_evidence(grid_data.image, grid_data.noise, model_image, pix_fit)
+    return compute_pixelization_evidence(image, image.background_noise, model_image, pix_fit)
 
 
 def compute_likelihood(image, noise, model_image):
@@ -171,12 +166,14 @@ def compute_likelihood(image, noise, model_image):
     """
     return -0.5 * (compute_chi_sq_term(image, noise, model_image) + compute_noise_term(noise))
 
+
 def compute_pixelization_evidence(image, noise, model_image, pix_fit):
     return -0.5 * (compute_chi_sq_term(image, noise, model_image)
                    + pix_fit.regularization_term_from_reconstruction()
                    + pix_fit.log_determinant_of_matrix_cholesky(pix_fit.covariance_regularization)
                    - pix_fit.log_determinant_of_matrix_cholesky(pix_fit.regularization)
                    + compute_noise_term(noise))
+
 
 def compute_chi_sq_term(image, noise, model_image):
     """Compute the chi-squared of a model image's fit to the weighted_data, by taking the difference between the observed \
@@ -193,7 +190,8 @@ def compute_chi_sq_term(image, noise, model_image):
     model_image : grids.GridData
         The model image of the weighted_data.
     """
-    return np.sum(((image - model_image) / noise) ** 2.0)
+    return np.sum((np.add(image.view(float), - model_image) / noise) ** 2.0)
+
 
 def compute_noise_term(noise):
     """Compute the noise normalization term of an image, which is computed by summing the noise in every pixel:
@@ -206,6 +204,7 @@ def compute_noise_term(noise):
         The noise in each pixel.
     """
     return np.sum(np.log(2 * np.pi * noise ** 2.0))
+
 
 def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, kernel_convolver, tracer,
                                             mapper_cluster, image=None):
