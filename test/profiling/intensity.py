@@ -91,5 +91,26 @@ def test_deflections_from_coordinate_grid(instance):
         logging.warning("{} throws a zero division error".format(name))
 
 
+@all_light_profiles
+def tick_toc_comparison_for_profile(instance):
+    print("")
+    print(instance.__class__.__name__)
+
+    @tick_toc
+    def old_method():
+        grid_values = np.zeros(grid.shape)
+
+        for pixel_no, coordinate in enumerate(grid):
+            grid_values[pixel_no] = instance.intensity_at_coordinates(coordinate)
+
+    @tick_toc
+    def new_method():
+        instance.intensity_from_grid(grid)
+
+    old = old_method()
+    new = new_method()
+    print("x faster: {}".format(old / new))
+
+
 if __name__ == "__main__":
-    test_deflections_from_coordinate_grid()
+    tick_toc_comparison_for_profile()

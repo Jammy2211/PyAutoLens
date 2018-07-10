@@ -29,34 +29,46 @@ new_deflection_elliptical_isothermal: 0.023957014083862305
 ## Results from Several Mass Profiles
 
 #### SphericalPowerLaw
-old_method: 1.4004719257354736
-new_method: 0.029329299926757812
-x faster: 47.7499268387852
+old_method: 1.2667009830474854
+
+new_method: 0.026113033294677734
+
+x faster: 48.50838157149901
 
 #### EllipticalIsothermal
-old_method: 1.4174158573150635
-new_method: 0.02125692367553711
-x faster: 66.6801969537226
+old_method: 1.4990592002868652
+
+new_method: 0.020721912384033203
+
+x faster: 72.34174011091423
 
 #### SphericalIsothermal
-old_method: 1.436042070388794
-new_method: 0.015048027038574219
-x faster: 95.43058812345522
+old_method: 1.1057920455932617
+
+new_method: 0.01303863525390625
+
+x faster: 84.8088794616735
 
 #### SphericalCoredPowerLaw
-old_method: 1.4370160102844238
-new_method: 0.029826879501342773
-x faster: 48.178556869139825
+old_method: 1.3261933326721191
+
+new_method: 0.028895854949951172
+
+x faster: 45.895625340352154
 
 #### SphericalCoredIsothermal
-old_method: 1.3838720321655273  
-new_method: 0.03012371063232422
-x faster: 45.93962706176592
+old_method: 1.339472770690918
+
+new_method: 0.029388904571533203
+
+x faster: 45.577499067058234
 
 #### ExternalShear
-old_method: 1.3890931606292725
-new_method: 0.016950130462646484
-x faster: 81.95176808169465
+old_method: 1.430459976196289
+
+new_method: 0.018290281295776367
+
+x faster: 78.20874665971452
 
 
 # Intensity
@@ -68,3 +80,32 @@ Running 100 calls on EllipticalProfile.to_eccentric_radius.
 classic_grid_to_eccentric_radius: 0.9260859489440918
 new_grid_to_eccentric_radius:   0.011136054992675781
 
+## Results from Several Light Profiles
+
+#### EllipticalSersic
+old_method: 1.1218419075012207
+
+new_method: 0.012676715850830078
+
+x faster: 88.49625728794433
+
+#### EllipticalExponential
+old_method: 1.0966298580169678
+
+new_method: 0.012710094451904297
+
+x faster: 86.28022885012193
+
+#### EllipticalDevVaucouleurs
+old_method: 1.104621171951294
+
+new_method: 0.012662172317504883
+
+x faster: 87.23788811689168
+
+#### EllipticalCoreSersic
+old_method: 1.2265520095825195
+
+new_method: 0.017539024353027344
+
+x faster: 69.93273883964983
