@@ -119,25 +119,25 @@ class NonLinearOptimizer(object):
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
-        param_names = open(self.file_param_names, 'w')
-
-        for prior_name, prior_model in self.variable.flat_prior_models:
-
-            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
-            component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
-
-            param_labels = generate_parameter_latex(param_labels, subscript)
-
-            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-
-                line = prior_name + '_' + param[0]
-                line += ' ' * (40 - len(line)) + param_labels[param_no]
-
-                param_names.write(line + '\n')
-
-        param_names.close()
-
+        # param_names = open(self.file_param_names, 'w')
+        #
+        # for prior_name, prior_model in self.variable.flat_prior_models:
+        #
+        #     param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
+        #     component_number = prior_model.cls().component_number
+        #     subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+        #
+        #     param_labels = generate_parameter_latex(param_labels, subscript)
+        #
+        #     for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+        #
+        #         line = prior_name + '_' + param[0]
+        #         line += ' ' * (40 - len(line)) + param_labels[param_no]
+        #
+        #         param_names.write(line + '\n')
+        #
+        # param_names.close()
+        #
 
 # TODO : Integration tests for this?? Hard to test as a unit test.
 # TODO : Need to think how this interfaces with Prior initialization.
@@ -188,6 +188,8 @@ class DownhillSimplex(NonLinearOptimizer):
         output = self.fmin(fitness_function, x0=initial_vector)
         logger.info("DownhillSimplex complete")
         res = fitness_function.result
+
+        # TODO : For me this extracts the mean of the first variable, do you just want to say means = output?
 
         # Get the reconstruction provided by Downhill Simplex
         means = output[0]
@@ -281,7 +283,13 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename=self.path)
+        outputfiles_basename=self.path, n_live_points=self.n_live_points,
+        const_efficiency_mode=self.const_efficiency_mode, importance_nested_sampling=self.importance_nested_sampling,
+        evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
+        null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
+        multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance, seed=self.seed,
+        verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
+                 log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
         result = fitness_function.result
@@ -430,22 +438,3 @@ class MultiNest(NonLinearOptimizer):
             The index of the weighted sample to return.
         """
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
-
-    # TODO : untested and unfinished, remains to be seen if we'll need this code.
-    #
-    # def reorder_summary_file(self, new_order):
-    #     most_probable = self.compute_most_probable()
-    #     most_likely = self.compute_most_likely()
-    #     likelihood = self.compute_max_likelihood()[0]
-    #     log_likelihood = self.compute_max_likelihood()[1]
-    #
-    #     most_probable = list(map(lambda param: ('%18.18E' % param).rjust(28), most_probable))
-    #     most_probable = ''.join(map(str, most_probable))
-    #     most_likely = list(map(lambda param: ('%18.18E' % param).rjust(28), most_likely))
-    #     most_likely = ''.join(map(str, most_likely))
-    #     likelihood = ('%18.18E' % 0.0).rjust(28)
-    #     log_likelihood = ('%18.18E' % 0.0).rjust(28)
-    #
-    #     new_summary_file = open(self.path + 'summary_new.txt', 'w')
-    #     new_summary_file.write(most_probable + most_likely + likelihood + log_likelihood)
-    #     new_summary_file.close()
