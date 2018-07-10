@@ -19,7 +19,8 @@ class LightProfileSettings(object):
             *True* - If the light profile is in the image-plane, it is evaluated using an iterative sub-grid_coords.
             *False* - Evaluate the light profile on the grid_coords defined by the variable *sub_grid_plane*.
          iterative_precision : float
-            The precision the light profile intensities are calculated too on the iterative grid_coords (image-plane only).
+            The precision the light profile intensities are calculated too on the iterative grid_coords (image-plane
+            only).
          sub_grid_plane : bool
             *True* - Evaluate the light profile using a sub-grid_coords.
             *False* - Evaluate the light profile using an image-grid_coords.
@@ -172,7 +173,7 @@ class EllipticalSersic(EllipticalLightProfile):
     @property
     def elliptical_effective_radius(self):
         """The effective_radius term used in a Sersic light profiles is the circular effective radius. It describes the
-         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis \
+         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis
          ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
 
          The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
