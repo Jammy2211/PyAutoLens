@@ -19,7 +19,8 @@ class LightProfileSettings(object):
             *True* - If the light profile is in the image-plane, it is evaluated using an iterative sub-grid_coords.
             *False* - Evaluate the light profile on the grid_coords defined by the variable *sub_grid_plane*.
          iterative_precision : float
-            The precision the light profile intensities are calculated too on the iterative grid_coords (image-plane only).
+            The precision the light profile intensities are calculated too on the iterative grid_coords (image-plane
+            only).
          sub_grid_plane : bool
             *True* - Evaluate the light profile using a sub-grid_coords.
             *False* - Evaluate the light profile using an image-grid_coords.
@@ -37,7 +38,6 @@ class LightProfileSettings(object):
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    # noinspection PyMethodMayBeStatic
     def intensity_at_radius(self, radius):
         """
         Abstract method for obtaining intensity at given radius
@@ -50,7 +50,7 @@ class LightProfile(object):
         intensity : float
             The value of intensity at the given radius
         """
-        raise AssertionError("Flux at radius should be overridden")
+        raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
     def intensity_at_coordinates(self, coordinates):
@@ -65,9 +65,13 @@ class LightProfile(object):
         intensity : float
             The value of intensity at the given image_grid
         """
-        raise AssertionError("Flux at image_grid should be overridden")
+        raise NotImplementedError("intensity_at_coordinates should be overridden")
+
+    def intensity_from_grid(self, grid):
+        raise NotImplementedError("intensity_from_grid should be overridden")
 
 
+# noinspection PyAbstractClass
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
@@ -172,7 +176,7 @@ class EllipticalSersic(EllipticalLightProfile):
     @property
     def elliptical_effective_radius(self):
         """The effective_radius term used in a Sersic light profiles is the circular effective radius. It describes the
-         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis \
+         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis
          ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
 
          The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
@@ -207,6 +211,11 @@ class EllipticalSersic(EllipticalLightProfile):
         return self.intensity * np.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
+    def intensity_at_grid_radii(self, grid_radii):
+        return np.multiply(self.intensity, np.exp(
+            np.multiply(-self.sersic_constant,
+                        np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
+
     @geometry_profiles.transform_coordinates
     def intensity_at_coordinates(self, coordinates):
         """
@@ -224,6 +233,10 @@ class EllipticalSersic(EllipticalLightProfile):
             The value of intensity at the given image_grid
         """
         return self.intensity_at_radius(self.coordinates_to_eccentric_radius(coordinates))
+
+    @geometry_profiles.transform_grid
+    def intensity_from_grid(self, grid):
+        return self.intensity_at_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
 class EllipticalExponential(EllipticalSersic):
@@ -354,3 +367,13 @@ class EllipticalCoreSersic(EllipticalSersic):
             -self.sersic_constant * ((((radius ** self.alpha) + (self.radius_break ** self.alpha)) / (
                     self.effective_radius ** self.alpha)) ** (
                                              1.0 / (self.alpha * self.sersic_index))))
+
+    def intensity_at_grid_radii(self, grid_radii):
+        return np.multiply(np.multiply(self.intensity_prime, np.power(
+            np.add(1, np.power(np.divide(self.radius_break, grid_radii), self.alpha)), (self.gamma / self.alpha))),
+                           np.exp(np.multiply(-self.sersic_constant,
+                                              (np.power(np.divide(np.add(np.power(grid_radii, self.alpha), (
+                                                      self.radius_break ** self.alpha)),
+                                                                  (self.effective_radius ** self.alpha)), (
+                                                                1.0 / (
+                                                                self.alpha * self.sersic_index)))))))

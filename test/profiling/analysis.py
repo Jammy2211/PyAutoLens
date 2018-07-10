@@ -5,12 +5,13 @@ from src.imaging import image as im
 from src.imaging import mask as msk
 from src.imaging import scaled_array
 import os
+import time
 
-repeats = 10
+repeats = 100
 
 # Load up the weighted_data
 lens_name = 'source_sersic'
-data_dir = "../../weighted_data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
+data_dir = "../../data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
 
 data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
@@ -36,7 +37,9 @@ def test_analysis_1():
     lens_galaxy = g.Galaxy(spherical_mass_profile=mass_profiles.EllipticalIsothermal(axis_ratio=0.9),
                            shear_mass_profile=mass_profiles.ExternalShear())
 
+    start = time.time()
     repeat(lambda _: analysis.run(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy]))
+    print(time.time() - start)
 
 
 if __name__ == "__main__":

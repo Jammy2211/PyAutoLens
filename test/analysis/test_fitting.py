@@ -93,7 +93,6 @@ class MockMapping(object):
         self.sub_to_image = sub_to_image
 
     def map_data_sub_to_image(self, data):
-
         data_image = np.zeros((self.image_pixels))
 
         for sub_pixel in range(self.sub_pixels):
@@ -104,6 +103,9 @@ class MockMapping(object):
 
 # noinspection PyUnusedLocal
 class MockLightProfile(light_profiles.LightProfile):
+
+    def intensity_from_grid(self, grid):
+        return np.array([self.value])
 
     def __init__(self, value):
         self.value = value
@@ -189,7 +191,6 @@ class TestGenerateBlurredLightProfileImage:
         assert non_blurred_value == blurred_value
 
     def test__1x1_image__psf_all_1s_so_blurs_into_image(self, image_1x1, galaxy_light_sersic, no_galaxies):
-
         kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
                                                                                      [1.0, 1.0, 1.0],
                                                                                      [1.0, 1.0, 1.0]]))
@@ -211,7 +212,6 @@ class TestGenerateBlurredLightProfileImage:
         assert blurred_value[0] == pytest.approx(blurred_value_manual[0], 1e-6)
 
     def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, image_2x2, galaxy_light_sersic, no_galaxies):
-
         kernel_convolver = image_2x2.convolver.convolver_for_kernel(kernel=np.array([[0.0, 3.0, 0.0],
                                                                                      [0.0, 2.0, 1.0],
                                                                                      [0.0, 0.0, 0.0]]))
@@ -242,7 +242,6 @@ class TestGenerateBlurredLightProfileImage:
 class TestFitDataWithProfilesHyperGalaxy:
 
     def test__chi_sq_is_0__hyper_galaxy_adds_to_noise_term(self, image_1x1, no_galaxies):
-
         kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
                                                                                      [0.0, 1.0, 0.0],
                                                                                      [0.0, 0.0, 0.0]]))
@@ -272,7 +271,6 @@ class TestFitDataWithProfilesHyperGalaxy:
 class TestComputeBlurredImages:
 
     def test__psf_just_central_1_so_no_blurring__no_blurring_region__image_in_is_image_out(self):
-
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -302,7 +300,6 @@ class TestComputeBlurredImages:
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__psf_all_1s_so_blurring_gives_4s__no_blurring_region__image_in_is_image_out(self):
-
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -506,7 +503,6 @@ class TestGenerateScaledNoise:
 class TestLikelihood:
 
     def test__model_matches_data__noise_all_2s__lh_is_noise_term(self):
-
         image = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([10.0, 10.0, 10.0, 10.0])
@@ -520,7 +516,6 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
     def test__model_data_mismatch__chi_sq_term_contributes_to_lh(self):
-
         image = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
@@ -537,7 +532,6 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
-
         image = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
@@ -556,7 +550,6 @@ class TestLikelihood:
 class TestPixelizationEvidence:
 
     def test__simple_values(self):
-
         image = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([10.0, 10.0, 10.0, 10.0])
@@ -588,7 +581,6 @@ class TestPixelizationEvidence:
                                          1e-4)
 
     def test__complicated_values(self):
-
         image = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
@@ -620,7 +612,6 @@ class TestPixelizationEvidence:
                                          1e-4)
 
     def test__use_fitting_functions_to_compute_terms(self):
-
         image = np.array([10.0, 100.0, 0.0, 10.0])
         noise = np.array([1.0, 2.0, 77.0, 4.0])
         model_image = np.array([11.0, 13.0, 9.0, 8.0])
@@ -644,7 +635,7 @@ class TestPixelizationEvidence:
         chi_sq_term = fitting.compute_chi_sq_term(image, noise, model_image)
         reg_term = pix_fit.regularization_term_from_reconstruction()
         log_det_cov_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.covariance_regularization)
-        log_det_reg =  pix_fit.log_determinant_of_matrix_cholesky(pix_fit.regularization)
+        log_det_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.regularization)
         noise_term = fitting.compute_noise_term(noise)
 
         assert evidence == pytest.approx(-0.5 * (chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term),
