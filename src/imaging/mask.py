@@ -1,5 +1,6 @@
 from src.imaging import scaled_array
 from src.imaging import grids
+from src.imaging import image as im
 from src import exc
 import numpy as np
 from collections import namedtuple
@@ -204,7 +205,6 @@ class Mask(scaled_array.ScaledArray):
                 if not self[x, y]:
                     for x1 in range(grid_size_sub):
                         for y1 in range(grid_size_sub):
-
                             sub_to_image[sub_pixel_count] = image_pixel_count
                             sub_pixel_count += 1
 
@@ -448,3 +448,24 @@ class Mask(scaled_array.ScaledArray):
                             raise exc.MaskException('compute_image_to_sparse - Stuck in infinite loop')
 
         return image_to_sparse
+
+    def mask_image(self, image):
+        """
+
+        Parameters
+        ----------
+        image: im.Image
+
+        Returns
+        -------
+        masked_image: MaskedImage
+        """
+
+        return MaskedImage(image, image.effective_exposure_time, image.pixel_scale, image.psf, image.background_noise,
+                           image.poisson_noise)
+
+
+class MaskedImage(im.AbstractImage):
+    def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
+                 poisson_noise=None):
+        super().__init__(array, effective_exposure_time, pixel_scale, psf, background_noise, poisson_noise)

@@ -5,10 +5,11 @@ import scipy.signal
 from src import exc
 
 
-class Image(ScaledArray):
+class AbstractImage(ScaledArray):
     """
     A 2d array representing a real or simulated image.
     """
+
     def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
                  poisson_noise=None):
         """
@@ -27,11 +28,79 @@ class Image(ScaledArray):
         poisson_noise: ndarray
             An array describing the poisson noise in the image
         """
-        super(Image, self).__init__(array, pixel_scale)
+        super(AbstractImage, self).__init__(array, pixel_scale)
         self.psf = psf
         self.background_noise = background_noise
         self.poisson_noise = poisson_noise
         self.effective_exposure_time = effective_exposure_time
+
+    def electrons_per_second_to_counts(self, array):
+        """
+        For an array (in electrons per second) and exposure time array, return an array in units counts.
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.multiply(array, self.effective_exposure_time)
+
+    def counts_to_electrons_per_second(self, array):
+        """
+        For an array (in counts) and exposure time array, convert the array to units electrons per second
+
+        Parameters
+        ----------
+        array : ndarray
+            The image from which the Poisson signal_to_noise_ratio map is estimated.
+        """
+        return np.divide(array, self.effective_exposure_time)
+
+    @property
+    def counts_array(self):
+        """
+        Returns
+        -------
+        counts_array: ndarray
+            An array representing the image in terms of counts
+        """
+        return self.electrons_per_second_to_counts(self)
+
+    @property
+    def background_noise_counts_array(self):
+        """
+        Returns
+        -------
+        background_noise_counts_array: ndarray
+            An array representing the background noise in terms of counts
+        """
+        return self.electrons_per_second_to_counts(self.background_noise)
+
+    @property
+    def estimated_noise_counts(self):
+        """
+        Returns
+        -------
+        estimated_noise_counts: ndarray
+            An array representing estimated noise in terms of counts
+        """
+        return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
+
+    @property
+    def estimated_noise(self):
+        """
+        Returns
+        -------
+        estimated_noise: ndarray
+            An array representing estimated noise
+        """
+        return self.counts_to_electrons_per_second(self.estimated_noise_counts)
+
+
+class Image(AbstractImage):
+    """
+    A 2d array representing a real or simulated image.
+    """
 
     @classmethod
     def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, background_sky_map=None,
@@ -125,7 +194,8 @@ class Image(ScaledArray):
 
         NOTE1 : The PSF kernel must be sub_grid_size odd x odd to avoid ambiguities with convolution offsets.
 
-        NOTE2 : SciPy has multiple 'mode' options for the sub_grid_size of the output array (e.g. does it include zero padding).
+        NOTE2 : SciPy has multiple 'mode' options for the sub_grid_size of the output array (e.g. does it include zero
+        padding).
         We require the output array to be the same sub_grid_size as the input image.
 
         Parameters
@@ -138,68 +208,6 @@ class Image(ScaledArray):
             raise exc.KernelException("PSF Kernel must be odd")
 
         return self.new_with_array(scipy.signal.convolve2d(self, psf, mode='same'))
-
-    def electrons_per_second_to_counts(self, array):
-        """
-        For an array (in electrons per second) and exposure time array, return an array in units counts.
-
-        Parameters
-        ----------
-        array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
-        """
-        return np.multiply(array, self.effective_exposure_time)
-
-    def counts_to_electrons_per_second(self, array):
-        """
-        For an array (in counts) and exposure time array, convert the array to units electrons per second
-
-        Parameters
-        ----------
-        array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
-        """
-        return np.divide(array, self.effective_exposure_time)
-
-    @property
-    def counts_array(self):
-        """
-        Returns
-        -------
-        counts_array: ndarray
-            An array representing the image in terms of counts
-        """
-        return self.electrons_per_second_to_counts(self)
-
-    @property
-    def background_noise_counts_array(self):
-        """
-        Returns
-        -------
-        background_noise_counts_array: ndarray
-            An array representing the background noise in terms of counts
-        """
-        return self.electrons_per_second_to_counts(self.background_noise)
-
-    @property
-    def estimated_noise_counts(self):
-        """
-        Returns
-        -------
-        estimated_noise_counts: ndarray
-            An array representing estimated noise in terms of counts
-        """
-        return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
-
-    @property
-    def estimated_noise(self):
-        """
-        Returns
-        -------
-        estimated_noise: ndarray
-            An array representing estimated noise
-        """
-        return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
 
 class PSF(ScaledArray):
