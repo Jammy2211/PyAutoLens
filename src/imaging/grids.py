@@ -96,8 +96,6 @@ class AbstractCoordinateGrid(np.ndarray):
         """
         return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(self), galaxies))
 
-    # TODO : Make galaxy.intensitites_from_coordinate_grid as above
-
     def new_from_array(self, array):
         return self.__class__(array)
 
@@ -276,6 +274,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
 
         Parameters
         -----------
+        mapping
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at the grid coordinates.
         """
@@ -422,13 +421,7 @@ class GridMapping(object):
         self.cluster = cluster
 
     def map_data_sub_to_image(self, data):
-
-        data_image = np.zeros((self.image_pixels,))
-
-        for sub_pixel in range(self.sub_pixels):
-            data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
-
-        return data_image * self.sub_grid_fraction
+        return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_size ** 2).sum(axis=1))
 
     def map_to_2d(self, grid_data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
