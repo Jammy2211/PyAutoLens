@@ -211,6 +211,11 @@ class EllipticalSersic(EllipticalLightProfile):
         return self.intensity * np.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
+    def intensity_at_grid_radii(self, grid_radii):
+        return np.multiply(self.intensity, np.exp(
+            np.multiply(-self.sersic_constant,
+                        np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
+
     @geometry_profiles.transform_coordinates
     def intensity_at_coordinates(self, coordinates):
         """
@@ -228,6 +233,10 @@ class EllipticalSersic(EllipticalLightProfile):
             The value of intensity at the given image_grid
         """
         return self.intensity_at_radius(self.coordinates_to_eccentric_radius(coordinates))
+
+    @geometry_profiles.transform_grid
+    def intensity_from_grid(self, grid):
+        return self.intensity_at_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
 class EllipticalExponential(EllipticalSersic):
