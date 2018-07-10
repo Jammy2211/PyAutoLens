@@ -286,7 +286,7 @@ class TestComputeBlurredImages:
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
 
-        image = ma.grid_data_from_grid(image_2d)
+        image = ma.masked_1d_array_from_2d_array(image_2d)
 
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -314,7 +314,7 @@ class TestComputeBlurredImages:
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        image = ma.grid_data_from_grid(image_2d)
+        image = ma.masked_1d_array_from_2d_array(image_2d)
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
@@ -341,7 +341,7 @@ class TestComputeBlurredImages:
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
 
-        image = ma.grid_data_from_grid(image_2d)
+        image = ma.masked_1d_array_from_2d_array(image_2d)
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
@@ -367,7 +367,7 @@ class TestComputeBlurredImages:
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        image = ma.grid_data_from_grid(image_2d)
+        image = ma.masked_1d_array_from_2d_array(image_2d)
 
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 

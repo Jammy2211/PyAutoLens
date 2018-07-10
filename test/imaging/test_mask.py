@@ -664,7 +664,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            grid_data = msk.grid_data_from_grid(data)
+            grid_data = msk.masked_1d_array_from_2d_array(data)
 
             assert (grid_data[0] == np.array([5])).all()
 
@@ -679,7 +679,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            grid_data = msk.grid_data_from_grid(data)
+            grid_data = msk.masked_1d_array_from_2d_array(data)
 
             assert (grid_data[0] == np.array([2])).all()
             assert (grid_data[1] == np.array([4])).all()
@@ -698,7 +698,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            grid_data = msk.grid_data_from_grid(data)
+            grid_data = msk.masked_1d_array_from_2d_array(data)
 
             assert (grid_data[0] == np.array([2])).all()
             assert (grid_data[1] == np.array([5])).all()
@@ -719,7 +719,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            grid_data = msk.grid_data_from_grid(data)
+            grid_data = msk.masked_1d_array_from_2d_array(data)
 
             assert (grid_data[0] == np.array([2])).all()
             assert (grid_data[1] == np.array([4])).all()
