@@ -38,7 +38,6 @@ class LightProfileSettings(object):
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    # noinspection PyMethodMayBeStatic
     def intensity_at_radius(self, radius):
         """
         Abstract method for obtaining intensity at given radius
@@ -51,7 +50,7 @@ class LightProfile(object):
         intensity : float
             The value of intensity at the given radius
         """
-        raise AssertionError("Flux at radius should be overridden")
+        raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
     def intensity_at_coordinates(self, coordinates):
@@ -66,9 +65,13 @@ class LightProfile(object):
         intensity : float
             The value of intensity at the given image_grid
         """
-        raise AssertionError("Flux at image_grid should be overridden")
+        raise NotImplementedError("intensity_at_coordinates should be overridden")
+
+    def intensity_from_grid(self, grid):
+        raise NotImplementedError("intensity_from_grid should be overridden")
 
 
+# noinspection PyAbstractClass
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
