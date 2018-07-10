@@ -119,25 +119,25 @@ class NonLinearOptimizer(object):
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
-        # param_names = open(self.file_param_names, 'w')
-        #
-        # for prior_name, prior_model in self.variable.flat_prior_models:
-        #
-        #     param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
-        #     component_number = prior_model.cls().component_number
-        #     subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
-        #
-        #     param_labels = generate_parameter_latex(param_labels, subscript)
-        #
-        #     for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-        #
-        #         line = prior_name + '_' + param[0]
-        #         line += ' ' * (40 - len(line)) + param_labels[param_no]
-        #
-        #         param_names.write(line + '\n')
-        #
-        # param_names.close()
-        #
+        param_names = open(self.file_param_names, 'w')
+
+        for prior_name, prior_model in self.variable.flat_prior_models:
+
+            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
+            component_number = prior_model.cls().component_number
+            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+
+            param_labels = generate_parameter_latex(param_labels, subscript)
+
+            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+
+                line = prior_name + '_' + param[0]
+                line += ' ' * (40 - len(line)) + param_labels[param_no]
+
+                param_names.write(line + '\n')
+
+        param_names.close()
+
 
 # TODO : Integration tests for this?? Hard to test as a unit test.
 # TODO : Need to think how this interfaces with Prior initialization.
