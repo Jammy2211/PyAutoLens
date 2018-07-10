@@ -228,6 +228,7 @@ class TestNonLinearOptimizer(object):
     class TestDirectorySetup(object):
 
         def test__input_path_sets_up_correct_directory(self, config_path, nlo_setup_path):
+
             nlo = non_linear.NonLinearOptimizer(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
                 path=nlo_setup_path + '1_profile')
