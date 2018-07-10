@@ -51,7 +51,7 @@ def tick_toc(func):
 
 
 def classic_method(func):
-    grid_values = np.zeros(grid.shape)
+    grid_values = np.zeros(grid.shape[0])
 
     for pixel_no, coordinate in enumerate(grid):
         grid_values[pixel_no] = func(coordinate)
