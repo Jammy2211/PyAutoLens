@@ -23,17 +23,16 @@ def make_galaxy_light_sersic():
 
 @pytest.fixture(name="image_1x1", scope='function')
 def make_1x1_image():
-    class Im(object):
+    class Im(np.ndarray):
         pass
 
-    im = Im()
+    im = np.array([1.0]).view(Im)
 
     im.ma = np.array([[True, True, True],
                       [True, False, True],
                       [True, True, True]])
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.image = np.array([1.0])
     im.noise = np.array([1.0])
     im.exposure_time = np.array([1.0])
 
@@ -44,7 +43,6 @@ def make_1x1_image():
                                                        blurring_region_mask=im.ma.blurring_mask_for_kernel_shape(
                                                            kernel_shape=(3, 3)))
 
-    im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
     im.grid_collection = im.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
                                                                                           blurring_shape=(3, 3))
 
@@ -53,10 +51,10 @@ def make_1x1_image():
 
 @pytest.fixture(name="image_2x2", scope='function')
 def make_2x2_image():
-    class Im(object):
+    class Im(np.ndarray):
         pass
 
-    im = Im()
+    im = np.array([1.0, 1.0, 1.0, 1.0]).view(Im)
 
     im.ma = np.array([[True, True, True, True],
                       [True, False, False, True],
@@ -65,7 +63,6 @@ def make_2x2_image():
 
     im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
 
-    im.image = np.array([1.0, 1.0, 1.0, 1.0])
     im.noise = np.array([1.0, 1.0, 1.0, 1.0])
     im.exposure_time = np.array([1.0, 1.0, 1.0, 1.0])
 
@@ -76,7 +73,6 @@ def make_2x2_image():
                                                        blurring_region_mask=im.ma.blurring_mask_for_kernel_shape(
                                                            kernel_shape=(3, 3)))
 
-    im.grid_datas = grids.DataCollection(image=im.image, noise=im.noise, exposure_time=im.exposure_time)
     im.grid_collection = im.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
                                                                                           blurring_shape=(3, 3))
 
@@ -149,7 +145,7 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
-        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace,
+        likelihood = fitting.fit_data_with_profiles(image_1x1, kernel_convolver, ray_trace,
                                                     image_1x1.mapping)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
@@ -166,7 +162,7 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                        image_plane_grids=image_1x1.grid_collection)
 
-        likelihood = fitting.fit_data_with_profiles(image_1x1.grid_datas, kernel_convolver, ray_trace,
+        likelihood = fitting.fit_data_with_profiles(image_1x1, kernel_convolver, ray_trace,
                                                     image_1x1.mapping)
 
         assert likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
@@ -260,7 +256,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)]
 
-        likelihood = fitting.fit_data_with_profiles_hyper_galaxies(image_1x1.grid_datas, kernel_convolver, ray_trace,
+        likelihood = fitting.fit_data_with_profiles_hyper_galaxies(image_1x1, kernel_convolver, ray_trace,
                                                                    image_1x1.mapping, model_image, galaxy_images,
                                                                    minimum_values,
                                                                    hyper_galaxies)
