@@ -285,29 +285,9 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         return __class__(array, self.sub_grid_size)
 
 
-class DataCollection(object):
-
-    def __init__(self, image, noise, exposure_time):
-        """A collection of grids which contain the data (image, noise, exposure times, psf).
-
-        Parameters
-        -----------
-        image : GridData
-            A data-grid of the observed image fluxes (electrons per second)
-        noise : GridData
-            A data-grid of the observed image noise estimates (standard deviations, electrons per second)
-        exposure_time : GridData
-            A data-grid of the exposure time in each pixel (seconds)
-        """
-        self.image = image
-        self.noise = noise
-        self.exposure_time = exposure_time
-
-
 class GridMapping(object):
 
     def __init__(self, image_shape, image_pixels, data_to_image, sub_grid_size, sub_to_image, cluster=None):
-
         self.image_shape = image_shape
         self.image_pixels = image_pixels
         self.data_to_image = data_to_image
@@ -334,34 +314,6 @@ class GridMapping(object):
             data_2d[pixel[0], pixel[1]] = grid_data[i]
 
         return data_2d
-
-
-class GridClusterPixelization(object):
-
-    def __init__(self, cluster_to_image, image_to_cluster):
-        """ The KMeans clustering used to derive an amorphous pixeliation uses a set of image-grid coordinates. For \
-        high resolution imaging, the large number of coordinates makes KMeans clustering (unfeasibly) slow.
-
-        Therefore, for efficiency, we define a 'clustering-grid', which is a sparsely sampled set of image-grid \
-        coordinates used by the KMeans algorithm instead. However, we don't need the actual coordinates of this \
-        clustering grid (as they are already calculated for the image-grid). Instead, we just need a mapper between \
-        clustering-data_to_image and image-data_to_image.
-
-        Thus, the *cluster_to_image* attribute maps every pixel on the clustering grid to its closest image pixel \
-        (via the image pixel's 1D index). This is used before the KMeans clustering algorithm, to extract the sub-set \
-        of coordinates that the algorithm uses.
-
-        By giving the KMeans algorithm only clustering-grid coordinates, it will only tell us the mappings between \
-        source-data_to_image and clustering-data_to_image. However, to perform the source reconstruction, we need to
-        know all of the mappings between source data_to_image and image data_to_image / sub-image data_to_image. This
-        would require a (computationally expensive) nearest-neighbor search (over all clustering data_to_image and
-        image / sub data_to_image) to calculate. The calculation can be sped-up by using the attribute
-        *image_to_cluster*, which maps every image-pixel to its closest pixel on the clustering grid (see
-        *pixelization.sub_coordinates_to_source_pixels_via_sparse_pairs*).
-        """
-
-        self.cluster_to_image = cluster_to_image
-        self.image_to_cluster = image_to_cluster
 
 
 class GridBorder(geometry_profiles.Profile):
