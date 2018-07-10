@@ -221,10 +221,10 @@ class Mask(scaled_array.ScaledArray):
 
         Parameters
         ----------
-        grid_data: ndarray | float
+        grid_data: ndarray | float | None
 
         """
-        if isinstance(grid_data, float):
+        if grid_data is None or isinstance(grid_data, float):
             return grid_data
 
         pixels = self.pixels_in_mask
