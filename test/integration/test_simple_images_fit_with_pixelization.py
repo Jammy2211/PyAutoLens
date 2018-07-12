@@ -1,5 +1,6 @@
 from src.imaging import mask
 from src.imaging import image
+from src.imaging import masked_image
 from src.profiles import light_profiles as lp
 from src.profiles import mass_profiles as mp
 from src.pixelization import pixelization
@@ -66,10 +67,10 @@ class TestCase:
             im.background_noise = np.ones(im.shape)
             im.effective_exposure_time = np.ones(im.shape)
             im.pixel_scale = 1.
-            im.psf = None
+            im.psf = image.PSF(np.ones((1, 1)), 1)
             im.poisson_noise = 1.
 
-            masked_image = ma.mask_image(im)
+            mi = masked_image.MaskedImage(ma, im)
 
             mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
 
@@ -119,7 +120,7 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(masked_image, kernel_convolver=kernel_convolver,
+            assert fitting.fit_data_with_pixelization(mi, kernel_convolver=kernel_convolver,
                                                       tracer=ray_trace, mapping=mapping) == pytest.approx(
                 evidence_expected, 1e-4)
 
@@ -135,10 +136,11 @@ class TestCase:
             im = image.Image(im)
             im.effective_exposure_time = np.ones(im.shape)
             im.background_noise = np.ones(im.shape)
+            im.psf = image.PSF(np.ones((1, 1)), 1)
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            masked_image = ma.mask_image(im)
+            mi = masked_image.MaskedImage(ma, im)
 
             ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1, blurring_shape=(3, 3))
 
@@ -194,6 +196,6 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(masked_image, kernel_convolver=kernel_convolver,
+            assert fitting.fit_data_with_pixelization(mi, kernel_convolver=kernel_convolver,
                                                       tracer=ray_trace, mapping=mapping) == pytest.approx(
                 evidence_expected, 1e-4)
