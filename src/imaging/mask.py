@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class Mask(scaled_array.ScaledArray):
+    """
+    A mask represented by an ndarray where True is masked.
+    """
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
@@ -296,13 +299,17 @@ class Mask(scaled_array.ScaledArray):
 
         return SparseMapperTuple(sparse_to_image, image_to_sparse)
 
-    def grid_border(self):
-        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on its \
-        edge, therefore neighboring a pixel with a *True* value.
-        """
+    def __getitem__(self, coords):
+        try:
+            return super(Mask, self).__getitem__(coords)
+        except IndexError:
+            return True
 
-        # TODO : Border data_to_pixels for a circular mask and annulus mask are different (the inner annulus
-        # TODO : data_to_pixels should be ignored. Should we turn this to classes for Masks?
+    @property
+    def border_pixel_indices(self):
+        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        its edge, therefore neighboring a pixel with a *True* value.
+        """
 
         border_pixels = np.empty(0)
         image_pixel_index = 0
@@ -310,9 +317,9 @@ class Mask(scaled_array.ScaledArray):
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 if not self[x, y]:
-                    if self[x + 1, y] == 1 or self[x - 1, y] == 1 or self[x, y + 1] == 1 or \
-                            self[x, y - 1] == 1 or self[x + 1, y + 1] == 1 or self[x + 1, y - 1] == 1 \
-                            or self[x - 1, y + 1] == 1 or self[x - 1, y - 1] == 1:
+                    if self[x + 1, y] or self[x - 1, y] or self[x, y + 1] or \
+                            self[x, y - 1] or self[x + 1, y + 1] or self[x + 1, y - 1] \
+                            or self[x - 1, y + 1] or self[x - 1, y - 1]:
                         border_pixels = np.append(border_pixels, image_pixel_index)
 
                     image_pixel_index += 1
@@ -462,6 +469,7 @@ class Mask(scaled_array.ScaledArray):
 
         return MaskedImage(self.masked_1d_array_from_2d_array(image),
                            self.coordinate_grid,
+                           self.border_pixel_indices,
                            self.masked_1d_array_from_2d_array(image.effective_exposure_time),
                            image.pixel_scale,
                            image.psf,
@@ -473,10 +481,12 @@ class MaskedImage(im.AbstractImage):
     def __init__(self,
                  array,
                  coordinate_grid,
+                 border_pixel_indices,
                  effective_exposure_time=1.,
                  pixel_scale=1.,
                  psf=None,
                  background_noise=None,
                  poisson_noise=None):
         super().__init__(array, effective_exposure_time, pixel_scale, psf, background_noise, poisson_noise)
+        self.border_pixel_indices = border_pixel_indices
         self.coordinate_grid = coordinate_grid
