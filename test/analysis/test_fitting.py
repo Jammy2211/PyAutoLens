@@ -4,6 +4,7 @@ import pytest
 from src.analysis import fitting, ray_tracing, galaxy
 from src.imaging import mask as mask
 from src.imaging import masked_image
+from src.imaging import image
 from src.profiles import light_profiles
 from src.pixelization import pixelization
 from src.pixelization import frame_convolution
@@ -23,60 +24,31 @@ def make_galaxy_light_sersic():
 
 @pytest.fixture(name="image_1x1", scope='function')
 def make_1x1_image():
-    class Im(np.ndarray):
-        pass
+    im = image.Image(np.ones((1, 1)), psf=image.PSF(np.ones((1, 1)), 1), background_noise=np.array([[1.0]]),
+                     effective_exposure_time=np.array([[1.0]]))
 
-    im = np.array([1.0]).view(Im)
+    ma = mask.Mask(array=np.array([[False]]), pixel_scale=1.0)
 
-    im.ma = np.array([[True, True, True],
-                      [True, False, True],
-                      [True, True, True]])
-    im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
+    # im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
 
-    im.background_noise = np.array([1.0])
-    im.exposure_time = np.array([1.0])
-
-    im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
-
-    im.frame = frame_convolution.FrameMaker(mask=im.ma)
-    im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                       blurring_region_mask=im.ma.blurring_mask_for_kernel_shape(
-                                                           kernel_shape=(3, 3)))
-
-    im.grid_collection = im.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
-                                                                                          blurring_shape=(3, 3))
-
-    return im
+    return masked_image.MaskedImage(im, ma)
 
 
 @pytest.fixture(name="image_2x2", scope='function')
 def make_2x2_image():
-    class Im(np.ndarray):
-        pass
+    im = image.Image(np.array([[1.0, 1.0], [1.0, 1.0]]),
+                     psf=image.PSF(np.ones((3, 3)), 1),
+                     background_noise=np.array([[1.0, 1.0], [1.0, 1.0]]),
+                     effective_exposure_time=np.array([[1.0, 1.0], [1.0, 1.0]]))
 
-    im = np.array([1.0, 1.0, 1.0, 1.0]).view(Im)
+    ma = mask.Mask(array=np.array([[True, True, True, True],
+                                   [True, False, False, True],
+                                   [True, False, False, True],
+                                   [True, True, True, True]]), pixel_scale=1.0)
 
-    im.ma = np.array([[True, True, True, True],
-                      [True, False, False, True],
-                      [True, False, False, True],
-                      [True, True, True, True]])
+    # im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
 
-    im.ma = mask.Mask(array=im.ma, pixel_scale=1.0)
-
-    im.background_noise = np.array([1.0, 1.0, 1.0, 1.0])
-    im.exposure_time = np.array([1.0, 1.0, 1.0, 1.0])
-
-    im.mapping = MockMapping(image_pixels=4, sub_grid_size=1, sub_to_image=np.array([0, 1, 2, 3]))
-
-    im.frame = frame_convolution.FrameMaker(mask=im.ma)
-    im.convolver = im.frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                       blurring_region_mask=im.ma.blurring_mask_for_kernel_shape(
-                                                           kernel_shape=(3, 3)))
-
-    im.grid_collection = im.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
-                                                                                          blurring_shape=(3, 3))
-
-    return im
+    return masked_image.MaskedImage(im, ma)
 
 
 class MockMapping(object):
@@ -142,8 +114,7 @@ class TestFitData:
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       image_plane_grids=image_1x1.grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies, masked_image=image_1x1)
 
         likelihood = fitting.fit_data_with_profiles(image_1x1, kernel_convolver, ray_trace,
                                                     image_1x1.mapping)
@@ -159,8 +130,7 @@ class TestFitData:
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       image_plane_grids=image_1x1.grid_collection)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies, masked_image=image_1x1)
 
         likelihood = fitting.fit_data_with_profiles(image_1x1, kernel_convolver, ray_trace,
                                                     image_1x1.mapping)
@@ -177,7 +147,7 @@ class TestGenerateBlurredLightProfileImage:
                                                                                      [0.0, 0.0, 0.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       image_plane_grids=image_1x1.grid_collection)
+                                       masked_image=image_1x1)
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles(image_1x1.mapping)
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
@@ -192,7 +162,7 @@ class TestGenerateBlurredLightProfileImage:
                                                                                      [1.0, 1.0, 1.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       image_plane_grids=image_1x1.grid_collection)
+                                       masked_image=image_1x1)
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
                                                                      kernel_convolver=kernel_convolver,
@@ -213,7 +183,7 @@ class TestGenerateBlurredLightProfileImage:
                                                                                      [0.0, 0.0, 0.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       image_plane_grids=image_2x2.grid_collection)
+                                       masked_image=image_2x2)
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
                                                                      kernel_convolver=kernel_convolver,
@@ -238,16 +208,12 @@ class TestGenerateBlurredLightProfileImage:
 class TestFitDataWithProfilesHyperGalaxy:
 
     def test__chi_sq_is_0__hyper_galaxy_adds_to_noise_term(self, image_1x1, no_galaxies):
-        kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                                     [0.0, 1.0, 0.0],
-                                                                                     [0.0, 0.0, 0.0]]))
-
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       image_plane_grids=image_1x1.grid_collection)
+                                       masked_image=image_1x1)
 
         model_image = np.array([1.0])
         galaxy_images = [np.array([1.0]), np.array([1.0])]
@@ -256,7 +222,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)]
 
-        likelihood = fitting.fit_data_with_profiles_hyper_galaxies(image_1x1, kernel_convolver, ray_trace,
+        likelihood = fitting.fit_data_with_profiles_hyper_galaxies(image_1x1, ray_trace,
                                                                    image_1x1.mapping, model_image, galaxy_images,
                                                                    minimum_values,
                                                                    hyper_galaxies)
@@ -287,11 +253,11 @@ class TestComputeBlurredImages:
                                                                            [0., 1., 0.],
                                                                            [0., 0., 0.]]))
 
-        image = ma.masked_1d_array_from_2d_array(image_2d)
+        im = ma.masked_1d_array_from_2d_array(image_2d)
 
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -315,10 +281,10 @@ class TestComputeBlurredImages:
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        image = ma.masked_1d_array_from_2d_array(image_2d)
+        im = ma.masked_1d_array_from_2d_array(image_2d)
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
 
         assert (blurred_image == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
@@ -342,10 +308,10 @@ class TestComputeBlurredImages:
                                                                            [0.0, 1.0, 0.0],
                                                                            [0.0, 0.0, 0.0]]))
 
-        image = ma.masked_1d_array_from_2d_array(image_2d)
+        im = ma.masked_1d_array_from_2d_array(image_2d)
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -368,11 +334,11 @@ class TestComputeBlurredImages:
                                                                            [1.0, 1.0, 1.0],
                                                                            [1.0, 1.0, 1.0]]))
 
-        image = ma.masked_1d_array_from_2d_array(image_2d)
+        im = ma.masked_1d_array_from_2d_array(image_2d)
 
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(image, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
 
         assert (blurred_image == np.array([9.0, 9.0, 9.0, 9.0])).all()
 
@@ -499,11 +465,11 @@ class TestGenerateScaledNoise:
 class TestLikelihood:
 
     def test__model_matches_data__noise_all_2s__lh_is_noise_term(self):
-        image = np.array([10.0, 10.0, 10.0, 10.0])
+        im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([10.0, 10.0, 10.0, 10.0])
 
-        likelihood = fitting.compute_likelihood(image, noise, model_image)
+        likelihood = fitting.compute_likelihood(im, noise, model_image)
 
         chi_sq_term = 0
         noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
@@ -512,11 +478,11 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
     def test__model_data_mismatch__chi_sq_term_contributes_to_lh(self):
-        image = np.array([10.0, 10.0, 10.0, 10.0])
+        im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
-        likelihood = fitting.compute_likelihood(image, noise, model_image)
+        likelihood = fitting.compute_likelihood(im, noise, model_image)
 
         # chi squared = 0.25, 0, 0.25, 1.0
         # likelihood = -0.5*(0.25+0+0.25+1.0)
@@ -528,11 +494,11 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_sq_term + noise_term)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
-        image = np.array([10.0, 10.0, 10.0, 10.0])
+        im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
-        likelihood = fitting.compute_likelihood(image, noise, model_image)
+        likelihood = fitting.compute_likelihood(im, noise, model_image)
 
         # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
 
@@ -546,7 +512,7 @@ class TestLikelihood:
 class TestPixelizationEvidence:
 
     def test__simple_values(self):
-        image = np.array([10.0, 10.0, 10.0, 10.0])
+        im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([10.0, 10.0, 10.0, 10.0])
 
@@ -564,7 +530,7 @@ class TestPixelizationEvidence:
                                                regularization=reg_matrix, covariance=None,
                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
-        evidence = fitting.compute_pixelization_evidence(image, noise, model_image, pix_fit)
+        evidence = fitting.compute_pixelization_evidence(im, noise, model_image, pix_fit)
 
         chi_sq_term = 0
         reg_term = 3.0
@@ -577,7 +543,7 @@ class TestPixelizationEvidence:
                                          1e-4)
 
     def test__complicated_values(self):
-        image = np.array([10.0, 10.0, 10.0, 10.0])
+        im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model_image = np.array([11.0, 10.0, 9.0, 8.0])
 
@@ -595,7 +561,7 @@ class TestPixelizationEvidence:
                                                regularization=reg_matrix, covariance=None,
                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
-        evidence = fitting.compute_pixelization_evidence(image, noise, model_image, pix_fit)
+        evidence = fitting.compute_pixelization_evidence(im, noise, model_image, pix_fit)
 
         chi_sq_term = 1.0 + (1.0 / 9.0) + 0.25
         reg_term = 34.0
@@ -608,7 +574,7 @@ class TestPixelizationEvidence:
                                          1e-4)
 
     def test__use_fitting_functions_to_compute_terms(self):
-        image = np.array([10.0, 100.0, 0.0, 10.0])
+        im = np.array([10.0, 100.0, 0.0, 10.0])
         noise = np.array([1.0, 2.0, 77.0, 4.0])
         model_image = np.array([11.0, 13.0, 9.0, 8.0])
 
@@ -626,9 +592,9 @@ class TestPixelizationEvidence:
                                                regularization=reg_matrix, covariance=None,
                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
-        evidence = fitting.compute_pixelization_evidence(image, noise, model_image, pix_fit)
+        evidence = fitting.compute_pixelization_evidence(im, noise, model_image, pix_fit)
 
-        chi_sq_term = fitting.compute_chi_sq_term(image, noise, model_image)
+        chi_sq_term = fitting.compute_chi_sq_term(im, noise, model_image)
         reg_term = pix_fit.regularization_term_from_reconstruction()
         log_det_cov_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.covariance_regularization)
         log_det_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.regularization)
