@@ -11,6 +11,23 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
+class Memoizer(object):
+    def __init__(self):
+        self.results = {}
+        self.calls = 0
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            key = "_".join(filter(None, ["_".join(map(str, args)), "_".join(map(str, kwargs.items()))]))
+            if key not in self.results:
+                self.calls += 1
+                self.results[key] = func(*args, **kwargs)
+            return self.results[key]
+
+        return wrapper
+
+
 class Mask(scaled_array.ScaledArray):
     """
     A mask represented by an ndarray where True is masked.
@@ -142,6 +159,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.CoordsCollection(image, sub, blurring)
 
+    @Memoizer()
     def sub_coordinate_grid_with_size(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
 
@@ -170,6 +188,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.SubCoordinateGrid(grid, size)
 
+    @Memoizer()
     def blurring_coordinate_grid(self, psf_size):
         """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
 
@@ -190,6 +209,7 @@ class Mask(scaled_array.ScaledArray):
 
         return blurring_mask.coordinate_grid
 
+    @Memoizer()
     def sub_to_image_with_size(self, grid_size_sub):
         """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
 
@@ -256,6 +276,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grid
 
+    @Memoizer()
     def grid_mapping_with_sub_grid_size(self, sub_grid_size, cluster_grid_size=None):
         data_to_image = self.grid_to_pixel()
         sub_to_image = self.sub_to_image_with_size(sub_grid_size)
@@ -267,6 +288,7 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.GridMapping(self.shape, self.pixels_in_mask, data_to_image, sub_grid_size, sub_to_image, cluster)
 
+    @Memoizer()
     def sparse_grid_mapper_with_grid_size(self, sparse_grid_size):
         """Given an image.Mask, compute the sparse cluster image data_to_pixels, defined as the sub-set of
         image-data_to_pixels used to perform KMeans clustering (this is used purely for speeding up the KMeans
@@ -326,6 +348,7 @@ class Mask(scaled_array.ScaledArray):
 
         return border_pixels
 
+    @Memoizer()
     def blurring_mask_for_kernel_shape(self, kernel_shape):
         """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
         fraction of their light will be blurring in the image.
@@ -354,6 +377,7 @@ class Mask(scaled_array.ScaledArray):
 
         return Mask(blurring_mask, self.pixel_scale)
 
+    @Memoizer()
     def sparse_uniform_mask_with_grid_size(self, sparse_grid_size):
         """Setup a two-dimensional sparse mask of image data_to_pixels, by keeping all image data_to_pixels which do not
         give a remainder when divided by the sub-grid_coords sub_grid_size. """
@@ -367,6 +391,7 @@ class Mask(scaled_array.ScaledArray):
 
         return Mask(sparse_mask, self.pixel_scale)
 
+    @Memoizer()
     def sparse_index_image_from_mask(self, sparse_mask):
         """Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
 
@@ -384,6 +409,7 @@ class Mask(scaled_array.ScaledArray):
 
         return sparse_index_2d
 
+    @Memoizer()
     def sparse_to_image_from_mask(self, sparse_mask):
         """Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
         data_to_pixels.
@@ -454,20 +480,3 @@ class Mask(scaled_array.ScaledArray):
                             raise exc.MaskException('compute_image_to_sparse - Stuck in infinite loop')
 
         return image_to_sparse
-
-
-class Memoizer(object):
-    def __init__(self):
-        self.results = {}
-        self.calls = 0
-
-    def __call__(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            key = "_".join(filter(None, ["_".join(map(str, args)), "_".join(map(str, kwargs.items()))]))
-            if key not in self.results:
-                self.calls += 1
-                self.results[key] = func(*args, **kwargs)
-            return self.results[key]
-
-        return wrapper
