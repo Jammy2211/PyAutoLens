@@ -160,13 +160,6 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.CoordinateGrid(grid)
 
-    def coordinates_collection_for_subgrid_size_and_blurring_shape(self, sub_grid_size, blurring_shape):
-        image = self.coordinate_grid
-        sub = self.sub_coordinate_grid_with_size(sub_grid_size)
-        blurring = self.blurring_coordinate_grid(blurring_shape)
-
-        return grids.CoordsCollection(image, sub, blurring)
-
     @Memoizer()
     def sub_coordinate_grid_with_size(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -195,27 +188,6 @@ class Mask(scaled_array.ScaledArray):
                             sub_pixel_count += 1
 
         return grids.SubCoordinateGrid(grid, size)
-
-    @Memoizer()
-    def blurring_coordinate_grid(self, psf_size):
-        """ Compute the blurring grid_coords grids from a mask, using the center of every unmasked pixel.
-
-        The blurring grid_coords contains all data_to_pixels which are not in the mask, but close enough to it that a
-        fraction of their will be blurred into the mask region (and therefore they are needed for the analysis). They
-        are located by scanning for all data_to_pixels which are outside the mask but within the psf sub_grid_size.
-
-        Parameters
-        ----------
-        psf_size : (int, int)
-           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
-        """
-
-        if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0:
-            raise exc.MaskException("psf_size of exterior region must be odd")
-
-        blurring_mask = self.blurring_mask_for_kernel_shape(psf_size)
-
-        return blurring_mask.coordinate_grid
 
     @Memoizer()
     def sub_to_image_with_size(self, grid_size_sub):
@@ -366,6 +338,9 @@ class Mask(scaled_array.ScaledArray):
         kernel_shape : (int, int)
            The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
+
+        if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
+            raise exc.MaskException("psf_size of exterior region must be odd")
 
         blurring_mask = np.full(self.shape, True)
 
