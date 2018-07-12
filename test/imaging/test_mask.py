@@ -451,11 +451,12 @@ class TestMask(object):
 
             image_sub_grid = np.round(image_sub_grid, decimals=2)
 
-            assert (image_sub_grid == np.array([[-0.35, 0.25], [-0.35, 0.35], [-0.25, 0.25], [-0.25, 0.35],
-                                                [-0.05, -0.35], [-0.05, -0.25], [0.05, -0.35], [0.05, -0.25],
-                                                [-0.05, -0.05], [-0.05, 0.05], [0.05, -0.05], [0.05, 0.05],
-                                                [-0.05, 0.25], [-0.05, 0.35], [0.05, 0.25], [0.05, 0.35],
-                                                [0.25, 0.25], [0.25, 0.35], [0.35, 0.25], [0.35, 0.35]])).all()
+            np.testing.assert_almost_equal(image_sub_grid,
+                                           np.array([[-0.35, 0.25], [-0.35, 0.35], [-0.25, 0.25], [-0.25, 0.35],
+                                                     [-0.05, -0.35], [-0.05, -0.25], [0.05, -0.35], [0.05, -0.25],
+                                                     [-0.05, -0.05], [-0.05, 0.05], [0.05, -0.05], [0.05, 0.05],
+                                                     [-0.05, 0.25], [-0.05, 0.35], [0.05, 0.25], [0.05, 0.35],
+                                                     [0.25, 0.25], [0.25, 0.35], [0.35, 0.25], [0.35, 0.35]]))
 
         def test__3x3_mask_with_one_pixel__3x3_sub_grid__coordinates(self):
             msk = np.array([[True, True, True],
@@ -1528,6 +1529,19 @@ class TestMemoizer(object):
         func(arg=2)
         func(arg=1)
 
-        print(memoizer.results)
-
         assert memoizer.calls == 2
+
+    def test_methods(self, memoizer):
+        class Class(object):
+            def __init__(self, value):
+                self.value = value
+
+            @memoizer
+            def method(self):
+                return self.value
+
+        one = Class(1)
+        two = Class(2)
+
+        assert one.method() == 1
+        assert two.method() == 2

@@ -25,12 +25,12 @@ class Memoizer(object):
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            key = ", ".join(filter(None, [
-                ", ".join(["('{}', {})".format(arg_name, arg) for arg_name, arg in zip(self.arg_names, args)]),
-                ", ".join(map(str, kwargs.items()))]))
+            key = ", ".join(
+                ["('{}', {})".format(arg_name, arg) for arg_name, arg in
+                 list(zip(self.arg_names, args)) + list(kwargs.items())])
             if key not in self.results:
                 self.calls += 1
-                self.results[key] = func(*args, **kwargs)
+            self.results[key] = func(*args, **kwargs)
             return self.results[key]
 
         return wrapper
