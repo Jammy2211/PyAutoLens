@@ -1045,7 +1045,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0])).all()
 
@@ -1060,7 +1060,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -1075,7 +1075,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
@@ -1091,7 +1091,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15, 16, 17])).all()
 
@@ -1107,7 +1107,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 24, 25, 26, 27, 28, 29])).all()
 
@@ -1122,7 +1122,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14])).all()
 
@@ -1137,7 +1137,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_pixels = msk.grid_border()
+            border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
 
