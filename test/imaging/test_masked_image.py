@@ -1,5 +1,6 @@
-from src.imaging import mask as msk
 from src.imaging import image as im
+from src.imaging import mask as msk
+from src.imaging import masked_image as mi
 import numpy as np
 import pytest
 
@@ -19,8 +20,8 @@ def make_mask():
 
 
 @pytest.fixture(name="masked_image")
-def make_masked_image(image, mask):
-    return mask.mask_image(image)
+def make_masked_image(mask, image):
+    return mi.MaskedImage(mask, image)
 
 
 class TestMaskedImage(object):
@@ -37,3 +38,7 @@ class TestMaskedImage(object):
         assert masked_image.coordinate_grid.shape == (5, 2)
         assert (masked_image.coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
         assert masked_image.border_pixel_indices.shape == (5,)
+
+    def test_blurring_mask(self, masked_image):
+        print(masked_image.blurring_mask)
+        assert not masked_image.blurring_mask.any()
