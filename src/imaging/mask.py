@@ -210,10 +210,6 @@ class Mask(scaled_array.ScaledArray):
 
                     image_pixel_count += 1
 
-        # print("assert (image_sub_grid == np.array({})).all()".format(
-        #     str(grid).replace("0.  ", "0.").replace("  ", ",").replace(" -", ",-").replace("\n ", ",")).replace('\n',
-        #                                                                                                         ''))
-
         return sub_to_image
 
     def masked_1d_array_from_2d_array(self, grid_data):
@@ -465,6 +461,7 @@ class Mask(scaled_array.ScaledArray):
         """
 
         return MaskedImage(self.masked_1d_array_from_2d_array(image),
+                           self.coordinate_grid,
                            self.masked_1d_array_from_2d_array(image.effective_exposure_time),
                            image.pixel_scale,
                            image.psf,
@@ -473,6 +470,13 @@ class Mask(scaled_array.ScaledArray):
 
 
 class MaskedImage(im.AbstractImage):
-    def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
+    def __init__(self,
+                 array,
+                 coordinate_grid,
+                 effective_exposure_time=1.,
+                 pixel_scale=1.,
+                 psf=None,
+                 background_noise=None,
                  poisson_noise=None):
         super().__init__(array, effective_exposure_time, pixel_scale, psf, background_noise, poisson_noise)
+        self.coordinate_grid = coordinate_grid
