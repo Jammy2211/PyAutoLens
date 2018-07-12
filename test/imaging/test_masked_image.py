@@ -56,3 +56,6 @@ class TestMaskedImage(object):
 
     def test_sub_to_pixel(self, masked_image):
         assert (masked_image.sub_to_image == np.array(range(5))).all()
+
+    def test_sub_data_to_image(self, masked_image):
+        assert (masked_image.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
