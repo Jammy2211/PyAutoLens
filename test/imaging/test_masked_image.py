@@ -49,3 +49,7 @@ class TestMaskedImage(object):
 
     def test_kernel_convolver(self, masked_image):
         assert masked_image.kernel_convolver.length == 1
+
+    def test_sub_coordinate_grid(self, masked_image):
+        assert masked_image.sub_coordinate_grid.shape == (5, 2)
+        assert (masked_image.sub_coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
