@@ -3,6 +3,7 @@ from src.imaging import grids
 from src import exc
 import numpy as np
 from collections import namedtuple
+from functools import wraps
 
 import logging
 
@@ -453,3 +454,18 @@ class Mask(scaled_array.ScaledArray):
                             raise exc.MaskException('compute_image_to_sparse - Stuck in infinite loop')
 
         return image_to_sparse
+
+
+class Memoizer(object):
+    def __init__(self):
+        self.results = {}
+
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            key = "_".join(filter(None, ["_".join(map(str, args)), "_".join(map(str, kwargs.values()))]))
+            if key not in self.results:
+                self.results[key] = func(*args, **kwargs)
+            return self.results[key]
+
+        return wrapper
