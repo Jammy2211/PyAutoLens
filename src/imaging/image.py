@@ -98,9 +98,31 @@ class AbstractImage(ScaledArray):
 
 
 class Image(AbstractImage):
-    """
-    A 2d array representing a real or simulated image.
-    """
+    def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
+                 poisson_noise=None):
+        """
+        A 2d array representing a real or simulated image.
+
+        Parameters
+        ----------
+        array: ndarray
+            An array of image pixels in gray-scale
+        effective_exposure_time: Union(ndarray, float)
+            A float or array representing the effective exposure time of the whole image or each pixel.
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        psf: PSF
+            An array describing the PSF
+        background_noise: ndarray
+            An array describing the background noise in the image
+        poisson_noise: ndarray
+            An array describing the poisson noise in the image
+        """
+        super(AbstractImage, self).__init__(array, pixel_scale)
+        self.psf = psf
+        self.background_noise = background_noise
+        self.poisson_noise = poisson_noise
+        self.effective_exposure_time = effective_exposure_time
 
     @classmethod
     def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, background_sky_map=None,
