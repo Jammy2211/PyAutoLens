@@ -556,7 +556,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_grid = msk.blurring_coordinate_grid(psf_size=(3, 3))
+            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)).coordinate_grid
 
             assert (blurring_grid == np.array(
                 [[-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.], [3., 0.], [3., 3.]])).all()
@@ -582,7 +582,7 @@ class TestMask(object):
             # [True, True, False, False, False, True, True],
             # [True, True, True, True, True, True, True]])
 
-            blurring_grid = msk.blurring_coordinate_grid(psf_size=(3, 5))
+            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(3, 5)).coordinate_grid
 
             assert (blurring_grid == np.array(
                 [[-3., -6.], [-3., -3.], [-3., 0.], [-3., 3.], [-3., 6.], [0., -6.], [0., -3.], [0., 3.], [0., 6.],
@@ -609,7 +609,7 @@ class TestMask(object):
             #  [True, True, True, True, True, True, True],
             #  [True, True, True, True, True, True, True]]
 
-            blurring_grid = msk.blurring_coordinate_grid(psf_size=(5, 3))
+            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(5, 3)).coordinate_grid
 
             assert (blurring_grid == np.array(
                 [[-6., -3.], [-6., 0.], [-6., 3.], [-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.],
