@@ -1476,15 +1476,45 @@ class TestMask(object):
                 [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
 
 
-class TestMemoizer(object):
-    def test_storing(self):
-        memoizer = mask.Memoizer()
+@pytest.fixture(name="memoizer")
+def make_memoizer():
+    return mask.Memoizer()
 
+
+class TestMemoizer(object):
+    def test_storing(self, memoizer):
         @memoizer
         def func(arg):
             return "result for {}".format(arg)
 
         func(1)
         func(2)
+        func(1)
 
         assert memoizer.results == {"1": "result for 1", "2": "result for 2"}
+        assert memoizer.calls == 2
+
+    def test_multiple_arguments(self, memoizer):
+        @memoizer
+        def func(arg1, arg2):
+            return arg1 * arg2
+
+        func(1, 2)
+        func(2, 1)
+        func(1, 2)
+
+        assert memoizer.results == {"1_2": 2, "2_1": 2}
+        assert memoizer.calls == 2
+
+    def test_key_word_arguments(self, memoizer):
+        @memoizer
+        def func(arg1=0, arg2=0):
+            return arg1 * arg2
+
+        func(arg1=1)
+        func(arg2=1)
+        func(arg1=1)
+        func(arg1=1, arg2=1)
+
+        assert memoizer.results == {"('arg1', 1)": 0, "('arg2', 1)": 0, "('arg1', 1)_('arg2', 1)": 1}
+        assert memoizer.calls == 3
