@@ -7,7 +7,7 @@ from src.pixelization import pixelization as px
 
 # TODO : Can we make model_immage, galaxy_images, minimum_Values a part of hyper galaxies?
 
-def fit_data_with_profiles_hyper_galaxies(image, kernel_convolver, tracer, mapping, model_image, galaxy_images,
+def fit_data_with_profiles_hyper_galaxies(image, tracer, mapping, model_image, galaxy_images,
                                           minimum_values, hyper_galaxies):
     """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
@@ -29,7 +29,7 @@ def fit_data_with_profiles_hyper_galaxies(image, kernel_convolver, tracer, mappi
     """
     contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
     scaled_noise = generate_scaled_noise(image.background_noise, contributions, hyper_galaxies)
-    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver, mapping)
+    blurred_model_image = generate_blurred_light_profile_image(tracer, image.kernel_convolver, mapping)
     return compute_likelihood(image, scaled_noise, blurred_model_image)
 
 
