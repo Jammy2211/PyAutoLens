@@ -40,5 +40,4 @@ class TestMaskedImage(object):
         assert masked_image.border_pixel_indices.shape == (5,)
 
     def test_blurring_mask(self, masked_image):
-        print(masked_image.blurring_mask)
-        assert not masked_image.blurring_mask.any()
+        assert masked_image.blurring_mask.all()
