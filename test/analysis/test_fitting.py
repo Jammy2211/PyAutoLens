@@ -3,6 +3,7 @@ import pytest
 
 from src.analysis import fitting, ray_tracing, galaxy
 from src.imaging import mask as mask
+from src.imaging import masked_image
 from src.profiles import light_profiles
 from src.pixelization import pixelization
 from src.pixelization import frame_convolution
