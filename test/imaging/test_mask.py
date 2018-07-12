@@ -1269,7 +1269,7 @@ class TestMask(object):
 
             assert (grid_cluster_pixelization.cluster_to_image == np.array([4, 6, 14, 16])).all()
             assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-                                                 1, 2, 2, 2, 3, 3, 2, 2, 3])).all()
+                                                                            1, 2, 2, 2, 3, 3, 2, 2, 3])).all()
 
         def test__8x8_sporadic_mask__sparse_grid_size_2(self):
             msk = np.array([[True, True, True, True, True, True, False, False],
@@ -1287,8 +1287,9 @@ class TestMask(object):
 
             assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 8, 10, 12, 22, 24, 26, 33])).all()
             assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 1, 1, 2, 0, 0, 1, 1, 1, 2, 2, 3, 3,
-                                                 1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 4, 4, 5, 6, 6,
-                                                 7, 7, 4, 4, 7, 7, 7])).all()
+                                                                            1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 4,
+                                                                            4, 5, 6, 6,
+                                                                            7, 7, 4, 4, 7, 7, 7])).all()
 
         def test__7x7_circle_mask_trues_on_even_values__sparse_grid_size_2(self):
             msk = np.array([[False, True, False, True, False, True, False],
@@ -1320,7 +1321,8 @@ class TestMask(object):
             grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
             assert (grid_cluster_pixelization.cluster_to_image == np.array([10])).all()
-            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array(
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])).all()
 
         def test__7x7_circle_mask_more_points_added__sparse_grid_size_3(self):
             msk = np.array([[False, True, True, False, True, False, False],
@@ -1336,8 +1338,9 @@ class TestMask(object):
             grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
             assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 1, 3, 14, 17, 26])).all()
-            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
-                                                 3, 4, 3, 3, 3, 5])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array(
+                [0, 1, 2, 2, 1, 1, 1, 0, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 3, 3, 3,
+                 3, 4, 3, 3, 3, 5])).all()
 
         def test__7x7_mask_trues_on_values_which_divide_by_3__sparse_grid_size_3(self):
             msk = np.array([[False, True, True, False, True, True, False],
@@ -1369,7 +1372,8 @@ class TestMask(object):
             grid_cluster_pixelization = msk.sparse_grid_mapper_with_grid_size(sparse_grid_size=3)
 
             assert (grid_cluster_pixelization.cluster_to_image == np.array([0, 2, 3, 7, 8, 9, 10, 13, 16])).all()
-            assert (grid_cluster_pixelization.image_to_cluster == np.array([0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
+            assert (grid_cluster_pixelization.image_to_cluster == np.array(
+                [0, 1, 1, 2, 4, 4, 4, 3, 4, 5, 6, 6, 7, 7, 7, 8, 8])).all()
 
         def test__8x7__five_central_pixels__sparse_grid_size_1(self):
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1470,3 +1474,17 @@ class TestMask(object):
             assert (grid_cluster_pixelization.cluster_to_image == np.array([1, 3, 11, 13])).all()
             assert (grid_cluster_pixelization.image_to_cluster == np.array(
                 [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
+
+
+class TestMemoizer(object):
+    def test_storing(self):
+        memoizer = mask.Memoizer()
+
+        @memoizer
+        def func(arg):
+            return "result for {}".format(arg)
+
+        func(1)
+        func(2)
+
+        assert memoizer.results == {"1": "result for 1", "2": "result for 2"}
