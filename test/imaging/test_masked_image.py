@@ -36,3 +36,4 @@ class TestMaskedImage(object):
     def test_coordinate_grid(self, masked_image):
         assert masked_image.coordinate_grid.shape == (5, 2)
         assert (masked_image.coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
+        assert masked_image.border_pixel_indices.shape == (5,)
