@@ -459,12 +459,14 @@ class Mask(scaled_array.ScaledArray):
 class Memoizer(object):
     def __init__(self):
         self.results = {}
+        self.calls = 0
 
     def __call__(self, func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            key = "_".join(filter(None, ["_".join(map(str, args)), "_".join(map(str, kwargs.values()))]))
+            key = "_".join(filter(None, ["_".join(map(str, args)), "_".join(map(str, kwargs.items()))]))
             if key not in self.results:
+                self.calls += 1
                 self.results[key] = func(*args, **kwargs)
             return self.results[key]
 
