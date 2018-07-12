@@ -7,7 +7,7 @@ class MaskedImage(im.AbstractImage):
     def __new__(cls, image, mask):
         return np.array(mask.masked_1d_array_from_2d_array(image), ).view(cls)
 
-    def __init__(self, image, mask):
+    def __init__(self, image, mask, subgrid_size=1):
         super().__init__(array=image,
                          effective_exposure_time=mask.masked_1d_array_from_2d_array(image.effective_exposure_time),
                          pixel_scale=image.pixel_scale,
@@ -19,3 +19,4 @@ class MaskedImage(im.AbstractImage):
         self.blurring_mask = mask.blurring_mask_for_kernel_shape(image.psf.shape)
         self.blurring_coordinate_grid = self.blurring_mask.coordinate_grid
         self.kernel_convolver = frame_convolution.FrameMaker(mask).convolver_for_kernel(image.psf)
+        self.sub_coordinate_grid = mask.sub_coordinate_grid_with_size(subgrid_size)
