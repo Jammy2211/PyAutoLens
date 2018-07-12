@@ -20,8 +20,8 @@ def make_mask():
 
 
 @pytest.fixture(name="masked_image")
-def make_masked_image(mask, image):
-    return mi.MaskedImage(mask, image)
+def make_masked_image(image, mask):
+    return mi.MaskedImage(image, mask)
 
 
 class TestMaskedImage(object):

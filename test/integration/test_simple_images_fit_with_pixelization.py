@@ -70,7 +70,7 @@ class TestCase:
             im.psf = image.PSF(np.ones((1, 1)), 1)
             im.poisson_noise = 1.
 
-            mi = masked_image.MaskedImage(ma, im)
+            mi = masked_image.MaskedImage(im, ma)
 
             mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
 
@@ -134,13 +134,16 @@ class TestCase:
                            [0.0, 0.0, 0.0, 0.0, 0.0]])
 
             im = image.Image(im)
+
             im.effective_exposure_time = np.ones(im.shape)
             im.background_noise = np.ones(im.shape)
             im.psf = image.PSF(np.ones((1, 1)), 1)
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            mi = masked_image.MaskedImage(ma, im)
+            mi = masked_image.MaskedImage(im, ma)
+            print(im)
+            print(mi)
 
             ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1, blurring_shape=(3, 3))
 
