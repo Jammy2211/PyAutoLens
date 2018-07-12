@@ -160,7 +160,6 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.CoordinateGrid(grid)
 
-    @Memoizer()
     def sub_coordinate_grid_with_size(self, size):
         """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
 
@@ -189,7 +188,6 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.SubCoordinateGrid(grid, size)
 
-    @Memoizer()
     def sub_to_image_with_size(self, grid_size_sub):
         """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
 
@@ -199,7 +197,7 @@ class Mask(scaled_array.ScaledArray):
             The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
         """
 
-        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2), dtype=int)
+        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2,), dtype=int)
         image_pixel_count = 0
         sub_pixel_count = 0
 
