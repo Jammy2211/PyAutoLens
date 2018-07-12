@@ -99,36 +99,6 @@ class AbstractCoordinateGrid(np.ndarray):
     def new_from_array(self, array):
         return self.__class__(array)
 
-    def evaluate_func_on_grid(self, func, output_shape):
-        """Compute a set of values (intensities, surface densities, potentials or deflections angles) for a light or \
-        mass profile for each coordinate on a regular grid.
-
-        NOTES
-        ----------
-
-        The output shape is included as an input because:
-
-        - For deflection angles, the output array's shape is the same as the grid (e.g. the input grid is \
-        [image_pixels, 2] and output grid is [image_pixels, 2]).
-
-        - For intensities, surface-densities and potentials, the output array's shape loses the second dimension \
-        (e.g. the input grid is [image_pixels, 2] and output grid is [image_pixels]).
-
-        Parameters
-        -----------
-        func : func
-            The *LightProfile* or *MassProfile* calculation function (e.g. intensity_at_coordinates).
-        output_shape : (int, int)
-            The output image_shape of the evaluated values.
-
-        """
-        grid_values = np.zeros(output_shape)
-
-        for pixel_no, coordinate in enumerate(self):
-            grid_values[pixel_no] = func(coordinates=coordinate)
-
-        return grid_values
-
 
 class CoordinateGrid(AbstractCoordinateGrid):
     """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
