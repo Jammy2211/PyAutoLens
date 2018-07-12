@@ -29,8 +29,6 @@ def make_1x1_image():
 
     ma = mask.Mask(array=np.array([[False]]), pixel_scale=1.0)
 
-    # im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
-
     return masked_image.MaskedImage(im, ma)
 
 
@@ -45,8 +43,6 @@ def make_2x2_image():
                                    [True, False, False, True],
                                    [True, False, False, True],
                                    [True, True, True, True]]), pixel_scale=1.0)
-
-    # im.mapping = MockMapping(image_pixels=1, sub_grid_size=1, sub_to_image=np.array([0]))
 
     return masked_image.MaskedImage(im, ma)
 
