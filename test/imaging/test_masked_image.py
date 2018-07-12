@@ -32,3 +32,7 @@ class TestMaskedImage(object):
     def test_masking(self, masked_image):
         assert masked_image.background_noise.shape == (5,)
         assert masked_image.poisson_noise.shape == (5,)
+
+    def test_coordinate_grid(self, masked_image):
+        assert masked_image.coordinate_grid.shape == (5, 2)
+        assert (masked_image.coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
