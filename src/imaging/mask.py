@@ -4,6 +4,7 @@ from src import exc
 import numpy as np
 from collections import namedtuple
 from functools import wraps
+import inspect
 
 import logging
 
@@ -15,11 +16,18 @@ class Memoizer(object):
     def __init__(self):
         self.results = {}
         self.calls = 0
+        self.arg_names = None
 
     def __call__(self, func):
+        if self.arg_names is not None:
+            raise AssertionError("Instantiate a new Memoizer for each function")
+        self.arg_names = inspect.getfullargspec(func).args
+
         @wraps(func)
         def wrapper(*args, **kwargs):
-            key = "_".join(filter(None, ["_".join(map(str, args)), "_".join(map(str, kwargs.items()))]))
+            key = ", ".join(filter(None, [
+                ", ".join(["('{}', {})".format(arg_name, arg) for arg_name, arg in zip(self.arg_names, args)]),
+                ", ".join(map(str, kwargs.items()))]))
             if key not in self.results:
                 self.calls += 1
                 self.results[key] = func(*args, **kwargs)
