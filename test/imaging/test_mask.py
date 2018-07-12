@@ -1491,7 +1491,7 @@ class TestMemoizer(object):
         func(2)
         func(1)
 
-        assert memoizer.results == {"1": "result for 1", "2": "result for 2"}
+        assert memoizer.results == {"('arg', 1)": "result for 1", "('arg', 2)": "result for 2"}
         assert memoizer.calls == 2
 
     def test_multiple_arguments(self, memoizer):
@@ -1503,7 +1503,7 @@ class TestMemoizer(object):
         func(2, 1)
         func(1, 2)
 
-        assert memoizer.results == {"1_2": 2, "2_1": 2}
+        assert memoizer.results == {"('arg1', 1), ('arg2', 2)": 2, "('arg1', 2), ('arg2', 1)": 2}
         assert memoizer.calls == 2
 
     def test_key_word_arguments(self, memoizer):
@@ -1516,5 +1516,18 @@ class TestMemoizer(object):
         func(arg1=1)
         func(arg1=1, arg2=1)
 
-        assert memoizer.results == {"('arg1', 1)": 0, "('arg2', 1)": 0, "('arg1', 1)_('arg2', 1)": 1}
+        assert memoizer.results == {"('arg1', 1)": 0, "('arg2', 1)": 0, "('arg1', 1), ('arg2', 1)": 1}
         assert memoizer.calls == 3
+
+    def test_key_word_for_positional(self, memoizer):
+        @memoizer
+        def func(arg):
+            return "result for {}".format(arg)
+
+        func(1)
+        func(arg=2)
+        func(arg=1)
+
+        print(memoizer.results)
+
+        assert memoizer.calls == 2
