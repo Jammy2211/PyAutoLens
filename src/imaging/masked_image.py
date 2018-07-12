@@ -4,7 +4,7 @@ import numpy as np
 
 class MaskedImage(im.AbstractImage):
     def __new__(cls, image, mask):
-        return np.array(mask.masked_1d_array_from_2d_array(image),).view(cls)
+        return np.array(mask.masked_1d_array_from_2d_array(image), ).view(cls)
 
     def __init__(self, image, mask):
         super().__init__(array=image,
@@ -16,3 +16,4 @@ class MaskedImage(im.AbstractImage):
         self.border_pixel_indices = mask.border_pixel_indices
         self.coordinate_grid = mask.coordinate_grid
         self.blurring_mask = mask.blurring_mask_for_kernel_shape(image.psf.shape)
+        self.blurring_coordinate_grid = self.blurring_mask.coordinate_grid

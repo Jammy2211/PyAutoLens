@@ -38,8 +38,8 @@ class TestMaskedImage(object):
         assert masked_image.coordinate_grid.shape == (5, 2)
         assert (masked_image.coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
 
-    def test_sub_coordinate_grid(self, masked_image):
-        pass
+    def test_blurring_coordinate_grid(self, masked_image):
+        assert masked_image.blurring_coordinate_grid.shape == (0, 2)
 
     def test_indices(self, masked_image):
         assert masked_image.border_pixel_indices.shape == (5,)
