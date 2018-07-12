@@ -46,3 +46,6 @@ class TestMaskedImage(object):
 
     def test_blurring_mask(self, masked_image):
         assert masked_image.blurring_mask.all()
+
+    def test_kernel_convolver(self, masked_image):
+        assert masked_image.kernel_convolver.length == 1
