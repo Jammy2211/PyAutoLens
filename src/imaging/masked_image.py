@@ -20,3 +20,4 @@ class MaskedImage(im.AbstractImage):
         self.blurring_coordinate_grid = self.blurring_mask.coordinate_grid
         self.kernel_convolver = frame_convolution.FrameMaker(mask).convolver_for_kernel(image.psf)
         self.sub_coordinate_grid = mask.sub_coordinate_grid_with_size(subgrid_size)
+        self.sub_to_image = mask.sub_to_image_with_size(subgrid_size)
