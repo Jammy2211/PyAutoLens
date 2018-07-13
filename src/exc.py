@@ -21,3 +21,7 @@ class CoordinatesException(Exception):
 
 class PixelizationException(Exception):
     pass
+
+
+class RayTracingException(Exception):
+    pass
