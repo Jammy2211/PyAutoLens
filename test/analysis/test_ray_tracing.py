@@ -2,6 +2,7 @@ from src import exc
 from src.analysis import ray_tracing, galaxy
 from src.imaging import grids
 from src.profiles import mass_profiles, light_profiles
+from astropy import cosmology as cosmo
 
 import pytest
 import numpy as np
@@ -550,3 +551,38 @@ class TestPlane(object):
 
             with pytest.raises(exc.PixelizationException):
                 plane.generate_pixelization_matrices_of_galaxy(mapping)
+                
+    class TestCosmology:
+
+        def test_angular_diameter_distances_z_01(self, all_grids):
+
+            plane = ray_tracing.Plane(galaxies=[galaxy.Galaxy(redshift=0.1)], grids=all_grids, next_redshift=1.0,
+                                      cosmology=cosmo.Planck15)
+
+            assert plane.arcsec_per_kpc.value == pytest.approx(0.525060, 1e-5)
+            assert plane.kpc_per_arcsec.value == pytest.approx(1.904544, 1e-5)
+
+            assert plane.ang_to_earth_kpc.value == pytest.approx(392840, 1e-5)
+            assert plane.ang_to_next_plane_kpc.value == pytest.approx(1481890.4, 1e-5)
+            assert plane.ang_next_plane_to_earth_kpc.value == pytest.approx(1697952, 1e-5)
+
+        def test_angular_diameter_distances_z_1(self, all_grids):
+
+            plane = ray_tracing.Plane(galaxies=[galaxy.Galaxy(redshift=1.0)], grids=all_grids, previous_redshift=0.1,
+                                      next_redshift=2.0, cosmology=cosmo.Planck15)
+
+            assert plane.arcsec_per_kpc.value == pytest.approx(0.1214785, 1e-5)
+            assert plane.kpc_per_arcsec.value == pytest.approx(8.231907, 1e-5)
+
+            assert plane.ang_to_earth_kpc.value == pytest.approx(1697952, 1e-5)
+            assert plane.ang_to_previous_plane_kpc.value == pytest.approx(1481890.4, 1e-5)
+            assert plane.ang_to_next_plane_kpc.value == pytest.approx(638544, 1e-5)
+            assert plane.ang_next_plane_to_earth_kpc.value == pytest.approx(1770512, 1e-5)
+
+        def test_critical_densities(self, all_grids):
+
+            plane = ray_tracing.Plane(galaxies=[galaxy.Galaxy(redshift=0.1)], grids=all_grids, next_redshift=1.0,
+                                      cosmology=cosmo.Planck15)
+
+            assert plane.critical_density_kpc.value == pytest.approx(4.85e9, 1e-2)
+            assert plane.critical_density_arcsec.value == pytest.approx(17593241668, 1e-2)
