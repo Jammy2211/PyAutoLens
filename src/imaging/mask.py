@@ -328,7 +328,7 @@ class SparseMask(Mask):
 
     def __init__(self, mask, sparse_grid_size):
         super().__init__(mask)
-        self.mask_shape = mask.shape
+        self.mask = mask
         self.sparse_grid_size = sparse_grid_size
 
     @property
@@ -373,7 +373,7 @@ class SparseMask(Mask):
                 if not self[x, y]:
                     sparse_to_image = np.append(sparse_to_image, image_pixel_index)
 
-                if not self[x, y]:
+                if not self.mask[x, y]:
                     image_pixel_index += 1
 
         return sparse_to_image
