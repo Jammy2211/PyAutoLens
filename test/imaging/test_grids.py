@@ -713,32 +713,6 @@ class TestGridData(object):
 
 
 class TestGridMapping(object):
-    class TestFromMask:
-
-        def test__setup_mappings_using_mask(self):
-            mask = np.array([[True, False, True],
-                             [False, False, False],
-                             [True, False, True]])
-
-            mask = msk.Mask(mask, pixel_scale=3.0)
-
-            grid_mapping = mask.grid_mapping_with_sub_grid_size(sub_grid_size=2)
-
-            assert grid_mapping.image_shape == (3, 3)
-            assert grid_mapping.image_pixels == 5
-
-            assert (grid_mapping.data_to_image[0] == np.array([0, 1])).all()
-            assert (grid_mapping.data_to_image[1] == np.array([1, 0])).all()
-            assert (grid_mapping.data_to_image[2] == np.array([1, 1])).all()
-            assert (grid_mapping.data_to_image[3] == np.array([1, 2])).all()
-            assert (grid_mapping.data_to_image[4] == np.array([2, 1])).all()
-
-            assert grid_mapping.sub_grid_size == 2
-            assert grid_mapping.sub_grid_fraction == (1.0 / 4.0)
-
-            assert (grid_mapping.sub_to_image == np.array(
-                [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])).all()
-
     class TestMapDataTo2d:
 
         def test__3x3_dataset_in_2d__mask_is_all_false__maps_back_to_original_data(self):
