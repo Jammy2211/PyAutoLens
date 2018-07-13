@@ -26,7 +26,6 @@ def make_galaxy_mass_sis():
     return galaxy.Galaxy(mass_profile=sis)
 
 
-
 @pytest.fixture(name="all_grids", scope='function')
 def make_all_grids():
 
@@ -63,6 +62,13 @@ def make_lens_sis_x3():
     mass_profile = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile_1=mass_profile, mass_profile_2=mass_profile,
                          mass_profile_3=mass_profile)
+
+
+class MockMassProfile(object):
+
+    def __init__(self, value):
+
+        self.value = value
 
 
 class MockMapping(object):
@@ -266,6 +272,127 @@ class TestTracer(object):
             pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
 
             assert pix_matrix == 1
+
+    class TestCosmology:
+
+        def test__2_galaxy_system__correct_cosmological_quantities(self, all_grids):
+
+            lens_galaxy = galaxy.Galaxy(redshift=0.1)
+            source_galaxy = galaxy.Galaxy(redshift=1.0)
+
+            tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+
+            assert tracer.image_plane.arcsec_per_kpc.value == pytest.approx(0.525060, 1e-5)
+            assert tracer.image_plane.kpc_per_arcsec.value == pytest.approx(1.904544, 1e-5)
+
+            assert tracer.image_plane.ang_to_earth_kpc.value == pytest.approx(392840, 1e-5)
+            assert tracer.image_plane.ang_to_next_plane_kpc.value == pytest.approx(1481890.4, 1e-5)
+            assert tracer.image_plane.ang_next_plane_to_earth_kpc.value == pytest.approx(1697952, 1e-5)
+
+            assert tracer.source_plane.arcsec_per_kpc.value == pytest.approx(0.1214785, 1e-5)
+            assert tracer.source_plane.kpc_per_arcsec.value == pytest.approx(8.231907, 1e-5)
+
+            assert tracer.source_plane.ang_to_earth_kpc.value == pytest.approx(1697952, 1e-5)
+            assert tracer.source_plane.ang_to_previous_plane_kpc.value == pytest.approx(1481890.4, 1e-5)
+
+            assert tracer.image_plane.critical_density_kpc.value == pytest.approx(4.85e9, 1e-2)
+            assert tracer.image_plane.critical_density_arcsec.value == pytest.approx(17593241668, 1e-2)
+
+
+class TestMultiTracer(object):
+
+    class TestGalaxyOrder:
+
+        def test__3_galaxies_reordered_in_ascending_redshift(self, all_grids):
+
+            tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=2.0), galaxy.Galaxy(redshift=1.0),
+                                galaxy.Galaxy(redshift=0.1)], image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+
+            assert tracer.galaxies_redshift_order[0].redshift == 0.1
+            assert tracer.galaxies_redshift_order[1].redshift == 1.0
+            assert tracer.galaxies_redshift_order[2].redshift == 2.0
+
+        def test__3_galaxies_two_same_redshift__planes_redshift_order_is_size_2_with_those_redshifts(self, all_grids):
+
+            tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=1.0), galaxy.Galaxy(redshift=1.0),
+                                galaxy.Galaxy(redshift=0.1)], image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+
+            assert tracer.galaxies_redshift_order[0].redshift == 0.1
+            assert tracer.galaxies_redshift_order[1].redshift == 1.0
+            assert tracer.galaxies_redshift_order[2].redshift == 1.0
+
+            assert tracer.planes_redshift_order[0] == 0.1
+            assert tracer.planes_redshift_order[1] == 1.0
+
+        def test__6_galaxies_producing_4_planes(self, all_grids):
+
+            g0 = galaxy.Galaxy(redshift=1.0)
+            g1 = galaxy.Galaxy(redshift=1.0)
+            g2 = galaxy.Galaxy(redshift=0.1)
+            g3 = galaxy.Galaxy(redshift=1.05)
+            g4 = galaxy.Galaxy(redshift=0.95)
+            g5 = galaxy.Galaxy(redshift=1.05)
+
+            tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
+                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+
+            assert tracer.galaxies_redshift_order[0].redshift == 0.1
+            assert tracer.galaxies_redshift_order[1].redshift == 0.95
+            assert tracer.galaxies_redshift_order[2].redshift == 1.0
+            assert tracer.galaxies_redshift_order[3].redshift == 1.0
+            assert tracer.galaxies_redshift_order[4].redshift == 1.05
+            assert tracer.galaxies_redshift_order[5].redshift == 1.05
+
+            assert tracer.planes_redshift_order[0] == 0.1
+            assert tracer.planes_redshift_order[1] == 0.95
+            assert tracer.planes_redshift_order[2] == 1.0
+            assert tracer.planes_redshift_order[3] == 1.05
+
+        def test__6_galaxies__plane_galaxies_are_correct(self, all_grids):
+
+            g0 = galaxy.Galaxy(redshift=1.0)
+            g1 = galaxy.Galaxy(redshift=1.0)
+            g2 = galaxy.Galaxy(redshift=0.1)
+            g3 = galaxy.Galaxy(redshift=1.05)
+            g4 = galaxy.Galaxy(redshift=0.95)
+            g5 = galaxy.Galaxy(redshift=1.05)
+
+            tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
+                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+
+            assert tracer.planes_galaxies[0] == [g2]
+            assert tracer.planes_galaxies[1] == [g4]
+            assert tracer.planes_galaxies[2] == [g0, g1]
+            assert tracer.planes_galaxies[3] == [g3, g5]
+
+    class TestRayTracingPlanes:
+
+        def test__6_galaxies__tracer_planes_are_correct(self, all_grids):
+
+            g0 = galaxy.Galaxy(redshift=1.0)
+            g1 = galaxy.Galaxy(redshift=1.0)
+            g2 = galaxy.Galaxy(redshift=0.1)
+            g3 = galaxy.Galaxy(redshift=1.05)
+            g4 = galaxy.Galaxy(redshift=0.95)
+            g5 = galaxy.Galaxy(redshift=1.05)
+
+            tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
+                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+
+            cosmology = cosmo.Planck15
+
+            assert tracer.planes[0].galaxies == [g2]
+            assert tracer.planes[0].arcsec_per_kpc == cosmology.arcsec_per_kpc_proper(0.1)
+
+            assert tracer.planes[1].galaxies == [g4]
+            assert tracer.planes[1].arcsec_per_kpc == cosmology.arcsec_per_kpc_proper(0.95)
+
+            assert tracer.planes[2].galaxies == [g0, g1]
+            assert tracer.planes[2].arcsec_per_kpc == cosmology.arcsec_per_kpc_proper(1.0)
+
+            assert tracer.planes[3].galaxies == [g3, g5]
+            assert tracer.planes[3].arcsec_per_kpc == cosmology.arcsec_per_kpc_proper(1.05)
 
 
 class TestPlane(object):
