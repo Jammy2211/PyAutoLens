@@ -59,3 +59,8 @@ class TestMaskedImage(object):
 
     def test_sub_data_to_image(self, masked_image):
         assert (masked_image.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
+
+    def test_map_to_2d(self, masked_image):
+        assert (masked_image.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
+                                                                               [1, 1, 1],
+                                                                               [0, 1, 0]])).all()
