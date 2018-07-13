@@ -315,9 +315,8 @@ class Mask(scaled_array.ScaledArray):
 
 
 class SparseMask(Mask):
-    def __init__(self, mask, sparse_grid_size):
-
-        sparse_mask = np.full(self.shape, True)
+    def __new__(cls, mask, sparse_grid_size, *args, **kwargs):
+        sparse_mask = np.full(mask.shape, True)
 
         for x in range(mask.shape[0]):
             for y in range(mask.shape[1]):
@@ -325,7 +324,12 @@ class SparseMask(Mask):
                     if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
                         sparse_mask[x, y] = False
 
+        return np.array(sparse_mask).view(cls)
+
+    def __init__(self, mask, sparse_grid_size):
         super().__init__(mask)
+        self.mask_shape = mask.shape
+        self.sparse_grid_size = sparse_grid_size
 
     @property
     @Memoizer()
@@ -374,6 +378,8 @@ class SparseMask(Mask):
 
         return sparse_to_image
 
+    @property
+    @Memoizer()
     def image_to_sparse(self):
         """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
 
