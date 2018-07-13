@@ -399,7 +399,7 @@ class SparseMask(Mask):
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
-                if not self[x, y]:
+                if not self.mask[x, y]:
                     iboarder = 0
                     pixel_match = False
                     while not pixel_match:
