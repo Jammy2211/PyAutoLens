@@ -46,6 +46,56 @@ class Tracer(object):
         return self.source_plane.generate_pixelization_matrices_of_galaxy(mapping)
 
 
+class MultiTracer(object):
+
+    def __init__(self, galaxies, image_plane_grids, cosmology, redshift_threshold=0.0):
+
+        self.cosmology = cosmology
+        self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy : galaxy.redshift, reverse=False)
+
+        # Ideally we'd extract the planes_red_Shfit order from the list above. However, I dont know how to extract it
+        # Using a list of class attributes so make a list of redshifts for now.
+
+        galaxy_redshifts = list(map(lambda galaxy : galaxy.redshift, self.galaxies_redshift_order))
+        self.planes_redshift_order = [redshift for i, redshift in enumerate(galaxy_redshifts)
+                                      if redshift not in galaxy_redshifts[:i]]
+
+        # TODO : Idea is to get a list of all galaxies in each plane - can you clean up the logic below?
+
+        self.planes_galaxies = []
+
+        for (i, plane_redshift) in enumerate(self.planes_redshift_order):
+            self.planes_galaxies.append(list(map(lambda galaxy :
+                                        galaxy if galaxy.redshift == plane_redshift else None,
+                                        self.galaxies_redshift_order)))
+            self.planes_galaxies[i] = list(filter(None, self.planes_galaxies[i]))
+
+        self.planes = []
+
+        for i in range(0, len(self.planes_redshift_order)):
+
+            if i == 0:
+                compute_deflections = True
+                previous_redshift = None
+                next_redshift = self.planes_redshift_order[i+1]
+                new_grid = image_plane_grids
+            elif i < len(self.planes_redshift_order)-1:
+                compute_deflections = True
+                previous_redshift = self.planes_redshift_order[i-1]
+                next_redshift = self.planes_redshift_order[i+1]
+                new_grid = self.planes[i-1].trace_to_next_plane()
+            elif i == len(self.planes_redshift_order)-1:
+                compute_deflections = False
+                previous_redshift = self.planes_redshift_order[i-1]
+                next_redshift = None
+                new_grid = self.planes[i-1].trace_to_next_plane()
+            else:
+                raise exc.RayTracingException('A galaxy was not corrected allocate its previous / next redshifts')
+
+            self.planes.append(Plane(galaxies=self.planes_galaxies[i], grids=new_grid,
+                                     previous_redshift=previous_redshift, next_redshift=next_redshift,
+                                     cosmology=cosmology, compute_deflections=compute_deflections))
+
 class Plane(object):
 
     def __init__(self, galaxies, grids, previous_redshift=None, next_redshift=None, cosmology=None,
@@ -94,13 +144,13 @@ class Plane(object):
                     cosmology.angular_diameter_distance_z1z2(galaxies[0].redshift, next_redshift).to('kpc')
                 self.ang_next_plane_to_earth_kpc = cosmology.angular_diameter_distance(z=next_redshift).to('kpc')
 
-            constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
+                constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
                            / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
-            self.critical_density_kpc = constant_kpc * self.ang_next_plane_to_earth_kpc / \
+                self.critical_density_kpc = constant_kpc * self.ang_next_plane_to_earth_kpc / \
                                         (self.ang_to_next_plane_kpc * self.ang_to_earth_kpc)
 
-            self.critical_density_arcsec = self.critical_density_kpc * self.kpc_per_arcsec ** 2.0
+                self.critical_density_arcsec = self.critical_density_kpc * self.kpc_per_arcsec ** 2.0
 
         self.galaxies = galaxies
         self.grids = grids
