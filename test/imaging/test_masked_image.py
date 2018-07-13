@@ -24,6 +24,11 @@ def make_masked_image(image, mask):
     return mi.MaskedImage(image, mask)
 
 
+@pytest.fixture(name="sub_coordinate_grid")
+def make_sub_coordinate_grid(mask):
+    return mi.SubCoordinateGrid(mask)
+
+
 class TestMaskedImage(object):
     def test_attributes(self, image, masked_image):
         assert image.effective_exposure_time == masked_image.effective_exposure_time
@@ -50,15 +55,15 @@ class TestMaskedImage(object):
     def test_kernel_convolver(self, masked_image):
         assert masked_image.kernel_convolver.length == 1
 
-    def test_sub_coordinate_grid(self, masked_image):
-        assert masked_image.sub_coordinate_grid.shape == (5, 2)
-        assert (masked_image.sub_coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
+    def test_sub_coordinate_grid(self, sub_coordinate_grid):
+        assert sub_coordinate_grid.shape == (5, 2)
+        assert (sub_coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
 
-    def test_sub_to_pixel(self, masked_image):
-        assert (masked_image.sub_to_image == np.array(range(5))).all()
+    def test_sub_to_pixel(self, sub_coordinate_grid):
+        assert (sub_coordinate_grid.sub_to_image == np.array(range(5))).all()
 
-    def test_sub_data_to_image(self, masked_image):
-        assert (masked_image.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
+    def test_sub_data_to_image(self, sub_coordinate_grid):
+        assert (sub_coordinate_grid.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
 
     def test_map_to_2d(self, masked_image):
         assert (masked_image.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
