@@ -24,6 +24,8 @@ class MaskedImage(im.AbstractImage):
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
+        self.grid_to_pixel = mask.grid_to_pixel()
+        self.image_shape = image.shape
 
     def sub_data_to_image(self, data):
         return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
@@ -36,9 +38,9 @@ class MaskedImage(im.AbstractImage):
         grid_data : ndarray
             The grid-data which is mapped to its 2D image.
         """
-        data_2d = np.zeros(self.shape)
+        data_2d = np.zeros(self.image_shape)
 
-        for (i, pixel) in enumerate(self.data_to_image):
+        for (i, pixel) in enumerate(self.grid_to_pixel):
             data_2d[pixel[0], pixel[1]] = grid_data[i]
 
         return data_2d
