@@ -1,8 +1,11 @@
 from src import exc
 
+from astropy import constants
+import math
+
 class Tracer(object):
 
-    def __init__(self, lens_galaxies, source_galaxies, image_plane_grids):
+    def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, cosmology=None):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
@@ -15,15 +18,19 @@ class Tracer(object):
             The list of lens galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_plane_grids : GridCoordsCollection
-            The image-plane grids of coordinates where ray-tracing calculation are performed, (this includes the
-            image.grid_coords, sub_grid, blurring.grid_coords etc.).
+        image_plane_grids : GCoordsCollection
+            The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
+            image-grid, sub-grid, blurring-grid, etc.).
         """
-        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
+        self.cosmology = cosmology
+        self.image_plane = Plane(lens_galaxies, image_plane_grids, previous_redshift=None,
+                                 next_redshift=source_galaxies[0].redshift, cosmology=cosmology,
+                                 compute_deflections=True)
 
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
+        self.source_plane = Plane(source_galaxies, source_plane_grids, previous_redshift=lens_galaxies[0].redshift,
+                                  next_redshift=None, cosmology=cosmology, compute_deflections=False)
 
     def generate_image_of_galaxy_light_profiles(self, mapping):
         """Generate the image of the galaxies over the entire ray trace."""
@@ -38,9 +45,11 @@ class Tracer(object):
     def generate_pixelization_matrices_of_source_galaxy(self, mapping):
         return self.source_plane.generate_pixelization_matrices_of_galaxy(mapping)
 
+
 class Plane(object):
 
-    def __init__(self, galaxies, grids, compute_deflections=True):
+    def __init__(self, galaxies, grids, previous_redshift=None, next_redshift=None, cosmology=None,
+                 compute_deflections=True):
         """
 
         Represents a plane, which is a set of galaxies and grids at a given redshift in the lens ray-tracing
@@ -69,6 +78,29 @@ class Plane(object):
             The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring,
             grid_coords, etc.
         """
+
+        if cosmology is not None:
+
+            self.arcsec_per_kpc = cosmology.arcsec_per_kpc_proper(z=galaxies[0].redshift)
+            self.kpc_per_arcsec = 1.0 / self.arcsec_per_kpc
+            self.ang_to_earth_kpc = cosmology.angular_diameter_distance(z=galaxies[0].redshift).to('kpc')
+
+            if previous_redshift is not None:
+                self.ang_to_previous_plane_kpc = \
+                    cosmology.angular_diameter_distance_z1z2(previous_redshift, galaxies[0].redshift).to('kpc')
+
+            if next_redshift is not None:
+                self.ang_to_next_plane_kpc = \
+                    cosmology.angular_diameter_distance_z1z2(galaxies[0].redshift, next_redshift).to('kpc')
+                self.ang_next_plane_to_earth_kpc = cosmology.angular_diameter_distance(z=next_redshift).to('kpc')
+
+            constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
+                           / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+
+            self.critical_density_kpc = constant_kpc * self.ang_next_plane_to_earth_kpc / \
+                                        (self.ang_to_next_plane_kpc * self.ang_to_earth_kpc)
+
+            self.critical_density_arcsec = self.critical_density_kpc * self.kpc_per_arcsec ** 2.0
 
         self.galaxies = galaxies
         self.grids = grids
