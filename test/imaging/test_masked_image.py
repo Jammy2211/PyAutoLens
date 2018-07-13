@@ -19,6 +19,11 @@ def make_mask():
                               [True, False, True]]))
 
 
+@pytest.fixture(name="sparse_mask")
+def make_sparse_mask(mask):
+    return msk.SparseMask(mask, 1)
+
+
 @pytest.fixture(name="masked_image")
 def make_masked_image(image, mask):
     return mi.MaskedImage(image, mask)
@@ -69,3 +74,6 @@ class TestMaskedImage(object):
         assert (masked_image.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
                                                                                [1, 1, 1],
                                                                                [0, 1, 0]])).all()
+
+    def test_sparse_mask(self, mask, sparse_mask):
+        assert (mask == sparse_mask).all()
