@@ -71,26 +71,6 @@ class TestCoordsCollection(object):
             assert (grid_collection.blurring[0] == np.array([1.0, 1.0])).all()
             assert (grid_collection.blurring[0] == np.array([1.0, 1.0])).all()
 
-    class TestFromMask(object):
-
-        def test__all_grids_from_masks__correct_grids_setup(self):
-            mask = np.array([[True, True, True],
-                             [True, False, True],
-                             [True, True, True]])
-
-            mask = msk.Mask(array=mask, pixel_scale=3.0)
-
-            image_grid = mask.coordinate_grid
-            sub_grid = mask.sub_coordinate_grid_with_size(size=2)
-            blurring_grid = mask.blurring_coordinate_grid(psf_size=(3, 3))
-
-            grid_collection = mask.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=2,
-                                                                                              blurring_shape=(3, 3))
-
-            assert (grid_collection.image == image_grid).all()
-            assert (grid_collection.sub == sub_grid).all()
-            assert (grid_collection.blurring == blurring_grid).all()
-
     class TestDeflectionAnglesViaGalaxy(object):
 
         def test_all_coordinates(self, galaxy_mass_sis):
