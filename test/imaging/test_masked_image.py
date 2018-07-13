@@ -77,3 +77,20 @@ class TestMaskedImage(object):
 
     def test_sparse_mask(self, mask, sparse_mask):
         assert (mask == sparse_mask).all()
+
+
+class TestPorted(object):
+    def test_setup_mappings_using_mask(self):
+        mask = np.array([[True, False, True],
+                         [False, False, False],
+                         [True, False, True]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_coordinate_grid = mi.SubCoordinateGrid(mask, 2)
+
+        assert sub_coordinate_grid.sub_grid_size == 2
+        assert sub_coordinate_grid.sub_grid_fraction == (1.0 / 4.0)
+
+        assert (sub_coordinate_grid.sub_to_image == np.array(
+            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])).all()
