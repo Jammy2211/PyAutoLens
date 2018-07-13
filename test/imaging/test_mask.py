@@ -540,8 +540,6 @@ class TestMask(object):
 
             image_sub_grid = msk.sub_coordinate_grid_with_size(size=2)
 
-            print(image_sub_grid)
-
             assert (image_sub_grid == np.array(
                 [[-3.5, 4.], [-3.5, 5.], [-2.5, 4.], [-2.5, 5.], [-0.5, -2.], [-0.5, -1.], [0.5, -2.], [0.5, -1.],
                  [-0.5, 1.], [-0.5, 2.], [0.5, 1.], [0.5, 2.], [2.5, -5.], [2.5, -4.], [3.5, -5.], [3.5, -4.],
@@ -1471,8 +1469,6 @@ class TestMask(object):
             msk = mask.Mask(msk, pixel_scale=3.0)
 
             grid_cluster_pixelization = mask.SparseMask(msk, 2)
-
-            print(grid_cluster_pixelization)
 
             assert (grid_cluster_pixelization.sparse_to_image == np.array([1, 3, 11, 13])).all()
             assert (grid_cluster_pixelization.image_to_sparse == np.array(
