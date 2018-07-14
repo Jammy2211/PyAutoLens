@@ -42,6 +42,14 @@ class CoordsCollection(object):
 
         return CoordsCollection(image, sub, blurring)
 
+    def scaled_deflection_grids_for_scaling_factor(self, scaling_factor):
+        """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
+        image = self.image.scaled_deflections_for_scaling_factor(scaling_factor)
+        sub = self.sub.scaled_deflections_for_scaling_factor(scaling_factor)
+        blurring = self.blurring.scaled_deflections_for_scaling_factor(scaling_factor)
+
+        return CoordsCollection(image, sub, blurring)
+
 
 class AbstractCoordinateGrid(np.ndarray):
 
@@ -82,6 +90,17 @@ class AbstractCoordinateGrid(np.ndarray):
             The grid of deflection angles used to perform the ray-tracing.
         """
         return self.new_from_array(np.subtract(self, grid_deflections))
+
+    def scaled_deflections_for_scaling_factor(self, scaling_factor):
+        """ Setup a new image grid of scaled deflection angles, by multiplying the grid's deflection angles by a \
+        scaling factor.
+
+        Parameters
+        -----------
+        scaling_factor : float
+            The factor the deflection angles are multipled by
+        """
+        return self.new_from_array(np.multiply(scaling_factor, self))
 
     def deflections_on_grid(self, galaxies):
         """Compute the intensity for each coordinate on the sub-grid, using the mass-profile(s) of a set of galaxies.
