@@ -8,9 +8,11 @@ class Tracer(object):
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, cosmology=None):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
 
-        This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
-        known redshift measurements. For computational efficiency, it is recommend this ray-tracing class is used for
+        By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
+        do not need input redshifts. For computational efficiency, it is recommend this ray-tracing class is used for \
         lens modeling, provided cosmological information is not necessary.
+
+        If a cosmology is supplied, the plane's angular diameter distances, conversion factors, etc. will be computed.
 
         Parameters
         ----------
@@ -25,35 +27,9 @@ class Tracer(object):
             The cosmology of the ray-tracing calculation.
         """
 
-        class TracerGeometry(object):
-
-            def __init__(self, lens_galaxies, source_galaxies, cosmology):
-
-                self.plane_arcsec_per_kpc = [cosmology.arcsec_per_kpc_proper(z=lens_galaxies[0].redshift),
-                                             cosmology.arcsec_per_kpc_proper(z=source_galaxies[0].redshift)]
-                self.plane_kpc_per_arcsec = list(map(lambda arcsec_per_kpc : 1.0 / arcsec_per_kpc, self.plane_arcsec_per_kpc))
-
-                self.angs_to_earth_kpc = [cosmology.angular_diameter_distance(z=lens_galaxies[0].redshift).to('kpc'),
-                                          cosmology.angular_diameter_distance(z=source_galaxies[0].redshift).to('kpc')]
-
-                self.angs_between_planes_kpc = []
-                self.angs_between_planes_kpc.append([0.0, cosmology.angular_diameter_distance_z1z2(
-                    lens_galaxies[0].redshift, source_galaxies[0].redshift).to('kpc')])
-                self.angs_between_planes_kpc.append([cosmology.angular_diameter_distance_z1z2(
-                    source_galaxies[0].redshift, lens_galaxies[0].redshift).to('kpc'), 0.0])
-
-                constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
-                               / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
-
-                self.critical_density_kpc = constant_kpc * self.angs_to_earth_kpc[1] / \
-                                            (self.angs_between_planes_kpc[0][1] * self.angs_to_earth_kpc[0])
-
-                self.critical_density_arcsec = self.critical_density_kpc * self.plane_kpc_per_arcsec[0] ** 2.0
-
-        self.cosmology = cosmology
-
-        if self.cosmology is not None:
-            self.geometry = TracerGeometry(lens_galaxies, source_galaxies, cosmology)
+        if cosmology is not None:
+            self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift, source_galaxies[0].redshift],
+                                           cosmology=cosmology)
         else:
             self.geometry = None
 
@@ -97,44 +73,6 @@ class MultiTracer(object):
             The cosmology of the ray-tracing calculation.
         """
 
-        class MultiTracerGeometry(object):
-
-            def __init__(self, planes_redshift_order, cosmology):
-
-                self.final_plane = len(planes_redshift_order)-1
-
-                self.plane_arcsec_per_kpc = list(map(lambda redshift : cosmology.arcsec_per_kpc_proper(z=redshift),
-                                                     planes_redshift_order))
-
-                self.plane_kpc_per_arcsec = list(map(lambda arcsec_per_kpc : 1.0 / arcsec_per_kpc,
-                                                     self.plane_arcsec_per_kpc))
-
-                self.angs_to_earth_kpc = list(map(lambda redshift :
-                                                  cosmology.angular_diameter_distance(z=redshift).to('kpc'),
-                                                  planes_redshift_order))
-
-                self.angs_between_planes_kpc = []
-                for plane_index in range(len(planes_redshift_order)):
-                    self.angs_between_planes_kpc.append(list(map(lambda redshift :
-                    cosmology.angular_diameter_distance_z1z2(planes_redshift_order[plane_index], redshift).to('kpc'),
-                                                                         planes_redshift_order)))
-
-                constant_kpc = (constants.c.to('kpc / s').value) ** 2.0 \
-                               / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
-
-                # TODO : Does this need generalizing to multi-planes? Do we need to distinguish thhe main 'lens plane'?
-
-                self.critical_density_kpc = constant_kpc * self.angs_to_earth_kpc[1] / \
-                                            (self.angs_between_planes_kpc[0][1] * self.angs_to_earth_kpc[0])
-
-                self.critical_density_arcsec = self.critical_density_kpc * self.plane_kpc_per_arcsec[0] ** 2.0
-
-            def compute_scaling_factor(self, plane_i, plane_j):
-
-                return (self.angs_between_planes_kpc[plane_i][plane_j] * self.angs_to_earth_kpc[self.final_plane]) \
-                       / (self.angs_to_earth_kpc[plane_j] * self.angs_between_planes_kpc[plane_i][self.final_plane])
-
-        self.cosmology = cosmology
         self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy : galaxy.redshift, reverse=False)
 
         # Ideally we'd extract the planes_red_Shfit order from the list above. However, I dont know how to extract it
@@ -143,11 +81,7 @@ class MultiTracer(object):
         galaxy_redshifts = list(map(lambda galaxy : galaxy.redshift, self.galaxies_redshift_order))
         self.planes_redshift_order = [redshift for i, redshift in enumerate(galaxy_redshifts)
                                       if redshift not in galaxy_redshifts[:i]]
-
-        if self.cosmology is not None:
-            self.geometry = MultiTracerGeometry(self.planes_redshift_order, cosmology)
-        else:
-            self.geometry = None
+        self.geometry = TracerGeometry(redshifts=self.planes_redshift_order, cosmology=cosmology)
 
         # TODO : Idea is to get a list of all galaxies in each plane - can you clean up the logic below?
 
@@ -175,8 +109,8 @@ class MultiTracer(object):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = self.geometry.compute_scaling_factor(plane_i=previous_plane_index,
-                                                                          plane_j=plane_index)
+                    scaling_factor = self.geometry.scaling_factor(plane_i=previous_plane_index,
+                                                                  plane_j=plane_index)
 
                     scaled_deflections = self.planes[previous_plane_index].deflections. \
                         scaled_deflection_grids_for_scaling_factor(scaling_factor)
@@ -185,6 +119,53 @@ class MultiTracer(object):
 
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
+
+
+
+class TracerGeometry(object):
+
+    def __init__(self, redshifts, cosmology):
+        """The geometry of a ray-tracing grid comprising an arbitrary number of planes.
+
+        Parameters
+        ----------
+        redshifts : []
+            The list of plane redshifts
+        cosmology : astropy.cosmology.Planck15
+            The cosmology of the ray-tracing calculation.
+        """
+        self.cosmology = cosmology
+        self.redshifts = redshifts
+        self.final_plane = len(self.redshifts)-1
+        self.ang_to_final_plane = self.ang_to_earth(plane_i=self.final_plane)
+
+    def arcsec_per_kpc(self, plane_i):
+        return self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
+
+    def kpc_per_arcsec(self, plane_i):
+        return 1.0/self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
+
+    def ang_to_earth(self, plane_i):
+        return self.cosmology.angular_diameter_distance(self.redshifts[plane_i]).to('kpc').value
+
+    def ang_between_planes(self, plane_i, plane_j):
+        return self.cosmology.angular_diameter_distance_z1z2(self.redshifts[plane_i], self.redshifts[plane_j]).\
+            to('kpc').value
+
+    @property
+    def constant_kpc(self):
+        return (constants.c.to('kpc / s').value) ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+
+    def critical_density_kpc(self, plane_i, plane_j):
+        return self.constant_kpc * self.ang_to_earth(plane_j) / \
+               (self.ang_between_planes(plane_i, plane_j) * self.ang_to_earth(plane_i))
+
+    def critical_density_arcsec(self, plane_i, plane_j):
+        return  self.critical_density_kpc(plane_i, plane_j) * self.kpc_per_arcsec(plane_i) ** 2.0
+
+    def scaling_factor(self, plane_i, plane_j):
+        return (self.ang_between_planes(plane_i, plane_j) * self.ang_to_final_plane) \
+               / (self.ang_to_earth(plane_j) * self.ang_between_planes(plane_i, self.final_plane))
 
 
 class Plane(object):
