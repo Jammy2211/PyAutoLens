@@ -175,17 +175,13 @@ class MultiTracer(object):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    print(previous_plane_index, plane_index)
-
                     scaling_factor = self.geometry.compute_scaling_factor(plane_i=previous_plane_index,
                                                                           plane_j=plane_index)
 
-                    print(self.planes)
-                    print(self.planes[0].deflections)
+                    scaled_deflections = self.planes[previous_plane_index].deflections. \
+                        scaled_deflection_grids_for_scaling_factor(scaling_factor)
 
-                    scaled_deflections = scaling_factor * self.planes[previous_plane_index].deflections
-
-                    new_grid = new_grid.traced_grid_for_deflections(scaled_deflections)
+                    new_grid = new_grid.traced_grids_for_deflections(scaled_deflections)
 
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
