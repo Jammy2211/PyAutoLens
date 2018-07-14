@@ -87,6 +87,127 @@ class MockPixelization(object):
         return self.value
 
 
+class TestTracerGeometry(object):
+
+    def test__2_planes__z01_and_z1(self):
+
+        geometry = ray_tracing.TracerGeometry(redshifts=[0.1, 1.0], cosmology=cosmo.Planck15)
+
+        assert geometry.arcsec_per_kpc(plane_i=0) == pytest.approx(0.525060, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=0) == pytest.approx(1.904544, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=0) == pytest.approx(392840, 1e-5)
+        assert geometry.ang_between_planes(plane_i=0, plane_j=0) == 0.0
+        assert geometry.ang_between_planes(plane_i=0, plane_j=1) == pytest.approx(1481890.4, 1e-5)
+
+        assert geometry.arcsec_per_kpc(plane_i=1) == pytest.approx(0.1214785, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=1) == pytest.approx(8.231907, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=1) == pytest.approx(1697952, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=0) == pytest.approx(-2694346, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=1) == 0.0
+
+        assert geometry.critical_density_kpc(plane_i=0, plane_j=1) == pytest.approx(4.85e9, 1e-2)
+        assert geometry.critical_density_arcsec(plane_i=0, plane_j=1) == pytest.approx(17593241668, 1e-2)
+
+    def test__3_planes__z01_z1__and_z2(self):
+
+        geometry = ray_tracing.TracerGeometry(redshifts=[0.1, 1.0, 2.0], cosmology=cosmo.Planck15)
+
+        assert geometry.final_plane == 2
+
+        assert geometry.arcsec_per_kpc(plane_i=0) == pytest.approx(0.525060, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=0) == pytest.approx(1.904544, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=0) == pytest.approx(392840, 1e-5)
+        assert geometry.ang_between_planes(plane_i=0, plane_j=0) == 0.0
+        assert geometry.ang_between_planes(plane_i=0, plane_j=1) == pytest.approx(1481890.4, 1e-5)
+        assert geometry.ang_between_planes(plane_i=0, plane_j=2) == pytest.approx(1626471, 1e-5)
+
+        assert geometry.arcsec_per_kpc(plane_i=1) == pytest.approx(0.1214785, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=1) == pytest.approx(8.231907, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=1) == pytest.approx(1697952, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=0) == pytest.approx(-2694346, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=1) == 0.0
+        assert geometry.ang_between_planes(plane_i=1, plane_j=2) == pytest.approx(638544, 1e-5)
+
+        assert geometry.arcsec_per_kpc(plane_i=2) == pytest.approx(0.116500, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=2) == pytest.approx(8.58368, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=2) == pytest.approx(1770512, 1e-5)
+        assert geometry.ang_between_planes(plane_i=2, plane_j=0) == pytest.approx(-4435831, 1e-5)
+        assert geometry.ang_between_planes(plane_i=2, plane_j=1) == pytest.approx(-957816)
+        assert geometry.ang_between_planes(plane_i=2, plane_j=2) == 0.0
+
+        assert geometry.critical_density_kpc(plane_i=0, plane_j=1) == pytest.approx(4.85e9, 1e-2)
+        assert geometry.critical_density_arcsec(plane_i=0, plane_j=1) == pytest.approx(17593241668, 1e-2)
+
+    def test__4_planes__z01_z1_z2_and_z3(self):
+
+        geometry = ray_tracing.TracerGeometry(redshifts=[0.1, 1.0, 2.0, 3.0], cosmology=cosmo.Planck15)
+
+        assert geometry.final_plane == 3
+
+        assert geometry.arcsec_per_kpc(plane_i=0) == pytest.approx(0.525060, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=0) == pytest.approx(1.904544, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=0) == pytest.approx(392840, 1e-5)
+        assert geometry.ang_between_planes(plane_i=0, plane_j=0) == 0.0
+        assert geometry.ang_between_planes(plane_i=0, plane_j=1) == pytest.approx(1481890.4, 1e-5)
+        assert geometry.ang_between_planes(plane_i=0, plane_j=2) == pytest.approx(1626471, 1e-5)
+        assert geometry.ang_between_planes(plane_i=0, plane_j=3) == pytest.approx(1519417, 1e-5)
+
+        assert geometry.arcsec_per_kpc(plane_i=1) == pytest.approx(0.1214785, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=1) == pytest.approx(8.231907, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=1) == pytest.approx(1697952, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=0) == pytest.approx(-2694346, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=1) == 0.0
+        assert geometry.ang_between_planes(plane_i=1, plane_j=2) == pytest.approx(638544, 1e-5)
+        assert geometry.ang_between_planes(plane_i=1, plane_j=3) == pytest.approx(778472, 1e-5)
+
+        assert geometry.arcsec_per_kpc(plane_i=2) == pytest.approx(0.116500, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=2) == pytest.approx(8.58368, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=2) == pytest.approx(1770512, 1e-5)
+        assert geometry.ang_between_planes(plane_i=2, plane_j=0) == pytest.approx(-4435831, 1e-5)
+        assert geometry.ang_between_planes(plane_i=2, plane_j=1) == pytest.approx(-957816)
+        assert geometry.ang_between_planes(plane_i=2, plane_j=2) == 0.0
+        assert geometry.ang_between_planes(plane_i=2, plane_j=3) == pytest.approx(299564)
+
+        assert geometry.arcsec_per_kpc(plane_i=3) == pytest.approx(0.12674, 1e-5)
+        assert geometry.kpc_per_arcsec(plane_i=3) == pytest.approx(7.89009, 1e-5)
+
+        assert geometry.ang_to_earth(plane_i=3) == pytest.approx(1627448, 1e-5)
+        assert geometry.ang_between_planes(plane_i=3, plane_j=0) == pytest.approx(-5525155, 1e-5)
+        assert geometry.ang_between_planes(plane_i=3, plane_j=1) == pytest.approx(-1556945, 1e-5)
+        assert geometry.ang_between_planes(plane_i=3, plane_j=2) == pytest.approx(-399419, 1e-5)
+        assert geometry.ang_between_planes(plane_i=3, plane_j=3) == 0.0
+
+        assert geometry.critical_density_kpc(plane_i=0, plane_j=1) == pytest.approx(4.85e9, 1e-2)
+        assert geometry.critical_density_arcsec(plane_i=0, plane_j=1) == pytest.approx(17593241668, 1e-2)
+
+    def test__scaling_factors__3_planes__z01_z1_and_z2(self):
+
+        geometry = ray_tracing.TracerGeometry(redshifts=[0.1, 1.0, 2.0], cosmology=cosmo.Planck15)
+
+        assert geometry.scaling_factor(plane_i=0, plane_j=1) == pytest.approx(0.9500, 1e-4)
+        assert geometry.scaling_factor(plane_i=0, plane_j=2) == pytest.approx(1.0, 1e-4)
+        assert geometry.scaling_factor(plane_i=1, plane_j=2) == pytest.approx(1.0, 1e-4)
+
+    def test__scaling_factors__4_planes__z01_z1_z2_and_z3(self):
+
+        geometry = ray_tracing.TracerGeometry(redshifts=[0.1, 1.0, 2.0, 3.0], cosmology=cosmo.Planck15)
+
+        assert geometry.scaling_factor(plane_i=0, plane_j=1) == pytest.approx(0.9348, 1e-4)
+        assert geometry.scaling_factor(plane_i=0, plane_j=2) == pytest.approx(0.984, 1e-4)
+        assert geometry.scaling_factor(plane_i=0, plane_j=3) == pytest.approx(1.0, 1e-4)
+        assert geometry.scaling_factor(plane_i=1, plane_j=2) == pytest.approx(0.754, 1e-4)
+        assert geometry.scaling_factor(plane_i=1, plane_j=3) == pytest.approx(1.0, 1e-4)
+        assert geometry.scaling_factor(plane_i=2, plane_j=3) == pytest.approx(1.0, 1e-4)
+
+
 class TestTracer(object):
 
     class TestSetup:
@@ -274,32 +395,6 @@ class TestTracer(object):
             assert pix_matrix == 1
 
 
-class TestTracerGeometry(object):
-
-    def test_angular_diameter_distances_z_01_and_z_1(self, all_grids):
-
-        plane = ray_tracing.Tracer(lens_galaxies=[galaxy.Galaxy(redshift=0.1)],
-                                   source_galaxies=[galaxy.Galaxy(redshift=1.0)], image_plane_grids=all_grids,
-                                   cosmology=cosmo.Planck15)
-
-        assert plane.geometry.plane_arcsec_per_kpc[0].value == pytest.approx(0.525060, 1e-5)
-        assert plane.geometry.plane_kpc_per_arcsec[0].value == pytest.approx(1.904544, 1e-5)
-
-        assert plane.geometry.angs_to_earth_kpc[0].value == pytest.approx(392840, 1e-5)
-        assert plane.geometry.angs_between_planes_kpc[0][0] == 0.0
-        assert plane.geometry.angs_between_planes_kpc[0][1].value == pytest.approx(1481890.4, 1e-5)
-
-        assert plane.geometry.plane_arcsec_per_kpc[1].value == pytest.approx(0.1214785, 1e-5)
-        assert plane.geometry.plane_kpc_per_arcsec[1].value == pytest.approx(8.231907, 1e-5)
-
-        assert plane.geometry.angs_to_earth_kpc[1].value == pytest.approx(1697952, 1e-5)
-        assert plane.geometry.angs_between_planes_kpc[1][0].value == pytest.approx(-2694346, 1e-5)
-        assert plane.geometry.angs_between_planes_kpc[1][1] == 0.0
-
-        assert plane.geometry.critical_density_kpc.value == pytest.approx(4.85e9, 1e-2)
-        assert plane.geometry.critical_density_arcsec.value == pytest.approx(17593241668, 1e-2)
-
-
 class TestMultiTracer(object):
 
     class TestGalaxyOrder:
@@ -467,112 +562,6 @@ class TestMultiTracer(object):
             assert tracer.planes[3].grids.blurring[0] == pytest.approx(np.array([coord3, 0.0]), 1e-4)
 
 
-class TestMultiTracerGeometry(object):
-
-    def test_angular_diameter_distances_z_01__z_1__and__z_2(self, all_grids):
-
-        tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=0.1), galaxy.Galaxy(redshift=1.0),
-                                                  galaxy.Galaxy(redshift=2.0)],
-                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
-
-        assert tracer.geometry.final_plane == 2
-
-        assert tracer.geometry.plane_arcsec_per_kpc[0].value == pytest.approx(0.525060, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[0].value == pytest.approx(1.904544, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[0].value == pytest.approx(392840, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[0][0] == 0.0
-        assert tracer.geometry.angs_between_planes_kpc[0][1].value == pytest.approx(1481890.4, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[0][2].value == pytest.approx(1626471, 1e-5)
-
-        assert tracer.geometry.plane_arcsec_per_kpc[1].value == pytest.approx(0.1214785, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[1].value == pytest.approx(8.231907, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[1].value == pytest.approx(1697952, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[1][0].value == pytest.approx(-2694346, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[1][1] == 0.0
-        assert tracer.geometry.angs_between_planes_kpc[1][2].value == pytest.approx(638544, 1e-5)
-
-        assert tracer.geometry.plane_arcsec_per_kpc[2].value == pytest.approx(0.116500, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[2].value == pytest.approx(8.58368, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[2].value == pytest.approx(1770512, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[2][0].value == pytest.approx(-4435831, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[2][1].value == pytest.approx(-957816)
-        assert tracer.geometry.angs_between_planes_kpc[2][2] == 0.0
-
-        assert tracer.geometry.critical_density_kpc.value == pytest.approx(4.85e9, 1e-2)
-        assert tracer.geometry.critical_density_arcsec.value == pytest.approx(17593241668, 1e-2)
-
-    def test_angular_diameter_distances_z_01__z_1__and__z_2__and_z_3(self, all_grids):
-
-        tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=0.1), galaxy.Galaxy(redshift=1.0),
-                                                  galaxy.Galaxy(redshift=2.0), galaxy.Galaxy(redshift=3.0)],
-                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
-
-        assert tracer.geometry.final_plane == 3
-
-        assert tracer.geometry.plane_arcsec_per_kpc[0].value == pytest.approx(0.525060, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[0].value == pytest.approx(1.904544, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[0].value == pytest.approx(392840, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[0][0] == 0.0
-        assert tracer.geometry.angs_between_planes_kpc[0][1].value == pytest.approx(1481890.4, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[0][2].value == pytest.approx(1626471, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[0][3].value == pytest.approx(1519417, 1e-5)
-
-        assert tracer.geometry.plane_arcsec_per_kpc[1].value == pytest.approx(0.1214785, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[1].value == pytest.approx(8.231907, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[1].value == pytest.approx(1697952, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[1][0].value == pytest.approx(-2694346, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[1][1] == 0.0
-        assert tracer.geometry.angs_between_planes_kpc[1][2].value == pytest.approx(638544, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[1][3].value == pytest.approx(778472, 1e-5)
-
-        assert tracer.geometry.plane_arcsec_per_kpc[2].value == pytest.approx(0.116500, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[2].value == pytest.approx(8.58368, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[2].value == pytest.approx(1770512, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[2][0].value == pytest.approx(-4435831, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[2][1].value == pytest.approx(-957816)
-        assert tracer.geometry.angs_between_planes_kpc[2][2] == 0.0
-        assert tracer.geometry.angs_between_planes_kpc[2][3].value == pytest.approx(299564)
-
-        assert tracer.geometry.plane_arcsec_per_kpc[3].value == pytest.approx(0.12674, 1e-5)
-        assert tracer.geometry.plane_kpc_per_arcsec[3].value == pytest.approx(7.89009, 1e-5)
-
-        assert tracer.geometry.angs_to_earth_kpc[3].value == pytest.approx(1627448, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[3][0].value == pytest.approx(-5525155, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[3][1].value == pytest.approx(-1556945, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[3][2].value == pytest.approx(-399419, 1e-5)
-        assert tracer.geometry.angs_between_planes_kpc[3][3] == 0.0
-
-        assert tracer.geometry.critical_density_kpc.value == pytest.approx(4.85e9, 1e-2)
-        assert tracer.geometry.critical_density_arcsec.value == pytest.approx(17593241668, 1e-2)
-
-    def test__compute_scaling_factor_3_galaxies(self, all_grids):
-
-        tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=0.1), galaxy.Galaxy(redshift=1.0),
-                                                  galaxy.Galaxy(redshift=2.0)],
-                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
-
-        assert tracer.geometry.compute_scaling_factor(plane_i=0, plane_j=1) == pytest.approx(0.9500, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=0, plane_j=2) == pytest.approx(1.0, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=1, plane_j=2) == pytest.approx(1.0, 1e-4)
-
-    def test__compute_scaling_factor_4_galaxies(self, all_grids):
-
-        tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=0.1), galaxy.Galaxy(redshift=1.0),
-                                                  galaxy.Galaxy(redshift=2.0), galaxy.Galaxy(redshift=3.0)],
-                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
-
-        assert tracer.geometry.compute_scaling_factor(plane_i=0, plane_j=1) == pytest.approx(0.9348, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=0, plane_j=2) == pytest.approx(0.984, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=0, plane_j=3) == pytest.approx(1.0, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=1, plane_j=2) == pytest.approx(0.754, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=1, plane_j=3) == pytest.approx(1.0, 1e-4)
-        assert tracer.geometry.compute_scaling_factor(plane_i=2, plane_j=3) == pytest.approx(1.0, 1e-4)
 
 
 class TestPlane(object):
