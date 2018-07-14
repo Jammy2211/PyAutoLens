@@ -2,6 +2,7 @@ from src import exc
 
 from astropy import constants
 import math
+import numpy as np
 
 class Tracer(object):
 
@@ -120,17 +121,34 @@ class MultiTracer(object):
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
 
+    def generate_image_of_galaxy_light_profiles(self, mapping):
+        """Generate the image of the galaxies over the entire ray trace."""
+        return np.ndarray.sum(np.array(list(map(lambda plane : plane.generate_image_of_galaxy_light_profiles(mapping),
+                                                self.planes))))
+
+    def generate_blurring_image_of_galaxy_light_profiles(self):
+        """Generate the image of all galaxy light profiles in the blurring regions of the image."""
+        return np.ndarray.sum(np.array(list(map(lambda plane : plane.generate_blurring_image_of_galaxy_light_profiles(),
+                                                self.planes))))
+
+    def generate_pixelization_matrices_of_galaxies(self, mapping):
+        return list(map(lambda plane : plane.generate_pixelization_matrices_of_galaxy(mapping), self.planes))
 
 
 class TracerGeometry(object):
 
     def __init__(self, redshifts, cosmology):
-        """The geometry of a ray-tracing grid comprising an arbitrary number of planes.
+        """The geometry of a ray-tracing grid comprising an image-plane and source-plane.
+
+        This sets up the angular diameter distances between each plane and the Earth, and between one another. \
+        The critical density of the lens plane is also computed.
 
         Parameters
         ----------
-        redshifts : []
-            The list of plane redshifts
+        lens_redshift : [Galaxy]
+            The list of lens galaxies in the image-plane.
+        source_redshift : [Galaxy]
+            The list of source galaxies in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
