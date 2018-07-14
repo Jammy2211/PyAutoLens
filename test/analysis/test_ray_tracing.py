@@ -402,7 +402,7 @@ class TestMultiTracer(object):
         def test__3_galaxies_reordered_in_ascending_redshift(self, all_grids):
 
             tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=2.0), galaxy.Galaxy(redshift=1.0),
-                                galaxy.Galaxy(redshift=0.1)], image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+                                                  galaxy.Galaxy(redshift=0.1)], image_plane_grids=all_grids, cosmology=cosmo.Planck15)
 
             assert tracer.galaxies_redshift_order[0].redshift == 0.1
             assert tracer.galaxies_redshift_order[1].redshift == 1.0
@@ -411,7 +411,7 @@ class TestMultiTracer(object):
         def test__3_galaxies_two_same_redshift__planes_redshift_order_is_size_2_with_those_redshifts(self, all_grids):
 
             tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=1.0), galaxy.Galaxy(redshift=1.0),
-                                galaxy.Galaxy(redshift=0.1)], image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+                                                  galaxy.Galaxy(redshift=0.1)], image_plane_grids=all_grids, cosmology=cosmo.Planck15)
 
             assert tracer.galaxies_redshift_order[0].redshift == 0.1
             assert tracer.galaxies_redshift_order[1].redshift == 1.0
@@ -430,7 +430,7 @@ class TestMultiTracer(object):
             g5 = galaxy.Galaxy(redshift=1.05)
 
             tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
-                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
 
             assert tracer.galaxies_redshift_order[0].redshift == 0.1
             assert tracer.galaxies_redshift_order[1].redshift == 0.95
@@ -454,7 +454,7 @@ class TestMultiTracer(object):
             g5 = galaxy.Galaxy(redshift=1.05)
 
             tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
-                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
 
             assert tracer.planes_galaxies[0] == [g2]
             assert tracer.planes_galaxies[1] == [g4]
@@ -473,7 +473,7 @@ class TestMultiTracer(object):
             g5 = galaxy.Galaxy(redshift=3.0)
 
             tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
-                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
 
             assert tracer.planes[0].galaxies == [g2]
             assert tracer.planes[1].galaxies == [g4]
@@ -492,7 +492,7 @@ class TestMultiTracer(object):
             g5 = galaxy.Galaxy(redshift=3.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
 
             tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
-                                             image_plane_grids=all_grids, cosmology=cosmo.Planck15)
+                                        image_plane_grids=all_grids, cosmology=cosmo.Planck15)
 
             # From unit test below:
             # Beta_01 = 0.9348
@@ -561,6 +561,152 @@ class TestMultiTracer(object):
             assert tracer.planes[3].grids.sub[1] == pytest.approx(np.array([coord3, 0.0]), 1e-4)
             assert tracer.planes[3].grids.blurring[0] == pytest.approx(np.array([coord3, 0.0]), 1e-4)
 
+    class TestImageFromGalaxies:
+
+        def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, all_grids, mapping):
+
+            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                     sersic_index=4.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic)
+            g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic)
+            g2 = galaxy.Galaxy(redshift=2.0, light_profile=sersic)
+
+            ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                                cosmology=cosmo.Planck15)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+
+            plane_0 = ray_tracing.Plane(galaxies=[g0], grids=all_grids, compute_deflections=True)
+            plane_1 = ray_tracing.Plane(galaxies=[g1], grids=all_grids, compute_deflections=True)
+            plane_2 = ray_tracing.Plane(galaxies=[g2], grids=all_grids, compute_deflections=False)
+
+            plane_image = plane_0.generate_image_of_galaxy_light_profiles(mapping) + \
+                          plane_1.generate_image_of_galaxy_light_profiles(mapping) + \
+                          plane_2.generate_image_of_galaxy_light_profiles(mapping)
+
+            assert (plane_image == ray_trace_image).all()
+
+        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids, mapping):
+
+            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                     sersic_index=4.0)
+
+            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic, mass_profile=sis)
+            g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic, mass_profile=sis)
+            g2 = galaxy.Galaxy(redshift=2.0, light_profile=sersic, mass_profile=sis)
+
+            ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                                cosmology=cosmo.Planck15)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+
+            plane_0 = ray_trace.planes[0]
+            plane_1 = ray_trace.planes[1]
+            plane_2 = ray_trace.planes[2]
+
+            plane_image = plane_0.generate_image_of_galaxy_light_profiles(mapping) + \
+                          plane_1.generate_image_of_galaxy_light_profiles(mapping) + \
+                          plane_2.generate_image_of_galaxy_light_profiles(mapping)
+
+            assert (plane_image == ray_trace_image).all()
+
+    class TestBlurringImageFromGalaxies:
+
+        def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, all_grids):
+
+            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                     sersic_index=4.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic)
+            g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic)
+            g2 = galaxy.Galaxy(redshift=2.0, light_profile=sersic)
+
+            ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                                cosmology=cosmo.Planck15)
+            ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
+
+            plane_0 = ray_tracing.Plane(galaxies=[g0], grids=all_grids, compute_deflections=True)
+            plane_1 = ray_tracing.Plane(galaxies=[g1], grids=all_grids, compute_deflections=True)
+            plane_2 = ray_tracing.Plane(galaxies=[g2], grids=all_grids, compute_deflections=False)
+
+            plane_image = plane_0.generate_blurring_image_of_galaxy_light_profiles() + \
+                          plane_1.generate_blurring_image_of_galaxy_light_profiles() + \
+                          plane_2.generate_blurring_image_of_galaxy_light_profiles()
+
+            assert (plane_image == ray_trace_image).all()
+
+        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids):
+
+            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                     sersic_index=4.0)
+
+            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic, mass_profile=sis)
+            g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic, mass_profile=sis)
+            g2 = galaxy.Galaxy(redshift=2.0, light_profile=sersic, mass_profile=sis)
+
+            ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                                cosmology=cosmo.Planck15)
+            ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
+
+            plane_0 = ray_trace.planes[0]
+            plane_1 = ray_trace.planes[1]
+            plane_2 = ray_trace.planes[2]
+
+            plane_image = plane_0.generate_blurring_image_of_galaxy_light_profiles() + \
+                          plane_1.generate_blurring_image_of_galaxy_light_profiles() + \
+                          plane_2.generate_blurring_image_of_galaxy_light_profiles()
+
+            assert (plane_image == ray_trace_image).all()
+
+    class TestPixelizationFromGalaxy:
+
+        def test__3_galaxies__non_have_pixelization__returns_none_x3(self, all_grids, mapping):
+
+            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, mass_profile=sis)
+            g1 = galaxy.Galaxy(redshift=1.0, mass_profile=sis)
+            g2 = galaxy.Galaxy(redshift=2.0, mass_profile=sis)
+
+            tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                              cosmology=cosmo.Planck15)
+
+            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(mapping)
+
+            assert pix_matrix == [None, None, None]
+
+        def test__3_galaxies__1_has_pixelization__returns_none_x2_and_pixelization(self, all_grids, mapping):
+
+            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, mass_profile=sis)
+            g1 = galaxy.Galaxy(redshift=1.0, pixelization=MockPixelization(value=1), mass_profile=sis)
+            g2 = galaxy.Galaxy(redshift=2.0, mass_profile=sis)
+
+            tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                              cosmology=cosmo.Planck15)
+
+            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(mapping)
+
+            assert pix_matrix == [None, 1, None]
+
+        def test__3_galaxies__all_have_pixelization__returns_pixelizations(self, all_grids, mapping):
+
+            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+
+            g0 = galaxy.Galaxy(redshift=0.1, pixelization=MockPixelization(value=0.5), mass_profile=sis)
+            g1 = galaxy.Galaxy(redshift=1.0, pixelization=MockPixelization(value=1), mass_profile=sis)
+            g2 = galaxy.Galaxy(redshift=2.0, pixelization=MockPixelization(value=2), mass_profile=sis)
+
+            tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
+                                              cosmology=cosmo.Planck15)
+
+            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(mapping)
+
+            assert pix_matrix == [0.5, 1, 2]
 
 
 
