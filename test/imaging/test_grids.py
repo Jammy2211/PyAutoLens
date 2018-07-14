@@ -230,11 +230,7 @@ class TestCoordsCollection(object):
 
             deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
 
-            print(deflections.image)
-
             scaled_deflections = deflections.scaled_deflection_grids_for_scaling_factor(scaling_factor=0.5)
-
-            print(scaled_deflections.image)
 
             assert (scaled_deflections.image[0] == 0.5*deflections.image[0]).all()
             assert (scaled_deflections.sub[0] == 0.5*deflections.sub[0]).all()
