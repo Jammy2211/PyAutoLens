@@ -40,17 +40,42 @@ class MaskedImage(im.AbstractImage):
         return data_2d
 
 
-class SubCoordinateGrid(np.ndarray):
-    def __new__(cls, mask, *args, sub_grid_size=1, **kwargs):
-        return np.array(mask.sub_coordinate_grid_with_size(sub_grid_size)).view(cls)
+class CoordsCollection(object):
 
-    def __init__(self, mask, sub_grid_size=1):
-        # noinspection PyArgumentList
-        super(SubCoordinateGrid, self).__init__()
-        self.sub_to_image = mask.sub_to_image_with_size(sub_grid_size)
-        self.sub_grid_size = sub_grid_size
-        self.sub_grid_length = int(sub_grid_size ** 2.0)
-        self.sub_grid_fraction = 1.0 / self.sub_grid_length
+    def __init__(self, image, sub, blurring):
+        """A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
+        sub-gri, blurring region, etc.
 
-    def sub_data_to_image(self, data):
-        return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
+        Coordinate grids are passed through the ray-tracing module to set up the image, lens and source planes.
+
+        Parameters
+        -----------
+        image : GridCoordsImage
+            A grid of coordinates for the regular image grid.
+        sub : GridCoordsImageSub
+            A grid of coordinates for the sub-gridded image grid.
+        blurring : GridCoordsBlurring
+            A grid of coordinates for the blurring regions.
+        """
+
+        self.image = image
+        self.sub = sub
+        self.blurring = blurring
+
+    def deflection_grids_for_galaxies(self, galaxies):
+        """Compute the deflection angles of every grids (by integrating the mass profiles of the input galaxies)
+        and set these up as a new collection of grids."""
+
+        image = self.image.deflection_grid_for_galaxies(galaxies)
+        sub = self.sub.deflection_grid_for_galaxies(galaxies)
+        blurring = self.blurring.deflection_grid_for_galaxies(galaxies)
+
+        return CoordsCollection(image, sub, blurring)
+
+    def traced_grids_for_deflections(self, deflections):
+        """Setup a new collection of grids by tracing their coordinates using a set of deflection angles."""
+        image = self.image.ray_tracing_grid_for_deflections(deflections.image)
+        sub = self.sub.ray_tracing_grid_for_deflections(deflections.sub)
+        blurring = self.blurring.ray_tracing_grid_for_deflections(deflections.blurring)
+
+        return CoordsCollection(image, sub, blurring)
