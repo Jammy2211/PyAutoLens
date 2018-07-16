@@ -1619,3 +1619,24 @@ class TestCoordinateCollection(object):
                                                                       [1., -1.],
                                                                       [1., 0.],
                                                                       [1., 1.]]))).all()
+
+    def test_map_function(self, coordinate_collection):
+        def add_number(coords, number):
+            return np.add(coords, number)
+
+        new_collection = coordinate_collection.map_function(add_number, [1, 2, 3])
+
+        assert isinstance(new_collection, mask.CoordsCollection)
+        assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
+        np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(2, np.array([[-0.16666667, -0.16666667],
+                                                                                           [-0.16666667, 0.16666667],
+                                                                                           [0.16666667, -0.16666667],
+                                                                                           [0.16666667, 0.16666667]])))
+        assert (new_collection.blurring_coords == np.add(3, np.array([[-1., -1.],
+                                                                      [-1., 0.],
+                                                                      [-1., 1.],
+                                                                      [0., -1.],
+                                                                      [0., 1.],
+                                                                      [1., -1.],
+                                                                      [1., 0.],
+                                                                      [1., 1.]]))).all()
