@@ -29,9 +29,7 @@ def sim_grid_9x9():
 def fit_grid_9x9():
     fit_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(4.5, 4.5), pixel_scale=0.5, psf_size=(5, 5))
     fit_grid_9x9.ma = mask.Mask(array=fit_grid_9x9.ma, pixel_scale=1.0)
-    fit_grid_9x9.image_grid = fit_grid_9x9.ma.coordinates_collection_for_subgrid_size_and_blurring_shape(
-        sub_grid_size=2,
-        blurring_shape=(3, 3,))
+    fit_grid_9x9.image_grid = mask.CoordsCollection(fit_grid_9x9.ma, 2, (3, 3,))
     sim_grid_9x9.mapping = sim_grid_9x9.ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
     return fit_grid_9x9
 
@@ -142,13 +140,8 @@ class TestCase:
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
             mi = masked_image.MaskedImage(im, ma)
-            print(im)
-            print(mi)
 
-            ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1, blurring_shape=(3, 3))
-
-            all_grids = ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
-                                                                                      blurring_shape=(3, 3))
+            all_grids = mask.CoordsCollection(ma, 1, (3, 3))
 
             mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
 
