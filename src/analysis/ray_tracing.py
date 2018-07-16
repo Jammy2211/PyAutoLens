@@ -3,7 +3,6 @@ from src import exc
 from astropy import constants
 import math
 import numpy as np
-from src.imaging import mask
 
 
 class Tracer(object):
@@ -42,19 +41,20 @@ class Tracer(object):
 
         self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
 
-    def generate_image_of_galaxy_light_profiles(self, mapping):
+    def generate_image_of_galaxy_light_profiles(self, sub_coordinate_grid, sparse_mask):
         """Generate the image of the galaxies over the entire ray trace."""
-        return self.image_plane.generate_image_of_galaxy_light_profiles(mapping
-                                                                        ) + self.source_plane.generate_image_of_galaxy_light_profiles(
-            mapping)
+        return self.image_plane.generate_image_of_galaxy_light_profiles(sub_coordinate_grid,
+                                                                        sparse_mask) + \
+               self.source_plane.generate_image_of_galaxy_light_profiles(
+                   sub_coordinate_grid, sparse_mask)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
         return self.image_plane.generate_blurring_image_of_galaxy_light_profiles(
         ) + self.source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
-    def generate_pixelization_matrices_of_source_galaxy(self, mapping):
-        return self.source_plane.generate_pixelization_matrices_of_galaxy(mapping)
+    def generate_pixelization_matrices_of_source_galaxy(self, sub_coordinate_grid, sparse_mask):
+        return self.source_plane.generate_pixelization_matrices_of_galaxy(sub_coordinate_grid, sparse_mask)
 
 
 class MultiTracer(object):
@@ -235,15 +235,15 @@ class Plane(object):
         """
         return self.grids.map_function(np.subtract, self.deflections)
 
-    def generate_image_of_galaxy_light_profiles(self, mapping):
+    def generate_image_of_galaxy_light_profiles(self, sub_coordinate_grid, sparse_mask):
         """Generate the image of the galaxies in this plane."""
-        return self.grids.sub.intensities_via_grid(self.galaxies, mapping)
+        return self.grids.sub.intensities_via_grid(self.galaxies, sub_coordinate_grid, sparse_mask)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
         return self.grids.blurring.intensities_via_grid(self.galaxies)
 
-    def generate_pixelization_matrices_of_galaxy(self, mapping):
+    def generate_pixelization_matrices_of_galaxy(self, sub_coordinate_grid, sparse_mask):
 
         pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
 
@@ -251,6 +251,7 @@ class Plane(object):
             return None
         if len(pixelized_galaxies) == 1:
             return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.grids.image,
-                                                                               self.grids.sub, mapping)
+                                                                               self.grids.sub, sub_coordinate_grid,
+                                                                               sparse_mask)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
