@@ -2,7 +2,6 @@ from src.imaging import scaled_array
 from src.imaging import grids
 from src import exc
 import numpy as np
-from collections import namedtuple
 from functools import wraps
 import inspect
 
@@ -159,31 +158,6 @@ class Mask(scaled_array.ScaledArray):
                     pixel_count += 1
 
         return grids.CoordinateGrid(grid)
-
-    def sub_to_image_with_size(self, grid_size_sub):
-        """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
-
-        Parameters
-        ----------
-        grid_size_sub : int
-            The (sub_grid_size x sub_grid_size) of the sub-grid_coords of each image pixel.
-        """
-
-        sub_to_image = np.zeros(shape=(self.pixels_in_mask * grid_size_sub ** 2,), dtype=int)
-        image_pixel_count = 0
-        sub_pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    for x1 in range(grid_size_sub):
-                        for y1 in range(grid_size_sub):
-                            sub_to_image[sub_pixel_count] = image_pixel_count
-                            sub_pixel_count += 1
-
-                    image_pixel_count += 1
-
-        return sub_to_image
 
     def masked_1d_array_from_2d_array(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
@@ -412,10 +386,30 @@ class SubCoordinateGrid(np.ndarray):
     def __init__(self, mask, sub_grid_size=1):
         # noinspection PyArgumentList
         super(SubCoordinateGrid, self).__init__()
-        self.sub_to_image = mask.sub_to_image_with_size(sub_grid_size)
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
+        self.mask = mask
 
     def sub_data_to_image(self, data):
         return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
+
+    @property
+    @Memoizer()
+    def sub_to_image(self):
+        """ Compute the pairing of every sub-pixel to its original image pixel from a mask. """
+        sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype=int)
+        image_pixel_count = 0
+        sub_pixel_count = 0
+
+        for x in range(self.mask.shape[0]):
+            for y in range(self.mask.shape[1]):
+                if not self.mask[x, y]:
+                    for x1 in range(self.sub_grid_size):
+                        for y1 in range(self.sub_grid_size):
+                            sub_to_image[sub_pixel_count] = image_pixel_count
+                            sub_pixel_count += 1
+
+                    image_pixel_count += 1
+
+        return sub_to_image
