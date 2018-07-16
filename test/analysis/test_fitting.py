@@ -110,7 +110,8 @@ class TestFitData:
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies, masked_image=image_1x1)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=mask.CoordsCollection(image_1x1.mask, 1, (3, 3)))
 
         likelihood = fitting.fit_data_with_profiles(image_1x1, kernel_convolver, ray_trace,
                                                     image_1x1.mapping)
@@ -123,12 +124,11 @@ class TestFitData:
                                                                                      [1.0, 1.0, 1.0],
                                                                                      [0.0, 1.0, 0.0]]))
 
-        coords_collection = image_1x1.grids_collection(sub_grid_size=1., sparse_grid_size=1.)
-
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies, masked_image=image_1x1)
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=mask.CoordsCollection(image_1x1.mask, 1, (3, 3)))
 
         likelihood = fitting.fit_data_with_profiles(image_1x1, kernel_convolver, ray_trace,
                                                     image_1x1.mapping)
@@ -145,7 +145,7 @@ class TestGenerateBlurredLightProfileImage:
                                                                                      [0.0, 0.0, 0.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       masked_image=image_1x1)
+                                       image_plane_grids=mask.CoordsCollection(image_1x1.mask, 1, (3, 3)))
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles(image_1x1.mapping)
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
@@ -160,7 +160,7 @@ class TestGenerateBlurredLightProfileImage:
                                                                                      [1.0, 1.0, 1.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       masked_image=image_1x1)
+                                       image_plane_grids=mask.CoordsCollection(image_1x1.mask, 1, (3, 3)))
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
                                                                      kernel_convolver=kernel_convolver,
@@ -181,7 +181,7 @@ class TestGenerateBlurredLightProfileImage:
                                                                                      [0.0, 0.0, 0.0]]))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-                                       masked_image=image_2x2)
+                                       image_plane_grids=mask.CoordsCollection(image_2x2.mask, 1, (3, 3)))
 
         blurred_value = fitting.generate_blurred_light_profile_image(tracer=ray_trace,
                                                                      kernel_convolver=kernel_convolver,
@@ -211,7 +211,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
 
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       masked_image=image_1x1)
+                                       image_plane_grids=mask.CoordsCollection(image_1x1.mask, 1, (3, 3)))
 
         model_image = np.array([1.0])
         galaxy_images = [np.array([1.0]), np.array([1.0])]
