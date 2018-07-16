@@ -4,7 +4,6 @@ from src import exc
 import numpy as np
 from functools import wraps
 import inspect
-from collections import namedtuple
 
 import logging
 
@@ -417,7 +416,23 @@ class SubCoordinateGrid(np.ndarray):
 
 
 class CoordsCollection(object):
-    def __init__(self, mask, subgrid_size, blurring_shape):
-        self.image_coords = mask.coordinate_grid
-        self.sub_grid_coords = SubCoordinateGrid(mask, subgrid_size)
-        self.blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
+    def __init__(self, image_coords, sub_grid_coords, blurring_coords):
+        self.image_coords = image_coords
+        self.sub_grid_coords = sub_grid_coords
+        self.blurring_coords = blurring_coords
+
+    @classmethod
+    def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
+        image_coords = mask.coordinate_grid
+        sub_grid_coords = SubCoordinateGrid(mask, subgrid_size)
+        blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
+        return CoordsCollection(image_coords, sub_grid_coords, blurring_coords)
+
+    def apply_function(self, func):
+        return CoordsCollection(func(self.image_coords), func(self.sub_grid_coords), func(self.blurring_coords))
+
+    def map_function(self, func, *arg_lists):
+        return CoordsCollection(*[func(*args) for args in zip(self, *arg_lists)])
+
+    def __getitem__(self, item):
+        return [self.image_coords, self.sub_grid_coords, self.blurring_coords][item]

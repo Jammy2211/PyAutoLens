@@ -3,6 +3,8 @@ from src import exc
 from astropy import constants
 import math
 import numpy as np
+from src.imaging import mask
+
 
 class Tracer(object):
 
@@ -43,7 +45,8 @@ class Tracer(object):
     def generate_image_of_galaxy_light_profiles(self, mapping):
         """Generate the image of the galaxies over the entire ray trace."""
         return self.image_plane.generate_image_of_galaxy_light_profiles(mapping
-        ) + self.source_plane.generate_image_of_galaxy_light_profiles(mapping)
+                                                                        ) + self.source_plane.generate_image_of_galaxy_light_profiles(
+            mapping)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
@@ -74,12 +77,12 @@ class MultiTracer(object):
             The cosmology of the ray-tracing calculation.
         """
 
-        self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy : galaxy.redshift, reverse=False)
+        self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
 
         # Ideally we'd extract the planes_red_Shfit order from the list above. However, I dont know how to extract it
         # Using a list of class attributes so make a list of redshifts for now.
 
-        galaxy_redshifts = list(map(lambda galaxy : galaxy.redshift, self.galaxies_redshift_order))
+        galaxy_redshifts = list(map(lambda galaxy: galaxy.redshift, self.galaxies_redshift_order))
         self.planes_redshift_order = [redshift for i, redshift in enumerate(galaxy_redshifts)
                                       if redshift not in galaxy_redshifts[:i]]
         self.geometry = TracerGeometry(redshifts=self.planes_redshift_order, cosmology=cosmology)
@@ -89,18 +92,18 @@ class MultiTracer(object):
         self.planes_galaxies = []
 
         for (plane_index, plane_redshift) in enumerate(self.planes_redshift_order):
-            self.planes_galaxies.append(list(map(lambda galaxy :
-                                        galaxy if galaxy.redshift == plane_redshift else None,
-                                        self.galaxies_redshift_order)))
+            self.planes_galaxies.append(list(map(lambda galaxy:
+                                                 galaxy if galaxy.redshift == plane_redshift else None,
+                                                 self.galaxies_redshift_order)))
             self.planes_galaxies[plane_index] = list(filter(None, self.planes_galaxies[plane_index]))
 
         self.planes = []
 
         for plane_index in range(0, len(self.planes_redshift_order)):
 
-            if plane_index < len(self.planes_redshift_order)-1:
+            if plane_index < len(self.planes_redshift_order) - 1:
                 compute_deflections = True
-            elif plane_index == len(self.planes_redshift_order)-1:
+            elif plane_index == len(self.planes_redshift_order) - 1:
                 compute_deflections = False
             else:
                 raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
@@ -109,7 +112,6 @@ class MultiTracer(object):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = self.geometry.scaling_factor(plane_i=previous_plane_index,
                                                                   plane_j=plane_index)
 
@@ -123,16 +125,16 @@ class MultiTracer(object):
 
     def generate_image_of_galaxy_light_profiles(self, mapping):
         """Generate the image of the galaxies over the entire ray trace."""
-        return np.ndarray.sum(np.array(list(map(lambda plane : plane.generate_image_of_galaxy_light_profiles(mapping),
+        return np.ndarray.sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(mapping),
                                                 self.planes))))
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
-        return np.ndarray.sum(np.array(list(map(lambda plane : plane.generate_blurring_image_of_galaxy_light_profiles(),
+        return np.ndarray.sum(np.array(list(map(lambda plane: plane.generate_blurring_image_of_galaxy_light_profiles(),
                                                 self.planes))))
 
     def generate_pixelization_matrices_of_galaxies(self, mapping):
-        return list(map(lambda plane : plane.generate_pixelization_matrices_of_galaxy(mapping), self.planes))
+        return list(map(lambda plane: plane.generate_pixelization_matrices_of_galaxy(mapping), self.planes))
 
 
 class TracerGeometry(object):
@@ -154,20 +156,20 @@ class TracerGeometry(object):
         """
         self.cosmology = cosmology
         self.redshifts = redshifts
-        self.final_plane = len(self.redshifts)-1
+        self.final_plane = len(self.redshifts) - 1
         self.ang_to_final_plane = self.ang_to_earth(plane_i=self.final_plane)
 
     def arcsec_per_kpc(self, plane_i):
         return self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
 
     def kpc_per_arcsec(self, plane_i):
-        return 1.0/self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
+        return 1.0 / self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
 
     def ang_to_earth(self, plane_i):
         return self.cosmology.angular_diameter_distance(self.redshifts[plane_i]).to('kpc').value
 
     def ang_between_planes(self, plane_i, plane_j):
-        return self.cosmology.angular_diameter_distance_z1z2(self.redshifts[plane_i], self.redshifts[plane_j]).\
+        return self.cosmology.angular_diameter_distance_z1z2(self.redshifts[plane_i], self.redshifts[plane_j]). \
             to('kpc').value
 
     @property
@@ -179,7 +181,7 @@ class TracerGeometry(object):
                (self.ang_between_planes(plane_i, plane_j) * self.ang_to_earth(plane_i))
 
     def critical_density_arcsec(self, plane_i, plane_j):
-        return  self.critical_density_kpc(plane_i, plane_j) * self.kpc_per_arcsec(plane_i) ** 2.0
+        return self.critical_density_kpc(plane_i, plane_j) * self.kpc_per_arcsec(plane_i) ** 2.0
 
     def scaling_factor(self, plane_i, plane_j):
         return (self.ang_between_planes(plane_i, plane_j) * self.ang_to_final_plane) \
@@ -220,7 +222,10 @@ class Plane(object):
         self.galaxies = galaxies
         self.grids = grids
         if compute_deflections:
-            self.deflections = self.grids.deflection_grids_for_galaxies(self.galaxies)
+            def calculate_deflections(grid):
+                return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(grid), galaxies))
+
+            self.deflections = self.grids.apply_function(calculate_deflections)
 
     def trace_to_next_plane(self):
         """Trace the grids to the next plane.
@@ -228,7 +233,7 @@ class Plane(object):
         NOTE : This does not work for multi-plane lensing, which requires one to use the previous plane's deflection
         angles to perform the tracing. I guess we'll ultimately call this class 'LensPlanes' and have it as a list.
         """
-        return self.grids.traced_grids_for_deflections(self.deflections)
+        return self.grids.map_function(np.subtract, self.deflections)
 
     def generate_image_of_galaxy_light_profiles(self, mapping):
         """Generate the image of the galaxies in this plane."""
