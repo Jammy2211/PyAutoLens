@@ -6,7 +6,7 @@ import math
 
 class Tracer(object):
 
-    def __init__(self, lens_galaxies, source_galaxies, masked_image, cosmology=None):
+    def __init__(self, lens_galaxies, source_galaxies, coords_collection, cosmology=None):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
@@ -19,18 +19,18 @@ class Tracer(object):
             The list of lens galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        masked_image : MaskedImage
-            The image-plane coordinate masked_image where ray-tracing calculation are performed, (this includes the
+        coords_collection : MaskedImage
+            The image-plane coordinate coords_collection where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         """
         self.cosmology = cosmology
-        self.image_plane = Plane(lens_galaxies, masked_image, previous_redshift=None,
+        self.image_plane = Plane(lens_galaxies, coords_collection, previous_redshift=None,
                                  next_redshift=source_galaxies[0].redshift, cosmology=cosmology,
                                  compute_deflections=True)
 
-        source_plane_masked_image = self.image_plane.trace_to_next_plane()
+        source_plane_coords_collection = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = Plane(source_galaxies, source_plane_masked_image,
+        self.source_plane = Plane(source_galaxies, source_plane_coords_collection,
                                   previous_redshift=lens_galaxies[0].redshift,
                                   next_redshift=None, cosmology=cosmology, compute_deflections=False)
 
@@ -50,7 +50,7 @@ class Tracer(object):
 
 class MultiTracer(object):
 
-    def __init__(self, galaxies, masked_image, cosmology, redshift_threshold=0.0):
+    def __init__(self, galaxies, coords_collection, cosmology, redshift_threshold=0.0):
 
         self.cosmology = cosmology
         self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
@@ -80,7 +80,7 @@ class MultiTracer(object):
                 compute_deflections = True
                 previous_redshift = None
                 next_redshift = self.planes_redshift_order[i + 1]
-                new_grid = masked_image
+                new_grid = coords_collection
             elif i < len(self.planes_redshift_order) - 1:
                 compute_deflections = True
                 previous_redshift = self.planes_redshift_order[i - 1]
@@ -94,18 +94,18 @@ class MultiTracer(object):
             else:
                 raise exc.RayTracingException('A galaxy was not corrected allocate its previous / next redshifts')
 
-            self.planes.append(Plane(galaxies=self.planes_galaxies[i], masked_image=new_grid,
+            self.planes.append(Plane(galaxies=self.planes_galaxies[i], coords_collection=new_grid,
                                      previous_redshift=previous_redshift, next_redshift=next_redshift,
                                      cosmology=cosmology, compute_deflections=compute_deflections))
 
 
 class Plane(object):
 
-    def __init__(self, galaxies, masked_image, previous_redshift=None, next_redshift=None, cosmology=None,
+    def __init__(self, galaxies, coords_collection, previous_redshift=None, next_redshift=None, cosmology=None,
                  compute_deflections=True):
         """
 
-        Represents a plane, which is a set of galaxies and masked_image at a given redshift in the lens ray-tracing
+        Represents a plane, which is a set of galaxies and coords_collection at a given redshift in the lens ray-tracing
         calculation.
 
         The image-plane coordinates are defined on the observed image's uniform regular grid_coords. Calculating its
@@ -127,8 +127,8 @@ class Plane(object):
         ----------
         galaxies : [Galaxy]
             The galaxies in the plane.
-        masked_image : masked_image.GridCoordsCollection
-            The masked_image of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords,
+        coords_collection : coords_collection.GridCoordsCollection
+            The coords_collection of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords,
             blurring, grid_coords, etc.
         """
 
@@ -157,25 +157,25 @@ class Plane(object):
                 self.critical_density_arcsec = self.critical_density_kpc * self.kpc_per_arcsec ** 2.0
 
         self.galaxies = galaxies
-        self.masked_image = masked_image
+        self.coords_collection = coords_collection
         if compute_deflections:
-            self.deflections = self.masked_image.deflection_masked_image_for_galaxies(self.galaxies)
+            self.deflections = self.coords_collection.deflection_coords_collection_for_galaxies(self.galaxies)
 
     def trace_to_next_plane(self):
-        """Trace the masked_image to the next plane.
+        """Trace the coords_collection to the next plane.
 
         NOTE : This does not work for multi-plane lensing, which requires one to use the previous plane's deflection
         angles to perform the tracing. I guess we'll ultimately call this class 'LensPlanes' and have it as a list.
         """
-        return self.masked_image.traced_masked_image_for_deflections(self.deflections)
+        return self.coords_collection.traced_coords_collection_for_deflections(self.deflections)
 
     def generate_image_of_galaxy_light_profiles(self, mapping):
         """Generate the image of the galaxies in this plane."""
-        return self.masked_image.sub.intensities_via_grid(self.galaxies, mapping)
+        return self.coords_collection.sub.intensities_via_grid(self.galaxies, mapping)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
-        return self.masked_image.blurring.intensities_via_grid(self.galaxies)
+        return self.coords_collection.blurring.intensities_via_grid(self.galaxies)
 
     def generate_pixelization_matrices_of_galaxy(self, mapping):
 
@@ -184,7 +184,7 @@ class Plane(object):
         if len(pixelized_galaxies) == 0:
             return None
         if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.inversion_from_pix_masked_image(self.masked_image.image,
-                                                                                      self.masked_image.sub, mapping)
+            return pixelized_galaxies[0].pixelization.inversion_from_pix_coords_collection(self.coords_collection.image,
+                                                                                      self.coords_collection.sub, mapping)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
