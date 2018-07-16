@@ -1570,3 +1570,14 @@ class TestMemoizer(object):
 
         assert one.method() == 1
         assert two.method() == 2
+
+
+@pytest.fixture(name="coordinate_collection")
+def make_coordinate_collection(msk):
+    return mask.CoordsCollection.from_mask_subgrid_size_and_blurring_shape(msk, 2, (3, 3))
+
+
+class TestCoordinateCollection(object):
+    def test_coordinate_collection(self, coordinate_collection):
+        print(coordinate_collection)
+        assert False
