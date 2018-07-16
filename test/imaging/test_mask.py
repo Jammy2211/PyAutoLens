@@ -347,7 +347,7 @@ class TestMask(object):
 
         def test__non_square_psf_shape__raises_error(self):
             with pytest.raises(exc.KernelException):
-                msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(3, 5))
+                mask.Mask.for_simulate(shape_arc_seconds=(4, 4), pixel_scale=1, psf_size=(3, 5))
 
     class TestComputeGridCoordsImage(object):
 
@@ -1488,8 +1488,8 @@ class TestSubCoordinateGrid(object):
 
     def test_setup_mappings_using_mask(self):
         msk = np.array([[True, False, True],
-                         [False, False, False],
-                         [True, False, True]])
+                        [False, False, False],
+                        [True, False, True]])
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
