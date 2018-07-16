@@ -622,7 +622,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = msk.sub_to_image_with_size(grid_size_sub=2)
+            sub_to_image = mask.SubCoordinateGrid(msk, 2).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0])).all()
 
@@ -633,7 +633,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = msk.sub_to_image_with_size(grid_size_sub=2)
+            sub_to_image = mask.SubCoordinateGrid(msk, 2).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])).all()
 
@@ -644,7 +644,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = msk.sub_to_image_with_size(grid_size_sub=3)
+            sub_to_image = mask.SubCoordinateGrid(msk, 3).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1,
