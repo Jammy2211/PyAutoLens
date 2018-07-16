@@ -4,6 +4,7 @@ from src import exc
 import numpy as np
 from functools import wraps
 import inspect
+from collections import namedtuple
 
 import logging
 
@@ -413,3 +414,10 @@ class SubCoordinateGrid(np.ndarray):
                     image_pixel_count += 1
 
         return sub_to_image
+
+
+class CoordsCollection(object):
+    def __init__(self, mask, subgrid_size, blurring_shape):
+        self.image_coords = mask.coordinate_grid
+        self.sub_grid_coords = SubCoordinateGrid(mask, subgrid_size)
+        self.blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
