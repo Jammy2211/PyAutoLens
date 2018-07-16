@@ -8,7 +8,6 @@ from src.imaging import image
 from src.profiles import light_profiles
 from src.pixelization import pixelization
 from src.pixelization import frame_convolution
-from src.imaging import grids
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
