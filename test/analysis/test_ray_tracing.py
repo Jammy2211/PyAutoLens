@@ -83,7 +83,7 @@ class MockPixelization(object):
 
         self.value = value
 
-    def inversion_from_pix_grids(self, source_grid, source_sub_grid, mapping):
+    def inversion_from_pix_grids(self, grids, mapping):
         return self.value
 
 
