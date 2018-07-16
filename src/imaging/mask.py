@@ -160,34 +160,6 @@ class Mask(scaled_array.ScaledArray):
 
         return grids.CoordinateGrid(grid)
 
-    def sub_coordinate_grid_with_size(self, size):
-        """ Compute the image sub-grid_coords grids from a mask, using the center of every unmasked pixel.
-
-        Parameters
-        ----------
-        size : int
-            The (grid_size_sub x grid_size_sub) of the sub-grid_coords of each image pixel.
-        """
-
-        sub_pixel_count = 0
-
-        grid = np.zeros(shape=(self.pixels_in_mask * size ** 2, 2))
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
-
-                    for x1 in range(size):
-                        for y1 in range(size):
-                            grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, size)
-
-                            grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, size)
-
-                            sub_pixel_count += 1
-
-        return grids.SubCoordinateGrid(grid, size)
-
     def sub_to_image_with_size(self, grid_size_sub):
         """ Compute the pairing of every sub-pixel to its original image pixel from a mask.
 
@@ -415,3 +387,35 @@ class SparseMask(Mask):
                             raise exc.MaskException('compute_image_to_sparse - Stuck in infinite loop')
 
         return image_to_sparse
+
+
+class SubCoordinateGrid(np.ndarray):
+    def __new__(cls, mask, sub_grid_size=1, **kwargs):
+        sub_pixel_count = 0
+
+        grid = np.zeros(shape=(mask.pixels_in_mask * sub_grid_size ** 2, 2))
+
+        for x in range(mask.shape[0]):
+            for y in range(mask.shape[1]):
+                if not mask[x, y]:
+                    x_arcsec, y_arcsec = mask.pixel_coordinates_to_arc_second_coordinates((x, y))
+
+                    for x1 in range(sub_grid_size):
+                        for y1 in range(sub_grid_size):
+                            grid[sub_pixel_count, 0] = mask.sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
+
+                            grid[sub_pixel_count, 1] = mask.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
+
+                            sub_pixel_count += 1
+        return grid.view(cls)
+
+    def __init__(self, mask, sub_grid_size=1):
+        # noinspection PyArgumentList
+        super(SubCoordinateGrid, self).__init__()
+        self.sub_to_image = mask.sub_to_image_with_size(sub_grid_size)
+        self.sub_grid_size = sub_grid_size
+        self.sub_grid_length = int(sub_grid_size ** 2.0)
+        self.sub_grid_fraction = 1.0 / self.sub_grid_length
+
+    def sub_data_to_image(self, data):
+        return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
