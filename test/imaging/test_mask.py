@@ -4,16 +4,23 @@ import pytest
 from src import exc
 
 
-@pytest.fixture(name="sub_coordinate_grid")
-def make_sub_coordinate_grid(msk):
-    return mask.SubCoordinateGrid(msk)
-
-
 @pytest.fixture(name="msk")
 def make_mask():
     return mask.Mask(np.array([[True, False, True],
                                [False, False, False],
                                [True, False, True]]))
+
+
+@pytest.fixture(name="centre_mask")
+def make_centre_mask():
+    return mask.Mask(np.array([[True, True, True],
+                               [True, False, True],
+                               [True, True, True]]))
+
+
+@pytest.fixture(name="sub_coordinate_grid")
+def make_sub_coordinate_grid(msk):
+    return mask.SubCoordinateGrid(msk)
 
 
 class TestMask(object):
@@ -1573,11 +1580,42 @@ class TestMemoizer(object):
 
 
 @pytest.fixture(name="coordinate_collection")
-def make_coordinate_collection(msk):
-    return mask.CoordsCollection.from_mask_subgrid_size_and_blurring_shape(msk, 2, (3, 3))
+def make_coordinate_collection(centre_mask):
+    return mask.CoordsCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
 
 
 class TestCoordinateCollection(object):
     def test_coordinate_collection(self, coordinate_collection):
-        print(coordinate_collection)
-        assert False
+        assert (coordinate_collection.image_coords == np.array([[0., 0.]])).all()
+        np.testing.assert_almost_equal(coordinate_collection.sub_grid_coords, np.array([[-0.16666667, -0.16666667],
+                                                                                        [-0.16666667, 0.16666667],
+                                                                                        [0.16666667, -0.16666667],
+                                                                                        [0.16666667, 0.16666667]]))
+        assert (coordinate_collection.blurring_coords == np.array([[-1., -1.],
+                                                                   [-1., 0.],
+                                                                   [-1., 1.],
+                                                                   [0., -1.],
+                                                                   [0., 1.],
+                                                                   [1., -1.],
+                                                                   [1., 0.],
+                                                                   [1., 1.]])).all()
+
+    def test_apply_function(self, coordinate_collection):
+        def add_one(coords):
+            return np.add(1, coords)
+
+        new_collection = coordinate_collection.apply_function(add_one)
+        assert isinstance(new_collection, mask.CoordsCollection)
+        assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
+        np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(1, np.array([[-0.16666667, -0.16666667],
+                                                                                           [-0.16666667, 0.16666667],
+                                                                                           [0.16666667, -0.16666667],
+                                                                                           [0.16666667, 0.16666667]])))
+        assert (new_collection.blurring_coords == np.add(1, np.array([[-1., -1.],
+                                                                      [-1., 0.],
+                                                                      [-1., 1.],
+                                                                      [0., -1.],
+                                                                      [0., 1.],
+                                                                      [1., -1.],
+                                                                      [1., 0.],
+                                                                      [1., 1.]]))).all()
