@@ -1,36 +1,78 @@
 import numpy as np
 
-from src.imaging import grids
-from src.analysis import ray_tracing
-from src.pixelization import pixelization as px
 
+# TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
 
-# TODO : Can we make model_immage, galaxy_images, minimum_Values a part of hyper galaxies?
+class Fitter(object):
+    def __init__(self, image, sub_coordinate_grid, sparse_mask, tracer):
+        self.image = image
+        self.sub_coordinate_grid = sub_coordinate_grid
+        self.sparse_mask = sparse_mask
+        self.tracer = tracer
 
-def fit_data_with_profiles_hyper_galaxies(image, tracer, mapping, model_image, galaxy_images,
-                                          minimum_values, hyper_galaxies):
-    """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
+    def fit_data_with_profiles_hyper_galaxies(self, model_image, galaxy_images, minimum_values, hyper_galaxies):
+        """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy
+        images.
 
-    Parameters
-    ----------
-    image
-    grid_data : grids.DataCollection
-        The collection of grid weighted_data-sets (image, noise, etc.)
-    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
-        The 2D Point Spread Function (PSF).
-    tracer : ray_tracing.Tracer
-        The ray-tracing configuration of the model galaxies and their profiles.
-    model_image : ndarray
-        The best-fit model image to the weighted_data, from a previous phase of the pipeline
-    galaxy_images : [ndarray]
-        The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
-    hyper_galaxies : [galaxy.HyperGalaxy]
-        Each hyper-galaxy which is used to determine its contributions.
-    """
-    contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
-    scaled_noise = generate_scaled_noise(image.background_noise, contributions, hyper_galaxies)
-    blurred_model_image = generate_blurred_light_profile_image(tracer, image.kernel_convolver, mapping)
-    return compute_likelihood(image, scaled_noise, blurred_model_image)
+        Parameters
+        ----------
+        minimum_values
+        model_image : ndarray
+            The best-fit model image to the weighted_data, from a previous phase of the pipeline
+        galaxy_images : [ndarray]
+            The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+        hyper_galaxies : [galaxy.HyperGalaxy]
+            Each hyper-galaxy which is used to determine its contributions.
+        """
+        contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+        scaled_noise = self.generate_scaled_noise(contributions, hyper_galaxies)
+        blurred_model_image = self.generate_blurred_light_profile_image()
+        return compute_likelihood(self.image, scaled_noise, blurred_model_image)
+
+    def generate_scaled_noise(self, contributions, hyper_galaxies):
+        """Use the contributions of each hyper galaxy to compute the scaled noise.
+        Parameters
+        -----------
+        contributions : [ndarray]
+            The contribution of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
+        hyper_galaxies : [galaxy.HyperGalaxy]
+            Each hyper-galaxy which is used to scale the noise.
+        """
+        scaled_noises = list(
+            map(lambda hyper, contribution: hyper.compute_scaled_noise(self.image.background_noise, contribution),
+                hyper_galaxies, contributions))
+        return self.image.background_noise + sum(scaled_noises)
+
+    def generate_blurred_light_profile_image(self):
+        """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
+        PSF.
+        """
+        image_light_profile = self.tracer.generate_image_of_galaxy_light_profiles(self.sub_coordinate_grid,
+                                                                                  self.sparse_mask)
+        blurring_image_light_profile = self.tracer.generate_blurring_image_of_galaxy_light_profiles()
+        return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile,
+                                                    self.image.kernel_convolver)
+
+    def fit_data_with_profiles(self):
+        """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
+
+        """
+        blurred_model_image = self.generate_blurred_light_profile_image()
+        return compute_likelihood(self.image, self.image.background_noise, blurred_model_image)
+
+    def fit_data_with_pixelization(self):
+        """Fit the weighted_data using the ray_tracing model, where only pixelizations are used to represent the galaxy
+        images.
+        """
+
+        pix_pre_fit = self.tracer.generate_pixelization_matrices_of_source_galaxy(self.sub_coordinate_grid,
+                                                                                  self.sparse_mask)
+        pix_fit = pix_pre_fit.fit_image_via_inversion(self.image, self.image.background_noise,
+                                                      self.image.kernel_convolver)
+
+        model_image = pix_fit.model_image_from_reconstruction()
+
+        return compute_pixelization_evidence(self.image, self.image.background_noise, model_image, pix_fit)
 
 
 def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values):
@@ -47,61 +89,10 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
     hyper_galaxies : [galaxy.HyperGalaxy]
         Each hyper-galaxy which is used to determine its contributions.
     """
+    # noinspection PyArgumentList
     return list(map(lambda hyper, galaxy_image, minimum_value:
                     hyper.compute_contributions(model_image, galaxy_image, minimum_value),
                     hyper_galaxies, galaxy_images, minimum_values))
-
-
-def generate_scaled_noise(noise, contributions, hyper_galaxies):
-    """Use the contributions of each hyper galaxy to compute the scaled noise.
-
-    Parameters
-    -----------
-    noise : grids.GridData
-        The (unscaled) noise in each pixel.
-    contributions : [ndarray]
-        The contribution of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
-    hyper_galaxies : [galaxy.HyperGalaxy]
-        Each hyper-galaxy which is used to scale the noise.
-    """
-    scaled_noises = list(map(lambda hyper, contribution: hyper.compute_scaled_noise(noise, contribution),
-                             hyper_galaxies, contributions))
-
-    return noise + sum(scaled_noises)
-
-
-def fit_data_with_profiles(image, kernel_convolver, tracer, mapping):
-    """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
-
-    Parameters
-    ----------
-    image
-    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
-        The 2D Point Spread Function (PSF).
-    tracer : ray_tracing.Tracer
-        The ray-tracing configuration of the model galaxies and their profiles.
-    mapping : grids.GridMapping
-        Contains arrays / functions used to map different grids.
-    """
-    blurred_model_image = generate_blurred_light_profile_image(tracer, kernel_convolver, mapping)
-    return compute_likelihood(image, image.background_noise, blurred_model_image)
-
-
-def generate_blurred_light_profile_image(tracer, kernel_convolver, mapping):
-    """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
-    PSF.
-
-    Parameters
-    ----------
-    mapping
-    tracer : ray_tracing.Tracer
-        The ray-tracing configuration of the model galaxies and their profiles.
-    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
-        The 2D Point Spread Function (PSF).
-    """
-    image_light_profile = tracer.generate_image_of_galaxy_light_profiles(mapping)
-    blurring_image_light_profile = tracer.generate_blurring_image_of_galaxy_light_profiles()
-    return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile, kernel_convolver)
 
 
 def blur_image_including_blurring_region(image, blurring_image, kernel_convolver):
@@ -117,29 +108,6 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
         The 2D Point Spread Function (PSF).
     """
     return kernel_convolver.convolve_array(image, blurring_image)
-
-
-def fit_data_with_pixelization(image, kernel_convolver, tracer, mapping):
-    """Fit the weighted_data using the ray_tracing model, where only pixelizations are used to represent the galaxy
-    images.
-
-    Parameters
-    ----------
-    mapping
-    image
-    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
-        The 2D Point Spread Function (PSF).
-    tracer : ray_tracing.Tracer
-        The ray-tracing configuration of the model galaxies and their profiles.
-
-    """
-
-    pix_pre_fit = tracer.generate_pixelization_matrices_of_source_galaxy(mapping)
-    pix_fit = pix_pre_fit.fit_image_via_inversion(image, image.background_noise, kernel_convolver)
-
-    model_image = pix_fit.model_image_from_reconstruction()
-
-    return compute_pixelization_evidence(image, image.background_noise, model_image, pix_fit)
 
 
 def compute_likelihood(image, noise, model_image):
@@ -208,6 +176,7 @@ def compute_noise_term(noise):
     return np.sum(np.log(2 * np.pi * noise ** 2.0))
 
 
+# noinspection PyUnusedLocal
 def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, kernel_convolver, tracer,
                                             mapper_cluster, image=None):
     # TODO: Implement me
