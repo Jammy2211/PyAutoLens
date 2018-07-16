@@ -1,8 +1,19 @@
 import numpy as np
 from src.imaging import mask
-from src.imaging import grids
 import pytest
 from src import exc
+
+
+@pytest.fixture(name="sub_coordinate_grid")
+def make_sub_coordinate_grid(msk):
+    return mask.SubCoordinateGrid(msk)
+
+
+@pytest.fixture(name="msk")
+def make_mask():
+    return mask.Mask(np.array([[True, False, True],
+                               [False, False, False],
+                               [True, False, True]]))
 
 
 class TestMask(object):
@@ -1462,6 +1473,33 @@ class TestMask(object):
             assert (grid_cluster_pixelization.sparse_to_image == np.array([1, 3, 11, 13])).all()
             assert (grid_cluster_pixelization.image_to_sparse == np.array(
                 [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3])).all()
+
+
+class TestSubCoordinateGrid(object):
+    def test_sub_coordinate_grid(self, sub_coordinate_grid):
+        assert sub_coordinate_grid.shape == (5, 2)
+        assert (sub_coordinate_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
+
+    def test_sub_to_pixel(self, sub_coordinate_grid):
+        assert (sub_coordinate_grid.sub_to_image == np.array(range(5))).all()
+
+    def test_sub_data_to_image(self, sub_coordinate_grid):
+        assert (sub_coordinate_grid.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
+
+    def test_setup_mappings_using_mask(self):
+        msk = np.array([[True, False, True],
+                         [False, False, False],
+                         [True, False, True]])
+
+        msk = mask.Mask(msk, pixel_scale=3.0)
+
+        sub_coordinate_grid = mask.SubCoordinateGrid(msk, 2)
+
+        assert sub_coordinate_grid.sub_grid_size == 2
+        assert sub_coordinate_grid.sub_grid_fraction == (1.0 / 4.0)
+
+        assert (sub_coordinate_grid.sub_to_image == np.array(
+            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])).all()
 
 
 @pytest.fixture(name="memoizer")
