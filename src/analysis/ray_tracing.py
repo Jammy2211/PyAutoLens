@@ -43,18 +43,18 @@ class Tracer(object):
 
     def generate_image_of_galaxy_light_profiles(self, sub_coordinate_grid, sparse_mask):
         """Generate the image of the galaxies over the entire ray trace."""
-        return self.image_plane.generate_image_of_galaxy_light_profiles(sub_coordinate_grid,
-                                                                        sparse_mask) + \
-               self.source_plane.generate_image_of_galaxy_light_profiles(
-                   sub_coordinate_grid, sparse_mask)
+        return self.image_plane.generate_image_of_galaxy_light_profiles(
+            sub_coordinate_grid,
+            sparse_mask) + self.source_plane.generate_image_of_galaxy_light_profiles(
+            sub_coordinate_grid, sparse_mask)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
         return self.image_plane.generate_blurring_image_of_galaxy_light_profiles(
         ) + self.source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
-    def generate_pixelization_matrices_of_source_galaxy(self, sub_coordinate_grid, sparse_mask):
-        return self.source_plane.generate_pixelization_matrices_of_galaxy(sub_coordinate_grid, sparse_mask)
+    def generate_pixelization_matrices_of_source_galaxy(self, sparse_mask):
+        return self.source_plane.generate_pixelization_matrices_of_galaxy(sparse_mask)
 
 
 class MultiTracer(object):
@@ -147,10 +147,6 @@ class TracerGeometry(object):
 
         Parameters
         ----------
-        lens_redshift : [Galaxy]
-            The list of lens galaxies in the image-plane.
-        source_redshift : [Galaxy]
-            The list of source galaxies in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
@@ -174,7 +170,8 @@ class TracerGeometry(object):
 
     @property
     def constant_kpc(self):
-        return (constants.c.to('kpc / s').value) ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+        # noinspection PyUnresolvedReferences
+        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
     def critical_density_kpc(self, plane_i, plane_j):
         return self.constant_kpc * self.ang_to_earth(plane_j) / \
@@ -184,8 +181,8 @@ class TracerGeometry(object):
         return self.critical_density_kpc(plane_i, plane_j) * self.kpc_per_arcsec(plane_i) ** 2.0
 
     def scaling_factor(self, plane_i, plane_j):
-        return (self.ang_between_planes(plane_i, plane_j) * self.ang_to_final_plane) \
-               / (self.ang_to_earth(plane_j) * self.ang_between_planes(plane_i, self.final_plane))
+        return (self.ang_between_planes(plane_i, plane_j) * self.ang_to_final_plane) / (
+                self.ang_to_earth(plane_j) * self.ang_between_planes(plane_i, self.final_plane))
 
 
 class Plane(object):
@@ -243,15 +240,13 @@ class Plane(object):
         """Generate the image of the galaxies in this plane."""
         return self.grids.blurring.intensities_via_grid(self.galaxies)
 
-    def generate_pixelization_matrices_of_galaxy(self, sub_coordinate_grid, sparse_mask):
+    def generate_pixelization_matrices_of_galaxy(self, sparse_mask):
 
         pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
 
         if len(pixelized_galaxies) == 0:
             return None
         if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.grids.image,
-                                                                               self.grids.sub, sub_coordinate_grid,
-                                                                               sparse_mask)
+            return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.grids, sparse_mask)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
