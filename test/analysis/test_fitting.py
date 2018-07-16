@@ -8,6 +8,7 @@ from src.imaging import image
 from src.profiles import light_profiles
 from src.pixelization import pixelization
 from src.pixelization import frame_convolution
+from src.imaging import grids
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
@@ -122,6 +123,8 @@ class TestFitData:
         kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 1.0, 0.0],
                                                                                      [1.0, 1.0, 1.0],
                                                                                      [0.0, 1.0, 0.0]]))
+
+        coords_collection = image_1x1.grids_collection(sub_grid_size=1., sparse_grid_size=1.)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
