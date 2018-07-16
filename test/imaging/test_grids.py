@@ -189,6 +189,29 @@ class TestCoordsCollection(object):
             assert traced.sub.sub_grid_size == 2
             assert traced.blurring[0] == pytest.approx(np.array([1.0 - 1.0, 0.0 - 0.0]), 1e-3)
 
+    class TestSetupScaledDeflections(object):
+
+        def test_all_coordinates(self, galaxy_mass_sis):
+
+            image_grid = np.array([[1.0, 1.0]])
+            sub_grid = np.array([[1.0, 1.0], [1.0, 0.0]])
+            blurring_grid = np.array([[1.0, 0.0]])
+
+            image_grid = grids.CoordinateGrid(image_grid)
+            sub_grid = grids.SubCoordinateGrid(sub_grid, sub_grid_size=2)
+            blurring_grid = grids.CoordinateGrid(blurring_grid)
+
+            ray_trace_grid = grids.CoordsCollection(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+
+            deflections = ray_trace_grid.deflection_grids_for_galaxies([galaxy_mass_sis])
+
+            scaled_deflections = deflections.scaled_deflection_grids_for_scaling_factor(scaling_factor=0.5)
+
+            assert (scaled_deflections.image[0] == 0.5*deflections.image[0]).all()
+            assert (scaled_deflections.sub[0] == 0.5*deflections.sub[0]).all()
+            assert (scaled_deflections.sub[1] == 0.5*deflections.sub[1]).all()
+            assert scaled_deflections.sub.sub_grid_size == 2
+            assert (scaled_deflections.blurring[0] == 0.5*deflections.blurring[0]).all()
 
 class TestCoordinateGrid(object):
     class TestConstructor:
@@ -371,6 +394,19 @@ class TestCoordinateGrid(object):
             grid_traced = grid_image.ray_tracing_grid_for_deflections(deflections)
 
             assert grid_traced == pytest.approx(np.array([[1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]]), 1e-3)
+
+    class TestScaledDeflections:
+
+        def test__simple_set_of_deflections__come_out_multiplied_by_factor(self):
+
+            regular_grid_defls = np.array([[1.0, 1.0],
+                                            [-1.0, -1.0]])
+
+            grid_image = grids.CoordinateGrid(regular_grid_defls)
+
+            scaled_defls = grid_image.scaled_deflections_for_scaling_factor(scaling_factor=0.5)
+
+            assert (0.5*regular_grid_defls == scaled_defls).all()
 
 
 @pytest.fixture(name="grid_image_sub")
@@ -656,6 +692,19 @@ class TestSubCoordinateGrid(object):
             assert deflections[5] == pytest.approx(3.0 * np.array([-1.0, 0.0]), 1e-2)
             assert deflections[6] == pytest.approx(3.0 * np.array([0.0, -1.0]), 1e-2)
             assert deflections[7] == pytest.approx(3.0 * np.array([0.0, -1.0]), 1e-2)
+
+    class TestScaledDeflections:
+
+        def test__simple_set_of_deflections__come_out_multiplied_by_factor(self):
+
+            sub_grid_defls = np.array([[1.0, 1.0], [0.0, 1.0], [0.0, 0.0], [0.0, 0.0],
+                                       [1.0, 1.0], [-1.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+
+            grid_sub = grids.CoordinateGrid(sub_grid_defls)
+
+            scaled_defls = grid_sub.scaled_deflections_for_scaling_factor(scaling_factor=0.5)
+
+            assert (0.5*sub_grid_defls == scaled_defls).all()
 
 
 class TestGridData(object):
