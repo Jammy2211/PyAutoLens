@@ -8,25 +8,25 @@ import pytest
 import numpy as np
 
 
-@pytest.fixture(name="no_galaxies", scope='function')
+@pytest.fixture(name="no_galaxies")
 def make_no_galaxies():
     return [galaxy.Galaxy()]
 
 
-@pytest.fixture(name="galaxy_light_sersic", scope='function')
+@pytest.fixture(name="galaxy_light_sersic")
 def make_galaxy_light_sersic():
     sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=4.0)
     return galaxy.Galaxy(light_profile=sersic)
 
 
-@pytest.fixture(name="galaxy_mass_sis", scope='function')
+@pytest.fixture(name="galaxy_mass_sis")
 def make_galaxy_mass_sis():
     sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile=sis)
 
 
-@pytest.fixture(name="all_grids", scope='function')
+@pytest.fixture(name="all_grids")
 def make_all_grids():
     regular_grid_coords = np.array([[1.0, 1.0]])
     sub_grid_coords = np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0]])
@@ -41,7 +41,7 @@ def make_all_grids():
     return all_grids
 
 
-@pytest.fixture(name="mapping", scope='function')
+@pytest.fixture(name="mapping")
 def make_mapping():
     return grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=np.array([[1, 1]]),
                              sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0]))
