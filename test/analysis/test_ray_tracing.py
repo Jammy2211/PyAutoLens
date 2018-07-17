@@ -36,7 +36,7 @@ def make_all_grids():
     sub_grid = mock_mask.SubCoordinateGrid(sub_grid_coords, sub_grid_size=2)
     blurring_grid = mock_mask.CoordinateGrid(blurring_grid_coords)
 
-    all_grids = mock_mask.CoordsCollection(grid, sub_grid, blurring_grid)
+    all_grids = mock_mask.MockCoordinateCollection(grid, sub_grid, blurring_grid)
 
     return all_grids
 
