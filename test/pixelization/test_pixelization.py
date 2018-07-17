@@ -1,8 +1,9 @@
 from src.pixelization import pixelization
-from src.imaging import mask
 
 import pytest
 import numpy as np
+
+from test.mock.mock_mask import MockSubGridCoords, MockCoordinateCollection
 
 
 def grid_to_pix_pixels_via_nearest_neighbour(grid, pix_centers):
@@ -23,38 +24,7 @@ def grid_to_pix_pixels_via_nearest_neighbour(grid, pix_centers):
     return image_to_pix
 
 
-class MockSubGridCoords(np.ndarray):
-    def __new__(cls, sub_grid_coords, *args, **kwargs):
-        return sub_grid_coords.view(cls)
-
-    def __init__(self, sub_grid_coords, sub_to_image, sub_grid_size):
-        # noinspection PyArgumentList
-        super().__init__()
-        self.sub_grid_coords = sub_grid_coords
-        self.sub_to_image = sub_to_image
-        self.no_pixels = sub_to_image.shape[0]
-        self.sub_grid_size = sub_grid_size
-        self.sub_grid_length = int(sub_grid_size ** 2.0)
-        self.sub_grid_fraction = 1.0 / self.sub_grid_length
-
-
-class MockCoordinateCollection(object):
-
-    def __init__(self, image_pixels, image_coords, sub_grid_coords):
-        self.image_pixels = image_pixels
-        self.image_coords = mask.CoordinateGrid(image_coords)
-        self.sub_grid_coords = sub_grid_coords
-
-    # def map_data_sub_to_image(self, data):
-    #     data_image = np.zeros((self.image_pixels,))
-    #
-    #     for sub_pixel in range(self.sub_pixels):
-    #         data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
-    #
-    #     return data_image / self.sub_grid_size ** 2
-
-
-class MockCluster(object):
+class MockSparseMask(object):
 
     def __init__(self, sparse_to_image, image_to_sparse):
         """ The KMeans clustering used to derive an amorphous pixelization uses a set of image-grid grid. For \
@@ -110,7 +80,7 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2])
             sub_to_image = np.array([0, 1, 2])
 
-            grids = MockCoordinateCollection(image_pixels=3, image_coords=three_pixels,
+            grids = MockCoordinateCollection(image_coords=three_pixels,
                                              sub_grid_coords=MockSubGridCoords(three_pixels,
                                                                                sub_to_image,
                                                                                sub_grid_size=1))
@@ -126,10 +96,10 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2, 7, 6])
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
-            grids = MockCoordinateCollection(image_pixels=5,
-                                             image_coords=five_pixels,
-                                             sub_grid_coords=MockSubGridCoords(five_pixels, sub_to_image,
-                                                                               sub_grid_size=1))
+            grids = MockCoordinateCollection(
+                image_coords=five_pixels,
+                sub_grid_coords=MockSubGridCoords(five_pixels, sub_to_image,
+                                                  sub_grid_size=1))
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -145,7 +115,7 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=five_pixels,
+            grids = MockCoordinateCollection(image_coords=five_pixels,
                                              sub_grid_coords=MockSubGridCoords(five_pixels, sub_to_image,
                                                                                sub_grid_size=2))
 
@@ -163,7 +133,7 @@ class TestPixelization:
             sub_to_pix = np.array([0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=five_pixels,
+            grids = MockCoordinateCollection(image_coords=five_pixels,
                                              sub_grid_coords=MockSubGridCoords(five_pixels, sub_to_image,
                                                                                sub_grid_size=2))
 
@@ -186,7 +156,7 @@ class TestPixelization:
                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
-            grids = MockCoordinateCollection(image_pixels=3, image_coords=three_pixels,
+            grids = MockCoordinateCollection(image_coords=three_pixels,
                                              sub_grid_coords=MockSubGridCoords(three_pixels,
                                                                                sub_to_image, sub_grid_size=4))
 
@@ -1067,7 +1037,7 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1117,7 +1087,7 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-            grids = MockCoordinateCollection(image_pixels=15, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1171,7 +1141,7 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=2))
 
@@ -1442,10 +1412,10 @@ class TestVoronoiPixelization:
             image_to_cluster = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
             cluster_to_image = np.array([0, 2, 6, 8])
             cluster_to_pix = np.array([0, 1, 2, 3])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            grids = MockCoordinateCollection(image_pixels=3, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1477,10 +1447,10 @@ class TestVoronoiPixelization:
             image_to_cluster = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
             cluster_to_image = np.array([0, 2, 6, 8])
             cluster_to_pix = np.array([0, 1, 2, 3])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
-            grids = MockCoordinateCollection(image_pixels=3, image_coords=np.array([]),
+            grids = MockCoordinateCollection(image_coords=np.array([]),
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1504,9 +1474,9 @@ class TestClusterPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1532,7 +1502,7 @@ class TestClusterPixelization:
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
             cluster_to_image = np.array([1, 4, 7, 10, 13])
             image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                  [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -1545,7 +1515,7 @@ class TestClusterPixelization:
                                      [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                      [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
-            grids = MockCoordinateCollection(image_pixels=15, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1583,7 +1553,7 @@ class TestClusterPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                      [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
@@ -1593,7 +1563,7 @@ class TestClusterPixelization:
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=2))
 
@@ -1688,9 +1658,9 @@ class TestAmorphousPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1719,7 +1689,7 @@ class TestAmorphousPixelization:
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
             cluster_to_image = np.array([1, 4, 7, 10, 13])
             image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                  [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -1733,7 +1703,7 @@ class TestAmorphousPixelization:
                                      [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-            grids = MockCoordinateCollection(image_pixels=15, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=1))
 
@@ -1776,7 +1746,7 @@ class TestAmorphousPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
+            sparse_mask = MockSparseMask(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                      [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
@@ -1786,7 +1756,7 @@ class TestAmorphousPixelization:
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = MockCoordinateCollection(image_pixels=5, image_coords=pix_grid,
+            grids = MockCoordinateCollection(image_coords=pix_grid,
                                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image,
                                                                                sub_grid_size=2))
 
