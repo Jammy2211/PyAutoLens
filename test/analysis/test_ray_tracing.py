@@ -298,6 +298,7 @@ class TestTracer(object):
 
         def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids,
                                                                                         galaxy_light_and_mass):
+
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=all_grids,
                                             compute_deflections=True)
             deflections_grid = ray_tracing.deflections_for_coordinates_collection(all_grids,

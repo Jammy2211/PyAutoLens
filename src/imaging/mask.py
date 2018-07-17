@@ -380,6 +380,13 @@ class SubCoordinateGrid(CoordinateGrid):
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
         self.mask = mask
 
+    def __array_finalize__(self, obj):
+        if isinstance(obj, SubCoordinateGrid):
+            self.sub_grid_size = obj.sub_grid_size
+            self.sub_grid_length = obj.sub_grid_length
+            self.sub_grid_fraction = obj.sub_grid_fraction
+            self.mask = obj.mask
+
     @classmethod
     def from_mask(cls, mask, sub_grid_size=1):
         sub_pixel_count = 0
