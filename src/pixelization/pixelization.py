@@ -476,7 +476,7 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        sub_to_pix = np.zeros((grids.sub_pixels,), dtype=int)
+        sub_to_pix = np.zeros((grids.sub_grid_coords.no_pixels,), dtype=int)
 
         for sub_index, sub_coordinate in enumerate(grids.sub_grid_coords):
             nearest_cluster = sparse_mask.image_to_sparse[grids.sub_grid_coords.sub_to_image[sub_index]]
