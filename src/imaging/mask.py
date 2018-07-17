@@ -1,5 +1,4 @@
 from src.imaging import scaled_array
-from src.imaging import grids
 from src import exc
 import numpy as np
 from functools import wraps
@@ -157,7 +156,7 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
-        return grids.CoordinateGrid(grid)
+        return CoordinateGrid(grid)
 
     def masked_1d_array_from_2d_array(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
@@ -363,7 +362,13 @@ class SparseMask(Mask):
         return image_to_sparse
 
 
-class SubCoordinateGrid(np.ndarray):
+class CoordinateGrid(np.ndarray):
+    @property
+    def no_pixels(self):
+        return self.shape[0]
+
+
+class SubCoordinateGrid(CoordinateGrid):
     def __new__(cls, mask, sub_grid_size=1, **kwargs):
         sub_pixel_count = 0
 
@@ -389,7 +394,6 @@ class SubCoordinateGrid(np.ndarray):
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
-        self.no_pixels = self.shape[0]
         self.mask = mask
 
     def sub_data_to_image(self, data):
