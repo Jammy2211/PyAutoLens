@@ -59,8 +59,7 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            all_grids = ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
-                                                                                      blurring_shape=(3, 3))
+            all_grids = mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(ma, 1, (3, 3))
 
             im.background_noise = np.ones(im.shape)
             im.effective_exposure_time = np.ones(im.shape)
@@ -70,7 +69,7 @@ class TestCase:
 
             mi = masked_image.MaskedImage(im, ma)
 
-            mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
+            sparse_mask = mask.SparseMask(ma, 1)
 
             pix = pixelization.RectangularPixelization(shape=(3, 3), regularization_coefficients=(1.0,))
 
@@ -118,8 +117,9 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(mi, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapping=mapping) == pytest.approx(
+            fitter = fitting.Fitter(mi, sparse_mask, ray_trace)
+
+            assert fitter.fit_data_with_pixelization() == pytest.approx(
                 evidence_expected, 1e-4)
 
     class TestClusterPixelization:
@@ -143,9 +143,11 @@ class TestCase:
 
             all_grids = mask.CoordinateCollection(ma, 1, (3, 3))
 
-            mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
+            sparse_mask = mask.SparseMask(ma, sparse_grid_size=1)
 
-            pix = pixelization.ClusterPixelization(pixels=len(mapping.cluster.cluster_to_image),
+            # mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
+
+            pix = pixelization.ClusterPixelization(pixels=len(sparse_mask.sparse_to_image),
                                                    regularization_coefficients=(1.0,))
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
@@ -192,6 +194,6 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(mi, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapping=mapping) == pytest.approx(
-                evidence_expected, 1e-4)
+            fitter = fitting.Fitter(mi, sparse_mask, ray_trace)
+
+            assert fitter.fit_data_with_pixelization() == pytest.approx(evidence_expected, 1e-4)
