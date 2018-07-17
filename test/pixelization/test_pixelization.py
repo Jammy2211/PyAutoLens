@@ -100,8 +100,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2])
             sub_to_image = np.array([0, 1, 2])
 
-            grids = MockGrids(image_pixels=3, image_coords=[],
-                              sub_grid_coords=MockSubGridCoords([], sub_to_image, sub_grid_size=1))
+            grids = MockGrids(image_pixels=3, image_coords=np.array([]),
+                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image, sub_grid_size=1))
 
             pix = pixelization.Pixelization(pixels=6)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -114,8 +114,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2, 7, 6])
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
-            grids = MockGrids(image_pixels=5, image_coords=[],
-                              sub_grid_coords=MockSubGridCoords([], sub_to_image, sub_grid_size=1))
+            grids = MockGrids(image_pixels=5, image_coords=np.array([]),
+                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image, sub_grid_size=1))
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -131,8 +131,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = MockGrids(image_pixels=5, image_coords=[],
-                              sub_grid_coords=MockSubGridCoords([], sub_to_image, sub_grid_size=2))
+            grids = MockGrids(image_pixels=5, image_coords=np.array([]),
+                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image, sub_grid_size=2))
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -148,8 +148,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = MockGrids(image_pixels=5, image_coords=[],
-                              sub_grid_coords=MockSubGridCoords([], sub_to_image, sub_grid_size=2))
+            grids = MockGrids(image_pixels=5, image_coords=np.array([]),
+                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image, sub_grid_size=2))
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -170,8 +170,8 @@ class TestPixelization:
                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
-            grids = MockGrids(image_pixels=3, image_coords=[],
-                              sub_grid_coords=MockSubGridCoords([], sub_to_image, sub_grid_size=4))
+            grids = MockGrids(image_pixels=3, image_coords=np.array([]),
+                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image, sub_grid_size=4))
 
             pix = pixelization.Pixelization(pixels=6)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -1426,7 +1426,7 @@ class TestVoronoiPixelization:
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             grids = MockGrids(image_pixels=3, image_coords=pix_grid,
-                              sub_grid_coords=MockSubGridCoords([], sub_to_image, sub_grid_size=1))
+                              sub_grid_coords=MockSubGridCoords(np.array([]), sub_to_image, sub_grid_size=1))
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.voronoi_from_cluster_grid(pix_centers)
@@ -1459,7 +1459,7 @@ class TestVoronoiPixelization:
             sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
-            grids = MockGrids(image_pixels=3, image_coords=[],
+            grids = MockGrids(image_pixels=3, image_coords=np.array([]),
                               sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image, sub_grid_size=1))
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
