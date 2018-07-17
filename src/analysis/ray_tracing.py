@@ -268,5 +268,13 @@ def intensities_via_grid(coords_grid, galaxies):
 def deflections_for_grid(coords_grid, galaxies):
     return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(coords_grid), galaxies))
 
+
 def deflections_for_coordinates_collection(coordinates_collection, galaxies):
     return coordinates_collection.apply_function(lambda grid: deflections_for_grid(grid, galaxies))
+
+
+def traced_collection_for_deflections(coordinates_collection, deflections):
+    def subtract_scaled_deflections(grid, scaled_deflection):
+        return np.subtract(grid, scaled_deflection)
+
+    return coordinates_collection.map_function(subtract_scaled_deflections, deflections)
