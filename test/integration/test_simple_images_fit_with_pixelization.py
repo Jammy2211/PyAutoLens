@@ -51,6 +51,7 @@ class TestCase:
     class TestRectangularPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -59,32 +60,23 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            all_grids = ma.coordinates_collection_for_subgrid_size_and_blurring_shape(sub_grid_size=1,
-                                                                                      blurring_shape=(3, 3))
-
-            im.background_noise = np.ones(im.shape)
-            im.effective_exposure_time = np.ones(im.shape)
-            im.pixel_scale = 1.
-            im.psf = image.PSF(np.ones((1, 1)), 1)
-            im.poisson_noise = 1.
+            im = image.Image(im, psf=image.PSF(np.ones((3, 3)), 1), background_noise=np.ones((5, 5)),
+                             effective_exposure_time=np.ones((5, 5)))
 
             mi = masked_image.MaskedImage(im, ma)
-
-            mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
+            mi.kernel_convolver = mi.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
+                                                                                     [0.0, 1.0, 0.0],
+                                                                                     [0.0, 0.0, 0.0]]))
 
             pix = pixelization.RectangularPixelization(shape=(3, 3), regularization_coefficients=(1.0,))
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix],
-                                           image_plane_grids=all_grids)
+                                           image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                                           ma, 1, (3, 3)))
 
-            frame = frame_convolution.FrameMaker(mask=ma)
-            convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3))
-            # This PSF leads to no blurring, so equivalent to being off.
-            kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
-                                                                               [0., 1., 0.],
-                                                                               [0., 0., 0.]]))
+            fitter = fitting.Fitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -118,47 +110,37 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(mi, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapping=mapping) == pytest.approx(
-                evidence_expected, 1e-4)
+            assert fitter.fit_data_with_pixelization() == pytest.approx(evidence_expected, 1e-4)
 
     class TestClusterPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 0.0, 0.0, 0.0, 0.0]])
-
-            im = image.Image(im)
-
-            im.effective_exposure_time = np.ones(im.shape)
-            im.background_noise = np.ones(im.shape)
-            im.psf = image.PSF(np.ones((1, 1)), 1)
+                           [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
+            im = image.Image(im, psf=image.PSF(np.ones((3, 3)), 1), background_noise=np.ones((5, 5)),
+                             effective_exposure_time=np.ones((5, 5)))
+
             mi = masked_image.MaskedImage(im, ma)
+            mi.kernel_convolver = mi.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
+                                                                                     [0.0, 1.0, 0.0],
+                                                                                     [0.0, 0.0, 0.0]]))
 
-            all_grids = mask.CoordinateCollection(ma, 1, (3, 3))
-
-            mapping = ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
-
-            pix = pixelization.ClusterPixelization(pixels=len(mapping.cluster.cluster_to_image),
-                                                   regularization_coefficients=(1.0,))
+            pix = pixelization.ClusterPixelization(pixels=9, regularization_coefficients=(1.0,))
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix],
-                                           image_plane_grids=all_grids)
+                                           image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                                           ma, 1, (3, 3)))
 
-            frame = frame_convolution.FrameMaker(mask=ma)
-            convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3))
-            # This PSF leads to no blurring, so equivalent to being off.
-            kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
-                                                                               [0., 1., 0.],
-                                                                               [0., 0., 0.]]))
+            fitter = fitting.Fitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -192,6 +174,4 @@ class TestCase:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitting.fit_data_with_pixelization(mi, kernel_convolver=kernel_convolver,
-                                                      tracer=ray_trace, mapping=mapping) == pytest.approx(
-                evidence_expected, 1e-4)
+            assert fitter.fit_data_with_pixelization() == pytest.approx(evidence_expected, 1e-4)
