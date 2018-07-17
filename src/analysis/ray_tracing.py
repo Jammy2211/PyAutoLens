@@ -263,3 +263,10 @@ def intensities_via_sub_grid(sub_coords_grid, galaxies):
 
 def intensities_via_grid(coords_grid, galaxies):
     return sum(map(lambda g: g.intensity_from_grid(coords_grid), galaxies))
+
+
+def deflections_for_grid(coords_grid, galaxies):
+    return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(coords_grid), galaxies))
+
+def deflections_for_coordinates_collection(coordinates_collection, galaxies):
+    return coordinates_collection.apply_function(lambda grid: deflections_for_grid(grid, galaxies))
