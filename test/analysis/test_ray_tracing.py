@@ -300,8 +300,9 @@ class TestTracer(object):
                                                                                         galaxy_light_and_mass):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=all_grids,
                                             compute_deflections=True)
-            deflections_grid = all_grids.deflection_grids_for_galaxies(galaxies=[galaxy_light_and_mass])
-            source_grid = all_grids.traced_grids_for_deflections(deflections_grid)
+            deflections_grid = ray_tracing.deflections_for_coordinates_collection(all_grids,
+                                                                                  galaxies=[galaxy_light_and_mass])
+            source_grid = ray_tracing.traced_collection_for_deflections(all_grids, deflections_grid)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=source_grid,
                                              compute_deflections=False)
             plane_image = image_plane.generate_image_of_galaxy_light_profiles(
@@ -347,24 +348,24 @@ class TestTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-        # def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids,
-        #                                                                                 galaxy_light_and_mass):
-        #     image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=all_grids,
-        #                                     compute_deflections=True)
-        #     deflections_grid = ray_tracing.deflections_for_coordinates_collection(all_grids,
-        #                                                                           galaxies=[galaxy_light_and_mass])
-        #     source_grid = all_grids.traced_grids_for_deflections(deflections_grid)
-        #     source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=source_grid,
-        #                                      compute_deflections=False)
-        #     plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles(
-        #     ) + source_plane.generate_blurring_image_of_galaxy_light_profiles()
-        #
-        #     ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_and_mass],
-        #                                    source_galaxies=[galaxy_light_and_mass],
-        #                                    image_plane_grids=all_grids)
-        #     ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
-        #
-        #     assert (plane_image == ray_trace_image).all()
+        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids,
+                                                                                        galaxy_light_and_mass):
+            image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=all_grids,
+                                            compute_deflections=True)
+            deflections_grid = ray_tracing.deflections_for_coordinates_collection(all_grids,
+                                                                                  galaxies=[galaxy_light_and_mass])
+            source_grid = ray_tracing.traced_collection_for_deflections(all_grids, deflections_grid)
+            source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=source_grid,
+                                             compute_deflections=False)
+            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles(
+            ) + source_plane.generate_blurring_image_of_galaxy_light_profiles()
+
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_and_mass],
+                                           source_galaxies=[galaxy_light_and_mass],
+                                           image_plane_grids=all_grids)
+            ray_trace_image = ray_trace.generate_blurring_image_of_galaxy_light_profiles()
+
+            assert (plane_image == ray_trace_image).all()
 
     class TestPixelizationFromGalaxy:
 
