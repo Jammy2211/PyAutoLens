@@ -126,9 +126,9 @@ class MultiTracer(object):
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], coordinates_collection=new_grid,
                                      compute_deflections=compute_deflections))
 
-    def generate_image_of_galaxy_light_profiles(self, mapping):
+    def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies over the entire ray trace."""
-        return np.ndarray.sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(mapping),
+        return np.ndarray.sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(),
                                                 self.planes))))
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
