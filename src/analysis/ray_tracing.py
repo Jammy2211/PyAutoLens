@@ -232,11 +232,11 @@ class Plane(object):
 
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
-        return self.coordinates_collection.sub.intensities_via_grid(self.galaxies)
+        return intensities_via_sub_grid(self.coordinates_collection.sub_grid_coords, self.galaxies)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
-        return self.coordinates_collection.blurring.intensities_via_grid(self.galaxies)
+        return intensities_via_grid(self.coordinates_collection.blurring_coords, self.galaxies)
 
     def generate_pixelization_matrices_of_galaxy(self, sparse_mask):
 
