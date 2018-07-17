@@ -389,6 +389,7 @@ class SubCoordinateGrid(np.ndarray):
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
+        self.no_pixels = self.shape[0]
         self.mask = mask
 
     def sub_data_to_image(self, data):
