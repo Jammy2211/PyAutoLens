@@ -434,5 +434,9 @@ class CoordsCollection(object):
     def map_function(self, func, *arg_lists):
         return CoordsCollection(*[func(*args) for args in zip(self, *arg_lists)])
 
+    @property
+    def sub_pixels(self):
+        return self.sub_grid_coords.shape[0]
+
     def __getitem__(self, item):
         return [self.image_coords, self.sub_grid_coords, self.blurring_coords][item]
