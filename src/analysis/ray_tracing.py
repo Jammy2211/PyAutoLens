@@ -41,12 +41,10 @@ class Tracer(object):
 
         self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
 
-    def generate_image_of_galaxy_light_profiles(self, sub_coordinate_grid, sparse_mask):
+    def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies over the entire ray trace."""
         return self.image_plane.generate_image_of_galaxy_light_profiles(
-            sub_coordinate_grid,
-            sparse_mask) + self.source_plane.generate_image_of_galaxy_light_profiles(
-            sub_coordinate_grid, sparse_mask)
+        ) + self.source_plane.generate_image_of_galaxy_light_profiles()
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of all galaxy light profiles in the blurring regions of the image."""
@@ -232,9 +230,9 @@ class Plane(object):
         """
         return self.grids.map_function(np.subtract, self.deflections)
 
-    def generate_image_of_galaxy_light_profiles(self, sub_coordinate_grid, sparse_mask):
+    def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
-        return self.grids.sub.intensities_via_grid(self.galaxies, sub_coordinate_grid, sparse_mask)
+        return self.grids.sub.intensities_via_grid(self.galaxies)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
