@@ -5,39 +5,13 @@ import numpy as np
 
 
 def grid_to_pix_pixels_via_nearest_neighbour(grid, pix_centers):
-    """ Match a set of image_grid image_grid-pixel image_grid to their closest pix-data_to_image, using the pix-pixel centers (x,y).
-
-        This method uses a nearest neighbour search between every image_image-pixel coordinate and set of pix-pixel \
-        centers, thus it is slow when the number of image_grid image_grid-pixel image_grid or pix-data_to_image is large. However, it
-        is probably the fastest routine for low numbers of image_grid image_grid-data_to_image and pix-data_to_image.
-
-        Parameters
-        ----------
-        grid : [(float, float)]
-            The x and y image_grid image_grid-pixel image_grid to be matched to the pix-pixel centers.
-        image_total : int
-            The total number of image_grid data_to_image in the image_grid.
-        image_total : int
-            The total number of image_grid data_to_image in the image_grid image_grid-grid_coords.
-        pix_centers: [(float, float)
-            The pix-data_to_image centers the image_grid image_grid-pixel image_grid are matched with.
-
-        Returns
-        ----------
-        image_to_pix : [int, int]
-            The index in pix_pixel_centers each image_grid and image_grid-image_coordinate is matched with. (e.g. if the fifth
-            image_coordinate of the third image_grid pixel is closest to the 3rd pix-pixel in pix_pixel_centers,
-            image_to_pix[2,4] = 2).
-
-     """
-
     def compute_squared_separation(coordinate1, coordinate2):
         """Computes the squared separation of two image_grid (no square root for efficiency)"""
         return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
 
     image_pixels = grid.shape[0]
 
-    image_to_pix = np.zeros((image_pixels))
+    image_to_pix = np.zeros((image_pixels,))
 
     for image_index, image_coordinate in enumerate(grid):
         distances = list(map(lambda centers: compute_squared_separation(image_coordinate, centers),
@@ -65,7 +39,7 @@ class Grids(object):
         for sub_pixel in range(self.sub_pixels):
             data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
 
-        return data_image / self.sub_grid_size_squared
+        return data_image / self.sub_grid_size ** 2
 
 
 class MockCluster(object):
@@ -339,7 +313,7 @@ class TestPixelization:
         # So, we don't have to make the same number of B matrices as Voronoi vertices, as we can combine them into a few B
         # matrices like this
 
-        #### SKIPPING THE B MATRIX CALCULATION ####
+        # SKIPPING THE B MATRIX CALCULATION #
 
         # The create_regularization_matrix routines in pixelization don't use the B matrices to compute H!.
 
@@ -347,12 +321,12 @@ class TestPixelization:
         # can bypass the B matrix multiplicaion entirely and enter the values directly into the H matrix (making the
         # calculation significantly faster).
 
-        #### POSITIVE DEFINITE MATRIX ####
+        # POSITIVE DEFINITE MATRIX #
 
         # The regularization matrix must be positive-definite, to ensure that its determinant is 0. To ensure this
         # criteria is met, two forms of regularization schemes are applied in slightly different ways.
 
-        #### CONSTANT REGULARIZATION ####
+        # CONSTANT REGULARIZATION #
 
         # For the constant regularization scheme, there is only 1 regularization coefficient that is applied to all
         # pix-pair regularizations equally. This means that we when write B, we only need to regularize pixels
@@ -361,7 +335,7 @@ class TestPixelization:
         # B = [-1, 1]  [0->1]
         #     [0, -1]  1 does not regularization with 0
 
-        #### WEIGHTED REGULARIZATION ####
+        # WEIGHTED REGULARIZATION #
 
         # For the weighted regularization scheme, each pixis given an 'effective regularization weight', instead
         # of applying one constant regularization coefficient to each pix-pixel pair. scheme overall. This is
@@ -397,12 +371,12 @@ class TestPixelization:
 
         class TestConstantRegularization:
 
-            def test__1_B_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
+            def test__1_b_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
                 # Here, we define the pix_neighbors first here and make the B matrices based on them.
 
-                # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
-                # have to have as many B matrices as we do the pix pixel with the most  vertices. We can combine the
-                # rows of each B matrix wherever we like ;0.
+                # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we 
+                # don't have to have as many B matrices as we do the pix pixel with the most  vertices. We can combine 
+                # the rows of each B matrix wherever we like ;0.
 
                 pix_neighbors = np.array([[1, 2], [0], [0]])
 
@@ -418,7 +392,7 @@ class TestPixelization:
                 assert (regularization_matrix == test_regularization_matrix).all()
                 assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
-            def test__1_B_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
+            def test__1_b_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
                 test_b_matrix = np.array([[-1, 1, 0, 0],
                                           [0, -1, 1, 0],
                                           [0, 0, -1, 1],
@@ -434,7 +408,7 @@ class TestPixelization:
                 assert (regularization_matrix == test_regularization_matrix).all()
                 assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
-            def test__1_B_matrix_size_4x4__coefficient_2__makes_correct_regularization_matrix(self):
+            def test__1_b_matrix_size_4x4__coefficient_2__makes_correct_regularization_matrix(self):
                 pix_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
 
                 test_b_matrix = 2.0 * np.array([[-1, 1, 0, 0],
@@ -450,7 +424,7 @@ class TestPixelization:
                 assert (regularization_matrix == test_regularization_matrix).all()
                 assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
-            def test__1_B_matrix_size_9x9__coefficient_2__makes_correct_regularization_matrix(self):
+            def test__1_b_matrix_size_9x9__coefficient_2__makes_correct_regularization_matrix(self):
                 pix_neighbors = [[1, 3], [4, 2, 0], [1, 5], [4, 6, 0], [7, 1, 5, 3], [4, 2, 8], [7, 3], [4, 8, 6],
                                  [7, 5]]
 
@@ -488,7 +462,7 @@ class TestPixelization:
 
         class TestWeightedRegularization:
 
-            def test__1_B_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
+            def test__1_b_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
                 pix_neighbors = np.array([[2], [3], [0], [1]])
 
                 test_b_matrix = np.array([[-1, 0, 1, 0],
@@ -498,7 +472,7 @@ class TestPixelization:
 
                 test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
-                regularization_weights = np.ones((4))
+                regularization_weights = np.ones((4,))
 
                 pix = pixelization.Pixelization(pixels=4)
                 regularization_matrix = pix.weighted_regularization_matrix_from_pix_neighbors(regularization_weights,
@@ -506,12 +480,12 @@ class TestPixelization:
 
                 assert (regularization_matrix == test_regularization_matrix).all()
 
-            def test__2_B_matrices_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
+            def test__2_b_matrices_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
                 # Here, we define the pix_neighbors first here and make the B matrices based on them.
 
-                # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we don't
-                # have to have as many B matrices as we do the pix pixel with the most  vertices. We can combine the
-                # rows of each B matrix wherever we like ;0.
+                # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we 
+                # don't have to have as many B matrices as we do the pix pixel with the most  vertices. We can combine 
+                # the rows of each B matrix wherever we like ;0.
 
                 pix_neighbors = np.array([[1, 2], [0], [0]])
 
@@ -537,7 +511,7 @@ class TestPixelization:
 
                 assert (regularization_matrix == test_regularization_matrix).all()
 
-            def test__2_B_matrices_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
+            def test__2_b_matrices_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
                 test_b_matrix_1 = np.array([[-1, 1, 0, 0],
                                             [0, -1, 1, 0],
                                             [0, 0, -1, 1],
@@ -563,9 +537,9 @@ class TestPixelization:
 
                 assert (regularization_matrix == test_regularization_matrix).all()
 
-            def test__4_B_matrices_size_6x6__weights_all_1s__makes_correct_regularization_matrix(self):
-                # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a lot less
-                # Stressful.
+            def test__4_b_matrices_size_6x6__weights_all_1s__makes_correct_regularization_matrix(self):
+                # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a 
+                # lot less Stressful.
 
                 pix_neighbors = [[2, 3, 4], [2, 5], [0, 1, 3, 5], [0, 2], [5, 0], [4, 1, 2]]
 
@@ -616,7 +590,7 @@ class TestPixelization:
 
                 assert (regularization_matrix == test_regularization_matrix).all()
 
-            def test__1_B_matrix_size_3x3_variables_regularization_weights__makes_correct_regularization_matrix(self):
+            def test__1_b_matrix_size_3x3_variables_regularization_weights__makes_correct_regularization_matrix(self):
                 # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
                 # This means our B matrix is:
@@ -645,7 +619,7 @@ class TestPixelization:
 
                 assert (regularization_matrix == test_regularization_matrix).all()
 
-            def test__2_B_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
+            def test__2_b_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
                 # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
                 # This means our B matrix is:
@@ -685,7 +659,8 @@ class TestPixelization:
                 pix_neighbors = [[1, 4], [2, 4, 0], [3, 4, 5, 1], [5, 2], [5, 0, 1, 2], [2, 3, 4]]
                 regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-                # I'm inputting the regularizationo weights directly thiss time, as it'd be a pain to multiply with a loop.
+                # I'm inputting the regularizationo weights directly thiss time, as it'd be a pain to multiply with a 
+                # loop.
 
                 test_b_matrix_1 = np.array([[-1, 1, 0, 0, 0, 0],  # Pair 1
                                             [-1, 0, 0, 0, 1, 0],  # Pair 2
@@ -722,8 +697,7 @@ class TestPixelization:
                 test_regularization_matrix_3 = np.matmul(test_b_matrix_3.T, test_b_matrix_3)
                 test_regularization_matrix_4 = np.matmul(test_b_matrix_4.T, test_b_matrix_4)
 
-                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + \
-                                             test_regularization_matrix_3 + test_regularization_matrix_4
+                test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + test_regularization_matrix_3 + test_regularization_matrix_4
 
                 pix = pixelization.Pixelization(pixels=6)
                 regularization_matrix = pix.weighted_regularization_matrix_from_pix_neighbors(regularization_weights,
@@ -1156,7 +1130,8 @@ class TestRectangularPixelization:
 
             # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
             # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
-            # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the sub-grid.
+            # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the 
+            # sub-grid.
             pix_sub_grid = np.array([[-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0],
                                      [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
                                      [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
@@ -1540,7 +1515,7 @@ class TestClusterPixelization:
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.inversion_from_pix_grids(grids)
+            pix_matrices = pix.inversion_from_pix_grids(grids, sparse_mask)
 
             assert (pix_matrices.mapping == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                       [1.0, 0.0, 0.0, 0.0, 0.0],
@@ -1587,7 +1562,7 @@ class TestClusterPixelization:
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.inversion_from_pix_grids(grids)
+            pix_matrices = pix.inversion_from_pix_grids(grids, sparse_mask)
 
             assert (pix_matrices.mapping == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
                                                       [0.0, 0.75, 0.25, 0.0, 0.0],
@@ -1683,7 +1658,7 @@ class TestAmorphousPixelization:
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.inversion_from_pix_grids(grids)
+            pix_matrices = pix.inversion_from_pix_grids(grids, sparse_mask)
 
             assert np.sum(pix_matrices.mapping) == 5.0
             assert np.sum(pix_matrices.mapping[:, 0]) == 1.0
@@ -1725,7 +1700,7 @@ class TestAmorphousPixelization:
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.inversion_from_pix_grids(grids)
+            pix_matrices = pix.inversion_from_pix_grids(grids, sparse_mask)
 
             assert np.sum(pix_matrices.mapping) == 15.0
 
