@@ -1,4 +1,5 @@
 from src.pixelization import pixelization
+from src.imaging import mask
 
 import pytest
 import numpy as np
@@ -40,7 +41,7 @@ class MockGrids(object):
         self.image_pixels = image_pixels
         self.sub_grid_size = sub_grid_size
         self.sub_grid_fraction = (1.0 / sub_grid_size ** 2.0)
-        self.image_coords = image_coords
+        self.image_coords = mask.CoordinateGrid(image_coords)
         self.sub_grid_coords = sub_grid_coords
 
     # def map_data_sub_to_image(self, data):
