@@ -28,7 +28,6 @@ class Tracer(object):
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
-
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift, source_galaxies[0].redshift],
                                            cosmology=cosmology)
@@ -222,6 +221,7 @@ class Plane(object):
         """
         self.galaxies = galaxies
         self.coordinates_collection = coordinates_collection
+
         if compute_deflections:
             def calculate_deflections(grid):
                 return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(grid), galaxies))
@@ -277,4 +277,6 @@ def traced_collection_for_deflections(coordinates_collection, deflections):
     def subtract_scaled_deflections(grid, scaled_deflection):
         return np.subtract(grid, scaled_deflection)
 
-    return coordinates_collection.map_function(subtract_scaled_deflections, deflections)
+    result = coordinates_collection.map_function(subtract_scaled_deflections, deflections)
+
+    return result
