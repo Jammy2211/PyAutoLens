@@ -2,6 +2,7 @@ import sys
 
 sys.path.append("../../")
 import numpy as np
+from src.imaging import image
 from src.analysis import galaxy
 from src.profiles import mass_profiles
 import time
@@ -15,9 +16,9 @@ def load(name):
     return np.load("{}/{}.npy".format(path, name))
 
 
-grid = load("grid")
-deflection_result = load("deflection_result")
-transformed_coordinates = load("transformed_coords")
+grid = load("deflection_data/grid")
+deflection_result = load("deflection_data/deflection_result")
+transformed_coordinates = load("deflection_data/transformed_coords")
 
 # print(transformed_coordinates)
 
