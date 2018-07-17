@@ -315,7 +315,9 @@ class RectangularPixelization(Pixelization):
 
         return grid_to_pix
 
-    def inversion_from_pix_grids(self, grids):
+    # TODO : RectangularPixelization doesnt need sparse mask, but equivalent functions elsewhere do. Change to *kwrgs?
+
+    def inversion_from_pix_grids(self, grids, sparse_mask=None):
         """
         Compute the pixelization matrices of the rectangular pixelization by following these steps:
 
