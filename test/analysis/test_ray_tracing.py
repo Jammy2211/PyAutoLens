@@ -605,7 +605,7 @@ class TestMultiTracer(object):
 
     class TestImageFromGalaxies:
 
-        def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, all_grids, sparse_mask):
+        def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, all_grids):
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                                      sersic_index=4.0)
 
@@ -615,7 +615,7 @@ class TestMultiTracer(object):
 
             ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                                 cosmology=cosmo.Planck15)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(sparse_mask)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             plane_0 = ray_tracing.Plane(galaxies=[g0], coordinates_collection=all_grids, compute_deflections=True)
             plane_1 = ray_tracing.Plane(galaxies=[g1], coordinates_collection=all_grids, compute_deflections=True)
@@ -639,15 +639,15 @@ class TestMultiTracer(object):
 
             ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                                 cosmology=cosmo.Planck15)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(sparse_mask)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             plane_0 = ray_trace.planes[0]
             plane_1 = ray_trace.planes[1]
             plane_2 = ray_trace.planes[2]
 
-            plane_image = (plane_0.generate_image_of_galaxy_light_profiles(sparse_mask) +
-                           plane_1.generate_image_of_galaxy_light_profiles(sparse_mask) +
-                           plane_2.generate_image_of_galaxy_light_profiles(sparse_mask))
+            plane_image = (plane_0.generate_image_of_galaxy_light_profiles() +
+                           plane_1.generate_image_of_galaxy_light_profiles() +
+                           plane_2.generate_image_of_galaxy_light_profiles())
 
             assert (plane_image == ray_trace_image).all()
 
