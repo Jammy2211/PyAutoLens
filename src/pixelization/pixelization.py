@@ -63,7 +63,7 @@ class Pixelization(object):
 
         sub_grid = grids.sub_grid_coords
 
-        mapping_matrix = np.zeros((sub_grid.image_pixels, self.pixels))
+        mapping_matrix = np.zeros((grids.image_coords.no_pixels, self.pixels))
 
         for sub_index in range(sub_grid.sub_pixels):
             mapping_matrix[sub_grid.sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid.sub_grid_fraction
