@@ -41,8 +41,13 @@ def make_all_grids():
     return all_grids
 
 
-# @pytest.fixture(name="mapping")
-# def make_mapping():
+@pytest.fixture(name="sparse_mask")
+def make_sparse_mask():
+    return mask.SparseMask(np.array([[0, 0]]), 1)
+
+
+# @pytest.fixture(name="sparse_mask")
+# def make_sparse_mask():
 #     return grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=np.array([[1, 1]]),
 #                              sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0]))
 
@@ -87,7 +92,7 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def inversion_from_pix_grids(self, grids, mapping):
+    def inversion_from_pix_grids(self, grids, sparse_mask):
         return self.value
 
 
@@ -385,34 +390,34 @@ class TestTracer(object):
 
     class TestPixelizationFromGalaxy:
 
-        def test__no_galaxies_in_plane__returns_none(self, all_grids, mapping):
+        def test__no_galaxies_in_plane__returns_none(self, all_grids, sparse_mask):
             galaxy_no_pix = galaxy.Galaxy()
 
             tracing = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_no_pix], image_plane_grids=all_grids)
 
-            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(sparse_mask)
 
             assert pix_matrix is None
 
-        def test__image_galaxy_has_pixelization__still_returns_none(self, all_grids, mapping):
+        def test__image_galaxy_has_pixelization__still_returns_none(self, all_grids, sparse_mask):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
 
             tracing = ray_tracing.Tracer(lens_galaxies=[galaxy_pix], source_galaxies=[galaxy_no_pix],
                                          image_plane_grids=all_grids)
 
-            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(sparse_mask)
 
             assert pix_matrix is None
 
-        def test__source_galaxy_has_pixelization__returns_pixelization_matrix(self, all_grids, mapping):
+        def test__source_galaxy_has_pixelization__returns_pixelization_matrix(self, all_grids, sparse_mask):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
 
             tracing = ray_tracing.Tracer(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
                                          image_plane_grids=all_grids)
 
-            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(sparse_mask)
 
             assert pix_matrix == 1
 
@@ -600,7 +605,7 @@ class TestMultiTracer(object):
 
     class TestImageFromGalaxies:
 
-        def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, all_grids, mapping):
+        def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, all_grids, sparse_mask):
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                                      sersic_index=4.0)
 
@@ -610,7 +615,7 @@ class TestMultiTracer(object):
 
             ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                                 cosmology=cosmo.Planck15)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(sparse_mask)
 
             plane_0 = ray_tracing.Plane(galaxies=[g0], coordinates_collection=all_grids, compute_deflections=True)
             plane_1 = ray_tracing.Plane(galaxies=[g1], coordinates_collection=all_grids, compute_deflections=True)
@@ -622,7 +627,7 @@ class TestMultiTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids, mapping):
+        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids, sparse_mask):
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                                      sersic_index=4.0)
 
@@ -634,15 +639,15 @@ class TestMultiTracer(object):
 
             ray_trace = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                                 cosmology=cosmo.Planck15)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(sparse_mask)
 
             plane_0 = ray_trace.planes[0]
             plane_1 = ray_trace.planes[1]
             plane_2 = ray_trace.planes[2]
 
-            plane_image = (plane_0.generate_image_of_galaxy_light_profiles(mapping) +
-                           plane_1.generate_image_of_galaxy_light_profiles(mapping) +
-                           plane_2.generate_image_of_galaxy_light_profiles(mapping))
+            plane_image = (plane_0.generate_image_of_galaxy_light_profiles(sparse_mask) +
+                           plane_1.generate_image_of_galaxy_light_profiles(sparse_mask) +
+                           plane_2.generate_image_of_galaxy_light_profiles(sparse_mask))
 
             assert (plane_image == ray_trace_image).all()
 
@@ -696,7 +701,7 @@ class TestMultiTracer(object):
 
     class TestPixelizationFromGalaxy:
 
-        def test__3_galaxies__non_have_pixelization__returns_none_x3(self, all_grids, mapping):
+        def test__3_galaxies__non_have_pixelization__returns_none_x3(self, all_grids, sparse_mask):
             sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, mass_profile=sis)
@@ -706,11 +711,11 @@ class TestMultiTracer(object):
             tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                               cosmology=cosmo.Planck15)
 
-            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(sparse_mask)
 
             assert pix_matrix == [None, None, None]
 
-        def test__3_galaxies__1_has_pixelization__returns_none_x2_and_pixelization(self, all_grids, mapping):
+        def test__3_galaxies__1_has_pixelization__returns_none_x2_and_pixelization(self, all_grids, sparse_mask):
             sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, mass_profile=sis)
@@ -720,11 +725,11 @@ class TestMultiTracer(object):
             tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                               cosmology=cosmo.Planck15)
 
-            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(sparse_mask)
 
             assert pix_matrix == [None, 1, None]
 
-        def test__3_galaxies__all_have_pixelization__returns_pixelizations(self, all_grids, mapping):
+        def test__3_galaxies__all_have_pixelization__returns_pixelizations(self, all_grids, sparse_mask):
             sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, pixelization=MockPixelization(value=0.5), mass_profile=sis)
@@ -734,7 +739,7 @@ class TestMultiTracer(object):
             tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=all_grids,
                                               cosmology=cosmo.Planck15)
 
-            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(mapping)
+            pix_matrix = tracing.generate_pixelization_matrices_of_galaxies(sparse_mask)
 
             assert pix_matrix == [0.5, 1, 2]
 
@@ -836,7 +841,7 @@ class TestPlane(object):
 
     class TestImageFromGalaxies:
 
-        def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids, mapping,
+        def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids, sparse_mask,
                                                                                        galaxy_light_sersic):
             sersic = galaxy_light_sersic.light_profiles[0]
 
@@ -864,7 +869,7 @@ class TestPlane(object):
         #                   [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]]), None,
         #         sub_grid_size=2)
         #
-        #     # mapping = mask.GridMapping(image_shape=(3, 3), image_pixels=2,
+        #     # sparse_mask = mask.GridMapping(image_shape=(3, 3), image_pixels=2,
         #     #                            data_to_image=np.array([[1, 1], [2, 2]]),
         #     #                            sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0, 1, 1, 1, 1]))
         #
@@ -900,7 +905,7 @@ class TestPlane(object):
         #                   [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]]), None,
         #         sub_grid_size=2)
         #
-        #     # mapping = mask.GridMapping(image_shape=(3, 3), image_pixels=2,
+        #     # sparse_mask = mask.GridMapping(image_shape=(3, 3), image_pixels=2,
         #     #                            data_to_image=np.array([[1, 1], [2, 2]]),
         #     #                            sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0, 1, 1, 1, 1]))
         #
@@ -998,39 +1003,39 @@ class TestPlane(object):
 
     class TestPixelizationFromGalaxies:
 
-        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, all_grids, mapping):
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, all_grids, sparse_mask):
             galaxy_no_pix = galaxy.Galaxy()
 
             plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], coordinates_collection=all_grids)
 
-            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(sparse_mask)
 
             assert pix_matrix is None
 
-        def test__1_galaxy_in_plane__it_has_pixelization__extracts_pixelization_matrix(self, all_grids, mapping):
+        def test__1_galaxy_in_plane__it_has_pixelization__extracts_pixelization_matrix(self, all_grids, sparse_mask):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
 
             plane = ray_tracing.Plane(galaxies=[galaxy_pix], coordinates_collection=all_grids)
 
-            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(sparse_mask)
 
             assert pix_matrix == 1
 
-        def test__2_galaxies_in_plane__1_has_pixelization__extracts_pixelization_matrix(self, all_grids, mapping):
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_pixelization_matrix(self, all_grids, sparse_mask):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
 
             plane = ray_tracing.Plane(galaxies=[galaxy_no_pix, galaxy_pix], coordinates_collection=all_grids)
 
-            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
+            pix_matrix = plane.generate_pixelization_matrices_of_galaxy(sparse_mask)
 
             assert pix_matrix == 1
 
-        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, all_grids, mapping):
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, all_grids, sparse_mask):
             galaxy_pix_0 = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_pix_1 = galaxy.Galaxy(pixelization=MockPixelization(value=2))
 
             plane = ray_tracing.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], coordinates_collection=all_grids)
 
             with pytest.raises(exc.PixelizationException):
-                plane.generate_pixelization_matrices_of_galaxy(mapping)
+                plane.generate_pixelization_matrices_of_galaxy(sparse_mask)
