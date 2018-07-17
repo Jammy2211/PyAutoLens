@@ -367,6 +367,9 @@ class CoordinateGrid(np.ndarray):
     def no_pixels(self):
         return self.shape[0]
 
+    def __new__(cls, arr, *args, **kwargs):
+        return arr.view(cls)
+
 
 class SubCoordinateGrid(CoordinateGrid):
     def __new__(cls, mask, sub_grid_size=1, **kwargs):
