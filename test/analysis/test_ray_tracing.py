@@ -817,8 +817,7 @@ class TestPlane(object):
                                  profile_intensity_2 +
                                  profile_intensity_3) / 4
 
-            galaxy_intensity = all_grids.sub_grid_coords.intensities_via_grid(galaxies=[galaxy_light_sersic],
-                                                                              mapping=mapping)
+            galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords, galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
             image = plane.generate_image_of_galaxy_light_profiles()
@@ -852,8 +851,8 @@ class TestPlane(object):
         #     profile_intensity_image_1 = (profile_intensity_4 + profile_intensity_5 + profile_intensity_6 +
         #                                  profile_intensity_7) / 4
         #
-        #     galaxy_intensity = all_grids.sub_grid_coords.intensities_via_grid(galaxies=[galaxy_light_sersic],
-        #                                                                       mapping=mapping)
+        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords, galaxies=[galaxy_light_sersic],
+        #                                                                       )
         #
         #     plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
         #     image = plane.generate_image_of_galaxy_light_profiles()
@@ -888,10 +887,10 @@ class TestPlane(object):
         #     profile_intensity_image_1 = (profile_intensity_4 + profile_intensity_5 + profile_intensity_6 +
         #                                  profile_intensity_7) / 4
         #
-        #     galaxy_intensity = all_grids.sub_grid_coords.intensities_via_grid(galaxies=[galaxy_light_sersic,
+        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords, galaxies=[galaxy_light_sersic,
         #                                                                                 galaxy_light_sersic,
         #                                                                                 galaxy_light_sersic],
-        #                                                                       mapping=mapping)
+        #                                                                       )
         #
         #     plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic, galaxy_light_sersic, galaxy_light_sersic],
         #                               coordinates_collection=all_grids)
@@ -910,7 +909,7 @@ class TestPlane(object):
             sersic = galaxy_light_sersic.light_profiles[0]
             profile_intensity = sersic.intensity_at_coordinates(all_grids.blurring_coords[0])
 
-            blurring_galaxy_intensity = all_grids.blurring_coords.intensities_via_grid(galaxies=[galaxy_light_sersic])
+            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring_coords, galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
             blurring_image = plane.generate_blurring_image_of_galaxy_light_profiles()
@@ -928,7 +927,7 @@ class TestPlane(object):
             profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.blurring_coords[2])
             profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.blurring_coords[3])
 
-            blurring_galaxy_intensity = all_grids.blurring_coords.intensities_via_grid(galaxies=[galaxy_light_sersic])
+            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring_coords, galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
             blurring_image = plane.generate_blurring_image_of_galaxy_light_profiles()
@@ -949,7 +948,7 @@ class TestPlane(object):
             profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.blurring_coords[2])
             profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.blurring_coords[3])
 
-            blurring_galaxy_intensity = all_grids.blurring_coords.intensities_via_grid(galaxies=[galaxy_light_sersic])
+            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring_coords, galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic, galaxy_light_sersic, galaxy_light_sersic],
                                       coordinates_collection=all_grids)
