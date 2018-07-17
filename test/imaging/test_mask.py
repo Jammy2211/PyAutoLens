@@ -1581,7 +1581,7 @@ class TestMemoizer(object):
 
 @pytest.fixture(name="coordinate_collection")
 def make_coordinate_collection(centre_mask):
-    return mask.CoordsCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
+    return mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
 
 
 class TestCoordinateCollection(object):
@@ -1605,7 +1605,7 @@ class TestCoordinateCollection(object):
             return np.add(1, coords)
 
         new_collection = coordinate_collection.apply_function(add_one)
-        assert isinstance(new_collection, mask.CoordsCollection)
+        assert isinstance(new_collection, mask.CoordinateCollection)
         assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
         np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(1, np.array([[-0.16666667, -0.16666667],
                                                                                            [-0.16666667, 0.16666667],
@@ -1626,7 +1626,7 @@ class TestCoordinateCollection(object):
 
         new_collection = coordinate_collection.map_function(add_number, [1, 2, 3])
 
-        assert isinstance(new_collection, mask.CoordsCollection)
+        assert isinstance(new_collection, mask.CoordinateCollection)
         assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
         np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(2, np.array([[-0.16666667, -0.16666667],
                                                                                            [-0.16666667, 0.16666667],
