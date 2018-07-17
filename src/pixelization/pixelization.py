@@ -428,9 +428,9 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        image_to_pix = np.zeros((grids.sub_grid_coords.shape[0]), dtype=int)
+        image_to_pix = np.zeros((grids.image_coords.shape[0]), dtype=int)
 
-        for image_index, pix_coordinate in enumerate(grids.sub_grid_coords):
+        for image_index, pix_coordinate in enumerate(grids.image_coords):
             nearest_cluster = sparse_mask.image_to_sparse[image_index]
 
             image_to_pix[image_index] = self.pair_image_and_pix(pix_coordinate, nearest_cluster,
