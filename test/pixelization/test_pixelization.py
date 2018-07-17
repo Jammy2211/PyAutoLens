@@ -22,11 +22,16 @@ def grid_to_pix_pixels_via_nearest_neighbour(grid, pix_centers):
     return image_to_pix
 
 
-class MockSubGridCoords(object):
+class MockSubGridCoords(np.ndarray):
+    def __new__(cls, sub_grid_coords, *args, **kwargs):
+        return sub_grid_coords.view(cls)
+
     def __init__(self, sub_grid_coords, sub_to_image):
+        # noinspection PyArgumentList
+        super().__init__()
         self.sub_grid_coords = sub_grid_coords
         self.sub_to_image = sub_to_image
-        self.sub_pixels = sub_to_image.shape[0]
+        self.no_pixels = sub_to_image.shape[0]
 
 
 class MockGrids(object):
@@ -1418,8 +1423,8 @@ class TestVoronoiPixelization:
             sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            grids = MockGrids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
-                              sub_grid_coords=[])
+            grids = MockGrids(image_pixels=3, sub_grid_size=1, image_coords=pix_grid,
+                              sub_grid_coords=MockSubGridCoords([], sub_to_image))
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.voronoi_from_cluster_grid(pix_centers)
@@ -1452,8 +1457,8 @@ class TestVoronoiPixelization:
             sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
-            grids = MockGrids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=[],
-                              sub_grid_coords=pix_sub_grid)
+            grids = MockGrids(image_pixels=3, sub_grid_size=1, image_coords=[],
+                              sub_grid_coords=MockSubGridCoords(pix_sub_grid, sub_to_image))
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.voronoi_from_cluster_grid(pix_centers)
