@@ -372,7 +372,16 @@ class CoordinateGrid(np.ndarray):
 
 
 class SubCoordinateGrid(CoordinateGrid):
-    def __new__(cls, mask, sub_grid_size=1, **kwargs):
+    def __init__(self, array, mask, sub_grid_size=1):
+        # noinspection PyArgumentList
+        super(SubCoordinateGrid, self).__init__()
+        self.sub_grid_size = sub_grid_size
+        self.sub_grid_length = int(sub_grid_size ** 2.0)
+        self.sub_grid_fraction = 1.0 / self.sub_grid_length
+        self.mask = mask
+
+    @classmethod
+    def from_mask(cls, mask, sub_grid_size=1):
         sub_pixel_count = 0
 
         grid = np.zeros(shape=(mask.pixels_in_mask * sub_grid_size ** 2, 2))
@@ -389,15 +398,7 @@ class SubCoordinateGrid(CoordinateGrid):
                             grid[sub_pixel_count, 1] = mask.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
 
                             sub_pixel_count += 1
-        return grid.view(cls)
-
-    def __init__(self, mask, sub_grid_size=1):
-        # noinspection PyArgumentList
-        super(SubCoordinateGrid, self).__init__()
-        self.sub_grid_size = sub_grid_size
-        self.sub_grid_length = int(sub_grid_size ** 2.0)
-        self.sub_grid_fraction = 1.0 / self.sub_grid_length
-        self.mask = mask
+        return SubCoordinateGrid(grid, mask, sub_grid_size=sub_grid_size)
 
     def sub_data_to_image(self, data):
         return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
@@ -432,7 +433,7 @@ class CoordinateCollection(object):
     @classmethod
     def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
         image_coords = mask.coordinate_grid
-        sub_grid_coords = SubCoordinateGrid(mask, subgrid_size)
+        sub_grid_coords = SubCoordinateGrid.from_mask(mask, subgrid_size)
         blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
         return CoordinateCollection(image_coords, sub_grid_coords, blurring_coords)
 
