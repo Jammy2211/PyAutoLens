@@ -315,7 +315,7 @@ class RectangularPixelization(Pixelization):
 
         return grid_to_pix
 
-    def inversion_from_pix_grids(self, grids):
+    def inversion_from_pix_grids(self, grids, _):
         """
         Compute the pixelization matrices of the rectangular pixelization by following these steps:
 
