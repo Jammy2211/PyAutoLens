@@ -34,10 +34,11 @@ def make_1x1_image():
 
 @pytest.fixture(name="image_2x2", scope='function')
 def make_2x2_image():
-    im = image.Image(np.array([[1.0, 1.0], [1.0, 1.0]]),
+    ones = np.ones((4, 4))
+    im = image.Image(ones,
                      psf=image.PSF(np.ones((3, 3)), 1),
-                     background_noise=np.array([[1.0, 1.0], [1.0, 1.0]]),
-                     effective_exposure_time=np.array([[1.0, 1.0], [1.0, 1.0]]))
+                     background_noise=ones,
+                     effective_exposure_time=ones)
 
     ma = mask.Mask(array=np.array([[True, True, True, True],
                                    [True, False, False, True],
@@ -48,11 +49,11 @@ def make_2x2_image():
 
 
 @pytest.fixture(name="fitter")
-def make_fitter(image_1x1, galaxy_light_sersic, no_galaxies):
+def make_fitter(image_2x2, galaxy_light_sersic, no_galaxies):
     ray_tracer = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
                                     image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
-                                        image_1x1.mask, 1, (3, 3)))
-    return fitting.Fitter(image_1x1, mask.SparseMask(image_1x1.mask, 1), ray_tracer)
+                                        image_2x2.mask, 1, (3, 3)))
+    return fitting.Fitter(image_2x2, mask.SparseMask(image_2x2.mask, 1), ray_tracer)
 
 
 class MockMapping(object):
