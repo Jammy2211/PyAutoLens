@@ -44,8 +44,8 @@ class Grids(object):
 
 class MockCluster(object):
 
-    def __init__(self, cluster_to_image, image_to_cluster):
-        """ The KMeans clustering used to derive an amorphous pixeliation uses a set of image-grid grid. For \
+    def __init__(self, sparse_to_image, image_to_sparse):
+        """ The KMeans clustering used to derive an amorphous pixelization uses a set of image-grid grid. For \
         high resolution imaging, the large number of grid makes KMeans clustering (unfeasibly) slow.
 
         Therefore, for efficiency, we define a 'clustering-grid', which is a sparsely sampled set of image-grid \
@@ -66,8 +66,8 @@ class MockCluster(object):
         *pixelization.sub_grid_to_pix_pixels_via_sparse_pairs*).
         """
 
-        self.cluster_to_image = cluster_to_image
-        self.image_to_cluster = image_to_cluster
+        self.sparse_to_image = sparse_to_image
+        self.image_to_sparse = image_to_sparse
 
 
 class MockGeometry(object):
@@ -1410,7 +1410,7 @@ class TestVoronoiPixelization:
             image_to_cluster = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
             cluster_to_image = np.array([0, 2, 6, 8])
             cluster_to_pix = np.array([0, 1, 2, 3])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
@@ -1444,7 +1444,7 @@ class TestVoronoiPixelization:
             image_to_cluster = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
             cluster_to_image = np.array([0, 2, 6, 8])
             cluster_to_pix = np.array([0, 1, 2, 3])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
             grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=[],
@@ -1470,7 +1470,7 @@ class TestClusterPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
                           sub_grid_coords=pix_sub_grid)
@@ -1497,7 +1497,7 @@ class TestClusterPixelization:
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
             cluster_to_image = np.array([1, 4, 7, 10, 13])
             image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                  [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -1547,7 +1547,7 @@ class TestClusterPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                      [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
@@ -1651,7 +1651,7 @@ class TestAmorphousPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
                           sub_grid_coords=pix_sub_grid)
@@ -1681,7 +1681,7 @@ class TestAmorphousPixelization:
         def test__15_grid__no_sub_grid__sets_up_correct_pix_matrices(self):
             cluster_to_image = np.array([1, 4, 7, 10, 13])
             image_to_cluster = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                  [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -1737,7 +1737,7 @@ class TestAmorphousPixelization:
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
-            sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
+            sparse_mask = MockCluster(sparse_to_image=cluster_to_image, image_to_sparse=image_to_cluster)
 
             pix_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                      [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
