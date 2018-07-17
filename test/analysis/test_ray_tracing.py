@@ -627,7 +627,7 @@ class TestMultiTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids, sparse_mask):
+        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids):
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                                      sersic_index=4.0)
 
@@ -841,7 +841,7 @@ class TestPlane(object):
 
     class TestImageFromGalaxies:
 
-        def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids, sparse_mask,
+        def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids,
                                                                                        galaxy_light_sersic):
             sersic = galaxy_light_sersic.light_profiles[0]
 
@@ -890,7 +890,8 @@ class TestPlane(object):
         #     profile_intensity_image_1 = (profile_intensity_4 + profile_intensity_5 + profile_intensity_6 +
         #                                  profile_intensity_7) / 4
         #
-        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords, galaxies=[galaxy_light_sersic],
+        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords,
+        # galaxies=[galaxy_light_sersic],
         #                                                                       )
         #
         #     plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
@@ -926,7 +927,8 @@ class TestPlane(object):
         #     profile_intensity_image_1 = (profile_intensity_4 + profile_intensity_5 + profile_intensity_6 +
         #                                  profile_intensity_7) / 4
         #
-        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords, galaxies=[galaxy_light_sersic,
+        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords,
+        # galaxies=[galaxy_light_sersic,
         #                                                                                 galaxy_light_sersic,
         #                                                                                 galaxy_light_sersic],
         #                                                                       )
