@@ -214,38 +214,50 @@ class TestTracer(object):
             ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.grids.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                                 1e-3)
             assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert ray_trace.source_plane.grids.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                                  1e-3)
 
         def test__image_grid__sis_lens__image_coordinates_are_grid_and_source_plane_is_deflected(self, all_grids,
                                                                                                  galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=galaxy_mass_sis,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.grids.image == pytest.approx(np.array([[1.0, 1.0]]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image_coords == pytest.approx(np.array([[1.0, 1.0]]),
+                                                                                              1e-3)
             assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.source_plane.grids.image == pytest.approx(np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.image_coords == pytest.approx(
+                np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
 
         def test__image_grid__2_sis_lenses__same_as_above_but_deflections_double(self, all_grids, galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis, galaxy_mass_sis],
                                            source_galaxies=galaxy_mass_sis,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.grids.image == pytest.approx(np.array([[1.0, 1.0]]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image_coords == pytest.approx(np.array([[1.0, 1.0]]),
+                                                                                              1e-3)
             assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([1.414, 1.414]), 1e-3)
-            assert ray_trace.source_plane.grids.image == pytest.approx(np.array([[1.0 - 1.414, 1.0 - 1.414]]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.image_coords == pytest.approx(
+                np.array([[1.0 - 1.414, 1.0 - 1.414]]), 1e-3)
 
         def test__all_grids__sis_lens__planes_setup_correctly(self, all_grids, galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=galaxy_mass_sis,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.grids.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert ray_trace.image_plane.grids.sub_grid_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert ray_trace.image_plane.grids.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.grids.sub_grid_coords[2] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert ray_trace.image_plane.grids.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.grids.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                                 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(
+                np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(
+                np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(
+                np.array([1.0, 1.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(
+                np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.blurring_coords[0] == pytest.approx(
+                np.array([1.0, 0.0]), 1e-3)
 
             assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert ray_trace.image_plane.deflections.sub_grid_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
@@ -254,15 +266,19 @@ class TestTracer(object):
             assert ray_trace.image_plane.deflections.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
             assert ray_trace.image_plane.deflections.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
-            assert ray_trace.source_plane.grids.image_coords[0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]),
-                                                                                 1e-3)
-            assert ray_trace.source_plane.grids.sub_grid_coords[0] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.image_coords[0] == pytest.approx(
+                np.array([1.0 - 0.707, 1.0 - 0.707]),
+                1e-3)
+            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
-            assert ray_trace.source_plane.grids.sub_grid_coords[1] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert ray_trace.source_plane.grids.sub_grid_coords[2] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
-            assert ray_trace.source_plane.grids.sub_grid_coords[3] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert ray_trace.source_plane.grids.blurring_coords[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.blurring_coords[0] == pytest.approx(
+                np.array([0.0, 0.0]), 1e-3)
 
     class TestImageFromGalaxies:
 
@@ -298,7 +314,6 @@ class TestTracer(object):
 
         def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids,
                                                                                         galaxy_light_and_mass):
-
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], coordinates_collection=all_grids,
                                             compute_deflections=True)
             deflections_grid = ray_tracing.deflections_for_coordinates_collection(all_grids,
