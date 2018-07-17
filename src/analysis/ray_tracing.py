@@ -248,3 +248,12 @@ class Plane(object):
             return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.coordinates_collection, sparse_mask)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
+
+
+def intensities_via_sub_grid(sub_coords_grid, galaxies):
+    sub_intensities = sum(map(lambda g: g.intensity_from_grid(sub_coords_grid), galaxies))
+    return sub_coords_grid.sub_data_to_image(sub_intensities)
+
+
+def intensities_via_grid(coords_grid, galaxies):
+    return sum(map(lambda g: g.intensity_from_grid(coords_grid), galaxies))
