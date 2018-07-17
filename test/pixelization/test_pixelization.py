@@ -50,16 +50,17 @@ def grid_to_pix_pixels_via_nearest_neighbour(grid, pix_centers):
 
 class Grids(object):
 
-    def __init__(self, image_pixels, sub_grid_size, sub_to_image, cluster=None):
+    def __init__(self, image_pixels, sub_grid_size, sub_to_image, image_coords, sub_grid_coords):
         self.image_pixels = image_pixels
         self.sub_pixels = sub_to_image.shape[0]
         self.sub_grid_size = sub_grid_size
         self.sub_grid_fraction = (1.0 / sub_grid_size ** 2.0)
         self.sub_to_image = sub_to_image
-        self.cluster = cluster
+        self.image_coords = image_coords
+        self.sub_grid_coords = sub_grid_coords
 
     def map_data_sub_to_image(self, data):
-        data_image = np.zeros((self.image_pixels))
+        data_image = np.zeros((self.image_pixels,))
 
         for sub_pixel in range(self.sub_pixels):
             data_image[self.sub_to_image[sub_pixel]] += data[sub_pixel]
@@ -113,7 +114,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2])
             sub_to_image = np.array([0, 1, 2])
 
-            grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=[],
+                          sub_grid_coords=[])
 
             pix = pixelization.Pixelization(pixels=6)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -126,7 +128,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2, 7, 6])
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
-            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=[],
+                          sub_grid_coords=[])
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -142,7 +145,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, image_coords=[],
+                          sub_grid_coords=[])
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -158,7 +162,8 @@ class TestPixelization:
             sub_to_pix = np.array([0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, image_coords=[],
+                          sub_grid_coords=[])
 
             pix = pixelization.Pixelization(pixels=8)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -179,7 +184,8 @@ class TestPixelization:
                                      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
-            grids = Grids(image_pixels=3, sub_grid_size=4, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=3, sub_grid_size=4, sub_to_image=sub_to_image, image_coords=[],
+                          sub_grid_coords=[])
 
             pix = pixelization.Pixelization(pixels=6)
             mapping_matrix = pix.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
@@ -1058,7 +1064,8 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
-            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             # There is no sub-grid, so our sub_grid are just the image grid (note the NumPy weighted_data structure
             # ensures this has no sub-gridding)
@@ -1106,7 +1113,8 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-            grids = Grids(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.RectangularPixelization(shape=(3, 3), regularization_coefficients=(1.0,))
 
@@ -1157,7 +1165,8 @@ class TestRectangularPixelization:
 
             sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.RectangularPixelization(shape=(3, 3), regularization_coefficients=(1.0,))
 
@@ -1429,7 +1438,8 @@ class TestVoronoiPixelization:
             sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=[])
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.voronoi_from_cluster_grid(pix_centers)
@@ -1462,7 +1472,8 @@ class TestVoronoiPixelization:
             sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
-            grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=3, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=[],
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.VoronoiPixelization(pixels=6, regularization_coefficients=1.0)
             voronoi = pix.voronoi_from_cluster_grid(pix_centers)
@@ -1486,11 +1497,12 @@ class TestClusterPixelization:
             image_to_cluster = np.array([0, 1, 2, 3, 4])
             sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
-            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.inversion_from_pix_grids(grids)
+            pix_matrices = pix.inversion_from_pix_grids(grids, sparse_mask)
 
             assert (pix_matrices.mapping == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                       [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -1523,7 +1535,8 @@ class TestClusterPixelization:
                                      [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                      [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
-            grids = Grids(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
@@ -1569,7 +1582,8 @@ class TestClusterPixelization:
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.ClusterPixelization(pixels=5, regularization_coefficients=(1.0,))
 
@@ -1664,7 +1678,8 @@ class TestAmorphousPixelization:
             image_to_cluster = np.array([0, 1, 2, 3, 4])
             sparse_mask = MockCluster(cluster_to_image=cluster_to_image, image_to_cluster=image_to_cluster)
 
-            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
@@ -1705,7 +1720,8 @@ class TestAmorphousPixelization:
                                      [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-            grids = Grids(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=15, sub_grid_size=1, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
@@ -1756,11 +1772,12 @@ class TestAmorphousPixelization:
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image)
+            grids = Grids(image_pixels=5, sub_grid_size=2, sub_to_image=sub_to_image, image_coords=pix_grid,
+                          sub_grid_coords=pix_sub_grid)
 
             pix = pixelization.AmorphousPixelization(pixels=5, regularization_coefficients=(1.0,))
 
-            pix_matrices = pix.inversion_from_pix_grids(grids)
+            pix_matrices = pix.inversion_from_pix_grids(grids, sparse_mask)
 
             assert np.sum(pix_matrices.mapping) == 5.0
 
