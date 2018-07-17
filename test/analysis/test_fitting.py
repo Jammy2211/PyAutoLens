@@ -47,6 +47,14 @@ def make_2x2_image():
     return masked_image.MaskedImage(im, ma)
 
 
+@pytest.fixture(name="fitter")
+def make_fitter(image_1x1, galaxy_light_sersic, no_galaxies):
+    ray_tracer = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                    image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                                        image_1x1.mask, 1, (3, 3)))
+    return fitting.Fitter(image_1x1, mask.SparseMask(image_1x1.mask, 1), ray_tracer)
+
+
 class MockMapping(object):
 
     def __init__(self, image_pixels, sub_grid_size, sub_to_image):
@@ -408,60 +416,60 @@ class TestGenerateContributions:
 
 class TestGenerateScaledNoise:
 
-    def test__x1_hyper_galaxy__noise_factor_is_0__scaled_noise_is_input_noise(self):
+    def test__x1_hyper_galaxy__noise_factor_is_0__scaled_noise_is_input_noise(self, fitter):
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
-        noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
 
         contributions = np.array([1.0, 1.0, 2.0])
 
-        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
 
-        assert (scaled_noise == noise).all()
+        assert (scaled_noise == fitter.image.background_noise).all()
 
-    def test__x1_hyper_galaxy__noise_factor_and_power_are_1__scaled_noise_added_to_input_noise(self):
+    def test__x1_hyper_galaxy__noise_factor_and_power_are_1__scaled_noise_added_to_input_noise(self, fitter):
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)]
 
-        noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5])]
 
-        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.0, 2.0, 1.5])).all()
 
-    def test__x1_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
+    def test__x1_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self, fitter):
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)]
 
-        noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5])]
 
-        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.0, 2.0, 1.25])).all()
 
-    def test__x2_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
+    def test__x2_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self, fitter):
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           MockHyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
 
-        noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
 
-        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.5, 2.5, 1.75])).all()
 
-    def test__x2_hyper_galaxy__same_as_above_but_use_real_hyper_galaxy(self):
+    def test__x2_hyper_galaxy__same_as_above_but_use_real_hyper_galaxy(self, fitter):
         hyper_galaxies = [galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
 
-        noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
 
-        scaled_noise = fitting.generate_scaled_noise(noise, contributions, hyper_galaxies)
+        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.5, 2.5, 1.75])).all()
 
