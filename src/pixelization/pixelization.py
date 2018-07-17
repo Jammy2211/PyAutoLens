@@ -5,6 +5,7 @@ import scipy.spatial
 from src import exc
 from src.pixelization import covariance_matrix
 
+
 class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
@@ -33,10 +34,7 @@ class Pixelization(object):
         self.regularization_coefficients = regularization_coefficients
         self.pix_signal_scale = pix_signal_scale
 
-    def inversion_from_pix_grids(self, pix_grid, pix_sub_grid, mapping):
-        raise exc.PixelizationException('inversion_from_pix_grids must be over-riden by a Pixelization.')
-
-    def mapping_matrix_from_sub_to_pix(self, sub_to_pix, mapping):
+    def mapping_matrix_from_sub_to_pix(self, sub_to_pix, grids):
         """
         Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
         image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
@@ -56,17 +54,19 @@ class Pixelization(object):
 
         Parameters
         ----------
+        grids
         sub_to_pix : [int, int]
             The pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
             sub-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
-        mapping : auto_lens.imaging.grids.GridMapper
-            The mapping between different grids.
+
         """
 
-        mapping_matrix = np.zeros((mapping.image_pixels, self.pixels))
+        sub_grid = grids.sub_grid_coords
 
-        for sub_index in range(mapping.sub_pixels):
-            mapping_matrix[mapping.sub_to_image[sub_index], sub_to_pix[sub_index]] += mapping.sub_grid_fraction
+        mapping_matrix = np.zeros((sub_grid.image_pixels, self.pixels))
+
+        for sub_index in range(sub_grid.sub_pixels):
+            mapping_matrix[sub_grid.sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid.sub_grid_fraction
 
         return mapping_matrix
 
@@ -158,13 +158,10 @@ class Pixelization(object):
 
         return regularization_matrix
 
-    def neighbors_from_pixelization(self):
-        raise NotImplementedError("compute_pix_neighbors must be over-riden by a Pixelization")
-
 
 class RectangularPixelization(Pixelization):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -177,11 +174,11 @@ class RectangularPixelization(Pixelization):
         regularization_coefficients : (float,)
             The regularization coefficients used to smooth the pix reconstruction.
         """
-        
-        if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException('The recentgular pixelization must be at least dimensions 3x3')
 
-        super(RectangularPixelization, self).__init__(shape[0]*shape[1], regularization_coefficients)
+        if shape[0] <= 2 or shape[1] <= 2:
+            raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
+
+        super(RectangularPixelization, self).__init__(shape[0] * shape[1], regularization_coefficients)
 
         self.shape = shape
 
@@ -189,14 +186,11 @@ class RectangularPixelization(Pixelization):
 
         def __init__(self, y_min, y_max, x_min, x_max, y_pixel_scale, x_pixel_scale):
             """The geometry of a rectangular grid, defining where the grids top-left, top-right, bottom-left and \
-            bottom-right corners are in arc seconds. The arc-seconod size of each rectangula pixel is also computed.
+            bottom-right corners are in arc seconds. The arc-second size of each rectangular pixel is also computed.
 
             Parameters
             -----------
-            shape : (int, int)
-                The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
-            regularization_coefficients : (float,)
-                The regularization coefficients used to smooth the pix reconstruction.
+
             """
             self.y_min = y_min
             self.y_max = y_max
@@ -240,66 +234,65 @@ class RectangularPixelization(Pixelization):
         def compute_corner_neighbors(pix_neighbors):
 
             pix_neighbors[0] = [1, self.shape[1]]
-            pix_neighbors[self.shape[1]-1] = [self.shape[1]-2, self.shape[1]+self.shape[1]-1]
-            pix_neighbors[self.pixels-self.shape[1]] = [self.pixels-self.shape[1]*2 ,self.pixels-self.shape[1]+1]
-            pix_neighbors[self.pixels-1] = [self.pixels-self.shape[1]-1, self.pixels-2]
+            pix_neighbors[self.shape[1] - 1] = [self.shape[1] - 2, self.shape[1] + self.shape[1] - 1]
+            pix_neighbors[self.pixels - self.shape[1]] = [self.pixels - self.shape[1] * 2,
+                                                          self.pixels - self.shape[1] + 1]
+            pix_neighbors[self.pixels - 1] = [self.pixels - self.shape[1] - 1, self.pixels - 2]
 
             return pix_neighbors
 
         def compute_top_edge_neighbors(pix_neighbors):
 
-            for pix in range(1, self.shape[1]-1):
+            for pix in range(1, self.shape[1] - 1):
                 pixel_index = pix
-                pix_neighbors[pixel_index] = [pixel_index-1, pixel_index+1, pixel_index+self.shape[1]]
+                pix_neighbors[pixel_index] = [pixel_index - 1, pixel_index + 1, pixel_index + self.shape[1]]
 
             return pix_neighbors
 
         def compute_left_edge_neighbors(pix_neighbors):
 
-            for pix in range(1, self.shape[0]-1):
-                pixel_index = pix*self.shape[1]
-                pix_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index+1, pixel_index+self.shape[1]]
+            for pix in range(1, self.shape[0] - 1):
+                pixel_index = pix * self.shape[1]
+                pix_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index + 1, pixel_index + self.shape[1]]
 
             return pix_neighbors
 
         def compute_right_edge_neighbors(pix_neighbors):
 
             for pix in range(1, self.shape[0] - 1):
-                pixel_index = pix*self.shape[1] + self.shape[1] - 1
-                pix_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index-1, pixel_index+self.shape[1]]
-                
+                pixel_index = pix * self.shape[1] + self.shape[1] - 1
+                pix_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index - 1, pixel_index + self.shape[1]]
+
             return pix_neighbors
 
         def compute_bottom_edge_neighbors(pix_neighbors):
 
-            for pix in range(1, self.shape[1]-1):
+            for pix in range(1, self.shape[1] - 1):
                 pixel_index = self.pixels - pix - 1
-                pix_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index-1, pixel_index+1]
+                pix_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index - 1, pixel_index + 1]
 
             return pix_neighbors
-        
+
         def compute_central_neighbors(pix_neighbors):
-            
-            for y in range(1, self.shape[1]-1):
-                for x in range(1, self.shape[0]-1):
 
-
-                    pixel_index = x*self.shape[1] + y
-                    pix_neighbors[pixel_index] = [pixel_index-self.shape[1], pixel_index-1, pixel_index+1,
-                                                     pixel_index+self.shape[1]]
+            for y in range(1, self.shape[1] - 1):
+                for x in range(1, self.shape[0] - 1):
+                    pixel_index = x * self.shape[1] + y
+                    pix_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index - 1, pixel_index + 1,
+                                                  pixel_index + self.shape[1]]
 
             return pix_neighbors
 
-        pix_neighbors = [[] for _ in range(self.pixels)]
-    
-        pix_neighbors = compute_corner_neighbors(pix_neighbors)
-        pix_neighbors = compute_top_edge_neighbors(pix_neighbors)
-        pix_neighbors = compute_left_edge_neighbors(pix_neighbors)
-        pix_neighbors = compute_right_edge_neighbors(pix_neighbors)
-        pix_neighbors = compute_bottom_edge_neighbors(pix_neighbors)
-        pix_neighbors = compute_central_neighbors(pix_neighbors)
-        
-        return pix_neighbors
+        pixel_neighbors = [[] for _ in range(self.pixels)]
+
+        pixel_neighbors = compute_corner_neighbors(pixel_neighbors)
+        pixel_neighbors = compute_top_edge_neighbors(pixel_neighbors)
+        pixel_neighbors = compute_left_edge_neighbors(pixel_neighbors)
+        pixel_neighbors = compute_right_edge_neighbors(pixel_neighbors)
+        pixel_neighbors = compute_bottom_edge_neighbors(pixel_neighbors)
+        pixel_neighbors = compute_central_neighbors(pixel_neighbors)
+
+        return pixel_neighbors
 
     def compute_grid_to_pix(self, grid, geometry):
         """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
@@ -315,15 +308,14 @@ class RectangularPixelization(Pixelization):
         grid_to_pix = np.zeros(grid.shape[0], dtype='int')
 
         for index, pix_coordinate in enumerate(grid):
-
             y_pixel = geometry.arc_second_to_pixel_index_y(pix_coordinate[0])
             x_pixel = geometry.arc_second_to_pixel_index_x(pix_coordinate[1])
 
-            grid_to_pix[index] = y_pixel*self.shape[1] + x_pixel
+            grid_to_pix[index] = y_pixel * self.shape[1] + x_pixel
 
         return grid_to_pix
 
-    def inversion_from_pix_grids(self, pix_grid, pix_sub_grid, mapping):
+    def inversion_from_pix_grids(self, grids):
         """
         Compute the pixelization matrices of the rectangular pixelization by following these steps:
 
@@ -333,20 +325,15 @@ class RectangularPixelization(Pixelization):
 
         Parameters
         ----------
-        pix_grid : [[float, float]]
-            The x and y pix-grid.
-        pix_sub_grid : [[float, float]]
-            The x and y sub-grid.
-        mapper_cluster : auto_lens.imaging.grids.GridMapperCluster
-            The mapping between cluster-pixels and image / pixels.
+
         """
 
-        geometry = self.geometry_from_pix_sub_grid(pix_sub_grid)
+        geometry = self.geometry_from_pix_sub_grid(grids.sub_grid_coords)
         pix_neighbors = self.neighbors_from_pixelization()
-        image_to_pix = self.compute_grid_to_pix(pix_grid, geometry)
-        sub_to_pix = self.compute_grid_to_pix(pix_sub_grid, geometry)
+        image_to_pix = self.compute_grid_to_pix(grids.image_coords, geometry)
+        sub_to_pix = self.compute_grid_to_pix(grids.sub_grid_coords, geometry)
 
-        mapping =  self.mapping_matrix_from_sub_to_pix(sub_to_pix, mapping)
+        mapping = self.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
         regularization = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return Inversion(mapping, regularization, image_to_pix, sub_to_pix)
@@ -402,7 +389,7 @@ class VoronoiPixelization(Pixelization):
 
         return pix_neighbors
 
-    def image_to_pix_from_pixelization(self, pix_grid, pix_centers, pix_neighbors, mapping, cluster_to_pix):
+    def image_to_pix_from_pixelization(self, grids, pix_centers, pix_neighbors, cluster_to_pix, sparse_mask):
         """ Compute the mappings between a set of image pixels and pixels, using the image's traced \
         pix-plane grid and the pixel centers.
 
@@ -421,15 +408,14 @@ class VoronoiPixelization(Pixelization):
 
         Parameters
         ----------
-        pix_sub_grid : [[float, float]]
-            The x and y pix sub-grid grid which are to be matched with their closest pixels.
+
+        sparse_mask
+        grids
         pix_centers: [[float, float]]
             The coordinate of the center of every pixel.
         pix_neighbors : [[]]
             The neighboring pix_pixels of each pix_pixel, computed via the Voronoi grid_coords. \
             (e.g. if the fifth pix_pixel neighbors pix_pixels 7, 9 and 44, pix_neighbors[4] = [6, 8, 43])
-        mapping : auto_lens.imaging.grids.GridMapper
-            The properties and mappings between different grids.
         cluster_to_pix : [int]
             The mapping between every pixel and cluster-pixel (e.g. if the fifth pixel maps to \
             the 3rd cluster_pixel, cluster_to_pix[4] = 2).
@@ -442,18 +428,17 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        image_to_pix = np.zeros((pix_grid.shape[0]), dtype=int)
+        image_to_pix = np.zeros((grids.sub_grid_coords.shape[0]), dtype=int)
 
-        for image_index, pix_coordinate in enumerate(pix_grid):
-
-            nearest_cluster = mapping.cluster.image_to_cluster[image_index]
+        for image_index, pix_coordinate in enumerate(grids.sub_grid_coords):
+            nearest_cluster = sparse_mask.image_to_sparse[image_index]
 
             image_to_pix[image_index] = self.pair_image_and_pix(pix_coordinate, nearest_cluster,
                                                                 pix_centers, pix_neighbors, cluster_to_pix)
 
         return image_to_pix
 
-    def sub_to_pix_from_pixelization(self, pix_sub_grid, pix_centers, pix_neighbors, mapping, cluster_to_pix):
+    def sub_to_pix_from_pixelization(self, grids, pix_centers, pix_neighbors, cluster_to_pix, sparse_mask):
         """ Compute the mappings between a set of sub-image pixels and pixels, using the image's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
@@ -473,15 +458,12 @@ class VoronoiPixelization(Pixelization):
 
         Parameters
         ----------
-        pix_sub_grid : [[float, float]]
-            The x and y pix sub-grid grid which are to be matched with their closest pixels.
+
         pix_centers: [[float, float]]
             The coordinate of the center of every pixel.
         pix_neighbors : [[]]
             The neighboring pix_pixels of each pix_pixel, computed via the Voronoi grid_coords. \
             (e.g. if the fifth pix_pixel neighbors pix_pixels 7, 9 and 44, pix_neighbors[4] = [6, 8, 43])
-        mapping : auto_lens.imaging.grids.GridMapper
-            The properties and mappings between different grids.
         cluster_to_pix : [int]
             The mapping between every pixel and cluster-pixel (e.g. if the fifth pixel maps to \
             the 3rd cluster_pixel, pix_to_cluster[4] = 2).
@@ -494,11 +476,10 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        sub_to_pix = np.zeros((mapping.sub_pixels), dtype=int)
+        sub_to_pix = np.zeros((grids.sub_pixels,), dtype=int)
 
-        for sub_index, sub_coordinate in enumerate(pix_sub_grid):
-
-            nearest_cluster = mapping.cluster.image_to_cluster[mapping.sub_to_image[sub_index]]
+        for sub_index, sub_coordinate in enumerate(grids.sub_grid_coords):
+            nearest_cluster = sparse_mask.image_to_sparse[grids.sub_grid_coords.sub_to_image[sub_index]]
 
             sub_to_pix[sub_index] = self.pair_image_and_pix(sub_coordinate, nearest_cluster, pix_centers,
                                                             pix_neighbors, cluster_to_pix)
@@ -560,7 +541,7 @@ class VoronoiPixelization(Pixelization):
 
     def nearest_neighboring_pix_and_distance(self, coordinate, pix_centers, pix_neighbors):
         """For a given pix_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
-        our input coordinaates.
+        our input coordinates.
 
         Parameters
         ----------
@@ -568,7 +549,7 @@ class VoronoiPixelization(Pixelization):
             The x and y coordinate to be matched with the neighboring set of pix_pixels.
         pix_centers: [(float, float)
             The pix_pixel centers the image_grid are matched with.
-        pix_neighbors : list
+        pix_neighbors : []
             The neighboring pix_pixels of the cluster_grid pix_pixel the coordinate is currently matched with
 
         Returns
@@ -614,7 +595,7 @@ class ClusterPixelization(VoronoiPixelization):
         """
         super(ClusterPixelization, self).__init__(pixels, regularization_coefficients)
 
-    def inversion_from_pix_grids(self, pix_grid, pix_sub_grid, mapping):
+    def inversion_from_pix_grids(self, grids, sparse_mask):
         """
         Compute the mapping matrix of the cluster pixelization by following these steps:
 
@@ -626,28 +607,22 @@ class ClusterPixelization(VoronoiPixelization):
 
         Parameters
         ----------
-        pix_grid : [[float, float]]
-            The x and y pix-grid.
-        pix_sub_grid : [[float, float]]
-            The x and y sub-grid.
-        mapping : auto_lens.imaging.grids.GridMapper
-            The properties and mappings between different grids.
+
         """
 
-        if self.pixels is not len(mapping.cluster.cluster_to_image):
+        if self.pixels is not len(sparse_mask.sparse_to_image):
             raise exc.PixelizationException('ClusteringPixelization - The input number of pixels in the constructor'
                                             'is not the same as the length of the cluster_to_image mapper')
 
-        pix_centers = pix_grid[mapping.cluster.cluster_to_image]
+        pix_centers = grids.image_coords[sparse_mask.sparse_to_image]
         cluster_to_pix = np.arange(0, self.pixels)
         voronoi = self.voronoi_from_cluster_grid(pix_centers)
         pix_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
-        image_to_pix = self.image_to_pix_from_pixelization(pix_grid, pix_centers, pix_neighbors, mapping,
-                                                           cluster_to_pix)
-        sub_to_pix = self.sub_to_pix_from_pixelization(pix_sub_grid, pix_centers, pix_neighbors, mapping,
-                                                       cluster_to_pix)
+        image_to_pix = self.image_to_pix_from_pixelization(grids, pix_centers, pix_neighbors, cluster_to_pix,
+                                                           sparse_mask)
+        sub_to_pix = self.sub_to_pix_from_pixelization(grids, pix_centers, pix_neighbors, cluster_to_pix, sparse_mask)
 
-        mapping_matrix =  self.mapping_matrix_from_sub_to_pix(sub_to_pix, mapping)
+        mapping_matrix = self.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
         regularization_matrix = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return Inversion(mapping_matrix, regularization_matrix, image_to_pix, sub_to_pix)
@@ -674,7 +649,7 @@ class AmorphousPixelization(VoronoiPixelization):
         """
         super(AmorphousPixelization, self).__init__(pixels, regularization_coefficients)
 
-    def inversion_from_pix_grids(self, pix_grid, pix_sub_grid, mapping):
+    def inversion_from_pix_grids(self, grids, sparse_mask):
         """
         Compute the mapping matrix of the amorphous pixelization by following these steps:
 
@@ -686,24 +661,18 @@ class AmorphousPixelization(VoronoiPixelization):
 
         Parameters
         ----------
-        pix_grid : [[float, float]]
-            The x and y pix-grid.
-        pix_sub_grid : [[float, float]]
-            The x and y sub-grid.
-        mapping : auto_lens.imaging.grids.GridMapper
-            The properties and mappings between different grids.
+
         """
 
-        cluster_grid = pix_grid[mapping.cluster.cluster_to_image]
+        cluster_grid = grids.image_coords[sparse_mask.sparse_to_image]
         pix_centers, cluster_to_pix = self.kmeans_cluster(cluster_grid)
         voronoi = self.voronoi_from_cluster_grid(pix_centers)
         pix_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
-        image_to_pix = self.image_to_pix_from_pixelization(pix_grid, pix_centers, pix_neighbors, mapping,
-                                                           cluster_to_pix)
-        sub_to_pix = self.sub_to_pix_from_pixelization(pix_sub_grid, pix_centers, pix_neighbors, mapping,
-                                                       cluster_to_pix)
+        image_to_pix = self.image_to_pix_from_pixelization(grids, pix_centers, pix_neighbors, cluster_to_pix,
+                                                           sparse_mask)
+        sub_to_pix = self.sub_to_pix_from_pixelization(grids, pix_centers, pix_neighbors, cluster_to_pix, sparse_mask)
 
-        mapping_matrix =  self.mapping_matrix_from_sub_to_pix(sub_to_pix, mapping)
+        mapping_matrix = self.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
         regularization_matrix = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return Inversion(mapping_matrix, regularization_matrix, image_to_pix, sub_to_pix)
@@ -720,6 +689,7 @@ class AmorphousPixelization(VoronoiPixelization):
         kmeans = sklearn.cluster.KMeans(self.pixels)
         km = kmeans.fit(cluster_grid)
         return km.cluster_centers_, km.labels_
+
 
 # TODO : Split into Inversion, InversionBlurred and InversionFitted.
 
