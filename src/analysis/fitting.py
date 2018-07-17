@@ -25,7 +25,7 @@ class Fitter(object):
         """
         contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
         scaled_noise = self.generate_scaled_noise(contributions, hyper_galaxies)
-        blurred_model_image = self.generate_blurred_light_profile_image()
+        blurred_model_image = self.generate_blurred_light_profile_image(self.image.kernel_convolver)
         return compute_likelihood(self.image, scaled_noise, blurred_model_image)
 
     def generate_scaled_noise(self, contributions, hyper_galaxies):
@@ -42,20 +42,20 @@ class Fitter(object):
                 hyper_galaxies, contributions))
         return self.image.background_noise + sum(scaled_noises)
 
-    def generate_blurred_light_profile_image(self):
+    def generate_blurred_light_profile_image(self, kernel_convolver):
         """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
         PSF.
         """
         image_light_profile = self.tracer.generate_image_of_galaxy_light_profiles()
         blurring_image_light_profile = self.tracer.generate_blurring_image_of_galaxy_light_profiles()
         return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile,
-                                                    self.image.kernel_convolver)
+                                                    kernel_convolver)
 
     def fit_data_with_profiles(self):
         """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy images.
 
         """
-        blurred_model_image = self.generate_blurred_light_profile_image()
+        blurred_model_image = self.generate_blurred_light_profile_image(self.image.kernel_convolver)
         return compute_likelihood(self.image, self.image.background_noise, blurred_model_image)
 
     def fit_data_with_pixelization(self):
