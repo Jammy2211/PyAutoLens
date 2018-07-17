@@ -748,13 +748,13 @@ class InversionFitted(object):
         blurred_mapping : ndarray | None
             The matrix representing the mapping between reconstruction-pixels and data-pixels, including a \
             blurring operation (f).
-        regularization : ndarray
+        regularization : ndarray | None
             The matrix defining how the reconstruction's pixels are regularized with one another (H).
         covariance : ndarray | None
             The covariance between each reconstruction pixel and all other reconstruction pixels (F).
-        covariance_regularization : ndarray
+        covariance_regularization : ndarray | None
             The covariance + regularizationo matrix.
-        reconstruction : ndarray
+        reconstruction : ndarray | None
             The vector containing the reconstructed fit of the data.
         """
         self.weighted_data = weighted_data
