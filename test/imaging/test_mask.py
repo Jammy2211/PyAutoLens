@@ -20,7 +20,7 @@ def make_centre_mask():
 
 @pytest.fixture(name="sub_coordinate_grid")
 def make_sub_coordinate_grid(msk):
-    return mask.SubCoordinateGrid(msk)
+    return mask.SubCoordinateGrid.from_mask(msk)
 
 
 class TestMask(object):
@@ -415,7 +415,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 2)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array([[[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]]])).all()
 
@@ -426,7 +426,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 2)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array([[-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5],
                                                 [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
@@ -439,7 +439,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 2)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array([[-3.5, 2.5], [-3.5, 3.5], [-2.5, 2.5], [-2.5, 3.5],
                                                 [-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5],
@@ -454,7 +454,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=0.3)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 2)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
             image_sub_grid = np.round(image_sub_grid, decimals=2)
 
@@ -472,7 +472,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 3)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 3)
 
             assert (image_sub_grid == np.array([[[-0.75, -0.75], [-0.75, 0.], [-0.75, 0.75], [0., -0.75], [0., 0.],
                                                  [0., 0.75], [0.75, -0.75], [0.75, 0.], [0.75, 0.75]]])).all()
@@ -484,7 +484,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=2.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 3)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 3)
 
             assert (image_sub_grid == np.array([[-2.5, 1.5], [-2.5, 2.], [-2.5, 2.5], [-2., 1.5], [-2., 2.],
                                                 [-2., 2.5], [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5],
@@ -501,7 +501,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=2.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 4)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 4)
 
             image_sub_grid = np.round(image_sub_grid, decimals=1)
 
@@ -532,7 +532,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 2)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array(
                 [[-2., -0.5], [-2., 0.5], [-1., -0.5], [-1., 0.5], [1., -0.5], [1., 0.5], [2., -0.5], [2., 0.5],
@@ -545,7 +545,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid(msk, 2)
+            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array(
                 [[-3.5, 4.], [-3.5, 5.], [-2.5, 4.], [-2.5, 5.], [-0.5, -2.], [-0.5, -1.], [0.5, -2.], [0.5, -1.],
@@ -629,7 +629,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = mask.SubCoordinateGrid(msk, 2).sub_to_image
+            sub_to_image = mask.SubCoordinateGrid.from_mask(msk, 2).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0])).all()
 
@@ -640,7 +640,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = mask.SubCoordinateGrid(msk, 2).sub_to_image
+            sub_to_image = mask.SubCoordinateGrid.from_mask(msk, 2).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])).all()
 
@@ -651,7 +651,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = mask.SubCoordinateGrid(msk, 3).sub_to_image
+            sub_to_image = mask.SubCoordinateGrid.from_mask(msk, 3).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1500,7 +1500,7 @@ class TestSubCoordinateGrid(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        sub_coordinate_grid = mask.SubCoordinateGrid(msk, 2)
+        sub_coordinate_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
 
         assert sub_coordinate_grid.sub_grid_size == 2
         assert sub_coordinate_grid.sub_grid_fraction == (1.0 / 4.0)
