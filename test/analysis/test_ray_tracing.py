@@ -41,10 +41,14 @@ def make_all_grids():
     return all_grids
 
 
-@pytest.fixture(name="mapping")
-def make_mapping():
-    return grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=np.array([[1, 1]]),
-                             sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0]))
+# @pytest.fixture(name="mapping")
+# def make_mapping():
+#     return grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=np.array([[1, 1]]),
+#                              sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0]))
+
+@pytest.fixture(name="sparse_mask")
+def make_sparse_mask():
+    return None
 
 
 @pytest.fixture(name="galaxy_light_only")
@@ -82,6 +86,7 @@ class MockPixelization(object):
     def __init__(self, value):
         self.value = value
 
+    # noinspection PyUnusedLocal,PyShadowingNames
     def inversion_from_pix_grids(self, grids, mapping):
         return self.value
 
@@ -258,47 +263,46 @@ class TestTracer(object):
 
     class TestImageFromGalaxies:
 
-        def test__no_galaxies__image_is_sum_of_image_plane_and_source_plane_images(self, all_grids, mapping,
+        def test__no_galaxies__image_is_sum_of_image_plane_and_source_plane_images(self, all_grids,
                                                                                    no_galaxies):
             image_plane = ray_tracing.Plane(galaxies=no_galaxies, grids=all_grids, compute_deflections=True)
             source_plane = ray_tracing.Plane(galaxies=no_galaxies, grids=all_grids, compute_deflections=False)
-            plane_image = image_plane.generate_image_of_galaxy_light_profiles(mapping) + \
-                          source_plane.generate_image_of_galaxy_light_profiles(mapping)
+            plane_image = image_plane.generate_image_of_galaxy_light_profiles(
+            ) + source_plane.generate_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
 
         def test__galaxy_light_sersic_no_mass__image_is_sum_of_image_plane_and_source_plane_images(self, all_grids,
-                                                                                                   mapping,
                                                                                                    galaxy_light_only):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], grids=all_grids, compute_deflections=True)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], grids=all_grids, compute_deflections=False)
-            plane_image = image_plane.generate_image_of_galaxy_light_profiles(mapping) + \
-                          source_plane.generate_image_of_galaxy_light_profiles(mapping)
+            plane_image = image_plane.generate_image_of_galaxy_light_profiles(
+            ) + source_plane.generate_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_only],
                                            source_galaxies=[galaxy_light_only], image_plane_grids=all_grids)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
 
-        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids, mapping,
+        def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, all_grids,
                                                                                         galaxy_light_and_mass):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], grids=all_grids, compute_deflections=True)
             deflections_grid = all_grids.deflection_grids_for_galaxies(galaxies=[galaxy_light_and_mass])
             source_grid = all_grids.traced_grids_for_deflections(deflections_grid)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], grids=source_grid,
                                              compute_deflections=False)
-            plane_image = image_plane.generate_image_of_galaxy_light_profiles(mapping) + \
-                          source_plane.generate_image_of_galaxy_light_profiles(mapping)
+            plane_image = image_plane.generate_image_of_galaxy_light_profiles(
+            ) + source_plane.generate_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_and_mass],
                                            source_galaxies=[galaxy_light_and_mass],
                                            image_plane_grids=all_grids)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles(mapping)
+            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
 
@@ -307,8 +311,9 @@ class TestTracer(object):
         def test__no_galaxies__image_is_sum_of_image_plane_and_source_plane_images(self, all_grids, no_galaxies):
             image_plane = ray_tracing.Plane(galaxies=no_galaxies, grids=all_grids, compute_deflections=True)
             source_plane = ray_tracing.Plane(galaxies=no_galaxies, grids=all_grids, compute_deflections=False)
-            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
-                          source_plane.generate_blurring_image_of_galaxy_light_profiles()
+            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles(
+
+            ) + source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
@@ -320,8 +325,8 @@ class TestTracer(object):
                                                                                                    galaxy_light_only):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], grids=all_grids, compute_deflections=True)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], grids=all_grids, compute_deflections=False)
-            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
-                          source_plane.generate_blurring_image_of_galaxy_light_profiles()
+            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles(
+            ) + source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_only],
                                            source_galaxies=[galaxy_light_only],
@@ -337,8 +342,8 @@ class TestTracer(object):
             source_grid = all_grids.traced_grids_for_deflections(deflections_grid)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], grids=source_grid,
                                              compute_deflections=False)
-            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles() + \
-                          source_plane.generate_blurring_image_of_galaxy_light_profiles()
+            plane_image = image_plane.generate_blurring_image_of_galaxy_light_profiles(
+            ) + source_plane.generate_blurring_image_of_galaxy_light_profiles()
 
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_and_mass],
                                            source_galaxies=[galaxy_light_and_mass],
@@ -356,7 +361,7 @@ class TestTracer(object):
 
             pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
 
-            assert pix_matrix == None
+            assert pix_matrix is None
 
         def test__image_galaxy_has_pixelization__still_returns_none(self, all_grids, mapping):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
@@ -367,7 +372,7 @@ class TestTracer(object):
 
             pix_matrix = tracing.generate_pixelization_matrices_of_source_galaxy(mapping)
 
-            assert pix_matrix == None
+            assert pix_matrix is None
 
         def test__source_galaxy_has_pixelization__returns_pixelization_matrix(self, all_grids, mapping):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
@@ -536,14 +541,14 @@ class TestMultiTracer(object):
             assert tracer.planes[2].deflections.sub[1] == pytest.approx(defl22[0], 1e-4)
             assert tracer.planes[2].deflections.blurring[0] == pytest.approx(defl22[0], 1e-4)
 
-            coord1 = 1.0 - tracer.planes[0].deflections.image[0, 0] - tracer.planes[1].deflections.image[0, 0] - \
-                     tracer.planes[2].deflections.image[0, 0]
+            coord1 = (1.0 - tracer.planes[0].deflections.image[0, 0] - tracer.planes[1].deflections.image[0, 0] -
+                      tracer.planes[2].deflections.image[0, 0])
 
-            coord2 = 1.0 - tracer.planes[0].deflections.image[0, 1] - tracer.planes[1].deflections.image[0, 1] - \
-                     tracer.planes[2].deflections.image[0, 1]
+            coord2 = (1.0 - tracer.planes[0].deflections.image[0, 1] - tracer.planes[1].deflections.image[0, 1] -
+                      tracer.planes[2].deflections.image[0, 1])
 
-            coord3 = 1.0 - tracer.planes[0].deflections.sub[1, 0] - tracer.planes[1].deflections.sub[1, 0] - \
-                     tracer.planes[2].deflections.sub[1, 0]
+            coord3 = (1.0 - tracer.planes[0].deflections.sub[1, 0] - tracer.planes[1].deflections.sub[1, 0] -
+                      tracer.planes[2].deflections.sub[1, 0])
 
             assert tracer.planes[3].grids.image[0] == pytest.approx(np.array([coord1, coord2]), 1e-4)
             assert tracer.planes[3].grids.sub[0] == pytest.approx(np.array([coord1, coord2]), 1e-4)
@@ -568,9 +573,9 @@ class TestMultiTracer(object):
             plane_1 = ray_tracing.Plane(galaxies=[g1], grids=all_grids, compute_deflections=True)
             plane_2 = ray_tracing.Plane(galaxies=[g2], grids=all_grids, compute_deflections=False)
 
-            plane_image = plane_0.generate_image_of_galaxy_light_profiles(mapping) + \
-                          plane_1.generate_image_of_galaxy_light_profiles(mapping) + \
-                          plane_2.generate_image_of_galaxy_light_profiles(mapping)
+            plane_image = (plane_0.generate_image_of_galaxy_light_profiles() +
+                           plane_1.generate_image_of_galaxy_light_profiles() +
+                           plane_2.generate_image_of_galaxy_light_profiles())
 
             assert (plane_image == ray_trace_image).all()
 
@@ -592,9 +597,9 @@ class TestMultiTracer(object):
             plane_1 = ray_trace.planes[1]
             plane_2 = ray_trace.planes[2]
 
-            plane_image = plane_0.generate_image_of_galaxy_light_profiles(mapping) + \
-                          plane_1.generate_image_of_galaxy_light_profiles(mapping) + \
-                          plane_2.generate_image_of_galaxy_light_profiles(mapping)
+            plane_image = (plane_0.generate_image_of_galaxy_light_profiles(mapping) +
+                           plane_1.generate_image_of_galaxy_light_profiles(mapping) +
+                           plane_2.generate_image_of_galaxy_light_profiles(mapping))
 
             assert (plane_image == ray_trace_image).all()
 
@@ -616,9 +621,9 @@ class TestMultiTracer(object):
             plane_1 = ray_tracing.Plane(galaxies=[g1], grids=all_grids, compute_deflections=True)
             plane_2 = ray_tracing.Plane(galaxies=[g2], grids=all_grids, compute_deflections=False)
 
-            plane_image = plane_0.generate_blurring_image_of_galaxy_light_profiles() + \
-                          plane_1.generate_blurring_image_of_galaxy_light_profiles() + \
-                          plane_2.generate_blurring_image_of_galaxy_light_profiles()
+            plane_image = (plane_0.generate_blurring_image_of_galaxy_light_profiles() +
+                           plane_1.generate_blurring_image_of_galaxy_light_profiles() +
+                           plane_2.generate_blurring_image_of_galaxy_light_profiles())
 
             assert (plane_image == ray_trace_image).all()
 
@@ -640,9 +645,9 @@ class TestMultiTracer(object):
             plane_1 = ray_trace.planes[1]
             plane_2 = ray_trace.planes[2]
 
-            plane_image = plane_0.generate_blurring_image_of_galaxy_light_profiles() + \
-                          plane_1.generate_blurring_image_of_galaxy_light_profiles() + \
-                          plane_2.generate_blurring_image_of_galaxy_light_profiles()
+            plane_image = (plane_0.generate_blurring_image_of_galaxy_light_profiles() +
+                           plane_1.generate_blurring_image_of_galaxy_light_profiles() +
+                           plane_2.generate_blurring_image_of_galaxy_light_profiles())
 
             assert (plane_image == ray_trace_image).all()
 
@@ -792,19 +797,21 @@ class TestPlane(object):
             profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.sub[2])
             profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.sub[3])
 
-            profile_intensity = (
-                                            profile_intensity_0 + profile_intensity_1 + profile_intensity_2 + profile_intensity_3) / 4
+            profile_intensity = (profile_intensity_0 +
+                                 profile_intensity_1 +
+                                 profile_intensity_2 +
+                                 profile_intensity_3) / 4
 
             galaxy_intensity = all_grids.sub.intensities_via_grid(galaxies=[galaxy_light_sersic], mapping=mapping)
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], grids=all_grids)
-            image = plane.generate_image_of_galaxy_light_profiles(mapping)
+            image = plane.generate_image_of_galaxy_light_profiles()
 
             assert (image[0] == profile_intensity == galaxy_intensity).all()
 
         def test__same_as_above__now_with_multiple_sets_of_coordinates(self, all_grids, galaxy_light_sersic):
-            all_grids.sub = grids.SubCoordinateGrid([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0],
-                                                     [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]],
+            all_grids.sub = grids.SubCoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0],
+                                                              [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]]),
                                                     sub_grid_size=2)
 
             mapping = grids.GridMapping(image_shape=(3, 3), image_pixels=2, data_to_image=np.array([[1, 1], [2, 2]]),
@@ -830,14 +837,14 @@ class TestPlane(object):
             galaxy_intensity = all_grids.sub.intensities_via_grid(galaxies=[galaxy_light_sersic], mapping=mapping)
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], grids=all_grids)
-            image = plane.generate_image_of_galaxy_light_profiles(mapping=mapping)
+            image = plane.generate_image_of_galaxy_light_profiles()
 
             assert (image[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
             assert (image[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
 
         def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, all_grids, galaxy_light_sersic):
-            all_grids.sub = grids.SubCoordinateGrid([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0],
-                                                     [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]],
+            all_grids.sub = grids.SubCoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0],
+                                                              [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]]),
                                                     sub_grid_size=2)
 
             mapping = grids.GridMapping(image_shape=(3, 3), image_pixels=2, data_to_image=np.array([[1, 1], [2, 2]]),
@@ -866,7 +873,7 @@ class TestPlane(object):
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic, galaxy_light_sersic, galaxy_light_sersic],
                                       grids=all_grids)
-            image = plane.generate_image_of_galaxy_light_profiles(mapping=mapping)
+            image = plane.generate_image_of_galaxy_light_profiles()
 
             assert (image[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
             assert (image[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
@@ -938,7 +945,7 @@ class TestPlane(object):
 
             pix_matrix = plane.generate_pixelization_matrices_of_galaxy(mapping)
 
-            assert pix_matrix == None
+            assert pix_matrix is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__extracts_pixelization_matrix(self, all_grids, mapping):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
