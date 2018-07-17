@@ -118,7 +118,7 @@ class MultiTracer(object):
 
                     new_grid = new_grid.traced_grids_for_deflections(scaled_deflections)
 
-            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
+            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], coordinates_collection=new_grid,
                                      compute_deflections=compute_deflections))
 
     def generate_image_of_galaxy_light_profiles(self, mapping):
@@ -185,7 +185,7 @@ class TracerGeometry(object):
 
 class Plane(object):
 
-    def __init__(self, galaxies, grids, compute_deflections=True):
+    def __init__(self, galaxies, coordinates_collection, compute_deflections=True):
         """
 
         Represents a plane, which is a set of galaxies and grids at a given redshift in the lens ray-tracing
@@ -210,17 +210,17 @@ class Plane(object):
         ----------
         galaxies : [Galaxy]
             The galaxies in the plane.
-        grids : grids.GridCoordsCollection
+        coordinates_collection : grids.GridCoordsCollection
             The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring,
             grid_coords, etc.
         """
         self.galaxies = galaxies
-        self.grids = grids
+        self.coordinates_collection = coordinates_collection
         if compute_deflections:
             def calculate_deflections(grid):
                 return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(grid), galaxies))
 
-            self.deflections = self.grids.apply_function(calculate_deflections)
+            self.deflections = self.coordinates_collection.apply_function(calculate_deflections)
 
     def trace_to_next_plane(self):
         """Trace the grids to the next plane.
@@ -228,15 +228,15 @@ class Plane(object):
         NOTE : This does not work for multi-plane lensing, which requires one to use the previous plane's deflection
         angles to perform the tracing. I guess we'll ultimately call this class 'LensPlanes' and have it as a list.
         """
-        return self.grids.map_function(np.subtract, self.deflections)
+        return self.coordinates_collection.map_function(np.subtract, self.deflections)
 
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
-        return self.grids.sub.intensities_via_grid(self.galaxies)
+        return self.coordinates_collection.sub.intensities_via_grid(self.galaxies)
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
-        return self.grids.blurring.intensities_via_grid(self.galaxies)
+        return self.coordinates_collection.blurring.intensities_via_grid(self.galaxies)
 
     def generate_pixelization_matrices_of_galaxy(self, sparse_mask):
 
@@ -245,6 +245,6 @@ class Plane(object):
         if len(pixelized_galaxies) == 0:
             return None
         if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.grids, sparse_mask)
+            return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.coordinates_collection, sparse_mask)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
