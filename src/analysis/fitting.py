@@ -4,9 +4,8 @@ import numpy as np
 # TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
 
 class Fitter(object):
-    def __init__(self, image, sub_coordinate_grid, sparse_mask, tracer):
+    def __init__(self, image, sparse_mask, tracer):
         self.image = image
-        self.sub_coordinate_grid = sub_coordinate_grid
         self.sparse_mask = sparse_mask
         self.tracer = tracer
 
@@ -47,8 +46,7 @@ class Fitter(object):
         """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
         PSF.
         """
-        image_light_profile = self.tracer.generate_image_of_galaxy_light_profiles(self.sub_coordinate_grid,
-                                                                                  self.sparse_mask)
+        image_light_profile = self.tracer.generate_image_of_galaxy_light_profiles()
         blurring_image_light_profile = self.tracer.generate_blurring_image_of_galaxy_light_profiles()
         return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile,
                                                     self.image.kernel_convolver)
@@ -65,8 +63,7 @@ class Fitter(object):
         images.
         """
 
-        pix_pre_fit = self.tracer.generate_pixelization_matrices_of_source_galaxy(self.sub_coordinate_grid,
-                                                                                  self.sparse_mask)
+        pix_pre_fit = self.tracer.generate_pixelization_matrices_of_source_galaxy(self.sparse_mask)
         pix_fit = pix_pre_fit.fit_image_via_inversion(self.image, self.image.background_noise,
                                                       self.image.kernel_convolver)
 
