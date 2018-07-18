@@ -452,35 +452,35 @@ class TestMassProfiles(object):
     class TestSurfaceDensity:
 
         def test__one_profile_galaxy__surface_density_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-            sie_surface_density = sie_1.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            sie_surface_density = sie_1.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
-            galaxy_sie_surface_density = galaxy_sie_1.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            galaxy_sie_surface_density = galaxy_sie_1.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
             assert sie_surface_density == galaxy_sie_surface_density
 
         def test__two_profile_galaxy__surface_density_is_sum_of_individual_profiles(self, sie_1, sie_2, galaxy_sie_2):
-            surface_density = sie_1.surface_density_at_coordinates(np.array([1.05, -0.55]))
-            surface_density += sie_2.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            surface_density = sie_1.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
+            surface_density += sie_2.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
-            galaxy_surface_density = galaxy_sie_2.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            galaxy_surface_density = galaxy_sie_2.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
             assert surface_density == galaxy_surface_density
 
         def test__three_profile_galaxy__surface_density_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
-            surface_density = sie_1.surface_density_at_coordinates(np.array([1.05, -0.55]))
-            surface_density += sie_2.surface_density_at_coordinates(np.array([1.05, -0.55]))
-            surface_density += sie_3.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            surface_density = sie_1.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
+            surface_density += sie_2.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
+            surface_density += sie_3.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
-            galaxy_surface_density = galaxy_sie_3.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            galaxy_surface_density = galaxy_sie_3.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
             assert surface_density == galaxy_surface_density
 
         def test__three_profile_galaxy__individual_surface_densities_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
-            surface_density_1 = sie_1.surface_density_at_coordinates(np.array([1.05, -0.55]))
-            surface_density_2 = sie_2.surface_density_at_coordinates(np.array([1.05, -0.55]))
-            surface_density_3 = sie_3.surface_density_at_coordinates(np.array([1.05, -0.55]))
+            surface_density_1 = sie_1.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
+            surface_density_2 = sie_2.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
+            surface_density_3 = sie_3.surface_density_from_coordinate_grid(np.array([1.05, -0.55]))
 
             galaxy_surface_density = galaxy_sie_3.surface_density_at_coordinates_individual((1.05, -0.55))
 
