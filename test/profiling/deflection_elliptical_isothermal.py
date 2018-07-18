@@ -17,15 +17,17 @@ def load(name):
     return np.load("{}/deflection_data/{}.npy".format(path, name))
 
 
-# grid = load("grid")
+grid = load("grid")
+deflection_result = load("deflection_result")
+transformed_coordinates = load("transformed_coords")
+elliptical_isothermal_deflection_result = load("elliptical_isothermal_deflection_result")
 
-grid = np.ones((100, 2))
+mass_profile = mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 
-mass_profile = mass_profiles.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0, slope=2.0)
+lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile,
+                            shear_mass_profile=mass_profiles.ExternalShear())
 
-lens_galaxy = galaxy.Galaxy(spherical_mass_profile=mass_profile)
-
-repeats = 10
+repeats = 100
 
 
 class InvalidRun(Exception):
@@ -48,24 +50,31 @@ def tick_toc(func):
     return wrapper
 
 
-@tick_toc
-def current_deflection_elliptical_power_law():
 
+
+
+@tick_toc
+def current_deflection_elliptical_isothermal():
     grid_values = np.zeros(grid.shape)
 
-  #  for pixel_no, coordinate in enumerate(grid):
-  #      grid_values[pixel_no] = mass_profile.deflections_at_coordinates(coordinates=coordinate)
+    for pixel_no, coordinate in enumerate(grid):
+        grid_values[pixel_no] = mass_profile.deflections_at_coordinates(coordinates=coordinate)
 
-   # assert (grid_values == elliptical_power_law_deflection_result).all()
+    assert (grid_values == elliptical_isothermal_deflection_result).all()
 
 
 @tick_toc
-def new_deflection_elliptical_power_law():
-
+def new_deflection_elliptical_isothermal():
     result = mass_profile.deflections_from_coordinate_grid(grid)
 
-   # assert (result == elliptical_power_law_deflection_result).all()
+    assert (result == elliptical_isothermal_deflection_result).all()
 
+
+@tick_toc
+def new_deflection_elliptical_isothermal_numba():
+    result = mass_profile.deflections_from_coordinate_grid(grid)
+
+    assert (result == elliptical_isothermal_deflection_result).all()
 
 def all_mass_profiles(func):
     mass_profile_classes = [value for value in mass_profiles.__dict__.values()
@@ -79,14 +88,6 @@ def all_mass_profiles(func):
             func(instance)
 
     return wrapper
-
-
-@all_mass_profiles
-def test_deflections_at_coordinates(instance):
-    grid_values = np.zeros(grid.shape)
-
-    for pixel_no, coordinate in enumerate(grid):
-        grid_values[pixel_no] = instance.deflections_at_coordinates(coordinates=coordinate)
 
 
 @all_mass_profiles
@@ -144,13 +145,13 @@ def tick_toc_comparison_for_class(mass_profile_class):
     def new_method():
         instance.deflections_from_coordinate_grid(grid)
 
-  #  old = old_method()
+    old = old_method()
     new = new_method()
-    print("x faster: {}".format(new))
+    print("x faster: {}".format(old / new))
 
 
 def tick_toc_comparison_for_classes():
-    mass_profile_classes = [mass_profiles.EllipticalPowerLaw]
+    mass_profile_classes = [mass_profiles.EllipticalIsothermal]
 
     for mass_profile_class in mass_profile_classes:
         tick_toc_comparison_for_class(mass_profile_class)
