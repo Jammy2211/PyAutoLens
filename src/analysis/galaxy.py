@@ -212,7 +212,7 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given image_grid.
         """
-        return sum(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return sum(map(lambda p: p.surface_density_from_coordinate_grid(coordinates), self.mass_profiles))
 
     def surface_density_at_coordinates_individual(self, coordinates):
         """
@@ -230,7 +230,7 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given image_grid.
         """
-        return list(map(lambda p: p.surface_density_at_coordinates(coordinates), self.mass_profiles))
+        return list(map(lambda p: p.surface_density_from_coordinate_grid(coordinates), self.mass_profiles))
 
     def potential_at_coordinates(self, coordinates):
         """
