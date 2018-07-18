@@ -571,6 +571,7 @@ class EllipticalProfile(Profile):
     def grid_radius_to_cartesian(self, grid, radius):
         theta_grid = np.degrees(np.arctan2(grid[:, 1], grid[:, 0]))
         cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
+        # TODO : This is breaking a lot of the deflection angle tests...
         return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
 
     def transform_from_reference_frame(self, coordinates_elliptical):
