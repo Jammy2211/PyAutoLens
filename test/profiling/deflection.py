@@ -123,6 +123,25 @@ def new_deflection_elliptical_isothermal():
     assert (result == elliptical_isothermal_deflection_result).all()
 
 
+@tick_toc
+def current_deflection_elliptical_power_law():
+
+    grid_values = np.zeros(grid.shape)
+
+    for pixel_no, coordinate in enumerate(grid):
+        grid_values[pixel_no] = mass_profile.deflections_at_coordinates(coordinates=coordinate)
+
+   # assert (grid_values == elliptical_power_law_deflection_result).all()
+
+
+@tick_toc
+def new_deflection_elliptical_isothermal():
+
+    result = mass_profile.deflections_from_coordinate_grid(grid)
+
+   # assert (result == elliptical_power_law_deflection_result).all()
+
+
 def all_mass_profiles(func):
     mass_profile_classes = [value for value in mass_profiles.__dict__.values()
                             if inspect.isclass(value)
