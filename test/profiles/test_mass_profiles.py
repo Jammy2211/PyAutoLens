@@ -3808,6 +3808,7 @@ class TestProfiles(object):
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
+
                 sersic = mass_profiles.EllipticalSersicMassRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                                           intensity=1.0,
                                                                           effective_radius=1.0, sersic_index=4.0,
