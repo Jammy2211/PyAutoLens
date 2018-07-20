@@ -172,7 +172,7 @@ class CoordinateGrid(AbstractCoordinateGrid):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at grid coordinate.
         """
-        return sum(map(lambda galaxy: galaxy.intensity_from_grid(self), galaxies))
+        return sum(map(lambda galaxy: galaxy.intensity_from_coordinate_grid(self), galaxies))
 
 
 class SubCoordinateGrid(AbstractCoordinateGrid):
@@ -267,7 +267,7 @@ class SubCoordinateGrid(AbstractCoordinateGrid):
         galaxies : [galaxy.Galaxy]
             The list of galaxies whose light profiles are used to compute the intensity at the grid coordinates.
         """
-        sub_intensities = sum(map(lambda galaxy: galaxy.intensity_from_grid(self), galaxies))
+        sub_intensities = sum(map(lambda galaxy: galaxy.intensity_from_coordinate_grid(self), galaxies))
         return mapping.map_data_sub_to_image(sub_intensities)
 
     def new_from_array(self, array):
