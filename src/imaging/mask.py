@@ -12,11 +12,34 @@ logger = logging.getLogger(__name__)
 
 class Memoizer(object):
     def __init__(self):
+        """
+        Class to store the results of a function given a set of inputs.
+        """
         self.results = {}
         self.calls = 0
         self.arg_names = None
 
     def __call__(self, func):
+        """
+        Memoize decorator. Any time a function is called that a memoizer has been attached to its results are stored in
+        the results dictionary or retrieved from the dictionary if the function has already been called with those
+        arguments.
+
+        Note that the same memoizer persists over all instances of a class. Any state for a given instance that is not
+        given in the representation of that instance will be ignored. That is, it is possible that the memoizer will
+        give incorrect results if instance state does not affect __str__ but does affect the value returned by the
+        memoized method.
+
+        Parameters
+        ----------
+        func: function
+            A function for which results should be memoized
+
+        Returns
+        -------
+        decorated: function
+            A function that memoizes results
+        """
         if self.arg_names is not None:
             raise AssertionError("Instantiate a new Memoizer for each function")
         self.arg_names = inspect.getfullargspec(func).args
@@ -602,15 +625,62 @@ class GridCollection(object):
 
     @classmethod
     def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
+        """
+        Convenience method to create a new GridCollection using a mask, subgrid_size and blurring_shape
+
+        Parameters
+        ----------
+        mask: Mask
+            The mask from which this collection is created
+        subgrid_size: int
+            The side length of the subgrid
+        blurring_shape: (int, int)
+            The shape of the kernel indicating how large a buffer needs to be added to the data within the masked region
+            to ensure data that could be blurred in by the kernel is included in the analysis.
+
+        Returns
+        -------
+        grid_collection: GridCollection
+            A collection of grids all corresponding to the same image
+        """
         image_coords = mask.coordinate_grid
         sub_grid_coords = SubCoordinateGrid.from_mask(mask, subgrid_size)
         blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
         return GridCollection(image_coords, sub_grid_coords, blurring_coords)
 
     def apply_function(self, func):
+        """
+        Apply a function to each of the grids
+
+        Parameters
+        ----------
+        func: (Grid) -> (Grid)
+            Some function that accepts a grid and returns a grid.
+
+        Returns
+        -------
+        grid_collection: GridCollection
+            A collection of grids returned by the function.
+        """
         return GridCollection(func(self.image), func(self.sub), func(self.blurring))
 
     def map_function(self, func, *arg_lists):
+        """
+        Apply a function to each of the grids and each of the args respectively in each arg list.
+
+        Parameters
+        ----------
+        func: (Grid) -> (Grid)
+            Some function that accepts a grid and returns a grid.
+        arg_lists: [args],...
+            Zero or more argument lists. Each list should be length three with each argument being applied to each
+            grid respectively.
+
+        Returns
+        -------
+        grid_collection: GridCollection
+            A collection of grids returned by the function.
+        """
         return GridCollection(*[func(*args) for args in zip(self, *arg_lists)])
 
     @property
