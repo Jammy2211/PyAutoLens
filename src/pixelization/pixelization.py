@@ -63,9 +63,9 @@ class Pixelization(object):
 
         """
 
-        sub_grid = grids.sub_grid_coords
+        sub_grid = grids.sub
 
-        mapping_matrix = np.zeros((grids.image_coords.no_pixels, self.pixels))
+        mapping_matrix = np.zeros((grids.image.no_pixels, self.pixels))
 
         for sub_index in range(sub_grid.no_pixels):
             mapping_matrix[sub_grid.sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid.sub_grid_fraction
@@ -332,10 +332,10 @@ class RectangularPixelization(Pixelization):
 
         """
 
-        geometry = self.geometry_from_pix_sub_grid(grids.sub_grid_coords)
+        geometry = self.geometry_from_pix_sub_grid(grids.sub)
         pix_neighbors = self.neighbors_from_pixelization()
-        image_to_pix = self.compute_grid_to_pix(grids.image_coords, geometry)
-        sub_to_pix = self.compute_grid_to_pix(grids.sub_grid_coords, geometry)
+        image_to_pix = self.compute_grid_to_pix(grids.image, geometry)
+        sub_to_pix = self.compute_grid_to_pix(grids.sub, geometry)
 
         mapping = self.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
         regularization = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
@@ -432,9 +432,9 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        image_to_pix = np.zeros((grids.image_coords.shape[0]), dtype=int)
+        image_to_pix = np.zeros((grids.image.shape[0]), dtype=int)
 
-        for image_index, pix_coordinate in enumerate(grids.image_coords):
+        for image_index, pix_coordinate in enumerate(grids.image):
             nearest_cluster = sparse_mask.image_to_sparse[image_index]
 
             image_to_pix[image_index] = self.pair_image_and_pix(pix_coordinate, nearest_cluster,
@@ -484,10 +484,10 @@ class VoronoiPixelization(Pixelization):
 
          """
 
-        sub_to_pix = np.zeros((grids.sub_grid_coords.no_pixels,), dtype=int)
+        sub_to_pix = np.zeros((grids.sub.no_pixels,), dtype=int)
 
-        for sub_index, sub_coordinate in enumerate(grids.sub_grid_coords):
-            nearest_cluster = sparse_mask.image_to_sparse[grids.sub_grid_coords.sub_to_image[sub_index]]
+        for sub_index, sub_coordinate in enumerate(grids.sub):
+            nearest_cluster = sparse_mask.image_to_sparse[grids.sub.sub_to_image[sub_index]]
 
             sub_to_pix[sub_index] = self.pair_image_and_pix(sub_coordinate, nearest_cluster, pix_centers,
                                                             pix_neighbors, cluster_to_pix)
@@ -625,7 +625,7 @@ class ClusterPixelization(VoronoiPixelization):
             raise exc.PixelizationException('ClusteringPixelization - The input number of pixels in the constructor'
                                             'is not the same as the length of the cluster_to_image mapper')
 
-        pix_centers = grids.image_coords[sparse_mask.sparse_to_image]
+        pix_centers = grids.image[sparse_mask.sparse_to_image]
         cluster_to_pix = np.arange(0, self.pixels)
         voronoi = self.voronoi_from_cluster_grid(pix_centers)
         pix_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
@@ -678,7 +678,7 @@ class AmorphousPixelization(VoronoiPixelization):
             A mask describing the image pixels that should be used in pixel clustering
         """
 
-        cluster_grid = grids.image_coords[sparse_mask.sparse_to_image]
+        cluster_grid = grids.image[sparse_mask.sparse_to_image]
         pix_centers, cluster_to_pix = self.kmeans_cluster(cluster_grid)
         voronoi = self.voronoi_from_cluster_grid(pix_centers)
         pix_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
