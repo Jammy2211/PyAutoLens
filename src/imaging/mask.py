@@ -434,7 +434,7 @@ class SubCoordinateGrid(CoordinateGrid):
         return sub_to_image
 
 
-class CoordinateCollection(object):
+class GridCollection(object):
     def __init__(self, image, sub, blurring):
         """
         A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
@@ -459,13 +459,13 @@ class CoordinateCollection(object):
         image_coords = mask.coordinate_grid
         sub_grid_coords = SubCoordinateGrid.from_mask(mask, subgrid_size)
         blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
-        return CoordinateCollection(image_coords, sub_grid_coords, blurring_coords)
+        return GridCollection(image_coords, sub_grid_coords, blurring_coords)
 
     def apply_function(self, func):
-        return CoordinateCollection(func(self.image), func(self.sub), func(self.blurring))
+        return GridCollection(func(self.image), func(self.sub), func(self.blurring))
 
     def map_function(self, func, *arg_lists):
-        return CoordinateCollection(*[func(*args) for args in zip(self, *arg_lists)])
+        return GridCollection(*[func(*args) for args in zip(self, *arg_lists)])
 
     @property
     def sub_pixels(self):
