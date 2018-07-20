@@ -463,7 +463,7 @@ class VoronoiPixelization(Pixelization):
         Parameters
         ----------
 
-        grids: mask.CoordinateCollection
+        grids: mask.GridCollection
             A collection of coordinates for the masked image, subgrid and blurring grid
         sparse_mask: mask.SparseMask
             A mask describing the image pixels that should be used in pixel clustering
@@ -615,7 +615,7 @@ class ClusterPixelization(VoronoiPixelization):
 
         Parameters
         ----------
-        grids: mask.CoordinateCollection
+        grids: mask.GridCollection
             A collection of coordinates for the masked image, subgrid and blurring grid
         sparse_mask: mask.SparseMask
             A mask describing the image pixels that should be used in pixel clustering
@@ -672,7 +672,7 @@ class AmorphousPixelization(VoronoiPixelization):
 
         Parameters
         ----------
-        grids: mask.CoordinateCollection
+        grids: mask.GridCollection
             A collection of coordinates for the masked image, subgrid and blurring grid
         sparse_mask: mask.SparseMask
             A mask describing the image pixels that should be used in pixel clustering
