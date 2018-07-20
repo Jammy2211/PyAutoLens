@@ -2995,6 +2995,7 @@ class TestProfiles(object):
                 assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
 
             def test__compare_to_elliptical_nfw__same_values(self):
+
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(-5.0, -10.0), kappa_s=0.1,
                                                               axis_ratio=0.5,
                                                               phi=100.0, inner_slope=1.0, scale_radius=20.0)
@@ -3004,10 +3005,10 @@ class TestProfiles(object):
                 gnfw = mass_profiles.EllipticalNFW(centre=(-5.0, -10.0), kappa_s=0.1, axis_ratio=0.5,
                                                    phi=100.0, scale_radius=20.0)
 
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[-7.0, 0.2]]))
+                defls_1 = gnfw.deflections_from_coordinate_grid(grid=np.array([[-7.0, 0.2]]))
 
-                assert defls_0[0,0] == pytest.approx(defls_0[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(defls_1[0,0], 1e-4)
+                assert defls_0[0,1] == pytest.approx(defls_1[0,1], 1e-4)
 
 
     class TestSphericalGeneralizedNFW(object):
