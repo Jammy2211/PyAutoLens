@@ -62,16 +62,17 @@ class Mask(scaled_array.ScaledArray):
 
         grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
 
-        for x in range(int(grid.shape[0])):
-            for y in range(int(grid.shape[1])):
-                x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
+        def fill_grid(x, y):
+            x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
 
-                x_arcsec -= centre[0]
-                y_arcsec -= centre[1]
+            x_arcsec -= centre[0]
+            y_arcsec -= centre[1]
 
-                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+            radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-                grid[x, y] = radius_arcsec > radius_mask
+            grid[x, y] = radius_arcsec > radius_mask
+
+        grid.map(fill_grid)
 
         return cls(grid, pixel_scale)
 
@@ -96,16 +97,17 @@ class Mask(scaled_array.ScaledArray):
 
         grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
 
-        for x in range(int(grid.shape[0])):
-            for y in range(int(grid.shape[1])):
-                x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
+        def fill_grid(x, y):
+            x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
 
-                x_arcsec -= centre[0]
-                y_arcsec -= centre[1]
+            x_arcsec -= centre[0]
+            y_arcsec -= centre[1]
 
-                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+            radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-                grid[x, y] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
+            grid[x, y] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
+
+        grid.map(fill_grid)
 
         return cls(grid, pixel_scale)
 
