@@ -244,19 +244,20 @@ class Mask(scaled_array.ScaledArray):
 
         blurring_mask = np.full(self.shape, True)
 
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    for y1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
-                        for x1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
-                            if 0 <= x + x1 <= self.shape[0] - 1 \
-                                    and 0 <= y + y1 <= self.shape[1] - 1:
-                                if self[x + x1, y + y1]:
-                                    blurring_mask[x + x1, y + y1] = False
-                            else:
-                                raise exc.MaskException(
-                                    "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image"
-                                    "before masking")
+        def fill_grid(x, y):
+            if not self[x, y]:
+                for y1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
+                    for x1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
+                        if 0 <= x + x1 <= self.shape[0] - 1 \
+                                and 0 <= y + y1 <= self.shape[1] - 1:
+                            if self[x + x1, y + y1]:
+                                blurring_mask[x + x1, y + y1] = False
+                        else:
+                            raise exc.MaskException(
+                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image"
+                                "before masking")
+
+        self.map(fill_grid)
 
         return Mask(blurring_mask, self.pixel_scale)
 
