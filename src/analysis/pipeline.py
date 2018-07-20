@@ -1,7 +1,9 @@
 from src.analysis import analysis as an
+from src.imaging import masked_image as mi
 from src.analysis import galaxy_prior
 from src.profiles import light_profiles, mass_profiles
 from src.analysis import non_linear
+from src.pipeline import phase as ph
 from src.pixelization import pixelization
 from src.analysis import model_mapper
 from src.analysis import galaxy
@@ -53,7 +55,7 @@ def source_only_pipeline(image, mask):
     results = []
 
     # Create an analysis object for the image and mask
-    analysis = an.Analysis(image, mask)
+    masked_image = mi.MaskedImage(image, mask)
 
     logger.info(
         """
@@ -62,8 +64,9 @@ def source_only_pipeline(image, mask):
            NLO: LM
         """
     )
+
     # Create an optimizer
-    optimizer_1 = non_linear.MultiNest()
+    phase1 = ph.ParameterizedPhase(optimizer=non_linear.MultiNest())
 
     # Define galaxy priors
     source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
@@ -71,11 +74,11 @@ def source_only_pipeline(image, mask):
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the galaxy priors to the optimizer
-    optimizer_1.variable.source_galaxies = [source_galaxy_prior]
-    optimizer_1.variable.lens_galaxies = [lens_galaxy_prior]
+    phase1.add_variable_lens_galaxies([lens_galaxy_prior])
+    phase1.add_variable_source_galaxies([source_galaxy_prior])
 
     # Analyse the system
-    result_1 = optimizer_1.fit(analysis)
+    result_1 = phase1.fit(masked_image)
 
     # Add the result of the first analysis to the list
     results.append(result_1)
@@ -88,6 +91,7 @@ def source_only_pipeline(image, mask):
         """
     )
     # Create an optimizer
+    phase = ph.ParameterizedPhase(optimizer=non_linear.MultiNest())
     optimizer_2 = non_linear.DownhillSimplex()
 
     # Define galaxy priors
