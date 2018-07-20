@@ -21,6 +21,6 @@ class MockSubGridCoords(np.ndarray):
 class MockCoordinateCollection(object):
 
     def __init__(self, image, sub, blurring=None):
-        self.image = mask.CoordinateGrid(image)
+        self.image = mask.Grid(image)
         self.sub = sub
-        self.blurring = mask.CoordinateGrid(blurring) if blurring is not None else None
+        self.blurring = mask.Grid(blurring) if blurring is not None else None
