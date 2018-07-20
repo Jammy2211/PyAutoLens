@@ -33,7 +33,7 @@ def make_all_grids():
     blurring_grid = np.array([[1.0, 0.0]])
 
     grid = mask.Grid(regular_grid)
-    sub = mask.SubCoordinateGrid(sub, None, sub_grid_size=2)
+    sub = mask.SubGrid(sub, None, sub_grid_size=2)
     blurring_grid = mask.Grid(blurring_grid)
 
     all_grids = mask.GridCollection(grid, sub, blurring_grid)
