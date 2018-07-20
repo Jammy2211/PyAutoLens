@@ -221,7 +221,7 @@ class TestTracer(object):
 
             assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]),
                                                                                           1e-3)
-            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
             assert ray_trace.source_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]),
                                                                                            1e-3)
 
@@ -232,7 +232,7 @@ class TestTracer(object):
 
             assert ray_trace.image_plane.coordinates_collection.image == pytest.approx(np.array([[1.0, 1.0]]),
                                                                                        1e-3)
-            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([0.707, 0.707]),
+            assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]),
                                                                                           1e-3)
             assert ray_trace.source_plane.coordinates_collection.image == pytest.approx(
                 np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
@@ -244,7 +244,7 @@ class TestTracer(object):
 
             assert ray_trace.image_plane.coordinates_collection.image == pytest.approx(np.array([[1.0, 1.0]]),
                                                                                        1e-3)
-            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.414, 1.414]),
+            assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([1.414, 1.414]),
                                                                                           1e-3)
             assert ray_trace.source_plane.coordinates_collection.image == pytest.approx(
                 np.array([[1.0 - 1.414, 1.0 - 1.414]]), 1e-3)
@@ -266,13 +266,13 @@ class TestTracer(object):
             assert ray_trace.image_plane.coordinates_collection.blurring[0] == pytest.approx(
                 np.array([1.0, 0.0]), 1e-3)
 
-            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([0.707, 0.707]),
+            assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]),
                                                                                           1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub[2] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.deflections.sub[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace.image_plane.deflections.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.deflections.sub[2] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace.image_plane.deflections.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.deflections.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
             assert ray_trace.source_plane.coordinates_collection.image[0] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]),
@@ -585,19 +585,19 @@ class TestMultiTracer(object):
             assert tracer.planes[2].deflections.sub[1] == pytest.approx(defl22[0], 1e-4)
             assert tracer.planes[2].deflections.blurring[0] == pytest.approx(defl22[0], 1e-4)
 
-            coord1 = (1.0 - tracer.planes[0].coordinates_collection.image[0, 0] -
-                      tracer.planes[1].coordinates_collection.image[
+            coord1 = (1.0 - tracer.planes[0].deflections.image[0, 0] -
+                      tracer.planes[1].deflections.image[
                           0, 0] -
-                      tracer.planes[2].coordinates_collection.image[0, 0])
+                      tracer.planes[2].deflections.image[0, 0])
 
-            coord2 = (1.0 - tracer.planes[0].coordinates_collection.image[0, 1] -
-                      tracer.planes[1].coordinates_collection.image[
+            coord2 = (1.0 - tracer.planes[0].deflections.image[0, 1] -
+                      tracer.planes[1].deflections.image[
                           0, 1] -
-                      tracer.planes[2].coordinates_collection.image[0, 1])
+                      tracer.planes[2].deflections.image[0, 1])
 
-            coord3 = (1.0 - tracer.planes[0].coordinates_collection.sub[1, 0] -
-                      tracer.planes[1].coordinates_collection.sub[1, 0] -
-                      tracer.planes[2].coordinates_collection.sub[1, 0])
+            coord3 = (1.0 - tracer.planes[0].deflections.sub[1, 0] -
+                      tracer.planes[1].deflections.sub[1, 0] -
+                      tracer.planes[2].deflections.sub[1, 0])
 
             assert tracer.planes[3].coordinates_collection.image[0] == pytest.approx(np.array([coord1, coord2]),
                                                                                      1e-4)
