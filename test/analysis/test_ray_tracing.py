@@ -536,10 +536,10 @@ class TestMultiTracer(object):
                                                                                    1e-4)
             assert tracer.planes[0].coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]),
                                                                                         1e-4)
-            assert tracer.planes[0].coordinates_collection.image[0] == pytest.approx(np.array([val, val]), 1e-4)
-            assert tracer.planes[0].coordinates_collection.sub[0] == pytest.approx(np.array([val, val]), 1e-4)
-            assert tracer.planes[0].coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
-            assert tracer.planes[0].coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
+            assert tracer.planes[0].deflections.image[0] == pytest.approx(np.array([val, val]), 1e-4)
+            assert tracer.planes[0].deflections.sub[0] == pytest.approx(np.array([val, val]), 1e-4)
+            assert tracer.planes[0].deflections.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
+            assert tracer.planes[0].deflections.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
 
             assert tracer.planes[1].coordinates_collection.image[0] == pytest.approx(
                 np.array([(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]), 1e-4)
@@ -553,10 +553,10 @@ class TestMultiTracer(object):
             defl11 = g0.deflections_from_coordinate_grid(grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]))
             defl12 = g0.deflections_from_coordinate_grid(grid=np.array([[(1.0 - 0.9348 * 1.0), 0.0]]))
 
-            assert tracer.planes[1].coordinates_collection.image[0] == pytest.approx(defl11[0], 1e-4)
-            assert tracer.planes[1].coordinates_collection.sub[0] == pytest.approx(defl11[0], 1e-4)
-            assert tracer.planes[1].coordinates_collection.sub[1] == pytest.approx(defl12[0], 1e-4)
-            assert tracer.planes[1].coordinates_collection.blurring[0] == pytest.approx(defl12[0], 1e-4)
+            assert tracer.planes[1].deflections.image[0] == pytest.approx(defl11[0], 1e-4)
+            assert tracer.planes[1].deflections.sub[0] == pytest.approx(defl11[0], 1e-4)
+            assert tracer.planes[1].deflections.sub[1] == pytest.approx(defl12[0], 1e-4)
+            assert tracer.planes[1].deflections.blurring[0] == pytest.approx(defl12[0], 1e-4)
 
             assert tracer.planes[2].coordinates_collection.image[0] == pytest.approx(
                 np.array([(1.0 - 0.9839601 * val - 0.7539734 * defl11[0, 0]),
@@ -580,10 +580,10 @@ class TestMultiTracer(object):
                 grid=np.array([[(1.0 - 0.9839601 * 1.0 - 0.7539734 * defl12[0, 0]),
                                 0.0]]))
 
-            assert tracer.planes[2].coordinates_collection.image[0] == pytest.approx(defl21[0], 1e-4)
-            assert tracer.planes[2].coordinates_collection.sub[0] == pytest.approx(defl21[0], 1e-4)
-            assert tracer.planes[2].coordinates_collection.sub[1] == pytest.approx(defl22[0], 1e-4)
-            assert tracer.planes[2].coordinates_collection.blurring[0] == pytest.approx(defl22[0], 1e-4)
+            assert tracer.planes[2].deflections.image[0] == pytest.approx(defl21[0], 1e-4)
+            assert tracer.planes[2].deflections.sub[0] == pytest.approx(defl21[0], 1e-4)
+            assert tracer.planes[2].deflections.sub[1] == pytest.approx(defl22[0], 1e-4)
+            assert tracer.planes[2].deflections.blurring[0] == pytest.approx(defl22[0], 1e-4)
 
             coord1 = (1.0 - tracer.planes[0].coordinates_collection.image[0, 0] -
                       tracer.planes[1].coordinates_collection.image[
@@ -775,15 +775,15 @@ class TestPlane(object):
             assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
             assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
-            assert lens_plane.coordinates_collection.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+            assert lens_plane.deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
                                                                                1e-3)
-            assert lens_plane.coordinates_collection.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+            assert lens_plane.deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
                                                                              1e-3)
-            assert lens_plane.coordinates_collection.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.coordinates_collection.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+            assert lens_plane.deflections.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflections.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
                                                                              1e-3)
-            assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflections.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         def test__all_grids__lens_is_3_identical_sis_profiles__deflections_triple_like_above(self, all_grids,
                                                                                              lens_sis_x3):
@@ -797,15 +797,15 @@ class TestPlane(object):
             assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
             assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
-            assert lens_plane.coordinates_collection.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+            assert lens_plane.deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
                                                                                1e-3)
-            assert lens_plane.coordinates_collection.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+            assert lens_plane.deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
                                                                              1e-3)
-            assert lens_plane.coordinates_collection.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.coordinates_collection.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+            assert lens_plane.deflections.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflections.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
                                                                              1e-3)
-            assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflections.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         # TODO : Commented out until quad works in deflections
 
