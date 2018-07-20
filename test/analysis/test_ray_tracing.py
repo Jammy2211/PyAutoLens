@@ -28,15 +28,15 @@ def make_galaxy_mass_sis():
 
 @pytest.fixture(name="all_grids")
 def make_all_grids():
-    regular_grid_coords = np.array([[1.0, 1.0]])
-    sub_grid_coords = np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0]])
-    blurring_grid_coords = np.array([[1.0, 0.0]])
+    regular_grid = np.array([[1.0, 1.0]])
+    sub = np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0]])
+    blurring_grid = np.array([[1.0, 0.0]])
 
-    grid = mask.CoordinateGrid(regular_grid_coords)
-    sub_grid = mask.SubCoordinateGrid(sub_grid_coords, None, sub_grid_size=2)
-    blurring_grid = mask.CoordinateGrid(blurring_grid_coords)
+    grid = mask.CoordinateGrid(regular_grid)
+    sub = mask.SubCoordinateGrid(sub, None, sub_grid_size=2)
+    blurring_grid = mask.CoordinateGrid(blurring_grid)
 
-    all_grids = mask.CoordinateCollection(grid, sub_grid, blurring_grid)
+    all_grids = mask.CoordinateCollection(grid, sub, blurring_grid)
 
     return all_grids
 
@@ -49,7 +49,7 @@ def make_sparse_mask():
 # @pytest.fixture(name="sparse_mask")
 # def make_sparse_mask():
 #     return grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=np.array([[1, 1]]),
-#                              sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0]))
+#                              sub_size=2, sub_to_image=np.array([0, 0, 0, 0]))
 
 @pytest.fixture(name="sparse_mask")
 def make_sparse_mask():
@@ -219,21 +219,22 @@ class TestTracer(object):
             ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                 1e-3)
-            assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                  1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                          1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
+            assert ray_trace.source_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                           1e-3)
 
         def test__image_grid__sis_lens__image_coordinates_are_grid_and_source_plane_is_deflected(self, all_grids,
                                                                                                  galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=galaxy_mass_sis,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.coordinates_collection.image_coords == pytest.approx(np.array([[1.0, 1.0]]),
-                                                                                              1e-3)
-            assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.image_coords == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.image == pytest.approx(np.array([[1.0, 1.0]]),
+                                                                                       1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([0.707, 0.707]),
+                                                                                          1e-3)
+            assert ray_trace.source_plane.coordinates_collection.image == pytest.approx(
                 np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
 
         def test__image_grid__2_sis_lenses__same_as_above_but_deflections_double(self, all_grids, galaxy_mass_sis):
@@ -241,48 +242,50 @@ class TestTracer(object):
                                            source_galaxies=galaxy_mass_sis,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.coordinates_collection.image_coords == pytest.approx(np.array([[1.0, 1.0]]),
-                                                                                              1e-3)
-            assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([1.414, 1.414]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.image_coords == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.image == pytest.approx(np.array([[1.0, 1.0]]),
+                                                                                       1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.414, 1.414]),
+                                                                                          1e-3)
+            assert ray_trace.source_plane.coordinates_collection.image == pytest.approx(
                 np.array([[1.0 - 1.414, 1.0 - 1.414]]), 1e-3)
 
         def test__all_grids__sis_lens__planes_setup_correctly(self, all_grids, galaxy_mass_sis):
             ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_mass_sis], source_galaxies=galaxy_mass_sis,
                                            image_plane_grids=all_grids)
 
-            assert ray_trace.image_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                          1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub[0] == pytest.approx(
                 np.array([1.0, 1.0]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.sub[1] == pytest.approx(
                 np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.sub[2] == pytest.approx(
                 np.array([1.0, 1.0]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.sub[3] == pytest.approx(
                 np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.coordinates_collection.blurring_coords[0] == pytest.approx(
+            assert ray_trace.image_plane.coordinates_collection.blurring[0] == pytest.approx(
                 np.array([1.0, 0.0]), 1e-3)
 
-            assert ray_trace.image_plane.deflections.image_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.image_plane.deflections.sub_grid_coords[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.image_plane.deflections.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.deflections.sub_grid_coords[2] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
-            assert ray_trace.image_plane.deflections.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert ray_trace.image_plane.deflections.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.image[0] == pytest.approx(np.array([0.707, 0.707]),
+                                                                                          1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub[2] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert ray_trace.image_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
-            assert ray_trace.source_plane.coordinates_collection.image_coords[0] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.image[0] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]),
                 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.sub[0] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.sub[1] == pytest.approx(
                 np.array([0.0, 0.0]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.sub[2] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.sub[3] == pytest.approx(
                 np.array([0.0, 0.0]), 1e-3)
-            assert ray_trace.source_plane.coordinates_collection.blurring_coords[0] == pytest.approx(
+            assert ray_trace.source_plane.coordinates_collection.blurring[0] == pytest.approx(
                 np.array([0.0, 0.0]), 1e-3)
 
     class TestImageFromGalaxies:
@@ -526,45 +529,45 @@ class TestMultiTracer(object):
 
             val = math.sqrt(2) / 2.0
 
-            assert tracer.planes[0].coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-4)
-            assert tracer.planes[0].coordinates_collection.sub_grid_coords[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                               1e-4)
-            assert tracer.planes[0].coordinates_collection.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]),
-                                                                                               1e-4)
-            assert tracer.planes[0].coordinates_collection.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]),
-                                                                                               1e-4)
-            assert tracer.planes[0].deflections.image_coords[0] == pytest.approx(np.array([val, val]), 1e-4)
-            assert tracer.planes[0].deflections.sub_grid_coords[0] == pytest.approx(np.array([val, val]), 1e-4)
-            assert tracer.planes[0].deflections.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
-            assert tracer.planes[0].deflections.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
+            assert tracer.planes[0].coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-4)
+            assert tracer.planes[0].coordinates_collection.sub[0] == pytest.approx(np.array([1.0, 1.0]),
+                                                                                   1e-4)
+            assert tracer.planes[0].coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]),
+                                                                                   1e-4)
+            assert tracer.planes[0].coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]),
+                                                                                        1e-4)
+            assert tracer.planes[0].coordinates_collection.image[0] == pytest.approx(np.array([val, val]), 1e-4)
+            assert tracer.planes[0].coordinates_collection.sub[0] == pytest.approx(np.array([val, val]), 1e-4)
+            assert tracer.planes[0].coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
+            assert tracer.planes[0].coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
 
-            assert tracer.planes[1].coordinates_collection.image_coords[0] == pytest.approx(
+            assert tracer.planes[1].coordinates_collection.image[0] == pytest.approx(
                 np.array([(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]), 1e-4)
-            assert tracer.planes[1].coordinates_collection.sub_grid_coords[0] == pytest.approx(
+            assert tracer.planes[1].coordinates_collection.sub[0] == pytest.approx(
                 np.array([(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]), 1e-4)
-            assert tracer.planes[1].coordinates_collection.sub_grid_coords[1] == pytest.approx(
+            assert tracer.planes[1].coordinates_collection.sub[1] == pytest.approx(
                 np.array([(1.0 - 0.9348 * 1.0), 0.0]), 1e-4)
-            assert tracer.planes[1].coordinates_collection.blurring_coords[0] == pytest.approx(
+            assert tracer.planes[1].coordinates_collection.blurring[0] == pytest.approx(
                 np.array([(1.0 - 0.9348 * 1.0), 0.0]), 1e-4)
 
             defl11 = g0.deflections_from_coordinate_grid(grid=np.array([[(1.0 - 0.9348 * val), (1.0 - 0.9348 * val)]]))
             defl12 = g0.deflections_from_coordinate_grid(grid=np.array([[(1.0 - 0.9348 * 1.0), 0.0]]))
 
-            assert tracer.planes[1].deflections.image_coords[0] == pytest.approx(defl11[0], 1e-4)
-            assert tracer.planes[1].deflections.sub_grid_coords[0] == pytest.approx(defl11[0], 1e-4)
-            assert tracer.planes[1].deflections.sub_grid_coords[1] == pytest.approx(defl12[0], 1e-4)
-            assert tracer.planes[1].deflections.blurring_coords[0] == pytest.approx(defl12[0], 1e-4)
+            assert tracer.planes[1].coordinates_collection.image[0] == pytest.approx(defl11[0], 1e-4)
+            assert tracer.planes[1].coordinates_collection.sub[0] == pytest.approx(defl11[0], 1e-4)
+            assert tracer.planes[1].coordinates_collection.sub[1] == pytest.approx(defl12[0], 1e-4)
+            assert tracer.planes[1].coordinates_collection.blurring[0] == pytest.approx(defl12[0], 1e-4)
 
-            assert tracer.planes[2].coordinates_collection.image_coords[0] == pytest.approx(
+            assert tracer.planes[2].coordinates_collection.image[0] == pytest.approx(
                 np.array([(1.0 - 0.9839601 * val - 0.7539734 * defl11[0, 0]),
                           (1.0 - 0.9839601 * val - 0.7539734 * defl11[0, 1])]), 1e-4)
-            assert tracer.planes[2].coordinates_collection.sub_grid_coords[0] == pytest.approx(
+            assert tracer.planes[2].coordinates_collection.sub[0] == pytest.approx(
                 np.array([(1.0 - 0.9839601 * val - 0.7539734 * defl11[0, 0]),
                           (1.0 - 0.9839601 * val - 0.7539734 * defl11[0, 1])]), 1e-4)
-            assert tracer.planes[2].coordinates_collection.sub_grid_coords[1] == pytest.approx(
+            assert tracer.planes[2].coordinates_collection.sub[1] == pytest.approx(
                 np.array([(1.0 - 0.9839601 * 1.0 - 0.7539734 * defl12[0, 0]),
                           0.0]), 1e-4)
-            assert tracer.planes[2].coordinates_collection.blurring_coords[0] == pytest.approx(
+            assert tracer.planes[2].coordinates_collection.blurring[0] == pytest.approx(
                 np.array([(1.0 - 0.9839601 * 1.0 - 0.7539734 * defl12[0, 0]),
                           0.0]), 1e-4)
 
@@ -577,31 +580,33 @@ class TestMultiTracer(object):
                 grid=np.array([[(1.0 - 0.9839601 * 1.0 - 0.7539734 * defl12[0, 0]),
                                 0.0]]))
 
-            assert tracer.planes[2].deflections.image_coords[0] == pytest.approx(defl21[0], 1e-4)
-            assert tracer.planes[2].deflections.sub_grid_coords[0] == pytest.approx(defl21[0], 1e-4)
-            assert tracer.planes[2].deflections.sub_grid_coords[1] == pytest.approx(defl22[0], 1e-4)
-            assert tracer.planes[2].deflections.blurring_coords[0] == pytest.approx(defl22[0], 1e-4)
+            assert tracer.planes[2].coordinates_collection.image[0] == pytest.approx(defl21[0], 1e-4)
+            assert tracer.planes[2].coordinates_collection.sub[0] == pytest.approx(defl21[0], 1e-4)
+            assert tracer.planes[2].coordinates_collection.sub[1] == pytest.approx(defl22[0], 1e-4)
+            assert tracer.planes[2].coordinates_collection.blurring[0] == pytest.approx(defl22[0], 1e-4)
 
-            coord1 = (1.0 - tracer.planes[0].deflections.image_coords[0, 0] - tracer.planes[1].deflections.image_coords[
-                0, 0] -
-                      tracer.planes[2].deflections.image_coords[0, 0])
+            coord1 = (1.0 - tracer.planes[0].coordinates_collection.image[0, 0] -
+                      tracer.planes[1].coordinates_collection.image[
+                          0, 0] -
+                      tracer.planes[2].coordinates_collection.image[0, 0])
 
-            coord2 = (1.0 - tracer.planes[0].deflections.image_coords[0, 1] - tracer.planes[1].deflections.image_coords[
-                0, 1] -
-                      tracer.planes[2].deflections.image_coords[0, 1])
+            coord2 = (1.0 - tracer.planes[0].coordinates_collection.image[0, 1] -
+                      tracer.planes[1].coordinates_collection.image[
+                          0, 1] -
+                      tracer.planes[2].coordinates_collection.image[0, 1])
 
-            coord3 = (1.0 - tracer.planes[0].deflections.sub_grid_coords[1, 0] -
-                      tracer.planes[1].deflections.sub_grid_coords[1, 0] -
-                      tracer.planes[2].deflections.sub_grid_coords[1, 0])
+            coord3 = (1.0 - tracer.planes[0].coordinates_collection.sub[1, 0] -
+                      tracer.planes[1].coordinates_collection.sub[1, 0] -
+                      tracer.planes[2].coordinates_collection.sub[1, 0])
 
-            assert tracer.planes[3].coordinates_collection.image_coords[0] == pytest.approx(np.array([coord1, coord2]),
-                                                                                            1e-4)
-            assert tracer.planes[3].coordinates_collection.sub_grid_coords[0] == pytest.approx(
+            assert tracer.planes[3].coordinates_collection.image[0] == pytest.approx(np.array([coord1, coord2]),
+                                                                                     1e-4)
+            assert tracer.planes[3].coordinates_collection.sub[0] == pytest.approx(
                 np.array([coord1, coord2]), 1e-4)
-            assert tracer.planes[3].coordinates_collection.sub_grid_coords[1] == pytest.approx(np.array([coord3, 0.0]),
-                                                                                               1e-4)
-            assert tracer.planes[3].coordinates_collection.blurring_coords[0] == pytest.approx(np.array([coord3, 0.0]),
-                                                                                               1e-4)
+            assert tracer.planes[3].coordinates_collection.sub[1] == pytest.approx(np.array([coord3, 0.0]),
+                                                                                   1e-4)
+            assert tracer.planes[3].coordinates_collection.blurring[0] == pytest.approx(np.array([coord3, 0.0]),
+                                                                                        1e-4)
 
     class TestImageFromGalaxies:
 
@@ -751,54 +756,56 @@ class TestPlane(object):
                                                                                         galaxy_mass_sis):
             plane = ray_tracing.Plane(galaxies=[galaxy_mass_sis], coordinates_collection=all_grids)
 
-            assert plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
-            assert plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert plane.coordinates_collection.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert plane.coordinates_collection.sub[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert plane.coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert plane.coordinates_collection.sub[2] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
+            assert plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
         def test__all_grids__3_identical_sis_lenses__deflections_triple_compared_to_above(self, all_grids,
                                                                                           galaxy_mass_sis):
             lens_plane = ray_tracing.Plane(galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis],
                                            coordinates_collection=all_grids, compute_deflections=True)
 
-            assert lens_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert lens_plane.coordinates_collection.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[2] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
-            assert lens_plane.deflections.image_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
-            assert lens_plane.deflections.sub_grid_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
-            assert lens_plane.deflections.sub_grid_coords[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.deflections.sub_grid_coords[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
-            assert lens_plane.deflections.sub_grid_coords[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.deflections.blurring_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates_collection.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+                                                                               1e-3)
+            assert lens_plane.coordinates_collection.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+                                                                             1e-3)
+            assert lens_plane.coordinates_collection.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates_collection.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+                                                                             1e-3)
+            assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         def test__all_grids__lens_is_3_identical_sis_profiles__deflections_triple_like_above(self, all_grids,
                                                                                              lens_sis_x3):
             lens_plane = ray_tracing.Plane(galaxies=[lens_sis_x3], coordinates_collection=all_grids,
                                            compute_deflections=True)
 
-            assert lens_plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[2] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-            assert lens_plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-            assert lens_plane.coordinates_collection.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates_collection.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[2] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+            assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+            assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
-            assert lens_plane.deflections.image_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
-            assert lens_plane.deflections.sub_grid_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
-            assert lens_plane.deflections.sub_grid_coords[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.deflections.sub_grid_coords[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
-            assert lens_plane.deflections.sub_grid_coords[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-            assert lens_plane.deflections.blurring_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates_collection.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+                                                                               1e-3)
+            assert lens_plane.coordinates_collection.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+                                                                             1e-3)
+            assert lens_plane.coordinates_collection.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates_collection.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
+                                                                             1e-3)
+            assert lens_plane.coordinates_collection.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
+            assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         # TODO : Commented out until quad works in deflections
 
@@ -813,31 +820,31 @@ class TestPlane(object):
         #
         #     lens_plane = ray_tracing.Plane(galaxies=[lens_galaxy], grids=all_grids, compute_deflections=True)
         #
-        #     assert lens_plane.grids.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-        #     assert lens_plane.grids.sub_grid_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-        #     assert lens_plane.grids.sub_grid_coords[1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-        #     assert lens_plane.grids.sub_grid_coords[2] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
-        #     assert lens_plane.grids.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
-        #     assert lens_plane.grids.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+        #     assert lens_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+        #     assert lens_plane.grids.sub[0] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+        #     assert lens_plane.grids.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+        #     assert lens_plane.grids.sub[2] == pytest.approx(np.array([1.0, 1.0]), 1e-5)
+        #     assert lens_plane.grids.sub[3] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
+        #     assert lens_plane.grids.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
         #
-        #     defls = power_law.deflections_at_coordinates(all_grids.image_coords[0]) + \
-        #             nfw.deflections_at_coordinates(all_grids.image_coords[0])
+        #     defls = power_law.deflections_at_coordinates(all_grids.image[0]) + \
+        #             nfw.deflections_at_coordinates(all_grids.image[0])
         #
-        #     sub_defls_0 = power_law.deflections_at_coordinates(all_grids.sub_grid_coords[0, 0]) + \
-        #                   nfw.deflections_at_coordinates(all_grids.sub_grid_coords[0, 0])
+        #     sub_defls_0 = power_law.deflections_at_coordinates(all_grids.sub[0, 0]) + \
+        #                   nfw.deflections_at_coordinates(all_grids.sub[0, 0])
         #
-        #     sub_defls_1 = power_law.deflections_at_coordinates(all_grids.sub_grid_coords[1, 0]) + \
-        #                   nfw.deflections_at_coordinates(all_grids.sub_grid_coords[1, 0])
+        #     sub_defls_1 = power_law.deflections_at_coordinates(all_grids.sub[1, 0]) + \
+        #                   nfw.deflections_at_coordinates(all_grids.sub[1, 0])
         #
-        #     blurring_defls = power_law.deflections_at_coordinates(all_grids.blurring_coords[0]) + \
-        #                      nfw.deflections_at_coordinates(all_grids.blurring_coords[0])
+        #     blurring_defls = power_law.deflections_at_coordinates(all_grids.blurring[0]) + \
+        #                      nfw.deflections_at_coordinates(all_grids.blurring[0])
         #
-        #     assert lens_plane.deflections.image_coords[0] == pytest.approx(defls, 1e-3)
-        #     assert lens_plane.deflections.sub_grid_coords[0] == pytest.approx(sub_defls_0, 1e-3)
-        #     assert lens_plane.deflections.sub_grid_coords[1] == pytest.approx(sub_defls_1, 1e-3)
-        #     assert lens_plane.deflections.sub_grid_coords[2] == pytest.approx(sub_defls_0, 1e-3)
-        #     assert lens_plane.deflections.sub_grid_coords[3] == pytest.approx(sub_defls_1, 1e-3)
-        #     assert lens_plane.deflections.blurring_coords[0] == pytest.approx(blurring_defls, 1e-3)
+        #     assert lens_plane.coordinates_collection.image[0] == pytest.approx(defls, 1e-3)
+        #     assert lens_plane.coordinates_collection.sub[0] == pytest.approx(sub_defls_0, 1e-3)
+        #     assert lens_plane.coordinates_collection.sub[1] == pytest.approx(sub_defls_1, 1e-3)
+        #     assert lens_plane.coordinates_collection.sub[2] == pytest.approx(sub_defls_0, 1e-3)
+        #     assert lens_plane.coordinates_collection.sub[3] == pytest.approx(sub_defls_1, 1e-3)
+        #     assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(blurring_defls, 1e-3)
 
     class TestImageFromGalaxies:
 
@@ -845,17 +852,17 @@ class TestPlane(object):
                                                                                        galaxy_light_sersic):
             sersic = galaxy_light_sersic.light_profiles[0]
 
-            profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[0])
-            profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[1])
-            profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[2])
-            profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[3])
+            profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.sub[0])
+            profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.sub[1])
+            profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.sub[2])
+            profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.sub[3])
 
             profile_intensity = (profile_intensity_0 +
                                  profile_intensity_1 +
                                  profile_intensity_2 +
                                  profile_intensity_3) / 4
 
-            galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords,
+            galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub,
                                                                     galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
@@ -864,70 +871,70 @@ class TestPlane(object):
             assert (image[0] == profile_intensity == galaxy_intensity).all()
 
         # def test__same_as_above__now_with_multiple_sets_of_coordinates(self, all_grids, galaxy_light_sersic):
-        #     all_grids.sub_grid_coords = mask.SubCoordinateGrid(
+        #     all_grids.sub = mask.SubCoordinateGrid(
         #         np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0],
         #                   [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]]), None,
-        #         sub_grid_size=2)
+        #         sub_size=2)
         #
         #     # sparse_mask = mask.GridMapping(image_shape=(3, 3), image_pixels=2,
         #     #                            data_to_image=np.array([[1, 1], [2, 2]]),
-        #     #                            sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0, 1, 1, 1, 1]))
+        #     #                            sub_size=2, sub_to_image=np.array([0, 0, 0, 0, 1, 1, 1, 1]))
         #
         #     sersic = galaxy_light_sersic.light_profiles[0]
-        #     profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[0])
-        #     profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[1])
-        #     profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[2])
-        #     profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[3])
+        #     profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.sub[0])
+        #     profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.sub[1])
+        #     profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.sub[2])
+        #     profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.sub[3])
         #
         #     profile_intensity_image_0 = (profile_intensity_0 + profile_intensity_1 + profile_intensity_2 +
         #                                  profile_intensity_3) / 4
         #
-        #     profile_intensity_4 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[4])
-        #     profile_intensity_5 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[5])
-        #     profile_intensity_6 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[6])
-        #     profile_intensity_7 = sersic.intensity_at_coordinates(all_grids.sub_grid_coords[7])
+        #     profile_intensity_4 = sersic.intensity_at_coordinates(all_grids.sub[4])
+        #     profile_intensity_5 = sersic.intensity_at_coordinates(all_grids.sub[5])
+        #     profile_intensity_6 = sersic.intensity_at_coordinates(all_grids.sub[6])
+        #     profile_intensity_7 = sersic.intensity_at_coordinates(all_grids.sub[7])
         #
         #     profile_intensity_image_1 = (profile_intensity_4 + profile_intensity_5 + profile_intensity_6 +
         #                                  profile_intensity_7) / 4
         #
-        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords,
+        #     galaxy_intensity = ray_tracing.intensities_via_sub(all_grids.sub,
         # galaxies=[galaxy_light_sersic],
         #                                                                       )
         #
         #     plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
         #     image = plane.generate_image_of_galaxy_light_profiles()
         #
-        #     assert (image_coords[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
-        #     assert (image_coords[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
+        #     assert (image[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
+        #     assert (image[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
         #
         # def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, all_grids, galaxy_light_sersic):
-        #     all_grids.sub_grid_coords = mask.SubCoordinateGrid(
+        #     all_grids.sub = mask.SubCoordinateGrid(
         #         np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0],
         #                   [1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.1, -2.0]]), None,
-        #         sub_grid_size=2)
+        #         sub_size=2)
         #
         #     # sparse_mask = mask.GridMapping(image_shape=(3, 3), image_pixels=2,
         #     #                            data_to_image=np.array([[1, 1], [2, 2]]),
-        #     #                            sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0, 1, 1, 1, 1]))
+        #     #                            sub_size=2, sub_to_image=np.array([0, 0, 0, 0, 1, 1, 1, 1]))
         #
         #     sersic = galaxy_light_sersic.light_profiles[0]
-        #     profile_intensity_0 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[0])
-        #     profile_intensity_1 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[1])
-        #     profile_intensity_2 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[2])
-        #     profile_intensity_3 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[3])
+        #     profile_intensity_0 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[0])
+        #     profile_intensity_1 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[1])
+        #     profile_intensity_2 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[2])
+        #     profile_intensity_3 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[3])
         #
         #     profile_intensity_image_0 = (profile_intensity_0 + profile_intensity_1 + profile_intensity_2 +
         #                                  profile_intensity_3) / 4
         #
-        #     profile_intensity_4 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[4])
-        #     profile_intensity_5 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[5])
-        #     profile_intensity_6 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[6])
-        #     profile_intensity_7 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub_grid_coords[7])
+        #     profile_intensity_4 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[4])
+        #     profile_intensity_5 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[5])
+        #     profile_intensity_6 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[6])
+        #     profile_intensity_7 = 3.0 * sersic.intensity_at_coordinates(all_grids.sub[7])
         #
         #     profile_intensity_image_1 = (profile_intensity_4 + profile_intensity_5 + profile_intensity_6 +
         #                                  profile_intensity_7) / 4
         #
-        #     galaxy_intensity = ray_tracing.intensities_via_sub_grid(all_grids.sub_grid_coords,
+        #     galaxy_intensity = ray_tracing.intensities_via_sub(all_grids.sub,
         # galaxies=[galaxy_light_sersic,
         #                                                                                 galaxy_light_sersic,
         #                                                                                 galaxy_light_sersic],
@@ -937,20 +944,20 @@ class TestPlane(object):
         #                               coordinates_collection=all_grids)
         #     image = plane.generate_image_of_galaxy_light_profiles()
         #
-        #     assert (image_coords[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
-        #     assert (image_coords[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
+        #     assert (image[0] == profile_intensity_image_0 == galaxy_intensity[0]).all()
+        #     assert (image[1] == profile_intensity_image_1 == galaxy_intensity[1]).all()
 
     class TestBlurringImageFromGalaxies:
 
         def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids,
                                                                                        galaxy_light_sersic):
-            all_grids.image_coords = mask.CoordinateGrid(np.array([[9.0, 9.0]]))
-            all_grids.blurring_coords = mask.CoordinateGrid(np.array([[1.0, 1.0]]))
+            all_grids.image = mask.CoordinateGrid(np.array([[9.0, 9.0]]))
+            all_grids.blurring = mask.CoordinateGrid(np.array([[1.0, 1.0]]))
 
             sersic = galaxy_light_sersic.light_profiles[0]
-            profile_intensity = sersic.intensity_at_coordinates(all_grids.blurring_coords[0])
+            profile_intensity = sersic.intensity_at_coordinates(all_grids.blurring[0])
 
-            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring_coords,
+            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring,
                                                                          galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
@@ -959,17 +966,17 @@ class TestPlane(object):
             assert (blurring_image[0] == profile_intensity == blurring_galaxy_intensity).all()
 
         def test__same_as_above__now_with_multiple_sets_of_coordinates(self, all_grids, galaxy_light_sersic):
-            all_grids.image_coords = mask.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
-            all_grids.blurring_coords = mask.CoordinateGrid(
+            all_grids.image = mask.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
+            all_grids.blurring = mask.CoordinateGrid(
                 np.array([[1.0, 1.0], [5.0, 5.0], [-2.0, -9.0], [5.0, 7.0]]))
 
             sersic = galaxy_light_sersic.light_profiles[0]
-            profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.blurring_coords[0])
-            profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.blurring_coords[1])
-            profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.blurring_coords[2])
-            profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.blurring_coords[3])
+            profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.blurring[0])
+            profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.blurring[1])
+            profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.blurring[2])
+            profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.blurring[3])
 
-            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring_coords,
+            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring,
                                                                          galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], coordinates_collection=all_grids)
@@ -981,17 +988,17 @@ class TestPlane(object):
             assert (blurring_image[3] == profile_intensity_3 == blurring_galaxy_intensity[3]).all()
 
         def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, all_grids, galaxy_light_sersic):
-            all_grids.image_coords = mask.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
-            all_grids.blurring_coords = mask.CoordinateGrid(
+            all_grids.image = mask.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
+            all_grids.blurring = mask.CoordinateGrid(
                 np.array([[1.0, 1.0], [5.0, 5.0], [-2.0, -9.0], [5.0, 7.0]]))
 
             sersic = galaxy_light_sersic.light_profiles[0]
-            profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.blurring_coords[0])
-            profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.blurring_coords[1])
-            profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.blurring_coords[2])
-            profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.blurring_coords[3])
+            profile_intensity_0 = sersic.intensity_at_coordinates(all_grids.blurring[0])
+            profile_intensity_1 = sersic.intensity_at_coordinates(all_grids.blurring[1])
+            profile_intensity_2 = sersic.intensity_at_coordinates(all_grids.blurring[2])
+            profile_intensity_3 = sersic.intensity_at_coordinates(all_grids.blurring[3])
 
-            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring_coords,
+            blurring_galaxy_intensity = ray_tracing.intensities_via_grid(all_grids.blurring,
                                                                          galaxies=[galaxy_light_sersic])
 
             plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic, galaxy_light_sersic, galaxy_light_sersic],

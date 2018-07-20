@@ -1586,12 +1586,12 @@ def make_coordinate_collection(centre_mask):
 
 class TestCoordinateCollection(object):
     def test_coordinate_collection(self, coordinate_collection):
-        assert (coordinate_collection.image_coords == np.array([[0., 0.]])).all()
-        np.testing.assert_almost_equal(coordinate_collection.sub_grid_coords, np.array([[-0.16666667, -0.16666667],
+        assert (coordinate_collection.image == np.array([[0., 0.]])).all()
+        np.testing.assert_almost_equal(coordinate_collection.sub, np.array([[-0.16666667, -0.16666667],
                                                                                         [-0.16666667, 0.16666667],
                                                                                         [0.16666667, -0.16666667],
                                                                                         [0.16666667, 0.16666667]]))
-        assert (coordinate_collection.blurring_coords == np.array([[-1., -1.],
+        assert (coordinate_collection.blurring == np.array([[-1., -1.],
                                                                    [-1., 0.],
                                                                    [-1., 1.],
                                                                    [0., -1.],
@@ -1606,19 +1606,19 @@ class TestCoordinateCollection(object):
 
         new_collection = coordinate_collection.apply_function(add_one)
         assert isinstance(new_collection, mask.CoordinateCollection)
-        assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
-        np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(1, np.array([[-0.16666667, -0.16666667],
-                                                                                           [-0.16666667, 0.16666667],
-                                                                                           [0.16666667, -0.16666667],
-                                                                                           [0.16666667, 0.16666667]])))
-        assert (new_collection.blurring_coords == np.add(1, np.array([[-1., -1.],
-                                                                      [-1., 0.],
-                                                                      [-1., 1.],
-                                                                      [0., -1.],
-                                                                      [0., 1.],
-                                                                      [1., -1.],
-                                                                      [1., 0.],
-                                                                      [1., 1.]]))).all()
+        assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
+        np.testing.assert_almost_equal(new_collection.sub, np.add(1, np.array([[-0.16666667, -0.16666667],
+                                                                               [-0.16666667, 0.16666667],
+                                                                               [0.16666667, -0.16666667],
+                                                                               [0.16666667, 0.16666667]])))
+        assert (new_collection.blurring == np.add(1, np.array([[-1., -1.],
+                                                               [-1., 0.],
+                                                               [-1., 1.],
+                                                               [0., -1.],
+                                                               [0., 1.],
+                                                               [1., -1.],
+                                                               [1., 0.],
+                                                               [1., 1.]]))).all()
 
     def test_map_function(self, coordinate_collection):
         def add_number(coords, number):
@@ -1627,16 +1627,16 @@ class TestCoordinateCollection(object):
         new_collection = coordinate_collection.map_function(add_number, [1, 2, 3])
 
         assert isinstance(new_collection, mask.CoordinateCollection)
-        assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
-        np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(2, np.array([[-0.16666667, -0.16666667],
-                                                                                           [-0.16666667, 0.16666667],
-                                                                                           [0.16666667, -0.16666667],
-                                                                                           [0.16666667, 0.16666667]])))
-        assert (new_collection.blurring_coords == np.add(3, np.array([[-1., -1.],
-                                                                      [-1., 0.],
-                                                                      [-1., 1.],
-                                                                      [0., -1.],
-                                                                      [0., 1.],
-                                                                      [1., -1.],
-                                                                      [1., 0.],
-                                                                      [1., 1.]]))).all()
+        assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
+        np.testing.assert_almost_equal(new_collection.sub, np.add(2, np.array([[-0.16666667, -0.16666667],
+                                                                               [-0.16666667, 0.16666667],
+                                                                               [0.16666667, -0.16666667],
+                                                                               [0.16666667, 0.16666667]])))
+        assert (new_collection.blurring == np.add(3, np.array([[-1., -1.],
+                                                               [-1., 0.],
+                                                               [-1., 1.],
+                                                               [0., -1.],
+                                                               [0., 1.],
+                                                               [1., -1.],
+                                                               [1., 0.],
+                                                               [1., 1.]]))).all()
