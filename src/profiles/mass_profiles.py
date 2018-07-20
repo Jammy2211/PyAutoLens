@@ -1271,20 +1271,20 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Tau']
 
-    @geometry_profiles.transform_coordinates
-    def surface_density_from_coordinate_grid(self, coordinates):
+    @geometry_profiles.transform_grid
+    def surface_density_from_coordinate_grid(self, grid):
         """Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
         Parameters
         ----------
-        coordinates : ndarray
+        grid : ndarray
             The x and y image_grid of the image_grid
 
         Returns
         ----------
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
-        return self.surface_density_func(self.coordinates_to_eccentric_radius(coordinates))
+        return self.surface_density_func(self.grid_to_eccentric_radii(grid))
 
     @geometry_profiles.transform_grid
     def deflections_from_coordinate_grid(self, grid):
