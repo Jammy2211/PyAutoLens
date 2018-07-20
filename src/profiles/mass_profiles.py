@@ -797,25 +797,10 @@ class SphericalNFW(EllipticalNFW):
     def parameter_labels(self):
         return ['x', 'y', r'\kappa', 'Rs']
 
-    @staticmethod
-    def potential_func_sph(eta):
-        return ((np.log(eta / 2.0)) ** 2) - (np.arctanh(np.sqrt(1 - eta ** 2))) ** 2
-
-    @staticmethod
-    def deflection_func_sph(eta):
-        conditional_eta = np.copy(eta)
-        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
-                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
-        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
-                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
-
-        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
-
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
 
     # TODO : Make this use numpy arthimitic
-    # TOOO : Same issue as a potential above
 
     @geometry_profiles.transform_grid
     def potential_from_coordinate_grid(self, grid):
@@ -843,6 +828,19 @@ class SphericalNFW(EllipticalNFW):
 
         return self.grid_radius_to_cartesian(grid, deflection_r)
 
+    @staticmethod
+    def potential_func_sph(eta):
+        return ((np.log(eta / 2.0)) ** 2) - (np.arctanh(np.sqrt(1 - eta ** 2))) ** 2
+
+    @staticmethod
+    def deflection_func_sph(eta):
+        conditional_eta = np.copy(eta)
+        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
+                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
+        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
+                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
+
+        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
 class EllipticalGeneralizedNFW(EllipticalNFW):
 
@@ -869,58 +867,12 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         super(EllipticalGeneralizedNFW, self).__init__(centre, axis_ratio, phi, kappa_s, scale_radius)
         self.inner_slope = inner_slope
 
-        # TODO : These should really be passed in the constructor or something... Hmm
-        # TODO : These are the minimum / maximum elliptical radius in the mask, make a property of masked_image and pass in?
-
-        self.tabulate_bins = 1000
-        self.eta_min = 1e-4
-        self.eta_max = 15.0
-        self.minimum_log_eta = np.log10(self.eta_min)
-        self.maximum_log_eta = np.log10(self.eta_max)
-        self.bin_size = (self.maximum_log_eta - self.minimum_log_eta) / (self.tabulate_bins - 1)
-
-        self.surface_density_integral = np.zeros((self.tabulate_bins))
-
-        for i in range(self.tabulate_bins):
-
-            eta = 10.** (self.minimum_log_eta + (i-1) * self.bin_size)
-
-            integral = quad(self.surface_density_integrand, a=0.0, b=1.0,
-                            args=(eta, self.scale_radius, self.inner_slope))[0]
-
-            # TODO : Refactor as numpy array calculation
-
-            self.surface_density_integral[i] = ((eta / self.scale_radius) ** (1 - self.inner_slope)) * \
-            (((1 + eta / self.scale_radius) ** (self.inner_slope - 3)) + (3 - self.inner_slope) * integral)
-
-
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', r'\kappa', r'\gamma' 'Rs']
 
-    def integral_y_2(self, y, eta):
-        return (y + eta) ** (self.inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
-
-    @geometry_profiles.transform_coordinates
-    def potential_at_coordinates(self, coordinates):
-        """
-        Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane
-        image_grid.
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The surface density [kappa(eta)] (r-direction) at those image_grid
-        """
-        potential = quad(self.potential_func_ell, a=0.0, b=1.0, args=(coordinates,))[0]
-        return 4.0 * self.kappa_s * self.scale_radius * self.axis_ratio / 2.0 * potential
-
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def potential_from_coordinate_grid(self, grid, tabulate_bins=1000):
         """
         Calculate the deflection angle at a given set of gridded coordinates
 
@@ -934,6 +886,58 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         The deflection angles [alpha(eta)] (x and y components) at those image_grid
         """
 
+        @jit_integrand_function_3_params
+        def potential_integrand(x, kappa_radius, scale_radius, inner_slope):
+            return (x + kappa_radius / scale_radius) ** (inner_slope - 3) * ((1 - np.sqrt(1 - x ** 2)) / x)
+
+        eta_min = 1.0e-4
+        eta_max = 1.05 * np.max(self.grid_to_elliptical_radius(grid))
+
+        minimum_log_eta = np.log10(eta_min)
+        maximum_log_eta = np.log10(eta_max)
+        bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
+
+        potential_grid = np.zeros(grid.shape[0])
+
+        potential_integral = np.zeros((tabulate_bins))
+
+        for i in range(tabulate_bins):
+
+            eta = 10.** (minimum_log_eta + (i-1) * bin_size)
+
+            integral = quad(potential_integrand, a=0.0, b=1.0, args=(eta, self.scale_radius, self.inner_slope))[0]
+
+            potential_integral[i] = ((eta/self.scale_radius) ** (2 - self.inner_slope)) * ((1.0 / (3 - self.inner_slope)) *
+                special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, - (eta/self.scale_radius))  + integral)
+
+        for i in range(grid.shape[0]):
+
+            potential_grid[i] =  (2.0 * self.kappa_s * self.axis_ratio) * \
+                                 quad(self.potential_func, a=0.0, b=1.0, args=(grid[i, 0], grid[i, 1],
+                                 self.axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins,
+                                                                               potential_integral))[0]
+
+        return potential_grid
+
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid, tabulate_bins=1000):
+        """
+        Calculate the deflection angle at a given set of gridded coordinates
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The x and y image_grid of the image_grid
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those image_grid
+        """
+
+        @jit_integrand_function_3_params
+        def surface_density_integrand(x, kappa_radius, scale_radius, inner_slope):
+            return (3 - inner_slope) * (x + kappa_radius / scale_radius) ** (inner_slope - 4) * (1 - np.sqrt(1 - x * x))
+
         def calculate_deflection_component(grid, npow, index):
 
             deflection_grid = np.zeros(grid.shape[0])
@@ -941,10 +945,29 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
             for i in range(grid.shape[0]):
 
                 deflection_grid[i] = 2.0 * self.kappa_s * self.axis_ratio * grid[i,index] * quad(self.deflection_func,
-                a=0.0, b=1.0, args=(grid[i,0], grid[i,1], npow, self.axis_ratio, self.minimum_log_eta, self.maximum_log_eta,
-                self.tabulate_bins, self.surface_density_integral))[0]
+                a=0.0, b=1.0, args=(grid[i,0], grid[i,1], npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
+                tabulate_bins, surface_density_integral))[0]
 
             return  deflection_grid
+
+        eta_min = 1.0e-4
+        eta_max = 1.05 * np.max(self.grid_to_elliptical_radius(grid))
+
+        minimum_log_eta = np.log10(eta_min)
+        maximum_log_eta = np.log10(eta_max)
+        bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
+
+        surface_density_integral = np.zeros((tabulate_bins))
+
+        for i in range(tabulate_bins):
+
+            eta = 10.** (minimum_log_eta + (i-1) * bin_size)
+
+            integral = quad(surface_density_integrand, a=0.0, b=1.0, args=(eta, self.scale_radius,
+                                                                                self.inner_slope))[0]
+
+            surface_density_integral[i] = ((eta / self.scale_radius) ** (1 - self.inner_slope)) * \
+            (((1 + eta / self.scale_radius) ** (self.inner_slope - 3)) + integral)
 
         deflection_x = calculate_deflection_component(grid, 0.0, 0)
         deflection_y = calculate_deflection_component(grid, 1.0, 1)
@@ -952,26 +975,28 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
     def surface_density_func(self, radius):
+
+        def integral_y(y, eta):
+            return (y + eta) ** (self.inner_slope - 4) * (1 - math.sqrt(1 - y ** 2))
+
         radius = (1.0 / self.scale_radius) * radius
-        integral_y = quad(self.integral_y, a=0.0, b=1.0, args=radius)[0]
+        integral_y = quad(integral_y, a=0.0, b=1.0, args=radius)[0]
 
         return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * (
                 (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
 
-    def potential_func_ell(self, u, coordinates):
-        eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
-        return (eta / u) * (self.deflection_func_sph(eta)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
-
-    def deflection_func_sph(self, eta):
-        integral_y_2 = quad(self.integral_y_2, a=0.0, b=1.0, args=eta)[0]
-        return eta ** (2 - self.inner_slope) * (
-                (1.0 / (3 - self.inner_slope)) *
-                special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, -eta) + integral_y_2)
-
     @staticmethod
-    @jit_integrand_function_3_params
-    def surface_density_integrand(x, kappa_radius, scale_radius, inner_slope):
-        return (x+kappa_radius/scale_radius)**(inner_slope-4)*(1-(1-x*x)**0.5)
+    # TODO : Decorator needs to know that potential_integral is 1D array
+    #    @jit_integrand_function_7_params
+    def potential_func(u, x, y, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins, potential_integral):
+        eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+        bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
+        i = 1 + int((np.log10(eta_u) - minimum_log_eta) / bin_size)
+        r1 = 10. ** (minimum_log_eta + (i - 1) * bin_size)
+        r2 = r1 * 10. ** bin_size
+        phi = potential_integral[i] + (potential_integral[i + 1] - potential_integral[i]) \
+              * (eta_u - r1) / (r2 - r1)
+        return eta_u * (phi / u) / (1.0 - (1.0 - axis_ratio ** 2) * u) ** (0.5)
 
     @staticmethod
     # TODO : Decorator needs to know that surface_density_integral is 1D array
