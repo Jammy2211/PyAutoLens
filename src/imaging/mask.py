@@ -409,10 +409,7 @@ class Grid(np.ndarray):
     |x|x|x|x|x|x|x|x|x|x|   grid_data[7] = 7
     |x|x|x|x|x|x|x|x|x|x|   grid_data[8] = 1
     |x|x|x|x|x|x|x|x|x|x|   grid_data[9] = 3
-    Parameters
-    -----------
-    grid_data : np.ndarray
-        The data-values in the unmasked data_to_pixel of a data-set (e.g. an image, noise, exposure times).
+    
     Notes
     ----------
     The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image.
