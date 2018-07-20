@@ -607,8 +607,8 @@ class TestCoordinates(object):
                 (-1, -1)), 1e-10)
 
     def test__intensity_from_coordinate_grid(self, elliptical):
-        assert elliptical.intensity_from_coordinate_grid((1, 1)) == pytest.approx(
-            elliptical.intensity_from_coordinate_grid((-1, -1)), 1e-10)
+        assert elliptical.intensity_from_coordinate_grid(np.array([[1, 1]])) == \
+               pytest.approx(elliptical.intensity_from_coordinate_grid(np.array([[-1, -1]])), 1e-4)
 
 
 class TestTransform(object):
