@@ -683,9 +683,5 @@ class GridCollection(object):
         """
         return GridCollection(*[func(*args) for args in zip(self, *arg_lists)])
 
-    @property
-    def sub_pixels(self):
-        return self.sub.shape[0]
-
     def __getitem__(self, item):
         return [self.image, self.sub, self.blurring][item]
