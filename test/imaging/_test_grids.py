@@ -732,7 +732,7 @@ class TestGridData(object):
 
             mask = msk.Mask(mask, pixel_scale=3.0)
 
-            grid_data = mask.masked_1d_array_from_2d_array(data)
+            grid_data = mask.map_to_1d(data)
 
             assert (grid_data[0] == np.array([2])).all()
             assert (grid_data[1] == np.array([4])).all()
@@ -757,7 +757,7 @@ class TestGridMapping(object):
 
             mask = msk.Mask(mask, pixel_scale=3.0)
 
-            grid_data = mask.masked_1d_array_from_2d_array(data)
+            grid_data = mask.map_to_1d(data)
 
             grid_mapping = grids.GridMapping(image_shape=(3, 3), image_pixels=9, data_to_image=data_to_image,
                                              sub_grid_size=1, sub_to_image=np.array([0]))
@@ -783,7 +783,7 @@ class TestGridMapping(object):
 
             mask = msk.Mask(mask, pixel_scale=3.0)
 
-            grid_data = mask.masked_1d_array_from_2d_array(data)
+            grid_data = mask.map_to_1d(data)
 
             grid_mapping = grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=data_to_image,
                                              sub_grid_size=5, sub_to_image=np.array([0]))
