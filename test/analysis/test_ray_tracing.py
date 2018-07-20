@@ -32,9 +32,9 @@ def make_all_grids():
     sub = np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0]])
     blurring_grid = np.array([[1.0, 0.0]])
 
-    grid = mask.CoordinateGrid(regular_grid)
+    grid = mask.Grid(regular_grid)
     sub = mask.SubCoordinateGrid(sub, None, sub_grid_size=2)
-    blurring_grid = mask.CoordinateGrid(blurring_grid)
+    blurring_grid = mask.Grid(blurring_grid)
 
     all_grids = mask.GridCollection(grid, sub, blurring_grid)
 
@@ -951,8 +951,8 @@ class TestPlane(object):
 
         def test__sersic_light_profile__intensities_equal_to_profile_and_galaxy_values(self, all_grids,
                                                                                        galaxy_light_sersic):
-            all_grids.image = mask.CoordinateGrid(np.array([[9.0, 9.0]]))
-            all_grids.blurring = mask.CoordinateGrid(np.array([[1.0, 1.0]]))
+            all_grids.image = mask.Grid(np.array([[9.0, 9.0]]))
+            all_grids.blurring = mask.Grid(np.array([[1.0, 1.0]]))
 
             sersic = galaxy_light_sersic.light_profiles[0]
             profile_intensity = sersic.intensity_at_coordinates(all_grids.blurring[0])
@@ -966,8 +966,8 @@ class TestPlane(object):
             assert (blurring_image[0] == profile_intensity == blurring_galaxy_intensity).all()
 
         def test__same_as_above__now_with_multiple_sets_of_coordinates(self, all_grids, galaxy_light_sersic):
-            all_grids.image = mask.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
-            all_grids.blurring = mask.CoordinateGrid(
+            all_grids.image = mask.Grid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
+            all_grids.blurring = mask.Grid(
                 np.array([[1.0, 1.0], [5.0, 5.0], [-2.0, -9.0], [5.0, 7.0]]))
 
             sersic = galaxy_light_sersic.light_profiles[0]
@@ -988,8 +988,8 @@ class TestPlane(object):
             assert (blurring_image[3] == profile_intensity_3 == blurring_galaxy_intensity[3]).all()
 
         def test__same_as_above__now_galaxy_entered_3_times__intensities_triple(self, all_grids, galaxy_light_sersic):
-            all_grids.image = mask.CoordinateGrid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
-            all_grids.blurring = mask.CoordinateGrid(
+            all_grids.image = mask.Grid(np.array([[1.0, 1.0], [3.0, 3.0], [5.0, -9.0], [-3.2, -5.0]]))
+            all_grids.blurring = mask.Grid(
                 np.array([[1.0, 1.0], [5.0, 5.0], [-2.0, -9.0], [5.0, 7.0]]))
 
             sersic = galaxy_light_sersic.light_profiles[0]
