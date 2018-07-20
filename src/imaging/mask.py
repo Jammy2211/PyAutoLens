@@ -435,10 +435,24 @@ class SubCoordinateGrid(CoordinateGrid):
 
 
 class CoordinateCollection(object):
-    def __init__(self, image_coords, sub_grid_coords, blurring_coords):
-        self.image_coords = image_coords
-        self.sub_grid_coords = sub_grid_coords
-        self.blurring_coords = blurring_coords
+    def __init__(self, image, sub, blurring):
+        """
+        A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
+        sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the image,
+        lens and source planes.
+
+        Parameters
+        -----------
+        image : GridCoordsImage
+            A grid of coordinates for the regular image grid.
+        sub : GridCoordsImageSub
+            A grid of coordinates for the sub-gridded image grid.
+        blurring : GridCoordsBlurring
+            A grid of coordinates for the blurring regions.
+        """
+        self.image_coords = image
+        self.sub_grid_coords = sub
+        self.blurring_coords = blurring
 
     @classmethod
     def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
