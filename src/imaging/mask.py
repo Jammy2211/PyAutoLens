@@ -158,7 +158,7 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
-        return CoordinateGrid(grid)
+        return Grid(grid)
 
     def masked_1d_array_from_2d_array(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
@@ -365,7 +365,59 @@ class SparseMask(Mask):
         return image_to_sparse
 
 
-class CoordinateGrid(np.ndarray):
+class Grid(np.ndarray):
+    """
+    The grid storing the value in each unmasked pixel of a data-set (e.g. an image, noise, exposure times, etc.)
+    Data values are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
+    image (e.g. [0,0]) have the lowest index value. Therefore, the *grid_data* is a NumPy array of dimensions_2d
+    [image_pixels], where each element maps to its corresponding image pixel index. For example, the value \
+    [3] gives the 4th pixel's data value.
+    Below is a visual illustration of a data-grid, where a total of 10 data_to_pixel are unmasked and therefore
+    included in the grid.
+
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
+    |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
+    |x|x|x|o|o|o|o|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    Now lets pretend these are the data values of this grid:
+    |1|6|8|3|4|5|7|4|3|2|
+    |7|3|6|4|8|1|2|2|4|3|
+    |6|0|7|4|1|0|6|6|3|0|
+    |5|7|6|0|2|8|4|4|2|0|
+    |3|3|3|9|3|4|6|3|1|0|
+    |4|2|4|6|7|1|3|2|2|2|
+    |5|3|5|9|7|2|2|2|2|3|
+    |6|4|5|9|5|3|1|4|3|6|
+    |6|5|6|9|3|4|2|0|7|4|
+    |3|6|7|6|2|5|4|0|8|2|
+
+    Lets extract specifically the data which is unmasked and look at our grid_data:
+
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[0] = 2
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[1] = 8
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[2] = 9
+    |x|x|x|x|2|8|x|x|x|x|   grid_data[3] = 3
+    |x|x|x|9|3|4|6|x|x|x|   grid_data[4] = 4
+    |x|x|x|6|7|1|3|x|x|x|   grid_data[5] = 6
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[6] = 6
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[7] = 7
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[8] = 1
+    |x|x|x|x|x|x|x|x|x|x|   grid_data[9] = 3
+    Parameters
+    -----------
+    grid_data : np.ndarray
+        The data-values in the unmasked data_to_pixel of a data-set (e.g. an image, noise, exposure times).
+    Notes
+    ----------
+    The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image.
+    The easiest way to ensure this is to generate them all from the same mask.
+    """
     @property
     def no_pixels(self):
         return self.shape[0]
@@ -374,7 +426,7 @@ class CoordinateGrid(np.ndarray):
         return arr.view(cls)
 
 
-class SubCoordinateGrid(CoordinateGrid):
+class SubCoordinateGrid(Grid):
     """
     Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
      sub-coordinates, which are used to perform over-sampling in the lens analysis.
