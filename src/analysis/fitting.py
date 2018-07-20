@@ -1,12 +1,24 @@
 import numpy as np
+from src.imaging import masked_image
+from src.imaging import mask
+from src.analysis import ray_tracing
 
 
 # TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
 
 class Fitter(object):
-    def __init__(self, image, sparse_mask, tracer):
+    def __init__(self, image, tracer):
+        """
+        Class to evaluate the fit between a model described by a tracer and an actual image.
+
+        Parameters
+        ----------
+        image: masked_image.MaskedImage
+            An image that has been masked for efficiency
+        tracer: ray_tracing.Tracer
+            An object describing the model
+        """
         self.image = image
-        self.sparse_mask = sparse_mask
         self.tracer = tracer
 
     def fit_data_with_profiles_hyper_galaxies(self, model_image, galaxy_images, minimum_values, hyper_galaxies):
@@ -57,6 +69,24 @@ class Fitter(object):
         """
         blurred_model_image = self.generate_blurred_light_profile_image()
         return compute_likelihood(self.image, self.image.background_noise, blurred_model_image)
+
+
+class PixelizedFitter(Fitter):
+    def __init__(self, image, sparse_mask, tracer):
+        """
+        Class to evaluate the fit between a model described by a tracer and an actual image.
+
+        Parameters
+        ----------
+        image: masked_image.MaskedImage
+            An image that has been masked for efficiency
+        sparse_mask: mask.SparseMask
+            A mask describing which pixels should be used in clustering for pixelizations
+        tracer: ray_tracing.Tracer
+            An object describing the model
+        """
+        super().__init__(image, tracer)
+        self.sparse_mask = sparse_mask
 
     def fit_data_with_pixelization(self):
         """Fit the weighted_data using the ray_tracing model, where only pixelizations are used to represent the galaxy
