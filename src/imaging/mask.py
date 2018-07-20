@@ -367,6 +367,8 @@ class SparseMask(Mask):
 
 class Grid(np.ndarray):
     """
+    DataGrid
+    --------
     The grid storing the value in each unmasked pixel of a data-set (e.g. an image, noise, exposure times, etc.)
     Data values are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
     image (e.g. [0,0]) have the lowest index value. Therefore, the *grid_data* is a NumPy array of dimensions_2d
@@ -414,7 +416,45 @@ class Grid(np.ndarray):
     ----------
     The *GridData* and *GridCoords* used in an analysis must correspond to the same masked region of an image.
     The easiest way to ensure this is to generate them all from the same mask.
+
+    CoordGrid
+    ---------
+    For a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
+    are represented by the value at the centre of the pixel.
+    Coordinates are defined from the top-left corner, such that data_to_pixel in the top-left corner of an \
+    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+    also counted from the top-left.
+    A regular *grid_coords* is a NumPy array of dimensions_2d [image_pixels, 2]. Therefore, the first element maps \
+    to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
+    [3,1] gives the 4th image pixel's y coordinate.
+    Below is a visual illustration of a regular grid, where a total of 10 data_to_pixel are unmasked and therefore \
+    included in the grid.
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
+    |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
+    |x|x|x|o|o|o|o|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
+    around the image.
+    pixel_scale = 1.0"
+    <--- -ve  x  +ve -->
+    |x|x|x|x|x|x|x|x|x|x|  ^   grid_coords[0] = [-0.5,  1.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[1] = [ 0.5,  1.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[2] = [-1.5,  0.5]
+    |x|x|x|x|0|1|x|x|x|x| +ve  grid_coords[3] = [-0.5,  0.5]
+    |x|x|x|2|3|4|5|x|x|x|  y   grid_coords[4] = [ 0.5,  0.5]
+    |x|x|x|6|7|8|9|x|x|x| -ve  grid_coords[5] = [ 1.5,  0.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[6] = [-1.5, -0.5]
+    |x|x|x|x|x|x|x|x|x|x|  |   grid_coords[7] = [-0.5, -0.5]
+    |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
+    |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
+
     @property
     def no_pixels(self):
         return self.shape[0]
@@ -425,8 +465,8 @@ class Grid(np.ndarray):
 
 class SubCoordinateGrid(Grid):
     """
-    Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
-     sub-coordinates, which are used to perform over-sampling in the lens analysis.
+    Class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
+    sub-coordinates, which are used to perform over-sampling in the lens analysis.
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
     image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
     also counted from the top-left.
