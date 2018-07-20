@@ -23,7 +23,7 @@ class Tracer(object):
             The list of lens galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_plane_grids : mask.CoordinateCollection
+        image_plane_grids : mask.GridCollection
             The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
@@ -68,7 +68,7 @@ class MultiTracer(object):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grids : mask.CoordinateCollection
+        image_plane_grids : mask.GridCollection
             The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -124,7 +124,7 @@ class MultiTracer(object):
 
                     new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
 
-            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], coordinates_collection=new_grid,
+            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grid_collection=new_grid,
                                      compute_deflections=compute_deflections))
 
     def generate_image_of_galaxy_light_profiles(self):
@@ -191,7 +191,7 @@ class TracerGeometry(object):
 
 class Plane(object):
 
-    def __init__(self, galaxies, coordinates_collection, compute_deflections=True):
+    def __init__(self, galaxies, grid_collection, compute_deflections=True):
         """
 
         Represents a plane, which is a set of galaxies and grids at a given redshift in the lens ray-tracing
@@ -216,12 +216,12 @@ class Plane(object):
         ----------
         galaxies : [Galaxy]
             The galaxies in the plane.
-        coordinates_collection : mask.CoordinateCollection
+        grid_collection : mask.GridCollection
             The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring,
             grid_coords, etc.
         """
         self.galaxies = galaxies
-        self.coordinates_collection = coordinates_collection
+        self.coordinates_collection = grid_collection
 
         if compute_deflections:
             def calculate_deflections(grid):

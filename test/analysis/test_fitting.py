@@ -55,7 +55,7 @@ def make_fitter(image_2x2, galaxy_light_sersic, no_galaxies):
     ray_tracer = ray_tracing.Tracer(
         lens_galaxies=[galaxy_light_sersic],
         source_galaxies=no_galaxies,
-        image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+        image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
             image_2x2.mask, 1, (3, 3)))
     return fitting.Fitter(image_2x2, ray_tracer)
 
@@ -126,7 +126,7 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[mock_galaxy],
             source_galaxies=no_galaxies,
-            image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
         fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
@@ -147,7 +147,7 @@ class TestFitData:
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[mock_galaxy],
             source_galaxies=no_galaxies,
-            image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
         fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
@@ -167,7 +167,7 @@ class TestGenerateBlurredLightProfileImage:
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[galaxy_light_sersic],
             source_galaxies=no_galaxies,
-            image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
         fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
@@ -185,7 +185,7 @@ class TestGenerateBlurredLightProfileImage:
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[galaxy_light_sersic],
             source_galaxies=no_galaxies,
-            image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (1, 1)))
 
         fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
@@ -209,7 +209,7 @@ class TestGenerateBlurredLightProfileImage:
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[galaxy_light_sersic],
             source_galaxies=no_galaxies,
-            image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_2x2.mask, 1, (3, 3)))
 
         fitter = fitting.Fitter(image=image_2x2, tracer=ray_trace)
@@ -246,7 +246,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[mock_galaxy],
             source_galaxies=no_galaxies,
-            image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
         model_image = np.array([1.0])
