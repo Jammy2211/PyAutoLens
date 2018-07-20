@@ -450,9 +450,9 @@ class CoordinateCollection(object):
         blurring : GridCoordsBlurring
             A grid of coordinates for the blurring regions.
         """
-        self.image_coords = image
-        self.sub_grid_coords = sub
-        self.blurring_coords = blurring
+        self.image = image
+        self.sub = sub
+        self.blurring = blurring
 
     @classmethod
     def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
@@ -462,14 +462,14 @@ class CoordinateCollection(object):
         return CoordinateCollection(image_coords, sub_grid_coords, blurring_coords)
 
     def apply_function(self, func):
-        return CoordinateCollection(func(self.image_coords), func(self.sub_grid_coords), func(self.blurring_coords))
+        return CoordinateCollection(func(self.image), func(self.sub), func(self.blurring))
 
     def map_function(self, func, *arg_lists):
         return CoordinateCollection(*[func(*args) for args in zip(self, *arg_lists)])
 
     @property
     def sub_pixels(self):
-        return self.sub_grid_coords.shape[0]
+        return self.sub.shape[0]
 
     def __getitem__(self, item):
-        return [self.image_coords, self.sub_grid_coords, self.blurring_coords][item]
+        return [self.image, self.sub, self.blurring][item]
