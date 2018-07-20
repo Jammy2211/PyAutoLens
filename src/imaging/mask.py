@@ -375,7 +375,64 @@ class CoordinateGrid(np.ndarray):
 
 
 class SubCoordinateGrid(CoordinateGrid):
+    """
+    Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
+     sub-coordinates, which are used to perform over-sampling in the lens analysis.
+    Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
+    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
+    also counted from the top-left.
+    A sub *grid_coords* is a NumPy array of image_shape [image_pixels * sub_grid_pixels, 2]. The first few entries
+    correspond to different subgrid pixels for the first pixels, the second few the second and so on. For example,
+    the entry sub_coordinate_grid[2 * sub_grid_pixels, 0] would be the x coordinate of the first subgrid pixel of the
+    second image pixel.
+    Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
+    the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
+    2 data_to_image, to keep the illustration brief.
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
+    |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    |x|x|x|x|x|x|x|x|x|x|
+    Our regular-grid looks like it did before:
+    pixel_scale = 1.0"
+    <--- -ve  x  +ve -->
+    |x|x|x|x|x|x|x|x|x|x|  ^
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x| +ve  grid_coords[0] = [-1.5,  0.5]
+    |x|x|x|0|1|x|x|x|x|x|  y   grid_coords[1] = [-0.5,  0.5]
+    |x|x|x|x|x|x|x|x|x|x| -ve
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x|  |
+    |x|x|x|x|x|x|x|x|x|x| \/
+    |x|x|x|x|x|x|x|x|x|x|
+    However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
+    if *sub_grid_size=2*, we use a 2x2 sub-grid:
+    Pixel 0 - (2x2):
+           grid_coords[0,0] = [-1.66, 0.66]
+    |0|1|  grid_coords[0,1] = [-1.33, 0.66]
+    |2|3|  grid_coords[0,2] = [-1.66, 0.33]
+           grid_coords[0,3] = [-1.33, 0.33]
+    Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
+    pretend we used a sub_grid_size of 3x3 for pixel 1:
+             grid_coords[0,0] = [-0.75, 0.75]
+             grid_coords[0,1] = [-0.5,  0.75]
+             grid_coords[0,2] = [-0.25, 0.75]
+    |0|1|2|  grid_coords[0,3] = [-0.75,  0.5]
+    |3|4|5|  grid_coords[0,4] = [-0.5,   0.5]
+    |6|7|8|  grid_coords[0,5] = [-0.25,  0.5]
+             grid_coords[0,6] = [-0.75, 0.25]
+             grid_coords[0,7] = [-0.5,  0.25]
+             grid_coords[0,8] = [-0.25, 0.25]
+    """
+
     def __init__(self, array, mask=None, sub_grid_size=1):
+
         # noinspection PyArgumentList
         super(SubCoordinateGrid, self).__init__()
         self.sub_grid_size = sub_grid_size
