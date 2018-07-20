@@ -3,6 +3,7 @@ from src import exc
 from astropy import constants
 import math
 import numpy as np
+from src.imaging import mask
 
 
 class Tracer(object):
@@ -22,7 +23,7 @@ class Tracer(object):
             The list of lens galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_plane_grids : grids.CoordsCollection
+        image_plane_grids : mask.CoordinateCollection
             The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
@@ -67,7 +68,7 @@ class MultiTracer(object):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grids : grids.CoordsCollection
+        image_plane_grids : mask.CoordinateCollection
             The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -215,7 +216,7 @@ class Plane(object):
         ----------
         galaxies : [Galaxy]
             The galaxies in the plane.
-        coordinates_collection : grids.GridCoordsCollection
+        coordinates_collection : mask.CoordinateCollection
             The grids of (x,y) coordinates in the plane, including the image grid_coords, sub-grid_coords, blurring,
             grid_coords, etc.
         """
