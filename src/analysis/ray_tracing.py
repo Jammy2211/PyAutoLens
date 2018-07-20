@@ -257,12 +257,12 @@ class Plane(object):
 
 
 def intensities_via_sub_grid(sub_coords_grid, galaxies):
-    sub_intensities = sum(map(lambda g: g.intensity_from_grid(sub_coords_grid), galaxies))
+    sub_intensities = sum(map(lambda g: g.intensity_from_coordinate_grid(sub_coords_grid), galaxies))
     return sub_coords_grid.sub_data_to_image(sub_intensities)
 
 
 def intensities_via_grid(coords_grid, galaxies):
-    return sum(map(lambda g: g.intensity_from_grid(coords_grid), galaxies))
+    return sum(map(lambda g: g.intensity_from_coordinate_grid(coords_grid), galaxies))
 
 
 def deflections_for_grid(coords_grid, galaxies):

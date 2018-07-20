@@ -842,6 +842,7 @@ class SphericalNFW(EllipticalNFW):
 
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
+
 class EllipticalGeneralizedNFW(EllipticalNFW):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
