@@ -726,7 +726,9 @@ class TestProfiles(object):
                 assert defls[0,0] == pytest.approx(-4.77162, 1e-3)
                 assert defls[0,1] == pytest.approx(-1.59054, 1e-3)
 
-            def test__compare_to_fortran_slope_below_isothermala(self):
+            # TODO : These two tests
+
+            def test__compare_to_fortran_slope_below_isothermal_at_coordinates(self):
                 power_law = mass_profiles.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0,
                                                             slope=1.5)
 
@@ -2749,18 +2751,6 @@ class TestProfiles(object):
 
                 assert potential_0 == pytest.approx(potential_1, 1e-4)
 
-            def test__compare_to_elliptical_model__same_value(self):
-                nfw = mass_profiles.SphericalNFW(centre=(1.0, 1.0), kappa_s=5.0, scale_radius=10.0)
-
-                potential_0 = nfw.potential_from_coordinate_grid(grid=np.array([[2.0, 2.0]]))
-
-                nfw = mass_profiles.EllipticalNFW(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0,
-                                                  kappa_s=5.0, scale_radius=10.0)
-
-                potential_1 = nfw.potential_from_coordinate_grid(grid=np.array([[2.0, 2.0]]))
-
-                assert potential_0 == pytest.approx(potential_1, 1e-4)
-
             def test__compare_to_fortran__same_potential(self):
 
                 nfw = mass_profiles.SphericalNFW(centre=(0.2, 0.3), kappa_s=2.5, scale_radius=4.0)
@@ -2852,6 +2842,7 @@ class TestProfiles(object):
         class TestSurfaceDensity(object):
 
             def test__simple_case__correct_value(self):
+
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
                                                               phi=90.0, inner_slope=1.5, scale_radius=1.0)
                 surface_density = gnfw.surface_density_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
@@ -2900,6 +2891,7 @@ class TestProfiles(object):
 
 
         class TestPotential(object):
+
             def test__flip_coordinates_lens_center__same_value(self):
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
                                                               phi=100.0, inner_slope=1.5, scale_radius=10.0)
@@ -2914,8 +2906,11 @@ class TestProfiles(object):
                 assert potential_0 == pytest.approx(potential_1, 1e-4)
 
             def test__compare_to_elliptical_nfw__same_value(self):
+
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
                                                               phi=100.0, inner_slope=1.0, scale_radius=10.0)
+
+                potential_coord = gnfw.potential_at_coordinates(coordinates=np.array([2.0, 2.0]))
 
                 potential_0 = gnfw.potential_from_coordinate_grid(grid=np.array([[2.0, 2.0]]))
 
@@ -2924,7 +2919,16 @@ class TestProfiles(object):
 
                 potential_1 = nfw.potential_from_coordinate_grid(grid=np.array([[2.0, 2.0]]))
 
-                assert potential_0 == pytest.approx(potential_1, 1e-4)
+                assert potential_0[0] == pytest.approx(potential_1[0], 1e-4)
+
+            def test__compare_to_known_value(self):
+
+                gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
+                                                              phi=100.0, inner_slope=1.0, scale_radius=10.0)
+
+                potential_0 = gnfw.potential_from_coordinate_grid(grid=np.array([[2.0, 2.0]]))
+
+                assert potential_0[0] == pytest.approx(2.4718, 1e-4)
 
 
         class TestDeflections(object):
@@ -2941,8 +2945,8 @@ class TestProfiles(object):
 
                 defls_1 = gnfw.deflections_from_coordinate_grid(grid=np.array([[0.00001, 0.00001]]))
 
-                assert defls_0[0,0] == pytest.approx(-defls_1[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(-defls_1[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(-defls_1[0,0], 1e-4)
+                assert defls_0[0,1] == pytest.approx(-defls_1[0,1], 1e-4)
 
             def test__compare_to_fortran_1(self):
 
@@ -2973,10 +2977,10 @@ class TestProfiles(object):
                                                              inner_slope=1.5,
                                                              scale_radius=8.0)
 
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[3.0, 3.0]]))
+                defls_1 = gnfw.deflections_from_coordinate_grid(grid=np.array([[3.0, 3.0]]))
 
-                assert defls_0[0,0] == pytest.approx(defls_0[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(defls_1[0,0], 1e-5)
+                assert defls_0[0,1] == pytest.approx(defls_1[0,1], 1e-5)
 
             def test__compare_to_spherical_gnfw_2__same_values(self):
                 gnfw = mass_profiles.EllipticalGeneralizedNFW(centre=(-1.0, -2.0), kappa_s=1.0,
@@ -2989,10 +2993,10 @@ class TestProfiles(object):
                                                              inner_slope=0.5,
                                                              scale_radius=3.0)
 
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[1.0, -3.0]]))
+                defls_1 = gnfw.deflections_from_coordinate_grid(grid=np.array([[1.0, -3.0]]))
 
-                assert defls_0[0,0] == pytest.approx(defls_0[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(defls_1[0,0], 1e-5)
+                assert defls_0[0,1] == pytest.approx(defls_1[0,1], 1e-5)
 
             def test__compare_to_elliptical_nfw__same_values(self):
 
@@ -3014,9 +3018,12 @@ class TestProfiles(object):
     class TestSphericalGeneralizedNFW(object):
 
         class TestSurfaceDensity(object):
+
             def test__simple_case__correct_value(self):
+
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5,
                                                              scale_radius=1.0)
+
                 surface_density = gnfw.surface_density_from_coordinate_grid(grid=np.array([[2.0, 0.0]]))
 
                 assert surface_density == pytest.approx(0.30840, 1e-3)
@@ -3039,6 +3046,7 @@ class TestProfiles(object):
                 assert surface_density_0 == pytest.approx(surface_density_1, 1e-3)
 
         class TestPotential(object):
+
             def test__flip_coordinates_lens_center__same_value(self):
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5,
                                                              scale_radius=10.0)
@@ -3065,6 +3073,7 @@ class TestProfiles(object):
                 assert potential_0 == pytest.approx(potential_1, 1e-4)
 
             def test__compare_to_fortran__same_potential(self):
+
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0,
                                                              inner_slope=0.5, scale_radius=8.0)
 
@@ -3073,6 +3082,7 @@ class TestProfiles(object):
                 assert potential == pytest.approx(0.00920, 1e-3)
 
             def test__compare_to_fortran_2__same_potential(self):
+
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0,
                                                              inner_slope=1.5, scale_radius=8.0)
 
@@ -3080,8 +3090,11 @@ class TestProfiles(object):
 
                 assert potential == pytest.approx(0.17448, 1e-3)
 
+
         class TestDeflections(object):
+
             def test__flip_coordinates_lens_center__same_value(self):
+
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5,
                                                              scale_radius=1.0)
 
@@ -3090,13 +3103,10 @@ class TestProfiles(object):
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=1.0, inner_slope=1.5,
                                                              scale_radius=1.0)
 
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[0.00001, 0.00001]]))
+                defls_1 = gnfw.deflections_from_coordinate_grid(grid=np.array([[0.00001, 0.00001]]))
 
-                # Foro deflection angles, a flip of image_grid also reverses the deflection angles
-                defls_0 = list(map(lambda l: -1.0 * l, defls_0))
-
-                assert defls_0[0,0] == pytest.approx(defls_0[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(-defls_1[0,0], 1e-5)
+                assert defls_0[0,1] == pytest.approx(-defls_1[0,1], 1e-5)
 
             def test__compare_to_fortran_1(self):
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0,
@@ -3116,6 +3126,7 @@ class TestProfiles(object):
                 assert defls[0,1] == pytest.approx(-9.31254, 1e-3)
 
             def test__compare_to_spherical_nfw__same_values(self):
+
                 gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=10.0,
                                                              inner_slope=1.0,
                                                              scale_radius=0.1)
@@ -3124,24 +3135,10 @@ class TestProfiles(object):
 
                 gnfw = mass_profiles.SphericalNFW(centre=(1.0, 1.0), kappa_s=10.0, scale_radius=0.1)
 
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[3.0, 3.0]]))
+                defls_1 = gnfw.deflections_from_coordinate_grid(grid=np.array([[3.0, 3.0]]))
 
-                assert defls_0[0,0] == pytest.approx(defls_0[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
-
-            def test__compare_to_spherical_nfw_2__same_values(self):
-                gnfw = mass_profiles.SphericalGeneralizedNFW(centre=(-5.0, -10.0), kappa_s=0.1,
-                                                             inner_slope=1.0,
-                                                             scale_radius=20.0)
-
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[-7.0, 0.2]]))
-
-                gnfw = mass_profiles.SphericalNFW(centre=(-5.0, -10.0), kappa_s=0.1, scale_radius=20.0)
-
-                defls_0 = gnfw.deflections_from_coordinate_grid(grid=np.array([[-7.0, 0.2]]))
-
-                assert defls_0[0,0] == pytest.approx(defls_0[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_0[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(defls_1[0,0], 1e-5)
+                assert defls_0[0,1] == pytest.approx(defls_1[0,1], 1e-5)
 
             def test__2_coordinates__2_sets_of_deflections(self):
 
