@@ -46,6 +46,32 @@ def jit_integrand_function_7_params(integrand_function):
 
     return LowLevelCallable(wrapped.ctypes)
 
+def jit_integrand_function_8_params(integrand_function):
+    jitted_function = numba.jit(integrand_function, nopython=True)
+
+    @cfunc(float64(intc, CPointer(float64)))
+    def wrapped(n, xx):
+        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8])
+
+    return LowLevelCallable(wrapped.ctypes)
+
+def jit_integrand_function_9_params(integrand_function):
+    jitted_function = numba.jit(integrand_function, nopython=True)
+
+    @cfunc(float64(intc, CPointer(float64)))
+    def wrapped(n, xx):
+        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9])
+
+    return LowLevelCallable(wrapped.ctypes)
+
+def jit_integrand_function_10_params(integrand_function):
+    jitted_function = numba.jit(integrand_function, nopython=True)
+
+    @cfunc(float64(intc, CPointer(float64)))
+    def wrapped(n, xx):
+        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9], xx[10])
+
+    return LowLevelCallable(wrapped.ctypes)
 
 class MassProfile(object):
 
@@ -605,6 +631,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         super(MassProfile, self).__init__()
         self.kappa_s = kappa_s
         self.scale_radius = scale_radius
+        self.inner_slope = 1.0
 
     @property
     def subscript(self):
@@ -623,8 +650,8 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         elif r == 1:
             return 1
 
-    @geometry_profiles.transform_coordinates
-    def surface_density_from_coordinate_grid(self, coordinates):
+    @geometry_profiles.transform_grid
+    def surface_density_from_coordinate_grid(self, grid):
         """
         Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
@@ -638,9 +665,15 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
 
-        eta = self.coordinates_to_elliptical_radius(coordinates)
+        surface_density_grid = np.zeros(grid.shape[0])
 
-        return self.surface_density_func(eta)
+        grid_eta = self.grid_to_elliptical_radius(grid)
+
+        for i in range(grid.shape[0]):
+
+            surface_density_grid[i] = self.surface_density_func(grid_eta[i])
+
+        return surface_density_grid
 
     @geometry_profiles.transform_grid
     def potential_from_coordinate_grid(self, grid):
@@ -757,13 +790,26 @@ class SphericalNFW(EllipticalNFW):
 
     @staticmethod
     def potential_func_sph(eta):
-        return ((math.log(eta / 2.0)) ** 2) - (math.atanh(math.sqrt(1 - eta ** 2))) ** 2
+        return ((np.log(eta / 2.0)) ** 2) - (np.arctanh(np.sqrt(1 - eta ** 2))) ** 2
+
+    @staticmethod
+    def deflection_func_sph(eta):
+        conditional_eta = np.copy(eta)
+        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
+                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
+        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
+                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
+
+        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
 
-    @geometry_profiles.transform_coordinates
-    def potential_at_coordinates(self, coordinates):
+    # TODO : Make this use numpy arthimitic
+    # TOOO : Same issue as a potential above
+
+    @geometry_profiles.transform_grid
+    def potential_from_coordinate_grid(self, grid):
         """
         Calculate the projected gravitational potential in dimensionless units at a given set of image_grid plane
         image_grid.
@@ -777,50 +823,20 @@ class SphericalNFW(EllipticalNFW):
         ----------
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
-        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
+        eta = (1.0 / self.scale_radius) * self.grid_to_elliptical_radius(grid)
         return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
-
-    def deflection_func_sph(self, eta):
-        return (math.log(eta / 2.0) + self.coord_func(eta)) / eta
-
-    @staticmethod
-    def deflection_func_sph_grid(eta):
-        conditional_eta = np.copy(eta)
-        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
-                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
-        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
-                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
-
-        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
-
-    @geometry_profiles.transform_coordinates
-    def deflections_at_coordinates(self, coordinates):
-        """
-        Calculate the deflection angle at a given set of gridded coordinates
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The deflection angles [alpha(eta)] (x and y components) at those image_grid
-        """
-        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
-        deflection_r = 4.0 * self.kappa_s * self.scale_radius * self.deflection_func_sph(eta)
-
-        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
 
     @geometry_profiles.transform_grid
     def deflections_from_coordinate_grid(self, grid):
+
         eta = np.multiply(1. / self.scale_radius, self.grid_to_elliptical_radius(grid))
-        deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph_grid(eta))
+        deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta))
 
         return self.grid_radius_to_cartesian(grid, deflection_r)
 
 
 class EllipticalGeneralizedNFW(EllipticalNFW):
+
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
         """
         The elliptical NFW profiles, used to fit the dark matter halo of the lens.
@@ -848,22 +864,8 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', r'\kappa', r'\gamma' 'Rs']
 
-    def integral_y(self, y, eta):
-        return (y + eta) ** (self.inner_slope - 4) * (1 - math.sqrt(1 - y ** 2))
-
     def integral_y_2(self, y, eta):
         return (y + eta) ** (self.inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
-
-    def surface_density_func(self, radius):
-        radius = (1.0 / self.scale_radius) * radius
-        integral_y = quad(self.integral_y, a=0.0, b=1.0, args=radius)[0]
-
-        return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * (
-                (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
-
-    def potential_func_ell(self, u, coordinates):
-        eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
-        return (eta / u) * (self.deflection_func_sph(eta)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
 
     @geometry_profiles.transform_coordinates
     def potential_at_coordinates(self, coordinates):
@@ -882,17 +884,6 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         """
         potential = quad(self.potential_func_ell, a=0.0, b=1.0, args=(coordinates,))[0]
         return 4.0 * self.kappa_s * self.scale_radius * self.axis_ratio / 2.0 * potential
-
-    def deflection_func_sph(self, eta):
-        integral_y_2 = quad(self.integral_y_2, a=0.0, b=1.0, args=eta)[0]
-        return eta ** (2 - self.inner_slope) * (
-                (1.0 / (3 - self.inner_slope)) *
-                special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, -eta) + integral_y_2)
-
-    def deflection_func_ell(self, u, coordinates, npow):
-        eta_u = self.eta_u(u, coordinates)
-
-        return self.surface_density_func(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @geometry_profiles.transform_coordinates
     def deflections_at_coordinates(self, coordinates):
@@ -918,8 +909,118 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
 
         return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        """
+        Calculate the deflection angle at a given set of gridded coordinates
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The x and y image_grid of the image_grid
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those image_grid
+        """
+
+        def calculate_deflection_component(grid, npow, index):
+
+            deflection_grid = np.zeros(grid.shape[0])
+
+            for i in range(grid.shape[0]):
+
+                eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(grid[i,:])
+
+                integral_y = quad(self.integral_y, a=0.0, b=1.0, args=eta)[0]
+
+                deflection_grid[i] = self.axis_ratio * grid[i,index] * quad(self.deflection_func, a=0.0, b=1.0,
+                        args=(grid[i,0], grid[i,1], npow, self.axis_ratio, self.kappa_s, self.scale_radius,
+                              self.inner_slope, integral_y))[0]
+
+            return  deflection_grid
+
+        deflection_x = calculate_deflection_component(grid, 0.0, 0)
+        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+
+        return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
+
+    def surface_density_func(self, radius):
+        radius = (1.0 / self.scale_radius) * radius
+        integral_y = quad(self.integral_y, a=0.0, b=1.0, args=radius)[0]
+
+        return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * (
+                (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
+
+    def potential_func_ell(self, u, coordinates):
+        eta = (1.0 / self.scale_radius) * self.eta_u(u, coordinates)
+        return (eta / u) * (self.deflection_func_sph(eta)) / ((1 - (1 - self.axis_ratio ** 2) * u) ** 0.5)
+
+    def deflection_func_sph(self, eta):
+        integral_y_2 = quad(self.integral_y_2, a=0.0, b=1.0, args=eta)[0]
+        return eta ** (2 - self.inner_slope) * (
+                (1.0 / (3 - self.inner_slope)) *
+                special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, -eta) + integral_y_2)
+
+    def integral_y(y, eta, inner_slope):
+        return (y + eta) ** (inner_slope - 4) * (1 - math.sqrt(1 - y ** 2))
+
+    @staticmethod
+ #   @jit_integrand_function_8_params
+    def deflection_func(u, x, y, npow, axis_ratio, kappa_s, scale_radius, inner_slope, integral_y):
+
+        eta = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        return 2.0*kappa_s*(eta**(1-inner_slope))*((1+eta)**(inner_slope-3)+((3-inner_slope)*integral_y)) \
+               / ((1-(1-axis_ratio**2)*u)**(npow+0.5))
+
+
+    def deflection_func_old(self, u, x, y, npow, axis_ratio, kappa_s, scale_radius, inner_slope):
+
+        eta = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        return 2.0 * kappa_s * (eta ** (1 - inner_slope)) * (
+                (1 + eta) ** (inner_slope - 3) + ((3 - inner_slope) * integral_y)) \
+               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+
+    def tabulate_kappa_integrand(self, eta_min, eta_max):
+
+        # These are associated with the image - can setup before analysis!
+
+        n_kappa_r = 1000
+
+        min_logr = np.log10(eta_min)
+        max_logr = np.log10(eta_max)
+
+        dr_log = (max_logr - min_logr) / (n_kappa_r - 1)
+
+        kappa_radius = np.zeros((n_kappa_r))
+
+        for i in range(n_kappa_r):
+            radius = 10.** (min_logr + (i-1) * dr_log)
+            integral = quad(self.kappa_integrand, a=0.0, b=1.0, args=radius)[0]
+            kappa_radius[i] = ((radius / self.scale_radius) ** (1 - self.inner_slope)) *  \
+                 (((1 + radius / self.scale_radius) ** (self.inner_slope - 3)) + (3 - self.inner_slope) * integral)
+
+    def kappa_integrand(self, x, kappa_radius):
+        return (x+kappa_radius/self.scale_radius)**(self.inner_slope-4)*(1-(1-x*x)**0.5)
+
+    @staticmethod
+    def magic_integral(u, x, y, npow, axis_ratio, max_logr, min_logr, kappa_r_lower, kappa_r_upper):
+
+        n_kappa_r = 1000
+        aa=(1-axis_ratio**2)*u
+        dr_log=(max_logr-min_logr)/(n_kappa_r-1)
+        xi=(u*((x**2)+(y**2)/(1-aa)))**0.5
+        i=1+int((np.log10(xi)-min_logr)/dr_log)
+        r1=10.**(min_logr+(i-1)*dr_log)
+        r2=r1*10.**dr_log
+        # TODO : kappa_r_lower = kappa_r[i], kappa_r_upper = kappa_r[i+1]
+        kap = kappa_r_lower + (kappa_r_upper - kappa_r_lower) * (xi-r1) / (r2-r1)
+        return kap/(1-aa)**(npow+.5)
 
 class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
+
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
         """
         The spherical NFW profiles, used to fit the dark matter halo of the lens.
@@ -972,6 +1073,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
 
 class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfile):
+
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
         """
@@ -1003,11 +1105,8 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi']
 
-    def surface_density_func(self, radius):
-        return self.mass_to_light_ratio * self.intensity_at_radius(radius)
-
-    @geometry_profiles.transform_coordinates
-    def surface_density_from_coordinate_grid(self, coordinates):
+    @geometry_profiles.transform_grid
+    def surface_density_from_coordinate_grid(self, grid):
         """Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
         Parameters
@@ -1019,18 +1118,10 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         ----------
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
-        return self.surface_density_func(self.coordinates_to_eccentric_radius(coordinates))
+        return self.surface_density_func(self.grid_to_eccentric_radii(grid))
 
-    @property
-    def deflection_normalization(self):
-        return self.axis_ratio
-
-    def deflection_func(self, u, coordinates, npow):
-        eta_u = math.sqrt(self.axis_ratio) * self.eta_u(u, coordinates)
-        return self.surface_density_func(eta_u) / ((1 - (1 - self.axis_ratio ** 2) * u) ** (npow + 0.5))
-
-    @geometry_profiles.transform_coordinates
-    def deflections_at_coordinates(self, coordinates):
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
         """
         Calculate the deflection angle at a given set of gridded coordinates
 
@@ -1044,17 +1135,42 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         The deflection angles [alpha(eta)] (x and y components) at those image_grid
         """
 
-        def calculate_deflection_component(npow, index):
-            deflection = quad(self.deflection_func, a=0.0, b=1.0, args=(coordinates, npow))[0]
-            return self.deflection_normalization * deflection * coordinates[index]
+        def calculate_deflection_component(grid, npow, index):
 
-        deflection_x = calculate_deflection_component(0.0, 0)
-        deflection_y = calculate_deflection_component(1.0, 1)
+            deflection_grid = np.zeros(grid.shape[0])
 
-        return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
+            sersic_constant = self.sersic_constant
+
+            for i in range(grid.shape[0]):
+
+                deflection_grid[i] = self.axis_ratio * grid[i,index] * quad(self.deflection_func, a=0.0, b=1.0,
+                        args=(grid[i,0], grid[i,1], npow, self.axis_ratio, self.intensity, self.sersic_index,
+                              self.effective_radius, self.mass_to_light_ratio, sersic_constant))[0]
+
+            return  deflection_grid
+
+        deflection_x = calculate_deflection_component(grid, 0.0, 0)
+        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+
+        return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
+
+    def surface_density_func(self, radius):
+        return self.mass_to_light_ratio * self.intensity_at_radius(radius)
+
+    @staticmethod
+    @jit_integrand_function_9_params
+    def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
+                        sersic_constant):
+
+        eta = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        return mass_to_light_ratio * intensity * \
+               np.exp(-sersic_constant * (((eta / effective_radius) ** (1. / sersic_index)) - 1)) \
+               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
 
 class EllipticalExponentialMass(EllipticalSersicMass):
+
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
@@ -1090,6 +1206,7 @@ class EllipticalExponentialMass(EllipticalSersicMass):
 
 
 class EllipticalDevVaucouleursMass(EllipticalSersicMass):
+    
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
@@ -1158,11 +1275,6 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Tau']
 
-    def surface_density_func(self, radius):
-        return self.mass_to_light_ratio * (
-                ((self.axis_ratio * radius) / self.effective_radius) ** -self.mass_to_light_gradient) \
-               * self.intensity_at_radius(radius)
-
     @geometry_profiles.transform_coordinates
     def surface_density_from_coordinate_grid(self, coordinates):
         """Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
@@ -1177,6 +1289,57 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
         The surface density [kappa(eta)] (r-direction) at those image_grid
         """
         return self.surface_density_func(self.coordinates_to_eccentric_radius(coordinates))
+
+    @geometry_profiles.transform_grid
+    def deflections_from_coordinate_grid(self, grid):
+        """
+        Calculate the deflection angle at a given set of gridded coordinates
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The x and y image_grid of the image_grid
+
+        Returns
+        ----------
+        The deflection angles [alpha(eta)] (x and y components) at those image_grid
+        """
+
+        def calculate_deflection_component(grid, npow, index):
+
+            deflection_grid = np.zeros(grid.shape[0])
+
+            sersic_constant = self.sersic_constant
+
+            for i in range(grid.shape[0]):
+
+                deflection_grid[i] = self.axis_ratio * grid[i,index] * quad(self.deflection_func, a=0.0, b=1.0,
+                        args=(grid[i,0], grid[i,1], npow, self.axis_ratio, self.intensity, self.sersic_index,
+                              self.effective_radius, self.mass_to_light_ratio, self.mass_to_light_gradient, 
+                              sersic_constant))[0]
+
+            return  deflection_grid
+
+        deflection_x = calculate_deflection_component(grid, 0.0, 0)
+        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+
+        return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
+
+    def surface_density_func(self, radius):
+        return self.mass_to_light_ratio * (
+                ((self.axis_ratio * radius) / self.effective_radius) ** -self.mass_to_light_gradient) \
+               * self.intensity_at_radius(radius)
+
+    @staticmethod
+    @jit_integrand_function_10_params
+    def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
+                        mass_to_light_gradient, sersic_constant):
+
+        eta = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        return mass_to_light_ratio * (((axis_ratio * eta) / effective_radius) ** -mass_to_light_gradient) * \
+               intensity * np.exp(-sersic_constant * (((eta / effective_radius) ** (1. / sersic_index)) - 1)) \
+               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
 
 class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
@@ -1202,24 +1365,6 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     @property
     def parameter_labels(self):
         return [r'\gamma', r'\theta']
-
-    @geometry_profiles.transform_coordinates
-    def deflections_at_coordinates(self, coordinates):
-        """
-        Calculate the deflection angle at a given set of gridded coordinates
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The deflection angles [alpha(eta)] (x and y components) at those image_grid
-        """
-        deflection_x = self.magnitude * coordinates[0]
-        deflection_y = -self.magnitude * coordinates[1]
-        return self.rotate_coordinates_from_profile((deflection_x, deflection_y))
 
     @geometry_profiles.transform_grid
     def deflections_from_coordinate_grid(self, grid):
