@@ -67,7 +67,7 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_at_coordinates should be overridden")
 
-    def intensity_from_grid(self, grid):
+    def intensity_from_coordinate_grid(self, grid):
         raise NotImplementedError("intensity_from_grid should be overridden")
 
 
@@ -216,26 +216,8 @@ class EllipticalSersic(EllipticalLightProfile):
             np.multiply(-self.sersic_constant,
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
-    @geometry_profiles.transform_coordinates
-    def intensity_at_coordinates(self, coordinates):
-        """
-        Method for obtaining intensity at given image_grid.
-
-        This includes a coordinate transform to the light profiles's shifted, rotated and elliptical reference frame.
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The image_grid in image_grid space
-        Returns
-        -------
-        intensity : float
-            The value of intensity at the given image_grid
-        """
-        return self.intensity_at_radius(self.coordinates_to_eccentric_radius(coordinates))
-
     @geometry_profiles.transform_grid
-    def intensity_from_grid(self, grid):
+    def intensity_from_coordinate_grid(self, grid):
         return self.intensity_at_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
