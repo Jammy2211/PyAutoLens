@@ -159,6 +159,7 @@ class TestConstructors(object):
 
 
 class TestProfiles(object):
+    
     class TestSersic:
 
         def test__intensity_at_radius__correct_value(self):
@@ -175,24 +176,24 @@ class TestProfiles(object):
                 radius=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
             assert intensity == pytest.approx(4.90657319276, 1e-3)
 
-        def test__intensity_at_coordinates__different_axis_ratio(self):
+        def test__intensity_from_coordinate_grid__different_axis_ratio(self):
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                      sersic_index=2.0)
 
-            intensity = sersic.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
+            intensity = sersic.intensity_from_coordinate_grid(grid=np.array([[0.0, 1.0]]))
 
             assert intensity == pytest.approx(5.38066670129, 1e-3)
 
-        def test__intensity_at_coordinates__different_rotate_phi_90_same_result(self):
+        def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                      sersic_index=2.0)
 
-            intensity_1 = sersic.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
+            intensity_1 = sersic.intensity_from_coordinate_grid(grid=np.array([[0.0, 1.0]]))
 
             sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
                                                      sersic_index=2.0)
 
-            intensity_2 = sersic.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity_2 = sersic.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity_1 == intensity_2
 
@@ -211,19 +212,19 @@ class TestProfiles(object):
             intensity = exponential.intensity_at_radius(radius=1.5)
             assert intensity == pytest.approx(4.5640, 1e-3)
 
-        def test__intensity_at_coordinates_1(self):
+        def test__intensity_from_coordinate_grid_1(self):
             exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                effective_radius=2.0)
 
-            intensity = exponential.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
+            intensity = exponential.intensity_from_coordinate_grid(grid=np.array([[0.0, 1.0]]))
 
             assert intensity == pytest.approx(4.9047, 1e-3)
 
-        def test__intensity_at_coordinates_2(self):
+        def test__intensity_from_coordinate_grid_2(self):
             exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                                effective_radius=3.0)
 
-            intensity = exponential.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity = exponential.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity == pytest.approx(4.8566, 1e-3)
 
@@ -231,20 +232,20 @@ class TestProfiles(object):
             exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                                effective_radius=3.0)
 
-            intensity = exponential.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity = exponential.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity == pytest.approx(2.0 * 4.8566, 1e-3)
 
-        def test__intensity_at_coordinates__different_rotate_phi_90_same_result(self):
+        def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
             exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                effective_radius=2.0)
 
-            intensity_1 = exponential.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
+            intensity_1 = exponential.intensity_from_coordinate_grid(grid=np.array([[0.0, 1.0]]))
 
             exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                                effective_radius=2.0)
 
-            intensity_2 = exponential.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity_2 = exponential.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity_1 == intensity_2
 
@@ -263,19 +264,19 @@ class TestProfiles(object):
             intensity = dev_vaucouleurs.intensity_at_radius(radius=1.5)
             assert intensity == pytest.approx(5.1081, 1e-3)
 
-        def test__intensity_at_coordinates_1(self):
+        def test__intensity_from_coordinate_grid_1(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                       effective_radius=2.0)
 
-            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
+            intensity = dev_vaucouleurs.intensity_from_coordinate_grid(grid=np.array([[0.0, 1.0]]))
 
             assert intensity == pytest.approx(5.6697, 1e-3)
 
-        def test__intensity_at_coordinates_2(self):
+        def test__intensity_from_coordinate_grid_2(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                                       effective_radius=3.0)
 
-            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity = dev_vaucouleurs.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity == pytest.approx(7.4455, 1e-3)
 
@@ -283,20 +284,20 @@ class TestProfiles(object):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                                       effective_radius=3.0)
 
-            intensity = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity = dev_vaucouleurs.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity == pytest.approx(2.0 * 7.4455, 1e-3)
 
-        def test__intensity_at_coordinates__different_rotate_phi_90_same_result(self):
+        def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                       effective_radius=2.0)
 
-            intensity_1 = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([0.0, 1.0]))
+            intensity_1 = dev_vaucouleurs.intensity_from_coordinate_grid(grid=np.array([[0.0, 1.0]]))
 
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                                       effective_radius=2.0)
 
-            intensity_2 = dev_vaucouleurs.intensity_at_coordinates(coordinates=np.array([1.0, 0.0]))
+            intensity_2 = dev_vaucouleurs.intensity_from_coordinate_grid(grid=np.array([[1.0, 0.0]]))
 
             assert intensity_1 == intensity_2
 
@@ -605,9 +606,9 @@ class TestCoordinates(object):
             elliptical.coordinates_to_eccentric_radius(
                 (-1, -1)), 1e-10)
 
-    def test__intensity_at_coordinates(self, elliptical):
-        assert elliptical.intensity_at_coordinates((1, 1)) == pytest.approx(
-            elliptical.intensity_at_coordinates((-1, -1)), 1e-10)
+    def test__intensity_from_coordinate_grid(self, elliptical):
+        assert elliptical.intensity_from_coordinate_grid((1, 1)) == pytest.approx(
+            elliptical.intensity_from_coordinate_grid((-1, -1)), 1e-10)
 
 
 class TestTransform(object):

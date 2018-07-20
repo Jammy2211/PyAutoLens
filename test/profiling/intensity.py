@@ -71,7 +71,7 @@ def test_deflections_from_coordinate_grid(instance):
     example = load(name)
     result = None
     try:
-        result = instance.intensity_from_grid(grid)
+        result = instance.intensity_from_coordinate_grid(grid)
         assert_almost_equal(result, example)
         print("{} gives the correct result".format(name))
         return
@@ -105,7 +105,7 @@ def tick_toc_comparison_for_profile(instance):
 
     @tick_toc
     def new_method():
-        instance.intensity_from_grid(grid)
+        instance.intensity_from_coordinate_grid(grid)
 
     old = old_method()
     new = new_method()
