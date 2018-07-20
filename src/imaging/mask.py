@@ -375,7 +375,7 @@ class CoordinateGrid(np.ndarray):
 
 
 class SubCoordinateGrid(CoordinateGrid):
-    def __init__(self, array, mask, sub_grid_size=1):
+    def __init__(self, array, mask=None, sub_grid_size=1):
         # noinspection PyArgumentList
         super(SubCoordinateGrid, self).__init__()
         self.sub_grid_size = sub_grid_size

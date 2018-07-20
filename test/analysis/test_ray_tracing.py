@@ -233,7 +233,7 @@ class TestTracer(object):
             assert ray_trace.image_plane.coordinates_collection.image == pytest.approx(np.array([[1.0, 1.0]]),
                                                                                        1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]),
-                                                                                          1e-3)
+                                                                               1e-3)
             assert ray_trace.source_plane.coordinates_collection.image == pytest.approx(
                 np.array([[1.0 - 0.707, 1.0 - 0.707]]), 1e-3)
 
@@ -245,7 +245,7 @@ class TestTracer(object):
             assert ray_trace.image_plane.coordinates_collection.image == pytest.approx(np.array([[1.0, 1.0]]),
                                                                                        1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([1.414, 1.414]),
-                                                                                          1e-3)
+                                                                               1e-3)
             assert ray_trace.source_plane.coordinates_collection.image == pytest.approx(
                 np.array([[1.0 - 1.414, 1.0 - 1.414]]), 1e-3)
 
@@ -267,7 +267,7 @@ class TestTracer(object):
                 np.array([1.0, 0.0]), 1e-3)
 
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]),
-                                                                                          1e-3)
+                                                                               1e-3)
             assert ray_trace.image_plane.deflections.sub[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert ray_trace.image_plane.deflections.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
             assert ray_trace.image_plane.deflections.sub[2] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
@@ -776,12 +776,12 @@ class TestPlane(object):
             assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
             assert lens_plane.deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                               1e-3)
+                                                                    1e-3)
             assert lens_plane.deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                             1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                             1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
@@ -798,12 +798,12 @@ class TestPlane(object):
             assert lens_plane.coordinates_collection.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-5)
 
             assert lens_plane.deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                               1e-3)
+                                                                    1e-3)
             assert lens_plane.deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                             1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                             1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
