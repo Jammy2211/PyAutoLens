@@ -1,35 +1,35 @@
 from src.pipeline import phase as ph
 import pytest
+from src.analysis import galaxy as g
+from src.analysis import galaxy_prior as gp
+from src.analysis import non_linear
 
 
 class MockPhase(ph.Phase):
     def __init__(self, optimizer):
         super(MockPhase, self).__init__(optimizer)
-        self.mock_class = None
-
-
-class MockClass(object):
-    def __init__(self, one):
-        self.one = one
-
-
-class MockOptimizer(object):
-    def __init__(self):
-        self.variable = object()
-        self.constant = object()
 
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return MockPhase(optimizer=MockOptimizer())
+    return MockPhase(optimizer=non_linear.NonLinearOptimizer())
 
 
-@pytest.fixture(name="mock_instance")
-def make_mock_instance():
-    return MockClass(1)
+@pytest.fixture(name="galaxy")
+def make_galaxy():
+    return g.Galaxy()
+
+
+@pytest.fixture(name="galaxy_prior")
+def make_galaxy_prior():
+    return gp.GalaxyPrior()
 
 
 class TestPhase(object):
-    def test_set_constants(self, phase, mock_instance):
-        phase.mock_class = mock_instance
-        assert phase.optimizer.constant.mock_instance is not None
+    def test_set_constants(self, phase, galaxy):
+        phase.lens_galaxies = [galaxy]
+        assert phase.optimizer.constant.lens_galaxies[0] == galaxy
+
+    def test_set_variables(self, phase, galaxy_prior):
+        phase.lens_galaxies = [galaxy_prior]
+        assert phase.optimizer.variable.lens_galaxies[0] == galaxy_prior
