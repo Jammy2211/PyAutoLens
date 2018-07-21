@@ -25,7 +25,7 @@ grid_data = ma.data_collection_from_image_noise_and_exposure_time(image=np.ones(
                                                                    exposure_time=np.ones(ma.shape))
 frame = frame_convolution.FrameMaker(mask=ma)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=psf_shape)
-# This PSF leads to no blurring, so equivalent to being off.
+# This PSF leads to no blurring_coords, so equivalent to being off.
 kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))
 
 repeats = 1

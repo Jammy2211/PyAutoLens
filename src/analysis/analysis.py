@@ -15,17 +15,17 @@ class Analysis(object):
     def __init__(self, image, mask, sub_grid_size=4, cluster_grid_size=3, model_image=None, galaxy_images=None,
                  minimum_values=None):
         """
-        An analysis object. Once set up with an image and mask it takes a set of objects describing a model and
-        determines how well they fit the image.
+        An analysis object. Once set up with an image_coords and mask it takes a set of objects describing a model and
+        determines how well they fit the image_coords.
 
         Parameters
         ----------
         image: Image
-            An image of a lens with associated metadata
+            An image_coords of a lens with associated metadata
         mask: Mask
-            A mask describing the region of the image to be modelled
+            A mask describing the region of the image_coords to be modelled
         sub_grid_size: int
-            The sub_grid_size of the sub-pixel grid for which values should be calculated
+            The sub_grid_size of the sub_grid_coords-pixel grid for which values should be calculated
         cluster_grid_size: int:
             The sparsity of pixels to be used in clustering. Specifies the number of pixels to jump, meaning a higher
             number gives a lower density.
@@ -47,14 +47,14 @@ class Analysis(object):
         self.galaxy_images = galaxy_images
         self.minimum_values = minimum_values
 
-        logger.info("Analysis created for image "
+        logger.info("Analysis created for image_coords "
                     "with shape {}, grid_sub_size {} and cluster_grid_size {}".format(image.shape,
                                                                                       sub_grid_size,
                                                                                       cluster_grid_size))
 
     def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
         """
-        Runs the analysis. Determines how well the supplied model fits the image.
+        Runs the analysis. Determines how well the supplied model fits the image_coords.
 
         Parameters
         ----------

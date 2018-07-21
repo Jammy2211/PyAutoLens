@@ -7,7 +7,7 @@ from src import exc
 
 class AbstractImage(ScaledArray):
     """
-    A 2d array representing a real or simulated image.
+    A 2d array representing a real or simulated image_coords.
     """
 
     def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
@@ -16,17 +16,17 @@ class AbstractImage(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array of image pixels in gray-scale
+            An array of image_coords pixels in gray-scale
         effective_exposure_time: Union(ndarray, float)
-            A float or array representing the effective exposure time of the whole image or each pixel.
+            A float or array representing the effective exposure time of the whole image_coords or each pixel.
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
             An array describing the PSF
         background_noise: ndarray
-            An array describing the background noise in the image
+            An array describing the background noise in the image_coords
         poisson_noise: ndarray
-            An array describing the poisson noise in the image
+            An array describing the poisson noise in the image_coords
         """
         super(AbstractImage, self).__init__(array, pixel_scale)
         self.psf = psf
@@ -41,7 +41,7 @@ class AbstractImage(ScaledArray):
         Parameters
         ----------
         array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
+            The image_coords from which the Poisson signal_to_noise_ratio map is estimated.
         """
         return np.multiply(array, self.effective_exposure_time)
 
@@ -52,7 +52,7 @@ class AbstractImage(ScaledArray):
         Parameters
         ----------
         array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
+            The image_coords from which the Poisson signal_to_noise_ratio map is estimated.
         """
         return np.divide(array, self.effective_exposure_time)
 
@@ -62,7 +62,7 @@ class AbstractImage(ScaledArray):
         Returns
         -------
         counts_array: ndarray
-            An array representing the image in terms of counts
+            An array representing the image_coords in terms of counts
         """
         return self.electrons_per_second_to_counts(self)
 
@@ -101,22 +101,22 @@ class Image(AbstractImage):
     def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
                  poisson_noise=None):
         """
-        A 2d array representing a real or simulated image.
+        A 2d array representing a real or simulated image_coords.
 
         Parameters
         ----------
         array: ndarray
-            An array of image pixels in gray-scale
+            An array of image_coords pixels in gray-scale
         effective_exposure_time: Union(ndarray, float)
-            A float or array representing the effective exposure time of the whole image or each pixel.
+            A float or array representing the effective exposure time of the whole image_coords or each pixel.
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
             An array describing the PSF
         background_noise: ndarray
-            An array describing the background noise in the image
+            An array describing the background noise in the image_coords
         poisson_noise: ndarray
-            An array describing the poisson noise in the image
+            An array describing the poisson noise in the image_coords
         """
         super(AbstractImage, self).__init__(array, pixel_scale)
         self.psf = psf
@@ -128,28 +128,28 @@ class Image(AbstractImage):
     def simulate(cls, array, effective_exposure_time=1, pixel_scale=1, background_sky_map=None,
                  psf=None, include_poisson_noise=False, seed=-1):
         """
-        Create a realistic simulated image by applying effects to a plain simulated image.
+        Create a realistic simulated image_coords by applying effects to a plain simulated image_coords.
 
         Parameters
         ----------
         array: ndarray
-            A plain image
+            A plain image_coords
         effective_exposure_time: Union(ndarray, float)
-            A float or array representing the effective exposure time of the whole image or each pixel.
+            A float or array representing the effective exposure time of the whole image_coords or each pixel.
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
             An array describing the PSF
         background_sky_map
         include_poisson_noise: Bool
-            If True poisson noise is simulated and added to the image
+            If True poisson noise is simulated and added to the image_coords
         seed: int
             A seed for random noise generation
 
         Returns
         -------
-        image: Image
-            A simulated image
+        image_coords: Image
+            A simulated image_coords
         """
 
         array_counts = None
@@ -164,7 +164,7 @@ class Image(AbstractImage):
 
         if psf is not None:
             array = psf.convolve(array)
-        # TODO : Could create image at this point and use properties?
+        # TODO : Could create image_coords at this point and use properties?
 
         if include_poisson_noise is True:
             array += generate_poisson_noise(array, effective_exposure_time, seed)
@@ -179,7 +179,7 @@ class Image(AbstractImage):
         else:
             poisson_noise = None
 
-        # The final image is background subtracted.
+        # The final image_coords is background subtracted.
         if background_sky_map is not None:
             array -= background_sky_map
 
@@ -187,7 +187,7 @@ class Image(AbstractImage):
                      background_noise=background_noise, poisson_noise=poisson_noise)
 
     def background_noise_from_edges(self, no_edges):
-        """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an image
+        """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an image_coords
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
         Gaussian gives a signal_to_noise_ratio estimate.
 
@@ -218,12 +218,12 @@ class Image(AbstractImage):
 
         NOTE2 : SciPy has multiple 'mode' options for the sub_grid_size of the output array (e.g. does it include zero
         padding).
-        We require the output array to be the same sub_grid_size as the input image.
+        We require the output array to be the same sub_grid_size as the input image_coords.
 
         Parameters
         ----------
         psf : ndarray
-            A point spread function to apply to this image.
+            A point spread function to apply to this image_coords.
         """
 
         if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
@@ -287,12 +287,12 @@ class PSF(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing an image
+            An array representing an image_coords
 
         Returns
         -------
         convolved_array: ndarray
-            An array representing an image that has been convolved with this PSF
+            An array representing an image_coords that has been convolved with this PSF
 
         Raises
         ------
@@ -306,13 +306,13 @@ class PSF(ScaledArray):
 
 def generate_poisson_noise(image, exposure_time, seed=-1):
     """
-    Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
+    Generate a two-dimensional background noise-map for an image_coords, generating values from a Gaussian
     distribution with mean 0.0.
 
     Parameters
     ----------
     image : ndarray
-        The 2D image background noise is added to.
+        The 2D image_coords background noise is added to.
     exposure_time : Union(ndarray, int)
         The 2D array of pixel exposure times.
     seed : int
