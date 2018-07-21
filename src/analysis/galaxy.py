@@ -82,30 +82,13 @@ class Galaxy(object):
             string += "\nMass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
         return string
 
-    def intensity_at_coordinates(self, coordinates):
-        """
-        Compute the summed intensity of the galaxy's light profiles at a given set of image_grid.
-
-        See *light_profiles* module for details of how this is performed.
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The image_grid in image_grid space
-        Returns
-        -------
-        intensity : float
-            The summed values of intensity at the given image_grid
-        """
-        return sum(map(lambda p: p.intensity_at_coordinates(coordinates), self.light_profiles))
-
-    def intensity_from_coordinate_grid(self, grid):
+    def intensity_from_grid(self, grid):
         if self.light_profiles is not None and len(self.light_profiles) > 0:
-            return sum(map(lambda p: p.intensity_from_coordinate_grid(grid), self.light_profiles))
+            return sum(map(lambda p: p.intensity_from_grid(grid), self.light_profiles))
         else:
             return np.zeros((grid.shape[0],))
 
-    def intensity_from_coordinate_grid_individual(self, grid):
+    def intensity_from_grid_individual(self, grid):
         """
         Compute the individual intensities of the galaxy's light profiles at a given set of image_grid.
 
@@ -120,7 +103,7 @@ class Galaxy(object):
         intensity : [float]
             The summed values of intensity at the given image_grid
         """
-        return list(map(lambda p: p.intensity_from_coordinate_grid(grid), self.light_profiles))
+        return list(map(lambda p: p.intensity_from_grid(grid), self.light_profiles))
 
     def luminosity_within_circle(self, radius):
         """
@@ -196,7 +179,7 @@ class Galaxy(object):
         """
         return list(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
 
-    def surface_density_from_coordinate_grid(self, grid):
+    def surface_density_from_grid(self, grid):
         """
 
         Compute the summed surface density of the galaxy's mass profiles at a given set of image_grid.
@@ -212,9 +195,9 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given image_grid.
         """
-        return sum(map(lambda p: p.surface_density_from_coordinate_grid(grid), self.mass_profiles))
+        return sum(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
 
-    def surface_density_from_coordinate_grid_individual(self, grid):
+    def surface_density_from_grid_individual(self, grid):
         """
 
         Compute the individual surface densities of the galaxy's mass profiles at a given set of image_grid.
@@ -230,9 +213,9 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given image_grid.
         """
-        return list(map(lambda p: p.surface_density_from_coordinate_grid(grid), self.mass_profiles))
+        return list(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
 
-    def potential_from_coordinate_grid(self, grid):
+    def potential_from_grid(self, grid):
         """
         Compute the summed gravitational potential of the galaxy's mass profiles at a given set of image_grid.
 
@@ -247,9 +230,9 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given image_grid.
         """
-        return sum(map(lambda p: p.potential_from_coordinate_grid(grid), self.mass_profiles))
+        return sum(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
 
-    def potential_from_coordinate_grid_individual(self, grid):
+    def potential_from_grid_individual(self, grid):
         """
         Compute the individual gravitational potentials of the galaxy's mass profiles at a given set of image_grid.
 
@@ -264,19 +247,19 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given image_grid.
         """
-        return list(map(lambda p: p.potential_from_coordinate_grid(grid), self.mass_profiles))
+        return list(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
 
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         if self.mass_profiles is not None and len(self.mass_profiles) > 0:
 
-            deflections = sum(map(lambda p: p.deflections_from_coordinate_grid(grid), self.mass_profiles))
+            deflections = sum(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles))
 
             # return sum(map(lambda p: p.deflections_from_coordinate_grid(grid), self.mass_profiles))
             return deflections
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def deflections_from_coordinate_grid_individual(self, grid):
+    def deflections_from_grid_individual(self, grid):
         """
         Compute the individual deflection angles of the galaxy's mass profiles at a given set of image_grid.
 
@@ -291,7 +274,7 @@ class Galaxy(object):
         ----------
         The summed values of deflection angles at the given image_grid.
         """
-        return np.asarray(list(map(lambda p: p.deflections_from_coordinate_grid(grid), self.mass_profiles)))
+        return np.asarray(list(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles)))
 
     def dimensionless_mass_within_circles(self, radius):
         """
