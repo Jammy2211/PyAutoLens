@@ -30,6 +30,11 @@ class ScaledArray(np.ndarray):
         super(ScaledArray, self).__init__()
         self.pixel_scale = pixel_scale
 
+    def map(self, func):
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                func(x, y)
+
     @property
     def central_pixel_coordinates(self):
         """
