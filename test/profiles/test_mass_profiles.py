@@ -2778,8 +2778,8 @@ class TestProfiles(object):
 
                 defls_1 = nfw.deflections_from_coordinate_grid(grid=np.array([[0.00001, 0.00001]]))
 
-                assert defls_0[0,0] == pytest.approx(defls_1[0,0], 1e-5)
-                assert defls_0[0,1] == pytest.approx(defls_1[0,1], 1e-5)
+                assert defls_0[0,0] == pytest.approx(-defls_1[0,0], 1e-5)
+                assert defls_0[0,1] == pytest.approx(-defls_1[0,1], 1e-5)
 
             def test__compare_to_fortran_1(self):
 
