@@ -222,8 +222,8 @@ def transform_grid(func):
         """
         if not isinstance(grid, TransformedGrid):
             result = func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
-            if isinstance(result, TransformedGrid):
-                result = profile.transform_grid_from_reference_frame(result)
+            # if isinstance(result, TransformedGrid):
+            #     result = profile.transform_grid_from_reference_frame(result)
             return np.asarray(result)
         return func(profile, grid, *args, **kwargs)
 
