@@ -1647,7 +1647,7 @@ class GridBorder(object):
     def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
         """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
 
-        This is required to ensure highly demagnified data_to_image in the centre of an image do not bias a source
+        This is required to ensure highly demagnified data_to_image in the centre of an image_coords do not bias a source
         pixelization.
 
         Parameters
@@ -1704,7 +1704,7 @@ class GridBorder(object):
         return relocated_coordinates
 
     def relocate_sub_coordinates_outside_border(self, coordinates, sub_coordinates):
-        """For an input sub-coordinates, return a coordinates where all sub-coordinates outside the border are relocated
+        """For an input sub_grid_coords-coordinates, return a coordinates where all sub_grid_coords-coordinates outside the border are relocated
         to its edge.
         """
 
