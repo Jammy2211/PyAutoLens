@@ -15,7 +15,7 @@ chi_sq_0 = fitting.compute_chi_sq_term(image=image, noise=noise, model_image=mod
 noise_term_0 = fitting.compute_noise_term(noise)
 likelihood_0 = fitting.compute_likelihood(image=image, noise=noise, model_image=model)
 
-# Image 2 - Same image but electron counts (x 10000)
+# Image 2 - Same image_coords but electron counts (x 10000)
 
 image = np.array([10000.0])
 noise = np.array([1000.0])
@@ -34,7 +34,7 @@ print(noise_term_0, noise_term_1)
 print(likelihood_0, likelihood_1)
 
 
-# Lets scale the noise in both images by x3, does the change in likelihood care about the image units?
+# Lets scale the noise in both images by x3, does the change in likelihood care about the image_coords units?
 
 image = np.array([1.0])
 noise = np.array([0.3])

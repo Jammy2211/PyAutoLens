@@ -1034,7 +1034,7 @@ class TestDeflectionAnglesViaGalaxy(object):
         assert deflections.image_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
         assert deflections.sub_grid_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
         assert deflections.sub_grid_coords[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-    #    assert deflections.sub.sub_grid_size == 2
+    #    assert deflections.sub_grid_coords.sub_grid_size == 2
         assert deflections.blurring_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
     def test_one_lens_with_three_identical_mass_profiles__deflection_angles_triple(self, coordinate_collection,
@@ -1045,7 +1045,7 @@ class TestDeflectionAnglesViaGalaxy(object):
         assert deflections.image_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
         assert deflections.sub_grid_coords[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
         assert deflections.sub_grid_coords[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
-    #    assert deflections.sub.sub_grid_size == 2
+    #    assert deflections.sub_grid_coords.sub_grid_size == 2
         assert deflections.blurring_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
 

@@ -12,16 +12,16 @@ class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
-        Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \ 
+        Abstract base class for a pixelization, which discretizes a set of image_coords and sub_grid_coords grid grid into \
         pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix
         enforces smoothness between pixel values.
 
-        A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
+        A number of 1D and 2D arrays are used to represent mappings betwen image_coords, sub_grid_coords, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
         example:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image_coords-pixel.
+        - sub_to_pix[4,2] = 2 tells us that the 5th sub_grid_coords-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
         ----------
@@ -39,33 +39,33 @@ class Pixelization(object):
     def mapping_matrix_from_sub_to_pix(self, sub_to_pix, grids):
         """
         Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
-        image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
+        image_coords-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
         Nightingale & Dye 2015 and Nightingale, Dye & Massey 2018.
 
         The matrix has dimensions [image_pixels, pix_pixels] and non-zero entries represents an \
-        image-pixel to pixel mapping. For example, if image-pixel 0 maps to pixel 2, element \
+        image_coords-pixel to pixel mapping. For example, if image_coords-pixel 0 maps to pixel 2, element \
         [0,2] of the mapping matrix will = 1.
 
-        The mapping matrix is created using sub-gridding. Here, each observed image-pixel is divided into a finer \
-        sub_grid. For example, if the sub-grid is sub_grid_size=4, each image-pixel is split into a uniform 4 x 4 \
-        sub grid and all 16 sub-pixels are individually paired with pixels.
+        The mapping matrix is created using sub_grid_coords-gridding. Here, each observed image_coords-pixel is divided into a finer \
+        sub_grid. For example, if the sub_grid_coords-grid is sub_grid_size=4, each image_coords-pixel is split into a uniform 4 x 4 \
+        sub_grid_coords grid and all 16 sub_grid_coords-pixels are individually paired with pixels.
 
         The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
-        number of sub-pixel to pixel mappings. For example if 3 sub-pixels from image-pixel 4 map to \
+        number of sub_grid_coords-pixel to pixel mappings. For example if 3 sub_grid_coords-pixels from image_coords-pixel 4 map to \
         pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
 
         Parameters
         ----------
         grids
         sub_to_pix : [int, int]
-            The pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
-            sub-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
+            The pixel index each image_coords and sub_grid_coords-image_coords pixel is matched with. (e.g. if the fifth
+            sub_grid_coords-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
 
         """
 
-        sub_grid = grids.sub
+        sub_grid = grids.sub_grid_coords
 
-        mapping_matrix = np.zeros((grids.image.no_pixels, self.pixels))
+        mapping_matrix = np.zeros((grids.image_coords.shape[0], self.pixels))
 
         for sub_index in range(sub_grid.no_pixels):
             mapping_matrix[sub_grid.sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid.sub_grid_fraction
@@ -95,16 +95,16 @@ class Pixelization(object):
         return regularization_matrix
 
     def pix_signals_from_images(self, image_to_pix, galaxy_image):
-        """Compute the (scaled) signal in each pixel, where the signal is the sum of its image-pixel fluxes. \
+        """Compute the (scaled) signal in each pixel, where the signal is the sum of its image_coords-pixel fluxes. \
         These pix-signals are then used to compute the effective regularization weight of each pixel.
 
         The pix signals are scaled in the following ways:
 
-        1) Divided by the number of image-pixels in the pixel, to ensure all pixels have the same \
+        1) Divided by the number of image_coords-pixels in the pixel, to ensure all pixels have the same \
         'relative' signal (i.e. a pixel with 10 images-pixels doesn't have x2 the signal of one with 5).
 
         2) Divided by the maximum pix-signal, so that all signals vary between 0 and 1. This ensures that the \
-        regularizations weights they're used to compute are defined identically for all image units / SNR's.
+        regularizations weights they're used to compute are defined identically for all image_coords units / SNR's.
 
         3) Raised to the power of the hyper-parameter *pix_signal_scale*, so the method can control the relative \
         contribution of the different regions of regularization.
@@ -167,7 +167,7 @@ class RectangularPixelization(Pixelization):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
-        Like an image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like an image_coords grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
@@ -214,7 +214,7 @@ class RectangularPixelization(Pixelization):
         Parameters
         -----------
         pix_sub_grid : [[float, float]]
-            The x and y pix grid (or sub-coordinaates) which are to be matched with their pixels.
+            The x and y pix grid (or sub_grid_coords-coordinaates) which are to be matched with their pixels.
         buffer : float
             The size the grid-geometry is extended beyond the most exterior grid.
         """
@@ -297,13 +297,13 @@ class RectangularPixelization(Pixelization):
         return pixel_neighbors
 
     def compute_grid_to_pix(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
-        traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
+        """Compute the mappings between a set of image_coords pixels (or sub_grid_coords-pixels) and pixels, using the image_coords's
+        traced pix-plane grid (or sub_grid_coords-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters
         ----------
         grid : [[float, float]]
-            The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
+            The x and y pix grid (or sub_grid_coords-coordinates) which are to be matched with their pixels.
         geometry : Geometry
             The rectangular pixel grid's geometry.
         """
@@ -323,19 +323,19 @@ class RectangularPixelization(Pixelization):
         """
         Compute the pixelization matrices of the rectangular pixelization by following these steps:
 
-        1) Setup the rectangular grid geometry, by making its corner appear at the higher / lowest x and y pix sub-
+        1) Setup the rectangular grid geometry, by making its corner appear at the higher / lowest x and y pix sub_grid_coords-
         grid.
-        2) Pair image and sub-image pixels to the rectangular grid using their traced grid and its geometry.
+        2) Pair image_coords and sub_grid_coords-image_coords pixels to the rectangular grid using their traced grid and its geometry.
 
         Parameters
         ----------
 
         """
 
-        geometry = self.geometry_from_pix_sub_grid(grids.sub)
+        geometry = self.geometry_from_pix_sub_grid(grids.sub_grid_coords)
         pix_neighbors = self.neighbors_from_pixelization()
-        image_to_pix = self.compute_grid_to_pix(grids.image, geometry)
-        sub_to_pix = self.compute_grid_to_pix(grids.sub, geometry)
+        image_to_pix = self.compute_grid_to_pix(grids.image_coords, geometry)
+        sub_to_pix = self.compute_grid_to_pix(grids.sub_grid_coords, geometry)
 
         mapping = self.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
         regularization = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
@@ -348,7 +348,7 @@ class VoronoiPixelization(Pixelization):
     def __init__(self, pixels, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a Voronoi pixelization, which represents pixels as a set of centers where \
-        all of the nearest-neighbor pix-grid (i.e. traced image-pixels) are mapped to them.
+        all of the nearest-neighbor pix-grid (i.e. traced image_coords-pixels) are mapped to them.
 
         This forms a Voronoi grid pix-plane, the properties of which are used for fast calculations, defining the \
         regularization matrix and visualization.
@@ -394,19 +394,19 @@ class VoronoiPixelization(Pixelization):
         return pix_neighbors
 
     def image_to_pix_from_pixelization(self, grids, pix_centers, pix_neighbors, cluster_to_pix, sparse_mask):
-        """ Compute the mappings between a set of image pixels and pixels, using the image's traced \
+        """ Compute the mappings between a set of image_coords pixels and pixels, using the image_coords's traced \
         pix-plane grid and the pixel centers.
 
         For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / image-pixels and pixels.
+        These provide the mappings between only a sub_grid_coords-set of sub_grid_coords-pixels / image_coords-pixels and pixels.
 
-        To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-        its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
+        To determine the complete set of sub_grid_coords-pixel to pixel mappings, we must therefore pair every sub_grid_coords-pixel to \
+        its nearest pixel (using the sub_grid_coords-pixel's pix-plane coordinate and pixel center). Using a full \
         nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
         is used to localize each nearest neighbor search.
 
         In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an image coordinate. \
+        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an image_coords coordinate. \
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
 
@@ -427,14 +427,14 @@ class VoronoiPixelization(Pixelization):
         Returns
         ----------
         sub_to_pix : [int, int]
-            The mapping between every sub-pixel and pixel. (e.g. if the fifth sub-pixel of the third \
-            image-pixel maps to the 3rd pixel, sub_to_pix[2,4] = 2).
+            The mapping between every sub_grid_coords-pixel and pixel. (e.g. if the fifth sub_grid_coords-pixel of the third \
+            image_coords-pixel maps to the 3rd pixel, sub_to_pix[2,4] = 2).
 
          """
 
-        image_to_pix = np.zeros((grids.image.shape[0]), dtype=int)
+        image_to_pix = np.zeros((grids.image_coords.shape[0]), dtype=int)
 
-        for image_index, pix_coordinate in enumerate(grids.image):
+        for image_index, pix_coordinate in enumerate(grids.image_coords):
             nearest_cluster = sparse_mask.image_to_sparse[image_index]
 
             image_to_pix[image_index] = self.pair_image_and_pix(pix_coordinate, nearest_cluster,
@@ -443,20 +443,20 @@ class VoronoiPixelization(Pixelization):
         return image_to_pix
 
     def sub_to_pix_from_pixelization(self, grids, pix_centers, pix_neighbors, cluster_to_pix, sparse_mask):
-        """ Compute the mappings between a set of sub-image pixels and pixels, using the image's traced \
-        pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
+        """ Compute the mappings between a set of sub_grid_coords-image_coords pixels and pixels, using the image_coords's traced \
+        pix-plane sub_grid_coords-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
 
         For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / image-pixels and pixels.
+        These provide the mappings between only a sub_grid_coords-set of sub_grid_coords-pixels / image_coords-pixels and pixels.
 
-        To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-        its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
+        To determine the complete set of sub_grid_coords-pixel to pixel mappings, we must therefore pair every sub_grid_coords-pixel to \
+        its nearest pixel (using the sub_grid_coords-pixel's pix-plane coordinate and pixel center). Using a full \
         nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
         is used to localize each nearest neighbor search.
 
         In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an image coordinate. \
+        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an image_coords coordinate. \
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
 
@@ -464,9 +464,9 @@ class VoronoiPixelization(Pixelization):
         ----------
 
         grids: mask.GridCollection
-            A collection of coordinates for the masked image, subgrid and blurring grid
+            A collection of coordinates for the masked image_coords, subgrid and blurring_coords grid
         sparse_mask: mask.SparseMask
-            A mask describing the image pixels that should be used in pixel clustering
+            A mask describing the image_coords pixels that should be used in pixel clustering
         pix_centers: [[float, float]]
             The coordinate of the center of every pixel.
         pix_neighbors : [[]]
@@ -479,15 +479,15 @@ class VoronoiPixelization(Pixelization):
         Returns
         ----------
         sub_to_pix : [int, int]
-            The mapping between every sub-pixel and pixel. (e.g. if the fifth sub-pixel of the third \
-            image-pixel maps to the 3rd pixel, sub_to_pix[2,4] = 2).
+            The mapping between every sub_grid_coords-pixel and pixel. (e.g. if the fifth sub_grid_coords-pixel of the third \
+            image_coords-pixel maps to the 3rd pixel, sub_to_pix[2,4] = 2).
 
          """
 
-        sub_to_pix = np.zeros((grids.sub.no_pixels,), dtype=int)
+        sub_to_pix = np.zeros((grids.sub_grid_coords.no_pixels,), dtype=int)
 
-        for sub_index, sub_coordinate in enumerate(grids.sub):
-            nearest_cluster = sparse_mask.image_to_sparse[grids.sub.sub_to_image[sub_index]]
+        for sub_index, sub_coordinate in enumerate(grids.sub_grid_coords):
+            nearest_cluster = sparse_mask.image_to_sparse[grids.sub_grid_coords.sub_to_image[sub_index]]
 
             sub_to_pix[sub_index] = self.pair_image_and_pix(sub_coordinate, nearest_cluster, pix_centers,
                                                             pix_neighbors, cluster_to_pix)
@@ -495,27 +495,27 @@ class VoronoiPixelization(Pixelization):
         return sub_to_pix
 
     def pair_image_and_pix(self, coordinate, nearest_cluster, pix_centers, pix_neighbors, cluster_to_pix):
-        """ Compute the mappings between a set of sub-image pixels and pixels, using the image's traced \
-        pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
+        """ Compute the mappings between a set of sub_grid_coords-image_coords pixels and pixels, using the image_coords's traced \
+        pix-plane sub_grid_coords-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
 
         For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / image-pixels and pixels.
+        These provide the mappings between only a sub_grid_coords-set of sub_grid_coords-pixels / image_coords-pixels and pixels.
 
-        To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-        its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
+        To determine the complete set of sub_grid_coords-pixel to pixel mappings, we must therefore pair every sub_grid_coords-pixel to \
+        its nearest pixel (using the sub_grid_coords-pixel's pix-plane coordinate and pixel center). Using a full \
         nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
         is used to localize each nearest neighbor search.
 
         In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an image coordinate. \
+        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an image_coords coordinate. \
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
 
         Parameters
         ----------
         coordinate : [float, float]
-            The x and y pix sub-grid grid which are to be matched with their closest pixels.
+            The x and y pix sub_grid_coords-grid grid which are to be matched with their closest pixels.
         nearest_cluster : int
             The nearest pixel defined on the cluster-pixel grid.
         pix_centers: [[float, float]]
@@ -589,10 +589,10 @@ class ClusterPixelization(VoronoiPixelization):
     def __init__(self, pixels, regularization_coefficients=(1.0,)):
         """
         A cluster pixelization, which represents pixels as a set of centers where all of the nearest-neighbor \
-        pix-grid (i.e. traced image-pixels) are mapped to them.
+        pix-grid (i.e. traced image_coords-pixels) are mapped to them.
 
-        For this pixelization, a set of cluster-pixels (defined in the image-plane as a cluster uniform grid of \
-        image-pixels) determine the pixel centers .
+        For this pixelization, a set of cluster-pixels (defined in the image_coords-plane as a cluster uniform grid of \
+        image_coords-pixels) determine the pixel centers .
 
         Parameters
         ----------
@@ -610,22 +610,22 @@ class ClusterPixelization(VoronoiPixelization):
         1) Extract the cluster-grid (see grids.GridMapperCluster) from the pix-plane and use these as the \
         pixel centres.
         3) Derive a Voronoi grid using these pixel centres.
-        4) Compute the mapping between all image sub-grid and pixels.
+        4) Compute the mapping between all image_coords sub_grid_coords-grid and pixels.
         5) Use these mappings to compute the mapping matrix.
 
         Parameters
         ----------
         grids: mask.GridCollection
-            A collection of coordinates for the masked image, subgrid and blurring grid
+            A collection of coordinates for the masked image_coords, subgrid and blurring_coords grid
         sparse_mask: mask.SparseMask
-            A mask describing the image pixels that should be used in pixel clustering
+            A mask describing the image_coords pixels that should be used in pixel clustering
         """
 
         if self.pixels is not len(sparse_mask.sparse_to_image):
             raise exc.PixelizationException('ClusteringPixelization - The input number of pixels in the constructor'
                                             'is not the same as the length of the cluster_to_image mapper')
 
-        pix_centers = grids.image[sparse_mask.sparse_to_image]
+        pix_centers = grids.image_coords[sparse_mask.sparse_to_image]
         cluster_to_pix = np.arange(0, self.pixels)
         voronoi = self.voronoi_from_cluster_grid(pix_centers)
         pix_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
@@ -644,10 +644,10 @@ class AmorphousPixelization(VoronoiPixelization):
     def __init__(self, pixels, regularization_coefficients=(1.0, 1.0, 2.0)):
         """
         An amorphous pixelization, which represents pixels as a set of centers where all of the \
-        nearest-neighbor pix-grid (i.e. traced image-pixels) are mapped to them.
+        nearest-neighbor pix-grid (i.e. traced image_coords-pixels) are mapped to them.
 
-        For this pixelization, a set of cluster-pixels (defined in the image-plane as a cluster uniform grid of \
-        image-pixels) are used to determine a set of pix-plane grid. These grid are then fed into a \
+        For this pixelization, a set of cluster-pixels (defined in the image_coords-plane as a cluster uniform grid of \
+        image_coords-pixels) are used to determine a set of pix-plane grid. These grid are then fed into a \
         weighted k-means clustering algorithm, such that the pixel centers adapt to the unlensed pix \
         surface-brightness profile.
 
@@ -667,18 +667,18 @@ class AmorphousPixelization(VoronoiPixelization):
         1) Extract the cluster-grid (see grids.GridMapperCluster) from the pix-plane.
         2) Performs weighted kmeans clustering on these cluster-grid to compute the pixel centres.
         3) Derive a Voronoi grid using these pixel centres.
-        4) Compute the mapping between all image sub-grid and pixels.
+        4) Compute the mapping between all image_coords sub_grid_coords-grid and pixels.
         5) Use these mappings to compute the mapping matrix.
 
         Parameters
         ----------
         grids: mask.GridCollection
-            A collection of coordinates for the masked image, subgrid and blurring grid
+            A collection of coordinates for the masked image_coords, subgrid and blurring_coords grid
         sparse_mask: mask.SparseMask
-            A mask describing the image pixels that should be used in pixel clustering
+            A mask describing the image_coords pixels that should be used in pixel clustering
         """
 
-        cluster_grid = grids.image[sparse_mask.sparse_to_image]
+        cluster_grid = grids.image_coords[sparse_mask.sparse_to_image]
         pix_centers, cluster_to_pix = self.kmeans_cluster(cluster_grid)
         voronoi = self.voronoi_from_cluster_grid(pix_centers)
         pix_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
@@ -720,9 +720,9 @@ class Inversion(object):
             The matrix defining how the reconstruction's pixels are regularized with one another when fitting the
             weighted_data.
         image_to_pix : ndarray
-            The mapping between each image-grid pixel and pixelization-grid pixel.
+            The mapping between each image_coords-grid pixel and pixelization-grid pixel.
         sub_to_pix : ndarray
-            The mapping between each sub-grid pixel and pixelization-grid sub-pixel.
+            The mapping between each sub_grid_coords-grid pixel and pixelization-grid sub_grid_coords-pixel.
         """
 
         self.mapping = mapping
@@ -731,7 +731,7 @@ class Inversion(object):
         self.sub_to_pix = sub_to_pix
 
     def fit_image_via_inversion(self, image, noise, kernel_convolver):
-        """Fit the image data using the inversion."""
+        """Fit the image_coords data using the inversion."""
 
         # TODO : Do faster / more cleanly
 
@@ -762,7 +762,7 @@ class InversionFitted(object):
             inversion (D).
         blurred_mapping : ndarray | None
             The matrix representing the mapping between reconstruction-pixels and data-pixels, including a \
-            blurring operation (f).
+            blurring_coords operation (f).
         regularization : ndarray | None
             The matrix defining how the reconstruction's pixels are regularized with one another (H).
         covariance : ndarray | None
@@ -780,7 +780,7 @@ class InversionFitted(object):
         self.reconstruction = reconstruction
 
     def model_image_from_reconstruction(self):
-        """ Map the reconstruction pix s_vector back to the image-plane to compute the pixelization's model-image.
+        """ Map the reconstruction pix s_vector back to the image_coords-plane to compute the pixelization's model-image_coords.
         """
         model_image = np.zeros(self.blurred_mapping.shape[0])
         for i in range(self.blurred_mapping.shape[0]):

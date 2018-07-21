@@ -23,24 +23,24 @@ A FrameMaker can be created for a given mask:
 
 frame_maker = FrameMaker(mask)
 
-This can then produce a convolver for any given kernel shape and corresponding blurring region mask:
+This can then produce a convolver for any given kernel shape and corresponding blurring_coords region mask:
 
 convolver = frame_maker.convolver_for_kernel_shape((3, 3), blurring_region_mask)
 
-Here the blurring region mask describes the region under the mask from which a given PSF kernel may blur pixels. If the
-regular mask specifies True for a givena pixel and the blurring region mask False then that pixel will be blurred in
-using the blurring array.
+Here the blurring_coords region mask describes the region under the mask from which a given PSF kernel may blur pixels. If the
+regular mask specifies True for a givena pixel and the blurring_coords region mask False then that pixel will be blurred in
+using the blurring_coords array.
 
 A convolver can then be made for any given kernel:
 
 kernel_convolver = convolver.convolver_for_kernel(kernel)
 
-Which is applied to a reduced array and blurring array:
+Which is applied to a reduced array and blurring_coords array:
 
 convolved_array = convolver.convolve_array(array, blurring_array)
 
-The array is pixels within the non-masked region, whilst the blurring array is pixels outside of the non-masked region
-but inside of the blurring mask region.
+The array is pixels within the non-masked region, whilst the blurring_coords array is pixels outside of the non-masked region
+but inside of the blurring_coords mask region.
 
 The convolver can also be applied for some sub_grid-shape of the kernel:
 
@@ -52,12 +52,12 @@ convolved_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix)
 
 Where the mapping matrix is an array of dictionaries with each index of the array corresponding to a source pixel.
 
-It is also possible to specify a blurring region mask:
+It is also possible to specify a blurring_coords region mask:
 
 FrameMaker(mask, blurring_region_mask)
 
-PSF will be calculated from values that are masked by mask but not by blurring region mask. That is, any entry with a 
-True value for mask and a False value for blurring region mask may contribute to the PSF convolved value of a nearby
+PSF will be calculated from values that are masked by mask but not by blurring_coords region mask. That is, any entry with a 
+True value for mask and a False value for blurring_coords region mask may contribute to the PSF convolved value of a nearby
 entry with a False value for mask.
 
 """
@@ -120,7 +120,7 @@ class FrameMaker(object):
         Returns
         -------
         blurring_frame_array [ndarray]
-            A list of frames where the position corresponds to a position in the blurring region weighted_data grid and the
+            A list of frames where the position corresponds to a position in the blurring_coords region weighted_data grid and the
             entries correspond to positions in the primary weighted_data grid
         """
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
@@ -172,7 +172,7 @@ class FrameMaker(object):
         Parameters
         ----------
         blurring_region_mask: Mask
-            A mask describing the blurring region. If False then that pixel is included int he blurring region.
+            A mask describing the blurring_coords region. If False then that pixel is included int he blurring_coords region.
         kernel_shape: (int, int)
             The shape of the kernel
         Returns
@@ -237,9 +237,9 @@ class KernelConvolver(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of image_coords pixels within the blurring_coords region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
+            An array representing the mapping of a source pixel to a set of image_coords pixels.
 
         Returns
         -------
@@ -254,7 +254,7 @@ class KernelConvolver(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of image_coords pixels within the blurring_coords region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_array: [float]
