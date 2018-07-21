@@ -81,7 +81,7 @@ class MockMapping(object):
 # noinspection PyUnusedLocal
 class MockLightProfile(light_profiles.LightProfile):
 
-    def intensity_from_coordinate_grid(self, grid):
+    def intensity_from_grid(self, grid):
         return np.array([self.value])
 
     def __init__(self, value):

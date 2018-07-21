@@ -87,16 +87,13 @@ class MassProfile(object):
     def surface_density_func(self, eta):
         raise NotImplementedError("surface_density_at_radius should be overridden")
 
-    def surface_density_from_coordinate_grid(self, coordinates):
-        raise NotImplementedError("surface_density_at_coordinates should be overridden")
+    def surface_density_from_grid(self, grid):
+        raise NotImplementedError("surface_density_from_coordinate_grid should be overridden")
 
-    def potential_at_coordinates(self, coordinates):
-        raise NotImplementedError("potential_at_coordinates should be overridden")
+    def potential_from_grid(self, grid):
+        raise NotImplementedError("potential_from_coordinate_grid should be overridden")
 
-    def deflections_at_coordinates(self, coordinates):
-        raise NotImplementedError("deflections_at_coordinates should be overridden")
-
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_coordinate_grid should be overridden")
 
 
@@ -228,7 +225,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
     @geometry_profiles.transform_grid
-    def surface_density_from_coordinate_grid(self, grid):
+    def surface_density_from_grid(self, grid):
         """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
         Parameters
@@ -248,7 +245,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
         return surface_density_grid
 
     @geometry_profiles.transform_grid
-    def potential_from_coordinate_grid(self, grid):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of gridded coordinates.
 
@@ -267,7 +264,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
         return self.einstein_radius_rescaled * self.axis_ratio * potential_grid
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -335,32 +332,11 @@ class SphericalPowerLaw(EllipticalPowerLaw):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\alpha']
 
-    # TODO : from grid isnt giving correct answer, at coordinates does.
-
-    @geometry_profiles.transform_coordinates
-    def deflections_at_coordinates(self, coordinates):
-        """
-        Calculate the deflection angles at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.CoordinateGrid
-            The grid of coordinates the deflection angles are computed on.
-        """
-        eta = self.coordinates_to_elliptical_radius(coordinates)
-        deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta) ** -1.0 * eta ** (
-                3.0 - self.slope)
-        print(deflection_r)
-        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
-
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         eta_u = self.grid_to_elliptical_radius(grid)
-        deflection_r = np.divide(np.power(eta_u, (3.0 - self.slope)), 2.0 * self.einstein_radius_rescaled * np.multiply((3.0 - self.slope), eta_u))
-    #    deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta_u) ** -1.0 * eta_u ** (
-    #            3.0 - self.slope)
-        print(deflection_r)
-        print(grid)
+        deflection_r = 2.0 * self.einstein_radius_rescaled * \
+                       np.divide(np.power(eta_u, (3.0 - self.slope)), np.multiply((3.0 - self.slope), eta_u))
         return self.grid_radius_to_cartesian(grid, deflection_r)
 
 
@@ -390,7 +366,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         return ['x', 'y', 'q', r'\phi', r'\theta']
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -437,7 +413,7 @@ class SphericalIsothermal(EllipticalIsothermal):
     # TODO : Raises errors because the decorator is trying to 'rotate back' the potential grid which is 1D
 
     @geometry_profiles.transform_grid
-    def potential_from_coordinate_grid(self, grid):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of gridded coordinates.
 
@@ -450,7 +426,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         return 2.0 * self.einstein_radius_rescaled * eta
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -459,7 +435,6 @@ class SphericalIsothermal(EllipticalIsothermal):
         grid : mask.CoordinateGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        print(np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
@@ -534,30 +509,11 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
     def parameter_labels(self):
         return ['x', 'y', r'\theta', r'\alpha', 'S']
 
-    @geometry_profiles.transform_coordinates
-    def deflections_at_coordinates(self, coordinates):
-        """
-        Calculate the deflection angle at a given set of gridded coordinates
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The deflection angles [alpha(eta)] (x and y components) at those image_grid
-        """
-        eta = self.coordinates_to_elliptical_radius(coordinates)
-        deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta) ** -1.0 * (
-                (self.core_radius ** 2 + eta ** 2) ** ((3.0 - self.slope) / 2.0) - self.core_radius ** (3 - self.slope))
-        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
-
     # TODO : Same problem as SphericalPowerLaw - however at coordinates / grid give the same defleciton_r value. Its the
     # TODO : self.grid_radius_to_cartesian method which is causing the problem.
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -567,11 +523,9 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
             The grid of coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_elliptical_radius(grid)
-        print(eta)
         deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
             np.add(np.power(np.add(self.core_radius ** 2, np.square(eta)), (3. - self.slope) / 2.),
                    -self.core_radius ** (3 - self.slope)), np.multiply((3. - self.slope), eta)))
-        print(deflection)
         return self.grid_radius_to_cartesian(grid, deflection)
 
 
@@ -672,7 +626,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
             return 1
 
     @geometry_profiles.transform_grid
-    def surface_density_from_coordinate_grid(self, grid):
+    def surface_density_from_grid(self, grid):
         """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
         Parameters
@@ -692,7 +646,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         return surface_density_grid
 
     @geometry_profiles.transform_grid
-    def potential_from_coordinate_grid(self, grid):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of gridded coordinates.
 
@@ -712,7 +666,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         return potential_grid
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -802,7 +756,7 @@ class SphericalNFW(EllipticalNFW):
     # TODO : Make this use numpy arthimitic
 
     @geometry_profiles.transform_grid
-    def potential_from_coordinate_grid(self, grid):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of gridded coordinates.
 
@@ -815,7 +769,7 @@ class SphericalNFW(EllipticalNFW):
         return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -874,7 +828,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         return ['x', 'y', 'q', r'\phi', r'\kappa', r'\gamma' 'Rs']
 
     @geometry_profiles.transform_grid
-    def potential_from_coordinate_grid(self, grid, tabulate_bins=1000):
+    def potential_from_grid(self, grid, tabulate_bins=1000):
         """
         Calculate the potential at a given set of gridded coordinates.
 
@@ -913,7 +867,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         return potential_grid
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid, tabulate_bins=1000):
+    def deflections_from_grid(self, grid, tabulate_bins=1000):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -1022,27 +976,8 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
     def parameter_labels(self):
         return ['x', 'y', r'\kappa', r'\gamma' 'Rs']
 
-    @geometry_profiles.transform_coordinates
-    def deflections_at_coordinates(self, coordinates):
-        """
-        Calculate the deflection angle at a given set of gridded coordinates
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The deflection angles [alpha(eta)] (x and y components) at those image_grid
-        """
-        eta = (1.0 / self.scale_radius) * self.coordinates_to_elliptical_radius(coordinates)
-        deflection_r = 4.0 * self.kappa_s * self.scale_radius * self.deflection_func_sph(eta)
-
-        return self.coordinates_radius_to_x_and_y(coordinates, deflection_r)
-
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid, tabulate_bins=1000):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -1051,36 +986,26 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         grid : mask.CoordinateGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        @jit_integrand_function_3_params
-        def deflection_integrand(x, kappa_radius, scale_radius, inner_slope):
-            return (x + kappa_radius / scale_radius) ** (inner_slope - 3) * ((1 - np.sqrt(1 - x ** 2)) / x)
 
-        eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size = self.tabulate_integral(grid, tabulate_bins)
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_elliptical_radius(grid))
 
-        deflection_integral = np.zeros((tabulate_bins))
-
-        for i in range(tabulate_bins):
-
-            eta = 10.** (minimum_log_eta + (i-1) * bin_size)
-
-            integral = quad(deflection_integrand, a=0.0, b=1.0, args=(eta, self.scale_radius, self.inner_slope))[0]
-
-            deflection_integral[i] = ((eta/self.scale_radius) ** (2 - self.inner_slope)) * ((1.0 / (3 - self.inner_slope)) *
-            special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, - (eta/self.scale_radius))  + integral)
-
-        eta = np.multiply((1. / self.scale_radius), self.grid_to_elliptical_radius(grid))
-
-        deflection_r = np.zeros(grid.shape[0])
+        deflection_grid = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
+            deflection_grid[i] = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta[i]))
 
-            j = 1 + int((np.log10(eta[i]) - minimum_log_eta) / bin_size)
+        return self.grid_radius_to_cartesian(grid, deflection_grid)
 
-            deflection_r[i] = 4.0 * self.kappa_s * self.scale_radius * (eta[i] ** (2.0-self.inner_slope)) \
-            * ((1.0/(3.0-self.inner_slope)) * special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope, -eta)
-              + deflection_integral[j])
+    @staticmethod
+    def deflection_integrand(y, eta, inner_slope):
+        return (y + eta) ** (inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
 
-        return self.grid_radius_to_cartesian(grid, deflection_r)
+    def deflection_func_sph(self, eta):
+
+        integral_y_2 = quad(self.deflection_integrand, a=0.0, b=1.0, args=(eta, self.inner_slope))[0]
+        return eta ** (2 - self.inner_slope) * ((1.0 / (3 - self.inner_slope)) *
+                special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope,-eta) + integral_y_2)
+
 
     #     deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph_grid(grid))
     #
@@ -1123,7 +1048,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi']
 
     @geometry_profiles.transform_grid
-    def surface_density_from_coordinate_grid(self, grid):
+    def surface_density_from_grid(self, grid):
         """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
         Parameters
@@ -1134,7 +1059,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -1285,7 +1210,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Tau']
 
     @geometry_profiles.transform_grid
-    def surface_density_from_coordinate_grid(self, grid):
+    def surface_density_from_grid(self, grid):
         """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
 
         Parameters
@@ -1296,7 +1221,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
@@ -1368,7 +1293,7 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         return [r'\gamma', r'\theta']
 
     @geometry_profiles.transform_grid
-    def deflections_from_coordinate_grid(self, grid):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
