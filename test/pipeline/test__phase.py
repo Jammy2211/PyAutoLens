@@ -33,3 +33,8 @@ class TestPhase(object):
     def test_set_variables(self, phase, galaxy_prior):
         phase.lens_galaxies = [galaxy_prior]
         assert phase.optimizer.variable.lens_galaxies[0] == galaxy_prior
+
+    def test_set_constant_and_variable(self, phase, galaxy, galaxy_prior):
+        phase.lens_galaxies = [galaxy, galaxy_prior]
+        assert phase.optimizer.constant.lens_galaxies[0] == galaxy
+        assert phase.optimizer.variable.lens_galaxies[0] == galaxy_prior
