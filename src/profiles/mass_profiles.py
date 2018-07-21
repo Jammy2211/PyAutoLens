@@ -357,9 +357,10 @@ class SphericalPowerLaw(EllipticalPowerLaw):
     def deflections_from_coordinate_grid(self, grid):
         eta_u = self.grid_to_elliptical_radius(grid)
         deflection_r = np.divide(np.power(eta_u, (3.0 - self.slope)), 2.0 * self.einstein_radius_rescaled * np.multiply((3.0 - self.slope), eta_u))
-        deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta_u) ** -1.0 * eta_u ** (
-                3.0 - self.slope)
+    #    deflection_r = 2.0 * self.einstein_radius_rescaled * ((3.0 - self.slope) * eta_u) ** -1.0 * eta_u ** (
+    #            3.0 - self.slope)
         print(deflection_r)
+        print(grid)
         return self.grid_radius_to_cartesian(grid, deflection_r)
 
 
@@ -458,6 +459,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         grid : mask.CoordinateGrid
             The grid of coordinates the deflection angles are computed on.
         """
+        print(np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 

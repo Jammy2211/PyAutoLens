@@ -222,8 +222,8 @@ def transform_grid(func):
         """
         if not isinstance(grid, TransformedGrid):
             result = func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
-            if isinstance(result, TransformedGrid):
-                result = profile.transform_grid_from_reference_frame(result)
+         #   if isinstance(result, TransformedGrid):
+         #       result = profile.transform_grid_from_reference_frame(result)
             return np.asarray(result)
         return func(profile, grid, *args, **kwargs)
 
@@ -566,6 +566,7 @@ class EllipticalProfile(Profile):
         """
         theta_from_x = np.degrees(np.arctan2(coordinates[1], coordinates[0]))
         cos_theta, sin_theta = self.cos_and_sin_of_angle_to_profile(theta_from_x)
+        print(cos_theta, sin_theta)
         return radius * cos_theta, radius * sin_theta
 
     def grid_radius_to_cartesian(self, grid, radius):
@@ -609,6 +610,9 @@ class EllipticalProfile(Profile):
         return transformed.view(TransformedGrid)
 
     def transform_grid_from_reference_frame(self, grid):
+
+        print(grid)
+
         x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),
                    self.centre[0])
         y = np.add(
