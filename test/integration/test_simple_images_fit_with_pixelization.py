@@ -4,7 +4,6 @@ from src.imaging import masked_image
 from src.profiles import light_profiles as lp
 from src.profiles import mass_profiles as mp
 from src.pixelization import pixelization
-from src.pixelization import frame_convolution
 from src.analysis import fitting
 from src.analysis import ray_tracing
 from src.analysis import galaxy
@@ -51,7 +50,6 @@ class TestCase:
     class TestRectangularPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
-
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -72,11 +70,13 @@ class TestCase:
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
 
-            ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix],
-                                           image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
-                                           ma, 1, (3, 3)))
+            ray_trace = ray_tracing.Tracer(
+                lens_galaxies=[],
+                source_galaxies=[galaxy_pix],
+                image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                    ma, 1, (3, 3)))
 
-            fitter = fitting.Fitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
+            fitter = fitting.PixelizedFitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -115,7 +115,6 @@ class TestCase:
     class TestClusterPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
-
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -136,11 +135,13 @@ class TestCase:
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
 
-            ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix],
-                                           image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
-                                           ma, 1, (3, 3)))
+            ray_trace = ray_tracing.Tracer(
+                lens_galaxies=[],
+                source_galaxies=[galaxy_pix],
+                image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                    ma, 1, (3, 3)))
 
-            fitter = fitting.Fitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
+            fitter = fitting.PixelizedFitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
