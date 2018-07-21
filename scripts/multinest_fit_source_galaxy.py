@@ -29,7 +29,7 @@ data_dir = "../weighted_data/"+lens_name.format(os.path.dirname(os.path.realpath
 
 print(data_dir)
 
-im = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/image', hdu=0, pixel_scale=0.1)
+im = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/image_coords', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/noise', hdu=0, pixel_scale=0.1)
 exposure_time = scaled_array.ScaledArray.from_fits(file_path=data_dir+'/exposure_time', hdu=0,
                                                    pixel_scale=0.1)

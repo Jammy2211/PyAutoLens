@@ -137,7 +137,7 @@ class Mask(scaled_array.ScaledArray):
     @classmethod
     def unmasked(cls, shape_arc_seconds, pixel_scale):
         """
-        Setup the mask such that all values are unmasked, thus corresponding to the entire image.
+        Setup the mask such that all values are unmasked, thus corresponding to the entire image_coords.
 
         Parameters
         ----------
@@ -166,7 +166,7 @@ class Mask(scaled_array.ScaledArray):
     @property
     def coordinate_grid(self):
         """
-        Compute the image grid_coords grids from a mask, using the center of every unmasked pixel.
+        Compute the image_coords grid_coords grids from a mask, using the center of every unmasked pixel.
         """
         coordinates = self.grid_coordinates
 
@@ -184,7 +184,7 @@ class Mask(scaled_array.ScaledArray):
         return CoordinateGrid(grid)
 
     def masked_1d_array_from_2d_array(self, grid_data):
-        """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
+        """Compute a data grid, which represents the data values of a data-set (e.g. an image_coords, noise, in the mask.
 
         Parameters
         ----------
@@ -232,7 +232,7 @@ class Mask(scaled_array.ScaledArray):
 
     @property
     def border_pixel_indices(self):
-        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        """Compute the border image_coords data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
         its edge, therefore neighboring a pixel with a *True* value.
         """
 
@@ -253,13 +253,13 @@ class Mask(scaled_array.ScaledArray):
 
     @Memoizer()
     def blurring_mask_for_kernel_shape(self, kernel_shape):
-        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
-        fraction of their light will be blurring in the image.
+        """Compute the blurring_coords mask, which represents all data_to_pixels not in the mask but close enough to it that a
+        fraction of their light will be blurring_coords in the image_coords.
 
         Parameters
         ----------
         kernel_shape : (int, int)
-           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
+           The sub_grid_size of the psf which defines the blurring_coords region (e.g. the shape of the PSF)
         """
 
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
@@ -277,7 +277,7 @@ class Mask(scaled_array.ScaledArray):
                                 blurring_mask[x + x1, y + y1] = False
                         else:
                             raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image"
+                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image_coords"
                                 "before masking")
 
         self.map(fill_grid)
@@ -306,10 +306,10 @@ class SparseMask(Mask):
     @Memoizer()
     def index_image(self):
         """
-        Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
+        Setup an image_coords which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
 
-         This is used for computing the image_to_cluster vector, whereby each image pixel is paired to the sparse
-         pixel in this image via a neighbor search."""
+         This is used for computing the image_to_cluster vector, whereby each image_coords pixel is paired to the sparse
+         pixel in this image_coords via a neighbor search."""
 
         sparse_index_2d = np.zeros(self.shape, dtype=int)
         sparse_pixel_index = 0
@@ -326,14 +326,14 @@ class SparseMask(Mask):
     @Memoizer()
     def sparse_to_image(self):
         """
-        Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
+        Compute the mapping of each sparse image_coords pixel to its closest image_coords pixel, defined using a mask of image_coords \
         data_to_pixels.
 
         Returns
         -------
         cluster_to_image : ndarray
-            The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
-            of the image pixel in the self.
+            The mapping between every sparse clustering image_coords pixel and image_coords pixel, where each entry gives the 1D index
+            of the image_coords pixel in the self.
         """
         sparse_to_image = np.empty(0, dtype=int)
         image_pixel_index = 0
@@ -352,9 +352,9 @@ class SparseMask(Mask):
     @property
     @Memoizer()
     def image_to_sparse(self):
-        """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
+        """Compute the mapping between every image_coords pixel in the mask and its closest sparse clustering pixel.
 
-        This is performed by going to each image pixel in the *mask*, and pairing it with its nearest neighboring pixel
+        This is performed by going to each image_coords pixel in the *mask*, and pairing it with its nearest neighboring pixel
         in the *sparse_mask*. The index of the *sparse_mask* pixel is drawn from the *sparse_index_image*. This
         neighbor search continue grows larger and larger around a pixel, until a pixel contained in the *sparse_mask* is
         successfully found.
@@ -362,7 +362,7 @@ class SparseMask(Mask):
         Returns
         -------
         image_to_cluster : ndarray
-            The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D
+            The mapping between every image_coords pixel and its closest sparse clustering pixel, where each entry give the 1D
             index of the sparse pixel in sparse_pixel arrays.
 
         """
@@ -393,18 +393,18 @@ class CoordinateGrid(np.ndarray):
     are represented by the value at the centre of the pixel.
 
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an \
-    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+    image_coords (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image_coords pixel indexes are \
     also counted from the top-left.
 
     A regular *grid_coords* is a NumPy array of image_shape [image_pixels, 2]. Therefore, the first element maps \
-    to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
-    [3,1] gives the 4th image pixel's y coordinate.
+    to the image_coords pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
+    [3,1] gives the 4th image_coords pixel's y coordinate.
 
     Below is a visual illustration of a regular grid, where a total of 10 data_to_image are unmasked and therefore \
     included in the grid.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image_coords.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
     |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
@@ -414,8 +414,8 @@ class CoordinateGrid(np.ndarray):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
-    around the image.
+    This image_coords pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
+    around the image_coords.
 
     pixel_scale = 1.0"
 
@@ -442,24 +442,24 @@ class CoordinateGrid(np.ndarray):
 
 class SubCoordinateGrid(CoordinateGrid):
 
-    """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
-     sub-coordinates, which are used to perform over-sampling in the lens analysis.
+    """Abstract class for a sub_grid_coords of coordinates. On a sub_grid_coords-grid, each pixel is sub_grid_coords-gridded into a uniform grid of
+     sub_grid_coords-coordinates, which are used to perform over-sampling in the lens analysis.
 
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
-    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
+    image_coords (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image_coords pixel indexes are
     also counted from the top-left.
 
-    A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
-    element maps to the image pixel index, the second element to the sub-pixel index and third element to that
-    sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
-    7th sub-pixel's y coordinate.
+    A sub_grid_coords *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
+    element maps to the image_coords pixel index, the second element to the sub_grid_coords-pixel index and third element to that
+    sub_grid_coords pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image_coords pixel's
+    7th sub_grid_coords-pixel's y coordinate.
 
-    Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
+    Below is a visual illustration of a sub_grid_coords grid. Like the regular grid, the indexing of each sub_grid_coords-pixel goes from
     the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
     2 data_to_image, to keep the illustration brief.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image_coords.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
     |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
@@ -486,8 +486,8 @@ class SubCoordinateGrid(CoordinateGrid):
     |x|x|x|x|x|x|x|x|x|x| \/
     |x|x|x|x|x|x|x|x|x|x|
 
-    However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
-    if *sub_grid_size=2*, we use a 2x2 sub-grid:
+    However, we now go to each image_coords-pixel and derive a sub_grid_coords-pixel grid for it. For example, for pixel 0,
+    if *sub_grid_size=2*, we use a 2x2 sub_grid_coords-grid:
 
     Pixel 0 - (2x2):
 
@@ -496,7 +496,7 @@ class SubCoordinateGrid(CoordinateGrid):
     |2|3|  grid_coords[0,2] = [-1.66, 0.33]
            grid_coords[0,3] = [-1.33, 0.33]
 
-    Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
+    Now, we'd normally sub_grid_coords-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
     pretend we used a sub_grid_size of 3x3 for pixel 1:
 
              grid_coords[0,0] = [-0.75, 0.75]
@@ -551,7 +551,7 @@ class SubCoordinateGrid(CoordinateGrid):
     @property
     @Memoizer()
     def sub_to_image(self):
-        """ Compute the pairing of every sub-pixel to its original image pixel from a mask. """
+        """ Compute the pairing of every sub_grid_coords-pixel to its original image_coords pixel from a mask. """
         sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype=int)
         image_pixel_count = 0
         sub_pixel_count = 0
@@ -570,20 +570,21 @@ class SubCoordinateGrid(CoordinateGrid):
 
 
 class CoordinateCollection(object):
+
     def __init__(self, image, sub, blurring):
         """
-        A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
-        sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the image,
+        A collection of grids which contain the coordinates of an image_coords. This includes the image_coords's regular grid,
+        sub_grid_coords-grid, blurring_coords region, etc. Coordinate grids are passed through the ray-tracing module to set up the image_coords,
         lens and source planes.
 
         Parameters
         -----------
         image : GridCoordsImage
-            A grid of coordinates for the regular image grid.
+            A grid of coordinates for the regular image_coords grid.
         sub : GridCoordsImageSub
-            A grid of coordinates for the sub-gridded image grid.
+            A grid of coordinates for the sub_grid_coords-gridded image_coords grid.
         blurring : GridCoordsBlurring
-            A grid of coordinates for the blurring regions.
+            A grid of coordinates for the blurring_coords regions.
         """
         self.image_coords = image
         self.sub_grid_coords = sub
@@ -608,3 +609,145 @@ class CoordinateCollection(object):
 
     def __getitem__(self, item):
         return [self.image_coords, self.sub_grid_coords, self.blurring_coords][item]
+
+
+class GridBorder(object):
+
+    def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
+        """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
+
+        This is required to ensure highly demagnified data_to_image in the centre of an image_coords do not bias a source
+        pixelization.
+
+        Parameters
+        ----------
+        border_pixels : np.ndarray
+            The the border source data_to_image, specified by their 1D index in *image_grid*.
+        polynomial_degree : int
+            The degree of the polynomial used to fit the source-plane border edge.
+        """
+
+        self.centre = centre
+
+        self.border_pixels = border_pixels
+        self.polynomial_degree = polynomial_degree
+        self.centre = centre
+
+        self.thetas = None
+        self.radii = None
+        self.polynomial = None
+
+    def coordinates_to_centre(self, coordinates):
+        """ Converts coordinates to the profiles's centre.
+
+        This is performed via a translation, which subtracts the profile centre from the coordinates.
+
+        Parameters
+        ----------
+        coordinates
+            The (x, y) coordinates of the profile.
+
+        Returns
+        ----------
+        The coordinates at the profile's centre.
+        """
+        return np.subtract(coordinates, self.centre)
+
+    def relocate_coordinates_outside_border(self, coordinates):
+        """For an input set of coordinates, return a new set of coordinates where every coordinate outside the border
+        is relocated to its edge.
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The coordinates which are to have border relocations take place.
+        """
+
+        self.polynomial_fit_to_border(coordinates)
+
+        relocated_coordinates = np.zeros(coordinates.shape)
+
+        for (i, coordinate) in enumerate(coordinates):
+            relocated_coordinates[i] = self.relocated_coordinate(coordinate)
+
+        return relocated_coordinates
+
+    def relocate_sub_coordinates_outside_border(self, coordinates, sub_coordinates):
+        """For an input sub_grid_coords-coordinates, return a coordinates where all sub_grid_coords-coordinates outside the border are relocated
+        to its edge.
+        """
+
+        # TODO : integrate these as functions into GridCoords and SubGrid, or pass in a GridCoords / SubGrid?
+
+        self.polynomial_fit_to_border(coordinates)
+
+        relocated_sub_coordinates = np.zeros(sub_coordinates.shape)
+
+        for image_pixel in range(len(coordinates)):
+            for (sub_pixel, sub_coordinate) in enumerate(sub_coordinates[image_pixel]):
+                relocated_sub_coordinates[image_pixel, sub_pixel] = self.relocated_coordinate(sub_coordinate)
+
+        return relocated_sub_coordinates
+
+    def coordinates_angle_from_x(self, coordinates):
+        """
+        Compute the angle in degrees between the image_grid and plane positive x-axis, defined counter-clockwise.
+
+        Parameters
+        ----------
+        coordinates : Union((float, float), ndarray)
+            The x and y image_grid of the plane.
+
+        Returns
+        ----------
+        The angle between the image_grid and the x-axis.
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        theta_from_x = np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        if theta_from_x < 0.0:
+            theta_from_x += 360.
+        return theta_from_x
+
+    def polynomial_fit_to_border(self, coordinates):
+
+        border_coordinates = coordinates[self.border_pixels]
+
+        self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), border_coordinates))
+        self.radii = list(map(lambda r: self.coordinates_to_radius(r), border_coordinates))
+        self.polynomial = np.polyfit(self.thetas, self.radii, self.polynomial_degree)
+
+    def radius_at_theta(self, theta):
+        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
+        return np.polyval(self.polynomial, theta)
+
+    def move_factor(self, coordinate):
+        """Get the move factor of a coordinate.
+         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order
+         to lie on it. PlaneCoordinates already within the setup_border_pixels return a move-factor of 1.0, signifying
+         they are already within the setup_border_pixels.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y image_grid of the pixel to have its move-factor computed.
+        """
+        theta = self.coordinates_angle_from_x(coordinate)
+        radius = self.coordinates_to_radius(coordinate)
+
+        border_radius = self.radius_at_theta(theta)
+
+        if radius > border_radius:
+            return border_radius / radius
+        else:
+            return 1.0
+
+    def relocated_coordinate(self, coordinate):
+        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
+
+        Parameters
+        ----------
+        coordinate : ndarray[float, float]
+            The x and y image_grid of the pixel to have its move-factor computed.
+        """
+        move_factor = self.move_factor(coordinate)
+        return coordinate[0] * move_factor, coordinate[1] * move_factor
