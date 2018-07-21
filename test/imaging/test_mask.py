@@ -1585,7 +1585,6 @@ def make_coordinate_collection(centre_mask):
 
 
 class TestCoordinateCollection(object):
-
     def test_coordinate_collection(self, coordinate_collection):
         assert (coordinate_collection.image_coords == np.array([[0., 0.]])).all()
         np.testing.assert_almost_equal(coordinate_collection.sub_grid_coords, np.array([[-0.16666667, -0.16666667],
