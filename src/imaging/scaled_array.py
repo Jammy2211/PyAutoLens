@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class ScaledArray(np.ndarray):
     """
-    Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. image_coords, PSF, signal_to_noise_ratio).
     """
 
     def __new__(cls, array, pixel_scale=1, *args, **kwargs):
@@ -41,7 +41,7 @@ class ScaledArray(np.ndarray):
         Returns
         -------
         central_pixel_coordinates:
-            The coordinates of the central pixel in the image. If a dimension of the image are odd then the
+            The coordinates of the central pixel in the image_coords. If a dimension of the image_coords are odd then the
             corresponding coordinate will be fractional.
         """
         return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
@@ -61,7 +61,7 @@ class ScaledArray(np.ndarray):
     def pixel_coordinates_to_arc_second_coordinates(self, pixel_coordinates):
         """
         Converts a pixel coordinate pair to an arc seconds coordinate pair. The pixel coordinate origin is at the top
-        left corner of the image whilst the arc second coordinate origin is at the centre. This means that the original
+        left corner of the image_coords whilst the arc second coordinate origin is at the centre. This means that the original
         pixel coordinates, (0, 0), will give negative arc second coordinates.
 
         Parameters
@@ -80,7 +80,7 @@ class ScaledArray(np.ndarray):
     def arc_second_coordinates_to_pixel_coordinates(self, arc_second_coordinates):
         """
         Converts an arc second coordinate pair to a pixel coordinate pair. The pixel coordinate origin is at the top
-        left corner of the image whilst the arc second coordinate origin is at the centre. This means that the original
+        left corner of the image_coords whilst the arc second coordinate origin is at the centre. This means that the original
         pixel coordinates, (0, 0), will give negative arc second coordinates.
 
         Parameters
@@ -100,7 +100,7 @@ class ScaledArray(np.ndarray):
     @property
     def shape_arc_seconds(self):
         """
-        The shape of the image in arc seconds
+        The shape of the image_coords in arc seconds
         """
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
@@ -179,19 +179,19 @@ class ScaledArray(np.ndarray):
 
         if self.shape[0] != new_dimensions[0]:
             logger.debug(
-                'image.weighted_data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+                'image_coords.weighted_data.trim_data - Your specified x_size was odd (even) when the image_coords x dimension is even (odd)')
             logger.debug(
-                'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
+                'The method has automatically used x_size+1 to ensure the image_coords is not miscentred by a half-pixel.')
         elif self.shape[1] != new_dimensions[1]:
             logger.debug(
-                'image.weighted_data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+                'image_coords.weighted_data.trim_data - Your specified y_size was odd (even) when the image_coords y dimension is even (odd)')
             logger.debug(
-                'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
+                'The method has automatically used y_size+1 to ensure the image_coords is not miscentred by a half-pixel.')
 
         return self.new_with_array(array)
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
-        """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and sub-grid_coords \
+        """Convert a coordinate on the regular image_coords-pixel grid_coords to a sub_grid_coords-coordinate, using the pixel scale and sub_grid_coords-grid_coords \
         sub_grid_size"""
 
         half = self.pixel_scale / 2
@@ -228,7 +228,7 @@ class ScaledArray(np.ndarray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the image weighted_data.
+            The HDU number in the fits file containing the image_coords weighted_data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """

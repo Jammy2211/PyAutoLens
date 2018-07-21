@@ -9,12 +9,12 @@ from src.analysis import ray_tracing
 class Fitter(object):
     def __init__(self, image, tracer):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual image.
+        Class to evaluate the fit between a model described by a tracer and an actual image_coords.
 
         Parameters
         ----------
         image: masked_image.MaskedImage
-            An image that has been masked for efficiency
+            An image_coords that has been masked for efficiency
         tracer: ray_tracing.Tracer
             An object describing the model
         """
@@ -29,9 +29,9 @@ class Fitter(object):
         ----------
         minimum_values
         model_image : ndarray
-            The best-fit model image to the weighted_data, from a previous phase of the pipeline
+            The best-fit model image_coords to the weighted_data, from a previous phase of the pipeline
         galaxy_images : [ndarray]
-            The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+            The best-fit model image_coords of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
         hyper_galaxies : [galaxy.HyperGalaxy]
             Each hyper-galaxy which is used to determine its contributions.
         """
@@ -55,7 +55,7 @@ class Fitter(object):
         return self.image.background_noise + sum(scaled_noises)
 
     def generate_blurred_light_profile_image(self):
-        """For a given ray-tracing model, compute the light profile image(s) of its galaxies and blur them with the
+        """For a given ray-tracing model, compute the light profile image_coords(s) of its galaxies and blur them with the
         PSF.
         """
         image_light_profile = self.tracer.generate_image_of_galaxy_light_profiles()
@@ -74,12 +74,12 @@ class Fitter(object):
 class PixelizedFitter(Fitter):
     def __init__(self, image, sparse_mask, tracer):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual image.
+        Class to evaluate the fit between a model described by a tracer and an actual image_coords.
 
         Parameters
         ----------
         image: masked_image.MaskedImage
-            An image that has been masked for efficiency
+            An image_coords that has been masked for efficiency
         sparse_mask: mask.SparseMask
             A mask describing which pixels should be used in clustering for pixelizations
         tracer: ray_tracing.Tracer
@@ -103,16 +103,16 @@ class PixelizedFitter(Fitter):
 
 
 def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values):
-    """Use the model image and galaxy image (computed in the previous phase of the pipeline) to determine the
+    """Use the model image_coords and galaxy image_coords (computed in the previous phase of the pipeline) to determine the
     contributions of each hyper galaxy.
 
     Parameters
     -----------
     minimum_values
     model_image : ndarray
-        The best-fit model image to the weighted_data, from a previous phase of the pipeline
+        The best-fit model image_coords to the weighted_data, from a previous phase of the pipeline
     galaxy_images : [ndarray]
-        The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+        The best-fit model image_coords of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
     hyper_galaxies : [galaxy.HyperGalaxy]
         Each hyper-galaxy which is used to determine its contributions.
     """
@@ -123,14 +123,14 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
 
 
 def blur_image_including_blurring_region(image, blurring_image, kernel_convolver):
-    """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
+    """For a given image_coords and blurring_coords region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
 
     Parameters
     ----------
     image : ndarray
-        The image weighted_data using the GridData 1D representation.
+        The image_coords weighted_data using the GridData 1D representation.
     blurring_image : ndarray
-        The blurring region weighted_data, using the GridData 1D representation.
+        The blurring_coords region weighted_data, using the GridData 1D representation.
     kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
@@ -138,8 +138,8 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
 
 
 def compute_likelihood(image, noise, model_image):
-    """Compute the likelihood of a model image's fit to the weighted_data, by taking the difference between the observed
-    image and model ray-tracing image. The likelihood consists of two terms:
+    """Compute the likelihood of a model image_coords's fit to the weighted_data, by taking the difference between the observed
+    image_coords and model ray-tracing image_coords. The likelihood consists of two terms:
 
     Chi-squared term - The residuals (model - weighted_data) of every pixel divided by the noise in each pixel, all
     squared.
@@ -155,11 +155,11 @@ def compute_likelihood(image, noise, model_image):
     Parameters
     ----------
     image : grids.GridData
-        The image weighted_data.
+        The image_coords weighted_data.
     noise : grids.GridData
         The noise in each pixel.
     model_image : grids.GridData
-        The model image of the weighted_data.
+        The model image_coords of the weighted_data.
     """
     return -0.5 * (compute_chi_sq_term(image, noise, model_image) + compute_noise_term(noise))
 
@@ -173,25 +173,25 @@ def compute_pixelization_evidence(image, noise, model_image, pix_fit):
 
 
 def compute_chi_sq_term(image, noise, model_image):
-    """Compute the chi-squared of a model image's fit to the weighted_data, by taking the difference between the observed \
-    image and model ray-tracing image, dividing by the noise in each pixel and squaring:
+    """Compute the chi-squared of a model image_coords's fit to the weighted_data, by taking the difference between the observed \
+    image_coords and model ray-tracing image_coords, dividing by the noise in each pixel and squaring:
 
     [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
 
     Parameters
     ----------
     image : grids.GridData
-        The image weighted_data.
+        The image_coords weighted_data.
     noise : grids.GridData
         The noise in each pixel.
     model_image : grids.GridData
-        The model image of the weighted_data.
+        The model image_coords of the weighted_data.
     """
     return np.sum((np.add(image.view(float), - model_image) / noise) ** 2.0)
 
 
 def compute_noise_term(noise):
-    """Compute the noise normalization term of an image, which is computed by summing the noise in every pixel:
+    """Compute the noise normalization term of an image_coords, which is computed by summing the noise in every pixel:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
