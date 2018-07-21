@@ -65,14 +65,14 @@ def current_deflection_elliptical_isothermal():
 
 @tick_toc
 def new_deflection_elliptical_isothermal():
-    result = mass_profile.deflections_from_coordinate_grid(grid)
+    result = mass_profile.deflections_from_grid(grid)
 
     assert (result == elliptical_isothermal_deflection_result).all()
 
 
 @tick_toc
 def new_deflection_elliptical_isothermal_numba():
-    result = mass_profile.deflections_from_coordinate_grid(grid)
+    result = mass_profile.deflections_from_grid(grid)
 
     assert (result == elliptical_isothermal_deflection_result).all()
 
@@ -96,7 +96,7 @@ def test_deflections_from_coordinate_grid(instance):
     example = load(name)
     result = None
     try:
-        result = instance.deflections_from_coordinate_grid(grid)
+        result = instance.deflections_from_grid(grid)
         assert_almost_equal(result, example)
         print("{} gives the correct result".format(name))
         return
@@ -125,7 +125,7 @@ def compare_single_coordinates_for_class(mass_profile_class):
     result = instance.deflections_at_coordinates(coordinates)
     print("result = {}".format(result))
     print("\ndeflections_from_coordinate_grid")
-    grid_result = instance.deflections_from_coordinate_grid(coordinates_grid)[0]
+    grid_result = instance.deflections_from_grid(coordinates_grid)[0]
     print("grid_result = {}".format(grid_result))
 
 
@@ -143,7 +143,7 @@ def tick_toc_comparison_for_class(mass_profile_class):
 
     @tick_toc
     def new_method():
-        instance.deflections_from_coordinate_grid(grid)
+        instance.deflections_from_grid(grid)
 
     old = old_method()
     new = new_method()

@@ -129,7 +129,7 @@ class MultiTracer(object):
 
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies over the entire ray trace."""
-        return np.ndarray.sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(),
+        return sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(),
                                                 self.planes))))
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
@@ -225,7 +225,7 @@ class Plane(object):
 
         if compute_deflections:
             def calculate_deflections(grid):
-                return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(grid), galaxies))
+                return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
             self.deflections = self.coordinates_collection.apply_function(calculate_deflections)
 
@@ -258,16 +258,16 @@ class Plane(object):
 
 
 def intensities_via_sub_grid(sub_coords_grid, galaxies):
-    sub_intensities = sum(map(lambda g: g.intensity_from_coordinate_grid(sub_coords_grid), galaxies))
+    sub_intensities = sum(map(lambda g: g.intensity_from_grid(sub_coords_grid), galaxies))
     return sub_coords_grid.sub_data_to_image(sub_intensities)
 
 
 def intensities_via_grid(coords_grid, galaxies):
-    return sum(map(lambda g: g.intensity_from_coordinate_grid(coords_grid), galaxies))
+    return sum(map(lambda g: g.intensity_from_grid(coords_grid), galaxies))
 
 
 def deflections_for_grid(coords_grid, galaxies):
-    return sum(map(lambda galaxy: galaxy.deflections_from_coordinate_grid(coords_grid), galaxies))
+    return sum(map(lambda galaxy: galaxy.deflections_from_grid(coords_grid), galaxies))
 
 
 def deflections_for_coordinates_collection(coordinates_collection, galaxies):
