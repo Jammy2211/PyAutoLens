@@ -1585,6 +1585,7 @@ def make_coordinate_collection(centre_mask):
 
 
 class TestCoordinateCollection(object):
+
     def test_coordinate_collection(self, coordinate_collection):
         assert (coordinate_collection.image_coords == np.array([[0., 0.]])).all()
         np.testing.assert_almost_equal(coordinate_collection.sub_grid_coords, np.array([[-0.16666667, -0.16666667],
@@ -1640,3 +1641,145 @@ class TestCoordinateCollection(object):
                                                                       [1., -1.],
                                                                       [1., 0.],
                                                                       [1., 1.]]))).all()
+
+
+class GridBorder(object):
+
+    def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
+        """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
+
+        This is required to ensure highly demagnified data_to_image in the centre of an image do not bias a source
+        pixelization.
+
+        Parameters
+        ----------
+        border_pixels : np.ndarray
+            The the border source data_to_image, specified by their 1D index in *image_grid*.
+        polynomial_degree : int
+            The degree of the polynomial used to fit the source-plane border edge.
+        """
+
+        self.centre = centre
+
+        self.border_pixels = border_pixels
+        self.polynomial_degree = polynomial_degree
+        self.centre = centre
+
+        self.thetas = None
+        self.radii = None
+        self.polynomial = None
+
+    def coordinates_to_centre(self, coordinates):
+        """ Converts coordinates to the profiles's centre.
+
+        This is performed via a translation, which subtracts the profile centre from the coordinates.
+
+        Parameters
+        ----------
+        coordinates
+            The (x, y) coordinates of the profile.
+
+        Returns
+        ----------
+        The coordinates at the profile's centre.
+        """
+        return np.subtract(coordinates, self.centre)
+
+    def relocate_coordinates_outside_border(self, coordinates):
+        """For an input set of coordinates, return a new set of coordinates where every coordinate outside the border
+        is relocated to its edge.
+
+        Parameters
+        ----------
+        coordinates : ndarray
+            The coordinates which are to have border relocations take place.
+        """
+
+        self.polynomial_fit_to_border(coordinates)
+
+        relocated_coordinates = np.zeros(coordinates.shape)
+
+        for (i, coordinate) in enumerate(coordinates):
+            relocated_coordinates[i] = self.relocated_coordinate(coordinate)
+
+        return relocated_coordinates
+
+    def relocate_sub_coordinates_outside_border(self, coordinates, sub_coordinates):
+        """For an input sub-coordinates, return a coordinates where all sub-coordinates outside the border are relocated
+        to its edge.
+        """
+
+        # TODO : integrate these as functions into GridCoords and SubGrid, or pass in a GridCoords / SubGrid?
+
+        self.polynomial_fit_to_border(coordinates)
+
+        relocated_sub_coordinates = np.zeros(sub_coordinates.shape)
+
+        for image_pixel in range(len(coordinates)):
+            for (sub_pixel, sub_coordinate) in enumerate(sub_coordinates[image_pixel]):
+                relocated_sub_coordinates[image_pixel, sub_pixel] = self.relocated_coordinate(sub_coordinate)
+
+        return relocated_sub_coordinates
+
+    def coordinates_angle_from_x(self, coordinates):
+        """
+        Compute the angle in degrees between the image_grid and plane positive x-axis, defined counter-clockwise.
+
+        Parameters
+        ----------
+        coordinates : Union((float, float), ndarray)
+            The x and y image_grid of the plane.
+
+        Returns
+        ----------
+        The angle between the image_grid and the x-axis.
+        """
+        shifted_coordinates = self.coordinates_to_centre(coordinates)
+        theta_from_x = np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
+        if theta_from_x < 0.0:
+            theta_from_x += 360.
+        return theta_from_x
+
+    def polynomial_fit_to_border(self, coordinates):
+
+        border_coordinates = coordinates[self.border_pixels]
+
+        self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), border_coordinates))
+        self.radii = list(map(lambda r: self.coordinates_to_radius(r), border_coordinates))
+        self.polynomial = np.polyfit(self.thetas, self.radii, self.polynomial_degree)
+
+    def radius_at_theta(self, theta):
+        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
+        return np.polyval(self.polynomial, theta)
+
+    def move_factor(self, coordinate):
+        """Get the move factor of a coordinate.
+         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order
+         to lie on it. PlaneCoordinates already within the setup_border_pixels return a move-factor of 1.0, signifying
+         they are already within the setup_border_pixels.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The x and y image_grid of the pixel to have its move-factor computed.
+        """
+        theta = self.coordinates_angle_from_x(coordinate)
+        radius = self.coordinates_to_radius(coordinate)
+
+        border_radius = self.radius_at_theta(theta)
+
+        if radius > border_radius:
+            return border_radius / radius
+        else:
+            return 1.0
+
+    def relocated_coordinate(self, coordinate):
+        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
+
+        Parameters
+        ----------
+        coordinate : ndarray[float, float]
+            The x and y image_grid of the pixel to have its move-factor computed.
+        """
+        move_factor = self.move_factor(coordinate)
+        return coordinate[0] * move_factor, coordinate[1] * move_factor

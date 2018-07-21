@@ -53,21 +53,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def intensity_at_coordinates(self, coordinates):
-        """
-        Abstract method for obtaining intensity at given image_grid
-        Parameters
-        ----------
-        coordinates : ndarray
-            The image_grid in image_grid space (arc seconds)
-        Returns
-        -------
-        intensity : float
-            The value of intensity at the given image_grid
-        """
-        raise NotImplementedError("intensity_at_coordinates should be overridden")
-
-    def intensity_from_coordinate_grid(self, grid):
+    def intensity_from_grid(self, grid):
         raise NotImplementedError("intensity_from_grid should be overridden")
 
 
@@ -217,7 +203,7 @@ class EllipticalSersic(EllipticalLightProfile):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
     @geometry_profiles.transform_grid
-    def intensity_from_coordinate_grid(self, grid):
+    def intensity_from_grid(self, grid):
         return self.intensity_at_grid_radii(self.grid_to_eccentric_radii(grid))
 
 

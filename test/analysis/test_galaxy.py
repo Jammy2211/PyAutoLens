@@ -14,7 +14,7 @@ class TestLightProfiles(object):
             sersic = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                      effective_radius=0.6, sersic_index=4.0)
 
-            sersic_intensity = sersic.intensity_from_coordinate_grid(grid=np.array([[1.05, -0.55]]))
+            sersic_intensity = sersic.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
                                           light_profile_1=light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0,
@@ -22,7 +22,7 @@ class TestLightProfiles(object):
                                                                                           effective_radius=0.6,
                                                                                           sersic_index=4.0))
 
-            galaxy_sersic_intensity = galaxy_sersic.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_sersic_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             assert sersic_intensity == galaxy_sersic_intensity
 
@@ -35,8 +35,8 @@ class TestLightProfiles(object):
                                                        effective_radius=3.0,
                                                        sersic_index=2.0)
 
-            intensity = sersic_1.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_2.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            intensity = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity += sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
                                           light_profile_1=light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0,
@@ -48,7 +48,7 @@ class TestLightProfiles(object):
                                                                                           effective_radius=3.0,
                                                                                           sersic_index=2.0))
 
-            galaxy_intensity = galaxy_sersic.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             assert intensity == galaxy_intensity
 
@@ -65,9 +65,9 @@ class TestLightProfiles(object):
                                                        effective_radius=3.0,
                                                        sersic_index=2.0)
 
-            intensity = sersic_1.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_2.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_3.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            intensity = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity += sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity += sersic_3.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
                                           light_profile_1=light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0,
@@ -83,7 +83,7 @@ class TestLightProfiles(object):
                                                                                           effective_radius=3.0,
                                                                                           sersic_index=2.0))
 
-            galaxy_intensity = galaxy_sersic.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             assert intensity == galaxy_intensity
 
@@ -101,9 +101,9 @@ class TestLightProfiles(object):
                                                        effective_radius=3.0,
                                                        sersic_index=2.0)
 
-            intensity_1 = sersic_1.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            intensity_2 = sersic_2.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            intensity_3 = sersic_3.intensity_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            intensity_1 = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_2 = sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_3 = sersic_3.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
                                           light_profile_1=light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0,
@@ -119,7 +119,7 @@ class TestLightProfiles(object):
                                                                                           effective_radius=3.0,
                                                                                           sersic_index=2.0))
 
-            galaxy_intensity = galaxy_sersic.intensity_from_coordinate_grid_individual(np.array([[1.05, -0.55]]))
+            galaxy_intensity = galaxy_sersic.intensity_from_grid_individual(np.array([[1.05, -0.55]]))
 
             assert intensity_1 == galaxy_intensity[0]
             assert intensity_2 == galaxy_intensity[1]
@@ -388,10 +388,10 @@ class TestLightProfiles(object):
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2)
 
-            assert galaxy_sersic.intensity_from_coordinate_grid(
-                np.array([[0.0, 0.0]])) == galaxy_sersic.intensity_from_coordinate_grid(np.array([[100.0, 0.0]]))
-            assert galaxy_sersic.intensity_from_coordinate_grid(
-                np.array([[49.0, 0.0]])) == galaxy_sersic.intensity_from_coordinate_grid(np.array([[51.0, 0.0]]))
+            assert galaxy_sersic.intensity_from_grid(
+                np.array([[0.0, 0.0]])) == galaxy_sersic.intensity_from_grid(np.array([[100.0, 0.0]]))
+            assert galaxy_sersic.intensity_from_grid(
+                np.array([[49.0, 0.0]])) == galaxy_sersic.intensity_from_grid(np.array([[51.0, 0.0]]))
 
         def test_2d_symmetry(self):
             sersic_1 = light_profiles.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
@@ -409,17 +409,17 @@ class TestLightProfiles(object):
             galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2,
                                           light_profile_3=sersic_3, light_profile_4=sersic_4)
 
-            assert galaxy_sersic.intensity_from_coordinate_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_coordinate_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert galaxy_sersic.intensity_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                galaxy_sersic.intensity_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert galaxy_sersic.intensity_from_coordinate_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_coordinate_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert galaxy_sersic.intensity_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                galaxy_sersic.intensity_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert galaxy_sersic.intensity_from_coordinate_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_coordinate_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert galaxy_sersic.intensity_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                galaxy_sersic.intensity_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert galaxy_sersic.intensity_from_coordinate_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_coordinate_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert galaxy_sersic.intensity_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                galaxy_sersic.intensity_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
 
 @pytest.fixture(name="sie_1")
@@ -458,38 +458,38 @@ class TestMassProfiles(object):
 
         def test__one_profile_galaxy__surface_density_is_same_individual_profile(self, sie_1, galaxy_sie_1):
 
-            sie_surface_density = sie_1.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            sie_surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_sie_surface_density = galaxy_sie_1.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_sie_surface_density = galaxy_sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
             assert sie_surface_density == galaxy_sie_surface_density
 
         def test__two_profile_galaxy__surface_density_is_sum_of_individual_profiles(self, sie_1, sie_2, galaxy_sie_2):
-            surface_density = sie_1.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_2.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            surface_density += sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_surface_density = galaxy_sie_2.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_surface_density = galaxy_sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
             assert surface_density == galaxy_surface_density
 
         def test__three_profile_galaxy__surface_density_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
-            surface_density = sie_1.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_2.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_3.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            surface_density += sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            surface_density += sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_surface_density = galaxy_sie_3.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_surface_density = galaxy_sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
             assert surface_density == galaxy_surface_density
 
         def test__three_profile_galaxy__individual_surface_densities_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
 
-            surface_density_1 = sie_1.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            surface_density_2 = sie_2.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            surface_density_3 = sie_3.surface_density_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            surface_density_1 = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            surface_density_2 = sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            surface_density_3 = sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_surface_density = galaxy_sie_3.surface_density_from_coordinate_grid_individual(np.array([[1.05, -0.55]]))
+            galaxy_surface_density = galaxy_sie_3.surface_density_from_grid_individual(np.array([[1.05, -0.55]]))
 
             assert surface_density_1 == galaxy_surface_density[0]
             assert surface_density_2 == galaxy_surface_density[1]
@@ -499,38 +499,38 @@ class TestMassProfiles(object):
 
         def test__one_profile_galaxy__potential_is_same_individual_profile(self, sie_1, galaxy_sie_1):
 
-            sie_potential = sie_1.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            sie_potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_sie_potential = galaxy_sie_1.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_sie_potential = galaxy_sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
 
             assert sie_potential == galaxy_sie_potential
 
         def test__two_profile_galaxy__potential_is_sum_of_individual_profiles(self, sie_1, sie_2, galaxy_sie_2):
-            potential = sie_1.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            potential += sie_2.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
+            potential += sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_potential = galaxy_sie_2.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_potential = galaxy_sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
 
             assert potential == galaxy_potential
 
         def test__three_profile_galaxy__potential_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
                                                                                 galaxy_sie_3):
-            potential = sie_1.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            potential += sie_2.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            potential += sie_3.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
+            potential += sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
+            potential += sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_potential = galaxy_sie_3.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_potential = galaxy_sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
 
             assert potential == galaxy_potential
 
         def test__three_profile_galaxy__individual_potentials_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                galaxy_sie_3):
 
-            potential_1 = sie_1.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            potential_2 = sie_2.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            potential_3 = sie_3.potential_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            potential_1 = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
+            potential_2 = sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
+            potential_3 = sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_potential = galaxy_sie_3.potential_from_coordinate_grid_individual(np.array([[1.05, -0.55]]))
+            galaxy_potential = galaxy_sie_3.potential_from_grid_individual(np.array([[1.05, -0.55]]))
 
             assert potential_1 == galaxy_potential[0]
             assert potential_2 == galaxy_potential[1]
@@ -540,9 +540,9 @@ class TestMassProfiles(object):
 
         def test__one_profile_galaxy__deflection_angles_is_same_individual_profile(self, sie_1, galaxy_sie_1):
 
-            sie_deflection_angles = sie_1.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            sie_deflection_angles = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_sie_deflection_angles = galaxy_sie_1.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_sie_deflection_angles = galaxy_sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             assert sie_deflection_angles[0,0] == galaxy_sie_deflection_angles[0,0]
             assert sie_deflection_angles[0,1] == galaxy_sie_deflection_angles[0,1]
@@ -552,8 +552,8 @@ class TestMassProfiles(object):
             sie_1 = mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
             sie_2 = mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
 
-            deflection_angles_0 = sie_1.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_2.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             deflection_angles = deflection_angles_0 + deflection_angles_1
 
@@ -563,7 +563,7 @@ class TestMassProfiles(object):
                                        mass_profile_2=mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0,
                                                                                          einstein_radius=1.2))
 
-            galaxy_deflection_angles = galaxy_sie.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_deflection_angles = galaxy_sie.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             assert deflection_angles[0,0] == galaxy_deflection_angles[0,0]
             assert deflection_angles[0,1] == galaxy_deflection_angles[0,1]
@@ -571,13 +571,13 @@ class TestMassProfiles(object):
         def test__three_profile_galaxy__deflection_angles_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
                                                                                         galaxy_sie_3):
 
-            deflection_angles_0 = sie_1.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_2.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_2 = sie_3.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_2 = sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             deflection_angles = deflection_angles_0 + deflection_angles_1 + deflection_angles_2
 
-            galaxy_deflection_angles = galaxy_sie_3.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            galaxy_deflection_angles = galaxy_sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             assert deflection_angles[0,0] == galaxy_deflection_angles[0,0]
             assert deflection_angles[0,1] == galaxy_deflection_angles[0,1]
@@ -585,11 +585,11 @@ class TestMassProfiles(object):
         def test__three_profile_galaxy__individual_deflection_angles_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
 
-            deflection_angles_0 = sie_1.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_2.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_2 = sie_3.deflections_from_coordinate_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_2 = sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_deflection_angles = galaxy_sie_3.deflections_from_coordinate_grid_individual(np.array([[1.05, -0.55]]))
+            galaxy_deflection_angles = galaxy_sie_3.deflections_from_grid_individual(np.array([[1.05, -0.55]]))
 
             assert (deflection_angles_0 == galaxy_deflection_angles[0]).all()
             assert (deflection_angles_1 == galaxy_deflection_angles[1]).all()
@@ -715,23 +715,23 @@ class TestMassProfiles(object):
 
             galaxy_isothermal = galaxy.Galaxy(redshift=0.5, mass_profile_1=isothermal_1, mass_profile_2=isothermal_2)
 
-            assert galaxy_isothermal.surface_density_from_coordinate_grid(
-                np.array([[1.0, 0.0]])) == galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[99.0, 0.0]]))
+            assert galaxy_isothermal.surface_density_from_grid(
+                np.array([[1.0, 0.0]])) == galaxy_isothermal.surface_density_from_grid(np.array([[99.0, 0.0]]))
 
-            assert galaxy_isothermal.surface_density_from_coordinate_grid(
-                np.array([[49.0, 0.0]])) == galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[51.0, 0.0]]))
+            assert galaxy_isothermal.surface_density_from_grid(
+                np.array([[49.0, 0.0]])) == galaxy_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]]))
 
-            assert galaxy_isothermal.potential_from_coordinate_grid(np.array([[1.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_coordinate_grid(np.array([[99.0, 0.0]])), 1e-6)
+            assert galaxy_isothermal.potential_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
+                galaxy_isothermal.potential_from_grid(np.array([[99.0, 0.0]])), 1e-6)
 
-            assert galaxy_isothermal.potential_from_coordinate_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_coordinate_grid(np.array([[51.0, 0.0]])), 1e-6)
+            assert galaxy_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                galaxy_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
-            assert galaxy_isothermal.deflections_from_coordinate_grid(np.array([[1.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[99.0, 0.0]])), 1e-6)
+            assert galaxy_isothermal.deflections_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[99.0, 0.0]])), 1e-6)
 
-            assert galaxy_isothermal.deflections_from_coordinate_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[51.0, 0.0]])), 1e-6)
+            assert galaxy_isothermal.deflections_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
         def test_2d_symmetry(self):
 
@@ -747,57 +747,53 @@ class TestMassProfiles(object):
                                               mass_profile_1=isothermal_1, mass_profile_2=isothermal_2,
                                               mass_profile_3=isothermal_3, mass_profile_4=isothermal_4)
 
-            assert galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert galaxy_isothermal.surface_density_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                galaxy_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert galaxy_isothermal.surface_density_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                galaxy_isothermal.surface_density_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert galaxy_isothermal.surface_density_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                galaxy_isothermal.surface_density_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_coordinate_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert galaxy_isothermal.surface_density_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                galaxy_isothermal.surface_density_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_coordinate_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_coordinate_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert galaxy_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                galaxy_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_coordinate_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_coordinate_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert galaxy_isothermal.potential_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                galaxy_isothermal.potential_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_coordinate_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_coordinate_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert galaxy_isothermal.potential_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                galaxy_isothermal.potential_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_coordinate_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_coordinate_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert galaxy_isothermal.potential_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                galaxy_isothermal.potential_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[49.0, 0.0]]))[0] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[51.0, 0.0]]))[0], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 0] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[0.0, 49.0]]))[0] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[0.0, 51.0]]))[0], 1e-5)
+            assert 1.0 * galaxy_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 0] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[100.0, 49.0]]))[
-                0] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[100.0, 51.0]]))[0], 1e-5)
+            assert 1.0 * galaxy_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 0] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 0], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[49.0, 49.0]]))[
-                0] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[51.0, 51.0]]))[0], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 0] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[49.0, 0.0]]))[1] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[51.0, 0.0]]))[1], 1e-5)
+            assert 1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 1] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[0.0, 49.0]]))[1] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[0.0, 51.0]]))[1], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 1] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[100.0, 49.0]]))[
-                1] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[100.0, 51.0]]))[1], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 1] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_coordinate_grid(np.array([[49.0, 49.0]]))[
-                1] == pytest.approx(
-                galaxy_isothermal.deflections_from_coordinate_grid(np.array([[51.0, 51.0]]))[1], 1e-5)
+            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 1] == pytest.approx(
+                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 1], 1e-5)
 
 
 class TestHyperGalaxy(object):
