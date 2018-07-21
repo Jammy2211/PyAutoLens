@@ -5,14 +5,16 @@ import scipy.spatial
 from src import exc
 from src.pixelization import covariance_matrix
 
+from src.imaging import mask
+
 
 class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
         Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \ 
-        pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix enforces \
-        smoothness between pixel values.
+        pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix
+        enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
@@ -108,8 +110,8 @@ class Pixelization(object):
         contribution of the different regions of regularization.
         """
 
-        pix_signals = np.zeros((self.pixels))
-        pix_sizes = np.zeros((self.pixels))
+        pix_signals = np.zeros((self.pixels,))
+        pix_sizes = np.zeros((self.pixels,))
 
         for image_index in range(galaxy_image.shape[0]):
             pix_signals[image_to_pix[image_index]] += galaxy_image[image_index]
@@ -301,7 +303,7 @@ class RectangularPixelization(Pixelization):
         Parameters
         ----------
         grid : [[float, float]]
-            The x and y pix grid (or sub-coordinaates) which are to be matched with their pixels.
+            The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
         geometry : Geometry
             The rectangular pixel grid's geometry.
         """
@@ -461,6 +463,10 @@ class VoronoiPixelization(Pixelization):
         Parameters
         ----------
 
+        grids: mask.CoordinateCollection
+            A collection of coordinates for the masked image, subgrid and blurring grid
+        sparse_mask: mask.SparseMask
+            A mask describing the image pixels that should be used in pixel clustering
         pix_centers: [[float, float]]
             The coordinate of the center of every pixel.
         pix_neighbors : [[]]
@@ -609,7 +615,10 @@ class ClusterPixelization(VoronoiPixelization):
 
         Parameters
         ----------
-
+        grids: mask.CoordinateCollection
+            A collection of coordinates for the masked image, subgrid and blurring grid
+        sparse_mask: mask.SparseMask
+            A mask describing the image pixels that should be used in pixel clustering
         """
 
         if self.pixels is not len(sparse_mask.sparse_to_image):
@@ -663,7 +672,10 @@ class AmorphousPixelization(VoronoiPixelization):
 
         Parameters
         ----------
-
+        grids: mask.CoordinateCollection
+            A collection of coordinates for the masked image, subgrid and blurring grid
+        sparse_mask: mask.SparseMask
+            A mask describing the image pixels that should be used in pixel clustering
         """
 
         cluster_grid = grids.image_coords[sparse_mask.sparse_to_image]
@@ -705,7 +717,8 @@ class Inversion(object):
         mapping : ndarray
             The matrix representing the mapping between reconstruction-pixels and weighted_data-pixels.
         regularization : ndarray
-            The matrix defining how the reconstruction's pixels are regularized with one another when fitting the weighted_data.
+            The matrix defining how the reconstruction's pixels are regularized with one another when fitting the
+            weighted_data.
         image_to_pix : ndarray
             The mapping between each image-grid pixel and pixelization-grid pixel.
         sub_to_pix : ndarray
@@ -767,7 +780,7 @@ class InversionFitted(object):
         self.reconstruction = reconstruction
 
     def model_image_from_reconstruction(self):
-        """ Map the reconstructioon pix s_vecotr back to the image-plane to compute the pixelization's model-image.
+        """ Map the reconstruction pix s_vector back to the image-plane to compute the pixelization's model-image.
         """
         model_image = np.zeros(self.blurred_mapping.shape[0])
         for i in range(self.blurred_mapping.shape[0]):
@@ -787,20 +800,13 @@ class InversionFitted(object):
 
          The above works include the regularization coefficient (lambda) in this calculation. In PyAutoLens, this is  \
          already in the regularization matrix and thus included in the matrix multiplication.
-
-         Parameters
-         -----------
-         s_vector : ndarray
-            1D vector of the reconstructed pix fluxes.
-         regularization_matrix : ndarray
-            The matrix encoding which pixel pairs are regularized with one another.
          """
         return np.matmul(self.reconstruction.T, np.matmul(self.regularization, self.reconstruction))
 
     # TODO : Cholesky decomposition can also use pixel neighbors list to skip sparsity.
     @staticmethod
     def log_determinant_of_matrix_cholesky(matrix):
-        """There are two terms in the pixelization's Bayesian likelihood funcition which require the log determinant of \
+        """There are two terms in the pixelization's Bayesian likelihood function which require the log determinant of \
         a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
 
         ln[det(F + H)] = ln[det(cov_reg_matrix)]
