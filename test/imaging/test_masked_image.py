@@ -53,9 +53,9 @@ class TestMaskedImage(object):
         assert masked_image.kernel_convolver.length == 1
 
     def test_map_to_2d(self, masked_image):
-        assert (masked_image.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
-                                                                               [1, 1, 1],
-                                                                               [0, 1, 0]])).all()
+        assert (masked_image.mask.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
+                                                                                    [1, 1, 1],
+                                                                                    [0, 1, 0]])).all()
 
     def test_sparse_mask(self, mask, sparse_mask):
         assert (mask == sparse_mask).all()
