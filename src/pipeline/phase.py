@@ -14,13 +14,11 @@ class Phase(object):
     def run(self, **kwargs):
         return self.optimizer.fit(self.make_analysis(**kwargs))
 
-    def make_analysis(self, **kwargs):
-        if "last_results" not in kwargs:
-            kwargs["last_results"] = None
-        last_results = kwargs["last_results"]
-        kwargs["masked_image"] = self.customize_image(kwargs["masked_image"], last_results)
+    def make_analysis(self, masked_image, last_results=None):
+        masked_image = self.customize_image(masked_image, last_results)
+
         analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size, blurring_shape=self.blurring_shape,
-                                           **kwargs)
+                                           masked_image=masked_image, last_results=last_results)
         return analysis
 
     @property
@@ -48,12 +46,18 @@ class Phase(object):
     def customize_image(self, masked_image, last_result):
         return masked_image
 
+    def pass_priors(self, last_results):
+        pass
+
 
 class SourceLensPhase(Phase):
 
     @property
     def lens_galaxy(self):
-        return self.optimizer.constant.lens_galaxies + self.optimizer.variable.lens_galaxies
+        if hasattr(self.optimizer.constant, "lens_galaxy"):
+            return self.optimizer.constant.lens_galaxy
+        elif hasattr(self.optimizer.variable, "lens_galaxy"):
+            return self.optimizer.variable.lens_galaxy
 
     @lens_galaxy.setter
     def lens_galaxy(self, lens_galaxy):
@@ -77,7 +81,7 @@ class SourceLensPhase(Phase):
 class InitialSourceLensPhase(SourceLensPhase):
     class Analysis(Phase.Analysis):
 
-        def fit(self, **kwargs):
-            tracer = ray_tracing.Tracer([kwargs["lens_galaxy"]], [kwargs["source_galaxy"]], self.coords_collection)
+        def fit(self, lens_galaxy=None, source_galaxy=None):
+            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
             return fitter.fit_data_with_profiles()
