@@ -6,7 +6,8 @@ from itertools import count
 import pytest
 from src.config import config
 from src import exc
-from src.analysis import model_mapper, non_linear
+from src.autopipe import model_mapper
+from src.autopipe import non_linear
 from src.profiles import light_profiles, mass_profiles
 
 
