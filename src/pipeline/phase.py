@@ -16,6 +16,7 @@ class Phase(object):
 
     def make_analysis(self, masked_image, last_results=None):
         masked_image = self.customize_image(masked_image, last_results)
+        self.pass_priors(last_results)
 
         analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size, blurring_shape=self.blurring_shape,
                                            masked_image=masked_image, last_results=last_results)
@@ -68,7 +69,10 @@ class SourceLensPhase(Phase):
 
     @property
     def source_galaxy(self):
-        return self.optimizer.constant.lens_galaxies + self.optimizer.variable.lens_galaxies
+        if hasattr(self.optimizer.constant, "source_galaxy"):
+            return self.optimizer.constant.source_galaxy
+        elif hasattr(self.optimizer.variable, "source_galaxy"):
+            return self.optimizer.variable.source_galaxy
 
     @source_galaxy.setter
     def source_galaxy(self, source_galaxy):
