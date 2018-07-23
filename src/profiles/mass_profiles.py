@@ -666,7 +666,8 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
 
         for i in range(grid.shape[0]):
             potential_grid[i] = quad(self.potential_func, a=0.0, b=1.0,
-                                     args=(grid[i, 0], grid[i, 1], self.axis_ratio, self.kappa_s, self.scale_radius))[0]
+                                     args=(grid[i, 0], grid[i, 1], self.axis_ratio, self.kappa_s, self.scale_radius),
+                                     epsrel=1.49e-5)[0]
 
         return potential_grid
 
@@ -715,7 +716,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
             eta_u_2 = 1
 
         return 4.0 * kappa_s * scale_radius * (axis_ratio / 2.0) * (eta_u / u) * (
-                    (math.log(eta_u / 2.0) + eta_u_2) / eta_u) / (
+                (math.log(eta_u / 2.0) + eta_u_2) / eta_u) / (
                        (1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
@@ -805,6 +806,7 @@ class SphericalNFW(EllipticalNFW):
 
 
 class EllipticalGeneralizedNFW(EllipticalNFW):
+    epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
         """
@@ -857,19 +859,22 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
         for i in range(tabulate_bins):
             eta = 10. ** (minimum_log_eta + (i - 1) * bin_size)
 
-            integral = quad(deflection_integrand, a=0.0, b=1.0, args=(eta, self.scale_radius, self.inner_slope))[0]
+            integral = \
+                quad(deflection_integrand, a=0.0, b=1.0, args=(eta, self.scale_radius, self.inner_slope),
+                     epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
             deflection_integral[i] = ((eta / self.scale_radius) ** (2 - self.inner_slope)) * (
-                        (1.0 / (3 - self.inner_slope)) *
-                        special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope,
-                                       - (eta / self.scale_radius)) + integral)
+                    (1.0 / (3 - self.inner_slope)) *
+                    special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope, 4 - self.inner_slope,
+                                   - (eta / self.scale_radius)) + integral)
 
         for i in range(grid.shape[0]):
             potential_grid[i] = (2.0 * self.kappa_s * self.axis_ratio) * \
                                 quad(self.potential_func, a=0.0, b=1.0, args=(grid[i, 0], grid[i, 1],
                                                                               self.axis_ratio, minimum_log_eta,
                                                                               maximum_log_eta, tabulate_bins,
-                                                                              deflection_integral))[0]
+                                                                              deflection_integral),
+                                     epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
         return potential_grid
 
@@ -895,8 +900,8 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
             for i in range(grid.shape[0]):
                 deflection_grid[i] = 2.0 * self.kappa_s * self.axis_ratio * grid[i, index] * quad(self.deflection_func,
                                                                                                   a=0.0, b=1.0, args=(
-                    grid[i, 0], grid[i, 1], npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
-                    tabulate_bins, surface_density_integral))[0]
+                        grid[i, 0], grid[i, 1], npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
+                        tabulate_bins, surface_density_integral), epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
             return deflection_grid
 
@@ -908,7 +913,8 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
             eta = 10. ** (minimum_log_eta + (i - 1) * bin_size)
 
             integral = quad(surface_density_integrand, a=0.0, b=1.0, args=(eta, self.scale_radius,
-                                                                           self.inner_slope))[0]
+                                                                           self.inner_slope),
+                            epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
             surface_density_integral[i] = ((eta / self.scale_radius) ** (1 - self.inner_slope)) * \
                                           (((1 + eta / self.scale_radius) ** (self.inner_slope - 3)) + integral)
@@ -924,7 +930,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
             return (y + eta) ** (self.inner_slope - 4) * (1 - math.sqrt(1 - y ** 2))
 
         radius = (1.0 / self.scale_radius) * radius
-        integral_y = quad(integral_y, a=0.0, b=1.0, args=radius)[0]
+        integral_y = quad(integral_y, a=0.0, b=1.0, args=radius, epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
         return 2.0 * self.kappa_s * (radius ** (1 - self.inner_slope)) * (
                 (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
@@ -1007,7 +1013,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         return (y + eta) ** (inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
 
     def deflection_func_sph(self, eta):
-        integral_y_2 = quad(self.deflection_integrand, a=0.0, b=1.0, args=(eta, self.inner_slope))[0]
+        integral_y_2 = quad(self.deflection_integrand, a=0.0, b=1.0, args=(eta, self.inner_slope), epsrel=1.49e-6)[0]
         return eta ** (2 - self.inner_slope) * ((1.0 / (3 - self.inner_slope)) *
                                                 special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope,
                                                                4 - self.inner_slope, -eta) + integral_y_2)
