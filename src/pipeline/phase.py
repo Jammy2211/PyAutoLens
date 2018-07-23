@@ -3,6 +3,7 @@ from src.analysis import galaxy
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
 from src.analysis import fitting
+import inspect
 
 
 class Phase(object):
@@ -89,3 +90,21 @@ class InitialSourceLensPhase(SourceLensPhase):
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
             return fitter.fit_data_with_profiles()
+
+
+def phase_property(name):
+    def fget(self):
+        if hasattr(self.optimizer.constant, name):
+            return getattr(self.optimizer.constant, name)
+        elif hasattr(self.optimizer.variable, name):
+            return getattr(self.optimizer.variable, name)
+
+    def fset(self, value):
+        if inspect.isclass(value) or isinstance(value, galaxy_prior.GalaxyPrior):
+            setattr(self.optimizer.variable, name, value)
+            setattr(self.optimizer.constant, name, None)
+        else:
+            setattr(self.optimizer.constant, name, value)
+            setattr(self.optimizer.variable, name, None)
+
+    return property(fget=fget, fset=fset, doc=name)
