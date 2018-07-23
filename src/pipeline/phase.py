@@ -5,6 +5,10 @@ from src.analysis import galaxy
 class Phase(object):
     def __init__(self, optimizer):
         self.optimizer = optimizer
+        self.last_results = None
+
+    def run(self, last_results):
+        self.last_results = last_results
 
 
 class SourceLensPhase(Phase):
