@@ -1,0 +1,32 @@
+from src.pipeline import phase as ph
+import pytest
+from src.analysis import galaxy as g
+from src.analysis import galaxy_prior as gp
+from src.autopipe import non_linear
+
+
+@pytest.fixture(name="phase")
+def make_phase():
+    return ph.SourceLensPhase(optimizer=non_linear.NonLinearOptimizer())
+
+
+@pytest.fixture(name="galaxy")
+def make_galaxy():
+    return g.Galaxy()
+
+
+@pytest.fixture(name="galaxy_prior")
+def make_galaxy_prior():
+    return gp.GalaxyPrior()
+
+
+class TestPhase(object):
+    def test_set_constants(self, phase, galaxy):
+        phase.lens_galaxy = galaxy
+        assert phase.optimizer.constant.lens_galaxy == galaxy
+        assert not hasattr(phase.optimizer.variable, "lens_galaxy")
+
+    def test_set_variables(self, phase, galaxy_prior):
+        phase.lens_galaxy = galaxy_prior
+        assert phase.optimizer.variable.lens_galaxy == galaxy_prior
+        assert not hasattr(phase.optimizer.constant, "lens_galaxy")
