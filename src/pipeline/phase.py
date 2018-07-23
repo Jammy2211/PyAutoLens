@@ -6,13 +6,16 @@ class Phase(object):
     def __init__(self, optimizer):
         self.optimizer = optimizer
 
+
+class SourceLensPhase(Phase):
+
     @property
-    def lens_galaxies(self):
+    def lens_galaxy(self):
         return self.optimizer.constant.lens_galaxies + self.optimizer.variable.lens_galaxies
 
-    @lens_galaxies.setter
-    def lens_galaxies(self, lens_galaxies):
-        self.optimizer.constant.lens_galaxies = [lens_galaxy for lens_galaxy in lens_galaxies if
-                                                 isinstance(lens_galaxy, galaxy.Galaxy)]
-        self.optimizer.variable.lens_galaxies = [lens_galaxy for lens_galaxy in lens_galaxies if
-                                                 isinstance(lens_galaxy, galaxy_prior.GalaxyPrior)]
+    @lens_galaxy.setter
+    def lens_galaxy(self, lens_galaxy):
+        if isinstance(lens_galaxy, galaxy.Galaxy):
+            self.optimizer.constant.lens_galaxy = lens_galaxy
+        elif isinstance(lens_galaxy, galaxy_prior.GalaxyPrior):
+            self.optimizer.variable.lens_galaxy = lens_galaxy
