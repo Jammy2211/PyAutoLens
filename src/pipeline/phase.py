@@ -6,9 +6,11 @@ class Phase(object):
     def __init__(self, optimizer):
         self.optimizer = optimizer
         self.last_results = None
+        self.masked_image = None
 
-    def run(self, last_results):
+    def run(self, masked_image, last_results):
         self.last_results = last_results
+        self.masked_image = masked_image
 
 
 class SourceLensPhase(Phase):
