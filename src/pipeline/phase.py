@@ -2,6 +2,7 @@ from src.analysis import galaxy_prior
 from src.analysis import galaxy
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
+from src.analysis import fitting
 
 
 class Phase(object):
@@ -28,8 +29,8 @@ class Phase(object):
         self.coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
             self.masked_image.mask, self.sub_grid_size, self.blurring_shape)
 
-    def fit(self, **kwargs):
-        tracer = ray_tracing.Tracer([kwargs["lens_galaxy"]], kwargs["source_galaxy"], self.coords_collection)
+    class Analysis(object):
+        pass
 
 
 class SourceLensPhase(Phase):
@@ -47,3 +48,8 @@ class SourceLensPhase(Phase):
 
     def run(self, **kwargs):
         super(SourceLensPhase, self).run(**kwargs)
+
+    def fit(self, **kwargs):
+        tracer = ray_tracing.Tracer([kwargs["lens_galaxy"]], kwargs["source_galaxy"], self.coords_collection)
+        fitter = fitting.Fitter(self.masked_image, tracer)
+        return fitter.fit_data_with_profiles()
