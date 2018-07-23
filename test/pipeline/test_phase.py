@@ -10,7 +10,12 @@ from src.imaging import masked_image as mi
 
 
 class MockResults(object):
-    pass
+    class Store(object):
+        pass
+
+    def __init__(self):
+        self.constant = MockResults.Store()
+        self.variable = MockResults.Store()
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -98,3 +103,21 @@ class TestPhase(object):
         result = phase.run(masked_image=masked_image)
         assert isinstance(result.constant.lens_galaxy, g.Galaxy)
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
+
+    def test_customize(self, results, masked_image):
+        class MyPhase(ph.SourceLensPhase):
+            def pass_priors(self, last_results):
+                self.lens_galaxy = last_results.constant.lens_galaxy
+                self.source_galaxy = last_results.variable.source_galaxy
+
+        galaxy = g.Galaxy()
+        galaxy_prior = gp.GalaxyPrior()
+
+        setattr(results.constant, "lens_galaxy", galaxy)
+        setattr(results.variable, "source_galaxy", galaxy_prior)
+
+        phase = MyPhase(optimizer=NLO())
+        phase.make_analysis(masked_image=masked_image, last_results=results)
+
+        assert phase.lens_galaxy == galaxy
+        assert phase.source_galaxy == galaxy_prior
