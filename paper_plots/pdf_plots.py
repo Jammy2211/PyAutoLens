@@ -5,7 +5,8 @@ import src.config.config
 
 sys.path.append("../")
 
-from src.analysis import model_mapper, non_linear
+from src.autopipe import model_mapper
+from src.autopipe import non_linear
 from src.profiles import mass_profiles as mp
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
