@@ -29,9 +29,6 @@ class Phase(object):
         self.coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
             self.masked_image.mask, self.sub_grid_size, self.blurring_shape)
 
-    class Analysis(object):
-        pass
-
 
 class SourceLensPhase(Phase):
 
