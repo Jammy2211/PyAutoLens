@@ -89,3 +89,7 @@ class TestPhase(object):
 
     def test_mask_analysis(self, phase, masked_image):
         analysis = phase.make_analysis(masked_image=masked_image)
+        assert analysis.last_results is None
+        assert analysis.masked_image == masked_image
+        assert analysis.sub_grid_size == 1
+        assert analysis.blurring_shape == (3, 3)
