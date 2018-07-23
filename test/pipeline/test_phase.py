@@ -136,7 +136,7 @@ class TestPhase(object):
         phase.prop = galaxy
 
         assert phase.constant.prop == galaxy
-        assert phase.variable.prop is None
+        assert not hasattr(phase.variable, "prop")
 
         phase.prop = g.Galaxy
-        assert phase.constant.prop is None
+        assert not hasattr(phase.constant, "prop")
