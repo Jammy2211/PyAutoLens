@@ -946,20 +946,20 @@ class TestFitting(object):
             downhill_simplex.constant.mock_class = MockClass()
             result = downhill_simplex.fit(MockAnalysis())
 
-            assert result.instance.mock_class.one == 1
-            assert result.instance.mock_class.two == 2
+            assert result.constant.mock_class.one == 1
+            assert result.constant.mock_class.two == 2
             assert result.likelihood == 1
 
         def test_variable(self, downhill_simplex, test_config):
             downhill_simplex.variable.mock_class = model_mapper.PriorModel(MockClass, test_config)
             result = downhill_simplex.fit(MockAnalysis())
 
-            assert result.instance.mock_class.one == 0.5
-            assert result.instance.mock_class.two == 0.5
+            assert result.constant.mock_class.one == 0.5
+            assert result.constant.mock_class.two == 0.5
             assert result.likelihood == 1
 
-            assert result.priors.mock_class.one.mean == 0.5
-            assert result.priors.mock_class.two.mean == 0.5
+            assert result.variable.mock_class.one.mean == 0.5
+            assert result.variable.mock_class.two.mean == 0.5
 
         def test_constant_and_variable(self, downhill_simplex, test_config):
             downhill_simplex.constant.constant = MockClass()
@@ -967,12 +967,12 @@ class TestFitting(object):
 
             result = downhill_simplex.fit(MockAnalysis())
 
-            assert result.instance.constant.one == 1
-            assert result.instance.constant.two == 2
-            assert result.instance.variable.one == 0.5
-            assert result.instance.variable.two == 0.5
-            assert result.priors.variable.one.mean == 0.5
-            assert result.priors.variable.two.mean == 0.5
+            assert result.constant.constant.one == 1
+            assert result.constant.constant.two == 2
+            assert result.constant.variable.one == 0.5
+            assert result.constant.variable.two == 0.5
+            assert result.variable.variable.one.mean == 0.5
+            assert result.variable.variable.two.mean == 0.5
             assert result.likelihood == 1
 
     class TestMultiNest(object):
@@ -980,12 +980,12 @@ class TestFitting(object):
             multi_nest.variable.mock_class = model_mapper.PriorModel(MockClass, test_config)
             result = multi_nest.fit(MockAnalysis())
 
-            assert result.instance.mock_class.one == 1
-            assert result.instance.mock_class.two == 1
+            assert result.constant.mock_class.one == 1
+            assert result.constant.mock_class.two == 1
             assert result.likelihood == 1
 
-            assert result.priors.mock_class.one.mean == 1
-            assert result.priors.mock_class.two.mean == -2
+            assert result.variable.mock_class.one.mean == 1
+            assert result.variable.mock_class.two.mean == -2
 
         def test_constant_and_variable(self, multi_nest, test_config):
             multi_nest.constant.constant = MockClass()
@@ -993,10 +993,10 @@ class TestFitting(object):
 
             result = multi_nest.fit(MockAnalysis())
 
-            assert result.instance.constant.one == 1
-            assert result.instance.constant.two == 2
-            assert result.instance.variable.one == 1
-            assert result.instance.variable.two == 1
-            assert result.priors.variable.one.mean == 1
-            assert result.priors.variable.two.mean == -2
+            assert result.constant.constant.one == 1
+            assert result.constant.constant.two == 2
+            assert result.constant.variable.one == 1
+            assert result.constant.variable.two == 1
+            assert result.variable.variable.one.mean == 1
+            assert result.variable.variable.two.mean == -2
             assert result.likelihood == 1
