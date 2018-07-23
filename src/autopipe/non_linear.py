@@ -8,7 +8,7 @@ import scipy.optimize
 from src.imaging import hyper_image
 from src.config import config
 
-from src.analysis import model_mapper as mm
+from src.autopipe import model_mapper as mm
 import logging
 
 logging.basicConfig()
