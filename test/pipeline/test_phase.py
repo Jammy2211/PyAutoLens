@@ -9,6 +9,10 @@ class MockResults(object):
     pass
 
 
+class MockMaskedImage(object):
+    pass
+
+
 @pytest.fixture(name="phase")
 def make_phase():
     return ph.SourceLensPhase(optimizer=non_linear.NonLinearOptimizer())
@@ -35,8 +39,11 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxy")
 
-    def test_last_results(self, phase):
+    def test_run_arguments(self, phase):
         assert phase.last_results is None
+        assert phase.masked_image is None
         results = MockResults()
-        phase.run(results)
+        masked_image = MockMaskedImage()
+        phase.run(masked_image, results)
         assert phase.last_results == results
+        assert phase.masked_image == masked_image
