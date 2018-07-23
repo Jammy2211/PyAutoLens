@@ -51,7 +51,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.SourceLensPhase(optimizer=NLO())
+    return ph.InitialSourceLensPhase(optimizer=NLO())
 
 
 @pytest.fixture(name="galaxy")
