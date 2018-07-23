@@ -1,14 +1,14 @@
 from src.analysis import galaxy_prior
-from src.analysis import galaxy
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
 from src.analysis import fitting
+from src.autopipe import non_linear
 import inspect
 
 
 class Phase(object):
-    def __init__(self, optimizer, sub_grid_size=1, blurring_shape=None):
-        self.optimizer = optimizer
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, blurring_shape=None):
+        self.optimizer = optimizer_class()
         self.sub_grid_size = sub_grid_size
         self.blurring_shape = blurring_shape
 
