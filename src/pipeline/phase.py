@@ -3,10 +3,12 @@ from src.analysis import galaxy
 
 
 class Phase(object):
-    def __init__(self, optimizer):
+    def __init__(self, optimizer, sub_grid_size=1, blurring_shape=(1, 1)):
         self.optimizer = optimizer
         self.last_results = None
         self.masked_image = None
+        self.sub_grid_size = sub_grid_size
+        self.blurring_shape = blurring_shape
 
     def run(self, masked_image, last_results):
         self.last_results = last_results

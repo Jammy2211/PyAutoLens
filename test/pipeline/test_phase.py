@@ -47,3 +47,7 @@ class TestPhase(object):
         phase.run(masked_image, results)
         assert phase.last_results == results
         assert phase.masked_image == masked_image
+
+    def test_default_arguments(self, phase):
+        assert phase.blurring_shape == (1, 1)
+        assert phase.sub_grid_size == 1

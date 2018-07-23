@@ -876,7 +876,7 @@ class MockAnalysis(object):
     def __init__(self):
         self.kwargs = None
 
-    def run(self, **kwargs):
+    def fit(self, **kwargs):
         self.kwargs = kwargs
         return 1
 
