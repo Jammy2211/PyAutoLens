@@ -38,7 +38,7 @@ def test_analysis_1():
                            shear_mass_profile=mass_profiles.ExternalShear())
 
     start = time.time()
-    repeat(lambda _: analysis.run(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy]))
+    repeat(lambda _: analysis.fit(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy]))
     print(time.time() - start)
 
 
