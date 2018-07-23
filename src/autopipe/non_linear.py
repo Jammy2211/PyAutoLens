@@ -49,22 +49,22 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class Result(object):
 
-    def __init__(self, instance, likelihood, priors=None):
+    def __init__(self, constant, likelihood, variable=None):
         """
         The result of an optimization.
 
         Parameters
         ----------
-        instance: model_mapper.ModelInstance
+        constant: model_mapper.ModelInstance
             An instance object comprising the class instances that gave the optimal fit
         likelihood: float
             A value indicating the likelihood given by the optimal fit
-        priors: model_mapper.ModelMapper
+        variable: model_mapper.ModelMapper
             An object comprising priors determined by this stage of the analysis
         """
-        self.instance = instance
+        self.constant = constant
         self.likelihood = likelihood
-        self.priors = priors
+        self.variable = variable
 
     def __str__(self):
         return "Analysis Result:\n{}".format(
@@ -195,7 +195,7 @@ class DownhillSimplex(NonLinearOptimizer):
         means = output[0]
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
-        res.priors = self.variable.mapper_from_gaussian_means(means)
+        res.variable = self.variable.mapper_from_gaussian_means(means)
 
         return res
 
@@ -294,7 +294,7 @@ class MultiNest(NonLinearOptimizer):
 
         result = fitness_function.result
 
-        result.priors = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
+        result.variable = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
         return result
 
