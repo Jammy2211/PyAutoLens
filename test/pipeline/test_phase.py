@@ -96,5 +96,5 @@ class TestPhase(object):
 
     def test_fit(self, phase, masked_image):
         result = phase.run(masked_image=masked_image)
-        assert isinstance(result.instance.lens_galaxy, g.Galaxy)
-        assert isinstance(result.instance.source_galaxy, g.Galaxy)
+        assert isinstance(result.constant.lens_galaxy, g.Galaxy)
+        assert isinstance(result.constant.source_galaxy, g.Galaxy)
