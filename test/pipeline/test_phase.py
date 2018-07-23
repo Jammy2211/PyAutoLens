@@ -93,3 +93,8 @@ class TestPhase(object):
         assert analysis.masked_image == masked_image
         assert analysis.sub_grid_size == 1
         assert analysis.blurring_shape == (3, 3)
+
+    def test_fit(self, phase, masked_image):
+        result = phase.run(masked_image=masked_image)
+        assert isinstance(result.instance.lens_galaxy, g.Galaxy)
+        assert isinstance(result.instance.source_galaxy, g.Galaxy)
