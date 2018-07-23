@@ -15,7 +15,7 @@ class Phase(object):
         return self.optimizer.fit(self.make_analysis(**kwargs))
 
     def make_analysis(self, **kwargs):
-        last_result = kwargs["last_result"]
+        last_result = kwargs["last_results"]
         kwargs["masked_image"] = self.customize_image(kwargs["masked_image"], last_result)
         analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size, blurring_shape=self.blurring_shape,
                                            **kwargs)
@@ -35,7 +35,7 @@ class Phase(object):
             self.masked_image = kwargs["masked_image"]
             self.coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 self.masked_image.mask, kwargs["sub_grid_size"],
-                kwargs["blurring_shape"] if "blurring_shape" in kwargs else self.masked_image.psf.shape)
+                kwargs["blurring_shape"] if kwargs["blurring_shape"] is not None else self.masked_image.psf.shape)
 
         def fit(self, **kwargs):
             raise NotImplementedError()
