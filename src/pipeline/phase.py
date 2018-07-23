@@ -6,16 +6,20 @@ from src.analysis import fitting
 
 
 class Phase(object):
-    def __init__(self, optimizer, sub_grid_size, blurring_shape):
+    def __init__(self, optimizer, sub_grid_size=1, blurring_shape=None):
         self.optimizer = optimizer
         self.sub_grid_size = sub_grid_size
         self.blurring_shape = blurring_shape
 
     def run(self, **kwargs):
+        return self.optimizer.fit(self.make_analysis(**kwargs))
+
+    def make_analysis(self, **kwargs):
         last_result = kwargs["last_result"]
         kwargs["masked_image"] = self.customize_image(kwargs["masked_image"], last_result)
-        analysis = self.__class__.Analysis(**kwargs)
-        return self.optimizer.fit(analysis)
+        analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size, blurring_shape=self.blurring_shape,
+                                           **kwargs)
+        return analysis
 
     @property
     def constant(self):
