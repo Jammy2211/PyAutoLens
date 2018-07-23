@@ -79,7 +79,7 @@ def phase_property(name):
 class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
-
+    
 
 class InitialSourceLensPhase(SourceLensPhase):
     class Analysis(Phase.Analysis):
