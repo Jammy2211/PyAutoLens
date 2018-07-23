@@ -121,3 +121,22 @@ class TestPhase(object):
 
         assert phase.lens_galaxy == galaxy
         assert phase.source_galaxy == galaxy_prior
+
+    def test_phase_property(self):
+        class MyPhase(ph.SourceLensPhase):
+            prop = ph.phase_property("prop")
+
+        phase = MyPhase(NLO())
+
+        phase.prop = g.Galaxy
+
+        assert phase.variable.prop == g.Galaxy
+
+        galaxy = g.Galaxy()
+        phase.prop = galaxy
+
+        assert phase.constant.prop == galaxy
+        assert phase.variable.prop is None
+
+        phase.prop = g.Galaxy
+        assert phase.constant.prop is None
