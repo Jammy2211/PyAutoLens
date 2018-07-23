@@ -45,7 +45,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.InitialSourceLensPhase(optimizer=NLO())
+    return ph.InitialSourceLensPhase(optimizer_class=NLO)
 
 
 @pytest.fixture(name="galaxy")
@@ -116,7 +116,7 @@ class TestPhase(object):
         setattr(results.constant, "lens_galaxy", galaxy)
         setattr(results.variable, "source_galaxy", galaxy_prior)
 
-        phase = MyPhase(optimizer=NLO())
+        phase = MyPhase(optimizer_class=NLO)
         phase.make_analysis(masked_image=masked_image, last_results=results)
 
         assert phase.lens_galaxy == galaxy
@@ -126,7 +126,7 @@ class TestPhase(object):
         class MyPhase(ph.SourceLensPhase):
             prop = ph.phase_property("prop")
 
-        phase = MyPhase(NLO())
+        phase = MyPhase(NLO)
 
         phase.prop = g.Galaxy
 
