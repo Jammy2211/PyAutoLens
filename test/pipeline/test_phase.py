@@ -5,23 +5,12 @@ from src.analysis import galaxy_prior as gp
 from src.autopipe import non_linear
 import numpy as np
 from src.imaging import mask as msk
+from src.imaging import image as img
+from src.imaging import masked_image as mi
 
 
 class MockResults(object):
     pass
-
-
-class MockMaskedImage(object):
-    def __init__(self, psf):
-        self.psf = psf
-
-    @property
-    def mask(self):
-        return msk.Mask.circular((10, 10), 1, 3)
-
-    @property
-    def image(self):
-        return None
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -66,7 +55,10 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="masked_image")
 def make_masked_image():
-    return MockMaskedImage(np.zeros((3, 3)))
+    shape = (10, 10)
+    image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
+    mask = msk.Mask.circular(shape, 1, 3)
+    return mi.MaskedImage(image, mask)
 
 
 @pytest.fixture(name="results")
