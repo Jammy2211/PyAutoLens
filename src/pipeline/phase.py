@@ -15,8 +15,10 @@ class Phase(object):
         return self.optimizer.fit(self.make_analysis(**kwargs))
 
     def make_analysis(self, **kwargs):
-        last_result = kwargs["last_results"]
-        kwargs["masked_image"] = self.customize_image(kwargs["masked_image"], last_result)
+        if "last_results" not in kwargs:
+            kwargs["last_results"] = None
+        last_results = kwargs["last_results"]
+        kwargs["masked_image"] = self.customize_image(kwargs["masked_image"], last_results)
         analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size, blurring_shape=self.blurring_shape,
                                            **kwargs)
         return analysis
