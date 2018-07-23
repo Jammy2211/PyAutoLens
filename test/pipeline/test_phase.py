@@ -85,7 +85,9 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxy")
 
-    def test_default_arguments(self, phase, masked_image, results):
+    def test_default_arguments(self, phase, masked_image, results, galaxy_prior):
+        phase.lens_galaxy = galaxy_prior
+        phase.source_galaxy = galaxy_prior
         assert phase.blurring_shape is None
         assert phase.sub_grid_size == 1
         phase.blurring_shape = (1, 1)

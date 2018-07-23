@@ -58,11 +58,22 @@ class SourceLensPhase(Phase):
         elif isinstance(lens_galaxy, galaxy_prior.GalaxyPrior):
             self.optimizer.variable.lens_galaxy = lens_galaxy
 
+    @property
+    def source_galaxy(self):
+        return self.optimizer.constant.lens_galaxies + self.optimizer.variable.lens_galaxies
+
+    @source_galaxy.setter
+    def source_galaxy(self, source_galaxy):
+        if isinstance(source_galaxy, galaxy.Galaxy):
+            self.optimizer.constant.source_galaxy = source_galaxy
+        elif isinstance(source_galaxy, galaxy_prior.GalaxyPrior):
+            self.optimizer.variable.source_galaxy = source_galaxy
+
 
 class InitialSourceLensPhase(SourceLensPhase):
     class Analysis(Phase.Analysis):
 
         def fit(self, **kwargs):
-            tracer = ray_tracing.Tracer([kwargs["lens_galaxy"]], kwargs["source_galaxy"], self.coords_collection)
+            tracer = ray_tracing.Tracer([kwargs["lens_galaxy"]], [kwargs["source_galaxy"]], self.coords_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
             return fitter.fit_data_with_profiles()
