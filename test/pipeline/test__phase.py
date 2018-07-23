@@ -2,7 +2,7 @@ from src.pipeline import phase as ph
 import pytest
 from src.analysis import galaxy as g
 from src.analysis import galaxy_prior as gp
-from src.analysis import non_linear
+from src.autopipe import non_linear
 
 
 class MockPhase(ph.Phase):

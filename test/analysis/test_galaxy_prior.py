@@ -3,7 +3,7 @@ from src.analysis import galaxy_prior as gp
 from src.analysis import galaxy as g
 from src.pixelization import pixelization
 from src.profiles import mass_profiles, light_profiles
-from src.analysis import model_mapper as mm
+from src.autopipe import model_mapper as mm
 import pytest
 import os
 

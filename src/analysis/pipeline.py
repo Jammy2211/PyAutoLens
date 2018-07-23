@@ -2,10 +2,10 @@ from src.analysis import analysis as an
 from src.imaging import masked_image as mi
 from src.analysis import galaxy_prior
 from src.profiles import light_profiles, mass_profiles
-from src.analysis import non_linear
+from src.autopipe import model_mapper
+from src.autopipe import non_linear
 from src.pipeline import phase as ph
 from src.pixelization import pixelization
-from src.analysis import model_mapper
 from src.analysis import galaxy
 
 import os
