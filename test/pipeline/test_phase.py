@@ -24,14 +24,34 @@ class MockMaskedImage(object):
         return None
 
 
-class ExtendedSourceLensPhase(ph.SourceLensPhase):
-    def __init__(self, optimizer):
-        super().__init__(optimizer)
+class NLO(non_linear.NonLinearOptimizer):
+    def fit(self, analysis):
+        class Fitness(object):
+            def __init__(self, instance_from_physical_vector, constant):
+                self.result = None
+                self.instance_from_physical_vector = instance_from_physical_vector
+                self.constant = constant
+
+            def __call__(self, vector):
+                instance = self.instance_from_physical_vector(vector)
+                for key, value in self.constant.__dict__.items():
+                    setattr(instance, key, value)
+
+                likelihood = analysis.fit(**instance.__dict__)
+                self.result = non_linear.Result(instance, likelihood)
+
+                # Return Chi squared
+                return -2 * likelihood
+
+        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
+        fitness_function(self.variable.total_parameters * [0.5])
+
+        return fitness_function.result
 
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.SourceLensPhase(optimizer=non_linear.NonLinearOptimizer())
+    return ph.SourceLensPhase(optimizer=NLO())
 
 
 @pytest.fixture(name="galaxy")
@@ -64,14 +84,6 @@ class TestPhase(object):
         phase.lens_galaxy = galaxy_prior
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxy")
-
-    def test_run_arguments(self, phase, masked_image, results):
-        assert phase.last_results is None
-        assert phase.masked_image is None
-        phase.run(masked_image=masked_image, last_results=results)
-        assert phase.last_results == results
-        assert phase.masked_image == masked_image
-        assert phase.coords_collection is not None
 
     def test_default_arguments(self, phase, masked_image, results):
         assert phase.blurring_shape is None
