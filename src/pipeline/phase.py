@@ -52,46 +52,6 @@ class Phase(object):
         pass
 
 
-class SourceLensPhase(Phase):
-
-    @property
-    def lens_galaxy(self):
-        if hasattr(self.optimizer.constant, "lens_galaxy"):
-            return self.optimizer.constant.lens_galaxy
-        elif hasattr(self.optimizer.variable, "lens_galaxy"):
-            return self.optimizer.variable.lens_galaxy
-
-    @lens_galaxy.setter
-    def lens_galaxy(self, lens_galaxy):
-        if isinstance(lens_galaxy, galaxy.Galaxy):
-            self.optimizer.constant.lens_galaxy = lens_galaxy
-        elif isinstance(lens_galaxy, galaxy_prior.GalaxyPrior):
-            self.optimizer.variable.lens_galaxy = lens_galaxy
-
-    @property
-    def source_galaxy(self):
-        if hasattr(self.optimizer.constant, "source_galaxy"):
-            return self.optimizer.constant.source_galaxy
-        elif hasattr(self.optimizer.variable, "source_galaxy"):
-            return self.optimizer.variable.source_galaxy
-
-    @source_galaxy.setter
-    def source_galaxy(self, source_galaxy):
-        if isinstance(source_galaxy, galaxy.Galaxy):
-            self.optimizer.constant.source_galaxy = source_galaxy
-        elif isinstance(source_galaxy, galaxy_prior.GalaxyPrior):
-            self.optimizer.variable.source_galaxy = source_galaxy
-
-
-class InitialSourceLensPhase(SourceLensPhase):
-    class Analysis(Phase.Analysis):
-
-        def fit(self, lens_galaxy=None, source_galaxy=None):
-            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
-            fitter = fitting.Fitter(self.masked_image, tracer)
-            return fitter.fit_data_with_profiles()
-
-
 def phase_property(name):
     def fget(self):
         if hasattr(self.optimizer.constant, name):
@@ -102,9 +62,29 @@ def phase_property(name):
     def fset(self, value):
         if inspect.isclass(value) or isinstance(value, galaxy_prior.GalaxyPrior):
             setattr(self.optimizer.variable, name, value)
-            setattr(self.optimizer.constant, name, None)
+            try:
+                delattr(self.optimizer.constant, name)
+            except AttributeError:
+                pass
         else:
             setattr(self.optimizer.constant, name, value)
-            setattr(self.optimizer.variable, name, None)
+            try:
+                delattr(self.optimizer.variable, name)
+            except AttributeError:
+                pass
 
     return property(fget=fget, fset=fset, doc=name)
+
+
+class SourceLensPhase(Phase):
+    lens_galaxy = phase_property("lens_galaxy")
+    source_galaxy = phase_property("source_galaxy")
+
+
+class InitialSourceLensPhase(SourceLensPhase):
+    class Analysis(Phase.Analysis):
+
+        def fit(self, lens_galaxy=None, source_galaxy=None):
+            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
+            fitter = fitting.Fitter(self.masked_image, tracer)
+            return fitter.fit_data_with_profiles()
