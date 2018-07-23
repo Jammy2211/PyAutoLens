@@ -86,3 +86,6 @@ class TestPhase(object):
         assert phase.blurring_shape == (1, 1)
         phase.run(masked_image=masked_image, last_results=results)
         assert phase.blurring_shape == (1, 1)
+
+    def test_mask_analysis(self, phase):
+        phase.make_analysis()
