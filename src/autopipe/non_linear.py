@@ -257,6 +257,7 @@ class MultiNest(NonLinearOptimizer):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = constant
+                self.max_likelihood = 0.
 
             def __call__(self, cube, ndim, nparams, lnew):
                 instance = self.instance_from_physical_vector(cube)
@@ -264,7 +265,12 @@ class MultiNest(NonLinearOptimizer):
                     setattr(instance, key, value)
 
                 likelihood, model_image = analysis.fit(**instance.__dict__)
-                self.result = Result(instance, likelihood, model_image)
+
+                # TODO: Use multinest to provide best model
+
+                if likelihood > self.max_likelihood:
+                    self.max_likelihood = likelihood
+                    self.result = Result(instance, likelihood, model_image)
 
                 return likelihood
 
