@@ -72,8 +72,8 @@ def make_masked_image():
 
 @pytest.fixture(name="results")
 def make_results():
-    return MockResults(np.ones(32,),
-                       galaxy_images=[np.ones(32,), np.ones(32,)],
+    return MockResults(np.ones(32, ),
+                       galaxy_images=[np.ones(32, ), np.ones(32, )],
                        hyper_galaxies=[g.HyperGalaxy(), g.HyperGalaxy()])
 
 
@@ -88,24 +88,15 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxy")
 
-    def test_default_arguments(self, phase, masked_image, results, galaxy_prior):
-        phase.lens_galaxy = galaxy_prior
-        phase.source_galaxy = galaxy_prior
-        assert phase.blurring_shape is None
-        assert phase.sub_grid_size == 1
-        phase.blurring_shape = (1, 1)
-        assert phase.blurring_shape == (1, 1)
-        phase.run(masked_image=masked_image, last_results=results)
-        assert phase.blurring_shape == (1, 1)
-
     def test_mask_analysis(self, phase, masked_image):
         analysis = phase.make_analysis(masked_image=masked_image)
         assert analysis.last_results is None
         assert analysis.masked_image == masked_image
         assert analysis.sub_grid_size == 1
-        assert analysis.blurring_shape == (3, 3)
 
     def test_fit(self, phase, masked_image):
+        phase.source_galaxy = g.Galaxy()
+        phase.lens_galaxy = g.Galaxy()
         result = phase.run(masked_image=masked_image)
         assert isinstance(result.constant.lens_galaxy, g.Galaxy)
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
@@ -146,3 +137,9 @@ class TestPhase(object):
 
         phase.prop = g.Galaxy
         assert not hasattr(phase.constant, "prop")
+
+
+class TestAnalysis(object):
+    def test_hyper_galaxies(self):
+        # ph.Phase.Analysis()
+        pass
