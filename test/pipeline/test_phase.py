@@ -143,6 +143,12 @@ class TestPhase(object):
     def test_default_mask_function(self, phase, image):
         assert len(mi.MaskedImage(image, phase.mask_function(image))) == 32
 
+    def test_galaxy_images(self, image, phase):
+        phase.lens_galaxy = g.Galaxy()
+        phase.source_galaxy = g.Galaxy()
+        result = phase.run(image)
+        assert len(result.galaxy_images) == 2
+
 
 class TestAnalysis(object):
     def test_model_image(self, results, masked_image):
