@@ -60,6 +60,12 @@ def make_galaxy_prior():
     return gp.GalaxyPrior()
 
 
+@pytest.fixture(name="image")
+def make_image():
+    image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
+    return image
+
+
 @pytest.fixture(name="masked_image")
 def make_masked_image():
     image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
@@ -90,10 +96,10 @@ class TestPhase(object):
         assert analysis.masked_image == masked_image
         assert analysis.sub_grid_size == 1
 
-    def test_fit(self, phase, masked_image):
+    def test_fit(self, phase, image):
         phase.source_galaxy = g.Galaxy()
         phase.lens_galaxy = g.Galaxy()
-        result = phase.run(masked_image=masked_image)
+        result = phase.run(image=image)
         assert isinstance(result.constant.lens_galaxy, g.Galaxy)
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
 
@@ -133,6 +139,9 @@ class TestPhase(object):
 
         phase.prop = g.Galaxy
         assert not hasattr(phase.constant, "prop")
+
+    def test_default_mask_function(self, phase, image):
+        assert len(mi.MaskedImage(image, phase.mask_function(image))) == 32
 
 
 class TestAnalysis(object):
