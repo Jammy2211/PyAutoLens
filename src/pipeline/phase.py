@@ -213,13 +213,24 @@ def phase_property(name):
 
 
 class SourceLensPhase(Phase):
-    """
-    A phase with a simple source/lens model
-    """
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
     def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+        """
+        A phase with a simple source/lens model
+
+        Parameters
+        ----------
+        lens_galaxy: g.Galaxy
+            A galaxy that acts as a gravitational lens
+        source_galaxy: g.Galaxy
+            A galaxy that is being lensed
+        optimizer_class: class
+            The class of a non-linear optimizer
+        sub_grid_size: int
+            The side length of the subgrid
+        """
         super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
