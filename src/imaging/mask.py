@@ -156,8 +156,7 @@ class Mask(scaled_array.ScaledArray):
             raise exc.KernelException("PSF Kernel must be odd and square")
 
         ma = cls.unmasked(shape_arc_seconds, pixel_scale)
-        pad_size = (int(psf_size[0] / 2) + 1, int(psf_size[1] / 2) + 1)
-        return ma.pad(new_dimensions=(ma.shape[0] + pad_size[0], ma.shape[1] + pad_size[1]), pad_value=1)
+        return ma.pad(new_dimensions=(ma.shape[0] + psf_size[0] - 1, ma.shape[1] + psf_size[1] - 1), pad_value=1)
 
     @property
     def pixels_in_mask(self):
@@ -271,8 +270,7 @@ class Mask(scaled_array.ScaledArray):
             if not self[x, y]:
                 for y1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
                     for x1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
-                        if 0 <= x + x1 <= self.shape[0] - 1 \
-                                and 0 <= y + y1 <= self.shape[1] - 1:
+                        if 0 <= x + x1 <= self.shape[0] - 1 and 0 <= y + y1 <= self.shape[1] - 1:
                             if self[x + x1, y + y1]:
                                 blurring_mask[x + x1, y + y1] = False
                         else:
@@ -284,6 +282,19 @@ class Mask(scaled_array.ScaledArray):
 
         return Mask(blurring_mask, self.pixel_scale)
 
+    def map_to_2d(self, data):
+        """Use mapper to map an input data-set from a *GridData* to its original 2D image_coords.
+        Parameters
+        -----------
+        data : ndarray
+            The grid-data which is mapped to its 2D image_coords.
+        """
+        data_2d = np.zeros(self.shape)
+
+        for (i, pixel) in enumerate(self.grid_to_pixel()):
+            data_2d[pixel[0], pixel[1]] = data[i]
+
+        return data_2d
 
 class SparseMask(Mask):
     def __new__(cls, mask, sparse_grid_size, *args, **kwargs):

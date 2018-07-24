@@ -16,7 +16,7 @@ class MaskedImage(im.AbstractImage):
         Parameters
         ----------
         image: im.Image
-            A 2D image_coords
+            A 2D image
         mask: msk.Mask
             A mask to be applied to the image_coords
         """
