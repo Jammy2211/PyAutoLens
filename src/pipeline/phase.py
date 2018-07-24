@@ -170,6 +170,7 @@ def phase_property(name):
     property: property
         A property that appears to be an attribute of the phase but is really an attribute of constant or variable.
     """
+
     def fget(self):
         if hasattr(self.optimizer.constant, name):
             return getattr(self.optimizer.constant, name)
@@ -200,14 +201,15 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-
-class InitialSourceLensPhase(SourceLensPhase):
-    """
-    A simple source lens model without any regard to previous phases.
-    """
     class Analysis(Phase.Analysis):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
+
+            if self.last_results is not None:
+                fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
+                                                             self.last_results.galaxy_images, "minimum_values?",
+                                                             self.last_results.hyper_galaxies)
+
             return fitter.fit_data_with_profiles()
