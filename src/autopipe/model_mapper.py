@@ -421,7 +421,9 @@ class ModelInstance(object):
 
     @DynamicAttrs
     """
-    pass
+
+    def instances_of(self, cls):
+        return [instance for instance in self.__dict__.values() if isinstance(instance, cls)]
 
 
 class Constant(object):
