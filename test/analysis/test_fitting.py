@@ -131,7 +131,7 @@ class TestFitData:
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
-        likelihood = fitter.fit_data_with_profiles()
+        likelihood, _ = fitter.fit_data_with_profiles()
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
@@ -152,7 +152,7 @@ class TestFitData:
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
-        likelihood = fitter.fit_data_with_profiles()
+        likelihood, _ = fitter.fit_data_with_profiles()
 
         assert likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
@@ -173,7 +173,7 @@ class TestGenerateBlurredLightProfileImage:
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles()
-        blurred_value = fitter.generate_blurred_light_profile_image()
+        blurred_value = fitter.blurred_light_profile_image()
 
         assert non_blurred_value == blurred_value
 
@@ -190,7 +190,7 @@ class TestGenerateBlurredLightProfileImage:
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
-        blurred_value = fitter.generate_blurred_light_profile_image()
+        blurred_value = fitter.blurred_light_profile_image()
 
         # Manually compute result of convolution, which for our PSF of all 1's is just the central value +
         # the (central value x each blurring_coords region value).
@@ -214,7 +214,7 @@ class TestGenerateBlurredLightProfileImage:
 
         fitter = fitting.Fitter(masked_image=image_2x2, tracer=ray_trace)
 
-        blurred_value = fitter.generate_blurred_light_profile_image()
+        blurred_value = fitter.blurred_light_profile_image()
 
         # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
@@ -251,7 +251,6 @@ class TestFitDataWithProfilesHyperGalaxy:
 
         model_image = np.array([1.0])
         galaxy_images = [np.array([1.0]), np.array([1.0])]
-        minimum_values = [0.0, 0.0]
 
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)]
@@ -259,8 +258,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         fitter = fitting.Fitter(masked_image=image_1x1,
                                 tracer=ray_trace)
 
-        likelihood = fitter.fit_data_with_profiles_hyper_galaxies(model_image, galaxy_images, minimum_values,
-                                                                  hyper_galaxies)
+        likelihood, _ = fitter.fit_data_with_profiles_hyper_galaxies(model_image, galaxy_images, hyper_galaxies)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 4.0 ** 2.0)  # should be 1
 
@@ -446,7 +444,7 @@ class TestGenerateScaledNoise:
 
         contributions = np.array([1.0, 1.0, 2.0])
 
-        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
+        scaled_noise = fitter.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
 
         assert (scaled_noise == fitter.image.background_noise).all()
 
@@ -457,7 +455,7 @@ class TestGenerateScaledNoise:
 
         contributions = [np.array([1.0, 1.0, 0.5])]
 
-        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
+        scaled_noise = fitter.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.0, 2.0, 1.5])).all()
 
@@ -468,7 +466,7 @@ class TestGenerateScaledNoise:
 
         contributions = [np.array([1.0, 1.0, 0.5])]
 
-        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
+        scaled_noise = fitter.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.0, 2.0, 1.25])).all()
 
@@ -480,7 +478,7 @@ class TestGenerateScaledNoise:
 
         contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
 
-        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
+        scaled_noise = fitter.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.5, 2.5, 1.75])).all()
 
@@ -492,7 +490,7 @@ class TestGenerateScaledNoise:
 
         contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
 
-        scaled_noise = fitter.generate_scaled_noise(contributions, hyper_galaxies)
+        scaled_noise = fitter.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
 
         assert (scaled_noise == np.array([2.5, 2.5, 1.75])).all()
 
