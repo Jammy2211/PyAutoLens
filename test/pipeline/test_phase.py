@@ -7,20 +7,17 @@ import numpy as np
 from src.imaging import mask as msk
 from src.imaging import image as img
 from src.imaging import masked_image as mi
+from src.autopipe import model_mapper as mm
 
 shape = (10, 10)
 
 
 class MockResults(object):
-    class Store(object):
-        pass
-
-    def __init__(self, model_image, galaxy_images=(), hyper_galaxies=()):
+    def __init__(self, model_image, galaxy_images=()):
         self.model_image = model_image
         self.galaxy_images = galaxy_images
-        self.constant = MockResults.Store()
-        self.variable = MockResults.Store()
-        self.hyper_galaxies = hyper_galaxies
+        self.constant = mm.ModelInstance()
+        self.variable = mm.ModelMapper()
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -73,8 +70,7 @@ def make_masked_image():
 @pytest.fixture(name="results")
 def make_results():
     return MockResults(np.ones(32, ),
-                       galaxy_images=[np.ones(32, ), np.ones(32, )],
-                       hyper_galaxies=[g.HyperGalaxy(), g.HyperGalaxy()])
+                       galaxy_images=[np.ones(32, ), np.ones(32, )])
 
 
 class TestPhase(object):
@@ -140,6 +136,14 @@ class TestPhase(object):
 
 
 class TestAnalysis(object):
-    def test_hyper_galaxies(self, results, masked_image):
+    def test_model_image(self, results, masked_image):
         analysis = ph.Phase.Analysis(results, masked_image, 1)
         assert (results.model_image == analysis.model_image).all()
+
+    def test_hyper_galaxy(self, results, masked_image):
+        hyper_galaxy_1 = g.HyperGalaxy()
+        hyper_galaxy_2 = g.HyperGalaxy()
+        results.constant.lens_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_1)
+        results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
+        analysis = ph.Phase.Analysis(results, masked_image, 1)
+        assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies
