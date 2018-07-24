@@ -254,6 +254,7 @@ class TestNonTrivialExamples(object):
         assert (result == np.array([0, 0, 0, 0, 0, 0.2, 0, 0, 0.2, 0.4, 0.2, 0, 0, 0.2, 0, 0])).all()
 
     def test_asymmetric_kernel(self, convolver_4_simple):
+
         asymmetric_kernel = np.array([[0, 0.0, 0],
                                       [0.4, 0.2, 0.3],
                                       [0, 0.1, 0]])
@@ -302,9 +303,7 @@ class TestNonTrivialExamples(object):
         kernel = np.array([[0, 0.2, 0],
                            [0.2, 0.4, 0.2],
                            [0, 0.2, 0]])
-        pixel_array = np.array([
-            1, 0, 0, 0, 0
-        ])
+        pixel_array = np.array([1, 0, 0, 0, 0])
 
         blurring_array = np.array([1, 0, 0, 0])
 
@@ -384,3 +383,161 @@ class TestOptionalBlurringRegion(object):
         assert (result == np.array([0,
                                     0, 0.5, 0.5,
                                     0])).all()
+
+
+class TestConvolveMappingMatrix(object):
+
+    def test__asymetric_convolver__matrix_blurred_correctly(self, convolver_4_simple):
+
+        asymmetric_kernel = np.array([[0, 0.0, 0],
+                                      [0.4, 0.2, 0.3],
+                                      [0, 0.1, 0]])
+
+        mapping = np.array([[0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0 ,0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 1, 0], # The 0.3 should be 'chopped' from this pixel as it is on the right-most edge
+                            [0, 0, 0],
+                            [1, 0, 0],
+                            [0, 0, 1],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0]])
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
+
+        blurred_mapping = kernel_convolver.convolve_mapping_matrix(mapping)
+
+        assert (blurred_mapping == np.array([[0,     0,   0],
+                                             [0,     0,   0],
+                                             [0,     0,   0],
+                                             [0,     0,   0],
+                                             [0,     0,   0],
+                                             [0,     0,   0],
+                                             [0,   0.4,   0],
+                                             [0,   0.2,   0],
+                                             [0.4,   0,   0],
+                                             [0.2,   0, 0.4],
+                                             [0.3,   0, 0.2],
+                                             [0,   0.1, 0.3],
+                                             [0,     0,   0],
+                                             [0.1,   0,   0],
+                                             [0,     0, 0.1],
+                                             [0,     0,   0]])).all()
+
+    def test__asymetric_convolver__multiple_overlapping_blurred_entires_in_matrix(self, convolver_4_simple):
+
+        asymmetric_kernel = np.array([[0, 0.0, 0],
+                                      [0.4, 0.2, 0.3],
+                                      [0, 0.1, 0]])
+
+        mapping = np.array([[0, 1, 0],
+                            [0, 1, 0],
+                            [0, 1, 0],
+                            [0, 0, 0],
+                            [0, 0 ,0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 1, 0], # The 0.3 should be 'chopped' from this pixel as it is on the right-most edge
+                            [1, 0, 0],
+                            [1, 0, 0],
+                            [0, 0, 1],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0]])
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
+
+        blurred_mapping = kernel_convolver.convolve_mapping_matrix(mapping)
+
+        assert blurred_mapping == pytest.approx(np.array([[0,     0.6,   0],
+                                                          [0,     0.9,   0],
+                                                          [0,     0.5,   0],
+                                                          [0,     0.3,   0],
+                                                          [0,     0.1,   0],
+                                                          [0,     0.1,   0],
+                                                          [0,   0.5,   0],
+                                                          [0,   0.2,   0],
+                                                          [0.6,   0,   0],
+                                                          [0.5,   0, 0.4],
+                                                          [0.3,   0, 0.2],
+                                                          [0,   0.1, 0.3],
+                                                          [0.1,   0,   0],
+                                                          [0.1,   0,   0],
+                                                          [0,     0, 0.1],
+                                                          [0,     0,   0]]), 1e-4)
+
+
+class TestJitFunction(object):
+
+    def test__identical_to_non_jit_version__no_blurring_array(self, cross_frame_maker):
+
+        kernel = np.array([[0.6, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [2.0, 0.2, 0.1]])
+        pixel_array = np.array([1, 2, 8, 1, 0])
+
+        convolver = cross_frame_maker.convolver_for_kernel_shape((3, 3), np.full((3, 3), False))
+        kernel_convolver = convolver.convolver_for_kernel(kernel)
+
+        result_0 = kernel_convolver.convolve_array(pixel_array)
+        result_1 = kernel_convolver.convolve_array_jit(pixel_array)
+
+        assert (result_0 == result_1).all()
+
+    def test__identical_to_non_jit_version__include_blurring_array(self, cross_frame_maker):
+
+        kernel = np.array([[0.6, 0.2, 0],
+                           [0.2, 0.4, 0.2],
+                           [2.0, 0.2, 0.1]])
+        pixel_array = np.array([1, 2, 8, 1, 0])
+
+        blurring_array = np.array([1, 2, 4, 8])
+
+        convolver = cross_frame_maker.convolver_for_kernel_shape((3, 3), np.full((3, 3), False))
+        kernel_convolver = convolver.convolver_for_kernel(kernel)
+
+        result_0 = kernel_convolver.convolve_array(pixel_array, blurring_array)
+        result_1 = kernel_convolver.convolve_array_jit(pixel_array, blurring_array)
+
+        assert result_0 == pytest.approx(result_1, 1e-4)
+
+    def test__identical_to_non_jit_version__mapping_matrix(self, convolver_4_simple):
+
+        asymmetric_kernel = np.array([[1.0, 0.0, 0],
+                                      [0.4, 0.2, 0.3],
+                                      [0, 0.1, 0]])
+
+        mapping = np.array([[0, 1, 0],
+                            [0, 1, 0],
+                            [0, 1, 0],
+                            [0, 0, 0],
+                            [0, 7 ,0],
+                            [0, 0, 0],
+                            [0, 3, 0],
+                            [0, 1, 3], # The 0.3 should be 'chopped' from this pixel as it is on the right-most edge
+                            [1, 0, 0],
+                            [1, 0, 1],
+                            [0, 0, 1],
+                            [0, 0, 0],
+                            [0, 0, 9],
+                            [0, 0, 0],
+                            [0, 0, 0],
+                            [0, 0, 0]])
+
+        kernel_convolver = convolver_4_simple.convolver_for_kernel(asymmetric_kernel)
+
+        result_0 = kernel_convolver.convolve_mapping_matrix(mapping)
+        result_1 = kernel_convolver.convolve_mapping_matrix_jit(mapping)
+
+        assert result_0[:,0] == pytest.approx(result_1[:,0], 1e-4)
+        assert result_0[:,1] == pytest.approx(result_1[:,1], 1e-4)
+        assert result_0[:,2] == pytest.approx(result_1[:,2], 1e-4)
