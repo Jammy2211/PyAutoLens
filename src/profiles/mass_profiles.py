@@ -1006,7 +1006,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         return ['x', 'y', r'\kappa', r'\gamma' 'Rs']
 
     @geometry_profiles.transform_grid
-    def deflections_from_grid(self, grid):
+    def deflections_from_grid(self, grid, **kwargs):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
