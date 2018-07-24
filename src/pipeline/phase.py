@@ -88,18 +88,24 @@ class Phase(object):
         return self.optimizer.variable
 
     class Analysis(object):
-        def __init__(self, **kwargs):
+        def __init__(self, last_results,
+                     masked_image,
+                     sub_grid_size):
             """
             An analysis object
 
             Parameters
             ----------
-            kwargs:
-                Dictionary of arguments used in this analysis
+            last_results: non_linear.Result
+                The result of an analysis
+            masked_image: mi.MaskedImage
+                An image that has been masked
+            sub_grid_size: int
+                The side length of the subgrid
             """
-            self.last_results = kwargs["last_results"]
-            self.masked_image = kwargs["masked_image"]
-            self.sub_grid_size = kwargs["sub_grid_size"]
+            self.last_results = last_results
+            self.masked_image = masked_image
+            self.sub_grid_size = sub_grid_size
             self.coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 self.masked_image.mask, self.sub_grid_size, self.masked_image.psf.shape)
 
