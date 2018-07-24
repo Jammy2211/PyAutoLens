@@ -53,6 +53,16 @@ class Tracer(object):
     def generate_pixelization_matrices_of_source_galaxy(self, sparse_mask):
         return self.source_plane.generate_pixelization_matrices_of_galaxy(sparse_mask)
 
+    @property
+    def galaxy_images(self):
+        """
+        Returns
+        -------
+        galaxy_images: [ndarray]
+            An image for each galaxy in this ray tracer
+        """
+        return [galaxy_image for plane in [self.image_plane, self.source_plane] for galaxy_image in plane.galaxy_images]
+
 
 class MultiTracer(object):
 
@@ -236,7 +246,28 @@ class Plane(object):
         """Generate the image_coords of the galaxies in this plane."""
         return intensities_via_sub_grid(self.coordinates_collection.sub_grid_coords, self.galaxies)
 
-    def generate_image_of_galaxy_light_profile(self, galaxy):
+    @property
+    def galaxy_images(self):
+        """
+        Returns
+        -------
+        galaxy_images: [ndarray]
+            A list of images of galaxies in this plane
+        """
+        return [self.image_for_galaxy(galaxy) for galaxy in self.galaxies]
+
+    def image_for_galaxy(self, galaxy):
+        """
+        Parameters
+        ----------
+        galaxy: Galaxy
+            An individual galaxy, assumed to be in this plane
+
+        Returns
+        -------
+        galaxy_image: ndarray
+            An array describing the intensity of light coming from the galaxy embedded in this plane
+        """
         return intensities_via_sub_grid(self.coordinates_collection.sub_grid_coords, [galaxy])
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
