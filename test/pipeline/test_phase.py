@@ -7,15 +7,17 @@ import numpy as np
 from src.imaging import mask as msk
 from src.imaging import image as img
 from src.imaging import masked_image as mi
+from src.autopipe import model_mapper as mm
+
+shape = (10, 10)
 
 
 class MockResults(object):
-    class Store(object):
-        pass
-
-    def __init__(self):
-        self.constant = MockResults.Store()
-        self.variable = MockResults.Store()
+    def __init__(self, model_image, galaxy_images=()):
+        self.model_image = model_image
+        self.galaxy_images = galaxy_images
+        self.constant = mm.ModelInstance()
+        self.variable = mm.ModelMapper()
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -31,8 +33,8 @@ class NLO(non_linear.NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
-                self.result = non_linear.Result(instance, likelihood)
+                likelihood, model_image = analysis.fit(**instance.__dict__)
+                self.result = non_linear.Result(instance, likelihood, model_image)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -45,7 +47,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.InitialSourceLensPhase(optimizer_class=NLO)
+    return ph.SourceLensPhase(optimizer_class=NLO)
 
 
 @pytest.fixture(name="galaxy")
@@ -60,7 +62,6 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="masked_image")
 def make_masked_image():
-    shape = (10, 10)
     image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
     mask = msk.Mask.circular(shape, 1, 3)
     return mi.MaskedImage(image, mask)
@@ -68,7 +69,8 @@ def make_masked_image():
 
 @pytest.fixture(name="results")
 def make_results():
-    return MockResults()
+    return MockResults(np.ones(32, ),
+                       galaxy_images=[np.ones(32, ), np.ones(32, )])
 
 
 class TestPhase(object):
@@ -82,24 +84,15 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxy")
 
-    def test_default_arguments(self, phase, masked_image, results, galaxy_prior):
-        phase.lens_galaxy = galaxy_prior
-        phase.source_galaxy = galaxy_prior
-        assert phase.blurring_shape is None
-        assert phase.sub_grid_size == 1
-        phase.blurring_shape = (1, 1)
-        assert phase.blurring_shape == (1, 1)
-        phase.run(masked_image=masked_image, last_results=results)
-        assert phase.blurring_shape == (1, 1)
-
     def test_mask_analysis(self, phase, masked_image):
         analysis = phase.make_analysis(masked_image=masked_image)
         assert analysis.last_results is None
         assert analysis.masked_image == masked_image
         assert analysis.sub_grid_size == 1
-        assert analysis.blurring_shape == (3, 3)
 
     def test_fit(self, phase, masked_image):
+        phase.source_galaxy = g.Galaxy()
+        phase.lens_galaxy = g.Galaxy()
         result = phase.run(masked_image=masked_image)
         assert isinstance(result.constant.lens_galaxy, g.Galaxy)
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
@@ -140,3 +133,17 @@ class TestPhase(object):
 
         phase.prop = g.Galaxy
         assert not hasattr(phase.constant, "prop")
+
+
+class TestAnalysis(object):
+    def test_model_image(self, results, masked_image):
+        analysis = ph.Phase.Analysis(results, masked_image, 1)
+        assert (results.model_image == analysis.model_image).all()
+
+    def test_hyper_galaxy(self, results, masked_image):
+        hyper_galaxy_1 = g.HyperGalaxy()
+        hyper_galaxy_2 = g.HyperGalaxy()
+        results.constant.lens_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_1)
+        results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
+        analysis = ph.Phase.Analysis(results, masked_image, 1)
+        assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies
