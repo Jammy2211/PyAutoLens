@@ -8,7 +8,7 @@ import scipy.optimize
 from src.imaging import hyper_image
 from src.config import config
 
-from src.analysis import model_mapper as mm
+from src.autopipe import model_mapper as mm
 import logging
 
 logging.basicConfig()
@@ -49,22 +49,22 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class Result(object):
 
-    def __init__(self, instance, likelihood, priors=None):
+    def __init__(self, constant, likelihood, variable=None):
         """
         The result of an optimization.
 
         Parameters
         ----------
-        instance: model_mapper.ModelInstance
+        constant: model_mapper.ModelInstance
             An instance object comprising the class instances that gave the optimal fit
         likelihood: float
             A value indicating the likelihood given by the optimal fit
-        priors: model_mapper.ModelMapper
+        variable: model_mapper.ModelMapper
             An object comprising priors determined by this stage of the analysis
         """
-        self.instance = instance
+        self.constant = constant
         self.likelihood = likelihood
-        self.priors = priors
+        self.variable = variable
 
     def __str__(self):
         return "Analysis Result:\n{}".format(
@@ -130,7 +130,6 @@ class NonLinearOptimizer(object):
             param_labels = generate_parameter_latex(param_labels, subscript)
 
             for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-
                 line = prior_name + '_' + param[0]
                 line += ' ' * (40 - len(line)) + param_labels[param_no]
 
@@ -176,7 +175,7 @@ class DownhillSimplex(NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.run(**instance.__dict__)
+                likelihood = analysis.fit(**instance.__dict__)
                 self.result = Result(instance, likelihood)
 
                 # Return Chi squared
@@ -195,7 +194,7 @@ class DownhillSimplex(NonLinearOptimizer):
         means = output[0]
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
-        res.priors = self.variable.mapper_from_gaussian_means(means)
+        res.variable = self.variable.mapper_from_gaussian_means(means)
 
         return res
 
@@ -264,7 +263,7 @@ class MultiNest(NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.run(**instance.__dict__)
+                likelihood = analysis.fit(**instance.__dict__)
                 self.result = Result(instance, likelihood)
 
                 return likelihood
@@ -283,18 +282,20 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-        outputfiles_basename=self.path, n_live_points=self.n_live_points,
-        const_efficiency_mode=self.const_efficiency_mode, importance_nested_sampling=self.importance_nested_sampling,
-        evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
-        null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
-        multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance, seed=self.seed,
-        verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
+                 outputfiles_basename=self.path, n_live_points=self.n_live_points,
+                 const_efficiency_mode=self.const_efficiency_mode,
+                 importance_nested_sampling=self.importance_nested_sampling,
+                 evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
+                 null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
+                 multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance,
+                 seed=self.seed,
+                 verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
                  log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
         result = fitness_function.result
 
-        result.priors = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
+        result.variable = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
 
         return result
 

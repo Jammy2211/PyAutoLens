@@ -1,7 +1,7 @@
 from src.analysis import galaxy
 import inspect
 from src.profiles import light_profiles, mass_profiles
-from src.analysis import model_mapper
+from src.autopipe import model_mapper
 
 
 def is_light_profile_class(cls):

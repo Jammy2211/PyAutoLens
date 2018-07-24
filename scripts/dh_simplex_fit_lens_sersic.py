@@ -10,10 +10,8 @@ from src.imaging import image
 from src.imaging import mask
 from src.imaging import grids
 from src.profiles import light_profiles as lp
-from src.profiles import mass_profiles as mp
 from src.pixelization import frame_convolution
-from src.analysis import model_mapper
-from src.analysis import non_linear
+from src.autopipe import model_mapper
 from src.analysis import ray_tracing
 from src.analysis import galaxy
 from src.analysis import fitting
