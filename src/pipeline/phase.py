@@ -211,6 +211,11 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
+    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size)
+        self.lens_galaxy = lens_galaxy
+        self.source_galaxy = source_galaxy
+
     class Analysis(Phase.Analysis):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
