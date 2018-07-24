@@ -129,7 +129,7 @@ class TestFitData:
             image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
-        fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
+        fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
         likelihood = fitter.fit_data_with_profiles()
 
@@ -150,7 +150,7 @@ class TestFitData:
             image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
-        fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
+        fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
         likelihood = fitter.fit_data_with_profiles()
 
@@ -170,7 +170,7 @@ class TestGenerateBlurredLightProfileImage:
             image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (3, 3)))
 
-        fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
+        fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
         non_blurred_value = ray_trace.generate_image_of_galaxy_light_profiles()
         blurred_value = fitter.generate_blurred_light_profile_image()
@@ -188,7 +188,7 @@ class TestGenerateBlurredLightProfileImage:
             image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_1x1.mask, 1, (1, 1)))
 
-        fitter = fitting.Fitter(image=image_1x1, tracer=ray_trace)
+        fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
         blurred_value = fitter.generate_blurred_light_profile_image()
 
@@ -212,7 +212,7 @@ class TestGenerateBlurredLightProfileImage:
             image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                 image_2x2.mask, 1, (3, 3)))
 
-        fitter = fitting.Fitter(image=image_2x2, tracer=ray_trace)
+        fitter = fitting.Fitter(masked_image=image_2x2, tracer=ray_trace)
 
         blurred_value = fitter.generate_blurred_light_profile_image()
 
@@ -256,7 +256,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)]
 
-        fitter = fitting.Fitter(image=image_1x1,
+        fitter = fitting.Fitter(masked_image=image_1x1,
                                 tracer=ray_trace)
 
         likelihood = fitter.fit_data_with_profiles_hyper_galaxies(model_image, galaxy_images, minimum_values,
