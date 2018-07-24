@@ -131,7 +131,7 @@ class TestFitData:
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
-        likelihood = fitter.fit_data_with_profiles()
+        likelihood, _ = fitter.fit_data_with_profiles()
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
@@ -152,7 +152,7 @@ class TestFitData:
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
-        likelihood = fitter.fit_data_with_profiles()
+        likelihood, _ = fitter.fit_data_with_profiles()
 
         assert likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
@@ -258,7 +258,7 @@ class TestFitDataWithProfilesHyperGalaxy:
         fitter = fitting.Fitter(masked_image=image_1x1,
                                 tracer=ray_trace)
 
-        likelihood = fitter.fit_data_with_profiles_hyper_galaxies(model_image, galaxy_images, hyper_galaxies)
+        likelihood, _ = fitter.fit_data_with_profiles_hyper_galaxies(model_image, galaxy_images, hyper_galaxies)
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 4.0 ** 2.0)  # should be 1
 
