@@ -236,6 +236,9 @@ class Plane(object):
         """Generate the image_coords of the galaxies in this plane."""
         return intensities_via_sub_grid(self.coordinates_collection.sub_grid_coords, self.galaxies)
 
+    def generate_image_of_galaxy_light_profile(self, galaxy):
+        return intensities_via_sub_grid(self.coordinates_collection.sub_grid_coords, [galaxy])
+
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image_coords of the galaxies in this plane."""
         return intensities_via_grid(self.coordinates_collection.blurring_coords, self.galaxies)
