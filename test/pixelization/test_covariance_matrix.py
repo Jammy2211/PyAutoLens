@@ -166,8 +166,6 @@ class TestMissingCovariances(object):
 
         assert len(non_zero_covariances) + 2 == len(generator.non_zero_covariances)
 
-        # TODO: should be iter()
-        # noinspection PyCompatibility
         assert {(0, 7), (7, 0)} == {t for t, v in generator.non_zero_covariances.items() if
                                     t not in non_zero_covariances}
 
