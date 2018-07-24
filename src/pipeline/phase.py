@@ -44,7 +44,10 @@ class Phase(object):
         """
         mask = self.mask_function(image)
         masked_image = mi.MaskedImage(image, mask)
-        return self.optimizer.fit(self.make_analysis(masked_image=masked_image, last_results=last_results))
+        analysis = self.make_analysis(masked_image=masked_image, last_results=last_results)
+        result = self.optimizer.fit(analysis)
+        result.galaxy_images = analysis.galaxy_images_for_model(result.constant)
+        return result
 
     def make_analysis(self, masked_image, last_results=None):
         """
@@ -252,3 +255,7 @@ class SourceLensPhase(Phase):
                                                                     self.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
+
+        def galaxy_images_for_model(self, model):
+            tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coords_collection)
+            return tracer.galaxy_images
