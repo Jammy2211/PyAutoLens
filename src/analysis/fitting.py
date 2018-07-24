@@ -1,5 +1,5 @@
 import numpy as np
-from src.imaging import masked_image
+from src.imaging import masked_image as mi
 from src.imaging import mask
 from src.analysis import ray_tracing
 
@@ -7,18 +7,18 @@ from src.analysis import ray_tracing
 # TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
 
 class Fitter(object):
-    def __init__(self, image, tracer):
+    def __init__(self, masked_image, tracer):
         """
         Class to evaluate the fit between a model described by a tracer and an actual image_coords.
 
         Parameters
         ----------
-        image: masked_image.MaskedImage
+        masked_image: mi.MaskedImage
             An image_coords that has been masked for efficiency
         tracer: ray_tracing.Tracer
             An object describing the model
         """
-        self.image = image
+        self.image = masked_image
         self.tracer = tracer
 
     def fit_data_with_profiles_hyper_galaxies(self, model_image, galaxy_images, minimum_values, hyper_galaxies):
@@ -31,7 +31,8 @@ class Fitter(object):
         model_image : ndarray
             The best-fit model image_coords to the weighted_data, from a previous phase of the pipeline
         galaxy_images : [ndarray]
-            The best-fit model image_coords of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+            The best-fit model image_coords of each hyper-galaxy, which can tell us how much flux each pixel contributes
+            to.
         hyper_galaxies : [galaxy.HyperGalaxy]
             Each hyper-galaxy which is used to determine its contributions.
         """
@@ -72,20 +73,20 @@ class Fitter(object):
 
 
 class PixelizedFitter(Fitter):
-    def __init__(self, image, sparse_mask, tracer):
+    def __init__(self, masked_image, sparse_mask, tracer):
         """
         Class to evaluate the fit between a model described by a tracer and an actual image_coords.
 
         Parameters
         ----------
-        image: masked_image.MaskedImage
+        masked_image: mi.MaskedImage
             An image_coords that has been masked for efficiency
         sparse_mask: mask.SparseMask
             A mask describing which pixels should be used in clustering for pixelizations
         tracer: ray_tracing.Tracer
             An object describing the model
         """
-        super().__init__(image, tracer)
+        super().__init__(masked_image, tracer)
         self.sparse_mask = sparse_mask
 
     def fit_data_with_pixelization(self):
@@ -123,7 +124,8 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
 
 
 def blur_image_including_blurring_region(image, blurring_image, kernel_convolver):
-    """For a given image_coords and blurring_coords region, convert them to 2D and blur with the PSF, then return as the 1D DataGrid.
+    """For a given image_coords and blurring_coords region, convert them to 2D and blur with the PSF, then return as
+    the 1D DataGrid.
 
     Parameters
     ----------
@@ -138,8 +140,8 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
 
 
 def compute_likelihood(image, noise, model_image):
-    """Compute the likelihood of a model image_coords's fit to the weighted_data, by taking the difference between the observed
-    image_coords and model ray-tracing image_coords. The likelihood consists of two terms:
+    """Compute the likelihood of a model image_coords's fit to the weighted_data, by taking the difference between the
+    observed image_coords and model ray-tracing image_coords. The likelihood consists of two terms:
 
     Chi-squared term - The residuals (model - weighted_data) of every pixel divided by the noise in each pixel, all
     squared.
@@ -173,8 +175,8 @@ def compute_pixelization_evidence(image, noise, model_image, pix_fit):
 
 
 def compute_chi_sq_term(image, noise, model_image):
-    """Compute the chi-squared of a model image_coords's fit to the weighted_data, by taking the difference between the observed \
-    image_coords and model ray-tracing image_coords, dividing by the noise in each pixel and squaring:
+    """Compute the chi-squared of a model image_coords's fit to the weighted_data, by taking the difference between the
+    observed image_coords and model ray-tracing image_coords, dividing by the noise in each pixel and squaring:
 
     [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
 
