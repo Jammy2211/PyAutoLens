@@ -120,8 +120,8 @@ class Phase(object):
 
             Returns
             -------
-            float: fitness
-                How fit the model is
+            fit: fitting.Fit
+                How fit the model is and the model
             """
             raise NotImplementedError()
 
@@ -235,8 +235,8 @@ class SourceLensPhase(Phase):
 
             Returns
             -------
-            fit: float
-                A fractional value indicating how well this model fit
+            fit: Fit
+                A fractional value indicating how well this model fit and the model image itself
             """
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
