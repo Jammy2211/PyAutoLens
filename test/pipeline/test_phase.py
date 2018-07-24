@@ -147,7 +147,7 @@ class TestPhase(object):
 class TestAnalysis(object):
     def test_model_image(self, results, masked_image):
         analysis = ph.Phase.Analysis(results, masked_image, 1)
-        assert (results.model_image == analysis.model_image).all()
+        assert (results.model_image == analysis.last_results.model_image).all()
 
     def test_hyper_galaxy(self, results, masked_image):
         hyper_galaxy_1 = g.HyperGalaxy()
