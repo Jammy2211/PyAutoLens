@@ -48,66 +48,6 @@ def jit_integrand(integrand_function):
     return LowLevelCallable(cf(wrapped).ctypes)
 
 
-def jit_integrand_function_5_params(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
-
-    @cfunc(float64(intc, CPointer(float64)))
-    def wrapped(n, xx):
-        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5])
-
-    return LowLevelCallable(wrapped.ctypes)
-
-
-def jit_integrand_function_6_params(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
-
-    @cfunc(float64(intc, CPointer(float64)))
-    def wrapped(n, xx):
-        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6])
-
-    return LowLevelCallable(wrapped.ctypes)
-
-
-def jit_integrand_function_7_params(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
-
-    @cfunc(float64(intc, CPointer(float64)))
-    def wrapped(n, xx):
-        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7])
-
-    return LowLevelCallable(wrapped.ctypes)
-
-
-def jit_integrand_function_8_params(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
-
-    @cfunc(float64(intc, CPointer(float64)))
-    def wrapped(n, xx):
-        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8])
-
-    return LowLevelCallable(wrapped.ctypes)
-
-
-def jit_integrand_function_9_params(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
-
-    @cfunc(float64(intc, CPointer(float64)))
-    def wrapped(n, xx):
-        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9])
-
-    return LowLevelCallable(wrapped.ctypes)
-
-
-def jit_integrand_function_10_params(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
-
-    @cfunc(float64(intc, CPointer(float64)))
-    def wrapped(n, xx):
-        return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9], xx[10])
-
-    return LowLevelCallable(wrapped.ctypes)
-
-
 class MassProfile(object):
 
     def surface_density_func(self, eta):
@@ -321,14 +261,14 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
         return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
 
     @staticmethod
-    @jit_integrand_function_5_params
+    @jit_integrand
     def potential_func(u, x, y, axis_ratio, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return (eta_u / u) * ((3.0 - slope) * eta_u) ** -1.0 * eta_u ** (3.0 - slope) / \
                ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
-    @jit_integrand_function_7_params
+    @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return einstein_radius_rescaled * eta_u ** (-(slope - 1)) / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
@@ -495,7 +435,7 @@ class EllipticalCoredPowerLaw(EllipticalPowerLaw):
         return self.einstein_radius_rescaled * (self.core_radius ** 2 + radius ** 2) ** (-(self.slope - 1) / 2.0)
 
     @staticmethod
-    @jit_integrand_function_5_params
+    @jit_integrand
     def potential_func(u, x, y, axis_ratio, slope, core_radius):
         eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
@@ -503,7 +443,7 @@ class EllipticalCoredPowerLaw(EllipticalPowerLaw):
                 core_radius ** (3 - slope)) / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
-    @jit_integrand_function_7_params
+    @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) \
@@ -720,7 +660,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
 
     @staticmethod
-    @jit_integrand_function_5_params
+    @jit_integrand
     def potential_func(u, x, y, axis_ratio, kappa_s, scale_radius):
 
         eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
@@ -737,7 +677,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
                        (1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
-    @jit_integrand_function_6_params
+    @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, kappa_s, scale_radius):
 
         eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
@@ -954,7 +894,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
 
     @staticmethod
     # TODO : Decorator needs to know that potential_integral is 1D array
-    #    @jit_integrand_function_7_params
+    #    @jit_integrand
     def potential_func(u, x, y, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins, potential_integral):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
@@ -967,7 +907,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
 
     @staticmethod
     # TODO : Decorator needs to know that surface_density_integral is 1D array
-    #    @jit_integrand_function_8_params
+    #    @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins,
                         surface_density_integral):
 
@@ -1122,7 +1062,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
         return self.mass_to_light_ratio * self.intensity_at_radius(radius)
 
     @staticmethod
-    @jit_integrand_function_9_params
+    @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         sersic_constant):
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
@@ -1288,7 +1228,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
                * self.intensity_at_radius(radius)
 
     @staticmethod
-    @jit_integrand_function_10_params
+    @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         mass_to_light_gradient, sersic_constant):
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
