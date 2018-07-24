@@ -229,7 +229,6 @@ class TestNonLinearOptimizer(object):
     class TestDirectorySetup(object):
 
         def test__input_path_sets_up_correct_directory(self, config_path, nlo_setup_path):
-
             nlo = non_linear.NonLinearOptimizer(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
                 path=nlo_setup_path + '1_profile')
@@ -878,11 +877,10 @@ class MockAnalysis(object):
 
     def fit(self, **kwargs):
         self.kwargs = kwargs
-        return 1
+        return 1, None
 
 
 class MockClass(object):
-
     component_number = 1
 
     def __init__(self, one=1, two=2, three=3, four=4):
@@ -898,6 +896,7 @@ class MockClass(object):
     @property
     def parameter_labels(self):
         return 'test'
+
 
 @pytest.fixture(name='test_config')
 def make_test_config():
@@ -929,10 +928,11 @@ def make_multi_nest(test_config, width_config, mn_samples_path):
 
     # noinspection PyUnusedLocal
     def run(fitness_function, prior, total_parameters, outputfiles_basename, n_clustering_params=None,
-        wrapped_params=None, importance_nested_sampling=True, multimodal=True, const_efficiency_mode=False,
-        n_live_points=400, evidence_tolerance=0.5, sampling_efficiency=0.8, n_iter_before_update=100,
-        null_log_evidence=-1e+90, max_modes=100, mode_tolerance=-1e+90, seed=-1, verbose=False, resume=True, context=0,
-        write_output=True, log_zero=-1e+100, max_iter=0, init_MPI=False, dump_callback=None):
+            wrapped_params=None, importance_nested_sampling=True, multimodal=True, const_efficiency_mode=False,
+            n_live_points=400, evidence_tolerance=0.5, sampling_efficiency=0.8, n_iter_before_update=100,
+            null_log_evidence=-1e+90, max_modes=100, mode_tolerance=-1e+90, seed=-1, verbose=False, resume=True,
+            context=0,
+            write_output=True, log_zero=-1e+100, max_iter=0, init_MPI=False, dump_callback=None):
         fitness_function([1 for _ in range(total_parameters)], total_parameters, total_parameters, None)
 
     create_summary_4_parameters(mn_samples_path)
