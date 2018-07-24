@@ -76,7 +76,7 @@ class TestCase:
                 image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
-            fitter = fitting.PixelizedFitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
+            fitter = fitting.PixelizedFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -141,7 +141,7 @@ class TestCase:
                 image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
-            fitter = fitting.PixelizedFitter(image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
+            fitter = fitting.PixelizedFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],

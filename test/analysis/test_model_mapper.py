@@ -1,5 +1,5 @@
 import src.config.config
-from src.analysis import model_mapper
+from src.autopipe import model_mapper
 import pytest
 from src.profiles import geometry_profiles, light_profiles, mass_profiles
 import os

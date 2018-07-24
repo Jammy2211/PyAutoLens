@@ -52,7 +52,7 @@ class Analysis(object):
                                                                                       sub_grid_size,
                                                                                       cluster_grid_size))
 
-    def run(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
+    def fit(self, lens_galaxies=empty_array, source_galaxies=empty_array, hyper_image=None):
         """
         Runs the analysis. Determines how well the supplied model fits the image_coords.
 

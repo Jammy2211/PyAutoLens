@@ -1,4 +1,5 @@
-from src.analysis import non_linear, galaxy_prior
+from src.analysis import galaxy_prior
+from src.autopipe import non_linear
 from src.profiles import light_profiles, mass_profiles
 
 
