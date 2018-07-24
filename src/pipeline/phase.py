@@ -1,4 +1,5 @@
 from src.analysis import galaxy_prior
+from src.analysis import galaxy as g
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
 from src.imaging import masked_image as mi
@@ -204,6 +205,21 @@ class SourceLensPhase(Phase):
     class Analysis(Phase.Analysis):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
+            """
+            Determine the fit of a lens galaxy and source galaxy to the image in this analysis.
+
+            Parameters
+            ----------
+            lens_galaxy: g.Galaxy
+                The galaxy that acts as a gravitational lens
+            source_galaxy: g.Galaxy
+                The galaxy that produces the light that is being lensed
+
+            Returns
+            -------
+            fit: float
+                A fractional value indicating how well this model fit
+            """
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
