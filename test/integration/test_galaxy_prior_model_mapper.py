@@ -1,5 +1,5 @@
 import src.config.config
-from src.analysis import model_mapper as mm
+from src.autopipe import model_mapper as mm
 from src.analysis import galaxy_prior as gp
 from src.profiles import light_profiles, mass_profiles
 import os
