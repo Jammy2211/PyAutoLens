@@ -3,8 +3,10 @@ from src.imaging import masked_image as mi
 from src.imaging import mask
 from src.analysis import ray_tracing
 
-
 # TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
+
+minimum_value_profile = 0.1
+
 
 class Fitter(object):
     def __init__(self, masked_image, tracer):
@@ -21,13 +23,12 @@ class Fitter(object):
         self.image = masked_image
         self.tracer = tracer
 
-    def fit_data_with_profiles_hyper_galaxies(self, model_image, galaxy_images, minimum_values, hyper_galaxies):
+    def fit_data_with_profiles_hyper_galaxies(self, model_image, galaxy_images, hyper_galaxies):
         """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy
         images.
 
         Parameters
         ----------
-        minimum_values
         model_image : ndarray
             The best-fit model image_coords to the weighted_data, from a previous phase of the pipeline
         galaxy_images : [ndarray]
@@ -36,7 +37,8 @@ class Fitter(object):
         hyper_galaxies : [galaxy.HyperGalaxy]
             Each hyper-galaxy which is used to determine its contributions.
         """
-        contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values)
+        contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies,
+                                               [minimum_value_profile for _ in range(len(galaxy_images))])
         scaled_noise = self.generate_scaled_noise(contributions, hyper_galaxies)
         blurred_model_image = self.generate_blurred_light_profile_image()
         return compute_likelihood(self.image, scaled_noise, blurred_model_image)
