@@ -3,13 +3,15 @@ from src.analysis import galaxy as g
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
 from src.imaging import masked_image as mi
+from src.imaging import image as img
 from src.analysis import fitting
 from src.autopipe import non_linear
 import inspect
 
 
 class Phase(object):
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -22,8 +24,9 @@ class Phase(object):
         """
         self.optimizer = optimizer_class()
         self.sub_grid_size = sub_grid_size
+        self.mask_function = mask_function
 
-    def run(self, masked_image, last_results=None):
+    def run(self, image, last_results=None):
         """
         Run this phase.
 
@@ -31,7 +34,7 @@ class Phase(object):
         ----------
         last_results: non_linear.Result | None
             An object describing the results of the last phase or None if no phase has been executed
-        masked_image: mi.MaskedImage
+        image: img.Image
             An image that has been masked
 
         Returns
@@ -39,6 +42,8 @@ class Phase(object):
         result: non_linear.Result
             A result object comprising the best fit model and other data.
         """
+        mask = self.mask_function(image)
+        masked_image = mi.MaskedImage(image, mask)
         return self.optimizer.fit(self.make_analysis(masked_image=masked_image, last_results=last_results))
 
     def make_analysis(self, masked_image, last_results=None):
