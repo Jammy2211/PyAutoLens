@@ -64,11 +64,6 @@ def make_sparse_mask():
     return mask.SparseMask(np.array([[0, 0]]), 1)
 
 
-# @pytest.fixture(name="sparse_mask")
-# def make_sparse_mask():
-#     return grids.GridMapping(image_shape=(3, 3), image_pixels=1, data_to_image=np.array([[1, 1]]),
-#                              sub_grid_size=2, sub_to_image=np.array([0, 0, 0, 0]))
-
 @pytest.fixture(name="sparse_mask")
 def make_sparse_mask():
     return None
@@ -316,9 +311,9 @@ class TestTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-        def test__galaxy_light_sersic_no_mass__image_is_sum_of_image_plane_and_source_plane_images(self,
-                                                                                                   coordinate_collection,
-                                                                                                   galaxy_light_only):
+        def test__galaxy_light_sersic_no_mass_image_is_sum_of_image_plane_and_source_plane_images(self,
+                                                                                                  coordinate_collection,
+                                                                                                  galaxy_light_only):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
                                             compute_deflections=True)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
@@ -370,9 +365,9 @@ class TestTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-        def test__galaxy_light_sersic_no_mass__image_is_sum_of_image_plane_and_source_plane_images(self,
-                                                                                                   coordinate_collection,
-                                                                                                   galaxy_light_only):
+        def test__galaxy_light_sersic_no_mass_image_is_sum_of_image_plane_and_source_plane_images(self,
+                                                                                                  coordinate_collection,
+                                                                                                  galaxy_light_only):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
                                             compute_deflections=True)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
@@ -455,8 +450,8 @@ class TestMultiTracer(object):
             assert tracer.galaxies_redshift_order[1].redshift == 1.0
             assert tracer.galaxies_redshift_order[2].redshift == 2.0
 
-        def test__3_galaxies_two_same_redshift__planes_redshift_order_is_size_2_with_those_redshifts(self,
-                                                                                                     coordinate_collection):
+        def test_3_galaxies_two_same_redshift_planes_redshift_order_is_size_2_with_redshifts(self,
+                                                                                             coordinate_collection):
             tracer = ray_tracing.MultiTracer(galaxies=[galaxy.Galaxy(redshift=1.0), galaxy.Galaxy(redshift=1.0),
                                                        galaxy.Galaxy(redshift=0.1)],
                                              image_plane_grids=coordinate_collection,
@@ -526,8 +521,8 @@ class TestMultiTracer(object):
             assert tracer.planes[2].galaxies == [g0, g1]
             assert tracer.planes[3].galaxies == [g3, g5]
 
-        def test__multiplane_4_planes__coordinate_grids_and_deflections_are_correct__sis_mass_profile(self,
-                                                                                                      coordinate_collection):
+        def test__4_planes__coordinate_grids_and_deflections_are_correct__sis_mass_profile(self,
+                                                                                           coordinate_collection):
             import math
 
             g0 = galaxy.Galaxy(redshift=2.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
@@ -778,9 +773,9 @@ class TestMultiTracer(object):
 class TestPlane(object):
     class TestBasicSetup:
 
-        def test__coordinate_collection__sis_lens__coordinates_and_deflections_setup_for_every_grid(self,
-                                                                                                    coordinate_collection,
-                                                                                                    galaxy_mass_sis):
+        def test__collection__sis_lens__coordinates_and_deflections_setup_for_every_grid(self,
+                                                                                         coordinate_collection,
+                                                                                         galaxy_mass_sis):
             plane = ray_tracing.Plane(galaxies=[galaxy_mass_sis], coordinates_collection=coordinate_collection)
 
             assert plane.coordinates_collection.image_coords[0] == pytest.approx(np.array([1.0, 1.0]), 1e-3)
@@ -790,9 +785,9 @@ class TestPlane(object):
             assert plane.coordinates_collection.sub_grid_coords[3] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
             assert plane.coordinates_collection.blurring_coords[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
-        def test__coordinate_collection__3_identical_sis_lenses__deflections_triple_compared_to_above(self,
-                                                                                                      coordinate_collection,
-                                                                                                      galaxy_mass_sis):
+        def test__collection__3_identical_sis_lenses__deflections_triple_compared_to_above(self,
+                                                                                           coordinate_collection,
+                                                                                           galaxy_mass_sis):
             lens_plane = ray_tracing.Plane(galaxies=[galaxy_mass_sis, galaxy_mass_sis, galaxy_mass_sis],
                                            coordinates_collection=coordinate_collection, compute_deflections=True)
 
@@ -812,9 +807,9 @@ class TestPlane(object):
             assert lens_plane.deflections.sub_grid_coords[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring_coords[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
-        def test__coordinate_collection__lens_is_3_identical_sis_profiles__deflections_triple_like_above(self,
-                                                                                                         coordinate_collection,
-                                                                                                         lens_sis_x3):
+        def test__collection__lens_is_3_identical_sis_profiles__deflections_triple_like_above(self,
+                                                                                              coordinate_collection,
+                                                                                              lens_sis_x3):
             lens_plane = ray_tracing.Plane(galaxies=[lens_sis_x3], coordinates_collection=coordinate_collection,
                                            compute_deflections=True)
 
