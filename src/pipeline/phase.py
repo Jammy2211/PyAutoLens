@@ -6,6 +6,7 @@ from src.imaging import masked_image as mi
 from src.imaging import image as img
 from src.analysis import fitting
 from src.autopipe import non_linear
+from src.autopipe import model_mapper as mm
 import inspect
 
 
@@ -252,5 +253,18 @@ class SourceLensPhase(Phase):
             return fitter.fit_data_with_profiles()
 
         def galaxy_images_for_model(self, model):
+            """
+            Generate images of galaxies for a set model.
+
+            Parameters
+            ----------
+            model: mm.ModelInstance
+                A model instance
+
+            Returns
+            -------
+            galaxy_images: [ndarray]
+                A list of images of galaxy components
+            """
             tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coords_collection)
             return tracer.galaxy_images
