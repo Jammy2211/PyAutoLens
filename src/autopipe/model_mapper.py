@@ -423,7 +423,10 @@ class ModelInstance(object):
     """
 
     def instances_of(self, cls):
-        return [instance for instance in self.__dict__.values() if isinstance(instance, cls)]
+        return [instance for source in
+                [list(self.__dict__.values())] + [ls for ls in self.__dict__.values() if isinstance(ls, list)] for
+                instance in
+                source if isinstance(instance, cls)]
 
 
 class Constant(object):

@@ -117,12 +117,29 @@ class TestModelInstance(object):
         instance.galaxy_2 = g.Galaxy()
         assert instance.instances_of(g.Galaxy) == [instance.galaxy_1, instance.galaxy_2]
 
-    def test_instance_of_filtering(self):
+    def test_instances_of_filtering(self):
         instance = model_mapper.ModelInstance()
         instance.galaxy_1 = g.Galaxy()
         instance.galaxy_2 = g.Galaxy()
         instance.other = galaxy_prior.GalaxyPrior()
         assert instance.instances_of(g.Galaxy) == [instance.galaxy_1, instance.galaxy_2]
+
+    def test_instances_from_list(self):
+        instance = model_mapper.ModelInstance()
+        galaxy_1 = g.Galaxy()
+        galaxy_2 = g.Galaxy()
+        instance.galaxies = [galaxy_1, galaxy_2]
+        assert instance.instances_of(g.Galaxy) == [galaxy_1, galaxy_2]
+
+    def test_non_trivial_instances_of(self):
+        instance = model_mapper.ModelInstance()
+        galaxy_1 = g.Galaxy(redshift=1)
+        galaxy_2 = g.Galaxy(redshift=2)
+        instance.galaxies = [galaxy_1, galaxy_2, galaxy_prior.GalaxyPrior]
+        instance.galaxy_3 = g.Galaxy(redshift=3)
+        instance.galaxy_prior = galaxy_prior.GalaxyPrior()
+
+        assert instance.instances_of(g.Galaxy) == [instance.galaxy_3, galaxy_1, galaxy_2]
 
     def test_simple_model(self):
         collection = model_mapper.ModelMapper(MockConfig())
