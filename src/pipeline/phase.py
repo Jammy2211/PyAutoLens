@@ -135,7 +135,8 @@ class Phase(object):
 
         @property
         def hyper_galaxies(self):
-            return self.last_results.hyper_galaxies
+            return [galaxy.hyper_galaxy for galaxy in self.last_results.constant.instances_of(g.Galaxy) if
+                    galaxy.hyper_galaxy is not None]
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def customize_image(self, masked_image, last_result):
