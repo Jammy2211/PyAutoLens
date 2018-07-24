@@ -129,7 +129,7 @@ class MultiTracer(object):
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image_coords of the galaxies over the entire ray trace."""
         return sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(),
-                                                self.planes))))
+                                     self.planes))))
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
         """Generate the image_coords of all galaxy light profiles in the blurring_coords regions of the image_coords."""
@@ -196,9 +196,9 @@ class Plane(object):
         Represents a plane, which is a set of galaxies and grids at a given redshift in the lens ray-tracing
         calculation.
 
-        The image_coords-plane coordinates are defined on the observed image_coords's uniform regular grid_coords. Calculating its
-        model images from its light profiles exploits this uniformity to perform more efficient and precise calculations
-        via an iterative sub_grid_coords-griding approach.
+        The image_coords-plane coordinates are defined on the observed image_coords's uniform regular grid_coords.
+        Calculating its model images from its light profiles exploits this uniformity to perform more efficient and
+        precise calculations via an iterative sub_grid_coords-griding approach.
 
         The light profiles of galaxies at higher redshifts (and therefore in different lens-planes) can be assigned to
         the ImagePlane. This occurs when:
@@ -211,13 +211,9 @@ class Plane(object):
         point-source images of a lensed quasar, effects like micro-lensing mean lens-plane modeling will be inaccurate.
 
 
-        Parameters
-        ----------
-        galaxies : [Galaxy]
-            The galaxies in the plane.
-        coordinates_collection : mask.GridCollection
-            The grids of (x,y) coordinates in the plane, including the image_coords grid_coords, sub_grid_coords-grid_coords, blurring_coords,
-            grid_coords, etc.
+        Parameters ---------- galaxies : [Galaxy] The galaxies in the plane. coordinates_collection :
+        mask.GridCollection The grids of (x,y) coordinates in the plane, including the image_coords grid_coords,
+        sub_grid_coords-grid_coords, blurring_coords, grid_coords, etc.
         """
         self.galaxies = galaxies
         self.coordinates_collection = coordinates_collection
