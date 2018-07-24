@@ -10,19 +10,15 @@ from src.imaging import image
 from src.imaging import mask
 from src.imaging import grids
 from src.profiles import light_profiles as lp
-from src.profiles import mass_profiles as mp
 from src.pixelization import frame_convolution
-from src.analysis import model_mapper
-from src.analysis import non_linear
+from src.autopipe import model_mapper
+from src.autopipe import non_linear
 from src.analysis import ray_tracing
 from src.analysis import galaxy
 from src.analysis import fitting
 
-import numpy as np
 from functools import partial
 import pymultinest
-
-import matplotlib.pyplot as plt
 
 lens_name = 'lens_sersic'
 data_dir = "../weighted_data/"+lens_name.format(os.path.dirname(os.path.realpath(__file__)))
