@@ -31,7 +31,7 @@ class Phase(object):
 
         Parameters
         ----------
-        kwargs: dict
+        kwargs
             Arguments
 
         Returns
@@ -96,8 +96,8 @@ class Phase(object):
 
             Parameters
             ----------
-            kwargs: dict
-                Dictionary of arguements used in this analysis
+            kwargs:
+                Dictionary of arguments used in this analysis
             """
             self.last_results = kwargs["last_results"]
             self.masked_image = kwargs["masked_image"]
