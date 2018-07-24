@@ -42,12 +42,12 @@ class Fitter(object):
         """
         contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies,
                                                [minimum_value_profile for _ in range(len(galaxy_images))])
-        scaled_noise = self.generate_scaled_noise(contributions, hyper_galaxies)
-        blurred_model_image = self.generate_blurred_light_profile_image()
+        scaled_noise = self.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
+        blurred_model_image = self.blurred_light_profile_image()
         fitness = compute_likelihood(self.image, scaled_noise, blurred_model_image)
         return Fit(fitness, blurred_model_image)
 
-    def generate_scaled_noise(self, contributions, hyper_galaxies):
+    def scaled_noise_for_contributions_and_hyper_galaxies(self, contributions, hyper_galaxies):
         """Use the contributions of each hyper galaxy to compute the scaled noise.
         Parameters
         -----------
@@ -61,7 +61,7 @@ class Fitter(object):
                 hyper_galaxies, contributions))
         return self.image.background_noise + sum(scaled_noises)
 
-    def generate_blurred_light_profile_image(self):
+    def blurred_light_profile_image(self):
         """
         For a given ray-tracing model, compute the light profile image_coords(s) of its galaxies and blur them with the
         PSF.
@@ -76,7 +76,7 @@ class Fitter(object):
         Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy
         images.
         """
-        blurred_model_image = self.generate_blurred_light_profile_image()
+        blurred_model_image = self.blurred_light_profile_image()
         fitness = compute_likelihood(self.image, self.image.background_noise, blurred_model_image)
         return Fit(fitness, blurred_model_image)
 
