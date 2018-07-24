@@ -19,8 +19,6 @@ class Phase(object):
             The class of a non_linear optimizer
         sub_grid_size: int
             The side length of the subgrid
-        blurring_shape: (int, int)
-            The shape of the PSF. Will default to the shape of the image PSF if none.
         """
         self.optimizer = optimizer_class()
         self.sub_grid_size = sub_grid_size
