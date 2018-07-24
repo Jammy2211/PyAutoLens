@@ -269,6 +269,7 @@ class TestMask(object):
     class TestForSimulate(object):
 
         def test__3x3_image__3x3_psf_size__5x5_image_made_border_all_masked(self):
+
             msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(3, 3))
 
             assert (msk == np.array([[True, True, True, True, True],
@@ -287,6 +288,20 @@ class TestMask(object):
                                      [True, True, False, False, False, True, True],
                                      [True, True, True, True, True, True, True],
                                      [True, True, True, True, True, True, True]])).all()
+
+        def test__3x3_image__7x7_psf_size__7x7_image_made_border_all_masked(self):
+
+            msk = mask.Mask.for_simulate(shape_arc_seconds=(3, 3), pixel_scale=1, psf_size=(7, 7))
+
+            assert (msk == np.array([[True, True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True, True],
+                                     [True, True, True, False, False, False, True, True, True],
+                                     [True, True, True, False, False, False, True, True, True],
+                                     [True, True, True, False, False, False, True, True, True],
+                                     [True, True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True, True],
+                                     [True, True, True, True, True, True, True, True, True]])).all()
 
         def test__4x3_image__3x3_psf_size__6x5_image_made_border_all_masked(self):
             msk = mask.Mask.for_simulate(shape_arc_seconds=(4, 3), pixel_scale=1, psf_size=(3, 3))
@@ -736,6 +751,7 @@ class TestMask(object):
     class TestComputeBlurringMask(object):
 
         def test__size__3x3_small_mask(self):
+
             msk = np.array([[True, True, True],
                             [True, False, True],
                             [True, True, True]])
@@ -770,6 +786,7 @@ class TestMask(object):
                                                [True, True, True, True, True, True, True]])).all()
 
         def test__size__5x5__large_mask(self):
+
             msk = np.array([[True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
