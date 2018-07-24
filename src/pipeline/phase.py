@@ -135,11 +135,6 @@ class Phase(object):
             """
             raise NotImplementedError()
 
-        #  TODO: extract individual model images
-        @property
-        def galaxy_images(self):
-            return self.last_results.galaxy_images
-
         @property
         def hyper_galaxies(self):
             return [galaxy.hyper_galaxy for galaxy in self.last_results.constant.instances_of(g.Galaxy) if
@@ -251,7 +246,7 @@ class SourceLensPhase(Phase):
 
             if self.last_results is not None:
                 return fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
-                                                                    self.galaxy_images,
+                                                                    self.last_results.galaxy_images,
                                                                     self.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
