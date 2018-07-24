@@ -65,6 +65,7 @@ class Result(object):
         self.likelihood = likelihood
         self.model_image = model_image
         self.variable = variable
+        self.galaxy_images = ()
 
     def __str__(self):
         return "Analysis Result:\n{}".format(
