@@ -168,9 +168,11 @@ class ScaledArray(np.ndarray):
             The (x,y) new pixel dimension of the trimmed weighted_data-array.
         """
         if new_dimensions[0] > self.shape[0]:
-            raise ValueError('grids.Grid2d.trim_data - You have specified a new x_size bigger than the weighted_data array')
+            raise ValueError(
+                'grids.Grid2d.trim_data - You have specified a new x_size bigger than the weighted_data array')
         elif new_dimensions[1] > self.shape[1]:
-            raise ValueError('grids.Grid2d.trim_data - You have specified a new y_size bigger than the weighted_data array')
+            raise ValueError(
+                'grids.Grid2d.trim_data - You have specified a new y_size bigger than the weighted_data array')
 
         x_trim = int((self.shape[0] - new_dimensions[0]) / 2)
         y_trim = int((self.shape[1] - new_dimensions[1]) / 2)
@@ -255,3 +257,10 @@ class ScaledArray(np.ndarray):
         """
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
+
+    def __eq__(self, other):
+        super_result = super(ScaledArray, self).__eq__(other)
+        try:
+            return super_result.all()
+        except AttributeError:
+            return super_result
