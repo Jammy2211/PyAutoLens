@@ -729,7 +729,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
             eta_u_2 = (1.0 / math.sqrt(eta_u ** 2 - 1)) * math.atan(math.sqrt(eta_u ** 2 - 1))
         elif eta_u < 1:
             eta_u_2 = (1.0 / math.sqrt(1 - eta_u ** 2)) * math.atanh(math.sqrt(1 - eta_u ** 2))
-        elif eta_u == 1:
+        else:
             eta_u_2 = 1
 
         return 4.0 * kappa_s * scale_radius * (axis_ratio / 2.0) * (eta_u / u) * (
@@ -746,7 +746,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
             eta_u_2 = (1.0 / math.sqrt(eta_u ** 2 - 1)) * math.atan(math.sqrt(eta_u ** 2 - 1))
         elif eta_u < 1:
             eta_u_2 = (1.0 / math.sqrt(1 - eta_u ** 2)) * math.atanh(math.sqrt(1 - eta_u ** 2))
-        elif eta_u == 1:
+        else:
             eta_u_2 = 1
 
         return 2.0 * kappa_s * (1 - eta_u_2) / (eta_u ** 2 - 1) / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
