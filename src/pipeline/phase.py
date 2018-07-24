@@ -124,6 +124,18 @@ class Phase(object):
             """
             raise NotImplementedError()
 
+        @property
+        def model_image(self):
+            return self.last_results.model_image
+
+        @property
+        def galaxy_images(self):
+            return self.last_results.galaxy_images
+
+        @property
+        def hyper_galaxies(self):
+            return self.last_results.hyper_galaxies
+
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def customize_image(self, masked_image, last_result):
         """
@@ -224,8 +236,8 @@ class SourceLensPhase(Phase):
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None:
-                fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
-                                                             self.last_results.galaxy_images,
-                                                             self.last_results.hyper_galaxies)
+                fitter.fit_data_with_profiles_hyper_galaxies(self.model_image,
+                                                             self.galaxy_images,
+                                                             self.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
