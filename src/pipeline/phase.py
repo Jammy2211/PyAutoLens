@@ -9,7 +9,7 @@ import inspect
 
 
 class Phase(object):
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, blurring_shape=None):
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -24,7 +24,6 @@ class Phase(object):
         """
         self.optimizer = optimizer_class()
         self.sub_grid_size = sub_grid_size
-        self.blurring_shape = blurring_shape
 
     def run(self, **kwargs):
         """
@@ -62,7 +61,7 @@ class Phase(object):
         masked_image = self.customize_image(masked_image, last_results)
         self.pass_priors(last_results)
 
-        analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size, blurring_shape=self.blurring_shape,
+        analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size,
                                            masked_image=masked_image, last_results=last_results)
         return analysis
 
@@ -103,10 +102,8 @@ class Phase(object):
             self.last_results = kwargs["last_results"]
             self.masked_image = kwargs["masked_image"]
             self.sub_grid_size = kwargs["sub_grid_size"]
-            self.blurring_shape = kwargs["blurring_shape"] \
-                if kwargs["blurring_shape"] is not None else self.masked_image.psf.shape
             self.coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
-                self.masked_image.mask, self.sub_grid_size, self.blurring_shape)
+                self.masked_image.mask, self.sub_grid_size, self.masked_image.psf.shape)
 
         def fit(self, **kwargs):
             """
@@ -236,8 +233,8 @@ class SourceLensPhase(Phase):
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None:
-                fitter.fit_data_with_profiles_hyper_galaxies(self.model_image,
-                                                             self.galaxy_images,
-                                                             self.hyper_galaxies)
+                return fitter.fit_data_with_profiles_hyper_galaxies(self.model_image,
+                                                                    self.galaxy_images,
+                                                                    self.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
