@@ -733,14 +733,8 @@ class Inversion(object):
     def fit_image_via_inversion(self, image, noise, kernel_convolver):
         """Fit the image_coords data using the inversion."""
 
-        # TODO : Do faster / more cleanly
-
-        blurred_mapping = np.zeros(self.mapping.shape)
-        for i in range(self.mapping.shape[1]):
-            blurred_mapping[:, i] = kernel_convolver.convolve_array(self.mapping[:, i])
-
+        blurred_mapping = kernel_convolver.convolve_mapping_matrix(self.mapping)
         # TODO : Use fast routines once ready.
-
         covariance = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping, noise)
         weighted_data = covariance_matrix.compute_d_vector_exact(blurred_mapping, image, noise)
         cov_reg = covariance + self.regularization
