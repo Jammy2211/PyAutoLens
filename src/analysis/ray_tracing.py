@@ -3,7 +3,6 @@ from src import exc
 from astropy import constants
 import math
 import numpy as np
-from src.imaging import mask
 
 
 class Tracer(object):
