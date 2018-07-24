@@ -209,7 +209,7 @@ class SourceLensPhase(Phase):
 
             if self.last_results is not None:
                 fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
-                                                             self.last_results.galaxy_images, "minimum_values?",
+                                                             self.last_results.galaxy_images,
                                                              self.last_results.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
