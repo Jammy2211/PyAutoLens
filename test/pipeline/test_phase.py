@@ -8,14 +8,19 @@ from src.imaging import mask as msk
 from src.imaging import image as img
 from src.imaging import masked_image as mi
 
+shape = (10, 10)
+
 
 class MockResults(object):
     class Store(object):
         pass
 
-    def __init__(self):
+    def __init__(self, model_image, galaxy_images=(), hyper_galaxies=()):
+        self.model_image = model_image
+        self.galaxy_images = galaxy_images
         self.constant = MockResults.Store()
         self.variable = MockResults.Store()
+        self.hyper_galaxies = hyper_galaxies
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -60,7 +65,6 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="masked_image")
 def make_masked_image():
-    shape = (10, 10)
     image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
     mask = msk.Mask.circular(shape, 1, 3)
     return mi.MaskedImage(image, mask)
@@ -68,7 +72,9 @@ def make_masked_image():
 
 @pytest.fixture(name="results")
 def make_results():
-    return MockResults()
+    return MockResults(np.ones(32,),
+                       galaxy_images=[np.ones(32,), np.ones(32,)],
+                       hyper_galaxies=[g.HyperGalaxy(), g.HyperGalaxy()])
 
 
 class TestPhase(object):
