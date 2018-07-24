@@ -48,7 +48,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class Result(object):
 
-    def __init__(self, constant, likelihood, variable=None):
+    def __init__(self, constant, likelihood, model_image, variable=None):
         """
         The result of an optimization.
 
@@ -63,6 +63,7 @@ class Result(object):
         """
         self.constant = constant
         self.likelihood = likelihood
+        self.model_image = model_image
         self.variable = variable
 
     def __str__(self):
@@ -174,8 +175,8 @@ class DownhillSimplex(NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
-                self.result = Result(instance, likelihood)
+                likelihood, model_image = analysis.fit(**instance.__dict__)
+                self.result = Result(instance, likelihood, model_image)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -262,8 +263,8 @@ class MultiNest(NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
-                self.result = Result(instance, likelihood)
+                likelihood, model_image = analysis.fit(**instance.__dict__)
+                self.result = Result(instance, likelihood, model_image)
 
                 return likelihood
 
