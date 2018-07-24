@@ -23,21 +23,23 @@ class Phase(object):
         self.optimizer = optimizer_class()
         self.sub_grid_size = sub_grid_size
 
-    def run(self, **kwargs):
+    def run(self, masked_image, last_results=None):
         """
         Run this phase.
 
         Parameters
         ----------
-        kwargs
-            Arguments
+        last_results: non_linear.Result | None
+            An object describing the results of the last phase or None if no phase has been executed
+        masked_image: mi.MaskedImage
+            An image that has been masked
 
         Returns
         -------
         result: non_linear.Result
             A result object comprising the best fit model and other data.
         """
-        return self.optimizer.fit(self.make_analysis(**kwargs))
+        return self.optimizer.fit(self.make_analysis(masked_image=masked_image, last_results=last_results))
 
     def make_analysis(self, masked_image, last_results=None):
         """
@@ -129,6 +131,7 @@ class Phase(object):
         def model_image(self):
             return self.last_results.model_image
 
+        #  TODO: extract individual model images
         @property
         def galaxy_images(self):
             return self.last_results.galaxy_images
