@@ -218,6 +218,25 @@ class TestTracerGeometry(object):
         assert geometry.scaling_factor(plane_i=2, plane_j=3) == pytest.approx(1.0, 1e-4)
 
 
+@pytest.fixture(name="light_only_source_plane")
+def make_light_only_source_plane(galaxy_light_only, coordinate_collection):
+    return ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
+                             compute_deflections=False)
+
+
+@pytest.fixture(name="light_only_image_plane")
+def make_light_only_image_plane(galaxy_light_only, coordinate_collection):
+    return ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
+                             compute_deflections=True)
+
+
+@pytest.fixture(name="light_only_ray_tracer")
+def make_light_only_ray_tracer(galaxy_light_only, coordinate_collection):
+    return ray_tracing.Tracer(lens_galaxies=[galaxy_light_only],
+                              source_galaxies=[galaxy_light_only],
+                              image_plane_grids=coordinate_collection)
+
+
 class TestTracer(object):
     class TestSetup:
 
@@ -311,21 +330,30 @@ class TestTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-        def test__galaxy_light_sersic_no_mass_image_is_sum_of_image_plane_and_source_plane_images(self,
-                                                                                                  coordinate_collection,
-                                                                                                  galaxy_light_only):
-            image_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
-                                            compute_deflections=True)
-            source_plane = ray_tracing.Plane(galaxies=[galaxy_light_only], coordinates_collection=coordinate_collection,
-                                             compute_deflections=False)
-            plane_image = image_plane.generate_image_of_galaxy_light_profiles(
-            ) + source_plane.generate_image_of_galaxy_light_profiles()
+        def test__galaxy_light_sersic_no_mass_image_is_sum_of_image_plane_and_source_plane(self,
+                                                                                           light_only_source_plane,
+                                                                                           light_only_image_plane,
+                                                                                           light_only_ray_tracer):
+            plane_image = light_only_image_plane.generate_image_of_galaxy_light_profiles(
+            ) + light_only_source_plane.generate_image_of_galaxy_light_profiles()
 
-            ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_only],
-                                           source_galaxies=[galaxy_light_only], image_plane_grids=coordinate_collection)
-            ray_trace_image = ray_trace.generate_image_of_galaxy_light_profiles()
+            ray_trace_image = light_only_ray_tracer.generate_image_of_galaxy_light_profiles()
 
             assert (plane_image == ray_trace_image).all()
+
+        def test__plane_galaxy_images(self,
+                                      light_only_source_plane,
+                                      light_only_image_plane):
+            assert (light_only_image_plane.galaxy_images[
+                        0] == light_only_image_plane.generate_image_of_galaxy_light_profiles()).all()
+            assert (light_only_source_plane.galaxy_images[
+                        0] == light_only_source_plane.generate_image_of_galaxy_light_profiles()).all()
+
+        def test__tracer_galaxy_images(self,
+                                       light_only_ray_tracer):
+            galaxy_images = light_only_ray_tracer.galaxy_images
+            assert (np.add(galaxy_images[0],
+                           galaxy_images[1]) == light_only_ray_tracer.generate_image_of_galaxy_light_profiles()).all()
 
         def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, coordinate_collection,
                                                                                         galaxy_light_and_mass):
