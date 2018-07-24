@@ -7,7 +7,6 @@ import pymultinest
 import scipy.optimize
 from src.imaging import hyper_image
 from src.config import config
-
 from src.autopipe import model_mapper as mm
 import logging
 
@@ -55,11 +54,11 @@ class Result(object):
 
         Parameters
         ----------
-        constant: model_mapper.ModelInstance
+        constant: mm.ModelInstance
             An instance object comprising the class instances that gave the optimal fit
         likelihood: float
             A value indicating the likelihood given by the optimal fit
-        variable: model_mapper.ModelMapper
+        variable: mm.ModelMapper
             An object comprising priors determined by this stage of the analysis
         """
         self.constant = constant
