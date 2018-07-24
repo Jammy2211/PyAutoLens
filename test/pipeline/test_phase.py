@@ -36,8 +36,8 @@ class NLO(non_linear.NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
-                self.result = non_linear.Result(instance, likelihood)
+                likelihood, model_image = analysis.fit(**instance.__dict__)
+                self.result = non_linear.Result(instance, likelihood, model_image)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -140,6 +140,6 @@ class TestPhase(object):
 
 
 class TestAnalysis(object):
-    def test_hyper_galaxies(self):
-        # ph.Phase.Analysis()
-        pass
+    def test_hyper_galaxies(self, results, masked_image):
+        analysis = ph.Phase.Analysis(results, masked_image, 1)
+        assert (results.model_image == analysis.model_image).all()
