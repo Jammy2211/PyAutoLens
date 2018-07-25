@@ -128,6 +128,10 @@ class EllipticalProfile(Profile):
         self.phi = phi
 
     @property
+    def phi_radians(self):
+        return np.radians(self.phi)
+
+    @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi']
 
@@ -151,7 +155,7 @@ class EllipticalProfile(Profile):
         return np.cos(phi_radians), np.sin(phi_radians)
 
     def grid_angle_to_profile(self, theta_grid):
-        theta_coordinate_to_profile = np.radians(np.add(theta_grid, - self.phi))
+        theta_coordinate_to_profile = np.add(theta_grid, - self.phi_radians)
         return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
     def rotate_grid_from_profile(self, grid_elliptical):
@@ -195,15 +199,14 @@ class EllipticalProfile(Profile):
                                           np.square(np.divide(grid[:, 1], self.axis_ratio))))).view(np.ndarray)
 
     def grid_radius_to_cartesian(self, grid, radius):
-        theta_grid = np.degrees(np.arctan2(grid[:, 1], grid[:, 0]))
+        theta_grid = np.arctan2(grid[:, 1], grid[:, 0])
         cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
         return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
 
     def transform_grid_to_reference_frame(self, grid):
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
-        theta_coordinate_to_profile = np.radians(
-            np.degrees(np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0])) - self.phi)
+        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0]) - self.phi_radians
         transformed = np.vstack(
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
         return transformed.view(TransformedGrid)
@@ -235,3 +238,15 @@ class SphericalProfile(EllipticalProfile):
     @property
     def parameter_labels(self):
         return ['x', 'y']
+
+    def transform_grid_to_reference_frame(self, grid):
+        transformed = np.subtract(grid, self.centre)
+        return transformed.view(TransformedGrid)
+
+    def grid_angle_to_profile(self, theta_grid):
+        return np.cos(theta_grid), np.sin(theta_grid)
+
+    def grid_radius_to_cartesian(self, grid, radius):
+        theta_grid = np.arctan2(grid[:, 1], grid[:, 0])
+        cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
+        return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
