@@ -54,3 +54,31 @@ deflection calculations.
 
 
 Can the jitted function I've written be sped up anymore? Im not sure how but one to revist maybe.
+
+
+
+
+
+
+
+
+
+NEW RESUTLS - removing phi / degrees conversions by applying them jsut to self.phi
+
+
+lsst_original_solution: 0.002794027328491211
+lsst_jit_solution: 0.129927396774292
+
+euclid_original_solution: 0.008972406387329102
+euclid_jit_solution: 0.147383451461792
+
+hst_original_solution: 0.038576364517211914
+hst_jit_solution: 0.15889668464660645
+
+hst_up_original_solution: 0.1132199764251709
+hst_up_jit_solution: 0.27456116676330566
+
+ao_original_solution: 1.210777997970581
+ao_jit_solution: 0.9357810020446777
+
+no real difference but neater code.
