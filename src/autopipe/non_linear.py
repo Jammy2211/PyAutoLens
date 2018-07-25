@@ -143,9 +143,6 @@ class NonLinearOptimizer(object):
         param_names.close()
 
 
-# TODO : Integration tests for this?? Hard to test as a unit test.
-# TODO : Need to think how this interfaces with Prior initialization.
-
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,

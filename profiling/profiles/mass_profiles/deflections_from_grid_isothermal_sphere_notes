@@ -1,0 +1,18 @@
+subgridsize = 4
+
+lsst_original_solution: 5.626678466796875e-05
+lsst_jit_solution: 0.1147606372833252
+
+euclid_original_solution: 7.510185241699219e-05
+euclid_jit_solution: 0.08079695701599121
+
+hst_original_solution: 0.00019693374633789062
+hst_jit_solution: 0.08461689949035645
+
+hst_up_original_solution: 0.0005726814270019531
+hst_up_jit_solution: 0.07718968391418457
+
+ao_original_solution: 0.020821332931518555
+ao_jit_solution: 0.10381937026977539
+
+This was clealy never a job for jit as you just compute one value.... still a nice baseline to think about from here on.
