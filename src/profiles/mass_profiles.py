@@ -374,8 +374,6 @@ class SphericalIsothermal(EllipticalIsothermal):
     def parameter_labels(self):
         return ['x', 'y', r'\theta']
 
-    # TODO : Raises errors because the decorator is trying to 'rotate back' the potential grid which is 1D
-
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         """
