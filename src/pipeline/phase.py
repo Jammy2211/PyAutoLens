@@ -3,13 +3,16 @@ from src.analysis import galaxy as g
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
 from src.imaging import masked_image as mi
+from src.imaging import image as img
 from src.analysis import fitting
 from src.autopipe import non_linear
+from src.autopipe import model_mapper as mm
 import inspect
 
 
 class Phase(object):
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -22,31 +25,38 @@ class Phase(object):
         """
         self.optimizer = optimizer_class()
         self.sub_grid_size = sub_grid_size
+        self.mask_function = mask_function
 
-    def run(self, **kwargs):
+    def run(self, image, last_results=None):
         """
         Run this phase.
 
         Parameters
         ----------
-        kwargs
-            Arguments
+        last_results: non_linear.Result | None
+            An object describing the results of the last phase or None if no phase has been executed
+        image: img.Image
+            An image that has been masked
 
         Returns
         -------
         result: non_linear.Result
             A result object comprising the best fit model and other data.
         """
-        return self.optimizer.fit(self.make_analysis(**kwargs))
+        analysis = self.make_analysis(image=image, last_results=last_results)
+        result = self.optimizer.fit(analysis)
+        result.lens_galaxy_images, result.source_galaxy_images = analysis.galaxy_images_for_model(result.constant)
+        result.galaxy_images = result.lens_galaxy_images + result.source_galaxy_images
+        return result
 
-    def make_analysis(self, masked_image, last_results=None):
+    def make_analysis(self, image, last_results=None):
         """
         Create an analysis object. Also calls the prior passing and image modifying functions to allow child classes to
         change the behaviour of the phase.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
+        image: im.Image
             An image that has been masked
         last_results: non_linear.Result
             The result from the previous phase
@@ -56,10 +66,14 @@ class Phase(object):
         analysis: Analysis
             An analysis object that the non-linear optimizer calls to determine the fit of a set of values
         """
+        mask = self.mask_function(image)
+        masked_image = mi.MaskedImage(image, mask)
         masked_image = self.customize_image(masked_image, last_results)
         self.pass_priors(last_results)
+        coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+            masked_image.mask, self.sub_grid_size, masked_image.psf.shape)
 
-        analysis = self.__class__.Analysis(sub_grid_size=self.sub_grid_size,
+        analysis = self.__class__.Analysis(coordinate_collection=coords_collection,
                                            masked_image=masked_image, last_results=last_results)
         return analysis
 
@@ -90,7 +104,7 @@ class Phase(object):
     class Analysis(object):
         def __init__(self, last_results,
                      masked_image,
-                     sub_grid_size):
+                     coordinate_collection):
             """
             An analysis object
 
@@ -100,14 +114,12 @@ class Phase(object):
                 The result of an analysis
             masked_image: mi.MaskedImage
                 An image that has been masked
-            sub_grid_size: int
-                The side length of the subgrid
+            coordinate_collection: msk.CoordinateCollection
+                A collection of coordinates (grid, blurring and sub)
             """
             self.last_results = last_results
             self.masked_image = masked_image
-            self.sub_grid_size = sub_grid_size
-            self.coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
-                self.masked_image.mask, self.sub_grid_size, self.masked_image.psf.shape)
+            self.coordinate_collection = coordinate_collection
 
         def fit(self, **kwargs):
             """
@@ -124,14 +136,6 @@ class Phase(object):
                 How fit the model is and the model
             """
             raise NotImplementedError()
-
-        @property
-        def model_image(self):
-            return self.last_results.model_image
-
-        @property
-        def galaxy_images(self):
-            return self.last_results.galaxy_images
 
         @property
         def hyper_galaxies(self):
@@ -210,13 +214,24 @@ def phase_property(name):
 
 
 class SourceLensPhase(Phase):
-    """
-    A phase with a simple source/lens model
-    """
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
     def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+        """
+        A phase with a simple source/lens model
+
+        Parameters
+        ----------
+        lens_galaxy: g.Galaxy
+            A galaxy that acts as a gravitational lens
+        source_galaxy: g.Galaxy
+            A galaxy that is being lensed
+        optimizer_class: class
+            The class of a non-linear optimizer
+        sub_grid_size: int
+            The side length of the subgrid
+        """
         super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
@@ -239,12 +254,29 @@ class SourceLensPhase(Phase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model image itself
             """
-            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coords_collection)
+            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None:
-                return fitter.fit_data_with_profiles_hyper_galaxies(self.model_image,
-                                                                    self.galaxy_images,
+                return fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
+                                                                    self.last_results.galaxy_images,
                                                                     self.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
+
+        def galaxy_images_for_model(self, model):
+            """
+            Generate images of galaxies for a set model.
+
+            Parameters
+            ----------
+            model: mm.ModelInstance
+                A model instance
+
+            Returns
+            -------
+            galaxy_images: [ndarray]
+                A list of images of galaxy components
+            """
+            tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
+            return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
