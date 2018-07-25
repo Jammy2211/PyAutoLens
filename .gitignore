@@ -32,3 +32,4 @@ temp.txt
 *.swp
 src/profiles/integrator.py
 test/profiles/test_integrator.py
+profiling/data/
