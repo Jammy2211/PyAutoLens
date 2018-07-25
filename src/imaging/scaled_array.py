@@ -30,6 +30,23 @@ class ScaledArray(np.ndarray):
         super(ScaledArray, self).__init__()
         self.pixel_scale = pixel_scale
 
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(ScaledArray, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict, )
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return (pickled_state[0], pickled_state[1], new_state)
+
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(ScaledArray, self).__setstate__(state[0:-1])
+
     def map(self, func):
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
