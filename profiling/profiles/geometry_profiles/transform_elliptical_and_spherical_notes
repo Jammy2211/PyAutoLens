@@ -1,0 +1,20 @@
+sub grid size = 4
+
+lsst_elliptical_solution: 0.0009145736694335938
+lsst_spherical_solution: 6.67572021484375e-05
+
+euclid_elliptical_solution: 0.002901315689086914
+euclid_spherical_solution: 0.00018143653869628906
+
+hst_elliptical_solution: 0.010070562362670898
+hst_spherical_solution: 0.0005865097045898438
+
+hst_up_elliptical_solution: 0.024544715881347656
+hst_up_spherical_solution: 0.0014958381652832031
+
+ao_elliptical_solution: 0.32286787033081055
+ao_spherical_solution: 0.022858142852783203
+
+A x10+ speed-up in spherical, by making the transform method skip rotations (which do nothing).
+
+Nice.
