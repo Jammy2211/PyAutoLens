@@ -5,6 +5,7 @@ from profiling import profiling_data
 from profiles import geometry_profiles
 import time
 import numba
+import pytest
 
 class EllipticalProfileOriginal(geometry_profiles.Profile):
 
@@ -75,15 +76,16 @@ class EllipticalProfileJit(geometry_profiles.Profile):
         return transformed.view(geometry_profiles.TransformedGrid)
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=2)
+geometry_original = EllipticalProfileOriginal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
+geometry_jit = EllipticalProfileJit(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
+
+assert geometry_original.transform_grid_to_reference_frame(grid=lsst.coords.sub_grid_coords) == \
+       pytest.approx(geometry_jit.transform_grid_to_reference_frame(grid=lsst.coords.sub_grid_coords), 1e-4)
+
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=2)
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=2)
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=2)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=2)
-
-geometry_original = EllipticalProfileOriginal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-geometry_jit = EllipticalProfileJit(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-
-geometry_jit.transform_grid_to_reference_frame(grid=lsst.coords.sub_grid_coords) # Run jit functions so their set-up isn't included in profiling run-time
 
 repeats = 1
 def tick_toc(func):

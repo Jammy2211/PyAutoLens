@@ -249,7 +249,7 @@ class InterpolationDeflections(np.ndarray):
         y_pixels = np.floor((grid[:,1] - self.geometry.y_start) / self.geometry.y_pixel_scale)
         x_pixels = np.floor((grid[:,0] - self.geometry.x_start) / self.geometry.x_pixel_scale)
 
-        return np.int((x_pixels * self.scheme.shape[1]) + y_pixels)
+        return np.floor((x_pixels * self.scheme.shape[1]) + y_pixels)
 
     def interpolate_values_from_grid(self, grid):
 
