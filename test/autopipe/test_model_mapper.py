@@ -541,6 +541,7 @@ class TestUtility(object):
 
 
 class TestPriorReplacement(object):
+
     def test_prior_replacement(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClass)
         result = mapper.mapper_from_gaussian_tuples(
