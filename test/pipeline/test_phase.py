@@ -33,8 +33,8 @@ class NLO(non_linear.NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood, model_image = analysis.fit(**instance.__dict__)
-                self.result = non_linear.Result(instance, likelihood, model_image)
+                likelihood = analysis.fit(**instance.__dict__)
+                self.result = non_linear.Result(instance, likelihood)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -43,6 +43,12 @@ class NLO(non_linear.NonLinearOptimizer):
         fitness_function(self.variable.total_parameters * [0.5])
 
         return fitness_function.result
+
+
+@pytest.fixture(name="coordinates_collection")
+def make_coordinates_collection(masked_image):
+    return msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+        masked_image.mask, 1, masked_image.psf.shape)
 
 
 @pytest.fixture(name="phase")
@@ -58,6 +64,12 @@ def make_galaxy():
 @pytest.fixture(name="galaxy_prior")
 def make_galaxy_prior():
     return gp.GalaxyPrior()
+
+
+@pytest.fixture(name="image")
+def make_image():
+    image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
+    return image
 
 
 @pytest.fixture(name="masked_image")
@@ -84,20 +96,19 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxy")
 
-    def test_mask_analysis(self, phase, masked_image):
-        analysis = phase.make_analysis(masked_image=masked_image)
+    def test_mask_analysis(self, phase, image, masked_image):
+        analysis = phase.make_analysis(image=image)
         assert analysis.last_results is None
         assert analysis.masked_image == masked_image
-        assert analysis.sub_grid_size == 1
 
-    def test_fit(self, phase, masked_image):
+    def test_fit(self, phase, image):
         phase.source_galaxy = g.Galaxy()
         phase.lens_galaxy = g.Galaxy()
-        result = phase.run(masked_image=masked_image)
+        result = phase.run(image=image)
         assert isinstance(result.constant.lens_galaxy, g.Galaxy)
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
 
-    def test_customize(self, results, masked_image):
+    def test_customize(self, results, image):
         class MyPhase(ph.SourceLensPhase):
             def pass_priors(self, last_results):
                 self.lens_galaxy = last_results.constant.lens_galaxy
@@ -110,7 +121,7 @@ class TestPhase(object):
         setattr(results.variable, "source_galaxy", galaxy_prior)
 
         phase = MyPhase(optimizer_class=NLO)
-        phase.make_analysis(masked_image=masked_image, last_results=results)
+        phase.make_analysis(image=image, last_results=results)
 
         assert phase.lens_galaxy == galaxy
         assert phase.source_galaxy == galaxy_prior
@@ -119,7 +130,7 @@ class TestPhase(object):
         class MyPhase(ph.SourceLensPhase):
             prop = ph.phase_property("prop")
 
-        phase = MyPhase(NLO)
+        phase = MyPhase(optimizer_class=NLO)
 
         phase.prop = g.Galaxy
 
@@ -134,16 +145,25 @@ class TestPhase(object):
         phase.prop = g.Galaxy
         assert not hasattr(phase.constant, "prop")
 
+    def test_default_mask_function(self, phase, image):
+        assert len(mi.MaskedImage(image, phase.mask_function(image))) == 32
+
+    def test_galaxy_images(self, image, phase):
+        phase.lens_galaxy = g.Galaxy()
+        phase.source_galaxy = g.Galaxy()
+        result = phase.run(image)
+        assert len(result.galaxy_images) == 2
+
 
 class TestAnalysis(object):
-    def test_model_image(self, results, masked_image):
-        analysis = ph.Phase.Analysis(results, masked_image, 1)
-        assert (results.model_image == analysis.model_image).all()
+    def test_model_image(self, results, masked_image, coordinates_collection):
+        analysis = ph.Phase.Analysis(results, masked_image, coordinates_collection)
+        assert (results.model_image == analysis.last_results.model_image).all()
 
-    def test_hyper_galaxy(self, results, masked_image):
+    def test_hyper_galaxy(self, results, masked_image, coordinates_collection):
         hyper_galaxy_1 = g.HyperGalaxy()
         hyper_galaxy_2 = g.HyperGalaxy()
         results.constant.lens_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_1)
         results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
-        analysis = ph.Phase.Analysis(results, masked_image, 1)
+        analysis = ph.Phase.Analysis(results, masked_image, coordinates_collection)
         assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies

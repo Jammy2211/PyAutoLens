@@ -8,8 +8,6 @@ from collections import namedtuple
 
 minimum_value_profile = 0.1
 
-Fit = namedtuple("Fit", ["fitness", "model_image"])
-
 
 class Fitter(object):
     def __init__(self, masked_image, tracer):
@@ -45,7 +43,7 @@ class Fitter(object):
         scaled_noise = self.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
         blurred_model_image = self.blurred_light_profile_image()
         fitness = compute_likelihood(self.image, scaled_noise, blurred_model_image)
-        return Fit(fitness, blurred_model_image)
+        return fitness
 
     def scaled_noise_for_contributions_and_hyper_galaxies(self, contributions, hyper_galaxies):
         """Use the contributions of each hyper galaxy to compute the scaled noise.
@@ -78,7 +76,7 @@ class Fitter(object):
         """
         blurred_model_image = self.blurred_light_profile_image()
         fitness = compute_likelihood(self.image, self.image.background_noise, blurred_model_image)
-        return Fit(fitness, blurred_model_image)
+        return fitness
 
 
 class PixelizedFitter(Fitter):
