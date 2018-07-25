@@ -25,11 +25,23 @@ class EllipticalProfileOriginal(geometry_profiles.Profile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
+    @property
+    def phi_radians(self):
+        return np.radians(self.phi)
+
+    def grid_angle_to_profile(self, theta_grid):
+        theta_coordinate_to_profile = np.add(theta_grid, - self.phi_radians)
+        return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
+
+    def grid_radius_to_cartesian(self, grid, radius):
+        theta_grid = np.arctan2(grid[:, 1], grid[:, 0])
+        cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
+        return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
+
     def transform_grid_to_reference_frame(self, grid):
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
-        theta_coordinate_to_profile = np.radians(
-            np.degrees(np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0])) - self.phi)
+        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0]) - self.phi_radians
         transformed = np.vstack(
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
         return transformed.view(geometry_profiles.TransformedGrid)
@@ -75,17 +87,19 @@ class EllipticalProfileJit(geometry_profiles.Profile):
         transformed = transform_grid_to_reference_frame_jit(grid, self.centre[0], self.centre[1], self.phi)
         return transformed.view(geometry_profiles.TransformedGrid)
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=2)
+subgrid_size=4
+
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size)
 geometry_original = EllipticalProfileOriginal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
 geometry_jit = EllipticalProfileJit(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
 
 assert geometry_original.transform_grid_to_reference_frame(grid=lsst.coords.sub_grid_coords) == \
        pytest.approx(geometry_jit.transform_grid_to_reference_frame(grid=lsst.coords.sub_grid_coords), 1e-4)
 
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=2)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=2)
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=2)
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=2)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size)
 
 repeats = 1
 def tick_toc(func):
