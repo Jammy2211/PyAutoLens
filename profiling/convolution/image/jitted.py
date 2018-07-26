@@ -19,7 +19,7 @@ class KernelConvolverProfiling(frame_convolution.KernelConvolver):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image_coords pixels within the blurring_coords region.
+            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the kernel for which the result should be calculated
         pixel_array: [float]

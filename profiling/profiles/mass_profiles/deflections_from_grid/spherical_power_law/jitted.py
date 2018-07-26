@@ -43,7 +43,7 @@ class SphericalPowerLaw(geometry_profiles.SphericalProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         return self.deflections_from_grid_jit(grid, self.einstein_radius_rescaled, self.slope)

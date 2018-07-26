@@ -642,7 +642,7 @@ class TestSimulateImage(object):
                                                       [0.0, 1.05, 0.0],
                                                       [0.0, 0.0, 0.0])), 1e-2)
 
-            # Because of the image_coords value is 1.05, the estimated Poisson noise is:
+            # Because of the image value is 1.05, the estimated Poisson noise is:
             # sqrt((1.05 * 20))/20 = 0.2291
 
             assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
