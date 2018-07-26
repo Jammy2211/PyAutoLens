@@ -90,7 +90,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         
         Parameters
         -----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the potential / deflections are computed on.
         tabulate_bins : int
             The number of bins used to tabulate the integral over.
@@ -195,7 +195,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the surface density is computed on.
         """
 
@@ -215,7 +215,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         potential_grid = np.zeros(grid.shape[0])
@@ -233,7 +233,7 @@ class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -335,7 +335,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -380,7 +380,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_elliptical_radius(grid)
@@ -393,7 +393,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
@@ -480,7 +480,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_radius(grid)
@@ -592,7 +592,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the surface density is computed on.
         """
 
@@ -612,7 +612,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -632,7 +632,7 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -723,7 +723,7 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
@@ -736,7 +736,7 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
@@ -796,7 +796,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -839,7 +839,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -949,7 +949,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -1018,7 +1018,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
@@ -1030,7 +1030,7 @@ class EllipticalSersicMass(light_profiles.EllipticalSersic, EllipticalMassProfil
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -1181,7 +1181,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
@@ -1193,7 +1193,7 @@ class EllipticalSersicMassRadialGradient(EllipticalSersicMass):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -1266,7 +1266,7 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
 
         Parameters
         ----------
-        grid : mask.CoordinateGrid
+        grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         deflection_x = np.multiply(self.magnitude, grid[:, 0])

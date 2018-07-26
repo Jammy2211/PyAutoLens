@@ -17,14 +17,14 @@ logger = logging.getLogger(__name__)
 
 def source_only_pipeline(image, mask):
     """
-    Fit a source-only image_coords (i.e. no lens light component)
+    Fit a source-only image (i.e. no lens light component)
 
     Parameters
     ----------
     image: Image
-        An image_coords of a lens galaxy including metadata such as PSF, background noise and effective exposure time
+        An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
     mask: Mask
-        A mask describing which parts of the image_coords should be excluded from the analysis
+        A mask describing which parts of the image should be excluded from the analysis
 
     Returns
     -------
@@ -36,7 +36,7 @@ def source_only_pipeline(image, mask):
         """
         Pipeline 1:
 
-        PURPOSE - Fit a source-only image_coords (i.e. no lens light component)
+        PURPOSE - Fit a source-only image (i.e. no lens light component)
 
         PREPROCESSING:
 
@@ -46,7 +46,7 @@ def source_only_pipeline(image, mask):
 
         NOTES:
 
-        Image: Observed image_coords used throughout.
+        Image: Observed image used throughout.
         Mask: Assume a large mask (e.g. 2") throughout - this value could be chosen in preprocessing.
         """
     )
@@ -54,7 +54,7 @@ def source_only_pipeline(image, mask):
     # Create an array in which to store results
     results = []
 
-    # Create an analysis object for the image_coords and mask
+    # Create an analysis object for the image and mask
     masked_image = mi.MaskedImage(image, mask)
 
     logger.info(
@@ -185,7 +185,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     """
     Pipeline 2:
 
-    PURPOSE - Fit a lens light + source image_coords (mass model does not decomposed the light and dark matter)
+    PURPOSE - Fit a lens light + source image (mass model does not decomposed the light and dark matter)
 
     PREPROCESSING:
 
@@ -193,21 +193,21 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     - Draw a circle around the source (Einstein Radius / center)
     - Mark the centre of the lens light.
     - Draw circle / ellipse for mask containing the lens galaxy.
-    - Draw annulus for mask containing the source (excludes central regions of image_coords where lens is).
+    - Draw annulus for mask containing the source (excludes central regions of image where lens is).
     """
 
     # Create an array in which to store results
     results = []
     """
 
-    1) Image: Observed image_coords, includes lens+source.
+    1) Image: Observed image, includes lens+source.
        Mask: Circle / Ellipse containing entire lens galaxy.
-       Light: Sersic (This phase simply subtracts the lens light from the image_coords - the source is present and disrupts the 
+       Light: Sersic (This phase simply subtracts the lens light from the image - the source is present and disrupts the 
        NLO: LM        fit but we choose not to care)
-       Purpose: Provides lens subtracted image_coords for subsequent phases.
+       Purpose: Provides lens subtracted image for subsequent phases.
 
     """
-    # Create an analysis object for the image_coords and a mask that means only lens light is visible
+    # Create an analysis object for the image and a mask that means only lens light is visible
     lens_light_analysis = an.Analysis(image, lens_mask)
 
     optimizer_1 = non_linear.DownhillSimplex()
@@ -228,7 +228,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     source_image = image - lens_light_analysis.mapper_collection.data_to_pixel.map_to_2d(light_grid)
 
     """
-    2) Image: The lens light subtracted image_coords from phase 1.
+    2) Image: The lens light subtracted image from phase 1.
        Mask: Annulus mask containing just source
        Light: None
        Mass: SIE+Shear
@@ -253,7 +253,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     results.append(result_2)
 
     """
-    3) Image: The lens light subtracted image_coords from phase 1.
+    3) Image: The lens light subtracted image from phase 1.
        Mask: Circle / Ellipse containing entire lens galaxy.
        Light: None
        Mass: SIE+Shear (priors from phase 2)
@@ -285,7 +285,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     results.append(result_3)
 
     """
-    4) Image: Observed image_coords, includes lens+source.
+    4) Image: Observed image, includes lens+source.
        Mask: Circle / Ellipse containing entire lens galaxy.
        Light: Sersic + Exponential (shared centre / phi, include Instrumentation lens light noise scaling parameters in 
               model)
@@ -340,15 +340,15 @@ class PipelinePaths(object):
 
 def profiles_pipeline(paths, image, mask):
     """
-     Fit an image_coords with profiles, gradually adding extra profiles.
+     Fit an image with profiles, gradually adding extra profiles.
 
      Parameters
      ----------
      paths
      image: Image
-         An image_coords of a lens galaxy including metadata such as PSF, background noise and effective exposure time
+         An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
      mask: Mask
-         A mask describing which parts of the image_coords should be excluded from the analysis
+         A mask describing which parts of the image should be excluded from the analysis
 
      Returns
      -------
@@ -360,7 +360,7 @@ def profiles_pipeline(paths, image, mask):
         """
         Pipeline Profiles:
 
-        PURPOSE - Fit profiles to an image_coords.
+        PURPOSE - Fit profiles to an image.
 
         PREPROCESSING:
 
@@ -368,7 +368,7 @@ def profiles_pipeline(paths, image, mask):
 
         NOTES:
 
-        Image: Observed image_coords used throughout.
+        Image: Observed image used throughout.
         Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
         """
     )
@@ -382,7 +382,7 @@ def profiles_pipeline(paths, image, mask):
     # Create an array in which to store results
     results = []
 
-    # Create an analysis object for the image_coords and mask
+    # Create an analysis object for the image and mask
     analysis = an.Analysis(image, mask)
 
     logger.info(
@@ -419,7 +419,7 @@ def profiles_pipeline(paths, image, mask):
         """
         Pipeline Profiles:
 
-        PURPOSE - Fit profiles to an image_coords.
+        PURPOSE - Fit profiles to an image.
 
         PREPROCESSING:
 
@@ -427,7 +427,7 @@ def profiles_pipeline(paths, image, mask):
 
         NOTES:
 
-        Image: Observed image_coords used throughout.
+        Image: Observed image used throughout.
         Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
         """
     )
@@ -446,7 +446,7 @@ def profiles_pipeline(paths, image, mask):
 
     minimum_values = [0.0]
 
-    # Create an analysis object for the image_coords and mask
+    # Create an analysis object for the image and mask
     analysis = an.Analysis(image, mask, model_image=model_image, galaxy_images=galaxy_images,
                            minimum_values=minimum_values)
 
@@ -476,16 +476,16 @@ def profiles_pipeline(paths, image, mask):
     results.append(result_1)
 
 
-# def profiles_pipeline(paths, image_coords, mask):
+# def profiles_pipeline(paths, image, mask):
 #     """
-#      Fit an image_coords with profiles, gradually adding extra profiles.
+#      Fit an image with profiles, gradually adding extra profiles.
 #
 #      Parameters
 #      ----------
-#      image_coords: Image
-#          An image_coords of a lens galaxy including metadata such as PSF, background noise and effective exposure time
+#      image: Image
+#          An image of a lens galaxy including metadata such as PSF, background noise and effective exposure time
 #      mask: Mask
-#          A mask describing which parts of the image_coords should be excluded from the analysis
+#          A mask describing which parts of the image should be excluded from the analysis
 #
 #      Returns
 #      -------
@@ -497,7 +497,7 @@ def profiles_pipeline(paths, image, mask):
 #         """
 #         Pipeline Profiles:
 #
-#         PURPOSE - Fit profiles to an image_coords.
+#         PURPOSE - Fit profiles to an image.
 #
 #         PREPROCESSING:
 #
@@ -505,7 +505,7 @@ def profiles_pipeline(paths, image, mask):
 #
 #         NOTES:
 #
-#         Image: Observed image_coords used throughout.
+#         Image: Observed image used throughout.
 #         Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
 #         """
 #     )
@@ -519,8 +519,8 @@ def profiles_pipeline(paths, image, mask):
 #     # Create an array in which to store results
 #     results = []
 #
-#     # Create an analysis object for the image_coords and mask
-#     analysis = an.Analysis(image_coords, mask)
+#     # Create an analysis object for the image and mask
+#     analysis = an.Analysis(image, mask)
 #
 #     logger.info(
 #         """
@@ -554,7 +554,7 @@ def profiles_pipeline(paths, image, mask):
 #         """
 #         Pipeline Profiles:
 #
-#         PURPOSE - Fit profiles to an image_coords.
+#         PURPOSE - Fit profiles to an image.
 #
 #         PREPROCESSING:
 #
@@ -562,7 +562,7 @@ def profiles_pipeline(paths, image, mask):
 #
 #         NOTES:
 #
-#         Image: Observed image_coords used throughout.
+#         Image: Observed image used throughout.
 #         Mask: Assume a large mask (e.g. 2.8") throughout - this value could be chosen in preprocessing.
 #         """
 #     )
@@ -576,8 +576,8 @@ def profiles_pipeline(paths, image, mask):
 #     # Create an array in which to store results
 #     results = []
 #
-#     # Create an analysis object for the image_coords and mask
-#     analysis = an.Analysis(image_coords, mask)
+#     # Create an analysis object for the image and mask
+#     analysis = an.Analysis(image, mask)
 #
 #     logger.info(
 #         """
@@ -607,7 +607,7 @@ def profiles_pipeline(paths, image, mask):
 """
 
 4H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
-    Image: The lens light subtracted image_coords from phase 1.
+    Image: The lens light subtracted image from phase 1.
     Mask: Circle / Ellipse containing entire lens galaxy.
     Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
     Source: 'noisy' pixelization

@@ -45,9 +45,9 @@ class NLO(non_linear.NonLinearOptimizer):
         return fitness_function.result
 
 
-@pytest.fixture(name="coordinates_collection")
+@pytest.fixture(name="grids")
 def make_coordinates_collection(masked_image):
-    return msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+    return msk.GridCollection.from_mask_subgrid_size_and_blurring_shape(
         masked_image.mask, 1, masked_image.psf.shape)
 
 
