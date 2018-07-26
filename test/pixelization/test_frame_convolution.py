@@ -478,20 +478,20 @@ class TestConvolveMappingMatrix(object):
 
 class TestJitFunction(object):
 
-    def test__identical_to_non_jit_version__no_blurring_array(self, cross_frame_maker):
-
-        kernel = np.array([[0.6, 0.2, 0],
-                           [0.2, 0.4, 0.2],
-                           [2.0, 0.2, 0.1]])
-        pixel_array = np.array([1, 2, 8, 1, 0])
-
-        convolver = cross_frame_maker.convolver_for_kernel_shape((3, 3), np.full((3, 3), False))
-        kernel_convolver = convolver.convolver_for_kernel(kernel)
-
-        result_0 = kernel_convolver.convolve_array(pixel_array)
-        result_1 = kernel_convolver.convolve_array_jit(pixel_array)
-
-        assert (result_0 == result_1).all()
+    # def test__identical_to_non_jit_version__no_blurring_array(self, cross_frame_maker):
+    #
+    #     kernel = np.array([[0.6, 0.2, 0],
+    #                        [0.2, 0.4, 0.2],
+    #                        [2.0, 0.2, 0.1]])
+    #     pixel_array = np.array([1, 2, 8, 1, 0])
+    #
+    #     convolver = cross_frame_maker.convolver_for_kernel_shape((3, 3), np.full((3, 3), False))
+    #     kernel_convolver = convolver.convolver_for_kernel(kernel)
+    #
+    #     result_0 = kernel_convolver.convolve_array(pixel_array)
+    #     result_1 = kernel_convolver.convolve_array_jit(pixel_array)
+    #
+    #     assert (result_0 == result_1).all()
 
     def test__identical_to_non_jit_version__include_blurring_array(self, cross_frame_maker):
 
@@ -506,7 +506,7 @@ class TestJitFunction(object):
         kernel_convolver = convolver.convolver_for_kernel(kernel)
 
         result_0 = kernel_convolver.convolve_array(pixel_array, blurring_array)
-        result_1 = kernel_convolver.convolve_array_jit(pixel_array, blurring_array)
+        result_1 = kernel_convolver.convolve_array_jitted(pixel_array, blurring_array)
 
         assert result_0 == pytest.approx(result_1, 1e-4)
 
