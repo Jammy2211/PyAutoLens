@@ -20,7 +20,7 @@ def make_centre_mask():
 
 @pytest.fixture(name="sub_coordinate_grid")
 def make_sub_coordinate_grid(msk):
-    return mask.SubCoordinateGrid.from_mask(msk)
+    return mask.SubGrid.from_mask(msk)
 
 
 class TestMask(object):
@@ -430,7 +430,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array([[[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]]])).all()
 
@@ -441,7 +441,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array([[-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5],
                                                 [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
@@ -454,7 +454,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array([[-3.5, 2.5], [-3.5, 3.5], [-2.5, 2.5], [-2.5, 3.5],
                                                 [-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5],
@@ -469,7 +469,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=0.3)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 2)
 
             image_sub_grid = np.round(image_sub_grid, decimals=2)
 
@@ -487,7 +487,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 3)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 3)
 
             assert (image_sub_grid == np.array([[[-0.75, -0.75], [-0.75, 0.], [-0.75, 0.75], [0., -0.75], [0., 0.],
                                                  [0., 0.75], [0.75, -0.75], [0.75, 0.], [0.75, 0.75]]])).all()
@@ -499,7 +499,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=2.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 3)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 3)
 
             assert (image_sub_grid == np.array([[-2.5, 1.5], [-2.5, 2.], [-2.5, 2.5], [-2., 1.5], [-2., 2.],
                                                 [-2., 2.5], [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5],
@@ -516,7 +516,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=2.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 4)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 4)
 
             image_sub_grid = np.round(image_sub_grid, decimals=1)
 
@@ -547,7 +547,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array(
                 [[-2., -0.5], [-2., 0.5], [-1., -0.5], [-1., 0.5], [1., -0.5], [1., 0.5], [2., -0.5], [2., 0.5],
@@ -560,7 +560,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_sub_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+            image_sub_grid = mask.SubGrid.from_mask(msk, 2)
 
             assert (image_sub_grid == np.array(
                 [[-3.5, 4.], [-3.5, 5.], [-2.5, 4.], [-2.5, 5.], [-0.5, -2.], [-0.5, -1.], [0.5, -2.], [0.5, -1.],
@@ -644,7 +644,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = mask.SubCoordinateGrid.from_mask(msk, 2).sub_to_image
+            sub_to_image = mask.SubGrid.from_mask(msk, 2).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0])).all()
 
@@ -655,7 +655,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = mask.SubCoordinateGrid.from_mask(msk, 2).sub_to_image
+            sub_to_image = mask.SubGrid.from_mask(msk, 2).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2])).all()
 
@@ -666,7 +666,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            sub_to_image = mask.SubCoordinateGrid.from_mask(msk, 3).sub_to_image
+            sub_to_image = mask.SubGrid.from_mask(msk, 3).sub_to_image
 
             assert (sub_to_image == np.array([0, 0, 0, 0, 0, 0, 0, 0, 0,
                                               1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1199,7 +1199,6 @@ class TestMask(object):
 
             assert (border_sub_pixels == np.array([0, 16, 35, 48, 83, 108, 124, 143])).all()
 
-
         def test__7x7_mask_rectangle_of_fifteen_central_pixels__is_border(self):
 
             msk = np.array([[True, True, True, True, True, True, True],
@@ -1214,7 +1213,7 @@ class TestMask(object):
 
             border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=2)
 
-            assert (border_sub_pixels == np.array([0, 4, 9, 12, 21, 24, 33, 38, 47, 44, 49, 59])).all()
+            assert (border_sub_pixels == np.array([0, 4, 9, 12, 21, 24, 33, 38, 47, 50, 54, 59])).all()
 
         def test__8x7_mask_add_edge_pixels__also_in_border(self):
 
@@ -1600,7 +1599,7 @@ class TestSubCoordinateGrid(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        sub_coordinate_grid = mask.SubCoordinateGrid.from_mask(msk, 2)
+        sub_coordinate_grid = mask.SubGrid.from_mask(msk, 2)
 
         assert sub_coordinate_grid.sub_grid_size == 2
         assert sub_coordinate_grid.sub_grid_fraction == (1.0 / 4.0)
@@ -1679,19 +1678,19 @@ class TestMemoizer(object):
         assert two.method() == 2
 
 
-@pytest.fixture(name="coordinate_collection")
-def make_coordinate_collection(centre_mask):
-    return mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
+@pytest.fixture(name="grids")
+def make_grids(centre_mask):
+    return mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
 
 
-class TestCoordinateCollection(object):
-    def test_coordinate_collection(self, coordinate_collection):
-        assert (coordinate_collection.image_coords == np.array([[0., 0.]])).all()
-        np.testing.assert_almost_equal(coordinate_collection.sub_grid_coords, np.array([[-0.16666667, -0.16666667],
+class TestGridCollection(object):
+    def test_grids(self, grids):
+        assert (grids.image == np.array([[0., 0.]])).all()
+        np.testing.assert_almost_equal(grids.sub, np.array([[-0.16666667, -0.16666667],
                                                                                         [-0.16666667, 0.16666667],
                                                                                         [0.16666667, -0.16666667],
                                                                                         [0.16666667, 0.16666667]]))
-        assert (coordinate_collection.blurring_coords == np.array([[-1., -1.],
+        assert (grids.blurring == np.array([[-1., -1.],
                                                                    [-1., 0.],
                                                                    [-1., 1.],
                                                                    [0., -1.],
@@ -1700,84 +1699,129 @@ class TestCoordinateCollection(object):
                                                                    [1., 0.],
                                                                    [1., 1.]])).all()
 
-    def test_apply_function(self, coordinate_collection):
+    def test_apply_function(self, grids):
         def add_one(coords):
             return np.add(1, coords)
 
-        new_collection = coordinate_collection.apply_function(add_one)
-        assert isinstance(new_collection, mask.CoordinateCollection)
-        assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
-        np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(1, np.array([[-0.16666667, -0.16666667],
-                                                                                           [-0.16666667, 0.16666667],
-                                                                                           [0.16666667, -0.16666667],
-                                                                                           [0.16666667, 0.16666667]])))
-        assert (new_collection.blurring_coords == np.add(1, np.array([[-1., -1.],
-                                                                      [-1., 0.],
-                                                                      [-1., 1.],
-                                                                      [0., -1.],
-                                                                      [0., 1.],
-                                                                      [1., -1.],
-                                                                      [1., 0.],
-                                                                      [1., 1.]]))).all()
+        new_collection = grids.apply_function(add_one)
+        assert isinstance(new_collection, mask.GridCollection)
+        assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
+        np.testing.assert_almost_equal(new_collection.sub, np.add(1, np.array([[-0.16666667, -0.16666667],
+                                                                               [-0.16666667, 0.16666667],
+                                                                               [0.16666667, -0.16666667],
+                                                                               [0.16666667, 0.16666667]])))
+        assert (new_collection.blurring == np.add(1, np.array([[-1., -1.],
+                                                               [-1., 0.],
+                                                               [-1., 1.],
+                                                               [0., -1.],
+                                                               [0., 1.],
+                                                               [1., -1.],
+                                                               [1., 0.],
+                                                               [1., 1.]]))).all()
 
-    def test_map_function(self, coordinate_collection):
+    def test_map_function(self, grids):
         def add_number(coords, number):
             return np.add(coords, number)
 
-        new_collection = coordinate_collection.map_function(add_number, [1, 2, 3])
+        new_collection = grids.map_function(add_number, [1, 2, 3])
 
-        assert isinstance(new_collection, mask.CoordinateCollection)
-        assert (new_collection.image_coords == np.add(1, np.array([[0., 0.]]))).all()
-        np.testing.assert_almost_equal(new_collection.sub_grid_coords, np.add(2, np.array([[-0.16666667, -0.16666667],
-                                                                                           [-0.16666667, 0.16666667],
-                                                                                           [0.16666667, -0.16666667],
-                                                                                           [0.16666667, 0.16666667]])))
-        assert (new_collection.blurring_coords == np.add(3, np.array([[-1., -1.],
-                                                                      [-1., 0.],
-                                                                      [-1., 1.],
-                                                                      [0., -1.],
-                                                                      [0., 1.],
-                                                                      [1., -1.],
-                                                                      [1., 0.],
-                                                                      [1., 1.]]))).all()
+        assert isinstance(new_collection, mask.GridCollection)
+        assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
+        np.testing.assert_almost_equal(new_collection.sub, np.add(2, np.array([[-0.16666667, -0.16666667],
+                                                                               [-0.16666667, 0.16666667],
+                                                                               [0.16666667, -0.16666667],
+                                                                               [0.16666667, 0.16666667]])))
+        assert (new_collection.blurring == np.add(3, np.array([[-1., -1.],
+                                                               [-1., 0.],
+                                                               [-1., 1.],
+                                                               [0., -1.],
+                                                               [0., 1.],
+                                                               [1., -1.],
+                                                               [1., 0.],
+                                                               [1., 1.]]))).all()
 
 
 class TestBorderCollection(object):
 
-    def test__simple_setup_using_constructor(self):
+    class TestSetup:
 
-        image_border = mask.CoordinateBorder(arr=np.array([1, 2, 5]), polynomial_degree=4, centre=(1.0, 1.0))
-        sub_border = mask.SubCoordinateBorder(arr=np.array([1, 2, 3]), polynomial_degree=2, centre=(0.0, 1.0))
+        def test__simple_setup_using_constructor(self):
 
-        border_collection = mask.BorderCollection(image=image_border, sub=sub_border)
+            image_border = mask.ImageGridBorder(arr=np.array([1, 2, 5]), polynomial_degree=4, centre=(1.0, 1.0))
+            sub_border = mask.SubGridBorder(arr=np.array([1, 2, 3]), polynomial_degree=2, centre=(0.0, 1.0))
 
-        assert (border_collection.image_border == np.array([1, 2, 5])).all()
-        assert border_collection.image_border.polynomial_degree == 4
-        assert border_collection.image_border.centre == (1.0, 1.0)
+            border_collection = mask.BorderCollection(image=image_border, sub=sub_border)
 
-        assert (border_collection.sub_border == np.array([1, 2, 3])).all()
-        assert border_collection.sub_border.polynomial_degree == 2
-        assert border_collection.sub_border.centre == (0.0, 1.0)
+            assert (border_collection.image == np.array([1, 2, 5])).all()
+            assert border_collection.image.polynomial_degree == 4
+            assert border_collection.image.centre == (1.0, 1.0)
 
-    def test__setup_from_mask(self):
+            assert (border_collection.sub == np.array([1, 2, 3])).all()
+            assert border_collection.sub.polynomial_degree == 2
+            assert border_collection.sub.centre == (0.0, 1.0)
 
-        msk = np.array([[True, True, True, True, True, True, True],
-                        [True, True, True, True, True, True, True],
-                        [True, True, True, True, True, True, True],
-                        [True, True, True, False, False, True, True],
-                        [True, True, True, True, True, True, True],
-                        [True, True, True, True, True, True, True],
-                        [True, True, True, True, True, True, True]])
+        def test__setup_from_mask(self):
 
-        msk = mask.Mask(msk, pixel_scale=3.0)
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, False, False, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True]])
 
-        border_collection = mask.BorderCollection.from_mask_and_subgrid_size(mask=msk, subgrid_size=2)
+            msk = mask.Mask(msk, pixel_scale=3.0)
 
-        assert (border_collection.image_border == np.array([0, 1])).all()
-        assert (border_collection.sub_border == np.array([0, 5])).all()
+            border_collection = mask.BorderCollection.from_mask_and_subgrid_size(mask=msk, subgrid_size=2)
 
+            assert (border_collection.image == np.array([0, 1])).all()
+            assert (border_collection.sub == np.array([0, 5])).all()
 
-class TestCoordinateBorder(object):
+    class TestRelocatedGridsFromGrids:
+        
+        def test__simple_case__new_grids_have_relocates(self):
+            
+            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
+            image_grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+            image_grid = image_grid_circle
+            image_grid.append(np.array([0.1, 0.0]))
+            image_grid.append(np.array([-0.2, -0.3]))
+            image_grid.append(np.array([0.5, 0.4]))
+            image_grid.append(np.array([0.7, -0.1]))
+            image_grid = np.asarray(image_grid)
+
+            image_border = mask.ImageGridBorder(arr=np.arange(32), polynomial_degree=3)
+
+            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
+            sub_grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+            sub_grid = sub_grid_circle
+            sub_grid.append(np.array([2.5, 0.0]))
+            sub_grid.append(np.array([0.0, 3.0]))
+            sub_grid.append(np.array([-2.5, 0.0]))
+            sub_grid.append(np.array([-5.0, 5.0]))
+            sub_grid = np.asarray(sub_grid)
+
+            sub_border = mask.SubGridBorder(arr=np.arange(32), polynomial_degree=3)
+
+            borders = mask.BorderCollection(image=image_border, sub=sub_border)
+
+            grids = mask.GridCollection(image=image_grid, sub=sub_grid, blurring=None)
+
+            relocated_grids = borders.relocated_grids_from_grids(grids)
+
+            assert relocated_grids.image[0:32] == pytest.approx(np.asarray(image_grid_circle)[0:32], 1e-3)
+            assert relocated_grids.image[32] == pytest.approx(np.array([0.1, 0.0]), 1e-3)
+            assert relocated_grids.image[33] == pytest.approx(np.array([-0.2, -0.3]), 1e-3)
+            assert relocated_grids.image[34] == pytest.approx(np.array([0.5, 0.4]), 1e-3)
+            assert relocated_grids.image[35] == pytest.approx(np.array([0.7, -0.1]), 1e-3)
+
+            assert relocated_grids.sub[0:32] == pytest.approx(np.asarray(sub_grid_circle)[0:32], 1e-3)
+            assert relocated_grids.sub[32] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert relocated_grids.sub[33] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
+            assert relocated_grids.sub[34] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+            assert relocated_grids.sub[35] == pytest.approx(np.array([-0.707, 0.707]), 1e-3)
+
+class TestImageGridBorder(object):
 
     class TestFromMask:
 
@@ -1793,7 +1837,7 @@ class TestCoordinateBorder(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border = mask.CoordinateBorder.from_mask(msk)
+            border = mask.ImageGridBorder.from_mask(msk)
 
             assert (border == np.array([0, 1])).all()
 
@@ -1803,7 +1847,7 @@ class TestCoordinateBorder(object):
 
             grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
             radii = border.grid_to_radii(grid)
             thetas = border.grid_to_thetas(grid)
 
@@ -1813,7 +1857,7 @@ class TestCoordinateBorder(object):
         def test__other_thetas_radii(self):
             grid = np.array([[2.0, 0.0], [2.0, 2.0], [-1.0, -1.0], [0.0, -3.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
             radii = border.grid_to_radii(grid)
             thetas = border.grid_to_thetas(grid)
 
@@ -1824,7 +1868,7 @@ class TestCoordinateBorder(object):
 
             grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
             radii = border.grid_to_radii(grid)
             thetas = border.grid_to_thetas(grid)
 
@@ -1837,7 +1881,7 @@ class TestCoordinateBorder(object):
 
             grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
             poly = border.polynomial_fit_to_border(grid)
 
             assert np.polyval(poly, 0.0) == pytest.approx(1.0, 1e-3)
@@ -1852,7 +1896,7 @@ class TestCoordinateBorder(object):
                                     [-1.0, 0.0], [-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)],
                                     [0.0, -1.0], [0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]])
 
-            border = mask.CoordinateBorder(arr=
+            border = mask.ImageGridBorder(arr=
                                       np.arange(8), polynomial_degree=3)
             poly = border.polynomial_fit_to_border(grid)
 
@@ -1871,7 +1915,7 @@ class TestCoordinateBorder(object):
             
             grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
             move_factors = border.move_factors_from_grid(grid)
 
             assert move_factors[0] == pytest.approx(1.0, 1e-4)
@@ -1884,7 +1928,7 @@ class TestCoordinateBorder(object):
             grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0],
                              [2.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [0.0, -2.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
             move_factors = border.move_factors_from_grid(grid)
 
             assert move_factors[0] == pytest.approx(1.0, 1e-4)
@@ -1901,7 +1945,7 @@ class TestCoordinateBorder(object):
             grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0],
                              [3.0, 1.0], [1.0, 3.0], [1.0, 3.0], [3.0, 1.0]])
 
-            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
+            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
             move_factors = border.move_factors_from_grid(grid)
 
             assert move_factors[0] == pytest.approx(1.0, 1e-4)
@@ -1926,7 +1970,7 @@ class TestCoordinateBorder(object):
             grid.append(np.array([0.7, -0.1]))
             grid = np.asarray(grid)
 
-            border = mask.CoordinateBorder(arr=np.arange(32), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(32), polynomial_degree=3)
             relocated_grid = border.relocated_grid_from_grid(grid)
 
             assert relocated_grid[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
@@ -1946,7 +1990,7 @@ class TestCoordinateBorder(object):
             grid.append(np.array([-5.0, 5.0]))
             grid = np.asarray(grid)
 
-            border = mask.CoordinateBorder(arr=np.arange(32), polynomial_degree=3)
+            border = mask.ImageGridBorder(arr=np.arange(32), polynomial_degree=3)
             relocated_grid = border.relocated_grid_from_grid(grid)
 
             assert relocated_grid[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
@@ -1960,7 +2004,7 @@ class TestCoordinateBorder(object):
             grid = np.array([[1.0, 0.0], [20., 20.], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 1.0]])
             border_pixels = np.array([0, 2, 3, 4])
 
-            border = mask.CoordinateBorder(border_pixels, polynomial_degree=3)
+            border = mask.ImageGridBorder(border_pixels, polynomial_degree=3)
 
             relocated_grid = border.relocated_grid_from_grid(grid)
 
@@ -1972,7 +2016,7 @@ class TestCoordinateBorder(object):
             assert relocated_grid[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
 
 
-class TestSubCoordinateBorder(object):
+class TestSubGridBorder(object):
 
     class TestFromMask:
 
@@ -1988,7 +2032,7 @@ class TestSubCoordinateBorder(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border = mask.SubCoordinateBorder.from_mask(msk, sub_grid_size=2)
+            border = mask.SubGridBorder.from_mask(msk, sub_grid_size=2)
 
             assert (border == np.array([0, 5])).all()
 
