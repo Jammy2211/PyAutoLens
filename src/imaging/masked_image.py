@@ -10,7 +10,7 @@ class MaskedImage(im.AbstractImage):
 
     def __init__(self, image, mask):
         """
-        An image_coords that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
+        An image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
         array mapping data back to 2D.
 
         Parameters
@@ -18,7 +18,7 @@ class MaskedImage(im.AbstractImage):
         image: im.Image
             A 2D image
         mask: msk.Mask
-            A mask to be applied to the image_coords
+            A mask to be applied to the image
         """
         super().__init__(array=image,
                          effective_exposure_time=mask.masked_1d_array_from_2d_array(image.effective_exposure_time),
@@ -26,8 +26,7 @@ class MaskedImage(im.AbstractImage):
                          psf=image.psf,
                          background_noise=mask.masked_1d_array_from_2d_array(image.background_noise),
                          poisson_noise=mask.masked_1d_array_from_2d_array(image.poisson_noise))
-        #  TODO: Kernel convolver and blurring_coords mask are here. Should they be?
-        self.border_pixel_indices = mask.border_pixel_indices
+
         self.coordinate_grid = mask.coordinate_grid
         self.blurring_mask = mask.blurring_mask_for_kernel_shape(image.psf.shape)
         self.frame_maker = frame_convolution.FrameMaker(mask)
@@ -38,11 +37,11 @@ class MaskedImage(im.AbstractImage):
         self.mask = mask
 
     def map_to_2d(self, data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D image_coords.
+        """Use mapper to map an input data-set from a *GridData* to its original 2D image.
         Parameters
         -----------
         data : ndarray
-            The grid-data which is mapped to its 2D image_coords.
+            The grid-data which is mapped to its 2D image.
         """
         data_2d = np.zeros(self.image_shape)
 
