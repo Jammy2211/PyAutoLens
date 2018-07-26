@@ -59,7 +59,8 @@ class ScaledArray(np.ndarray):
         -------
         central_pixel_coordinates:
             The coordinates of the central pixel in the image_coords. If a dimension of the image_coords are odd then the
-            corresponding coordinate will be fractional.
+            corresponding coordinate will be fra
+    @propertyctional.
         """
         return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
 

@@ -384,7 +384,7 @@ class TestMask(object):
 
             assert (image_grid[0] == np.array([0.0, 0.0])).all()
 
-        def test__setup_3x3_image__five_coordinates(self):
+        def test__setup_3x3_image__five_grid(self):
             msk = np.array([[True, False, True],
                             [False, False, False],
                             [True, False, True]])
@@ -395,7 +395,7 @@ class TestMask(object):
 
             assert (image_grid == np.array([[-3., 0.], [0., -3.], [0., 0.], [0., 3.], [3., 0.]])).all()
 
-        def test__setup_4x4_image__ten_coordinates__new_pixel_scale(self):
+        def test__setup_4x4_image__ten_grid__new_pixel_scale(self):
             msk = np.array([[True, False, False, True],
                             [False, False, False, True],
                             [True, False, False, True],
@@ -409,7 +409,7 @@ class TestMask(object):
                 [[-1.5, -0.5], [-1.5, 0.5], [-0.5, -1.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
                  [1.5, -1.5], [1.5, -0.5], [1.5, 0.5]])).all()
 
-        def test__setup_3x4_image__six_coordinates(self):
+        def test__setup_3x4_image__six_grid(self):
             msk = np.array([[True, False, True, True],
                             [False, False, False, True],
                             [True, False, True, False]])
@@ -423,7 +423,7 @@ class TestMask(object):
 
     class TestComputeGridCoordsImageSub(object):
 
-        def test__3x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
+        def test__3x3_mask_with_one_pixel__2x2_sub_grid__grid(self):
             msk = np.array([[True, True, True],
                             [True, False, True],
                             [True, True, True]])
@@ -434,7 +434,7 @@ class TestMask(object):
 
             assert (image_sub_grid == np.array([[[-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5]]])).all()
 
-        def test__3x3_mask_with_row_of_pixels__2x2_sub_grid__coordinates(self):
+        def test__3x3_mask_with_row_of_pixels__2x2_sub_grid__grid(self):
             msk = np.array([[True, True, True],
                             [False, False, False],
                             [True, True, True]])
@@ -447,7 +447,7 @@ class TestMask(object):
                                                 [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
                                                 [-0.5, 2.5], [-0.5, 3.5], [0.5, 2.5], [0.5, 3.5]])).all()
 
-        def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__coordinates(self):
+        def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__grid(self):
             msk = np.array([[True, True, False],
                             [False, False, False],
                             [True, True, False]])
@@ -480,7 +480,7 @@ class TestMask(object):
                                                      [-0.05, 0.25], [-0.05, 0.35], [0.05, 0.25], [0.05, 0.35],
                                                      [0.25, 0.25], [0.25, 0.35], [0.35, 0.25], [0.35, 0.35]]))
 
-        def test__3x3_mask_with_one_pixel__3x3_sub_grid__coordinates(self):
+        def test__3x3_mask_with_one_pixel__3x3_sub_grid__grid(self):
             msk = np.array([[True, True, True],
                             [True, False, True],
                             [True, True, True]])
@@ -492,7 +492,7 @@ class TestMask(object):
             assert (image_sub_grid == np.array([[[-0.75, -0.75], [-0.75, 0.], [-0.75, 0.75], [0., -0.75], [0., 0.],
                                                  [0., 0.75], [0.75, -0.75], [0.75, 0.], [0.75, 0.75]]])).all()
 
-        def test__3x3_mask_with_one_row__3x3_sub_grid__coordinates(self):
+        def test__3x3_mask_with_one_row__3x3_sub_grid__grid(self):
             msk = np.array([[True, True, False],
                             [True, False, True],
                             [True, True, False]])
@@ -508,7 +508,7 @@ class TestMask(object):
                                                 [1.5, 1.5], [1.5, 2.], [1.5, 2.5], [2., 1.5], [2., 2.], [2., 2.5],
                                                 [2.5, 1.5], [2.5, 2.], [2.5, 2.5]])).all()
 
-        def test__4x4_mask_with_one_pixel__4x4_sub_grid__coordinates(self):
+        def test__4x4_mask_with_one_pixel__4x4_sub_grid__grid(self):
             msk = np.array([[True, True, True, True],
                             [True, False, False, True],
                             [True, False, False, True],
@@ -539,7 +539,7 @@ class TestMask(object):
                                                 [2.8, 3.2], [2.8, 3.6], [3.2, 2.4], [3.2, 2.8], [3.2, 3.2], [3.2, 3.6],
                                                 [3.6, 2.4], [3.6, 2.8], [3.6, 3.2], [3.6, 3.6]])).all()
 
-        def test__4x3_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
+        def test__4x3_mask_with_one_pixel__2x2_sub_grid__grid(self):
             msk = np.array([[True, True, True],
                             [True, False, True],
                             [True, False, False],
@@ -553,7 +553,7 @@ class TestMask(object):
                 [[-2., -0.5], [-2., 0.5], [-1., -0.5], [-1., 0.5], [1., -0.5], [1., 0.5], [2., -0.5], [2., 0.5],
                  [1., 2.5], [1., 3.5], [2., 2.5], [2., 3.5], [4., -3.5], [4., -2.5], [5., -3.5], [5., -2.5]])).all()
 
-        def test__3x4_mask_with_one_pixel__2x2_sub_grid__coordinates(self):
+        def test__3x4_mask_with_one_pixel__2x2_sub_grid__grid(self):
             msk = np.array([[True, True, True, False],
                             [True, False, False, True],
                             [False, True, False, True]])
@@ -569,7 +569,7 @@ class TestMask(object):
 
     class TestComputeGridCoordsBlurring(object):
 
-        def test__3x3_blurring_mask_correct_coordinates(self):
+        def test__3x3_blurring_mask_correct_grid(self):
             msk = np.array([[True, True, True],
                             [True, False, True],
                             [True, True, True]])
@@ -581,7 +581,7 @@ class TestMask(object):
             assert (blurring_grid == np.array(
                 [[-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.], [3., 0.], [3., 3.]])).all()
 
-        def test__3x5_blurring_mask_correct_coordinates(self):
+        def test__3x5_blurring_mask_correct_grid(self):
             msk = np.array([[True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
@@ -608,7 +608,7 @@ class TestMask(object):
                 [[-3., -6.], [-3., -3.], [-3., 0.], [-3., 3.], [-3., 6.], [0., -6.], [0., -3.], [0., 3.], [0., 6.],
                  [3., -6.], [3., -3.], [3., 0.], [3., 3.], [3., 6.]])).all()
 
-        def test__5x3_blurring_mask_correct_coordinates(self):
+        def test__5x3_blurring_mask_correct_grid(self):
             msk = np.array([[True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
@@ -1058,6 +1058,7 @@ class TestMask(object):
     class TestComputeBorderPixels(object):
 
         def test__7x7_mask_one_central_pixel__is_entire_border(self):
+
             msk = np.array([[True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
@@ -1163,6 +1164,88 @@ class TestMask(object):
             border_pixels = msk.border_pixel_indices
 
             assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
+
+    class TestComputeBorderSubPixels(object):
+
+        def test__7x7_mask__2x2_sub_grid__nine_central_pixels__is_border(self):
+
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=2)
+
+            assert (border_sub_pixels == np.array([0, 4, 9, 12, 21, 26, 30, 35])).all()
+
+        def test__7x7_mask__4x4_sub_grid_nine_central_pixels__is_border(self):
+
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=4)
+
+            assert (border_sub_pixels == np.array([0, 16, 35, 48, 83, 108, 124, 143])).all()
+
+
+        def test__7x7_mask_rectangle_of_fifteen_central_pixels__is_border(self):
+
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, True, True, True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=2)
+
+            assert (border_sub_pixels == np.array([0, 4, 9, 12, 21, 24, 33, 38, 47, 44, 49, 59])).all()
+
+        def test__8x7_mask_add_edge_pixels__also_in_border(self):
+
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, True, False, True, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, False, False, False, False, False, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, False, False, False, True, True],
+                            [True, True, True, True, True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=2)
+            assert (border_sub_pixels == np.array([0, 4, 8, 13, 16, 25, 30, 34, 43, 47, 50, 59, 62, 66, 71])).all()
+
+        def test__7x8_mask_add_edge_pixels__also_in_border(self):
+
+            msk = np.array([[True, True, True, True, True, True, True, True],
+                            [True, True, True, False, True, True, True, True],
+                            [True, True, False, False, False, True, True, True],
+                            [True, True, False, False, False, True, True, True],
+                            [True, False, False, False, False, False, True, True],
+                            [True, True, False, False, False, True, True, True],
+                            [True, True, True, True, True, True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=2)
+            assert (border_sub_pixels == np.array([0, 4, 8, 13, 16, 25, 30, 34, 43, 47, 50, 54, 59])).all()
 
     class TestComputeGridMapperTo2D(object):
 
@@ -1659,143 +1742,255 @@ class TestCoordinateCollection(object):
                                                                       [1., 1.]]))).all()
 
 
-class GridBorder(object):
+class TestBorderCollection(object):
 
-    def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
-        """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
+    def test__simple_setup_using_constructor(self):
 
-        This is required to ensure highly demagnified data_to_image in the centre of an image_coords do not bias a source
-        pixelization.
+        image_border = mask.CoordinateBorder(arr=np.array([1, 2, 5]), polynomial_degree=4, centre=(1.0, 1.0))
+        sub_border = mask.SubCoordinateBorder(arr=np.array([1, 2, 3]), polynomial_degree=2, centre=(0.0, 1.0))
 
-        Parameters
-        ----------
-        border_pixels : np.ndarray
-            The the border source data_to_image, specified by their 1D index in *image_grid*.
-        polynomial_degree : int
-            The degree of the polynomial used to fit the source-plane border edge.
-        """
+        border_collection = mask.BorderCollection(image=image_border, sub=sub_border)
 
-        self.centre = centre
+        assert (border_collection.image_border == np.array([1, 2, 5])).all()
+        assert border_collection.image_border.polynomial_degree == 4
+        assert border_collection.image_border.centre == (1.0, 1.0)
 
-        self.border_pixels = border_pixels
-        self.polynomial_degree = polynomial_degree
-        self.centre = centre
+        assert (border_collection.sub_border == np.array([1, 2, 3])).all()
+        assert border_collection.sub_border.polynomial_degree == 2
+        assert border_collection.sub_border.centre == (0.0, 1.0)
 
-        self.thetas = None
-        self.radii = None
-        self.polynomial = None
+    def test__setup_from_mask(self):
 
-    def coordinates_to_centre(self, coordinates):
-        """ Converts coordinates to the profiles's centre.
+        msk = np.array([[True, True, True, True, True, True, True],
+                        [True, True, True, True, True, True, True],
+                        [True, True, True, True, True, True, True],
+                        [True, True, True, False, False, True, True],
+                        [True, True, True, True, True, True, True],
+                        [True, True, True, True, True, True, True],
+                        [True, True, True, True, True, True, True]])
 
-        This is performed via a translation, which subtracts the profile centre from the coordinates.
+        msk = mask.Mask(msk, pixel_scale=3.0)
 
-        Parameters
-        ----------
-        coordinates
-            The (x, y) coordinates of the profile.
+        border_collection = mask.BorderCollection.from_mask_and_subgrid_size(mask=msk, subgrid_size=2)
 
-        Returns
-        ----------
-        The coordinates at the profile's centre.
-        """
-        return np.subtract(coordinates, self.centre)
+        assert (border_collection.image_border == np.array([0, 1])).all()
+        assert (border_collection.sub_border == np.array([0, 5])).all()
 
-    def relocate_coordinates_outside_border(self, coordinates):
-        """For an input set of coordinates, return a new set of coordinates where every coordinate outside the border
-        is relocated to its edge.
 
-        Parameters
-        ----------
-        coordinates : ndarray
-            The coordinates which are to have border relocations take place.
-        """
+class TestCoordinateBorder(object):
 
-        self.polynomial_fit_to_border(coordinates)
+    class TestFromMask:
 
-        relocated_coordinates = np.zeros(coordinates.shape)
+        def test__simple_mask_border_pixel_is_pixel(self):
 
-        for (i, coordinate) in enumerate(coordinates):
-            relocated_coordinates[i] = self.relocated_coordinate(coordinate)
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, False, False, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True]])
 
-        return relocated_coordinates
+            msk = mask.Mask(msk, pixel_scale=3.0)
 
-    def relocate_sub_coordinates_outside_border(self, coordinates, sub_coordinates):
-        """For an input sub_grid_coords-coordinates, return a coordinates where all sub_grid_coords-coordinates outside the border are relocated
-        to its edge.
-        """
+            border = mask.CoordinateBorder.from_mask(msk)
 
-        # TODO : integrate these as functions into GridCoords and SubGrid, or pass in a GridCoords / SubGrid?
+            assert (border == np.array([0, 1])).all()
 
-        self.polynomial_fit_to_border(coordinates)
+    class TestThetasAndRadii:
 
-        relocated_sub_coordinates = np.zeros(sub_coordinates.shape)
+        def test__four_grid_in_circle__all_in_border__correct_radii_and_thetas(self):
 
-        for image_pixel in range(len(coordinates)):
-            for (sub_pixel, sub_coordinate) in enumerate(sub_coordinates[image_pixel]):
-                relocated_sub_coordinates[image_pixel, sub_pixel] = self.relocated_coordinate(sub_coordinate)
+            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
-        return relocated_sub_coordinates
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            radii = border.grid_to_radii(grid)
+            thetas = border.grid_to_thetas(grid)
 
-    def coordinates_angle_from_x(self, coordinates):
-        """
-        Compute the angle in degrees between the image_grid and plane positive x-axis, defined counter-clockwise.
+            assert (radii == np.array([1.0, 1.0, 1.0, 1.0])).all()
+            assert (thetas == np.array([0.0, 90.0, 180.0, 270.0])).all()
 
-        Parameters
-        ----------
-        coordinates : Union((float, float), ndarray)
-            The x and y image_grid of the plane.
+        def test__other_thetas_radii(self):
+            grid = np.array([[2.0, 0.0], [2.0, 2.0], [-1.0, -1.0], [0.0, -3.0]])
 
-        Returns
-        ----------
-        The angle between the image_grid and the x-axis.
-        """
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-        theta_from_x = np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
-        if theta_from_x < 0.0:
-            theta_from_x += 360.
-        return theta_from_x
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            radii = border.grid_to_radii(grid)
+            thetas = border.grid_to_thetas(grid)
 
-    def polynomial_fit_to_border(self, coordinates):
+            assert (radii == np.array([2.0, 2.0 * np.sqrt(2), np.sqrt(2.0), 3.0])).all()
+            assert (thetas == np.array([0.0, 45.0, 225.0, 270.0])).all()
 
-        border_coordinates = coordinates[self.border_pixels]
+        def test__border_centre_offset__grid_same_r_and_theta_shifted(self):
 
-        self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), border_coordinates))
-        self.radii = list(map(lambda r: self.coordinates_to_radius(r), border_coordinates))
-        self.polynomial = np.polyfit(self.thetas, self.radii, self.polynomial_degree)
+            grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0]])
 
-    def radius_at_theta(self, theta):
-        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
-        return np.polyval(self.polynomial, theta)
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
+            radii = border.grid_to_radii(grid)
+            thetas = border.grid_to_thetas(grid)
 
-    def move_factor(self, coordinate):
-        """Get the move factor of a coordinate.
-         A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order
-         to lie on it. PlaneCoordinates already within the setup_border_pixels return a move-factor of 1.0, signifying
-         they are already within the setup_border_pixels.
+            assert (radii == np.array([1.0, 1.0, 1.0, 1.0])).all()
+            assert (thetas == np.array([0.0, 90.0, 180.0, 270.0])).all()
 
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The x and y image_grid of the pixel to have its move-factor computed.
-        """
-        theta = self.coordinates_angle_from_x(coordinate)
-        radius = self.coordinates_to_radius(coordinate)
+    class TestBorderPolynomialFit(object):
 
-        border_radius = self.radius_at_theta(theta)
+        def test__four_grid_in_circle__thetas_at_radius_are_each_grid_radius(self):
 
-        if radius > border_radius:
-            return border_radius / radius
-        else:
-            return 1.0
+            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
 
-    def relocated_coordinate(self, coordinate):
-        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            poly = border.polynomial_fit_to_border(grid)
 
-        Parameters
-        ----------
-        coordinate : ndarray[float, float]
-            The x and y image_grid of the pixel to have its move-factor computed.
-        """
-        move_factor = self.move_factor(coordinate)
-        return coordinate[0] * move_factor, coordinate[1] * move_factor
+            assert np.polyval(poly, 0.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 90.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 180.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 270.0) == pytest.approx(1.0, 1e-3)
+
+        def test__eight_grid_in_circle__thetas_at_each_grid_are_the_radius(self):
+
+            grid = np.array([[1.0, 0.0], [0.5 * np.sqrt(2), 0.5 * np.sqrt(2)],
+                                    [0.0, 1.0], [-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)],
+                                    [-1.0, 0.0], [-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)],
+                                    [0.0, -1.0], [0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]])
+
+            border = mask.CoordinateBorder(arr=
+                                      np.arange(8), polynomial_degree=3)
+            poly = border.polynomial_fit_to_border(grid)
+
+            assert np.polyval(poly, 0.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 45.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 90.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 135.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 180.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 225.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 270.0) == pytest.approx(1.0, 1e-3)
+            assert np.polyval(poly, 315.0) == pytest.approx(1.0, 1e-3)
+
+    class TestMoveFactors(object):
+
+        def test__inside_border__move_factor_is_1(self):
+            
+            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
+
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            move_factors = border.move_factors_from_grid(grid)
+
+            assert move_factors[0] == pytest.approx(1.0, 1e-4)
+            assert move_factors[1] == pytest.approx(1.0, 1e-4)
+            assert move_factors[2] == pytest.approx(1.0, 1e-4)
+            assert move_factors[3] == pytest.approx(1.0, 1e-4)
+
+        def test__outside_border_double_its_radius__move_factor_is_05(self):
+
+            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0],
+                             [2.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [0.0, -2.0]])
+
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3)
+            move_factors = border.move_factors_from_grid(grid)
+
+            assert move_factors[0] == pytest.approx(1.0, 1e-4)
+            assert move_factors[1] == pytest.approx(1.0, 1e-4)
+            assert move_factors[2] == pytest.approx(1.0, 1e-4)
+            assert move_factors[3] == pytest.approx(1.0, 1e-4)
+            assert move_factors[4] == pytest.approx(0.5, 1e-4)
+            assert move_factors[5] == pytest.approx(0.5, 1e-4)
+            assert move_factors[6] == pytest.approx(0.5, 1e-4)
+            assert move_factors[7] == pytest.approx(0.5, 1e-4)
+
+        def test__outside_border_as_above__but_shift_for_source_plane_centre(self):
+
+            grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0],
+                             [3.0, 1.0], [1.0, 3.0], [1.0, 3.0], [3.0, 1.0]])
+
+            border = mask.CoordinateBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
+            move_factors = border.move_factors_from_grid(grid)
+
+            assert move_factors[0] == pytest.approx(1.0, 1e-4)
+            assert move_factors[1] == pytest.approx(1.0, 1e-4)
+            assert move_factors[2] == pytest.approx(1.0, 1e-4)
+            assert move_factors[3] == pytest.approx(1.0, 1e-4)
+            assert move_factors[4] == pytest.approx(0.5, 1e-4)
+            assert move_factors[5] == pytest.approx(0.5, 1e-4)
+            assert move_factors[6] == pytest.approx(0.5, 1e-4)
+            assert move_factors[7] == pytest.approx(0.5, 1e-4)
+
+    class TestRelocateCoordinates(object):
+
+        def test__inside_border_no_relocations(self):
+
+            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
+            grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+            grid = grid_circle
+            grid.append(np.array([0.1, 0.0]))
+            grid.append(np.array([-0.2, -0.3]))
+            grid.append(np.array([0.5, 0.4]))
+            grid.append(np.array([0.7, -0.1]))
+            grid = np.asarray(grid)
+
+            border = mask.CoordinateBorder(arr=np.arange(32), polynomial_degree=3)
+            relocated_grid = border.relocated_grid_from_grid(grid)
+
+            assert relocated_grid[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
+            assert relocated_grid[32] == pytest.approx(np.array([0.1, 0.0]), 1e-3)
+            assert relocated_grid[33] == pytest.approx(np.array([-0.2, -0.3]), 1e-3)
+            assert relocated_grid[34] == pytest.approx(np.array([0.5, 0.4]), 1e-3)
+            assert relocated_grid[35] == pytest.approx(np.array([0.7, -0.1]), 1e-3)
+
+        def test__outside_border_simple_cases__relocates_to_source_border(self):
+
+            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
+            grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
+            grid = grid_circle
+            grid.append(np.array([2.5, 0.0]))
+            grid.append(np.array([0.0, 3.0]))
+            grid.append(np.array([-2.5, 0.0]))
+            grid.append(np.array([-5.0, 5.0]))
+            grid = np.asarray(grid)
+
+            border = mask.CoordinateBorder(arr=np.arange(32), polynomial_degree=3)
+            relocated_grid = border.relocated_grid_from_grid(grid)
+
+            assert relocated_grid[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
+            assert relocated_grid[32] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
+            assert relocated_grid[33] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
+            assert relocated_grid[34] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
+            assert relocated_grid[35] == pytest.approx(np.array([-0.707, 0.707]), 1e-3)
+
+        def test__6_grid_total__2_outside_border__different_border__relocate_to_source_border(self):
+
+            grid = np.array([[1.0, 0.0], [20., 20.], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 1.0]])
+            border_pixels = np.array([0, 2, 3, 4])
+
+            border = mask.CoordinateBorder(border_pixels, polynomial_degree=3)
+
+            relocated_grid = border.relocated_grid_from_grid(grid)
+
+            assert relocated_grid[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grid[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert relocated_grid[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grid[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grid[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grid[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+
+
+class TestSubCoordinateBorder(object):
+
+    class TestFromMask:
+
+        def test__simple_mask_border_pixel_is_pixel(self):
+
+            msk = np.array([[True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, False, False, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True],
+                            [True, True, True, True, True, True, True]])
+
+            msk = mask.Mask(msk, pixel_scale=3.0)
+
+            border = mask.SubCoordinateBorder.from_mask(msk, sub_grid_size=2)
+
+            assert (border == np.array([0, 5])).all()
+
+
+
