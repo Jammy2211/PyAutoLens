@@ -1,6 +1,6 @@
 from src.analysis import fitting
 from src.analysis import ray_tracing
-from src.pixelization import frame_convolution
+from imaging import convolution
 from src import exc
 import logging
 
@@ -41,7 +41,7 @@ class Analysis(object):
         self.mapper_cluster = mask.sparse_grid_mapper_with_grid_size(cluster_grid_size)
         self.mapping = mask.grid_mapping_with_sub_grid_size(sub_grid_size)
 
-        self.kernel_convolver = frame_convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
+        self.kernel_convolver = convolution.FrameMaker(mask=mask).convolver_for_kernel(image.psf)
 
         self.model_image = model_image
         self.galaxy_images = galaxy_images
