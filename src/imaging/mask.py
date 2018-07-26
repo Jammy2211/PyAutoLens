@@ -296,6 +296,7 @@ class Mask(scaled_array.ScaledArray):
 
         return data_2d
 
+
 class SparseMask(Mask):
     def __new__(cls, mask, sparse_grid_size, *args, **kwargs):
         sparse_mask = np.full(mask.shape, True)
@@ -466,6 +467,7 @@ class CoordinateGrid(np.ndarray):
         for key, value in state[-1].items():
             setattr(self, key, value)
         super(CoordinateGrid, self).__setstate__(state[0:-1])
+
 
 class SubCoordinateGrid(CoordinateGrid):
 
