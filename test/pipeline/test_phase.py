@@ -46,7 +46,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 
 @pytest.fixture(name="grids")
-def make_coordinates_collection(masked_image):
+def make_grids(masked_image):
     return msk.GridCollection.from_mask_subgrid_size_and_blurring_shape(
         masked_image.mask, 1, masked_image.psf.shape)
 
@@ -156,14 +156,14 @@ class TestPhase(object):
 
 
 class TestAnalysis(object):
-    def test_model_image(self, results, masked_image, coordinates_collection):
-        analysis = ph.Phase.Analysis(results, masked_image, coordinates_collection)
+    def test_model_image(self, results, masked_image, grids):
+        analysis = ph.Phase.Analysis(results, masked_image, grids)
         assert (results.model_image == analysis.last_results.model_image).all()
 
-    def test_hyper_galaxy(self, results, masked_image, coordinates_collection):
+    def test_hyper_galaxy(self, results, masked_image, grids):
         hyper_galaxy_1 = g.HyperGalaxy()
         hyper_galaxy_2 = g.HyperGalaxy()
         results.constant.lens_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_1)
         results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
-        analysis = ph.Phase.Analysis(results, masked_image, coordinates_collection)
+        analysis = ph.Phase.Analysis(results, masked_image, grids)
         assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies

@@ -1,6 +1,6 @@
 from src.imaging import image as im
 from src.imaging import mask as msk
-from src.pixelization import frame_convolution
+from src.imaging import convolution
 import numpy as np
 
 
@@ -29,7 +29,7 @@ class MaskedImage(im.AbstractImage):
 
         self.coordinate_grid = mask.coordinate_grid
         self.blurring_mask = mask.blurring_mask_for_kernel_shape(image.psf.shape)
-        self.frame_maker = frame_convolution.FrameMaker(mask)
+        self.frame_maker = convolution.FrameMaker(mask)
         self.convolver = self.frame_maker.convolver_for_kernel_shape(image.psf.shape, self.blurring_mask)
         self.kernel_convolver = self.convolver.convolver_for_kernel(image.psf)
         self.image_shape = image.shape

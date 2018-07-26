@@ -3,10 +3,10 @@ import numpy as np
 from src.profiles import light_profiles
 from profiling import profiling_data
 from profiling import tools
-from src.pixelization import frame_convolution
-import pytest
+from imaging import convolution
 
-class KernelConvolverProfiling(frame_convolution.KernelConvolver):
+
+class KernelConvolverProfiling(convolution.KernelConvolver):
 
     def __init__(self, kernel, frame_array, blurring_frame_array=None):
 
