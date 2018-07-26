@@ -9,7 +9,7 @@ from src.analysis import ray_tracing, galaxy
 # Simple coordinates to show behaviour
 coordinates = np.array([[1.0, 1.0]])
 
-# Setup a simple sersic light and sis mass profile
+# Setup a simple sersic light and power_law mass profile
 sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1,
                                          effective_radius=1.0, sersic_index=4.0)
 sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)

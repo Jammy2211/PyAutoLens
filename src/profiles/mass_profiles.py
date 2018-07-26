@@ -1,6 +1,5 @@
 from src.profiles import geometry_profiles
 from src.profiles import light_profiles
-import math
 from scipy.integrate import quad
 from scipy import special
 from itertools import count
@@ -150,7 +149,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
-        return 2 * math.pi * r * self.surface_density_func(x)
+        return 2 * np.pi * r * self.surface_density_func(x)
 
 
 class EllipticalPowerLaw(EllipticalMassProfile, MassProfile):
@@ -298,9 +297,9 @@ class SphericalPowerLaw(EllipticalPowerLaw):
 
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
-        eta_u = self.grid_to_elliptical_radius(grid)
+        eta = self.grid_to_radius(grid)
         deflection_r = 2.0 * self.einstein_radius_rescaled * \
-                       np.divide(np.power(eta_u, (3.0 - self.slope)), np.multiply((3.0 - self.slope), eta_u))
+                       np.divide(np.power(eta, (3.0 - self.slope)), np.multiply((3.0 - self.slope), eta))
         return self.grid_radius_to_cartesian(grid, deflection_r)
 
 
@@ -341,12 +340,12 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         """
 
         try:
-            factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / math.sqrt(1 - self.axis_ratio ** 2)
+            factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(1 - self.axis_ratio ** 2)
 
             psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 0])), np.square(grid[:, 1])))
 
-            deflection_x = np.arctan(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
-            deflection_y = np.arctanh(np.divide(np.multiply(math.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
+            deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
+            deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
 
             return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_x, deflection_y)).T))
         except ZeroDivisionError:
@@ -484,7 +483,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         grid : mask.CoordinateGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        eta = self.grid_to_elliptical_radius(grid)
+        eta = self.grid_to_radius(grid)
         deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
             np.add(np.power(np.add(self.core_radius ** 2, np.square(eta)), (3. - self.slope) / 2.),
                    -self.core_radius ** (3 - self.slope)), np.multiply((3. - self.slope), eta)))
@@ -581,9 +580,9 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
     @staticmethod
     def coord_func(r):
         if r > 1:
-            return (1.0 / math.sqrt(r ** 2 - 1)) * math.atan(math.sqrt(r ** 2 - 1))
+            return (1.0 / np.sqrt(r ** 2 - 1)) * np.arctan(np.sqrt(r ** 2 - 1))
         elif r < 1:
-            return (1.0 / math.sqrt(1 - r ** 2)) * math.atanh(math.sqrt(1 - r ** 2))
+            return (1.0 / np.sqrt(1 - r ** 2)) * np.arctanh(np.sqrt(1 - r ** 2))
         elif r == 1:
             return 1
 
@@ -664,14 +663,14 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
         if eta_u > 1:
-            eta_u_2 = (1.0 / math.sqrt(eta_u ** 2 - 1)) * math.atan(math.sqrt(eta_u ** 2 - 1))
+            eta_u_2 = (1.0 / np.sqrt(eta_u ** 2 - 1)) * np.arctan(np.sqrt(eta_u ** 2 - 1))
         elif eta_u < 1:
-            eta_u_2 = (1.0 / math.sqrt(1 - eta_u ** 2)) * math.atanh(math.sqrt(1 - eta_u ** 2))
+            eta_u_2 = (1.0 / np.sqrt(1 - eta_u ** 2)) * np.arctanh(np.sqrt(1 - eta_u ** 2))
         else:
             eta_u_2 = 1
 
         return 4.0 * kappa_s * scale_radius * (axis_ratio / 2.0) * (eta_u / u) * (
-                (math.log(eta_u / 2.0) + eta_u_2) / eta_u) / (
+                (np.log(eta_u / 2.0) + eta_u_2) / eta_u) / (
                        (1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
@@ -681,9 +680,9 @@ class EllipticalNFW(EllipticalMassProfile, MassProfile):
         eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
         if eta_u > 1:
-            eta_u_2 = (1.0 / math.sqrt(eta_u ** 2 - 1)) * math.atan(math.sqrt(eta_u ** 2 - 1))
+            eta_u_2 = (1.0 / np.sqrt(eta_u ** 2 - 1)) * np.arctan(np.sqrt(eta_u ** 2 - 1))
         elif eta_u < 1:
-            eta_u_2 = (1.0 / math.sqrt(1 - eta_u ** 2)) * math.atanh(math.sqrt(1 - eta_u ** 2))
+            eta_u_2 = (1.0 / np.sqrt(1 - eta_u ** 2)) * np.arctanh(np.sqrt(1 - eta_u ** 2))
         else:
             eta_u_2 = 1
 
@@ -727,7 +726,7 @@ class SphericalNFW(EllipticalNFW):
         grid : mask.CoordinateGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        eta = (1.0 / self.scale_radius) * self.grid_to_elliptical_radius(grid)
+        eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
         return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
 
     @geometry_profiles.transform_grid
@@ -740,7 +739,7 @@ class SphericalNFW(EllipticalNFW):
         grid : mask.CoordinateGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        eta = np.multiply(1. / self.scale_radius, self.grid_to_elliptical_radius(grid))
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
         deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta))
 
         return self.grid_radius_to_cartesian(grid, deflection_r)
@@ -882,7 +881,7 @@ class EllipticalGeneralizedNFW(EllipticalNFW):
     def surface_density_func(self, radius):
 
         def integral_y(y, eta):
-            return (y + eta) ** (self.inner_slope - 4) * (1 - math.sqrt(1 - y ** 2))
+            return (y + eta) ** (self.inner_slope - 4) * (1 - np.sqrt(1 - y ** 2))
 
         radius = (1.0 / self.scale_radius) * radius
         integral_y = quad(integral_y, a=0.0, b=1.0, args=radius, epsrel=EllipticalGeneralizedNFW.epsrel)[0]
@@ -954,7 +953,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        eta = np.multiply(1. / self.scale_radius, self.grid_to_elliptical_radius(grid))
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
 
         deflection_grid = np.zeros(grid.shape[0])
 
@@ -965,7 +964,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
     @staticmethod
     def deflection_integrand(y, eta, inner_slope):
-        return (y + eta) ** (inner_slope - 3) * ((1 - math.sqrt(1 - y ** 2)) / y)
+        return (y + eta) ** (inner_slope - 3) * ((1 - np.sqrt(1 - y ** 2)) / y)
 
     def deflection_func_sph(self, eta):
         integral_y_2 = quad(self.deflection_integrand, a=0.0, b=1.0, args=(eta, self.inner_slope), epsrel=1.49e-6)[0]
