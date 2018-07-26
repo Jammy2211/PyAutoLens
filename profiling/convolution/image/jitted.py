@@ -1,14 +1,13 @@
-import sys
 import numpy as np
 
 from src.profiles import light_profiles
 from profiling import profiling_data
-from src.pixelization import frame_convolution
+from imaging import convolution
 from profiling import tools
 import numba
-import pytest
 
-class KernelConvolverProfiling(frame_convolution.KernelConvolver):
+
+class KernelConvolverProfiling(convolution.KernelConvolver):
 
     def __init__(self, kernel, frame_array, blurring_frame_array=None):
 
