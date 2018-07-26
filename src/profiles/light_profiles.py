@@ -1,5 +1,4 @@
 from src.profiles import geometry_profiles
-import math
 from scipy.integrate import quad
 import numpy as np
 from itertools import count
@@ -125,7 +124,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
-        return 2 * math.pi * r * self.intensity_at_radius(x)
+        return 2 * np.pi * r * self.intensity_at_radius(x)
 
 
 class EllipticalSersic(EllipticalLightProfile):
@@ -167,7 +166,7 @@ class EllipticalSersic(EllipticalLightProfile):
 
          The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
          half the light, and may be more appropriate for pixelization of highly flattened systems like disk galaxies."""
-        return self.effective_radius / math.sqrt(self.axis_ratio)
+        return self.effective_radius / np.sqrt(self.axis_ratio)
 
     @property
     def sersic_constant(self):
@@ -314,7 +313,7 @@ class EllipticalCoreSersic(EllipticalSersic):
     @property
     def intensity_prime(self):
         """Overall intensity normalisation in the rescaled Core-Sersic light profiles (electrons per second)"""
-        return self.intensity_break * (2.0 ** (-self.gamma / self.alpha)) * math.exp(
+        return self.intensity_break * (2.0 ** (-self.gamma / self.alpha)) * np.exp(
             self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
                     1.0 / self.sersic_index))
 
