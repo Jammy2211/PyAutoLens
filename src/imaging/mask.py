@@ -235,7 +235,7 @@ class Mask(scaled_array.ScaledArray):
         its edge, therefore neighboring a pixel with a *True* value.
         """
 
-        border_pixels = np.empty(0)
+        border_pixels = np.empty(0, dtype='int')
         image_pixel_index = 0
 
         for x in range(self.shape[0]):
@@ -249,6 +249,39 @@ class Mask(scaled_array.ScaledArray):
                     image_pixel_index += 1
 
         return border_pixels
+
+    def border_sub_pixel_indices(self, sub_grid_size):
+        """Compute the border image_coords data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        its edge, therefore neighboring a pixel with a *True* value.
+        """
+
+        border_sub_pixels = np.empty(0, dtype='int')
+        image_pixel_index = 0
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    if self[x + 1, y] or self[x - 1, y] or self[x, y + 1] or \
+                            self[x, y - 1] or self[x + 1, y + 1] or self[x + 1, y - 1] \
+                            or self[x - 1, y + 1] or self[x - 1, y - 1]:
+
+                            x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
+                            sub_grid = np.zeros((sub_grid_size**2, 2))
+                            sub_pixel_count = 0
+
+                            for x1 in range(sub_grid_size):
+                                for y1 in range(sub_grid_size):
+                                    sub_grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
+                                    sub_grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
+                                    sub_pixel_count += 1
+
+                            sub_grid_radii =  np.add(np.square(sub_grid[:,0]), np.square(sub_grid[:, 1]))
+                            border_sub_pixel_index = image_pixel_index*(sub_grid_size**2) + np.argmax(sub_grid_radii)
+                            border_sub_pixels = np.append(border_sub_pixels, border_sub_pixel_index)
+
+                    image_pixel_index += 1
+
+        return border_sub_pixels
 
     @Memoizer()
     def blurring_mask_for_kernel_shape(self, kernel_shape):
@@ -449,7 +482,7 @@ class CoordinateGrid(np.ndarray):
         return self.shape[0]
 
     def __new__(cls, arr, *args, **kwargs):
-        return arr.view(cls)
+        grid = arr.view(cls)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -640,116 +673,98 @@ class CoordinateCollection(object):
         return [self.image_coords, self.sub_grid_coords, self.blurring_coords][item]
 
 
-class GridBorder(object):
 
-    def __init__(self, border_pixels, polynomial_degree=3, centre=(0.0, 0.0)):
-        """ The border of a set of grid coordinates, which relocates coordinates outside of the border to its edge.
+class BorderCollection(object):
 
-        This is required to ensure highly demagnified data_to_image in the centre of an image_coords do not bias a source
-        pixelization.
+    def __init__(self, image, sub):
 
-        Parameters
-        ----------
-        border_pixels : np.ndarray
-            The the border source data_to_image, specified by their 1D index in *image_grid*.
-        polynomial_degree : int
-            The degree of the polynomial used to fit the source-plane border edge.
+        self.image_border = image
+        self.sub_border = sub
+
+    @classmethod
+    def from_mask_and_subgrid_size(cls, mask, subgrid_size, polynomial_degree=3, centre=(0.0, 0.0)):
+        image_border = CoordinateBorder.from_mask(mask, polynomial_degree, centre)
+        sub_border = SubCoordinateBorder.from_mask(mask, subgrid_size, polynomial_degree, centre)
+        return BorderCollection(image_border, sub_border)
+
+
+
+class CoordinateBorder(np.ndarray):
+
+    @property
+    def no_pixels(self):
+        return self.shape[0]
+
+    def __new__(cls, arr, polynomial_degree=3, centre=(0.0, 0.0), *args, **kwargs):
+        border = arr.view(cls)
+        border.polynomial_degree = polynomial_degree
+        border.centre = centre
+        return border
+
+    @classmethod
+    def from_mask(cls, mask, polynomial_degree=3, centre=(0.0, 0.0)):
+        return cls(mask.border_pixel_indices, polynomial_degree, centre)
+
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(CoordinateGrid, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict, )
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return (pickled_state[0], pickled_state[1], new_state)
+
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(CoordinateGrid, self).__setstate__(state[0:-1])
+
+    def grid_to_radii(self, grid):
         """
+        Convert coordinates to a circular radius.
 
-        self.centre = centre
-
-        self.border_pixels = border_pixels
-        self.polynomial_degree = polynomial_degree
-        self.centre = centre
-
-        self.thetas = None
-        self.radii = None
-        self.polynomial = None
-
-    def coordinates_to_centre(self, coordinates):
-        """ Converts coordinates to the profiles's centre.
-
-        This is performed via a translation, which subtracts the profile centre from the coordinates.
+        If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
         Parameters
         ----------
-        coordinates
-            The (x, y) coordinates of the profile.
+        grid
 
         Returns
-        ----------
-        The coordinates at the profile's centre.
-        """
-        return np.subtract(coordinates, self.centre)
-
-    def relocate_coordinates_outside_border(self, coordinates):
-        """For an input set of coordinates, return a new set of coordinates where every coordinate outside the border
-        is relocated to its edge.
-
-        Parameters
-        ----------
-        coordinates : ndarray
-            The coordinates which are to have border relocations take place.
+        -------
+        The radius at those coordinates
         """
 
-        self.polynomial_fit_to_border(coordinates)
+        return np.sqrt(np.add(np.square(np.subtract(grid[:, 0], self.centre[0])),
+                              np.square(np.subtract(grid[:, 1], self.centre[1]))))
 
-        relocated_coordinates = np.zeros(coordinates.shape)
-
-        for (i, coordinate) in enumerate(coordinates):
-            relocated_coordinates[i] = self.relocated_coordinate(coordinate)
-
-        return relocated_coordinates
-
-    def relocate_sub_coordinates_outside_border(self, coordinates, sub_coordinates):
-        """For an input sub_grid_coords-coordinates, return a coordinates where all sub_grid_coords-coordinates outside the border are relocated
-        to its edge.
-        """
-
-        # TODO : integrate these as functions into GridCoords and SubGrid, or pass in a GridCoords / SubGrid?
-
-        self.polynomial_fit_to_border(coordinates)
-
-        relocated_sub_coordinates = np.zeros(sub_coordinates.shape)
-
-        for image_pixel in range(len(coordinates)):
-            for (sub_pixel, sub_coordinate) in enumerate(sub_coordinates[image_pixel]):
-                relocated_sub_coordinates[image_pixel, sub_pixel] = self.relocated_coordinate(sub_coordinate)
-
-        return relocated_sub_coordinates
-
-    def coordinates_angle_from_x(self, coordinates):
+    def grid_to_thetas(self, grid):
         """
         Compute the angle in degrees between the image_grid and plane positive x-axis, defined counter-clockwise.
 
         Parameters
         ----------
-        coordinates : Union((float, float), ndarray)
+        grid : Union((float, float), ndarray)
             The x and y image_grid of the plane.
 
         Returns
         ----------
         The angle between the image_grid and the x-axis.
         """
-        shifted_coordinates = self.coordinates_to_centre(coordinates)
-        theta_from_x = np.degrees(np.arctan2(shifted_coordinates[1], shifted_coordinates[0]))
-        if theta_from_x < 0.0:
-            theta_from_x += 360.
+        shifted_grid = np.subtract(grid, self.centre)
+        theta_from_x = np.degrees(np.arctan2(shifted_grid[:, 1], shifted_grid[:, 0]))
+        theta_from_x[theta_from_x < 0.0] += 360.
         return theta_from_x
 
-    def polynomial_fit_to_border(self, coordinates):
+    def polynomial_fit_to_border(self, grid):
 
-        border_coordinates = coordinates[self.border_pixels]
+        border_grid = grid[self]
 
-        self.thetas = list(map(lambda r: self.coordinates_angle_from_x(r), border_coordinates))
-        self.radii = list(map(lambda r: self.coordinates_to_radius(r), border_coordinates))
-        self.polynomial = np.polyfit(self.thetas, self.radii, self.polynomial_degree)
+        return np.polyfit(self.grid_to_thetas(border_grid), self.grid_to_radii(border_grid), self.polynomial_degree)
 
-    def radius_at_theta(self, theta):
-        """For a an angle theta from the x-axis, return the setup_border_pixels radius via the polynomial fit"""
-        return np.polyval(self.polynomial, theta)
-
-    def move_factor(self, coordinate):
+    def move_factors_from_grid(self, grid):
         """Get the move factor of a coordinate.
          A move-factor defines how far a coordinate outside the source-plane setup_border_pixels must be moved in order
          to lie on it. PlaneCoordinates already within the setup_border_pixels return a move-factor of 1.0, signifying
@@ -757,26 +772,31 @@ class GridBorder(object):
 
         Parameters
         ----------
-        coordinate : (float, float)
+        grid : ndarray
             The x and y image_grid of the pixel to have its move-factor computed.
         """
-        theta = self.coordinates_angle_from_x(coordinate)
-        radius = self.coordinates_to_radius(coordinate)
+        grid_thetas = self.grid_to_thetas(grid)
+        grid_radii = self.grid_to_radii(grid)
+        poly = self.polynomial_fit_to_border(grid)
 
-        border_radius = self.radius_at_theta(theta)
+        move_factors = np.ones(grid.shape[0])
 
-        if radius > border_radius:
-            return border_radius / radius
-        else:
-            return 1.0
+        for i in range(grid.shape[0]):
 
-    def relocated_coordinate(self, coordinate):
-        """Get a coordinate relocated to the source-plane setup_border_pixels if initially outside of it.
+            border_radius = np.polyval(poly, grid_thetas[i])
 
-        Parameters
-        ----------
-        coordinate : ndarray[float, float]
-            The x and y image_grid of the pixel to have its move-factor computed.
-        """
-        move_factor = self.move_factor(coordinate)
-        return coordinate[0] * move_factor, coordinate[1] * move_factor
+            if grid_radii[i] > border_radius:
+                move_factors[i] = border_radius / grid_radii[i]
+
+        return move_factors
+
+    def relocated_grid_from_grid(self, grid):
+        move_factors = self.move_factors_from_grid(grid)
+        return np.multiply(grid, move_factors[:, None])
+
+
+class SubCoordinateBorder(CoordinateBorder):
+
+    @classmethod
+    def from_mask(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
+        return cls(mask.border_sub_pixel_indices(sub_grid_size), polynomial_degree, centre)
