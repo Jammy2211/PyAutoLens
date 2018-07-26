@@ -5,9 +5,9 @@ from src.analysis import fitting, ray_tracing, galaxy
 from src.imaging import mask as mask
 from src.imaging import masked_image
 from src.imaging import image
+from src.imaging import convolution
 from src.profiles import light_profiles
 from src.pixelization import pixelization
-from src.pixelization import frame_convolution
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
@@ -278,7 +278,7 @@ class TestComputeBlurredImages:
 
         ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = frame_convolution.FrameMaker(mask=ma)
+        frame = convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
                                                      blurring_region_mask=ma.blurring_mask_for_kernel_shape(
                                                          kernel_shape=(3, 3)))
@@ -306,7 +306,7 @@ class TestComputeBlurredImages:
                        [True, True, True, True]])
         ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = frame_convolution.FrameMaker(mask=ma)
+        frame = convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
                                                      blurring_region_mask=ma.blurring_mask_for_kernel_shape(
                                                          kernel_shape=(3, 3)))
@@ -333,7 +333,7 @@ class TestComputeBlurredImages:
                        [True, True, True, True]])
         ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = frame_convolution.FrameMaker(mask=ma)
+        frame = convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
                                                      blurring_region_mask=ma.blurring_mask_for_kernel_shape(
                                                          kernel_shape=(3, 3)))
@@ -359,7 +359,7 @@ class TestComputeBlurredImages:
                        [True, True, True, True]])
         ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = frame_convolution.FrameMaker(mask=ma)
+        frame = convolution.FrameMaker(mask=ma)
         convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
                                                      blurring_region_mask=ma.blurring_mask_for_kernel_shape(
                                                          kernel_shape=(3, 3)))

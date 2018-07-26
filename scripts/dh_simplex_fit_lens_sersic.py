@@ -10,7 +10,7 @@ from src.imaging import image
 from src.imaging import mask
 from src.imaging import grids
 from src.profiles import light_profiles as lp
-from src.pixelization import frame_convolution
+from imaging import convolution
 from src.autopipe import model_mapper
 from src.analysis import ray_tracing
 from src.analysis import galaxy
@@ -37,7 +37,7 @@ grid_data = grids.DataCollection.from_mask(mask=msk, image=data, noise=data.back
                                            exposure_time=data.effective_exposure_time)
 mappers = grids.MapperCollection.from_mask(mask=msk)
 
-frame = frame_convolution.FrameMaker(mask=msk)
+frame = convolution.FrameMaker(mask=msk)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=data.psf.shape,
                                              blurring_region_mask=msk.blurring_mask_for_kernel_shape(
                                                  kernel_shape=data.psf.shape))

@@ -1,11 +1,6 @@
-import sys
-import numpy as np
-
 from src.profiles import light_profiles
 from profiling import profiling_data
-from src.pixelization import frame_convolution
 import time
-import numba
 import pytest
 
 subgrid_size=2
