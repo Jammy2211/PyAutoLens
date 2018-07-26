@@ -28,7 +28,7 @@ def sim_grid_9x9():
 def fit_grid_9x9():
     fit_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(4.5, 4.5), pixel_scale=0.5, psf_size=(5, 5))
     fit_grid_9x9.ma = mask.Mask(array=fit_grid_9x9.ma, pixel_scale=1.0)
-    fit_grid_9x9.image_grid = mask.CoordinateCollection(fit_grid_9x9.ma, 2, (3, 3,))
+    fit_grid_9x9.image_grid = mask.GridCollection(fit_grid_9x9.ma, 2, (3, 3,))
     sim_grid_9x9.mapping = sim_grid_9x9.ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
     return fit_grid_9x9
 
@@ -47,9 +47,11 @@ def galaxy_light_sersic():
 
 
 class TestCase:
+
     class TestRectangularPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -73,10 +75,12 @@ class TestCase:
             ray_trace = ray_tracing.Tracer(
                 lens_galaxies=[],
                 source_galaxies=[galaxy_pix],
-                image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
-            fitter = fitting.PixelizedFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
+            fitter = fitting.PixelizedFitter(masked_image=mi,
+                                             borders=mask.BorderCollection.from_mask_and_subgrid_size(mask=ma, subgrid_size=1),
+                                             sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -138,10 +142,12 @@ class TestCase:
             ray_trace = ray_tracing.Tracer(
                 lens_galaxies=[],
                 source_galaxies=[galaxy_pix],
-                image_plane_grids=mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+                image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
-            fitter = fitting.PixelizedFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
+            fitter = fitting.PixelizedFitter(masked_image=mi,
+                                             borders=mask.BorderCollection.from_mask_and_subgrid_size(mask=ma, subgrid_size=1),
+                                             sparse_mask=mask.SparseMask(mi.mask, 1), tracer=ray_trace)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],

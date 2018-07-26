@@ -52,9 +52,9 @@ class Data(object):
 
         self.masked_image = masked_image.MaskedImage(image=self.image, mask=self.mask)
 
-        self.coords = mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(mask=self.mask,
-                                                                                          subgrid_size=subgrid_size,
-                                                                                          blurring_shape=psf.shape)
+        self.coords = mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(mask=self.mask,
+                                                                                    subgrid_size=subgrid_size,
+                                                                                    blurring_shape=psf.shape)
 
         with open(pickle_path(), 'wb') as pickle_file:
             pickle.dump(self, file=pickle_file)
