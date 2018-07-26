@@ -3,10 +3,9 @@ import sys
 sys.path.append("../../")
 import numpy as np
 from src.imaging import mask
-from src.pixelization import frame_convolution
+from imaging import convolution
 import time
 import os
-import numba
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -23,7 +22,7 @@ data = ma.masked_1d_array_from_2d_array(np.ones(ma.shape))
 
 mapping = np.ones((len(data), 60))
 
-frame = frame_convolution.FrameMaker(mask=ma)
+frame = convolution.FrameMaker(mask=ma)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=psf_shape)
 # This PSF leads to no blurring, so equivalent to being off.
 kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))
