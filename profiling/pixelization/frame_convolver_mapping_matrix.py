@@ -25,7 +25,7 @@ mapping = np.ones((len(data), 60))
 
 frame = frame_convolution.FrameMaker(mask=ma)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=psf_shape)
-# This PSF leads to no blurring_coords, so equivalent to being off.
+# This PSF leads to no blurring, so equivalent to being off.
 kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))
 
 kernel_convolver.convolve_mapping_matrix_jit(mapping)

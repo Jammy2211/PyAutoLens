@@ -36,8 +36,8 @@ psf = image.PSF.from_fits(file_path=path+'../profiling/data/psf', hdu=3, pixel_s
 psf = psf.trim(psf_size)
 ma = mask.Mask.for_simulate(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, psf_size=psf_size)
 
-image_plane_grids = mask.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(mask=ma, subgrid_size=4,
-                                                                                        blurring_shape=psf_size)
+image_plane_grids = mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(mask=ma, subgrid_size=4,
+                                                                                  blurring_shape=psf_size)
 
 ### Setup the ray tracing model, and use to generate the 2D galaxy image_coords ###
 
