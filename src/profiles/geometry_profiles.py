@@ -37,7 +37,7 @@ def transform_grid(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
         if not isinstance(grid, TransformedGrid):
-            result = func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
+            result = func(profile, profile.transform_grid_to_reference_frame_jitted(grid), *args, **kwargs)
         #    if isinstance(result, TransformedGrid):
         #        result = profile.transform_grid_from_reference_frame(result)
             return np.asarray(result)
@@ -60,7 +60,7 @@ class Profile(object):
     def parameter_labels(self):
         return ['x', 'y']
 
-    def transform_grid_to_reference_frame(self, grid):
+    def transform_grid_to_reference_frame_jitted(self, grid):
         raise NotImplemented()
 
     def transform_grid_from_reference_frame(self, grid):
@@ -176,6 +176,23 @@ class EllipticalProfile(Profile):
         return np.vstack((x, y)).T
 
     @transform_grid
+    def grid_to_radius(self, grid):
+        """
+        Convert coordinates to an elliptical radius.
+
+        If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
+
+        Parameters
+        ----------
+        grid
+
+        Returns
+        -------
+        The radius at those coordinates
+        """
+        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
+
+    @transform_grid
     def grid_to_elliptical_radius(self, grid):
         """
         Convert coordinates to an elliptical radius.
@@ -203,7 +220,7 @@ class EllipticalProfile(Profile):
         cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
         return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
 
-    def transform_grid_to_reference_frame(self, grid):
+    def transform_grid_to_reference_frame_jitted(self, grid):
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
         theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0]) - self.phi_radians
@@ -239,7 +256,7 @@ class SphericalProfile(EllipticalProfile):
     def parameter_labels(self):
         return ['x', 'y']
 
-    def transform_grid_to_reference_frame(self, grid):
+    def transform_grid_to_reference_frame_jitted(self, grid):
         transformed = np.subtract(grid, self.centre)
         return transformed.view(TransformedGrid)
 

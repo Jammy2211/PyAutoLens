@@ -1,38 +1,60 @@
 import sys
-
-sys.path.append("../../")
 import numpy as np
-from src.imaging import image
-from src.imaging import mask
+
+from src.profiles import light_profiles
+from profiling import profiling_data
 from src.pixelization import frame_convolution
-from src.analysis import galaxy
-from src.profiles import mass_profiles
 import time
-import os
 import numba
+import pytest
 
-path = os.path.dirname(os.path.realpath(__file__))
+subgrid_size=2
 
-def load(name):
-    return np.load("{}/{}.npy".format(path, name))
+kernel_shape = (39,39)
+sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
+                                         effective_radius=0.8, sersic_index=4.0)
 
-grid = load("deflection_data/grid")
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size, psf_shape=kernel_shape)
+lsst_image = sersic.intensity_from_grid(grid=lsst.coords.image_coords)
+lsst_blurring_image = sersic.intensity_from_grid(grid=lsst.coords.blurring_coords)
+lsst_kernel_convolver = lsst.masked_image.convolver.convolver_for_kernel(lsst.image.psf.trim(kernel_shape))
 
-psf_shape = (21, 21)
+assert lsst_kernel_convolver.convolve_array(pixel_array=lsst_image, blurring_array=lsst_blurring_image) == \
+       pytest.approx(lsst_kernel_convolver.convolve_array_jitted(pixel_array=lsst_image, blurring_array=lsst_blurring_image), 1e-4)
 
-ma = mask.Mask.for_simulate(shape_arc_seconds=(4.0, 4.0), pixel_scale=0.03, psf_size=psf_shape)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size, psf_shape=kernel_shape)
+euclid_image = sersic.intensity_from_grid(grid=euclid.coords.image_coords)
+euclid_blurring_image = sersic.intensity_from_grid(grid=euclid.coords.blurring_coords)
+euclid_kernel_convolver = euclid.masked_image.convolver.convolver_for_kernel(euclid.image.psf.trim(kernel_shape))
 
-data = ma.masked_1d_array_from_2d_array(np.ones(ma.shape))
+assert euclid_kernel_convolver.convolve_array(pixel_array=euclid_image, blurring_array=euclid_blurring_image) == \
+       pytest.approx(euclid_kernel_convolver.convolve_array_jitted(pixel_array=euclid_image, blurring_array=euclid_blurring_image), 1e-4)
 
-frame = frame_convolution.FrameMaker(mask=ma)
-convolver = frame.convolver_for_kernel_shape(kernel_shape=psf_shape)
-# This PSF leads to no blurring_coords, so equivalent to being off.
-kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size, psf_shape=kernel_shape)
+hst_image = sersic.intensity_from_grid(grid=hst.coords.image_coords)
+hst_blurring_image = sersic.intensity_from_grid(grid=hst.coords.blurring_coords)
+hst_kernel_convolver = hst.masked_image.convolver.convolver_for_kernel(hst.image.psf.trim(kernel_shape))
 
+assert hst_kernel_convolver.convolve_array(pixel_array=hst_image, blurring_array=hst_blurring_image) == \
+       pytest.approx(hst_kernel_convolver.convolve_array_jitted(pixel_array=hst_image, blurring_array=hst_blurring_image), 1e-4)
 
-kernel_convolver.convolve_array_jit(data)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size, psf_shape=kernel_shape)
+hst_up_image = sersic.intensity_from_grid(grid=hst_up.coords.image_coords)
+hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.coords.blurring_coords)
+hst_up_kernel_convolver = hst_up.masked_image.convolver.convolver_for_kernel(hst_up.image.psf.trim(kernel_shape))
+
+assert hst_up_kernel_convolver.convolve_array(pixel_array=hst_up_image, blurring_array=hst_up_blurring_image) == \
+       pytest.approx(hst_up_kernel_convolver.convolve_array_jitted(pixel_array=hst_up_image, blurring_array=hst_up_blurring_image), 1e-4)
+
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size, psf_shape=kernel_shape)
+ao_image = sersic.intensity_from_grid(grid=ao.coords.image_coords)
+ao_blurring_image = sersic.intensity_from_grid(grid=ao.coords.blurring_coords)
+ao_kernel_convolver = ao.masked_image.convolver.convolver_for_kernel(ao.image.psf.trim(kernel_shape))
+
+assert ao_kernel_convolver.convolve_array(pixel_array=ao_image, blurring_array=ao_blurring_image) == \
+       pytest.approx(ao_kernel_convolver.convolve_array_jitted(pixel_array=ao_image, blurring_array=ao_blurring_image), 1e-4)
+
 repeats = 1
-
 def tick_toc(func):
     def wrapper():
         start = time.time()
@@ -45,16 +67,69 @@ def tick_toc(func):
     return wrapper
 
 @tick_toc
-def current_solution():
-
-    kernel_convolver.convolve_array(data)
-
+def lsst_original_solution():
+    lsst_kernel_convolver.convolve_array(pixel_array=lsst_image, blurring_array=lsst_blurring_image)
 
 @tick_toc
-def jitted_solution():
+def lsst_jit_solution():
+    lsst_kernel_convolver.convolve_array_jitted(pixel_array=lsst_image, blurring_array=lsst_blurring_image)
 
-    kernel_convolver.convolve_array_jit(data)
+@tick_toc
+def euclid_original_solution():
+    euclid_kernel_convolver.convolve_array(pixel_array=euclid_image, blurring_array=euclid_blurring_image)
+
+@tick_toc
+def euclid_jit_solution():
+    euclid_kernel_convolver.convolve_array_jitted(pixel_array=euclid_image, blurring_array=euclid_blurring_image)
+
+@tick_toc
+def hst_original_solution():
+    hst_kernel_convolver.convolve_array(pixel_array=hst_image, blurring_array=hst_blurring_image)
+
+@tick_toc
+def hst_jit_solution():
+    hst_kernel_convolver.convolve_array_jitted(pixel_array=hst_image, blurring_array=hst_blurring_image)
+
+@tick_toc
+def hst_up_original_solution():
+    hst_up_kernel_convolver.convolve_array(pixel_array=hst_up_image, blurring_array=hst_up_blurring_image)
+
+@tick_toc
+def hst_up_jit_solution():
+    hst_up_kernel_convolver.convolve_array_jitted(pixel_array=hst_up_image, blurring_array=hst_up_blurring_image)
+
+@tick_toc
+def ao_original_solution():
+    ao_kernel_convolver.convolve_array(pixel_array=ao_image, blurring_array=ao_blurring_image)
+
+@tick_toc
+def ao_jit_solution():
+    ao_kernel_convolver.convolve_array_jitted(pixel_array=ao_image, blurring_array=ao_blurring_image)
+
+# @tick_toc
+# def jitted_solution():
+#     kernel_convolver.convolve_array_jit(data)
 
 if __name__ == "__main__":
-    current_solution()
-    jitted_solution()
+    lsst_original_solution()
+    lsst_jit_solution()
+
+    print()
+
+    euclid_original_solution()
+    euclid_jit_solution()
+
+    print()
+
+    hst_original_solution()
+    hst_jit_solution()
+    #
+    print()
+
+    hst_up_original_solution()
+    hst_up_jit_solution()
+
+    print()
+
+    ao_original_solution()
+    ao_jit_solution()
