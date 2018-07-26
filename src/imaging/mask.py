@@ -137,7 +137,7 @@ class Mask(scaled_array.ScaledArray):
     @classmethod
     def unmasked(cls, shape_arc_seconds, pixel_scale):
         """
-        Setup the mask such that all values are unmasked, thus corresponding to the entire image_coords.
+        Setup the mask such that all values are unmasked, thus corresponding to the entire image.
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class Mask(scaled_array.ScaledArray):
     @property
     def coordinate_grid(self):
         """
-        Compute the image_coords grid_coords grids from a mask, using the center of every unmasked pixel.
+        Compute the image grid_coords grids from a mask, using the center of every unmasked pixel.
         """
         coordinates = self.grid_coordinates
 
@@ -180,10 +180,10 @@ class Mask(scaled_array.ScaledArray):
                     grid[pixel_count, :] = coordinates[x, y]
                     pixel_count += 1
 
-        return CoordinateGrid(grid)
+        return ImageGrid(grid)
 
     def masked_1d_array_from_2d_array(self, grid_data):
-        """Compute a data grid, which represents the data values of a data-set (e.g. an image_coords, noise, in the mask.
+        """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
 
         Parameters
         ----------
@@ -231,7 +231,7 @@ class Mask(scaled_array.ScaledArray):
 
     @property
     def border_pixel_indices(self):
-        """Compute the border image_coords data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
         its edge, therefore neighboring a pixel with a *True* value.
         """
 
@@ -251,7 +251,7 @@ class Mask(scaled_array.ScaledArray):
         return border_pixels
 
     def border_sub_pixel_indices(self, sub_grid_size):
-        """Compute the border image_coords data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
         its edge, therefore neighboring a pixel with a *True* value.
         """
 
@@ -285,13 +285,13 @@ class Mask(scaled_array.ScaledArray):
 
     @Memoizer()
     def blurring_mask_for_kernel_shape(self, kernel_shape):
-        """Compute the blurring_coords mask, which represents all data_to_pixels not in the mask but close enough to it that a
-        fraction of their light will be blurring_coords in the image_coords.
+        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
+        fraction of their light will be blurring in the image.
 
         Parameters
         ----------
         kernel_shape : (int, int)
-           The sub_grid_size of the psf which defines the blurring_coords region (e.g. the shape of the PSF)
+           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
@@ -308,7 +308,7 @@ class Mask(scaled_array.ScaledArray):
                                 blurring_mask[x + x1, y + y1] = False
                         else:
                             raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image_coords"
+                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image"
                                 "before masking")
 
         self.map(fill_grid)
@@ -316,11 +316,11 @@ class Mask(scaled_array.ScaledArray):
         return Mask(blurring_mask, self.pixel_scale)
 
     def map_to_2d(self, data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D image_coords.
+        """Use mapper to map an input data-set from a *GridData* to its original 2D image.
         Parameters
         -----------
         data : ndarray
-            The grid-data which is mapped to its 2D image_coords.
+            The grid-data which is mapped to its 2D image.
         """
         data_2d = np.zeros(self.shape)
 
@@ -351,10 +351,10 @@ class SparseMask(Mask):
     @Memoizer()
     def index_image(self):
         """
-        Setup an image_coords which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
+        Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
 
-         This is used for computing the image_to_cluster vector, whereby each image_coords pixel is paired to the sparse
-         pixel in this image_coords via a neighbor search."""
+         This is used for computing the image_to_cluster vector, whereby each image pixel is paired to the sparse
+         pixel in this image via a neighbor search."""
 
         sparse_index_2d = np.zeros(self.shape, dtype=int)
         sparse_pixel_index = 0
@@ -371,14 +371,14 @@ class SparseMask(Mask):
     @Memoizer()
     def sparse_to_image(self):
         """
-        Compute the mapping of each sparse image_coords pixel to its closest image_coords pixel, defined using a mask of image_coords \
+        Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
         data_to_pixels.
 
         Returns
         -------
         cluster_to_image : ndarray
-            The mapping between every sparse clustering image_coords pixel and image_coords pixel, where each entry gives the 1D index
-            of the image_coords pixel in the self.
+            The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
+            of the image pixel in the self.
         """
         sparse_to_image = np.empty(0, dtype=int)
         image_pixel_index = 0
@@ -397,9 +397,9 @@ class SparseMask(Mask):
     @property
     @Memoizer()
     def image_to_sparse(self):
-        """Compute the mapping between every image_coords pixel in the mask and its closest sparse clustering pixel.
+        """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
 
-        This is performed by going to each image_coords pixel in the *mask*, and pairing it with its nearest neighboring pixel
+        This is performed by going to each image pixel in the *mask*, and pairing it with its nearest neighboring pixel
         in the *sparse_mask*. The index of the *sparse_mask* pixel is drawn from the *sparse_index_image*. This
         neighbor search continue grows larger and larger around a pixel, until a pixel contained in the *sparse_mask* is
         successfully found.
@@ -407,7 +407,7 @@ class SparseMask(Mask):
         Returns
         -------
         image_to_cluster : ndarray
-            The mapping between every image_coords pixel and its closest sparse clustering pixel, where each entry give the 1D
+            The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D
             index of the sparse pixel in sparse_pixel arrays.
 
         """
@@ -433,23 +433,23 @@ class SparseMask(Mask):
         return image_to_sparse
 
 
-class CoordinateGrid(np.ndarray):
+class ImageGrid(np.ndarray):
     """Abstract class for a regular grid of coordinates. On a regular grid, each pixel's arc-second coordinates \
     are represented by the value at the centre of the pixel.
 
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an \
-    image_coords (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image_coords pixel indexes are \
+    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
     also counted from the top-left.
 
     A regular *grid_coords* is a NumPy array of image_shape [image_pixels, 2]. Therefore, the first element maps \
-    to the image_coords pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
-    [3,1] gives the 4th image_coords pixel's y coordinate.
+    to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
+    [3,1] gives the 4th image pixel's y coordinate.
 
     Below is a visual illustration of a regular grid, where a total of 10 data_to_image are unmasked and therefore \
     included in the grid.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example image_coords.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
     |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
@@ -459,8 +459,8 @@ class CoordinateGrid(np.ndarray):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    This image_coords pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
-    around the image_coords.
+    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
+    around the image.
 
     pixel_scale = 1.0"
 
@@ -482,11 +482,11 @@ class CoordinateGrid(np.ndarray):
         return self.shape[0]
 
     def __new__(cls, arr, *args, **kwargs):
-        grid = arr.view(cls)
+        return arr.view(cls)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(CoordinateGrid, self).__reduce__()
+        pickled_state = super(ImageGrid, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -499,29 +499,29 @@ class CoordinateGrid(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(CoordinateGrid, self).__setstate__(state[0:-1])
+        super(ImageGrid, self).__setstate__(state[0:-1])
 
 
-class SubCoordinateGrid(CoordinateGrid):
+class SubGrid(ImageGrid):
 
-    """Abstract class for a sub_grid_coords of coordinates. On a sub_grid_coords-grid, each pixel is sub_grid_coords-gridded into a uniform grid of
-     sub_grid_coords-coordinates, which are used to perform over-sampling in the lens analysis.
+    """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
+     sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
-    image_coords (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image_coords pixel indexes are
+    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
     also counted from the top-left.
 
-    A sub_grid_coords *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
-    element maps to the image_coords pixel index, the second element to the sub_grid_coords-pixel index and third element to that
-    sub_grid_coords pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image_coords pixel's
-    7th sub_grid_coords-pixel's y coordinate.
+    A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
+    element maps to the image pixel index, the second element to the sub-pixel index and third element to that
+    sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
+    7th sub-pixel's y coordinate.
 
-    Below is a visual illustration of a sub_grid_coords grid. Like the regular grid, the indexing of each sub_grid_coords-pixel goes from
+    Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
     the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
     2 data_to_image, to keep the illustration brief.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example image_coords.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
     |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
@@ -548,8 +548,8 @@ class SubCoordinateGrid(CoordinateGrid):
     |x|x|x|x|x|x|x|x|x|x| \/
     |x|x|x|x|x|x|x|x|x|x|
 
-    However, we now go to each image_coords-pixel and derive a sub_grid_coords-pixel grid for it. For example, for pixel 0,
-    if *sub_grid_size=2*, we use a 2x2 sub_grid_coords-grid:
+    However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
+    if *sub_grid_size=2*, we use a 2x2 sub-grid:
 
     Pixel 0 - (2x2):
 
@@ -558,7 +558,7 @@ class SubCoordinateGrid(CoordinateGrid):
     |2|3|  grid_coords[0,2] = [-1.66, 0.33]
            grid_coords[0,3] = [-1.33, 0.33]
 
-    Now, we'd normally sub_grid_coords-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
+    Now, we'd normally sub-grid all data_to_image using the same *sub_grid_size*, but for this illustration lets
     pretend we used a sub_grid_size of 3x3 for pixel 1:
 
              grid_coords[0,0] = [-0.75, 0.75]
@@ -574,14 +574,14 @@ class SubCoordinateGrid(CoordinateGrid):
     """
     def __init__(self, array, mask, sub_grid_size=1):
         # noinspection PyArgumentList
-        super(SubCoordinateGrid, self).__init__()
+        super(SubGrid, self).__init__()
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
         self.mask = mask
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, SubCoordinateGrid):
+        if isinstance(obj, SubGrid):
             self.sub_grid_size = obj.sub_grid_size
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
@@ -605,7 +605,7 @@ class SubCoordinateGrid(CoordinateGrid):
                             grid[sub_pixel_count, 1] = mask.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
 
                             sub_pixel_count += 1
-        return SubCoordinateGrid(grid, mask, sub_grid_size=sub_grid_size)
+        return SubGrid(grid, mask, sub_grid_size=sub_grid_size)
 
     def sub_data_to_image(self, data):
         return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
@@ -613,7 +613,7 @@ class SubCoordinateGrid(CoordinateGrid):
     @property
     @Memoizer()
     def sub_to_image(self):
-        """ Compute the pairing of every sub_grid_coords-pixel to its original image_coords pixel from a mask. """
+        """ Compute the pairing of every sub-pixel to its original image pixel from a mask. """
         sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype=int)
         image_pixel_count = 0
         sub_pixel_count = 0
@@ -631,65 +631,49 @@ class SubCoordinateGrid(CoordinateGrid):
         return sub_to_image
 
 
-class CoordinateCollection(object):
+class GridCollection(object):
 
     def __init__(self, image, sub, blurring):
         """
-        A collection of grids which contain the coordinates of an image_coords. This includes the image_coords's regular grid,
-        sub_grid_coords-grid, blurring_coords region, etc. Coordinate grids are passed through the ray-tracing module to set up the image_coords,
+        A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
+        sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the image,
         lens and source planes.
 
         Parameters
         -----------
         image : GridCoordsImage
-            A grid of coordinates for the regular image_coords grid.
+            A grid of coordinates for the regular image grid.
         sub : GridCoordsImageSub
-            A grid of coordinates for the sub_grid_coords-gridded image_coords grid.
+            A grid of coordinates for the sub-gridded image grid.
         blurring : GridCoordsBlurring
-            A grid of coordinates for the blurring_coords regions.
+            A grid of coordinates for the blurring regions.
         """
-        self.image_coords = image
-        self.sub_grid_coords = sub
-        self.blurring_coords = blurring
+        self.image = image
+        self.sub = sub
+        self.blurring = blurring
 
     @classmethod
     def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
         image_coords = mask.coordinate_grid
-        sub_grid_coords = SubCoordinateGrid.from_mask(mask, subgrid_size)
+        sub_grid_coords = SubGrid.from_mask(mask, subgrid_size)
         blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
-        return CoordinateCollection(image_coords, sub_grid_coords, blurring_coords)
+        return GridCollection(image_coords, sub_grid_coords, blurring_coords)
 
     def apply_function(self, func):
-        return CoordinateCollection(func(self.image_coords), func(self.sub_grid_coords), func(self.blurring_coords))
+        return GridCollection(func(self.image), func(self.sub), func(self.blurring))
 
     def map_function(self, func, *arg_lists):
-        return CoordinateCollection(*[func(*args) for args in zip(self, *arg_lists)])
+        return GridCollection(*[func(*args) for args in zip(self, *arg_lists)])
 
     @property
     def sub_pixels(self):
-        return self.sub_grid_coords.shape[0]
+        return self.sub.shape[0]
 
     def __getitem__(self, item):
-        return [self.image_coords, self.sub_grid_coords, self.blurring_coords][item]
+        return [self.image, self.sub, self.blurring][item]
 
 
-
-class BorderCollection(object):
-
-    def __init__(self, image, sub):
-
-        self.image_border = image
-        self.sub_border = sub
-
-    @classmethod
-    def from_mask_and_subgrid_size(cls, mask, subgrid_size, polynomial_degree=3, centre=(0.0, 0.0)):
-        image_border = CoordinateBorder.from_mask(mask, polynomial_degree, centre)
-        sub_border = SubCoordinateBorder.from_mask(mask, subgrid_size, polynomial_degree, centre)
-        return BorderCollection(image_border, sub_border)
-
-
-
-class CoordinateBorder(np.ndarray):
+class ImageGridBorder(np.ndarray):
 
     @property
     def no_pixels(self):
@@ -707,7 +691,7 @@ class CoordinateBorder(np.ndarray):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(CoordinateGrid, self).__reduce__()
+        pickled_state = super(ImageGrid, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -720,7 +704,7 @@ class CoordinateBorder(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(CoordinateGrid, self).__setstate__(state[0:-1])
+        super(ImageGrid, self).__setstate__(state[0:-1])
 
     def grid_to_radii(self, grid):
         """
@@ -795,8 +779,27 @@ class CoordinateBorder(np.ndarray):
         return np.multiply(grid, move_factors[:, None])
 
 
-class SubCoordinateBorder(CoordinateBorder):
+class SubGridBorder(ImageGridBorder):
 
     @classmethod
     def from_mask(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
         return cls(mask.border_sub_pixel_indices(sub_grid_size), polynomial_degree, centre)
+
+
+class BorderCollection(object):
+
+    def __init__(self, image, sub):
+
+        self.image = image
+        self.sub = sub
+
+    @classmethod
+    def from_mask_and_subgrid_size(cls, mask, subgrid_size, polynomial_degree=3, centre=(0.0, 0.0)):
+        image_border = ImageGridBorder.from_mask(mask, polynomial_degree, centre)
+        sub_border = SubGridBorder.from_mask(mask, subgrid_size, polynomial_degree, centre)
+        return BorderCollection(image_border, sub_border)
+
+    def relocated_grids_from_grids(self, grids):
+        return GridCollection(image=self.image.relocated_grid_from_grid(grids.image),
+                              sub=self.sub.relocated_grid_from_grid(grids.sub),
+                              blurring=None)

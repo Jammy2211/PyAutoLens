@@ -11,7 +11,7 @@ import os
 data_name = 'lens_x2'
 paths = pipeline.PipelinePaths(data_name=data_name)
 
-data = scaled_array.ScaledArray.from_fits(file_path=paths.data_path + '/image_coords', hdu=0, pixel_scale=0.07)
+data = scaled_array.ScaledArray.from_fits(file_path=paths.data_path + '/image', hdu=0, pixel_scale=0.07)
 noise = scaled_array.ScaledArray.from_fits(file_path=paths.data_path + '/noise', hdu=0, pixel_scale=0.07)
 exposure_time = scaled_array.ScaledArray.from_fits(file_path=paths.data_path + '/exposure_time', hdu=0, pixel_scale=0.07)
 psf = im.PSF.from_fits(file_path=paths.data_path + '/psf', hdu=0, pixel_scale=0.07)

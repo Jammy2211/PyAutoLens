@@ -70,7 +70,7 @@ class Phase(object):
         masked_image = mi.MaskedImage(image, mask)
         masked_image = self.customize_image(masked_image, last_results)
         self.pass_priors(last_results)
-        coords_collection = msk.CoordinateCollection.from_mask_subgrid_size_and_blurring_shape(
+        coords_collection = msk.GridCollection.from_mask_subgrid_size_and_blurring_shape(
             masked_image.mask, self.sub_grid_size, masked_image.psf.shape)
 
         analysis = self.__class__.Analysis(coordinate_collection=coords_collection,
@@ -114,7 +114,7 @@ class Phase(object):
                 The result of an analysis
             masked_image: mi.MaskedImage
                 An image that has been masked
-            coordinate_collection: msk.CoordinateCollection
+            coordinate_collection: msk.GridCollection
                 A collection of coordinates (grid, blurring and sub)
             """
             self.last_results = last_results

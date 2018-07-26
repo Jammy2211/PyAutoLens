@@ -352,12 +352,12 @@ class Galaxy(object):
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
 
-# TODO : Should galaxy image_coords and minimum value be in the constructor (they aren't free parameters)?
+# TODO : Should galaxy image and minimum value be in the constructor (they aren't free parameters)?
 
 class HyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """Class for scaling the noise in the different galaxies of an image_coords (e.g. the lens, source).
+        """Class for scaling the noise in the different galaxies of an image (e.g. the lens, source).
 
         Parameters
         -----------
@@ -382,10 +382,10 @@ class HyperGalaxy(object):
         Parameters
         -----------
         model_image : ndarray
-            The model image_coords of the observed weighted_data (from a previous analysis phase). This tells us the total light \
-            attributed to each image_coords pixel by the model.
+            The model image of the observed weighted_data (from a previous analysis phase). This tells us the total light \
+            attributed to each image pixel by the model.
         galaxy_image : ndarray
-            A model image_coords of the galaxy (e.g the lens light profile or source reconstruction) computed from a
+            A model image of the galaxy (e.g the lens light profile or source reconstruction) computed from a
             previous analysis.
         minimum_value : float
             The minimum fractional flux a pixel must contain to not be rounded to 0.
