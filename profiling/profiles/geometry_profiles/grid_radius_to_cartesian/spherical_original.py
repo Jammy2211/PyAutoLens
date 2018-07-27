@@ -31,39 +31,39 @@ class SphericalProfile(geometry_profiles.Profile):
 
 geometry = SphericalProfile(centre=(0.0, 0.0))
 
-subgrid_size=4
+sub_grid_size=4
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size)
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size)
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size)
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
-lsst_radius = np.ones(lsst.coords.sub_grid_coords.shape[0])
-euclid_radius = np.ones(euclid.coords.sub_grid_coords.shape[0])
-hst_radius = np.ones(hst.coords.sub_grid_coords.shape[0])
-hst_up_radius = np.ones(hst_up.coords.sub_grid_coords.shape[0])
-ao_radius = np.ones(ao.coords.sub_grid_coords.shape[0])
+lsst_radius = np.ones(lsst.grids.sub.shape[0])
+euclid_radius = np.ones(euclid.grids.sub.shape[0])
+hst_radius = np.ones(hst.grids.sub.shape[0])
+hst_up_radius = np.ones(hst_up.grids.sub.shape[0])
+ao_radius = np.ones(ao.grids.sub.shape[0])
 
 @tools.tick_toc_x20
 def lsst_solution():
-    geometry.grid_radius_to_cartesian(grid=lsst.coords.sub_grid_coords, radius=lsst_radius)
+    geometry.grid_radius_to_cartesian(grid=lsst.grids.sub, radius=lsst_radius)
 
 @tools.tick_toc_x20
 def euclid_solution():
-    geometry.grid_radius_to_cartesian(grid=euclid.coords.sub_grid_coords, radius=euclid_radius)
+    geometry.grid_radius_to_cartesian(grid=euclid.grids.sub, radius=euclid_radius)
 
 @tools.tick_toc_x20
 def hst_solution():
-    geometry.grid_radius_to_cartesian(grid=hst.coords.sub_grid_coords, radius=hst_radius)
+    geometry.grid_radius_to_cartesian(grid=hst.grids.sub, radius=hst_radius)
 
 @tools.tick_toc_x20
 def hst_up_solution():
-    geometry.grid_radius_to_cartesian(grid=hst_up.coords.sub_grid_coords, radius=hst_up_radius)
+    geometry.grid_radius_to_cartesian(grid=hst_up.grids.sub, radius=hst_up_radius)
 
 @tools.tick_toc_x20
 def ao_solution():
-    geometry.grid_radius_to_cartesian(grid=ao.coords.sub_grid_coords, radius=ao_radius)
+    geometry.grid_radius_to_cartesian(grid=ao.grids.sub, radius=ao_radius)
 
 if __name__ == "__main__":
     lsst_solution()

@@ -75,7 +75,7 @@ class TestCase:
             ray_trace = ray_tracing.Tracer(
                 lens_galaxies=[],
                 source_galaxies=[galaxy_pix],
-                image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
+                image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
             fitter = fitting.PixelizedFitter(masked_image=mi,
@@ -142,7 +142,7 @@ class TestCase:
             ray_trace = ray_tracing.Tracer(
                 lens_galaxies=[],
                 source_galaxies=[galaxy_pix],
-                image_plane_grids=mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(
+                image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
             fitter = fitting.PixelizedFitter(masked_image=mi,

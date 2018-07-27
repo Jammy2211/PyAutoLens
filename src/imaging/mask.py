@@ -653,9 +653,9 @@ class GridCollection(object):
         self.blurring = blurring
 
     @classmethod
-    def from_mask_subgrid_size_and_blurring_shape(cls, mask, subgrid_size, blurring_shape):
+    def from_mask_sub_grid_size_and_blurring_shape(cls, mask, sub_grid_size, blurring_shape):
         image_coords = mask.coordinate_grid
-        sub_grid_coords = SubGrid.from_mask(mask, subgrid_size)
+        sub_grid_coords = SubGrid.from_mask(mask, sub_grid_size)
         blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
         return GridCollection(image_coords, sub_grid_coords, blurring_coords)
 

@@ -17,17 +17,17 @@ def load_data(name, pixel_scale, psf_shape):
 
     return im, noise, exposure_time, psf
 
-def setup_class(name, pixel_scale, radius_mask=4.0, psf_shape=(21,21), subgrid_size=4):
+def setup_class(name, pixel_scale, radius_mask=4.0, psf_shape=(21,21), sub_grid_size=4):
 
     def pickle_path():
         return path + 'data/' + name + '/pickle/r' + str(radius_mask) + '_psf' + str(psf_shape[0]) + '_sub' + \
-               str(subgrid_size)
+               str(sub_grid_size)
 
     if not os.path.isdir(path + 'data/' + name + '/pickle'):
         os.mkdir(path + 'data/' + name + '/pickle')
 
     if not os.path.isfile(pickle_path()):
-        return Data(name, pixel_scale, radius_mask, psf_shape, subgrid_size)
+        return Data(name, pixel_scale, radius_mask, psf_shape, sub_grid_size)
     elif os.path.isfile(pickle_path()):
         with open(pickle_path(), 'rb') as pickle_file:
              thing=pickle.load(file=pickle_file)
@@ -36,11 +36,11 @@ def setup_class(name, pixel_scale, radius_mask=4.0, psf_shape=(21,21), subgrid_s
 
 class Data(object):
 
-    def __init__(self, name, pixel_scale, radius_mask=4.0, psf_shape=(21, 21), subgrid_size=4):
+    def __init__(self, name, pixel_scale, radius_mask=4.0, psf_shape=(21, 21), sub_grid_size=4):
 
         def pickle_path():
             return path + 'data/' + name + '/pickle/r' + str(radius_mask) + '_psf' + str(psf_shape[0]) + '_sub' + \
-                   str(subgrid_size)
+                   str(sub_grid_size)
 
         im, noise, exposure_time, psf = load_data(name=name, pixel_scale=pixel_scale, psf_shape=psf_shape)
 
@@ -52,9 +52,9 @@ class Data(object):
 
         self.masked_image = masked_image.MaskedImage(image=self.image, mask=self.mask)
 
-        self.coords = mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(mask=self.mask,
-                                                                                    subgrid_size=subgrid_size,
-                                                                                    blurring_shape=psf.shape)
+        self.grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=self.mask,
+                                                                                   sub_grid_size=sub_grid_size,
+                                                                                   blurring_shape=psf.shape)
 
         with open(pickle_path(), 'wb') as pickle_file:
             pickle.dump(self, file=pickle_file)
