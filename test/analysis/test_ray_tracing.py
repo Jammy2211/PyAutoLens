@@ -17,7 +17,7 @@ def make_centre_mask():
 
 @pytest.fixture(name="grids")
 def make_grids(centre_mask):
-    grids = mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
+    grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(centre_mask, 2, (3, 3))
     grids.image = mask.ImageGrid(np.array([[1.0, 1.0], [1.0, 0.0]]))
     grids.sub = mask.SubGrid(
         np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
