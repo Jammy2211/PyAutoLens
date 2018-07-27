@@ -43,13 +43,13 @@ class EllipticalProfile(geometry_profiles.Profile):
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
         return transformed.view(geometry_profiles.TransformedGrid)
 
-subgrid_size=2
+sub_grid_size=2
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size)
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size)
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size)
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
 geometry = EllipticalProfile(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
 

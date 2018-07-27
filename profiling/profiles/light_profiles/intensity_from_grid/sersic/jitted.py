@@ -75,13 +75,13 @@ class EllipticalSersic(light_profiles.EllipticalLightProfile):
 
         return intensities
 
-subgrid_size=4
+sub_grid_size=4
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size)
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size)
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size)
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
 sersic = EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
                                    effective_radius=0.8, sersic_index=4.0)
