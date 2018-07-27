@@ -90,12 +90,12 @@ class KernelConvolverProfiling(convolution.KernelConvolver):
 
         return new_array
 
-subgrid_size=2
+sub_grid_size=2
 psf_shape = (41, 41)
 sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
                                          effective_radius=0.8, sersic_index=4.0)
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size, psf_shape=psf_shape)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 lsst_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
@@ -105,7 +105,7 @@ lsst_blurring_image = sersic.intensity_from_grid(grid=lsst.coords.blurring_coord
 assert (lsst_kernel_convolver.convolve_array(lsst_image, lsst_blurring_image) == 
         lsst_kernel_convolver.convolve_array_jitted(lsst_image, lsst_blurring_image))
 
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size, psf_shape=psf_shape)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 euclid_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
@@ -113,7 +113,7 @@ euclid_image = sersic.intensity_from_grid(grid=euclid.coords.image_coords)
 euclid_blurring_image = sersic.intensity_from_grid(grid=euclid.coords.blurring_coords)
 euclid_kernel_convolver.convolve_array_jitted(pixel_array=euclid_image, blurring_array=euclid_blurring_image)
 
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size, psf_shape=psf_shape)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 hst_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
@@ -121,7 +121,7 @@ hst_image = sersic.intensity_from_grid(grid=hst.coords.image_coords)
 hst_blurring_image = sersic.intensity_from_grid(grid=hst.coords.blurring_coords)
 hst_kernel_convolver.convolve_array_jitted(pixel_array=hst_image, blurring_array=hst_blurring_image)
 
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size, psf_shape=psf_shape)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 hst_up_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
@@ -129,7 +129,7 @@ hst_up_image = sersic.intensity_from_grid(grid=hst_up.coords.image_coords)
 hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.coords.blurring_coords)
 hst_up_kernel_convolver.convolve_array_jitted(pixel_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size, psf_shape=psf_shape)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 ao_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
