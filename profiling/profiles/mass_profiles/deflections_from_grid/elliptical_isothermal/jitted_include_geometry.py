@@ -86,11 +86,11 @@ sie = EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein
 
 subgrd_size=4
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrd_size)
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrd_size)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrd_size)
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrd_size)
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrd_size)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=subgrd_size)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=subgrd_size)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=subgrd_size)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=subgrd_size)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=subgrd_size)
 
 assert (sie.deflections_from_grid(grid=lsst.coords.sub_grid_coords) ==
         pytest.approx(sie.deflections_from_grid_jitted(grid=lsst.coords.sub_grid_coords), 1e-4))

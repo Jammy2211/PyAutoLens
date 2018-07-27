@@ -48,11 +48,11 @@ sis = SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.4)
 
 subgrd_size=4
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrd_size)
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrd_size)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrd_size)
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrd_size)
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrd_size)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=subgrd_size)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=subgrd_size)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=subgrd_size)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=subgrd_size)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=subgrd_size)
 
 @tools.tick_toc_x10
 def lsst_solution():
