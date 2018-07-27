@@ -1680,7 +1680,7 @@ class TestMemoizer(object):
 
 @pytest.fixture(name="grids")
 def make_grids(centre_mask):
-    return mask.GridCollection.from_mask_subgrid_size_and_blurring_shape(centre_mask, 2, (3, 3))
+    return mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(centre_mask, 2, (3, 3))
 
 
 class TestGridCollection(object):

@@ -47,31 +47,31 @@ class KernelConvolverProfiling(convolution.KernelConvolver):
 
         return new_array
 
-subgrid_size=2
+sub_grid_size=2
 psf_shape = (41, 41)
 sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
                                          effective_radius=0.8, sersic_index=4.0)
 
-lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size, psf_shape=psf_shape)
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 lsst_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
 
-euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrid_size, psf_shape=psf_shape)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 euclid_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
-hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size, psf_shape=psf_shape)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 hst_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
 
-hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size=subgrid_size, psf_shape=psf_shape)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 hst_up_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
 
-ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size, psf_shape=psf_shape)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 ao_kernel_convolver = KernelConvolverProfiling(kernel=lsst.image.psf.trim(psf_shape),
                                                  frame_array=lsst.masked_image.convolver.frame_array,
                                                  blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
@@ -106,10 +106,6 @@ def hst_up_solution():
 @tools.tick_toc_x1
 def ao_solution():
     ao_kernel_convolver.convolve_array(pixel_array=ao_image, blurring_array=ao_blurring_image)
-
-# @tools.tick_toc_x1
-# def jitted_solution():
-#     kernel_convolver.convolve_array_jit(data)
 
 if __name__ == "__main__":
     lsst_solution()
