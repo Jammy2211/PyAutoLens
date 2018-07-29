@@ -172,7 +172,7 @@ class TestResultForArguments:
 
 class TestPixelization(object):
     def test_pixelization(self, test_config):
-        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, pixelization=pixelization.VoronoiPixelization,
+        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, pixelization=pixelization.Voronoi,
                                       config=test_config)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,

@@ -14,7 +14,7 @@ class ScaledArray(np.ndarray):
     """
 
     def __new__(cls, array, pixel_scale=1, *args, **kwargs):
-        return np.array(array).view(cls)
+        return np.array(array, dtype='float64').view(cls)
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale=1):

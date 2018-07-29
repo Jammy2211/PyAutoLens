@@ -67,7 +67,7 @@ class Fitter(object):
         image_light_profile = self.tracer.generate_image_of_galaxy_light_profiles()
         blurring_image_light_profile = self.tracer.generate_blurring_image_of_galaxy_light_profiles()
         return blur_image_including_blurring_region(image_light_profile, blurring_image_light_profile,
-                                                    self.image.kernel_convolver)
+                                                    self.image.convolver_image)
 
     def fit_data_with_profiles(self):
         """
@@ -106,7 +106,7 @@ class PixelizedFitter(Fitter):
 
         pix_pre_fit = self.tracer.inversions_from_source_plane(self.borders, self.sparse_mask)
         pix_fit = pix_pre_fit.fit_image_via_inversion(self.image, self.image.background_noise,
-                                                      self.image.kernel_convolver)
+                                                      self.image.convolver_mapping_matrix)
 
         model_image = pix_fit.model_image_from_reconstruction()
 
@@ -133,7 +133,7 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
                     hyper_galaxies, galaxy_images, minimum_values))
 
 
-def blur_image_including_blurring_region(image, blurring_image, kernel_convolver):
+def blur_image_including_blurring_region(image, blurring_image, convolver):
     """For a given image and blurring region, convert them to 2D and blur with the PSF, then return as
     the 1D DataGrid.
 
@@ -143,10 +143,10 @@ def blur_image_including_blurring_region(image, blurring_image, kernel_convolver
         The image weighted_data using the GridData 1D representation.
     blurring_image : ndarray
         The blurring region weighted_data, using the GridData 1D representation.
-    kernel_convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+    convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
-    return kernel_convolver.convolve_array(image, blurring_image)
+    return convolver.convolve_image(image, blurring_image)
 
 
 def compute_likelihood(image, noise, model_image):
@@ -216,7 +216,7 @@ def compute_noise_term(noise):
 
 
 # noinspection PyUnusedLocal
-def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, kernel_convolver, tracer,
+def fit_data_with_pixelization_and_profiles(grid_data_collection, pixelization, convolver, tracer,
                                             mapper_cluster, image=None):
     # TODO: Implement me
     raise NotImplementedError("fit_data_with_pixelization_and_profiles has not been implemented")
