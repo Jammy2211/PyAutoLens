@@ -22,7 +22,7 @@ data = ma.masked_1d_array_from_2d_array(np.ones(ma.shape))
 
 mapping = np.ones((len(data), 60))
 
-frame = convolution.FrameMaker(mask=ma)
+frame = convolution.Convolver(mask=ma)
 convolver = frame.convolver_for_kernel_shape(kernel_shape=psf_shape)
 # This PSF leads to no blurring, so equivalent to being off.
 kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))

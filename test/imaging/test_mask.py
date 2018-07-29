@@ -1821,6 +1821,7 @@ class TestBorderCollection(object):
             assert relocated_grids.sub[34] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
             assert relocated_grids.sub[35] == pytest.approx(np.array([-0.707, 0.707]), 1e-3)
 
+
 class TestImageGridBorder(object):
 
     class TestFromMask:

@@ -8,71 +8,12 @@ from src.pixelization import covariance_matrix
 from src.imaging import mask
 
 
-class Pixelization(object):
+class RegularizationConstant(object):
 
-    def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
-        """
-        Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \
-        pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix
-        enforces smoothness between pixel values.
+    pixels = None
+    regularization_coefficients = None
 
-        A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
-        nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
-        example:
-
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
-
-        Parameters
-        ----------
-        pixels : int
-            The number of pixels in the pixelization.
-        regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
-        pix_signal_scale : float
-            A hyper-parameter which scales the signal attributed to each pixel, used for weighted regularization.
-        """
-        self.pixels = pixels
-        self.regularization_coefficients = regularization_coefficients
-        self.pix_signal_scale = pix_signal_scale
-
-    def mapping_matrix_from_sub_to_pix(self, sub_to_pix, grids):
-        """
-        Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
-        image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
-        Nightingale & Dye 2015 and Nightingale, Dye & Massey 2018.
-
-        The matrix has dimensions [image_pixels, pix_pixels] and non-zero entries represents an \
-        image-pixel to pixel mapping. For example, if image-pixel 0 maps to pixel 2, element \
-        [0,2] of the mapping matrix will = 1.
-
-        The mapping matrix is created using sub-gridding. Here, each observed image-pixel is divided into a finer \
-        sub_grid. For example, if the sub-grid is sub_grid_size=4, each image-pixel is split into a uniform 4 x 4 \
-        sub grid and all 16 sub-pixels are individually paired with pixels.
-
-        The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
-        number of sub-pixel to pixel mappings. For example if 3 sub-pixels from image-pixel 4 map to \
-        pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
-
-        Parameters
-        ----------
-        grids
-        sub_to_pix : [int, int]
-            The pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
-            sub-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
-
-        """
-
-        sub_grid = grids.sub
-
-        mapping_matrix = np.zeros((grids.image.shape[0], self.pixels))
-
-        for sub_index in range(sub_grid.no_pixels):
-            mapping_matrix[sub_grid.sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid.sub_grid_fraction
-
-        return mapping_matrix
-
-    def constant_regularization_matrix_from_pix_neighbors(self, pix_neighbors):
+    def regularization_matrix_from_pix_neighbors(self, pix_neighbors):
         """
         Setup a pixelization's constant regularization matrix (see test_pixelization.py)
 
@@ -81,7 +22,7 @@ class Pixelization(object):
         pix_neighbors : [[]]
             A list of the neighbors of each pixel.
         """
-
+        
         regularization_matrix = np.zeros(shape=(self.pixels, self.pixels))
 
         reg_coeff = self.regularization_coefficients[0] ** 2.0
@@ -93,6 +34,13 @@ class Pixelization(object):
                 regularization_matrix[i, j] -= reg_coeff
 
         return regularization_matrix
+
+
+class RegularizationWeighted(object):
+    
+    pixels = None
+    regularization_coefficients = None
+    pix_signal_scale = None
 
     def pix_signals_from_images(self, image_to_pix, galaxy_image):
         """Compute the (scaled) signal in each pixel, where the signal is the sum of its image-pixel fluxes. \
@@ -134,7 +82,7 @@ class Pixelization(object):
         return (self.regularization_coefficients[0] * pix_signals +
                 self.regularization_coefficients[1] * (1.0 - pix_signals)) ** 2.0
 
-    def weighted_regularization_matrix_from_pix_neighbors(self, regularization_weights, pix_neighbors):
+    def regularization_matrix_from_pix_neighbors(self, regularization_weights, pix_neighbors):
         """
         Setup a weighted regularization matrix, where all pixels are regularized with one another in both \
         directions using a different effective regularization coefficient.
@@ -161,9 +109,71 @@ class Pixelization(object):
         return regularization_matrix
 
 
-class RectangularPixelization(Pixelization):
+class Pixelization(object):
 
-    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
+    def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
+        """
+        Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \
+        pixels. These pixels fit an image using a linear inversion, where a regularization matrix
+        enforces smoothness between pixel values.
+
+        A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
+        nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
+        example:
+
+        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image-pixel.
+        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+
+        Parameters
+        ----------
+        pixels : int
+            The number of pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
+        """
+        self.pixels = pixels
+        self.regularization_coefficients = regularization_coefficients
+
+    def mapping_matrix_from_sub_to_pix(self, sub_to_pix, grids):
+        """
+        Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
+        image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
+        Nightingale & Dye 2015 and Nightingale, Dye & Massey 2018.
+
+        The matrix has dimensions [image_pixels, pix_pixels] and non-zero entries represents an \
+        image-pixel to pixel mapping. For example, if image-pixel 0 maps to pixel 2, element \
+        [0,2] of the mapping matrix will = 1.
+
+        The mapping matrix is created using sub-gridding. Here, each observed image-pixel is divided into a finer \
+        sub_grid. For example, if the sub-grid is sub_grid_size=4, each image-pixel is split into a uniform 4 x 4 \
+        sub grid and all 16 sub-pixels are individually paired with pixels.
+
+        The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
+        number of sub-pixel to pixel mappings. For example if 3 sub-pixels from image-pixel 4 map to \
+        pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
+
+        Parameters
+        ----------
+        grids
+        sub_to_pix : [int, int]
+            The pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
+            sub-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
+
+        """
+
+        sub_grid = grids.sub
+
+        mapping_matrix = np.zeros((grids.image.shape[0], self.pixels))
+
+        for sub_index in range(sub_grid.no_pixels):
+            mapping_matrix[sub_grid.sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid.sub_grid_fraction
+
+        return mapping_matrix
+
+
+class Rectangular(Pixelization):
+
+    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -180,7 +190,7 @@ class RectangularPixelization(Pixelization):
         if shape[0] <= 2 or shape[1] <= 2:
             raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
 
-        super(RectangularPixelization, self).__init__(shape[0] * shape[1], regularization_coefficients)
+        super(Rectangular, self).__init__(shape[0] * shape[1], regularization_coefficients)
 
         self.shape = shape
 
@@ -296,7 +306,7 @@ class RectangularPixelization(Pixelization):
 
         return pixel_neighbors
 
-    def compute_grid_to_pix(self, grid, geometry):
+    def grid_to_pix_from_grid(self, grid, geometry):
         """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
@@ -317,7 +327,7 @@ class RectangularPixelization(Pixelization):
 
         return grid_to_pix
 
-    # TODO : RectangularPixelization doesnt need sparse mask, but equivalent functions elsewhere do. Change to *kwrgs?
+    # TODO : Rectangular doesnt need sparse mask, but equivalent functions elsewhere do. Change to *kwrgs?
 
     def inversion_from_pix_grids(self, grids, borders, cluster_mask=None):
         """
@@ -334,18 +344,55 @@ class RectangularPixelization(Pixelization):
         relocated_grids = borders.relocated_grids_from_grids(grids)
         geometry = self.geometry_from_pix_sub_grid(relocated_grids.sub)
         pix_neighbors = self.neighbors_from_pixelization()
-        image_to_pix = self.compute_grid_to_pix(relocated_grids.image, geometry)
-        sub_to_pix = self.compute_grid_to_pix(relocated_grids.sub, geometry)
+        image_to_pix = self.grid_to_pix_from_grid(relocated_grids.image, geometry)
+        sub_to_pix = self.grid_to_pix_from_grid(relocated_grids.sub, geometry)
 
         mapping = self.mapping_matrix_from_sub_to_pix(sub_to_pix, grids)
-        regularization = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
+        regularization = self.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return Inversion(mapping, regularization, image_to_pix, sub_to_pix)
 
 
-class VoronoiPixelization(Pixelization):
+class RectangularRegConst(Rectangular, RegularizationConstant):
+    
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
+        """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
+        of  shape (rows, columns).
 
-    def __init__(self, pixels, regularization_coefficients=(1.0,)):
+        Like an image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+
+        Parameters
+        -----------
+        shape : (int, int)
+            The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
+        """
+        super(RectangularRegConst, self).__init__(shape, regularization_coefficients)
+
+
+class RectangularRegWeighted(Rectangular, RegularizationWeighted):
+
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0, 1.0), pix_signal_scale=1.0):
+        """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
+        of  shape (rows, columns).
+
+        Like an image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+
+        Parameters
+        -----------
+        shape : (int, int)
+            The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
+        """
+        super(RectangularRegWeighted, self).__init__(shape, regularization_coefficients)
+        self.pix_signal_scale = pix_signal_scale
+
+
+class Voronoi(Pixelization):
+
+    def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a Voronoi pixelization, which represents pixels as a set of centers where \
         all of the nearest-neighbor pix-grid (i.e. traced image-pixels) are mapped to them.
@@ -361,7 +408,7 @@ class VoronoiPixelization(Pixelization):
             The regularization coefficients used to smooth the pix reconstruction.
         """
 
-        super(VoronoiPixelization, self).__init__(pixels, regularization_coefficients)
+        super(Voronoi, self).__init__(pixels, regularization_coefficients)
 
     @staticmethod
     def voronoi_from_cluster_grid(cluster_grid):
@@ -584,7 +631,7 @@ class VoronoiPixelization(Pixelization):
         return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
 
 
-class ClusterPixelization(VoronoiPixelization):
+class Cluster(Voronoi):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,)):
         """
@@ -601,7 +648,7 @@ class ClusterPixelization(VoronoiPixelization):
         regularization_coefficients : (float,)
             The regularization coefficients used to smooth the pix reconstruction.
         """
-        super(ClusterPixelization, self).__init__(pixels, regularization_coefficients)
+        super(Cluster, self).__init__(pixels, regularization_coefficients)
 
     def inversion_from_pix_grids(self, grids, borders, cluster_mask):
         """
@@ -637,12 +684,53 @@ class ClusterPixelization(VoronoiPixelization):
                                                        cluster_mask)
 
         mapping_matrix = self.mapping_matrix_from_sub_to_pix(sub_to_pix, relocated_grids)
-        regularization_matrix = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
+        regularization_matrix = self.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return Inversion(mapping_matrix, regularization_matrix, image_to_pix, sub_to_pix)
 
 
-class AmorphousPixelization(VoronoiPixelization):
+class ClusterRegConst(Cluster, RegularizationConstant):
+
+    def __init__(self, pixels, regularization_coefficients=(1.0,)):
+        """
+        A cluster pixelization, which represents pixels as a set of centers where all of the nearest-neighbor \
+        pix-grid (i.e. traced image-pixels) are mapped to them.
+
+        For this pixelization, a set of cluster-pixels (defined in the image-plane as a cluster uniform grid of \
+        image-pixels) determine the pixel centers .
+
+        Parameters
+        ----------
+        pixels : int
+            The number of pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
+        """
+        super(ClusterRegConst, self).__init__(pixels, regularization_coefficients)
+
+
+class ClusterRegWeighted(Cluster, RegularizationWeighted):
+
+    def __init__(self, pixels, regularization_coefficients=(1.0, 1.0), pix_signal_scale=1.0):
+        """
+        A cluster pixelization, which represents pixels as a set of centers where all of the nearest-neighbor \
+        pix-grid (i.e. traced image-pixels) are mapped to them.
+
+        For this pixelization, a set of cluster-pixels (defined in the image-plane as a cluster uniform grid of \
+        image-pixels) determine the pixel centers .
+
+        Parameters
+        ----------
+        pixels : int
+            The number of pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
+        """
+        super(ClusterRegWeighted, self).__init__(pixels, regularization_coefficients)
+        self.pix_signal_scale = pix_signal_scale
+
+
+class Amorphous(Voronoi):
 
     def __init__(self, pixels, regularization_coefficients=(1.0, 1.0, 2.0)):
         """
@@ -661,7 +749,20 @@ class AmorphousPixelization(VoronoiPixelization):
         regularization_coefficients : (float,)
             The regularization coefficients used to smooth the pix reconstruction.
         """
-        super(AmorphousPixelization, self).__init__(pixels, regularization_coefficients)
+        super(Amorphous, self).__init__(pixels, regularization_coefficients)
+
+    def kmeans_cluster(self, cluster_grid):
+        """Perform k-means clustering on the cluster_grid to compute the k-means clusters which represent \
+        pixels.
+
+        Parameters
+        ----------
+        cluster_grid : ndarray
+            The x and y cluster-grid which are used to derive the k-means pixelization.
+        """
+        kmeans = sklearn.cluster.KMeans(self.pixels)
+        km = kmeans.fit(cluster_grid)
+        return km.cluster_centers_, km.labels_
 
     def inversion_from_pix_grids(self, grids, borders, cluster_mask):
         """
@@ -692,23 +793,50 @@ class AmorphousPixelization(VoronoiPixelization):
         sub_to_pix = self.sub_to_pix_from_pixelization(relocated_grids, pix_centers, pix_neighbors, cluster_to_pix, cluster_mask)
 
         mapping_matrix = self.mapping_matrix_from_sub_to_pix(sub_to_pix, relocated_grids)
-        regularization_matrix = self.constant_regularization_matrix_from_pix_neighbors(pix_neighbors)
+        regularization_matrix = self.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return Inversion(mapping_matrix, regularization_matrix, image_to_pix, sub_to_pix)
 
-    def kmeans_cluster(self, cluster_grid):
-        """Perform k-means clustering on the cluster_grid to compute the k-means clusters which represent \
-        pixels.
+
+class AmorphousRegConst(Amorphous, RegularizationConstant):
+
+    def __init__(self, pixels, regularization_coefficients=(1.0,)):
+        """
+        A cluster pixelization, which represents pixels as a set of centers where all of the nearest-neighbor \
+        pix-grid (i.e. traced image-pixels) are mapped to them.
+
+        For this pixelization, a set of cluster-pixels (defined in the image-plane as a cluster uniform grid of \
+        image-pixels) determine the pixel centers .
 
         Parameters
         ----------
-        cluster_grid : ndarray
-            The x and y cluster-grid which are used to derive the k-means pixelization.
+        pixels : int
+            The number of pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
         """
-        kmeans = sklearn.cluster.KMeans(self.pixels)
-        km = kmeans.fit(cluster_grid)
-        return km.cluster_centers_, km.labels_
+        super(AmorphousRegConst, self).__init__(pixels, regularization_coefficients)
 
+
+class AmorphousRegWeighted(Amorphous, RegularizationWeighted):
+
+    def __init__(self, pixels, regularization_coefficients=(1.0, 1.0), pix_signal_scale=1.0):
+        """
+        A cluster pixelization, which represents pixels as a set of centers where all of the nearest-neighbor \
+        pix-grid (i.e. traced image-pixels) are mapped to them.
+
+        For this pixelization, a set of cluster-pixels (defined in the image-plane as a cluster uniform grid of \
+        image-pixels) determine the pixel centers .
+
+        Parameters
+        ----------
+        pixels : int
+            The number of pixels in the pixelization.
+        regularization_coefficients : (float,)
+            The regularization coefficients used to smooth the pix reconstruction.
+        """
+        super(AmorphousRegWeighted, self).__init__(pixels, regularization_coefficients)
+        self.pix_signal_scale = pix_signal_scale
 
 # TODO : Split into Inversion, InversionBlurred and InversionFitted.
 
@@ -735,10 +863,10 @@ class Inversion(object):
         self.image_to_pix = image_to_pix
         self.sub_to_pix = sub_to_pix
 
-    def fit_image_via_inversion(self, image, noise, kernel_convolver):
+    def fit_image_via_inversion(self, image, noise, convolver):
         """Fit the image data using the inversion."""
 
-        blurred_mapping = kernel_convolver.convolve_mapping_matrix(self.mapping)
+        blurred_mapping = convolver.convolve_mapping_matrix(self.mapping)
         # TODO : Use fast routines once ready.
         covariance = covariance_matrix.compute_covariance_matrix_exact(blurred_mapping, noise)
         weighted_data = covariance_matrix.compute_d_vector_exact(blurred_mapping, image, noise)

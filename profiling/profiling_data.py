@@ -44,15 +44,15 @@ class Data(object):
 
         im, noise, exposure_time, psf = load_data(name=name, pixel_scale=pixel_scale, psf_shape=psf_shape)
 
-        self.image = image.Image(array=im, effective_exposure_time=exposure_time, pixel_scale=pixel_scale, psf=psf,
+        im = image.Image(array=im, effective_exposure_time=exposure_time, pixel_scale=pixel_scale, psf=psf,
                          background_noise=noise, poisson_noise=noise)
 
-        self.mask = mask.Mask.circular(shape_arc_seconds=self.image.shape_arc_seconds,
-                                       pixel_scale=self.image.pixel_scale, radius_mask=radius_mask)
+        ma = mask.Mask.circular(shape_arc_seconds=im.shape_arc_seconds, pixel_scale=im.pixel_scale,
+                                radius_mask=radius_mask)
 
-        self.masked_image = masked_image.MaskedImage(image=self.image, mask=self.mask)
+        self.masked_image = masked_image.MaskedImage(image=im, mask=ma)
 
-        self.grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=self.mask,
+        self.grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma,
                                                                                    sub_grid_size=sub_grid_size,
                                                                                    blurring_shape=psf.shape)
 
