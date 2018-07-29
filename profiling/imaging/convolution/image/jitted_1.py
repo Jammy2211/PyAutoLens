@@ -1,67 +1,12 @@
 import numpy as np
-from src import exc
+
+from src.profiles import light_profiles
+from profiling import profiling_data
+from profiling import tools
+from imaging import convolution
+import pytest
 import numba
-
-"""
-This module is for the application of convolution to sparse_grid vectors.
-
-Take a simple mask:
-
-[[True, False, True],
- [False, False, False],
- [True, False, True]]
- 
-Here True means that the value is masked.
-
-A set of values in a corresponding image_grid might be represented in a 1D array:
-
-[2, 8, 2, 5, 7, 5, 3, 1, 4]
-
-This module allows us to find the relationships between data_to_image in a mask for a kernel of a given sub_grid_size so that
-convolutions can be efficiently applied to reduced arrays such as the one above.
-
-A Convolver can be created for a given mask:
-
-frame_maker = Convolver(self.mask)
-
-This can then produce a convolver_image for any given kernel shape and corresponding blurring region mask:
-
-convolver_image = frame_maker.convolver_for_kernel_shape((3, 3), blurring_region_mask)
-
-Here the blurring region mask describes the region under the mask from which a given PSF kernel may blur pixels. If the
-regular mask specifies True for a givena pixel and the blurring region mask False then that pixel will be blurred in
-using the blurring array.
-
-A convolver_image can then be made for any given kernel:
-
-kernel_convolver = convolver_image.convolver_for_kernel(kernel)
-
-Which is applied to a reduced array and blurring array:
-
-convolved_array = convolver_image.convolve_array(array, blurring_array)
-
-The array is pixels within the non-masked region, whilst the blurring array is pixels outside of the non-masked region
-but inside of the blurring mask region.
-
-The convolver_image can also be applied for some sub_grid-shape of the kernel:
-
-convolved_vector = convolver_image.convolve_vector(vector, sub_shape=(3, 3))
-
-Or applied to a whole mapping matrix:
-
-convolved_mapping_matrix = convolver_image.convolve_mapping_matrix(mapping_matrix)
-
-Where the mapping matrix is an array of dictionaries with each index of the array corresponding to a source pixel.
-
-It is also possible to specify a blurring region mask:
-
-Convolver(self.mask, blurring_region_mask)
-
-PSF will be calculated from values that are masked by mask but not by blurring region mask. That is, any entry with a 
-True value for mask and a False value for blurring region mask may contribute to the PSF convolved value of a nearby
-entry with a False value for mask.
-
-"""
+from src import exc
 
 
 class Convolver(object):
@@ -221,7 +166,8 @@ class Convolver(object):
             for y in range(self.mask_index_array.shape[1]):
                 if not self.mask[x][y]:
                     image_frame_indexes, image_frame_kernels = self.frame_at_coords_jit((x, y), self.mask,
-                                                                                    self.mask_index_array, self.kernel[:,:])
+                                                                                        self.mask_index_array,
+                                                                                        self.kernel)
                     self.image_frame_indexes[image_index, :] = image_frame_indexes
                     self.image_frame_kernels[image_index, :] = image_frame_kernels
                     self.image_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
@@ -244,8 +190,8 @@ class Convolver(object):
         half_x = int(self.kernel_shape[0] / 2)
         half_y = int(self.kernel_shape[1] / 2)
 
-        frame = -1*np.ones((self.kernel_max_size))
-        kernel_frame = -1.0*np.ones((self.kernel_max_size))
+        frame = -1 * np.ones((self.kernel_max_size))
+        kernel_frame = -1.0 * np.ones((self.kernel_max_size))
 
         count = 0
         for i in range(self.kernel_shape[0]):
@@ -256,7 +202,7 @@ class Convolver(object):
                     value = self.mask_index_array[x, y]
                     if value >= 0 and not self.mask[x, y]:
                         frame[count] = value
-                        kernel_frame[count] = self.kernel[i,j]
+                        kernel_frame[count] = self.kernel[i, j]
                         count += 1
 
         return frame, kernel_frame
@@ -284,8 +230,8 @@ class Convolver(object):
         half_x = int(kernel_shape[0] / 2)
         half_y = int(kernel_shape[1] / 2)
 
-        frame = -1*np.ones((kernel_max_size))
-        kernel_frame = -1.0*np.ones((kernel_max_size))
+        frame = -1 * np.ones((kernel_max_size))
+        kernel_frame = -1.0 * np.ones((kernel_max_size))
 
         count = 0
         for i in range(kernel_shape[0]):
@@ -296,7 +242,7 @@ class Convolver(object):
                     value = mask_index_array[x, y]
                     if value >= 0 and not mask[x, y]:
                         frame[count] = value
-                        kernel_frame[count] = kernel[i,j]
+                        kernel_frame[count] = kernel[i, j]
                         count += 1
 
         return frame, kernel_frame
@@ -349,7 +295,8 @@ class ConvolverImage(Convolver):
             for y in range(self.mask.shape[1]):
                 if self.mask[x][y] and not self.blurring_mask[x, y]:
                     image_frame_indexes, image_frame_kernels = self.frame_at_coords_jit((x, y), self.mask,
-                                                                                    self.mask_index_array, self.kernel)
+                                                                                        self.mask_index_array,
+                                                                                        self.kernel)
                     self.blurring_frame_indexes[image_index, :] = image_frame_indexes
                     self.blurring_frame_kernels[image_index, :] = image_frame_kernels
                     self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
@@ -381,7 +328,6 @@ class ConvolverImage(Convolver):
             value = image_array[image_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -394,7 +340,6 @@ class ConvolverImage(Convolver):
             value = blurring_array[image_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -422,7 +367,6 @@ class ConvolverImage(Convolver):
             value = image_array[image_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -435,7 +379,6 @@ class ConvolverImage(Convolver):
             value = blurring_array[image_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -443,142 +386,64 @@ class ConvolverImage(Convolver):
         return new_array
 
 
-class ConvolverMappingMatrix(Convolver):
 
-    def __init__(self, mask, kernel):
-        """
-        Class to create number array and frames used to convolve a kernel with a 1D vector of non-masked values.
+sub_grid_size=4
+psf_shape = (21, 21)
+# psf_shape = (41, 41)
+sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
+                                         effective_radius=0.8, sersic_index=4.0)
 
-        Parameters
-        ----------
-        mask : Mask
-            A mask where True eliminates data.
-        mask : Mask
-            A mask of pixels outside the mask but whose light blurs into it after convolution.
-        kernel : image.PSF or ndarray
-            An array representing a PSF kernel.
+lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
-        Attributes
-        ----------
-        blurring_frame_indexes: [ndarray]
-            An array of frames created by the frame maker. Maps positions in the kernel to values in the 1D vector for
-            masked pixels.
-        image_frame_indexes: [ndarray]
-            An array of frames created by the frame maker. A frame maps positions in the kernel to values in the 1D
-            vector.
-        """
+lsst_image = sersic.intensity_from_grid(grid=lsst.grids.image)
+lsst_blurring_image = sersic.intensity_from_grid(grid=lsst.grids.blurring)
+assert lsst.masked_image.convolver_image.convolve_image(lsst_image, lsst_blurring_image) == \
+    pytest.approx(lsst.masked_image.convolver_image.convolve_image_jitted(lsst_image, lsst_blurring_image), 1e-4)
 
-        if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel must be odd")
+euclid_image = sersic.intensity_from_grid(grid=euclid.grids.image)
+euclid_blurring_image = sersic.intensity_from_grid(grid=euclid.grids.blurring)
+hst_image = sersic.intensity_from_grid(grid=hst.grids.image)
+hst_blurring_image = sersic.intensity_from_grid(grid=hst.grids.blurring)
+hst_up_image = sersic.intensity_from_grid(grid=hst_up.grids.image)
+hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.grids.blurring)
+ao_image = sersic.intensity_from_grid(grid=ao.grids.image)
+ao_blurring_image = sersic.intensity_from_grid(grid=ao.grids.blurring)
 
-        self.mask = mask
-        self.mask_index_array = np.full(self.mask.shape, -1)
-        self.pixels_in_mask = int(np.size(self.mask) - np.sum(self.mask))
+euclid.masked_image.convolver_image.convolve_image_jitted(image_array=euclid_image,
+                                                          blurring_array=euclid_blurring_image)
+hst.masked_image.convolver_image.convolve_image_jitted(image_array=hst_image, blurring_array=hst_blurring_image)
+hst_up.masked_image.convolver_image.convolve_image_jitted(image_array=hst_up_image,
+                                                          blurring_array=hst_up_blurring_image)
+ao.masked_image.convolver_image.convolve_image_jitted(image_array=ao_image, blurring_array=ao_blurring_image)
 
-        self.setup_mask_index_array()
 
-        self.kernel = kernel
-        self.kernel_shape = kernel.shape
-        self.kernel_max_size = self.kernel_shape[0] * self.kernel_shape[1]
+@tools.tick_toc_x1
+def lsst_solution():
+    lsst.masked_image.convolver_image.convolve_image_jitted(image_array=lsst_image, blurring_array=lsst_blurring_image)
 
-        self.setup_image_frames()
+@tools.tick_toc_x1
+def euclid_solution():
+    euclid.masked_image.convolver_image.convolve_image_jitted(image_array=euclid_image, blurring_array=euclid_blurring_image)
 
-    def convolve_mapping_matrix(self, mapping):
-        """
-        Simple version of function that applies this convolver_image to a whole mapping matrix.
+@tools.tick_toc_x1
+def hst_solution():
+    hst.masked_image.convolver_image.convolve_image_jitted(image_array=hst_image, blurring_array=hst_blurring_image)
 
-        Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
-        array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
+@tools.tick_toc_x1
+def hst_up_solution():
+    hst_up.masked_image.convolver_image.convolve_image_jitted(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
-        Returns
-        -------
-        convolved_array: [float]
-            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
-            convolution
-        """
-        blurred_mapping = np.zeros(mapping.shape)
-        for i in range(mapping.shape[1]):
-            blurred_mapping[:, i] = self.convolve_matrix_image(mapping[:, i])
-        return blurred_mapping
+@tools.tick_toc_x1
+def ao_solution():
+    ao.masked_image.convolver_image.convolve_image_jitted(image_array=ao_image, blurring_array=ao_blurring_image)
 
-    def convolve_matrix_image(self, image_array):
-        """
-        Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
-        sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
-        image_array: [float]
-            A 1D array
-        Returns
-        -------
-        convolved_vector: [float]
-            A vector convolved with the kernel
-        """
-
-        new_array = np.zeros(image_array.shape)
-
-        for image_index in range(len(image_array)):
-
-            frame_indexes = self.image_frame_indexes[image_index]
-            frame_kernels = self.image_frame_kernels[image_index]
-            length = self.image_frame_lengths[image_index]
-            value = image_array[image_index]
-
-            for kernel_index in range(length):
-
-                vector_index = frame_indexes[kernel_index]
-                kernel = frame_kernels[kernel_index]
-                new_array[vector_index] += value * kernel
-
-        return new_array
-
-    def convolve_mapping_matrix_jit(self, mapping):
-        """
-        Simple version of function that applies this convolver_image to a whole mapping matrix.
-
-        Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
-        array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
-
-        Returns
-        -------
-        convolved_array: [float]
-            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
-            convolution
-        """
-        return self.convolve_matrix_jitted(mapping, self.image_frame_indexes,
-                                           self.image_frame_kernels, self.image_frame_lengths)
-
-    @staticmethod
-    @numba.jit(nopython=True)
-    def convolve_matrix_jitted(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
-
-        blurred_mapping = np.zeros(mapping_matrix.shape)
-
-        for pixel_index in range(mapping_matrix.shape[1]):
-            for image_index in range(mapping_matrix.shape[0]):
-
-                value = mapping_matrix[image_index, pixel_index]
-
-                if value > 0:
-
-                    frame_indexes = image_frame_indexes[image_index]
-                    frame_kernels = image_frame_kernels[image_index]
-                    frame_length = image_frame_lengths[image_index]
-
-                    for kernel_index in range(frame_length):
-
-                        vector_index = frame_indexes[kernel_index]
-                        kernel = frame_kernels[kernel_index]
-                        blurred_mapping[vector_index, pixel_index] += value * kernel
-
-        return blurred_mapping
+if __name__ == "__main__":
+    lsst_solution()
+    euclid_solution()
+    hst_solution()
+    hst_up_solution()
+    ao_solution()

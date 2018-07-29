@@ -22,36 +22,20 @@ def make_galaxy_light_sersic():
     return galaxy.Galaxy(light_profile=sersic)
 
 
-@pytest.fixture(name="image_1x1", scope='function')
-def make_1x1_image():
-    im = image.Image(np.ones((3, 3)), psf=image.PSF(np.ones((3, 3)), 1), background_noise=np.ones((3, 3)),
-                     effective_exposure_time=np.ones((3, 3)))
-
-    ma = mask.Mask(array=np.array([[True, True, True],
-                                   [True, False, True],
-                                   [True, True, True]]), pixel_scale=1.0)
-
-    return masked_image.MaskedImage(im, ma)
+@pytest.fixture(name="fitter")
+def make_fitter(galaxy_light_sersic, no_galaxies):
 
 
-@pytest.fixture(name="image_2x2", scope='function')
-def make_2x2_image():
-    ones = np.ones((4, 4))
-    im = image.Image(ones,
-                     psf=image.PSF(np.ones((3, 3)), 1),
-                     background_noise=ones,
-                     effective_exposure_time=ones)
+    im = image.Image(array=np.ones((4, 4)), psf=image.PSF(np.ones((3,3)), 1), background_noise=np.ones((4, 4)),
+                     effective_exposure_time=np.ones((4, 4)))
 
     ma = mask.Mask(array=np.array([[True, True, True, True],
                                    [True, False, False, True],
                                    [True, False, False, True],
                                    [True, True, True, True]]), pixel_scale=1.0)
 
-    return masked_image.MaskedImage(im, ma)
+    image_2x2 = masked_image.MaskedImage(im, ma)
 
-
-@pytest.fixture(name="fitter")
-def make_fitter(image_2x2, galaxy_light_sersic, no_galaxies):
     ray_tracer = ray_tracing.Tracer(
         lens_galaxies=[galaxy_light_sersic],
         source_galaxies=no_galaxies,
@@ -113,21 +97,26 @@ class MockHyperGalaxy(object):
 
 class TestFitData:
 
-    def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self, image_1x1, no_galaxies):
-        # Setup the mask, grid data and PSF
+    def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self, no_galaxies):
 
-        image_1x1.kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                                               [0.0, 1.0, 0.0],
-                                                                                               [0.0, 0.0, 0.0]]))
+        kernel = np.array([[0.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0]])
+
+        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
+                         effective_exposure_time=np.ones((3, 3)))
+
+        ma = mask.Mask(array=np.array([[True, True, True],
+                                       [True, False, True],
+                                       [True, True, True]]), pixel_scale=1.0)
+
+        image_1x1 = masked_image.MaskedImage(im, ma)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-        ray_trace = ray_tracing.Tracer(
-            lens_galaxies=[mock_galaxy],
-            source_galaxies=no_galaxies,
-            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                image_1x1.mask, 1, (3, 3)))
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(image_1x1.mask, 1, (3, 3)))
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
@@ -135,11 +124,20 @@ class TestFitData:
 
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-    def test___1x1_image__tracing_fits_data_perfectly__psf_blurs_model_to_5__lh_is_chi_sq_plus_noise(self, image_1x1,
-                                                                                                     no_galaxies):
-        image_1x1.kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 1.0, 0.0],
-                                                                                               [1.0, 1.0, 1.0],
-                                                                                               [0.0, 1.0, 0.0]]))
+    def test___1x1_image__tracing_fits_data_perfectly__psf_blurs_model_to_5__lh_is_chi_sq_plus_noise(self, no_galaxies):
+
+        kernel = np.array([[0.0, 1.0, 0.0],
+                           [1.0, 1.0, 1.0],
+                           [0.0, 1.0, 0.0]])
+
+        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
+                         effective_exposure_time=np.ones((3, 3)))
+
+        ma = mask.Mask(array=np.array([[True, True, True],
+                                       [True, False, True],
+                                       [True, True, True]]), pixel_scale=1.0)
+
+        image_1x1 = masked_image.MaskedImage(im, ma)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -159,10 +157,21 @@ class TestFitData:
 
 class TestGenerateBlurredLightProfileImage:
 
-    def test__1x1_image__no_psf_blurring_into_mask_from_region(self, image_1x1, galaxy_light_sersic, no_galaxies):
-        image_1x1.kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                                               [0.0, 1.0, 0.0],
-                                                                                               [0.0, 0.0, 0.0]]))
+    def test__1x1_image__no_psf_blurring_into_mask_from_region(self, galaxy_light_sersic, no_galaxies):
+
+        kernel = np.array([[0.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0]])
+
+        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
+                         effective_exposure_time=np.ones((3, 3)))
+
+        ma = mask.Mask(array=np.array([[True, True, True],
+                                       [True, False, True],
+                                       [True, True, True]]), pixel_scale=1.0)
+
+        image_1x1 = masked_image.MaskedImage(im, ma)
+
 
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[galaxy_light_sersic],
@@ -177,10 +186,20 @@ class TestGenerateBlurredLightProfileImage:
 
         assert non_blurred_value == blurred_value
 
-    def test__1x1_image__psf_all_1s_so_blurs_into_image(self, image_1x1, galaxy_light_sersic, no_galaxies):
-        image_1x1.kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
-                                                                                               [1.0, 1.0, 1.0],
-                                                                                               [1.0, 1.0, 1.0]]))
+    def test__1x1_image__psf_all_1s_so_blurs_into_image(self, galaxy_light_sersic, no_galaxies):
+
+        kernel = np.array([[1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0]])
+
+        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
+                         effective_exposure_time=np.ones((3, 3)))
+
+        ma = mask.Mask(array=np.array([[True, True, True],
+                                       [True, False, True],
+                                       [True, True, True]]), pixel_scale=1.0)
+
+        image_1x1 = masked_image.MaskedImage(im, ma)
 
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[galaxy_light_sersic],
@@ -201,10 +220,22 @@ class TestGenerateBlurredLightProfileImage:
 
         assert blurred_value[0] == pytest.approx(blurred_value_manual[0], 1e-6)
 
-    def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, image_2x2, galaxy_light_sersic, no_galaxies):
-        image_2x2.kernel_convolver = image_2x2.convolver.convolver_for_kernel(kernel=np.array([[0.0, 3.0, 0.0],
-                                                                                               [0.0, 2.0, 1.0],
-                                                                                               [0.0, 0.0, 0.0]]))
+    def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, galaxy_light_sersic, no_galaxies):
+
+        kernel = np.array([[0.0, 3.0, 0.0],
+                           [0.0, 2.0, 1.0],
+                           [0.0, 0.0, 0.0]])
+
+        im = image.Image(array=np.ones((4, 4)), psf=image.PSF(kernel, 1), background_noise=np.ones((4, 4)),
+                         effective_exposure_time=np.ones((4, 4)))
+
+        ma = mask.Mask(array=np.array([[True, True, True, True],
+                                       [True, False, False, True],
+                                       [True, False, False, True],
+                                       [True, True, True, True]]), pixel_scale=1.0)
+
+        image_2x2 = masked_image.MaskedImage(im, ma)
+
 
         ray_trace = ray_tracing.Tracer(
             lens_galaxies=[galaxy_light_sersic],
@@ -234,10 +265,20 @@ class TestGenerateBlurredLightProfileImage:
 
 class TestFitDataWithProfilesHyperGalaxy:
 
-    def test__chi_sq_is_0__hyper_galaxy_adds_to_noise_term(self, image_1x1, no_galaxies):
-        image_1x1.kernel_convolver = image_1x1.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                                               [0.0, 1.0, 0.0],
-                                                                                               [0.0, 0.0, 0.0]]))
+    def test__chi_sq_is_0__hyper_galaxy_adds_to_noise_term(self, no_galaxies):
+
+        kernel = np.array([[0.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0]])
+
+        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
+                         effective_exposure_time=np.ones((3, 3)))
+
+        ma = mask.Mask(array=np.array([[True, True, True],
+                                       [True, False, True],
+                                       [True, True, True]]), pixel_scale=1.0)
+
+        image_1x1 = masked_image.MaskedImage(im, ma)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
@@ -266,10 +307,15 @@ class TestFitDataWithProfilesHyperGalaxy:
 class TestComputeBlurredImages:
 
     def test__psf_just_central_1_so_no_blurring__no_blurring_region__image_in_is_image_out(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 0.0, 0.0, 0.0]])
+
+        kernel = np.array([[0.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0]])
 
         ma = np.array([[True, True, True, True],
                        [True, False, False, True],
@@ -277,101 +323,100 @@ class TestComputeBlurredImages:
                        [True, True, True, True]])
 
         ma = mask.Mask(array=ma, pixel_scale=1.0)
+        blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
 
-        frame = convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
-                                                         kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0., 0., 0.],
-                                                                           [0., 1., 0.],
-                                                                           [0., 0., 0.]]))
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
 
         im = ma.masked_1d_array_from_2d_array(image_2d)
 
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, convolver)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__psf_all_1s_so_blurring_gives_4s__no_blurring_region__image_in_is_image_out(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 0.0, 0.0, 0.0]])
 
+        kernel = np.array([[1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0]])
+
         ma = np.array([[True, True, True, True],
                        [True, False, False, True],
                        [True, False, False, True],
                        [True, True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
-                                                         kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
-                                                                           [1.0, 1.0, 1.0],
-                                                                           [1.0, 1.0, 1.0]]))
+        ma = mask.Mask(array=ma, pixel_scale=1.0)
+        blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
+
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
 
         im = ma.masked_1d_array_from_2d_array(image_2d)
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, convolver)
 
         assert (blurred_image == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
     def test__psf_just_central_1__include_blurring_region_blurring_region_not_blurred_in_so_return_image(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 0.0, 0.0, 0.0]])
 
+        kernel = np.array([[0.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0]])
+
         ma = np.array([[True, True, True, True],
                        [True, False, False, True],
                        [True, False, False, True],
                        [True, True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
-                                                         kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                           [0.0, 1.0, 0.0],
-                                                                           [0.0, 0.0, 0.0]]))
+        ma = mask.Mask(array=ma, pixel_scale=1.0)
+        blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
+
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
 
         im = ma.masked_1d_array_from_2d_array(image_2d)
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, convolver)
 
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__psf_all_1s__include_blurring_region_image_turns_to_9s(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 0.0, 0.0, 0.0]])
+
+        kernel = np.array([[1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0],
+                           [1.0, 1.0, 1.0]])
+
         ma = np.array([[True, True, True, True],
                        [True, False, False, True],
                        [True, False, False, True],
                        [True, True, True, True]])
-        ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-        frame = convolution.FrameMaker(mask=ma)
-        convolver = frame.convolver_for_kernel_shape(kernel_shape=(3, 3),
-                                                     blurring_region_mask=ma.blurring_mask_for_kernel_shape(
-                                                         kernel_shape=(3, 3)))
-        kernel_convolver = convolver.convolver_for_kernel(kernel=np.array([[1.0, 1.0, 1.0],
-                                                                           [1.0, 1.0, 1.0],
-                                                                           [1.0, 1.0, 1.0]]))
+        ma = mask.Mask(array=ma, pixel_scale=1.0)
+        blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
+
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
 
         im = ma.masked_1d_array_from_2d_array(image_2d)
 
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, kernel_convolver)
+        blurred_image = fitting.blur_image_including_blurring_region(im, blurring_image, convolver)
 
         assert (blurred_image == np.array([9.0, 9.0, 9.0, 9.0])).all()
 
