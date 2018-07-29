@@ -60,21 +60,19 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            im = image.Image(im, psf=image.PSF(np.ones((3, 3)), 1), background_noise=np.ones((5, 5)),
-                             effective_exposure_time=np.ones((5, 5)))
+            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+
+            im = image.Image(im, psf=psf, background_noise=np.ones((5, 5)), effective_exposure_time=np.ones((5, 5)))
 
             mi = masked_image.MaskedImage(im, ma)
-            mi.kernel_convolver = mi.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                                     [0.0, 1.0, 0.0],
-                                                                                     [0.0, 0.0, 0.0]]))
 
-            pix = pixelization.RectangularPixelization(shape=(3, 3), regularization_coefficients=(1.0,))
+            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
 
-            ray_trace = ray_tracing.Tracer(
-                lens_galaxies=[],
-                source_galaxies=[galaxy_pix],
+            ray_trace = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix],
                 image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
                     ma, 1, (3, 3)))
 
@@ -119,23 +117,24 @@ class TestCase:
     class TestClusterPixelization:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
 
+            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            im = image.Image(im, psf=image.PSF(np.ones((3, 3)), 1), background_noise=np.ones((5, 5)),
-                             effective_exposure_time=np.ones((5, 5)))
+            im = image.Image(im, psf=psf, background_noise=np.ones((5, 5)), effective_exposure_time=np.ones((5, 5)))
 
             mi = masked_image.MaskedImage(im, ma)
-            mi.kernel_convolver = mi.convolver.convolver_for_kernel(kernel=np.array([[0.0, 0.0, 0.0],
-                                                                                     [0.0, 1.0, 0.0],
-                                                                                     [0.0, 0.0, 0.0]]))
 
-            pix = pixelization.ClusterPixelization(pixels=9, regularization_coefficients=(1.0,))
+            pix = pixelization.ClusterRegConst(pixels=9, regularization_coefficients=(1.0,))
 
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
 
