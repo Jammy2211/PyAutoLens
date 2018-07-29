@@ -28,13 +28,12 @@ class MaskedImage(im.AbstractImage):
                          poisson_noise=mask.masked_1d_array_from_2d_array(image.poisson_noise))
 
         self.coordinate_grid = mask.coordinate_grid
-        self.blurring_mask = mask.blurring_mask_for_kernel_shape(image.psf.shape)
-        self.frame_maker = convolution.FrameMaker(mask)
-        self.convolver = self.frame_maker.convolver_for_kernel_shape(image.psf.shape, self.blurring_mask)
-        self.kernel_convolver = self.convolver.convolver_for_kernel(image.psf)
-        self.image_shape = image.shape
         self.image = image
+        self.image_shape = image.shape
         self.mask = mask
+        self.blurring_mask = mask.blurring_mask_for_kernel_shape(image.psf.shape)
+        self.convolver_image = convolution.ConvolverImage(self.mask, self.blurring_mask, self.image.psf)
+        self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask, self.image.psf)
 
     def map_to_2d(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
