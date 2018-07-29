@@ -1,5 +1,6 @@
 from src.imaging import image as im
 from src.imaging import mask as msk
+from src.imaging import convolution
 from src.imaging import masked_image as mi
 import numpy as np
 import pytest
@@ -46,8 +47,9 @@ class TestMaskedImage(object):
     def test_blurring_mask(self, masked_image):
         assert masked_image.blurring_mask.all()
 
-    def test_kernel_convolver(self, masked_image):
-        assert masked_image.kernel_convolver.length == 1
+    def test_convolvers(self, masked_image):
+        assert type(masked_image.convolver_image) == convolution.ConvolverImage
+        assert type(masked_image.convolver_mapping_matrix) == convolution.ConvolverMappingMatrix
 
     def test_map_to_2d(self, masked_image):
         assert (masked_image.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
