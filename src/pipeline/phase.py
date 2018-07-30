@@ -72,6 +72,7 @@ class Phase(object):
         """
         mask = self.mask_function(image)
         masked_image = mi.MaskedImage(image, mask)
+        print(masked_image.shape)
         masked_image = self.customize_image(masked_image, last_results)
         self.pass_priors(last_results)
         coords_collection = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
