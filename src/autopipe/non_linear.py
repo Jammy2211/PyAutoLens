@@ -72,7 +72,7 @@ def generate_parameter_latex(parameters, subscript=''):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(),
+    def __init__(self, include_hyper_image=False, model_mapper=None,
                  config_path=None, path=default_path, **classes):
         """Abstract base class for non-linear optimizers.
 
@@ -91,7 +91,7 @@ class NonLinearOptimizer(object):
             self.__class__.__name__)
 
         self.path = path
-        self.variable = model_mapper
+        self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
         self.file_param_names = self.path + 'multinest.paramnames'
@@ -139,7 +139,7 @@ class NonLinearOptimizer(object):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
                  fmin=scipy.optimize.fmin):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
                                               model_mapper=model_mapper, path=path)
@@ -192,7 +192,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
