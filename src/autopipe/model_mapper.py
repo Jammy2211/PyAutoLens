@@ -3,7 +3,7 @@ from scipy.special import erfinv
 import inspect
 import os
 from src import exc
-from src.config.config import DefaultPriorConfig
+from src.config.config import DefaultPriorConfig, WidthConfig
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -72,7 +72,7 @@ class ModelMapper(object):
 
         self.config = (config if config is not None else DefaultPriorConfig("{}/../config/priors/default".format(path)))
         self.width_config = (
-            width_config if width_config is not None else DefaultPriorConfig("{}/../config/priors/width".format(path)))
+            width_config if width_config is not None else WidthConfig("{}/../config/priors/width".format(path)))
 
         for name, cls in classes.items():
             self.add_class(name, cls)
@@ -453,6 +453,9 @@ class Constant(object):
 
     def __ne__(self, other):
         return self.value != other
+
+    def __str__(self):
+        return "Constant {}".format(self.value)
 
 
 prior_number = 0
