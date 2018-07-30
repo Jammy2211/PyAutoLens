@@ -7,6 +7,7 @@ from src.imaging import image as img
 from src.analysis import fitting
 from src.autopipe import non_linear
 from src.autopipe import model_mapper as mm
+import numpy as np
 import inspect
 
 
@@ -280,3 +281,32 @@ class SourceLensPhase(Phase):
             """
             tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
             return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
+
+
+class Result(object):
+
+    def __init__(self, constant, likelihood, variable=None):
+        """
+        The result of an optimization.
+
+        Parameters
+        ----------
+        constant: mm.ModelInstance
+            An instance object comprising the class instances that gave the optimal fit
+        likelihood: float
+            A value indicating the likelihood given by the optimal fit
+        variable: mm.ModelMapper
+            An object comprising priors determined by this stage of the analysis
+        """
+        self.constant = constant
+        self.likelihood = likelihood
+        self.variable = variable
+        self.galaxy_images = ()
+
+    @property
+    def model_image(self):
+        return np.sum(np.stack(self.galaxy_images), axis=0)
+
+    def __str__(self):
+        return "Analysis Result:\n{}".format(
+            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
