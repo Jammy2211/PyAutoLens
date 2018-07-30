@@ -56,4 +56,15 @@ def make_source_only_pipeline():
 
     phase2 = PriorLensPhase()
 
-    return Pipeline(phase1, phase2)
+    class HyperParameterPhase(ph.SourceLensPhase):
+        def __init__(self):
+            super().__init__(source_galaxy=gp.GalaxyPrior(pixelization=px.RectangularRegWeighted),
+                             optimizer_class=nl.MultiNest, sub_grid_size=1,
+                             mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
+
+        def pass_priors(self, last_results):
+            self.lens_galaxy = last_results.constant.lens_galaxy
+
+    phase3 = HyperParameterPhase()
+
+    return Pipeline(phase1, phase2, phase3)
