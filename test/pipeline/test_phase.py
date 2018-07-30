@@ -154,6 +154,14 @@ class TestPhase(object):
         result = phase.run(image)
         assert len(result.galaxy_images) == 2
 
+    def test_duplication(self):
+        phase = ph.SourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior())
+
+        ph.SourceLensPhase()
+
+        assert phase.lens_galaxy is not None
+        assert phase.source_galaxy is not None
+
 
 class TestAnalysis(object):
     def test_model_image(self, results, masked_image, grids):
