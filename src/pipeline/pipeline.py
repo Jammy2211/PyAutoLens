@@ -1,5 +1,7 @@
-# from src.pipeline import phase as ph
-# from src.analysis import galaxy_prior as gp
+from src.pipeline import phase as ph
+from src.autopipe import non_linear as nl
+from src.analysis import galaxy_prior as gp
+from src.profiles import light_profiles, mass_profiles
 
 
 class Pipeline(object):
@@ -15,20 +17,16 @@ class Pipeline(object):
         for phase in self.phases:
             self.results.append(phase.run(image, self.last_result))
 
-# class ExtendedPhase(ph.SourceLensPhase):
-#     def pass_priors(self, last_results):
-#         self.lens_galaxy = last_results.constant.lens_galaxy
-#
-#     def customize_image(self, masked_image, last_result):
-#         return masked_image
-#
-#
-# img = None
-#
-# first_phase = ph.SourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior())
-# second_phase = ExtendedPhase(source_galaxy=gp.GalaxyPrior())
-#
-#
-# pipeline = Pipeline(first_phase, second_phase)
-#
-# pipeline.run(img)
+
+# 1) Mass: SIE+Shear
+#    Source: Sersic
+#    NLO: LM
+
+
+def make_pipeline_one():
+    phase1 = ph.SourceLensPhase(
+        lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal, shear=mass_profiles.ExternalShear),
+        source_galaxy=gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic),
+        optimizer_class=nl.DownhillSimplex)
+
+    pipeline = Pipeline(phase1)
