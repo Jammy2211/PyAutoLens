@@ -240,7 +240,8 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, lens_galaxy=None, source_galaxy=None, other=None, optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=1,
                  mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
         """
         A phase with a simple source/lens model
@@ -259,6 +260,7 @@ class SourceLensPhase(Phase):
         super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
+        self.optimizer.variable.other = other
 
     class Result(Phase.Result):
         @property
@@ -318,5 +320,3 @@ class SourceLensPhase(Phase):
             """
             tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
             return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
-
-# result.lens_galaxy_images, result.source_galaxy_images =
