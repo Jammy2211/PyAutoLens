@@ -46,9 +46,8 @@ class Phase(object):
         """
         analysis = self.make_analysis(image=image, last_results=last_results)
         result = self.optimizer.fit(analysis)
-        result.lens_galaxy_images, result.source_galaxy_images = analysis.galaxy_images_for_model(result.constant)
-        result.galaxy_images = result.lens_galaxy_images + result.source_galaxy_images
-        return result
+        return self.__class__.Result(result.constant, result.likelihood, result.variable,
+                                     galaxy_images=analysis.galaxy_images_for_model(result.constant))
 
     def make_analysis(self, image, last_results=None):
         """
@@ -102,6 +101,25 @@ class Phase(object):
         """
         return self.optimizer.variable
 
+    class Result(non_linear.Result):
+
+        def __init__(self, constant, likelihood, variable, galaxy_images):
+            """
+            The result of a phase
+
+            Parameters
+            ----------
+
+            galaxy_images: [ndarray]
+                A collection of images created by each individual galaxy which taken together form the full model image
+            """
+            super(Phase.Result, self).__init__(constant, likelihood, variable)
+            self.galaxy_images = galaxy_images
+
+        @property
+        def model_image(self):
+            return np.sum(np.stack(self.galaxy_images), axis=0)
+
     class Analysis(object):
         def __init__(self, last_results,
                      masked_image,
@@ -111,7 +129,7 @@ class Phase(object):
 
             Parameters
             ----------
-            last_results: non_linear.Result
+            last_results: Result
                 The result of an analysis
             masked_image: mi.MaskedImage
                 An image that has been masked
@@ -237,6 +255,15 @@ class SourceLensPhase(Phase):
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
+    class Result(Phase.Result):
+        @property
+        def lens_galaxy_image(self):
+            return self.galaxy_images[0]
+
+        @property
+        def source_galaxy_image(self):
+            return self.galaxy_images[1]
+
     class Analysis(Phase.Analysis):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
@@ -282,31 +309,4 @@ class SourceLensPhase(Phase):
             tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
             return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
 
-
-class Result(object):
-
-    def __init__(self, constant, likelihood, variable=None):
-        """
-        The result of an optimization.
-
-        Parameters
-        ----------
-        constant: mm.ModelInstance
-            An instance object comprising the class instances that gave the optimal fit
-        likelihood: float
-            A value indicating the likelihood given by the optimal fit
-        variable: mm.ModelMapper
-            An object comprising priors determined by this stage of the analysis
-        """
-        self.constant = constant
-        self.likelihood = likelihood
-        self.variable = variable
-        self.galaxy_images = ()
-
-    @property
-    def model_image(self):
-        return np.sum(np.stack(self.galaxy_images), axis=0)
-
-    def __str__(self):
-        return "Analysis Result:\n{}".format(
-            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
+# result.lens_galaxy_images, result.source_galaxy_images =
