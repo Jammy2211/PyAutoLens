@@ -8,7 +8,7 @@ from src.imaging import image
 from src.imaging import convolution
 from src.profiles import light_profiles
 from src.pixelization import pixelization
-
+from src.pixelization import reconstruction
 
 @pytest.fixture(name="no_galaxies", scope='function')
 def make_no_galaxies():
@@ -590,6 +590,7 @@ class TestLikelihood:
 class TestPixelizationEvidence:
 
     def test__simple_values(self):
+
         im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model_image = np.array([10.0, 10.0, 10.0, 10.0])
@@ -604,9 +605,9 @@ class TestPixelizationEvidence:
                                [0.0, 1.0, 0.0],
                                [0.0, 0.0, 1.0]])
 
-        pix_fit = pixelization.InversionFitted(weighted_data=None, blurred_mapping=None,
-                                               regularization=reg_matrix, covariance=None,
-                                               covariance_regularization=cov_reg_matrix, reconstruction=solution)
+        pix_fit = reconstruction.Reconstruction(weighted_data=None, blurred_mapping=None,
+                                                regularization=reg_matrix, covariance=None,
+                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
         evidence = fitting.compute_pixelization_evidence(im, noise, model_image, pix_fit)
 
@@ -635,9 +636,9 @@ class TestPixelizationEvidence:
                                [-1.0, 2.0, -1.0],
                                [0.0, -1.0, 2.0]])
 
-        pix_fit = pixelization.InversionFitted(weighted_data=None, blurred_mapping=None,
-                                               regularization=reg_matrix, covariance=None,
-                                               covariance_regularization=cov_reg_matrix, reconstruction=solution)
+        pix_fit = reconstruction.Reconstruction(weighted_data=None, blurred_mapping=None,
+                                                regularization=reg_matrix, covariance=None,
+                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
         evidence = fitting.compute_pixelization_evidence(im, noise, model_image, pix_fit)
 
@@ -652,6 +653,7 @@ class TestPixelizationEvidence:
                                          1e-4)
 
     def test__use_fitting_functions_to_compute_terms(self):
+
         im = np.array([10.0, 100.0, 0.0, 10.0])
         noise = np.array([1.0, 2.0, 77.0, 4.0])
         model_image = np.array([11.0, 13.0, 9.0, 8.0])
@@ -666,9 +668,9 @@ class TestPixelizationEvidence:
                                [-1.0, 2.0, -1.0],
                                [0.0, -1.0, 2.0]])
 
-        pix_fit = pixelization.InversionFitted(weighted_data=None, blurred_mapping=None,
-                                               regularization=reg_matrix, covariance=None,
-                                               covariance_regularization=cov_reg_matrix, reconstruction=solution)
+        pix_fit = reconstruction.Reconstruction(weighted_data=None, blurred_mapping=None,
+                                                regularization=reg_matrix, covariance=None,
+                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
         evidence = fitting.compute_pixelization_evidence(im, noise, model_image, pix_fit)
 
