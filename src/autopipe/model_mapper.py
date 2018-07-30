@@ -454,6 +454,9 @@ class Constant(object):
     def __ne__(self, other):
         return self.value != other
 
+    def __str__(self):
+        return "Constant {}".format(self.value)
+
 
 prior_number = 0
 
