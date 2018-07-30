@@ -9,7 +9,6 @@ from src.imaging import hyper_image
 from src.config import config
 from src.autopipe import model_mapper as mm
 import logging
-import numpy as np
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -18,6 +17,30 @@ default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
+
+
+class Result(object):
+
+    def __init__(self, constant, likelihood, variable=None):
+        """
+        The result of an optimization.
+
+        Parameters
+        ----------
+        constant: mm.ModelInstance
+            An instance object comprising the class instances that gave the optimal fit
+        likelihood: float
+            A value indicating the likelihood given by the optimal fit
+        variable: mm.ModelMapper
+            An object comprising priors determined by this stage of the analysis
+        """
+        self.constant = constant
+        self.likelihood = likelihood
+        self.variable = variable
+
+    def __str__(self):
+        return "Analysis Result:\n{}".format(
+            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
 
 
 def generate_parameter_latex(parameters, subscript=''):
