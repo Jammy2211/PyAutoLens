@@ -32,6 +32,6 @@ def make_source_only_pipeline():
         source_galaxy=gp.GalaxyPrior(
             sersic=light_profiles.EllipticalSersic),
         optimizer_class=nl.DownhillSimplex,
-        mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 3))
+        mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
 
     return Pipeline(phase1)
