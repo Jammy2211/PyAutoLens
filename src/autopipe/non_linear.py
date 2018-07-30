@@ -184,12 +184,6 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.info("DownhillSimplex complete")
         res = fitness_function.result
 
-        # TODO : For me this extracts the mean of the first variable, do you just want to say means = output?
-        # TODO : I could have sworn the first part of the output was the means...?
-
-        # Get the reconstruction provided by Downhill Simplex
-        # means = output[0]
-
         # Create a set of Gaussian priors from this result and associate them with the result object.
         res.variable = self.variable.mapper_from_gaussian_means(output)
 
