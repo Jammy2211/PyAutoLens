@@ -2,10 +2,8 @@ from __future__ import division, print_function
 
 import pytest
 from src.profiles import light_profiles
-from src.profiles import geometry_profiles
 import math
 import numpy as np
-from src import exc
 
 
 @pytest.fixture(name='circular')
@@ -26,25 +24,6 @@ def vertical_sersic():
                                            sersic_index=4.0)
 
 
-class TestLightProfileSettings(object):
-
-    def test__setup_using_default_values__all_are_correct(self):
-        settings = light_profiles.LightProfileSettings()
-
-        assert settings.iterative_image_plane is True
-        assert settings.iterative_precision == 1e-4
-        assert settings.sub_grid_plane is True
-        assert settings.image_plane_override is False
-
-    def test__setup_using_overridden_values__all_are_correct(self):
-        settings = light_profiles.LightProfileSettings(iterative_image_plane=False, iterative_precision=1e-5,
-                                                       sub_grid_plane=False, image_plane_override=True)
-
-        assert settings.iterative_image_plane is False
-        assert settings.iterative_precision == 1e-5
-        assert settings.sub_grid_plane is False
-        assert settings.image_plane_override is True
-
 
 class TestConstructors(object):
 
@@ -62,15 +41,8 @@ class TestConstructors(object):
         assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
         assert sersic.elliptical_effective_radius == 0.6
 
-        assert sersic.settings.iterative_image_plane is True
-        assert sersic.settings.iterative_precision == 1e-4
-        assert sersic.settings.sub_grid_plane is True
-        assert sersic.settings.image_plane_override is False
-
     def test__setup_exponential(self):
-        exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                           settings=light_profiles.LightProfileSettings(
-                                                               sub_grid_plane=False))
+        exponential = light_profiles.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6)
 
         assert exponential.x_cen == 0.0
         assert exponential.y_cen == 0.0
@@ -82,17 +54,10 @@ class TestConstructors(object):
         assert exponential.sersic_constant == pytest.approx(1.678378, 1e-3)
         assert exponential.elliptical_effective_radius == 0.6 / math.sqrt(0.5)
 
-        assert exponential.settings.iterative_image_plane is True
-        assert exponential.settings.iterative_precision == 1e-4
-        assert exponential.settings.sub_grid_plane is False
-        assert exponential.settings.image_plane_override is False
-
     def test__setup_dev_vaucouleurs(self):
         dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=0.6, phi=10.0, intensity=2.0,
                                                                   effective_radius=0.9,
-                                                                  centre=(0.0, 0.1),
-                                                                  settings=light_profiles.LightProfileSettings(
-                                                                      image_plane_override=True))
+                                                                  centre=(0.0, 0.1))
 
         assert dev_vaucouleurs.x_cen == 0.0
         assert dev_vaucouleurs.y_cen == 0.1
@@ -103,11 +68,6 @@ class TestConstructors(object):
         assert dev_vaucouleurs.sersic_index == 4.0
         assert dev_vaucouleurs.sersic_constant == pytest.approx(7.66925, 1e-3)
         assert dev_vaucouleurs.elliptical_effective_radius == 0.9 / math.sqrt(0.6)
-
-        assert dev_vaucouleurs.settings.iterative_image_plane is True
-        assert dev_vaucouleurs.settings.iterative_precision == 1e-4
-        assert dev_vaucouleurs.settings.sub_grid_plane is True
-        assert dev_vaucouleurs.settings.image_plane_override is True
 
     def test__setup_core_sersic(self):
         cored_sersic = light_profiles.EllipticalCoreSersic(axis_ratio=0.5, phi=0.0, intensity=1.0,
@@ -127,11 +87,6 @@ class TestConstructors(object):
         assert cored_sersic.gamma == 1.0
         assert cored_sersic.alpha == 1.0
         assert cored_sersic.elliptical_effective_radius == 5.0 / math.sqrt(0.5)
-
-        assert cored_sersic.settings.iterative_image_plane is True
-        assert cored_sersic.settings.iterative_precision == 1e-4
-        assert cored_sersic.settings.sub_grid_plane is True
-        assert cored_sersic.settings.image_plane_override is False
 
     def test_component_numbers_four_profiles(self):
         # TODO : Perform Counting reset better
