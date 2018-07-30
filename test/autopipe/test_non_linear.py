@@ -1094,7 +1094,7 @@ class MockAnalysis(object):
 
     def fit(self, **kwargs):
         self.kwargs = kwargs
-        return 1
+        return 1.
 
 
 @pytest.fixture(name='test_config')
@@ -1115,7 +1115,7 @@ def make_width_config():
 def make_downhill_simplex(test_config, width_config):
     def fmin(fitness_function, x0):
         fitness_function(x0)
-        return [x0]
+        return x0
 
     return non_linear.DownhillSimplex(fmin=fmin, model_mapper=model_mapper.ModelMapper(config=test_config,
                                                                                        width_config=width_config))
