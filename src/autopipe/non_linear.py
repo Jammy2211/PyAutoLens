@@ -47,35 +47,6 @@ def generate_parameter_latex(parameters, subscript=''):
     return latex
 
 
-class Result(object):
-
-    def __init__(self, constant, likelihood, variable=None):
-        """
-        The result of an optimization.
-
-        Parameters
-        ----------
-        constant: mm.ModelInstance
-            An instance object comprising the class instances that gave the optimal fit
-        likelihood: float
-            A value indicating the likelihood given by the optimal fit
-        variable: mm.ModelMapper
-            An object comprising priors determined by this stage of the analysis
-        """
-        self.constant = constant
-        self.likelihood = likelihood
-        self.variable = variable
-        self.galaxy_images = ()
-
-    @property
-    def model_image(self):
-        return np.sum(np.stack(self.galaxy_images), axis=0)
-
-    def __str__(self):
-        return "Analysis Result:\n{}".format(
-            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
-
-
 class NonLinearOptimizer(object):
 
     def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(),
