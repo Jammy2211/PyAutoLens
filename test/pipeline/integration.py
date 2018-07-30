@@ -5,6 +5,7 @@ from src.imaging import scaled_array
 from src.analysis import galaxy_prior as gp
 from src.profiles import mass_profiles
 from src.autopipe import model_mapper as mm
+import numpy as np
 
 import os
 
@@ -39,7 +40,8 @@ def test_source_only_phase_2():
     variable = mm.ModelMapper()
     variable.lens_galaxy = lens_galaxy
 
-    last_result = ph.SourceLensPhase.Result(mm.ModelInstance(), 1., variable, [])
+    last_result = ph.SourceLensPhase.Result(mm.ModelInstance(), 1., variable,
+                                            galaxy_images=[np.ones(1264), np.ones(1264)])
 
     phase2 = pl.make_source_only_pipeline().phases[1]
 
@@ -48,4 +50,4 @@ def test_source_only_phase_2():
 
 
 if __name__ == "__main__":
-    test_source_only_phase_1()
+    test_source_only_phase_2()
