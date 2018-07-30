@@ -1,11 +1,14 @@
 from src.pipeline import pipeline as pl
 from src.imaging import image as im
 from src.imaging import scaled_array
+
 import os
+
+dirpath = os.path.dirname(os.path.realpath(__file__))
 
 # Load up the weighted_data
 lens_name = 'source_sersic'
-data_dir = "data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
+data_dir = "{}/../../data/{}".format(dirpath, lens_name.format(os.path.dirname(os.path.realpath(__file__))))
 
 data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
@@ -17,7 +20,7 @@ image = im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=
                  background_noise=noise, poisson_noise=noise)
 
 
-def test_pipeline_1_phase_1():
+def test_source_only_phase_1():
     pipeline = pl.make_source_only_pipeline()
 
     phase1 = pipeline.phases[0]
@@ -27,4 +30,4 @@ def test_pipeline_1_phase_1():
 
 
 if __name__ == "__main__":
-    test_pipeline_1_phase_1()
+    test_source_only_phase_1()
