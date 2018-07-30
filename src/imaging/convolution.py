@@ -197,14 +197,28 @@ class Convolver(object):
     blurring_frame_length = 3
     """
 
-    mask = None
-    pixels_in_mask = None
-    mask_index_array = None
-    kernel = None
-    kernel_shape = None
-    kernel_max_size = None
+    def __init__(self, mask, kernel):
+        """
+        Class to create image frames and blurring frames used to convolve a kernel with a 1D image of non-masked \
+        values.
 
-    def setup_mask_index_array(self):
+        Parameters
+        ----------
+        mask : Mask
+            A mask where True eliminates data.
+        burring_mask : Mask
+            A mask of pixels outside the mask but whose light blurs into it after convolution.
+        kernel : image.PSF or ndarray
+            An array representing a PSF kernel.
+        """
+
+        if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
+            raise exc.KernelException("Kernel must be odd")
+
+        self.mask = mask
+        self.mask_index_array = np.full(self.mask.shape, -1)
+        self.pixels_in_mask = int(np.size(self.mask) - np.sum(self.mask))
+
         count = 0
         for x in range(self.mask.shape[0]):
             for y in range(self.mask.shape[1]):
@@ -212,7 +226,10 @@ class Convolver(object):
                     self.mask_index_array[x, y] = count
                     count += 1
 
-    def setup_image_frames(self):
+        self.kernel = kernel
+        self.kernel_shape = kernel.shape
+        self.kernel_max_size = self.kernel_shape[0] * self.kernel_shape[1]
+
         image_index = 0
         self.image_frame_indexes = np.zeros((self.pixels_in_mask, self.kernel_max_size), dtype='int')
         self.image_frame_kernels = np.zeros((self.pixels_in_mask, self.kernel_max_size))
@@ -319,27 +336,13 @@ class ConvolverImage(Convolver):
             An array representing a PSF kernel.
         """
 
-        if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel must be odd")
         if mask.shape != blurring_mask.shape:
             raise exc.KernelException("Mask and Blurring mask must be same shape to generate Convolver")
 
-        self.mask = mask
+        super(ConvolverImage, self).__init__(mask, kernel)
+
         self.blurring_mask = blurring_mask
-        self.mask_index_array = np.full(self.mask.shape, -1)
-        self.pixels_in_mask = int(np.size(self.mask) - np.sum(self.mask))
         self.pixels_in_blurring_mask = int(np.size(blurring_mask) - np.sum(blurring_mask))
-
-        self.setup_mask_index_array()
-
-        self.kernel = kernel
-        self.kernel_shape = kernel.shape
-        self.kernel_max_size = self.kernel_shape[0] * self.kernel_shape[1]
-
-        self.setup_image_frames()
-        self.setup_blurring_frames()
-
-    def setup_blurring_frames(self):
 
         image_index = 0
         self.blurring_frame_indexes = np.zeros((self.pixels_in_blurring_mask, self.kernel_max_size), dtype='int')
@@ -354,6 +357,7 @@ class ConvolverImage(Convolver):
                     self.blurring_frame_kernels[image_index, :] = image_frame_kernels
                     self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
                     image_index += 1
+
 
     def convolve_image(self, image_array, blurring_array):
         """
@@ -468,20 +472,7 @@ class ConvolverMappingMatrix(Convolver):
             vector.
         """
 
-        if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel must be odd")
-
-        self.mask = mask
-        self.mask_index_array = np.full(self.mask.shape, -1)
-        self.pixels_in_mask = int(np.size(self.mask) - np.sum(self.mask))
-
-        self.setup_mask_index_array()
-
-        self.kernel = kernel
-        self.kernel_shape = kernel.shape
-        self.kernel_max_size = self.kernel_shape[0] * self.kernel_shape[1]
-
-        self.setup_image_frames()
+        super(ConvolverMappingMatrix, self).__init__(mask, kernel)
 
     def convolve_mapping_matrix(self, mapping):
         """
