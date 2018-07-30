@@ -1200,10 +1200,3 @@ class TestFitting(object):
             assert result.variable.variable.one.mean == 1
             assert result.variable.variable.two.mean == -2
             assert result.likelihood == 1
-
-
-class TestResult(object):
-    def test_model_image(self):
-        result = non_linear.Result(model_mapper.ModelInstance(), 1)
-        result.galaxy_images = [np.array([1, 2, 3]), np.array([2, 3, 4])]
-        assert (result.model_image == np.array([3, 5, 7])).all()
