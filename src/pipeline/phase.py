@@ -9,6 +9,10 @@ from src.autopipe import non_linear
 from src.autopipe import model_mapper as mm
 import numpy as np
 import inspect
+import logging
+
+logger = logging.getLogger(__name__)
+logger.level = logging.DEBUG
 
 
 class Phase(object):
@@ -283,6 +287,11 @@ class SourceLensPhase(Phase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model image itself
             """
+            logger.debug(
+                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                    lens_galaxy,
+                    source_galaxy))
+
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
