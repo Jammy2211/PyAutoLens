@@ -1,6 +1,7 @@
 from src.pipeline import phase as ph
 from src.autopipe import non_linear as nl
 from src.analysis import galaxy_prior as gp
+from src.imaging import mask as msk
 from src.profiles import light_profiles, mass_profiles
 
 
@@ -23,10 +24,14 @@ class Pipeline(object):
 #    NLO: LM
 
 
-def make_pipeline_one():
+def make_source_only_pipeline():
     phase1 = ph.SourceLensPhase(
-        lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal, shear=mass_profiles.ExternalShear),
-        source_galaxy=gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic),
-        optimizer_class=nl.DownhillSimplex)
+        lens_galaxy=gp.GalaxyPrior(
+            sie=mass_profiles.SphericalIsothermal,
+            shear=mass_profiles.ExternalShear),
+        source_galaxy=gp.GalaxyPrior(
+            sersic=light_profiles.EllipticalSersic),
+        optimizer_class=nl.DownhillSimplex,
+        mask_function=lambda img: msk.Mask.circular(img.shape, img.pixel_scale, 3))
 
-    pipeline = Pipeline(phase1)
+    return Pipeline(phase1)
