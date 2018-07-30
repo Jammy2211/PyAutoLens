@@ -154,6 +154,14 @@ class TestPhase(object):
         result = phase.run(image)
         assert len(result.galaxy_images) == 2
 
+    def test_duplication(self):
+        phase = ph.SourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior(), other="s")
+
+        ph.SourceLensPhase()
+
+        assert phase.lens_galaxy is not None
+        assert phase.source_galaxy is not None
+
 
 class TestAnalysis(object):
     def test_model_image(self, results, masked_image, grids):
@@ -167,3 +175,9 @@ class TestAnalysis(object):
         results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
         analysis = ph.Phase.Analysis(results, masked_image, grids)
         assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies
+
+
+class TestResult(object):
+    def test_model_image(self):
+        result = ph.Phase.Result(mm.ModelInstance(), 1, mm.ModelMapper(), [np.array([1, 2, 3]), np.array([2, 3, 4])])
+        assert (result.model_image == np.array([3, 5, 7])).all()

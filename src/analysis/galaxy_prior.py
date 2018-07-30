@@ -125,6 +125,11 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     def priors(self):
         return [prior for prior_model in self.prior_models for prior in prior_model.priors]
 
+    @property
+    def prior_class_dict(self):
+        return {prior: cls for prior_model in self.prior_models for prior, cls in
+                prior_model.prior_class_dict.items()}
+
     def instance_for_arguments(self, arguments):
         """
         Create an instance of the associated class for a set of arguments
