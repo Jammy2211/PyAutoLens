@@ -34,7 +34,7 @@ class NLO(non_linear.NonLinearOptimizer):
                     setattr(instance, key, value)
 
                 likelihood = analysis.fit(**instance.__dict__)
-                self.result = non_linear.Result(instance, likelihood)
+                self.result = ph.Result(instance, likelihood)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -167,3 +167,10 @@ class TestAnalysis(object):
         results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
         analysis = ph.Phase.Analysis(results, masked_image, grids)
         assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies
+
+
+class TestResult(object):
+    def test_model_image(self):
+        result = ph.Result(mm.ModelInstance(), 1)
+        result.galaxy_images = [np.array([1, 2, 3]), np.array([2, 3, 4])]
+        assert (result.model_image == np.array([3, 5, 7])).all()
