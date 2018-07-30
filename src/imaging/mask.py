@@ -691,7 +691,7 @@ class ImageGridBorder(np.ndarray):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(ImageGrid, self).__reduce__()
+        pickled_state = super(ImageGridBorder, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -704,7 +704,7 @@ class ImageGridBorder(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(ImageGrid, self).__setstate__(state[0:-1])
+        super(ImageGridBorder, self).__setstate__(state[0:-1])
 
     def grid_to_radii(self, grid):
         """
@@ -763,14 +763,8 @@ class ImageGridBorder(np.ndarray):
         grid_radii = self.grid_to_radii(grid)
         poly = self.polynomial_fit_to_border(grid)
 
-        move_factors = np.ones(grid.shape[0])
-
-        for i in range(grid.shape[0]):
-
-            border_radius = np.polyval(poly, grid_thetas[i])
-
-            if grid_radii[i] > border_radius:
-                move_factors[i] = border_radius / grid_radii[i]
+        move_factors = np.divide(np.polyval(poly, grid_thetas), grid_radii)
+        move_factors[move_factors > 1.0] = 1.0
 
         return move_factors
 
