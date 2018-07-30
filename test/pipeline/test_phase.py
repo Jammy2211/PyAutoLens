@@ -34,7 +34,7 @@ class NLO(non_linear.NonLinearOptimizer):
                     setattr(instance, key, value)
 
                 likelihood = analysis.fit(**instance.__dict__)
-                self.result = ph.Result(instance, likelihood)
+                self.result = non_linear.Result(instance, likelihood)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -171,6 +171,5 @@ class TestAnalysis(object):
 
 class TestResult(object):
     def test_model_image(self):
-        result = ph.Result(mm.ModelInstance(), 1)
-        result.galaxy_images = [np.array([1, 2, 3]), np.array([2, 3, 4])]
+        result = ph.Phase.Result(mm.ModelInstance(), 1, mm.ModelMapper(), [np.array([1, 2, 3]), np.array([2, 3, 4])])
         assert (result.model_image == np.array([3, 5, 7])).all()
