@@ -1,4 +1,4 @@
-from src.analysis import galaxy_prior
+from src.analysis import galaxy_prior as gp
 from src.analysis import galaxy as g
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
@@ -216,7 +216,7 @@ def phase_property(name):
             return getattr(self.optimizer.variable, name)
 
     def fset(self, value):
-        if inspect.isclass(value) or isinstance(value, galaxy_prior.GalaxyPrior):
+        if inspect.isclass(value) or isinstance(value, gp.GalaxyPrior):
             setattr(self.optimizer.variable, name, value)
             try:
                 delattr(self.optimizer.constant, name)
@@ -236,22 +236,23 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
         """
         A phase with a simple source/lens model
 
         Parameters
         ----------
-        lens_galaxy: g.Galaxy
+        lens_galaxy: g.Galaxy | gp.GalaxyPrior
             A galaxy that acts as a gravitational lens
-        source_galaxy: g.Galaxy
+        source_galaxy: g.Galaxy | gp.GalaxyPrior
             A galaxy that is being lensed
         optimizer_class: class
             The class of a non-linear optimizer
         sub_grid_size: int
             The side length of the subgrid
         """
-        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size)
+        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
