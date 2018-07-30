@@ -9,7 +9,7 @@ import os
 
 # Load up the weighted_data
 lens_name = 'source_sersic'
-data_dir = "../data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
+data_dir = "data/" + lens_name.format(os.path.dirname(os.path.realpath(__file__)))
 
 data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
 noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
@@ -21,12 +21,15 @@ image = im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=
                  background_noise=noise, poisson_noise=noise)
 
 
-class TestCase(object):
-    def test_pipeline_1_phase_1(self):
-        phase1 = ph.SourceLensPhase(
-            lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal, shear=mass_profiles.ExternalShear),
-            source_galaxy=gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic),
-            optimizer_class=nl.DownhillSimplex)
+def test_pipeline_1_phase_1():
+    phase1 = ph.SourceLensPhase(
+        lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal, shear=mass_profiles.ExternalShear),
+        source_galaxy=gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic),
+        optimizer_class=nl.DownhillSimplex)
 
-        result = phase1.run(image)
-        print(result)
+    result = phase1.run(image)
+    print(result)
+
+
+if __name__ == "__main__":
+    test_pipeline_1_phase_1()
