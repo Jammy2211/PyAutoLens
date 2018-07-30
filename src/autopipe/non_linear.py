@@ -9,7 +9,6 @@ from src.imaging import hyper_image
 from src.config import config
 from src.autopipe import model_mapper as mm
 import logging
-import numpy as np
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -18,6 +17,30 @@ default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
+
+
+class Result(object):
+
+    def __init__(self, constant, likelihood, variable=None):
+        """
+        The result of an optimization.
+
+        Parameters
+        ----------
+        constant: mm.ModelInstance
+            An instance object comprising the class instances that gave the optimal fit
+        likelihood: float
+            A value indicating the likelihood given by the optimal fit
+        variable: mm.ModelMapper
+            An object comprising priors determined by this stage of the analysis
+        """
+        self.constant = constant
+        self.likelihood = likelihood
+        self.variable = variable
+
+    def __str__(self):
+        return "Analysis Result:\n{}".format(
+            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
 
 
 def generate_parameter_latex(parameters, subscript=''):
@@ -47,38 +70,9 @@ def generate_parameter_latex(parameters, subscript=''):
     return latex
 
 
-class Result(object):
-
-    def __init__(self, constant, likelihood, variable=None):
-        """
-        The result of an optimization.
-
-        Parameters
-        ----------
-        constant: mm.ModelInstance
-            An instance object comprising the class instances that gave the optimal fit
-        likelihood: float
-            A value indicating the likelihood given by the optimal fit
-        variable: mm.ModelMapper
-            An object comprising priors determined by this stage of the analysis
-        """
-        self.constant = constant
-        self.likelihood = likelihood
-        self.variable = variable
-        self.galaxy_images = ()
-
-    @property
-    def model_image(self):
-        return np.sum(np.stack(self.galaxy_images), axis=0)
-
-    def __str__(self):
-        return "Analysis Result:\n{}".format(
-            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
-
-
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(),
+    def __init__(self, include_hyper_image=False, model_mapper=None,
                  config_path=None, path=default_path, **classes):
         """Abstract base class for non-linear optimizers.
 
@@ -97,7 +91,7 @@ class NonLinearOptimizer(object):
             self.__class__.__name__)
 
         self.path = path
-        self.variable = model_mapper
+        self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
         self.file_param_names = self.path + 'multinest.paramnames'
@@ -145,7 +139,7 @@ class NonLinearOptimizer(object):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
                  fmin=scipy.optimize.fmin):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
                                               model_mapper=model_mapper, path=path)
@@ -190,20 +184,15 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.info("DownhillSimplex complete")
         res = fitness_function.result
 
-        # TODO : For me this extracts the mean of the first variable, do you just want to say means = output?
-
-        # Get the reconstruction provided by Downhill Simplex
-        means = output[0]
-
         # Create a set of Gaussian priors from this result and associate them with the result object.
-        res.variable = self.variable.mapper_from_gaussian_means(means)
+        res.variable = self.variable.mapper_from_gaussian_means(output)
 
         return res
 
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=mm.ModelMapper(), path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
                  sigma_limit=3, run=pymultinest.run):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 

@@ -146,7 +146,7 @@ def blur_image_including_blurring_region(image, blurring_image, convolver):
     convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
-    return convolver.convolve_image(image, blurring_image)
+    return convolver.convolve_image_jitted(image, blurring_image)
 
 
 def compute_likelihood(image, noise, model_image):
