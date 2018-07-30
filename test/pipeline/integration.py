@@ -1,9 +1,5 @@
-from src.pipeline import phase as ph
-from src.autopipe import non_linear as nl
-from src.analysis import galaxy_prior as gp
-from src.profiles import light_profiles, mass_profiles
+from src.pipeline import pipeline as pl
 from src.imaging import image as im
-from src.imaging import mask as msk
 from src.imaging import scaled_array
 import os
 
@@ -22,10 +18,9 @@ image = im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=
 
 
 def test_pipeline_1_phase_1():
-    phase1 = ph.SourceLensPhase(
-        lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal, shear=mass_profiles.ExternalShear),
-        source_galaxy=gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic),
-        optimizer_class=nl.DownhillSimplex)
+    pipeline = pl.make_source_only_pipeline()
+
+    phase1 = pipeline.phases[0]
 
     result = phase1.run(image)
     print(result)
