@@ -1,4 +1,3 @@
-from src.pixelization import covariance_matrix
 import numpy as np
 import numba
 
