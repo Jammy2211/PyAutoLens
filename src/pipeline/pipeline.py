@@ -16,8 +16,10 @@ class Pipeline(object):
         return None if len(self.results) == 0 else self.results[-1]
 
     def run(self, image):
+        self.results = []
         for phase in self.phases:
             self.results.append(phase.run(image, self.last_result))
+        return self.results
 
 
 def make_source_only_pipeline():
