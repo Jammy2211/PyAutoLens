@@ -1,6 +1,7 @@
 from src.pipeline import pipeline as pl
-from src.autopipe import non_linear
+from src.pipeline import phase as ph
 from src.autopipe import model_mapper
+from src.autopipe import non_linear
 
 
 class DummyPhase(object):
@@ -11,7 +12,7 @@ class DummyPhase(object):
     def run(self, masked_image, last_result=None):
         self.masked_image = masked_image
         self.last_result = last_result
-        return non_linear.Result(model_mapper.ModelInstance(), 1, None)
+        return non_linear.Result(model_mapper.ModelInstance(), 1)
 
 
 class TestPipeline(object):
