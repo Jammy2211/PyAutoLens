@@ -5,6 +5,10 @@ from src.pixelization import pixelization as px
 from src.imaging import mask as msk
 from src.profiles import light_profiles, mass_profiles
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Pipeline(object):
     def __init__(self, *phases):
@@ -17,7 +21,8 @@ class Pipeline(object):
 
     def run(self, image):
         self.results = []
-        for phase in self.phases:
+        for i, phase in enumerate(self.phases):
+            logger.info("Running Phase {} (Number {})".format(phase.__class__.__name__, i))
             self.results.append(phase.run(image, self.last_result))
         return self.results
 
