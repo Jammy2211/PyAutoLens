@@ -768,6 +768,15 @@ class TestGaussianWidthConfig(object):
         assert gaussian_mapper.two.one.mean == 5
         assert gaussian_mapper.two.two.mean == 6
 
+    def test_no_override(self, test_config):
+        mapper = model_mapper.ModelMapper()
+
+        mapper.one = model_mapper.PriorModel(MockClassMM, config=test_config)
+
+        model_mapper.ModelMapper()
+
+        assert mapper.one is not None
+
 
 class TestFlatPriorModel(object):
     def test_flatten_list(self, width_config, test_config):
