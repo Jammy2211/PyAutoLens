@@ -98,7 +98,7 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def inversion_from_pix_grids(self, grids, borders, sparse_mask):
+    def reconstructor_from_pix_grids(self, grids, borders, sparse_mask):
         return self.value
 
 
@@ -435,7 +435,7 @@ class TestTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-    class TestInversionFromGalaxy:
+    class TestReconstructorFromGalaxy:
 
         def test__no_galaxies_in_plane__returns_none(self, grids, sparse_mask):
             galaxy_no_pix = galaxy.Galaxy()
@@ -443,9 +443,9 @@ class TestTracer(object):
             tracing = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_no_pix],
                                          image_plane_grids=grids)
 
-            inversions = tracing.inversions_from_source_plane(MockBorders(), sparse_mask)
+            reconstructors = tracing.reconstructors_from_source_plane(MockBorders(), sparse_mask)
 
-            assert inversions is None
+            assert reconstructors is None
 
         def test__image_galaxy_has_pixelization__still_returns_none(self, grids, sparse_mask):
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
@@ -454,11 +454,11 @@ class TestTracer(object):
             tracing = ray_tracing.Tracer(lens_galaxies=[galaxy_pix], source_galaxies=[galaxy_no_pix],
                                          image_plane_grids=grids)
 
-            inversions = tracing.inversions_from_source_plane(MockBorders(), sparse_mask)
+            reconstructors = tracing.reconstructors_from_source_plane(MockBorders(), sparse_mask)
 
-            assert inversions is None
+            assert reconstructors is None
 
-        def test__source_galaxy_has_pixelization__returns_pixelization_matrix(self, grids, sparse_mask):
+        def test__source_galaxy_has_pixelization__returns_reconstructor(self, grids, sparse_mask):
 
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
@@ -466,9 +466,9 @@ class TestTracer(object):
             tracing = ray_tracing.Tracer(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
                                          image_plane_grids=grids)
 
-            inversions = tracing.inversions_from_source_plane(MockBorders(), sparse_mask)
+            reconstructors = tracing.reconstructors_from_source_plane(MockBorders(), sparse_mask)
 
-            assert inversions == 1
+            assert reconstructors == 1
 
 
 class TestMultiTracer(object):
@@ -758,7 +758,7 @@ class TestMultiTracer(object):
 
             assert (plane_image == ray_trace_image).all()
 
-    class TestInversionFromGalaxy:
+    class TestReconstructorFromGalaxy:
 
         def test__3_galaxies__non_have_pixelization__returns_none_x3(self, grids, sparse_mask):
             sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
@@ -770,9 +770,9 @@ class TestMultiTracer(object):
             tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=grids,
                                               cosmology=cosmo.Planck15)
 
-            inversions = tracing.inversions_from_planes(MockBorders(), sparse_mask)
+            reconstructors = tracing.reconstructors_from_planes(MockBorders(), sparse_mask)
 
-            assert inversions == [None, None, None]
+            assert reconstructors == [None, None, None]
 
         def test__3_galaxies__1_has_pixelization__returns_none_x2_and_pixelization(self, grids,
                                                                                    sparse_mask):
@@ -785,9 +785,9 @@ class TestMultiTracer(object):
             tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=grids,
                                               cosmology=cosmo.Planck15)
 
-            inversions = tracing.inversions_from_planes(MockBorders(), sparse_mask)
+            reconstructors = tracing.reconstructors_from_planes(MockBorders(), sparse_mask)
 
-            assert inversions == [None, 1, None]
+            assert reconstructors == [None, 1, None]
 
         def test__3_galaxies__all_have_pixelization__returns_pixelizations(self, grids, sparse_mask):
             sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
@@ -799,9 +799,9 @@ class TestMultiTracer(object):
             tracing = ray_tracing.MultiTracer(galaxies=[g0, g1, g2], image_plane_grids=grids,
                                               cosmology=cosmo.Planck15)
 
-            inversions = tracing.inversions_from_planes(MockBorders(), sparse_mask)
+            reconstructors = tracing.reconstructors_from_planes(MockBorders(), sparse_mask)
 
-            assert inversions == [0.5, 1, 2]
+            assert reconstructors == [0.5, 1, 2]
 
 
 class TestPlane(object):
@@ -1002,36 +1002,39 @@ class TestPlane(object):
             assert (blurring_image[2] == 3.0 * profile_intensity[2] == 3.0 * blurring_galaxy_intensity[2]).all()
             assert (blurring_image[3] == 3.0 * profile_intensity[3] == 3.0 * blurring_galaxy_intensity[3]).all()
 
-    class TestInversionFromGalaxies:
+    class TestReconstructorFromGalaxies:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grids, sparse_mask):
+
             galaxy_no_pix = galaxy.Galaxy()
 
             plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=grids)
 
-            inversions = plane.inversion_from_plane(MockBorders(), sparse_mask)
+            reconstructors = plane.reconstructor_from_plane(MockBorders(), sparse_mask)
 
-            assert inversions is None
+            assert reconstructors is None
 
-        def test__1_galaxy_in_plane__it_has_pixelization__extracts_pixelization_matrix(self, grids, sparse_mask):
+        def test__1_galaxy_in_plane__it_has_pixelization__extracts_reconstructor(self, grids, sparse_mask):
+
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
 
             plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=grids)
 
-            inversions = plane.inversion_from_plane(MockBorders(), sparse_mask)
+            reconstructors = plane.reconstructor_from_plane(MockBorders(), sparse_mask)
 
-            assert inversions == 1
+            assert reconstructors == 1
 
-        def test__2_galaxies_in_plane__1_has_pixelization__extracts_pixelization_matrix(self, grids, sparse_mask):
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grids, sparse_mask):
+            
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
 
             plane = ray_tracing.Plane(galaxies=[galaxy_no_pix, galaxy_pix],
                                       grids=grids)
 
-            inversions = plane.inversion_from_plane(MockBorders(), sparse_mask)
+            reconstructors = plane.reconstructor_from_plane(MockBorders(), sparse_mask)
 
-            assert inversions == 1
+            assert reconstructors == 1
 
         def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grids, sparse_mask):
 
@@ -1042,7 +1045,7 @@ class TestPlane(object):
                                       grids=grids)
 
             with pytest.raises(exc.PixelizationException):
-                plane.inversion_from_plane(MockBorders(), sparse_mask)
+                plane.reconstructor_from_plane(MockBorders(), sparse_mask)
 
 
 class TestDeflectionAnglesViaGalaxy(object):
