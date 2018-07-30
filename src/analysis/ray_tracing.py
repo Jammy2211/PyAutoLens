@@ -50,8 +50,8 @@ class Tracer(object):
         return self.image_plane.blurring_image_from_galaxy_light_profiles(
         ) + self.source_plane.blurring_image_from_galaxy_light_profiles()
 
-    def inversions_from_source_plane(self, borders, cluster_mask):
-        return self.source_plane.inversion_from_plane(borders, cluster_mask)
+    def reconstructors_from_source_plane(self, borders, cluster_mask):
+        return self.source_plane.reconstructor_from_plane(borders, cluster_mask)
 
     @property
     def galaxy_images(self):
@@ -146,8 +146,8 @@ class MultiTracer(object):
         return np.ndarray.sum(np.array(list(map(lambda plane: plane.blurring_image_from_galaxy_light_profiles(),
                                                 self.planes))))
 
-    def inversions_from_planes(self, borders, cluster_mask):
-        return list(map(lambda plane: plane.inversion_from_plane(borders, cluster_mask), self.planes))
+    def reconstructors_from_planes(self, borders, cluster_mask):
+        return list(map(lambda plane: plane.reconstructor_from_plane(borders, cluster_mask), self.planes))
 
 
 class TracerGeometry(object):
@@ -274,14 +274,14 @@ class Plane(object):
         """Generate the image of the galaxies in this plane."""
         return intensities_via_grid(self.grids.blurring, self.galaxies)
 
-    def inversion_from_plane(self, borders, sparse_mask):
+    def reconstructor_from_plane(self, borders, sparse_mask):
 
         pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
 
         if len(pixelized_galaxies) == 0:
             return None
         if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.inversion_from_pix_grids(self.grids, borders, sparse_mask)
+            return pixelized_galaxies[0].pixelization.reconstructor_from_pix_grids(self.grids, borders, sparse_mask)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 

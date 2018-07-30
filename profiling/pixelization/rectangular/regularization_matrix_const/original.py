@@ -1,15 +1,48 @@
 from profiling import profiling_data
 from profiling import tools
+from analysis import ray_tracing
+from analysis import galaxy
+from profiles import mass_profiles
 from src import exc
 import numpy as np
 import pytest
+import numba
+
+
+class RegularizationConstant(object):
+
+    pixels = None
+    regularization_coefficients = None
+
+    def regularization_matrix_from_pix_neighbors(self, pix_neighbors):
+        """
+        Setup a pixelization's constant regularization matrix (see test_pixelization.py)
+
+        Parameters
+        ----------
+        pix_neighbors : [[]]
+            A list of the neighbors of each pixel.
+        """
+
+        regularization_matrix = np.zeros(shape=(self.pixels, self.pixels))
+
+        reg_coeff = self.regularization_coefficients[0] ** 2.0
+
+        for i in range(self.pixels):
+            regularization_matrix[i, i] += 1e-8
+            for j in pix_neighbors[i]:
+                regularization_matrix[i, i] += reg_coeff
+                regularization_matrix[i, j] -= reg_coeff
+
+        return regularization_matrix
+
 
 class Pixelization(object):
 
-    def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
+    def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \
-        pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix
+        pixels. These pixels fit an image using a linear inversion, where a regularization matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
@@ -25,16 +58,14 @@ class Pixelization(object):
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
             The regularization coefficients used to smooth the pix reconstruction.
-        pix_signal_scale : float
-            A hyper-parameter which scales the signal attributed to each pixel, used for weighted regularization.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
-        self.pix_signal_scale = pix_signal_scale
 
-class Rectangular(Pixelization):
 
-    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
+class RectangularRegConst(Pixelization, RegularizationConstant):
+
+    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -51,7 +82,7 @@ class Rectangular(Pixelization):
         if shape[0] <= 2 or shape[1] <= 2:
             raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
 
-        super(Rectangular, self).__init__(shape[0] * shape[1], regularization_coefficients)
+        super(RectangularRegConst, self).__init__(shape[0] * shape[1], regularization_coefficients)
 
         self.shape = shape
 
@@ -124,40 +155,17 @@ class Rectangular(Pixelization):
 
         return pixel_neighbors
 
-@tools.tick_toc_x10
-def solution_10x10():
-    pix = Rectangular(shape=(10, 10))
-    pix.neighbors_from_pixelization()
 
-@tools.tick_toc_x10
-def solution_20x20():
-    pix = Rectangular(shape=(20, 20))
-    pix.neighbors_from_pixelization()
+sub_grid_size=4
 
-@tools.tick_toc_x10
-def solution_30x30():
-    pix = Rectangular(shape=(30, 30))
-    pix.neighbors_from_pixelization()
+pix = RectangularRegConst(shape=(20, 20))
 
-@tools.tick_toc_x10
-def solution_40x40():
-    pix = Rectangular(shape=(40, 40))
-    pix.neighbors_from_pixelization()
+pix_neighbors = pix.neighbors_from_pixelization()
 
-@tools.tick_toc_x10
-def solution_50x50():
-    pix = Rectangular(shape=(50, 50))
-    pix.neighbors_from_pixelization()
+@tools.tick_toc_x1
+def solution():
+    pix.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
-@tools.tick_toc_x10
-def solution_100x100():
-    pix = Rectangular(shape=(100, 100))
-    pix.neighbors_from_pixelization()
 
 if __name__ == "__main__":
-    solution_10x10()
-    solution_20x20()
-    solution_30x30()
-    solution_40x40()
-    solution_50x50()
-    solution_100x100()
+    solution()
