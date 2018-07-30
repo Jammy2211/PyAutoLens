@@ -1,6 +1,7 @@
 from src.pipeline import phase as ph
 from src.autopipe import non_linear as nl
 from src.analysis import galaxy_prior as gp
+from src.pixelization import pixelization as px
 from src.imaging import mask as msk
 from src.profiles import light_profiles, mass_profiles
 
@@ -19,12 +20,11 @@ class Pipeline(object):
             self.results.append(phase.run(image, self.last_result))
 
 
-# 1) Mass: SIE+Shear
-#    Source: Sersic
-#    NLO: LM
-
-
 def make_source_only_pipeline():
+    # 1) Mass: SIE+Shear
+    #    Source: Sersic
+    #    NLO: LM
+
     phase1 = ph.SourceLensPhase(
         lens_galaxy=gp.GalaxyPrior(
             sie=mass_profiles.SphericalIsothermal,
@@ -34,4 +34,19 @@ def make_source_only_pipeline():
         optimizer_class=nl.DownhillSimplex,
         mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
 
-    return Pipeline(phase1)
+    # 2) Mass: SIE+Shear (priors from phase 1)
+    #    Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+    #    NLO: LM
+
+    class PriorLensPhase(ph.SourceLensPhase):
+        def __init__(self):
+            super().__init__(source_galaxy=gp.GalaxyPrior(pixelization=px.RectangularRegConst),
+                             optimizer_class=nl.DownhillSimplex, sub_grid_size=1,
+                             mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
+
+        def pass_priors(self, last_results):
+            self.lens_galaxy = last_results.variable.lens_galaxy
+
+    phase2 = PriorLensPhase()
+
+    return Pipeline(phase1, phase2)
