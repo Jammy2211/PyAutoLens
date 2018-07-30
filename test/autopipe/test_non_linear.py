@@ -9,7 +9,6 @@ from src import exc
 from src.autopipe import model_mapper
 from src.autopipe import non_linear
 from src.profiles import light_profiles, mass_profiles
-import numpy as np
 
 
 @pytest.fixture(name='nlo_setup_path')
@@ -1095,7 +1094,7 @@ class MockAnalysis(object):
 
     def fit(self, **kwargs):
         self.kwargs = kwargs
-        return 1
+        return 1.
 
 
 @pytest.fixture(name='test_config')
@@ -1116,7 +1115,7 @@ def make_width_config():
 def make_downhill_simplex(test_config, width_config):
     def fmin(fitness_function, x0):
         fitness_function(x0)
-        return [x0]
+        return x0
 
     return non_linear.DownhillSimplex(fmin=fmin, model_mapper=model_mapper.ModelMapper(config=test_config,
                                                                                        width_config=width_config))
@@ -1200,10 +1199,3 @@ class TestFitting(object):
             assert result.variable.variable.one.mean == 1
             assert result.variable.variable.two.mean == -2
             assert result.likelihood == 1
-
-
-class TestResult(object):
-    def test_model_image(self):
-        result = non_linear.Result(model_mapper.ModelInstance(), 1)
-        result.galaxy_images = [np.array([1, 2, 3]), np.array([2, 3, 4])]
-        assert (result.model_image == np.array([3, 5, 7])).all()
