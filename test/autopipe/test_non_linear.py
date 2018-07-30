@@ -9,7 +9,6 @@ from src import exc
 from src.autopipe import model_mapper
 from src.autopipe import non_linear
 from src.profiles import light_profiles, mass_profiles
-import numpy as np
 
 
 @pytest.fixture(name='nlo_setup_path')
