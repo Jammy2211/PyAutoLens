@@ -13,7 +13,7 @@ import inspect
 
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
-                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
+                 mask_function=lambda image: msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
