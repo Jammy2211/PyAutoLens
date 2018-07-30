@@ -2,6 +2,7 @@ from profiling import profiling_data
 from profiling import tools
 from src import exc
 import numpy as np
+import numba
 import pytest
 
 class Pixelization(object):
@@ -31,6 +32,7 @@ class Pixelization(object):
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
         self.pix_signal_scale = pix_signal_scale
+
 
 class Rectangular(Pixelization):
 
@@ -98,6 +100,56 @@ class Rectangular(Pixelization):
 
         return self.Geometry(x_min, x_max, x_pixel_scale, y_min, y_max, y_pixel_scale)
 
+    def grid_to_pix_from_grid(self, grid, geometry):
+        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
+
+        Parameters
+        ----------
+        grid : [[float, float]]
+            The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
+        geometry : Geometry
+            The rectangular pixel grid's geometry.
+        """
+        grid_to_pix = np.zeros(grid.shape[0], dtype='int')
+
+        for index, pix_coordinate in enumerate(grid):
+            x_pixel = geometry.arc_second_to_pixel_index_x(pix_coordinate[0])
+            y_pixel = geometry.arc_second_to_pixel_index_y(pix_coordinate[1])
+
+            grid_to_pix[index] = x_pixel * self.shape[1] + y_pixel
+
+        return grid_to_pix
+
+    def grid_to_pix_from_grid_jitted(self, grid, geometry):
+        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
+
+        Parameters
+        ----------
+        grid : [[float, float]]
+            The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
+        geometry : Geometry
+            The rectangular pixel grid's geometry.
+        """
+        return self.grid_to_pix_jit(grid, geometry.x_min, geometry.x_pixel_scale, geometry.y_min,
+                                    geometry.y_pixel_scale, self.shape[1]).astype(dtype='int')
+
+    @staticmethod
+    @numba.jit(nopython=True)
+    def grid_to_pix_jit(grid, x_min, x_pixel_scale, y_min, y_pixel_scale, y_shape):
+
+        grid_to_pix = np.zeros(grid.shape[0])
+
+        for i in range(grid.shape[0]):
+
+            x_pixel = np.floor((grid[i,0] - x_min) / x_pixel_scale)
+            y_pixel = np.floor((grid[i,1] - y_min) / y_pixel_scale)
+
+            grid_to_pix[i] = x_pixel * y_shape + y_pixel
+
+        return grid_to_pix
+
 sub_grid_size=4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
@@ -106,27 +158,43 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
-pix = Rectangular()
+pix_shape = (50, 50)
 
-@tools.tick_toc_x10
+pix = Rectangular(pix_shape)
+
+lsst_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=lsst.grids.sub)
+euclid_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=euclid.grids.sub)
+hst_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=hst.grids.sub)
+hst_up_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=hst_up.grids.sub)
+ao_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=ao.grids.sub)
+
+assert pix.grid_to_pix_from_grid(grid=lsst.grids.sub, geometry=lsst_geometry) == \
+    pytest.approx(pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry))
+pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry)
+pix.grid_to_pix_from_grid_jitted(grid=euclid.grids.sub, geometry=euclid_geometry)
+pix.grid_to_pix_from_grid_jitted(grid=hst.grids.sub, geometry=hst_geometry)
+pix.grid_to_pix_from_grid_jitted(grid=hst_up.grids.sub, geometry=hst_up_geometry)
+pix.grid_to_pix_from_grid_jitted(grid=ao.grids.sub, geometry=ao_geometry)
+
+@tools.tick_toc_x1
 def lsst_solution():
-    pix.geometry_from_pix_sub_grid(pix_sub_grid=lsst.grids.sub)
+    pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry)
 
-@tools.tick_toc_x10
+@tools.tick_toc_x1
 def euclid_solution():
-    pix.geometry_from_pix_sub_grid(pix_sub_grid=euclid.grids.sub)
+    pix.grid_to_pix_from_grid_jitted(grid=euclid.grids.sub, geometry=euclid_geometry)
 
-@tools.tick_toc_x10
+@tools.tick_toc_x1
 def hst_solution():
-    pix.geometry_from_pix_sub_grid(pix_sub_grid=hst.grids.sub)
+    pix.grid_to_pix_from_grid_jitted(grid=hst.grids.sub, geometry=hst_geometry)
 
-@tools.tick_toc_x10
+@tools.tick_toc_x1
 def hst_up_solution():
-    pix.geometry_from_pix_sub_grid(pix_sub_grid=hst_up.grids.sub)
+    pix.grid_to_pix_from_grid_jitted(grid=hst_up.grids.sub, geometry=hst_up_geometry)
 
-@tools.tick_toc_x10
+@tools.tick_toc_x1
 def ao_solution():
-    pix.geometry_from_pix_sub_grid(pix_sub_grid=ao.grids.sub)
+    pix.grid_to_pix_from_grid_jitted(grid=ao.grids.sub, geometry=ao_geometry)
 
 
 if __name__ == "__main__":

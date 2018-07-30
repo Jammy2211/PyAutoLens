@@ -104,9 +104,9 @@ class PixelizedFitter(Fitter):
         images.
         """
 
-        pix_pre_fit = self.tracer.inversions_from_source_plane(self.borders, self.sparse_mask)
-        pix_fit = pix_pre_fit.fit_image_via_inversion(self.image, self.image.background_noise,
-                                                      self.image.convolver_mapping_matrix)
+        pix_pre_fit = self.tracer.reconstructors_from_source_plane(self.borders, self.sparse_mask)
+        pix_fit = pix_pre_fit.reconstruct_image(self.image, self.image.background_noise,
+                                                self.image.convolver_mapping_matrix)
 
         model_image = pix_fit.model_image_from_reconstruction()
 
