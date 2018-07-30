@@ -1,4 +1,4 @@
-from src.analysis import galaxy_prior
+from src.analysis import galaxy_prior as gp
 from src.analysis import galaxy as g
 from src.analysis import ray_tracing
 from src.imaging import mask as msk
@@ -7,12 +7,17 @@ from src.imaging import image as img
 from src.analysis import fitting
 from src.autopipe import non_linear
 from src.autopipe import model_mapper as mm
+import numpy as np
 import inspect
+import logging
+
+logger = logging.getLogger(__name__)
+logger.level = logging.DEBUG
 
 
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
-                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
+                 mask_function=lambda image: msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -45,9 +50,8 @@ class Phase(object):
         """
         analysis = self.make_analysis(image=image, last_results=last_results)
         result = self.optimizer.fit(analysis)
-        result.lens_galaxy_images, result.source_galaxy_images = analysis.galaxy_images_for_model(result.constant)
-        result.galaxy_images = result.lens_galaxy_images + result.source_galaxy_images
-        return result
+        return self.__class__.Result(result.constant, result.likelihood, result.variable,
+                                     galaxy_images=analysis.galaxy_images_for_model(result.constant))
 
     def make_analysis(self, image, last_results=None):
         """
@@ -101,6 +105,25 @@ class Phase(object):
         """
         return self.optimizer.variable
 
+    class Result(non_linear.Result):
+
+        def __init__(self, constant, likelihood, variable, galaxy_images):
+            """
+            The result of a phase
+
+            Parameters
+            ----------
+
+            galaxy_images: [ndarray]
+                A collection of images created by each individual galaxy which taken together form the full model image
+            """
+            super(Phase.Result, self).__init__(constant, likelihood, variable)
+            self.galaxy_images = galaxy_images
+
+        @property
+        def model_image(self):
+            return np.sum(np.stack(self.galaxy_images), axis=0)
+
     class Analysis(object):
         def __init__(self, last_results,
                      masked_image,
@@ -110,7 +133,7 @@ class Phase(object):
 
             Parameters
             ----------
-            last_results: non_linear.Result
+            last_results: Result
                 The result of an analysis
             masked_image: mi.MaskedImage
                 An image that has been masked
@@ -197,7 +220,7 @@ def phase_property(name):
             return getattr(self.optimizer.variable, name)
 
     def fset(self, value):
-        if inspect.isclass(value) or isinstance(value, galaxy_prior.GalaxyPrior):
+        if inspect.isclass(value) or isinstance(value, gp.GalaxyPrior):
             setattr(self.optimizer.variable, name, value)
             try:
                 delattr(self.optimizer.constant, name)
@@ -217,24 +240,36 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1):
+    def __init__(self, lens_galaxy=None, source_galaxy=None, other=None, optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=1,
+                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
         """
         A phase with a simple source/lens model
 
         Parameters
         ----------
-        lens_galaxy: g.Galaxy
+        lens_galaxy: g.Galaxy | gp.GalaxyPrior
             A galaxy that acts as a gravitational lens
-        source_galaxy: g.Galaxy
+        source_galaxy: g.Galaxy | gp.GalaxyPrior
             A galaxy that is being lensed
         optimizer_class: class
             The class of a non-linear optimizer
         sub_grid_size: int
             The side length of the subgrid
         """
-        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size)
+        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
+        self.optimizer.variable.other = other
+
+    class Result(Phase.Result):
+        @property
+        def lens_galaxy_image(self):
+            return self.galaxy_images[0]
+
+        @property
+        def source_galaxy_image(self):
+            return self.galaxy_images[1]
 
     class Analysis(Phase.Analysis):
 
@@ -254,6 +289,11 @@ class SourceLensPhase(Phase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model image itself
             """
+            logger.debug(
+                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                    lens_galaxy,
+                    source_galaxy))
+
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
