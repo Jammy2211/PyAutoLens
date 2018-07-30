@@ -1,6 +1,10 @@
 from src.pipeline import pipeline as pl
+from src.pipeline import phase as ph
 from src.imaging import image as im
 from src.imaging import scaled_array
+from src.analysis import galaxy_prior as gp
+from src.profiles import mass_profiles
+from src.autopipe import model_mapper as mm
 
 import os
 
@@ -21,11 +25,25 @@ image = im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=
 
 
 def test_source_only_phase_1():
-    pipeline = pl.make_source_only_pipeline()
-
-    phase1 = pipeline.phases[0]
+    phase1 = pl.make_source_only_pipeline().phases[0]
 
     result = phase1.run(image)
+    print(result)
+
+
+def test_source_only_phase_2():
+    lens_galaxy = gp.GalaxyPrior(
+        sie=mass_profiles.SphericalIsothermal,
+        shear=mass_profiles.ExternalShear)
+
+    variable = mm.ModelMapper()
+    variable.lens_galaxy = lens_galaxy
+
+    last_result = ph.SourceLensPhase.Result(mm.ModelInstance(), 1., variable, [])
+
+    phase2 = pl.make_source_only_pipeline().phases[1]
+
+    result = phase2.run(image, last_result)
     print(result)
 
 
