@@ -46,9 +46,10 @@ class MaskedImage(im.AbstractImage):
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
 
-
     def map_to_2d(self, data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D image.
+        """
+        Use mapper to map an input data-set from a *GridData* to its original 2D image.
+
         Parameters
         -----------
         data : ndarray

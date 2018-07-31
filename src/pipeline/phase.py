@@ -364,12 +364,16 @@ class SourceLensPhase(Phase):
             galaxy_images: [ndarray]
                 A list of images of galaxy components
             """
-            tracer = ray_tracing.Tracer(
-                [] if model.lens_galaxy is None else [model.lens_galaxy],
-                [] if model.source_galaxy is None else [model.source_galaxy],
-                self.coordinate_collection)
-            return None if model.lens_galaxy is None else tracer.image_plane.galaxy_images[
-                0], None if model.source_galaxy is None else tracer.source_plane.galaxy_images[0]
+
+            def model_image(plane):
+                if len(plane.galaxies) == 0:
+                    return None
+                return self.masked_image.map_to_2d(plane.galaxy_images[0])
+
+            lens_galaxies = [] if model.lens_galaxy is None else [model.lens_galaxy]
+            source_galaxies = [] if model.source_galaxy is None else [model.source_galaxy]
+            tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coordinate_collection)
+            return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
 
 class PixelizedSourceLensPhase(SourceLensPhase):
