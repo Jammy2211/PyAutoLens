@@ -91,7 +91,7 @@ def make_profile_pipeline():
             return masked_image - previous_results.last.lens_galaxy_image
 
         def pass_priors(self, previous_results):
-            self.lens_galaxy.sie.centre = previous_results.variable.elliptical_sersic.centre
+            self.lens_galaxy.sie.centre = previous_results.last.variable.elliptical_sersic.centre
 
     # 2) Lens Light : None
     #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
