@@ -91,7 +91,7 @@ def make_profile_pipeline():
             return masked_image - previous_results.last.lens_galaxy_image
 
         def pass_priors(self, previous_results):
-            self.lens_galaxy.sie.centre = previous_results.last.variable.elliptical_sersic.centre
+            self.lens_galaxy.sie.centre = previous_results.last.variable.lens_galaxy.elliptical_sersic.centre
 
     # 2) Lens Light : None
     #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
@@ -111,13 +111,18 @@ def make_profile_pipeline():
 
     # 3) Lens Light : Elliptical Sersic (Priors phase 1)
     #    Mass: SIE (Priors phase 2)
-    #    Source : Elliptical Sesic (Priors phase 2)
+    #    Source : Elliptical Sersic (Priors phase 2)
     #    NLO : MultiNest
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
     class CombinedPhase(ph.SourceLensPhase):
         def pass_priors(self, previous_results):
-            pass
+            self.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=previous_results.first.lens_galaxy.elliptical_sersic,
+                                              sie=previous_results.last.lens_galaxy.sie)
+            self.source_galaxy = previous_results.last.source_galaxy
 
-    return Pipeline(phase1, phase2)
+    phase3 = CombinedPhase(optimizer_class=nl.MultiNest,
+                           mask_function=mask_function)
+
+    return Pipeline(phase1, phase2, phase3)
