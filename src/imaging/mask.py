@@ -182,7 +182,7 @@ class Mask(scaled_array.ScaledArray):
 
         return ImageGrid(grid)
 
-    def masked_1d_array_from_2d_array(self, grid_data):
+    def map_to_1d(self, grid_data):
         """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
 
         Parameters

@@ -316,6 +316,13 @@ class SourceLensPhase(Phase):
             return self.galaxy_images[1]
 
     class Analysis(Phase.Analysis):
+        def __init__(self, coordinate_collection, masked_image, previous_results):
+            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image, coordinate_collection)
+            self.model_image = None
+            self.galaxy_images = None
+            if self.last_results is not None:
+                self.model_image = self.masked_image.mask.map_to_1d(previous_results.last.model_image)
+                self.galaxy_images = list(map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
@@ -345,8 +352,8 @@ class SourceLensPhase(Phase):
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
-                return fitter.fit_data_with_profiles_and_model_images(self.last_results.model_image,
-                                                                      self.last_results.galaxy_images)
+                return fitter.fit_data_with_profiles_and_model_images(self.model_image,
+                                                                      self.galaxy_images)
 
             return fitter.fit_data_with_profiles()
 
