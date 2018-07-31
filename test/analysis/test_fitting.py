@@ -600,7 +600,7 @@ class TestPixelizationEvidence:
                                [0.0, 1.0, 0.0],
                                [0.0, 0.0, 1.0]])
 
-        pix_fit = reconstruction.Reconstruction(weighted_data=None, blurred_mapping=None,
+        pix_fit = reconstruction.Reconstruction(data_vector=None, blurred_mapping=None,
                                                 regularization=reg_matrix, covariance=None,
                                                 covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
@@ -631,7 +631,7 @@ class TestPixelizationEvidence:
                                [-1.0, 2.0, -1.0],
                                [0.0, -1.0, 2.0]])
 
-        pix_fit = reconstruction.Reconstruction(weighted_data=None, blurred_mapping=None,
+        pix_fit = reconstruction.Reconstruction(data_vector=None, blurred_mapping=None,
                                                 regularization=reg_matrix, covariance=None,
                                                 covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
@@ -662,7 +662,7 @@ class TestPixelizationEvidence:
                                [-1.0, 2.0, -1.0],
                                [0.0, -1.0, 2.0]])
 
-        pix_fit = reconstruction.Reconstruction(weighted_data=None, blurred_mapping=None,
+        pix_fit = reconstruction.Reconstruction(data_vector=None, blurred_mapping=None,
                                                 regularization=reg_matrix, covariance=None,
                                                 covariance_regularization=cov_reg_matrix, reconstruction=solution)
 
