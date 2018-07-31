@@ -109,7 +109,7 @@ class MockBorders(object):
         self.sub = sub
 
 
-class TestGalaxyImages(object):
+class TestProperties(object):
     def test_tracer(self, grids):
         tracer = ray_tracing.Tracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
                                     [galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
@@ -126,6 +126,32 @@ class TestGalaxyImages(object):
                                          cosmo.Planck15)
 
         assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(1), galaxy.HyperGalaxy(2)]
+
+    def test_all_with_hyper_galaxies_tracer(self, grids):
+        tracer = ray_tracing.Tracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
+                                    [galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
+                                    grids)
+
+        assert tracer.all_with_hyper_galaxies
+
+        tracer = ray_tracing.Tracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
+                                    [galaxy.Galaxy()],
+                                    grids)
+
+        assert not tracer.all_with_hyper_galaxies
+
+    def test_all_with_hyper_galaxies_multi_tracer(self, grids):
+        tracer = ray_tracing.MultiTracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(2), redshift=2),
+                                          galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(1), redshift=1)], grids,
+                                         cosmo.Planck15)
+
+        assert tracer.all_with_hyper_galaxies
+
+        tracer = ray_tracing.MultiTracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(2), redshift=2),
+                                          galaxy.Galaxy(redshift=1)], grids,
+                                         cosmo.Planck15)
+
+        assert not tracer.all_with_hyper_galaxies
 
 
 class TestTracerGeometry(object):
