@@ -32,39 +32,33 @@ def make_source_only_pipeline():
     #    Source: Sersic
     #    NLO: LM
 
+    def mask_function(img):
+        return msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2)
+
     phase1 = ph.SourceLensPhase(
         lens_galaxy=gp.GalaxyPrior(
             sie=mass_profiles.SphericalIsothermal,
             shear=mass_profiles.ExternalShear),
         source_galaxy=gp.GalaxyPrior(
             sersic=light_profiles.EllipticalSersic),
-        optimizer_class=nl.DownhillSimplex,
-        mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
+        mask_function=mask_function)
 
     # 2) Mass: SIE+Shear (priors from phase 1)
     #    Source: 'smooth' pixelization (include regularization parameter(s) in the model)
     #    NLO: LM
 
-    class PriorLensPhase(ph.SourceLensPhase):
-        def __init__(self):
-            super().__init__(source_galaxy=gp.GalaxyPrior(pixelization=px.RectangularRegConst),
-                             optimizer_class=nl.DownhillSimplex, sub_grid_size=1,
-                             mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
-
+    class PriorLensPhase(ph.PixelizedSourceLensPhase):
         def pass_priors(self, last_results):
             self.lens_galaxy = last_results.variable.lens_galaxy
 
-    phase2 = PriorLensPhase()
+    phase2 = PriorLensPhase(pixelization=px.RectangularRegConst,
+                            mask_function=mask_function)
 
-    class HyperParameterPhase(ph.SourceLensPhase):
-        def __init__(self):
-            super().__init__(source_galaxy=gp.GalaxyPrior(pixelization=px.RectangularRegWeighted),
-                             optimizer_class=nl.MultiNest, sub_grid_size=1,
-                             mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
-
+    class ConstantLensPhase(ph.PixelizedSourceLensPhase):
         def pass_priors(self, last_results):
             self.lens_galaxy = last_results.constant.lens_galaxy
 
-    phase3 = HyperParameterPhase()
+    phase3 = ConstantLensPhase(pixelization=px.RectangularRegConst,
+                               mask_function=mask_function)
 
     return Pipeline(phase1, phase2, phase3)

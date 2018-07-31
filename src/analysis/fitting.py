@@ -112,6 +112,12 @@ class PixelizedFitter(Fitter):
 
         return compute_pixelization_evidence(self.image, self.image.background_noise, model_image, pix_fit)
 
+    def fit_data_with_pixelization_profiles_and_hyper_galaxies(self, model_image, galaxy_images, hyper_galaxies):
+        raise NotImplementedError()
+
+    def fit_data_with_pixelization_and_profiles(self):
+        raise NotImplementedError()
+
 
 def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_values):
     """Use the model image and galaxy image (computed in the previous phase of the pipeline) to determine the
