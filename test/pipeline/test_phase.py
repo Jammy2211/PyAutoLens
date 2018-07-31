@@ -167,6 +167,16 @@ class TestPhase(object):
         assert phase.lens_galaxy is not None
         assert phase.source_galaxy is not None
 
+    def test_modify_image(self, image):
+        class MyPhase(ph.Phase):
+            def modify_image(self, im, previous_results):
+                assert image.shape == im.shape
+                return im
+
+        phase = MyPhase()
+        analysis = phase.make_analysis(image)
+        assert analysis.masked_image != image
+
 
 class TestPixelizedPhase(object):
     def test_constructor(self):
