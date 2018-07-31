@@ -7,6 +7,7 @@ class DummyPhase(object):
     def __init__(self):
         self.masked_image = None
         self.previous_results = None
+        self.name = "dummy_phase"
 
     def run(self, masked_image, previous_results):
         self.masked_image = masked_image
