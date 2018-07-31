@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Pipeline(object):
-    def __init__(self, *phases):
+    def __init__(self, *phases, name="pipeline"):
         self.phases = phases
 
     def run(self, image):

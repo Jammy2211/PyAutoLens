@@ -13,7 +13,7 @@ import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
+default_path = '{}/../output'.format(os.path.dirname(os.path.realpath(__file__)))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
@@ -73,7 +73,7 @@ def generate_parameter_latex(parameters, subscript=''):
 class NonLinearOptimizer(object):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
-                 config_path=None, path=default_path, **classes):
+                 config_path=None, path=default_path, name=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -90,12 +90,12 @@ class NonLinearOptimizer(object):
             "{}/../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
             self.__class__.__name__)
 
-        self.path = path
+        self.path = "{}/{}".format(path, name) if name is not None else path
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
-        self.file_param_names = self.path + 'multinest.paramnames'
-        self.file_model_info = self.path + 'model.info'
+        self.file_param_names = "{}/{}".format(self.path, '/multinest.paramnames')
+        self.file_model_info = "{}/{}".format(self.path, '/model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
         if include_hyper_image:
