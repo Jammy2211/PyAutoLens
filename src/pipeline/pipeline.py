@@ -70,15 +70,15 @@ def make_source_only_pipeline():
     #    NLO: LM
 
     class PriorLensPhase(ph.PixelizedSourceLensPhase):
-        def pass_priors(self, last_results):
-            self.lens_galaxy = last_results.variable.lens_galaxy
+        def pass_priors(self, previous_results):
+            self.lens_galaxy = previous_results.last.variable.lens_galaxy
 
     phase2 = PriorLensPhase(pixelization=px.RectangularRegConst,
                             mask_function=mask_function)
 
     class ConstantLensPhase(ph.PixelizedSourceLensPhase):
-        def pass_priors(self, last_results):
-            self.lens_galaxy = last_results.constant.lens_galaxy
+        def pass_priors(self, previous_results):
+            self.lens_galaxy = previous_results.last.constant.lens_galaxy
 
     phase3 = ConstantLensPhase(pixelization=px.RectangularRegConst,
                                mask_function=mask_function)
@@ -98,12 +98,12 @@ def make_profile_pipeline():
                               optimizer_class=nl.MultiNest)
 
     class LensSubtractedPhase(ph.SourceLensPhase):
-        def customize_image(self, masked_image, last_result):
-            return masked_image - last_result.lens_galaxy_image
+        def customize_image(self, masked_image, previous_results):
+            return masked_image - previous_results.last.lens_galaxy_image
 
-        def pass_priors(self, last_results):
+        def pass_priors(self, previous_results):
             #  TODO: does this work?
-            self.lens_galaxy.sie.centre = last_results.variable.lens_galaxy.elliptical_sersic.centre
+            self.lens_galaxy.sie.centre = previous_results.variable.lens_galaxy.elliptical_sersic.centre
 
     # 2) Lens Light : None
     #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
