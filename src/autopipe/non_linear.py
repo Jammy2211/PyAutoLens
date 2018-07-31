@@ -13,7 +13,7 @@ import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-default_path = '{}/../output/'.format(os.path.dirname(os.path.realpath(__file__)))
+default_path = '{}/../../output'.format(os.path.dirname(os.path.realpath(__file__)))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
@@ -73,7 +73,7 @@ def generate_parameter_latex(parameters, subscript=''):
 class NonLinearOptimizer(object):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
-                 config_path=None, path=default_path, **classes):
+                 config_path=None, path=default_path, name=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -90,12 +90,12 @@ class NonLinearOptimizer(object):
             "{}/../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
             self.__class__.__name__)
 
-        self.path = path
+        self.path = "{}/{}".format(path, name) if name is not None else path
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
-        self.file_param_names = self.path + 'multinest.paramnames'
-        self.file_model_info = self.path + 'model.info'
+        self.file_param_names = "{}/{}".format(self.path, '/multinest.paramnames')
+        self.file_model_info = "{}/{}".format(self.path, '/model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
         if include_hyper_image:
@@ -140,9 +140,9 @@ class NonLinearOptimizer(object):
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
-                 fmin=scipy.optimize.fmin):
+                 fmin=scipy.optimize.fmin, name=None):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              model_mapper=model_mapper, path=path)
+                                              model_mapper=model_mapper, path=path, name=name)
 
         self.xtol = self.nlo_config.get("xtol", float)
         self.ftol = self.nlo_config.get("ftol", float)
@@ -193,7 +193,7 @@ class DownhillSimplex(NonLinearOptimizer):
 class MultiNest(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
-                 sigma_limit=3, run=pymultinest.run):
+                 sigma_limit=3, run=pymultinest.run, name=None):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -206,10 +206,10 @@ class MultiNest(NonLinearOptimizer):
         """
 
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper,
-                                        path=path)
+                                        path=path, name=name)
 
-        self.file_summary = self.path + 'summary.txt'
-        self.file_weighted_samples = self.path + 'multinest.txt'
+        self.file_summary = "{}/{}".format(self.path, 'summary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.path, 'multinest.txt')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
@@ -279,7 +279,7 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename=self.path, n_live_points=self.n_live_points,
+                 outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
                  evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,

@@ -2,7 +2,6 @@ import numpy as np
 from src.imaging import masked_image as mi
 from src.imaging import mask
 from src.analysis import ray_tracing
-from collections import namedtuple
 
 # TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
 
@@ -24,7 +23,7 @@ class Fitter(object):
         self.image = masked_image
         self.tracer = tracer
 
-    def fit_data_with_profiles_hyper_galaxies(self, model_image, galaxy_images, hyper_galaxies):
+    def fit_data_with_profiles_and_model_images(self, model_image, galaxy_images):
         """Fit the weighted_data using the ray_tracing model, where only light_profiles are used to represent the galaxy
         images.
 
@@ -35,28 +34,24 @@ class Fitter(object):
         galaxy_images : [ndarray]
             The best-fit model image of each hyper-galaxy, which can tell us how much flux each pixel contributes
             to.
-        hyper_galaxies : [galaxy.HyperGalaxy]
-            Each hyper-galaxy which is used to determine its contributions.
         """
-        contributions = generate_contributions(model_image, galaxy_images, hyper_galaxies,
+        contributions = generate_contributions(model_image, galaxy_images, self.tracer.hyper_galaxies,
                                                [minimum_value_profile for _ in range(len(galaxy_images))])
-        scaled_noise = self.scaled_noise_for_contributions_and_hyper_galaxies(contributions, hyper_galaxies)
+        scaled_noise = self.scaled_noise_for_contributions(contributions)
         blurred_model_image = self.blurred_light_profile_image()
         fitness = compute_likelihood(self.image, scaled_noise, blurred_model_image)
         return fitness
 
-    def scaled_noise_for_contributions_and_hyper_galaxies(self, contributions, hyper_galaxies):
+    def scaled_noise_for_contributions(self, contributions):
         """Use the contributions of each hyper galaxy to compute the scaled noise.
         Parameters
         -----------
         contributions : [ndarray]
             The contribution of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
-        hyper_galaxies : [galaxy.HyperGalaxy]
-            Each hyper-galaxy which is used to scale the noise.
         """
         scaled_noises = list(
             map(lambda hyper, contribution: hyper.compute_scaled_noise(self.image.background_noise, contribution),
-                hyper_galaxies, contributions))
+                self.tracer.hyper_galaxies, contributions))
         return self.image.background_noise + sum(scaled_noises)
 
     def blurred_light_profile_image(self):
@@ -114,7 +109,7 @@ class PixelizedFitter(Fitter):
 
         return compute_pixelization_evidence(self.image, self.image.background_noise, model_image, pix_fit)
 
-    def fit_data_with_pixelization_profiles_and_hyper_galaxies(self, model_image, galaxy_images, hyper_galaxies):
+    def fit_data_with_pixelization_profiles_and_model_images(self, model_image, galaxy_images):
         raise NotImplementedError()
 
     def fit_data_with_pixelization_and_profiles(self):

@@ -115,7 +115,7 @@ def create_path(func):
 
 @create_path
 def create_summary_4_parameters(path):
-    summary = open(path + 'summary.txt', 'w')
+    summary = open(path + '/summary.txt', 'w')
     summary.write('    0.100000000000000000E+01   -0.200000000000000000E+01    0.300000000000000000E+01'
                   '    0.400000000000000000E+01   -0.500000000000000000E+01    0.600000000000000000E+01'
                   '    0.700000000000000000E+01    0.800000000000000000E+01'
@@ -136,7 +136,7 @@ def create_summary_4_parameters(path):
 
 @create_path
 def create_summary_10_parameters(path):
-    summary = open(path + 'summary.txt', 'w')
+    summary = open(path + '/summary.txt', 'w')
     summary.write('    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01'
                   '    0.400000000000000000E+01   -0.500000000000000000E+01   -0.600000000000000000E+01'
                   '   -0.700000000000000000E+01   -0.800000000000000000E+01    0.900000000000000000E+01'
@@ -173,7 +173,7 @@ def create_summary_10_parameters(path):
 
 @create_path
 def create_gaussian_prior_summary_4_parameters(path):
-    summary = open(path + 'summary.txt', 'w')
+    summary = open(path + '/summary.txt', 'w')
     summary.write('    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01'
                   '    0.410000000000000000E+01    0.500000000000000000E+01    0.600000000000000000E+01'
                   '    0.700000000000000000E+01    0.800000000000000000E+01'
@@ -194,7 +194,7 @@ def create_gaussian_prior_summary_4_parameters(path):
 
 @create_path
 def create_weighted_samples_4_parameters(path):
-    with open(path + 'multinest.txt', 'w+') as weighted_samples:
+    with open(path + '/multinest.txt', 'w+') as weighted_samples:
         weighted_samples.write(
             '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01\n'
             '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01\n'
@@ -210,7 +210,7 @@ def create_weighted_samples_4_parameters(path):
 
 @create_path
 def create_weighted_samples_10_parameters(path):
-    weighted_samples = open(path + 'multinest.txt', 'w')
+    weighted_samples = open(path + '/multinest.txt', 'w')
     weighted_samples.write(
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01   -0.510000000000000000E+01   -0.610000000000000000E+01   -0.710000000000000000E+01   -0.810000000000000000E+01    0.910000000000000000E+01    1.010000000000000000E+01\n'
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01   -0.490000000000000000E+01   -0.590000000000000000E+01   -0.690000000000000000E+01   -0.790000000000000000E+01    0.890000000000000000E+01    0.990000000000000000E+01\n'
@@ -324,7 +324,7 @@ class TestNonLinearOptimizer(object):
             nlo.variable.add_classes(mock_class=MockClassNLOx4)
             nlo.save_model_info()
 
-            paramnames_file = open(nlo_paramnames_path + 'multinest.paramnames')
+            paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
 
             paramnames = paramnames_file.readlines()
 
@@ -342,7 +342,7 @@ class TestNonLinearOptimizer(object):
             nlo.variable.add_classes(mock_class_2=MockClassNLOx6)
             nlo.save_model_info()
 
-            paramnames_file = open(nlo_paramnames_path + 'multinest.paramnames')
+            paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
 
             paramnames = paramnames_file.readlines()
 
@@ -367,7 +367,7 @@ class TestNonLinearOptimizer(object):
             nlo.variable.add_classes(mock_class=MockClassNLOx4)
             nlo.save_model_info()
 
-            model_info_file = open(nlo_model_info_path + 'model.info')
+            model_info_file = open(nlo_model_info_path + '/model.info')
 
             model_info = model_info_file.readlines()
 
@@ -386,7 +386,7 @@ class TestNonLinearOptimizer(object):
             nlo.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
             nlo.save_model_info()
 
-            model_info_file = open(nlo_model_info_path + 'model.info')
+            model_info_file = open(nlo_model_info_path + '/model.info')
 
             model_info = model_info_file.readlines()
 
@@ -409,7 +409,7 @@ class TestNonLinearOptimizer(object):
     class TestWrongModelInfo(object):
 
         def test__single_model__prior_changed_from_input_model__raises_error(self, config_path, nlo_wrong_info_path):
-            with open(nlo_wrong_info_path + 'model.info', 'w') as file: file.write('The model info is missing :(')
+            with open(nlo_wrong_info_path + '/model.info', 'w') as file: file.write('The model info is missing :(')
 
             with pytest.raises(exc.PriorException):
                 nl = non_linear.NonLinearOptimizer(
@@ -452,7 +452,7 @@ class TestMultiNest(object):
 
             mn = non_linear.MultiNest(
                 model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                path=mn_summary_path + '1_class')
+                path=mn_summary_path + '/1_class')
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
             most_probable = mn.create_most_probable_model_instance()

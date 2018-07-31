@@ -17,7 +17,7 @@ logger.level = logging.DEBUG
 
 
 def default_mask_function(image):
-    return msk.Mask.circular(image.shape, image.pixel_scale, 3)
+    return msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)
 
 
 class ResultsCollection(list):
@@ -39,7 +39,7 @@ class ResultsCollection(list):
 
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1,
-                 mask_function=default_mask_function):
+                 mask_function=default_mask_function, name=None):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -50,9 +50,10 @@ class Phase(object):
         sub_grid_size: int
             The side length of the subgrid
         """
-        self.optimizer = optimizer_class()
+        self.optimizer = optimizer_class(name=name)
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
+        self.name = name
 
     def run(self, image, last_results=None):
         """
@@ -187,11 +188,6 @@ class Phase(object):
             """
             raise NotImplementedError()
 
-        @property
-        def hyper_galaxies(self):
-            return [galaxy.hyper_galaxy for galaxy in self.last_results.constant.instances_of(g.Galaxy) if
-                    galaxy.hyper_galaxy is not None]
-
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def customize_image(self, masked_image, previous_results):
         """
@@ -272,7 +268,8 @@ class SourceLensPhase(Phase):
                  source_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
-                 mask_function=default_mask_function):
+                 mask_function=default_mask_function,
+                 name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -287,7 +284,11 @@ class SourceLensPhase(Phase):
         sub_grid_size: int
             The side length of the subgrid
         """
-        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
+        super().__init__(
+            optimizer_class=optimizer_class,
+            sub_grid_size=sub_grid_size,
+            mask_function=mask_function,
+            name=name)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
@@ -337,13 +338,15 @@ class SourceLensPhase(Phase):
                     lens_galaxy,
                     source_galaxy))
 
-            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
+            tracer = ray_tracing.Tracer(
+                [] if lens_galaxy is None else [lens_galaxy],
+                [] if source_galaxy is None else [source_galaxy],
+                self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
-            if self.last_results is not None:
-                return fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
-                                                                    self.last_results.galaxy_images,
-                                                                    self.hyper_galaxies)
+            if self.last_results is not None and tracer.all_with_hyper_galaxies:
+                return fitter.fit_data_with_profiles_and_model_images(self.last_results.model_image,
+                                                                      self.last_results.galaxy_images)
 
             return fitter.fit_data_with_profiles()
 
@@ -401,10 +404,9 @@ class PixelizedSourceLensPhase(SourceLensPhase):
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.PixelizedFitter(self.masked_image, "TODO", "TODO", tracer)
 
-            if self.last_results is not None:
-                return fitter.fit_data_with_pixelization_profiles_and_hyper_galaxies(self.last_results.model_image,
-                                                                                     self.last_results.galaxy_images,
-                                                                                     self.hyper_galaxies)
+            if self.last_results is not None and tracer.all_with_hyper_galaxies:
+                return fitter.fit_data_with_pixelization_profiles_and_model_images(self.last_results.model_image,
+                                                                                   self.last_results.galaxy_images)
 
             return fitter.fit_data_with_pixelization_and_profiles()
 
@@ -414,12 +416,14 @@ class LensOnlyPhase(SourceLensPhase):
                  lens_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
-                 mask_function=default_mask_function
+                 mask_function=default_mask_function,
+                 name="lens_only_phase"
                  ):
         super(LensOnlyPhase, self).__init__(lens_galaxy=lens_galaxy,
                                             optimizer_class=optimizer_class,
                                             sub_grid_size=sub_grid_size,
-                                            mask_function=mask_function)
+                                            mask_function=mask_function,
+                                            name=name)
 
 
 class SourceOnlyPhase(SourceLensPhase):
