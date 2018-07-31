@@ -58,7 +58,7 @@ def test_source_only_pipeline():
 
 
 def test_profile_pipeline():
-    pipeline = pl.make_profile_pipeline()
+    pipeline = pl.make_profile_pipeline("test_pipeline")
     results = pipeline.run(load_image("integration/hst_0"))
     for result in results:
         print(result)
