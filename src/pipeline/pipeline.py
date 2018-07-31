@@ -10,17 +10,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Results(list):
-    def __init__(self, results):
-        super().__init__(results)
-
-    @property
-    def last(self):
-        if len(self) > 0:
-            return self[-1]
-        return None
-
-
 class Pipeline(object):
     def __init__(self, *phases):
         self.phases = phases
@@ -29,7 +18,7 @@ class Pipeline(object):
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.__class__.__name__, i))
-            results.append(phase.run(image, Results(results)))
+            results.append(phase.run(image, ph.ResultsCollection(results)))
         return results
 
     def __add__(self, other):
@@ -119,5 +108,16 @@ def make_profile_pipeline():
                                  source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                                  optimizer_class=nl.MultiNest,
                                  mask_function=mask_function)
+
+    # 3) Lens Light : Elliptical Sersic (Priors phase 1)
+    #    Mass: SIE (Priors phase 2)
+    #    Source : Elliptical Sesic (Priors phase 2)
+    #    NLO : MultiNest
+    #    Image : Observed Image
+    #    Mask : Circle - 3.0"
+
+    class CombinedPhase(ph.SourceLensPhase):
+        def pass_priors(self, previous_results):
+            pass
 
     return Pipeline(phase1, phase2)
