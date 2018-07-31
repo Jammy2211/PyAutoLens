@@ -53,8 +53,16 @@ class TestMaskedImage(object):
 
     def test_map_to_2d(self, masked_image):
         assert (masked_image.map_to_2d(np.array([1, 1, 1, 1, 1])) == np.array([[0, 1, 0],
-                                                                                    [1, 1, 1],
-                                                                                    [0, 1, 0]])).all()
+                                                                               [1, 1, 1],
+                                                                               [0, 1, 0]])).all()
 
     def test_sparse_mask(self, mask, sparse_mask):
         assert (mask == sparse_mask).all()
+
+    def test_subtract(self, masked_image):
+        subtracted_image = masked_image - np.array([1, 0, 1, 0, 0])
+        assert isinstance(subtracted_image, mi.MaskedImage)
+        assert subtracted_image.psf == masked_image.psf
+        assert subtracted_image.pixel_scale == masked_image.pixel_scale
+
+        assert subtracted_image == np.array([0, 1, 0, 1, 1])

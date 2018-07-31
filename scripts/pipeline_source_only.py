@@ -5,7 +5,7 @@ sys.path.append("../")
 from src.imaging import image as im
 from src.imaging import mask as msk
 from src.imaging import scaled_array
-from src.analysis import pipeline
+from pipeline import old_pipeline
 import os
 
 # Load up the weighted_data
@@ -24,7 +24,7 @@ image = im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=
 mask = msk.Mask.circular(shape_arc_seconds=image.shape_arc_seconds, pixel_scale=data.pixel_scale, radius_mask=2.0)
 
 # Run the primary pipeline
-results = pipeline.source_only_pipeline(image, mask)
+results = old_pipeline.source_only_pipeline(image, mask)
 
 # Print results
 print(results)

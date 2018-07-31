@@ -1,6 +1,5 @@
 import numpy as np
 import logging
-from astropy.io import fits
 
 from src.tools import arrays
 
@@ -30,6 +29,10 @@ class ScaledArray(np.ndarray):
         super(ScaledArray, self).__init__()
         self.pixel_scale = pixel_scale
 
+    def __array_finalize__(self, obj):
+        if isinstance(obj, ScaledArray):
+            self.pixel_scale = obj.pixel_scale
+
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(ScaledArray, self).__reduce__()
@@ -37,10 +40,11 @@ class ScaledArray(np.ndarray):
         class_dict = {}
         for key, value in self.__dict__.items():
             class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict, )
+        new_state = pickled_state[2] + (class_dict,)
         # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return (pickled_state[0], pickled_state[1], new_state)
+        return pickled_state[0], pickled_state[1], new_state
 
+    # noinspection PyMethodOverriding
     def __setstate__(self, state):
 
         for key, value in state[-1].items():
@@ -199,20 +203,22 @@ class ScaledArray(np.ndarray):
 
         if self.shape[0] != new_dimensions[0]:
             logger.debug(
-                'image.weighted_data.trim_data - Your specified x_size was odd (even) when the image x dimension is even (odd)')
+                'image.weighted_data.trim_data - Your specified x_size was odd (even) when the image x dimension is '
+                'even (odd)')
             logger.debug(
                 'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
         elif self.shape[1] != new_dimensions[1]:
             logger.debug(
-                'image.weighted_data.trim_data - Your specified y_size was odd (even) when the image y dimension is even (odd)')
+                'image.weighted_data.trim_data - Your specified y_size was odd (even) when the image y dimension is '
+                'even (odd)')
             logger.debug(
                 'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
 
         return self.new_with_array(array)
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
-        """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and sub-grid_coords \
-        sub_grid_size"""
+        """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and
+        sub-grid_coords sub_grid_size """
 
         half = self.pixel_scale / 2
         step = self.pixel_scale / (sub_grid_size + 1)
