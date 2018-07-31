@@ -8,6 +8,7 @@ from src.imaging import mask as msk
 from src.imaging import image as img
 from src.imaging import masked_image as mi
 from src.autopipe import model_mapper as mm
+from src.profiles import light_profiles, mass_profiles
 
 shape = (10, 10)
 
@@ -176,6 +177,17 @@ class TestPhase(object):
         phase = MyPhase()
         analysis = phase.make_analysis(image)
         assert analysis.masked_image != image
+
+    def test_model_images(self, image):
+        phase = ph.SourceLensPhase()
+        analysis = phase.make_analysis(image)
+        instance = mm.ModelInstance()
+        instance.lens_galaxy = g.Galaxy(light=light_profiles.EllipticalExponential())
+        instance.source_galaxy = None
+
+        images = analysis.galaxy_images_for_model(instance)
+        assert images[0].shape == image.shape
+        assert images[1] is None
 
 
 class TestPixelizedPhase(object):
