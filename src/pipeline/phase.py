@@ -433,3 +433,10 @@ class SourceOnlyPhase(SourceLensPhase):
                                               optimizer_class=optimizer_class,
                                               sub_grid_size=sub_grid_size,
                                               mask_function=mask_function)
+
+
+class SourceLensHyperGalaxyPhase(SourceLensPhase):
+    def pass_priors(self, previous_results):
+        self.lens_galaxy = previous_results.last.lens_galaxy
+        self.source_galaxy = previous_results.last.source_galaxy
+        
