@@ -91,4 +91,24 @@ def make_profile_pipeline():
     phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                               optimizer_class=nl.MultiNest)
 
+    class LensSubtractedPhase(ph.SourceLensPhase):
+        def customize_image(self, masked_image, last_result):
+            return masked_image - last_result.lens_galaxy_image
+
+    # 2) Lens Light : None
+    #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
+    #    Source: EllipticalSersic
+    #    NLO: MultiNest
+    #    Image : Lens Subtracted Image (previous phase)
+    #    Mask : Annulus (0.4" - 3.0")
+
+    def mask_function(img):
+        return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
+                                outer_radius=3.)
+
+    phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal),
+                                 source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
+                                 optimizer_class=nl.MultiNest,
+                                 mask_function=mask_function)
+
     return Pipeline(phase1)
