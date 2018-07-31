@@ -11,13 +11,20 @@ logger = logging.getLogger(__name__)
 
 
 class Pipeline(object):
-    def __init__(self, *phases, name="pipeline"):
+    def __init__(self, *phases):
+        """
+
+        Parameters
+        ----------
+        phases: [ph.Phase]
+            Phases
+        """
         self.phases = phases
 
     def run(self, image):
         results = []
         for i, phase in enumerate(self.phases):
-            logger.info("Running Phase {} (Number {})".format(phase.__class__.__name__, i))
+            logger.info("Running Phase {} (Number {})".format(phase.name, i))
             results.append(phase.run(image, ph.ResultsCollection(results)))
         return results
 
