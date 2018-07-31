@@ -401,8 +401,8 @@ ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_g
 
 lsst_image = sersic.intensity_from_grid(grid=lsst.grids.image)
 lsst_blurring_image = sersic.intensity_from_grid(grid=lsst.grids.blurring)
-assert lsst.masked_image.convolver_image.convolve_image(lsst_image, lsst_blurring_image) == \
-    pytest.approx(lsst.masked_image.convolver_image.convolve_image_jitted(lsst_image, lsst_blurring_image), 1e-4)
+assert lsst.masked_image.convolver_image.convolve_image_jit(lsst_image, lsst_blurring_image) == \
+       pytest.approx(lsst.masked_image.convolver_image.convolve_image_jit(lsst_image, lsst_blurring_image), 1e-4)
 
 euclid_image = sersic.intensity_from_grid(grid=euclid.grids.image)
 euclid_blurring_image = sersic.intensity_from_grid(grid=euclid.grids.blurring)
@@ -413,33 +413,33 @@ hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.grids.blurring)
 ao_image = sersic.intensity_from_grid(grid=ao.grids.image)
 ao_blurring_image = sersic.intensity_from_grid(grid=ao.grids.blurring)
 
-euclid.masked_image.convolver_image.convolve_image_jitted(image_array=euclid_image,
-                                                          blurring_array=euclid_blurring_image)
-hst.masked_image.convolver_image.convolve_image_jitted(image_array=hst_image, blurring_array=hst_blurring_image)
-hst_up.masked_image.convolver_image.convolve_image_jitted(image_array=hst_up_image,
-                                                          blurring_array=hst_up_blurring_image)
-ao.masked_image.convolver_image.convolve_image_jitted(image_array=ao_image, blurring_array=ao_blurring_image)
+euclid.masked_image.convolver_image.convolve_image_jit(image_array=euclid_image,
+                                                       blurring_array=euclid_blurring_image)
+hst.masked_image.convolver_image.convolve_image_jit(image_array=hst_image, blurring_array=hst_blurring_image)
+hst_up.masked_image.convolver_image.convolve_image_jit(image_array=hst_up_image,
+                                                       blurring_array=hst_up_blurring_image)
+ao.masked_image.convolver_image.convolve_image_jit(image_array=ao_image, blurring_array=ao_blurring_image)
 
 
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst.masked_image.convolver_image.convolve_image_jitted(image_array=lsst_image, blurring_array=lsst_blurring_image)
+    lsst.masked_image.convolver_image.convolve_image_jit(image_array=lsst_image, blurring_array=lsst_blurring_image)
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid.masked_image.convolver_image.convolve_image_jitted(image_array=euclid_image, blurring_array=euclid_blurring_image)
+    euclid.masked_image.convolver_image.convolve_image_jit(image_array=euclid_image, blurring_array=euclid_blurring_image)
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst.masked_image.convolver_image.convolve_image_jitted(image_array=hst_image, blurring_array=hst_blurring_image)
+    hst.masked_image.convolver_image.convolve_image_jit(image_array=hst_image, blurring_array=hst_blurring_image)
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up.masked_image.convolver_image.convolve_image_jitted(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
+    hst_up.masked_image.convolver_image.convolve_image_jit(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao.masked_image.convolver_image.convolve_image_jitted(image_array=ao_image, blurring_array=ao_blurring_image)
+    ao.masked_image.convolver_image.convolve_image_jit(image_array=ao_image, blurring_array=ao_blurring_image)
 
 if __name__ == "__main__":
     lsst_solution()

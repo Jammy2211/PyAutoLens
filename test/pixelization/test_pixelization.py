@@ -89,7 +89,7 @@ class TestPixelization:
                                                                    sub_grid_size=1))
 
             pix = pixelization.Pixelization(pixels=6)
-            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, grids)
+            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, grids)
 
             assert (mapping_matrix == np.array([[1, 0, 0, 0, 0, 0],  # Image pixel 0 maps to pix pixel 0.
                                                 [0, 1, 0, 0, 0, 0],  # Image pixel 1 maps to pix pixel 1.
@@ -105,7 +105,7 @@ class TestPixelization:
                                       sub_grid_size=1))
 
             pix = pixelization.Pixelization(pixels=8)
-            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, grids)
+            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, grids)
 
             assert (mapping_matrix == np.array(
                 [[1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 map to pix pixel 0.
@@ -123,7 +123,7 @@ class TestPixelization:
                                                                    sub_grid_size=2))
 
             pix = pixelization.Pixelization(pixels=8)
-            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, grids)
+            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, grids)
 
             assert (mapping_matrix == np.array(
                 [[0.25, 0.25, 0.25, 0.25, 0, 0, 0, 0],
@@ -141,7 +141,7 @@ class TestPixelization:
                                                                    sub_grid_size=2))
 
             pix = pixelization.Pixelization(pixels=8)
-            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, grids)
+            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, grids)
 
             assert (mapping_matrix == np.array(
                 [[0.75, 0.25, 0, 0, 0, 0, 0, 0],
@@ -164,7 +164,7 @@ class TestPixelization:
                                                                    sub_to_image, sub_grid_size=4))
 
             pix = pixelization.Pixelization(pixels=6)
-            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, grids)
+            mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, grids)
 
             assert (mapping_matrix == np.array(
                 [[0.75, 0.25, 0, 0, 0, 0],
@@ -359,7 +359,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
@@ -375,7 +375,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
@@ -391,7 +391,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
 
@@ -416,7 +416,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(4, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 2, 3, 8, 11])).all()
 
@@ -440,7 +440,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 4), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 2, 6, 9, 11])).all()
 
@@ -454,7 +454,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 2, 7, 8])).all()
 
@@ -468,7 +468,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 3, 5, 8])).all()
 
@@ -483,7 +483,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(4, 3), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 3, 10, 11])).all()
 
@@ -497,7 +497,7 @@ class TestRectangularPixelization:
 
             pix = pixelization.Rectangular(shape=(3, 4), regularization_coefficients=(1.0,))
 
-            image_to_pix = pix.grid_to_pix_from_grid_jitted(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
+            image_to_pix = pix.grid_to_pix_from_grid_jit(pix_grid, pix.geometry_from_pix_sub_grid(pix_grid))
 
             assert (image_to_pix == np.array([0, 1, 4, 10, 11])).all()
 
