@@ -12,12 +12,14 @@ def is_mass_profile(obj):
 
 class Galaxy(object):
     """
-    Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass
-    profiles
+    @DynamicAttrs
     """
 
     def __init__(self, redshift=None, pixelization=None, hyper_galaxy=None, **kwargs):
         """
+        Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass
+        profiles
+
         Parameters
         ----------
         redshift: float
