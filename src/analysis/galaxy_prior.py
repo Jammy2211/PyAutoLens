@@ -24,7 +24,6 @@ def is_profile_class(cls):
 
 class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
-    Class to produce Galaxy instances from sets of profile classes using the model mapper
     @DynamicAttrs
     """
 
@@ -36,6 +35,8 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     def __init__(self, align_centres=False, align_orientations=False, redshift=None, variable_redshift=False,
                  pixelization=None, hyper_galaxy=None, config=None, **kwargs):
         """
+        Class to produce Galaxy instances from sets of profile classes using the model mapper
+
         Parameters
         ----------
         light_profile_classes: [LightProfile]
