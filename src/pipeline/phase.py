@@ -53,12 +53,12 @@ class Phase(object):
         result: non_linear.Result
             A result object comprising the best fit model and other data.
         """
-        analysis = self.make_analysis(image=image, last_results=last_results)
+        analysis = self.make_analysis(image=image, previous_results=last_results)
         result = self.optimizer.fit(analysis)
         return self.__class__.Result(result.constant, result.likelihood, result.variable,
                                      galaxy_images=analysis.galaxy_images_for_model(result.constant))
 
-    def make_analysis(self, image, last_results=None):
+    def make_analysis(self, image, previous_results=None):
         """
         Create an analysis object. Also calls the prior passing and image modifying functions to allow child classes to
         change the behaviour of the phase.
@@ -67,7 +67,7 @@ class Phase(object):
         ----------
         image: im.Image
             An image that has been masked
-        last_results: non_linear.Result
+        previous_results: [Result]
             The result from the previous phase
 
         Returns
@@ -77,13 +77,13 @@ class Phase(object):
         """
         mask = self.mask_function(image)
         masked_image = mi.MaskedImage(image, mask)
-        masked_image = self.customize_image(masked_image, last_results)
-        self.pass_priors(last_results)
+        masked_image = self.customize_image(masked_image, previous_results)
+        self.pass_priors(previous_results)
         coords_collection = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
             masked_image.mask, self.sub_grid_size, masked_image.psf.shape)
 
         analysis = self.__class__.Analysis(coordinate_collection=coords_collection,
-                                           masked_image=masked_image, last_results=last_results)
+                                           masked_image=masked_image, previous_results=previous_results)
         return analysis
 
     @property
@@ -130,7 +130,7 @@ class Phase(object):
             return np.sum(np.stack(self.galaxy_images), axis=0)
 
     class Analysis(object):
-        def __init__(self, last_results,
+        def __init__(self, previous_results,
                      masked_image,
                      coordinate_collection):
             """
@@ -138,16 +138,20 @@ class Phase(object):
 
             Parameters
             ----------
-            last_results: Result
-                The result of an analysis
+            previous_results: Results
+                The results of all previous phases
             masked_image: mi.MaskedImage
                 An image that has been masked
             coordinate_collection: msk.GridCollection
                 A collection of coordinates (grid, blurring and sub)
             """
-            self.last_results = last_results
+            self.previous_results = previous_results
             self.masked_image = masked_image
             self.coordinate_collection = coordinate_collection
+
+        @property
+        def last_results(self):
+            return self.previous_results.last
 
         def fit(self, **kwargs):
             """
@@ -171,7 +175,7 @@ class Phase(object):
                     galaxy.hyper_galaxy is not None]
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def customize_image(self, masked_image, last_result):
+    def customize_image(self, masked_image, previous_results):
         """
         Customize an image. e.g. removing lens light.
 
@@ -179,7 +183,7 @@ class Phase(object):
         ----------
         masked_image: mi.MaskedImage
             An image that has been masked
-        last_result: non_linear.Result
+        previous_results: [non_linear.Result]
             The result of the previous analysis
 
         Returns
@@ -189,14 +193,14 @@ class Phase(object):
         """
         return masked_image
 
-    def pass_priors(self, last_results):
+    def pass_priors(self, previous_results):
         """
         Perform any prior or constant passing. This could involve setting model attributes equal to priors or constants
         from a previous phase.
 
         Parameters
         ----------
-        last_results: non_linear.Result
+        previous_results: [non_linear.Result]
             The result of the previous phase
         """
         pass
