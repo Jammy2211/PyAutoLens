@@ -53,6 +53,7 @@ class Phase(object):
         self.optimizer = optimizer_class(name=name)
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
+        self.name = name
 
     def run(self, image, last_results=None):
         """
@@ -337,7 +338,10 @@ class SourceLensPhase(Phase):
                     lens_galaxy,
                     source_galaxy))
 
-            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
+            tracer = ray_tracing.Tracer(
+                [] if lens_galaxy is None else [lens_galaxy],
+                [] if source_galaxy is None else [source_galaxy],
+                self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
