@@ -121,10 +121,11 @@ class TestGalaxyImages(object):
         assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(), galaxy.HyperGalaxy()]
 
     def test_multi_tracer(self, grids):
-        tracer = ray_tracing.MultiTracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy()),
-                                          galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())], grids, cosmo.Planck15)
+        tracer = ray_tracing.MultiTracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(2), redshift=2),
+                                          galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(1), redshift=1)], grids,
+                                         cosmo.Planck15)
 
-        assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(), galaxy.HyperGalaxy()]
+        assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(1), galaxy.HyperGalaxy(2)]
 
 
 class TestTracerGeometry(object):
