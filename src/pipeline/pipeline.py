@@ -62,3 +62,17 @@ def make_source_only_pipeline():
                                mask_function=mask_function)
 
     return Pipeline(phase1, phase2, phase3)
+
+
+def make_profile_pipeline():
+    # 1) Lens Light : EllipticalSersic
+    #    Mass: None
+    #    Source: None
+    #    NLO: MultiNest
+    #    Image : Observed Image
+    #    Mask : Circle - 3.0"
+
+    phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
+                              optimizer_class=nl.MultiNest)
+
+    return Pipeline(phase1)

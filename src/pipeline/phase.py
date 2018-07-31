@@ -22,7 +22,7 @@ def default_mask_function(image):
 
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1,
-                 mask_function=lambda image: msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)):
+                 mask_function=default_mask_function):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -245,9 +245,12 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.DownhillSimplex,
+    def __init__(self,
+                 lens_galaxy=None,
+                 source_galaxy=None,
+                 optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
-                 mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
+                 mask_function=default_mask_function):
         """
         A phase with a simple source/lens model
 
@@ -368,3 +371,29 @@ class PixelizedSourceLensPhase(SourceLensPhase):
                                                                                      self.hyper_galaxies)
 
             return fitter.fit_data_with_pixelization_and_profiles()
+
+
+class LensOnlyPhase(object):
+    def __init__(self,
+                 lens_galaxy=None,
+                 optimizer_class=non_linear.DownhillSimplex,
+                 sub_grid_size=1,
+                 mask_function=default_mask_function
+                 ):
+        super(LensOnlyPhase, self).__init__(lens_galaxy=lens_galaxy,
+                                            optimizer_class=optimizer_class,
+                                            sub_grid_size=sub_grid_size,
+                                            mask_function=mask_function)
+
+
+class SourceOnlyPhase(object):
+    def __init__(self,
+                 source_galaxy=None,
+                 optimizer_class=non_linear.DownhillSimplex,
+                 sub_grid_size=1,
+                 mask_function=default_mask_function
+                 ):
+        super(SourceOnlyPhase, self).__init__(source_galaxy=source_galaxy,
+                                              optimizer_class=optimizer_class,
+                                              sub_grid_size=sub_grid_size,
+                                              mask_function=mask_function)
