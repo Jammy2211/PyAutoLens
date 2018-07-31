@@ -52,7 +52,7 @@ def test_source_only_phase_2():
 def test_pipeline():
     pipeline = pl.make_source_only_pipeline()
     results = pipeline.run(image)
-    print(results)
+    print([str(r) for r in results])
 
 
 if __name__ == "__main__":
