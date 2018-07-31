@@ -395,10 +395,9 @@ class PixelizedSourceLensPhase(SourceLensPhase):
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.PixelizedFitter(self.masked_image, "TODO", "TODO", tracer)
 
-            if self.last_results is not None:
-                return fitter.fit_data_with_pixelization_profiles_and_hyper_galaxies(self.last_results.model_image,
-                                                                                     self.last_results.galaxy_images,
-                                                                                     self.hyper_galaxies)
+            if self.last_results is not None and tracer.all_with_hyper_galaxies:
+                return fitter.fit_data_with_pixelization_profiles_and_model_images(self.last_results.model_image,
+                                                                                   self.last_results.galaxy_images)
 
             return fitter.fit_data_with_pixelization_and_profiles()
 
