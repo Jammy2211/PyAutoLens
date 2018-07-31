@@ -335,7 +335,7 @@ class SourceLensPhase(Phase):
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
-            if self.last_results is not None and tracer.all_with_hypergalaxies:
+            if self.last_results is not None and tracer.all_with_hyper_galaxies:
                 return fitter.fit_data_with_profiles_and_model_images(self.last_results.model_image,
                                                                       self.last_results.galaxy_images)
 
