@@ -272,7 +272,16 @@ class TestRedshift(object):
 class TestFromGalaxy(object):
     def test_redshift(self):
         galaxy = g.Galaxy(redshift=3)
-
         galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
 
         assert galaxy_prior.redshift.redshift == 3
+
+    def test_profiles(self):
+        galaxy = g.Galaxy(sersic=light_profiles.EllipticalSersic(),
+                          exponential=light_profiles.EllipticalExponential(),
+                          spherical=mass_profiles.SphericalIsothermal())
+        galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
+
+        assert galaxy_prior.sersic == galaxy.sersic
+        assert galaxy_prior.exponential == galaxy.exponential
+        assert galaxy_prior.spherical == galaxy.spherical
