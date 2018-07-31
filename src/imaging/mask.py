@@ -100,7 +100,7 @@ class Mask(scaled_array.ScaledArray):
         return cls(grid, pixel_scale)
 
     @classmethod
-    def annular(cls, shape_arc_seconds, pixel_scale, inner_radius_mask, outer_radius_mask, centre=(0., 0.)):
+    def annular(cls, shape_arc_seconds, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
         """
         Setup the mask as a circle, using a specified inner and outer radius in arc seconds.
 
@@ -110,9 +110,9 @@ class Mask(scaled_array.ScaledArray):
             The (x,y) image_shape of the mask
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
-        inner_radius_mask : float
+        inner_radius : float
             The inner radius of the annulus mask in arc seconds.
-        outer_radius_mask : float
+        outer_radius : float
             The outer radius of the annulus mask in arc seconds.
         centre: (float, float)
             The centre of the mask.
@@ -128,7 +128,7 @@ class Mask(scaled_array.ScaledArray):
 
             radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-            grid[x, y] = radius_arcsec > outer_radius_mask or radius_arcsec < inner_radius_mask
+            grid[x, y] = radius_arcsec > outer_radius or radius_arcsec < inner_radius
 
         grid.map(fill_grid)
 
