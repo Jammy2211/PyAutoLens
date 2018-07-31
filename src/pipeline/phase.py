@@ -17,7 +17,7 @@ logger.level = logging.DEBUG
 
 
 def default_mask_function(image):
-    return msk.Mask.circular(image.shape, image.pixel_scale, 3)
+    return msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)
 
 
 class ResultsCollection(list):
