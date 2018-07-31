@@ -63,6 +63,11 @@ class Tracer(object):
         """
         return [galaxy_image for plane in [self.image_plane, self.source_plane] for galaxy_image in plane.galaxy_images]
 
+    @property
+    def hyper_galaxies(self):
+        return [hyper_galaxy for plane in [self.image_plane, self.source_plane] for hyper_galaxy in
+                plane.hyper_galaxies]
+
 
 class MultiTracer(object):
 
@@ -135,6 +140,10 @@ class MultiTracer(object):
 
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
+
+    @property
+    def hyper_galaxies(self):
+        return [hyper_galaxy for plane in self.planes for hyper_galaxy in plane.hyper_galaxies]
 
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies over the entire ray trace."""
@@ -255,6 +264,10 @@ class Plane(object):
             A list of images of galaxies in this plane
         """
         return [self.image_from_galaxy(galaxy) for galaxy in self.galaxies]
+
+    @property
+    def hyper_galaxies(self):
+        return [galaxy.hyper_galaxy for galaxy in self.galaxies]
 
     def image_from_galaxy(self, galaxy):
         """

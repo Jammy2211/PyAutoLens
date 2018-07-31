@@ -411,6 +411,13 @@ class HyperGalaxy(object):
         """
         return self.noise_factor * (noise * contributions) ** self.noise_power
 
+    def __eq__(self, other):
+        if isinstance(other, HyperGalaxy):
+            return self.contribution_factor == other.contribution_factor and \
+                   self.noise_factor == other.noise_factor and \
+                   self.noise_power == other.noise_power
+        return False
+
 
 class Redshift(object):
     def __init__(self, redshift):
