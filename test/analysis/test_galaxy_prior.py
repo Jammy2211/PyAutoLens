@@ -269,19 +269,30 @@ class TestRedshift(object):
         assert galaxy_prior.redshift.redshift == 3
 
 
+@pytest.fixture(name="galaxy")
+def make_galaxy():
+    return g.Galaxy(redshift=3, sersic=light_profiles.EllipticalSersic(),
+                    exponential=light_profiles.EllipticalExponential(),
+                    spherical=mass_profiles.SphericalIsothermal())
+
+
 class TestFromGalaxy(object):
-    def test_redshift(self):
-        galaxy = g.Galaxy(redshift=3)
+    def test_redshift(self, galaxy):
         galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
 
         assert galaxy_prior.redshift.redshift == 3
 
-    def test_profiles(self):
-        galaxy = g.Galaxy(sersic=light_profiles.EllipticalSersic(),
-                          exponential=light_profiles.EllipticalExponential(),
-                          spherical=mass_profiles.SphericalIsothermal())
+    def test_profiles(self, galaxy):
         galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
 
         assert galaxy_prior.sersic == galaxy.sersic
         assert galaxy_prior.exponential == galaxy.exponential
         assert galaxy_prior.spherical == galaxy.spherical
+
+    def test_recover_galaxy(self, galaxy):
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy).instance_for_arguments({})
+
+        assert recovered.sersic == galaxy.sersic
+        assert recovered.exponential == galaxy.exponential
+        assert recovered.spherical == galaxy.spherical
+        assert recovered.redshift == galaxy.redshift
