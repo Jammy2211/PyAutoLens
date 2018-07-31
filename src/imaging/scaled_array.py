@@ -1,6 +1,5 @@
 import numpy as np
 import logging
-from astropy.io import fits
 
 from src.tools import arrays
 
@@ -30,6 +29,10 @@ class ScaledArray(np.ndarray):
         super(ScaledArray, self).__init__()
         self.pixel_scale = pixel_scale
 
+    def __array_finalize__(self, obj):
+        if isinstance(obj, ScaledArray):
+            self.pixel_scale = obj.pixel_scale
+
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(ScaledArray, self).__reduce__()
@@ -37,7 +40,7 @@ class ScaledArray(np.ndarray):
         class_dict = {}
         for key, value in self.__dict__.items():
             class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict, )
+        new_state = pickled_state[2] + (class_dict,)
         # Return a tuple that replaces the parent's __setstate__ tuple with our own
         return (pickled_state[0], pickled_state[1], new_state)
 
