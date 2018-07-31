@@ -31,20 +31,18 @@ class Reconstructor(object):
         self.regularization = regularization
         self.image_to_pix = image_to_pix
         self.sub_to_pix = sub_to_pix
-
-    def covariance_matrix_from_blurred_mapping(self, blurred_mapping, noise_vector):
+    
+    def data_vector_from_blurred_mapping_and_data(self, blurred_mapping, image_vector, noise_vector):
         """ Compute the covariance matrix directly - used to integration test that our covariance matrix generator approach
         truly works."""
+        data_vector = np.zeros(self.mapping_shape[1])
 
-        covariance_matrix = np.zeros((self.mapping_shape[1], self.mapping_shape[1]))
+        for image_index in range(self.mapping_shape[0]):
+            for pix_index in range(self.mapping_shape[1]):
+                data_vector[pix_index] += image_vector[image_index] * \
+                                          blurred_mapping[image_index, pix_index] / (noise_vector[image_index] ** 2.0)
 
-        for i in range(self.mapping_shape[0]):
-            for jx in range(self.mapping_shape[1]):
-                for jy in range(self.mapping_shape[1]):
-                    covariance_matrix[jx, jy] += blurred_mapping[i, jx] * blurred_mapping[i, jy] \
-                                                 / (noise_vector[i] ** 2.0)
-
-        return covariance_matrix
+        return data_vector
 
 sub_grid_size = 4
 psf_size = (41, 41)
@@ -92,23 +90,27 @@ hst_up_blurred_mapping = hst_up.masked_image.convolver_mapping_matrix.convolve_m
 
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst_recon.covariance_matrix_from_blurred_mapping(lsst_blurred_mapping, lsst.masked_image.estimated_noise)
+    lsst_recon.data_vector_from_blurred_mapping_and_data(lsst_blurred_mapping, lsst.masked_image,
+                                                         lsst.masked_image.estimated_noise)
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid_recon.covariance_matrix_from_blurred_mapping(euclid_blurred_mapping, euclid.masked_image.estimated_noise)
+    euclid_recon.data_vector_from_blurred_mapping_and_data(euclid_blurred_mapping, euclid.masked_image,
+                                                           euclid.masked_image.estimated_noise)
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst_recon.covariance_matrix_from_blurred_mapping(hst_blurred_mapping, hst.masked_image.estimated_noise)
+    hst_recon.data_vector_from_blurred_mapping_and_data(hst_blurred_mapping, hst.masked_image,
+                                                        hst.masked_image.estimated_noise)
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up_recon.covariance_matrix_from_blurred_mapping(hst_up_blurred_mapping, hst_up.masked_image.estimated_noise)
+    hst_up_recon.data_vector_from_blurred_mapping_and_data(hst_up_blurred_mapping, hst_up.masked_image,
+                                                           hst_up.masked_image.estimated_noise)
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.estimated_noise)
+    ao_recon.data_vector_from_blurred_mapping_and_data_jit(ao_blurred_mapping, ao.masked_image.estimated_noise)
 
 if __name__ == "__main__":
     lsst_solution()

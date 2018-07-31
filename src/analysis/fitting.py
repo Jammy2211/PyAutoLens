@@ -110,7 +110,7 @@ class PixelizedFitter(Fitter):
         pix_fit = pix_pre_fit.reconstruct_image(self.image, self.image.background_noise,
                                                 self.image.convolver_mapping_matrix)
 
-        model_image = pix_fit.model_image_from_reconstruction()
+        model_image = pix_fit.model_image_from_reconstruction_jit()
 
         return compute_pixelization_evidence(self.image, self.image.background_noise, model_image, pix_fit)
 
@@ -154,7 +154,7 @@ def blur_image_including_blurring_region(image, blurring_image, convolver):
     convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
-    return convolver.convolve_image_jitted(image, blurring_image)
+    return convolver.convolve_image_jit(image, blurring_image)
 
 
 def compute_likelihood(image, noise, model_image):

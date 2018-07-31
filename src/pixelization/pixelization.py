@@ -35,13 +35,13 @@ class Pixelization(object):
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
 
-    def mapping_matrix_from_sub_to_pix_jitted(self, sub_to_pix, grids):
-        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, self.pixels, grids.image, grids.sub.sub_to_image,
-                                                       grids.sub.sub_grid_fraction)
+    def mapping_matrix_from_sub_to_pix_jit(self, sub_to_pix, grids):
+        return self.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, self.pixels, grids.image, grids.sub.sub_to_image,
+                                                          grids.sub.sub_grid_fraction)
 
     @staticmethod
     @numba.jit(nopython=True)
-    def mapping_matrix_from_sub_to_pix_jit(sub_to_pix, pixels, grid_image, sub_to_image, sub_grid_fraction):
+    def mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, pixels, grid_image, sub_to_image, sub_grid_fraction):
 
         mapping_matrix = np.zeros((grid_image.shape[0], pixels))
 
@@ -186,7 +186,7 @@ class Rectangular(Pixelization):
 
         return pixel_neighbors
 
-    def grid_to_pix_from_grid_jitted(self, grid, geometry):
+    def grid_to_pix_from_grid_jit(self, grid, geometry):
         """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
@@ -197,12 +197,12 @@ class Rectangular(Pixelization):
         geometry : Geometry
             The rectangular pixel grid's geometry.
         """
-        return self.grid_to_pix_from_grid_jit(grid, geometry.x_min, geometry.x_pixel_scale, geometry.y_min,
-                                              geometry.y_pixel_scale, self.shape[1]).astype(dtype='int')
+        return self.grid_to_pix_from_grid_jitted(grid, geometry.x_min, geometry.x_pixel_scale, geometry.y_min,
+                                                 geometry.y_pixel_scale, self.shape[1]).astype(dtype='int')
 
     @staticmethod
     @numba.jit(nopython=True)
-    def grid_to_pix_from_grid_jit(grid, x_min, x_pixel_scale, y_min, y_pixel_scale, y_shape):
+    def grid_to_pix_from_grid_jitted(grid, x_min, x_pixel_scale, y_min, y_pixel_scale, y_shape):
 
         grid_to_pix = np.zeros(grid.shape[0])
 
@@ -232,10 +232,10 @@ class Rectangular(Pixelization):
         relocated_grids = borders.relocated_grids_from_grids(grids)
         geometry = self.geometry_from_pix_sub_grid(relocated_grids.sub)
         pix_neighbors = self.neighbors_from_pixelization()
-        image_to_pix = self.grid_to_pix_from_grid_jitted(relocated_grids.image, geometry)
-        sub_to_pix = self.grid_to_pix_from_grid_jitted(relocated_grids.sub, geometry)
+        image_to_pix = self.grid_to_pix_from_grid_jit(relocated_grids.image, geometry)
+        sub_to_pix = self.grid_to_pix_from_grid_jit(relocated_grids.sub, geometry)
 
-        mapping = self.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, grids)
+        mapping = self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, grids)
         regularization = self.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return reconstruction.Reconstructor(mapping, regularization, image_to_pix, sub_to_pix)
@@ -571,7 +571,7 @@ class Cluster(Voronoi):
         sub_to_pix = self.sub_to_pix_from_pixelization(relocated_grids, pix_centers, pix_neighbors, cluster_to_pix,
                                                        cluster_mask)
 
-        mapping_matrix = self.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, relocated_grids)
+        mapping_matrix = self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, relocated_grids)
         regularization_matrix = self.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return reconstruction.Reconstructor(mapping_matrix, regularization_matrix, image_to_pix, sub_to_pix)
@@ -680,7 +680,7 @@ class Amorphous(Voronoi):
                                                            cluster_mask)
         sub_to_pix = self.sub_to_pix_from_pixelization(relocated_grids, pix_centers, pix_neighbors, cluster_to_pix, cluster_mask)
 
-        mapping_matrix = self.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, relocated_grids)
+        mapping_matrix = self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, relocated_grids)
         regularization_matrix = self.regularization_matrix_from_pix_neighbors(pix_neighbors)
 
         return reconstruction.Reconstructor(mapping_matrix, regularization_matrix, image_to_pix, sub_to_pix)
