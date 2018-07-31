@@ -95,6 +95,10 @@ def make_profile_pipeline():
         def customize_image(self, masked_image, last_result):
             return masked_image - last_result.lens_galaxy_image
 
+        def pass_priors(self, last_results):
+            #  TODO: does this work?
+            self.lens_galaxy.sie.centre = last_results.variable.lens_galaxy.elliptical_sersic.centre
+
     # 2) Lens Light : None
     #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
     #    Source: EllipticalSersic
@@ -111,4 +115,4 @@ def make_profile_pipeline():
                                  optimizer_class=nl.MultiNest,
                                  mask_function=mask_function)
 
-    return Pipeline(phase1)
+    return Pipeline(phase1, phase2)
