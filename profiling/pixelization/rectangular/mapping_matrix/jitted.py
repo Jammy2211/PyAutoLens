@@ -69,6 +69,7 @@ class Pixelization(object):
         return mapping_matrix
 
     def mapping_matrix_from_sub_to_pix_jitted(self, sub_to_pix, grids):
+
         return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, self.pixels, grids.image, grids.sub.sub_to_image,
                                                        grids.sub.sub_grid_fraction)
 
