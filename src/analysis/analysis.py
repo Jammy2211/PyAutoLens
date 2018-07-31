@@ -12,6 +12,7 @@ empty_array = []
 
 
 class Analysis(object):
+
     def __init__(self, image, mask, sub_grid_size=4, cluster_grid_size=3, model_image=None, galaxy_images=None,
                  minimum_values=None):
         """
