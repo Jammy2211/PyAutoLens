@@ -5,7 +5,40 @@ import math
 import numpy as np
 
 
-class Tracer(object):
+class AbstractTracer(object):
+    @property
+    def all_planes(self):
+        raise NotImplementedError()
+
+    @property
+    def galaxy_images(self):
+        """
+        Returns
+        -------
+        galaxy_images: [ndarray]
+            An image for each galaxy in this ray tracer
+        """
+        return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
+
+    @property
+    def hyper_galaxies(self):
+        return [hyper_galaxy for plane in self.all_planes for hyper_galaxy in
+                plane.hyper_galaxies]
+
+    @property
+    def galaxies(self):
+        return [galaxy for plane in self.all_planes for galaxy in plane.galaxies]
+
+    @property
+    def all_with_hyper_galaxies(self):
+        return len(list(filter(None, self.hyper_galaxies))) == len(self.galaxies)
+
+
+class Tracer(AbstractTracer):
+
+    @property
+    def all_planes(self):
+        return [self.image_plane, self.source_plane]
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, cosmology=None):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
@@ -53,23 +86,12 @@ class Tracer(object):
     def reconstructors_from_source_plane(self, borders, cluster_mask):
         return self.source_plane.reconstructor_from_plane(borders, cluster_mask)
 
-    @property
-    def galaxy_images(self):
-        """
-        Returns
-        -------
-        galaxy_images: [ndarray]
-            An image for each galaxy in this ray tracer
-        """
-        return [galaxy_image for plane in [self.image_plane, self.source_plane] for galaxy_image in plane.galaxy_images]
+
+class MultiTracer(AbstractTracer):
 
     @property
-    def hyper_galaxies(self):
-        return [hyper_galaxy for plane in [self.image_plane, self.source_plane] for hyper_galaxy in
-                plane.hyper_galaxies]
-
-
-class MultiTracer(object):
+    def all_planes(self):
+        return self.planes
 
     def __init__(self, galaxies, image_plane_grids, cosmology):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
@@ -140,10 +162,6 @@ class MultiTracer(object):
 
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
-
-    @property
-    def hyper_galaxies(self):
-        return [hyper_galaxy for plane in self.planes for hyper_galaxy in plane.hyper_galaxies]
 
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies over the entire ray trace."""
