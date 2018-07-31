@@ -12,10 +12,9 @@ import os
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
 
-def make_toy_image():
+def load_image(name):
     # Load up the weighted_data
-    lens_name = 'source_sersic'
-    data_dir = "{}/../../data/{}".format(dirpath, lens_name.format(os.path.dirname(os.path.realpath(__file__))))
+    data_dir = "{}/../../data/{}".format(dirpath, name)
 
     data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
     noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
@@ -30,7 +29,7 @@ def make_toy_image():
 def test_source_only_phase_1():
     phase1 = pl.make_source_only_pipeline().phases[0]
 
-    result = phase1.run(make_toy_image())
+    result = phase1.run(load_image('source_sersic'))
     print(result)
 
 
@@ -53,17 +52,17 @@ def test_source_only_phase_2():
 
 def test_source_only_pipeline():
     pipeline = pl.make_source_only_pipeline()
-    results = pipeline.run(make_toy_image())
+    results = pipeline.run(load_image('source_sersic'))
     for result in results:
         print(result)
 
 
 def test_profile_pipeline():
     pipeline = pl.make_profile_pipeline()
-    results = pipeline.run(image)
+    results = pipeline.run(load_image("integration/hst_0"))
     for result in results:
         print(result)
 
 
 if __name__ == "__main__":
-    test_source_only_pipeline()
+    test_profile_pipeline()
