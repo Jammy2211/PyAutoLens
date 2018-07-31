@@ -126,9 +126,10 @@ def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest)
 
     class CombinedPhase(ph.SourceLensPhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=previous_results.first.lens_galaxy.elliptical_sersic,
-                                              sie=previous_results.last.lens_galaxy.sie)
-            self.source_galaxy = previous_results.last.source_galaxy
+            self.lens_galaxy = gp.GalaxyPrior(
+                elliptical_sersic=previous_results.first.variable.lens_galaxy.elliptical_sersic,
+                sie=previous_results.last.variable.lens_galaxy.sie)
+            self.source_galaxy = previous_results.last.variable.source_galaxy
 
     phase3 = CombinedPhase(optimizer_class=optimizer_class,
                            mask_function=mask_function,
