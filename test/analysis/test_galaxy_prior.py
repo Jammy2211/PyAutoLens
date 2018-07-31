@@ -267,3 +267,12 @@ class TestRedshift(object):
         galaxy_prior.redshift = mm.Constant(3)
         # noinspection PyUnresolvedReferences
         assert galaxy_prior.redshift.redshift == 3
+
+
+class TestFromGalaxy(object):
+    def test_redshift(self):
+        galaxy = g.Galaxy(redshift=3)
+
+        galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
+
+        assert galaxy_prior.redshift.redshift == 3
