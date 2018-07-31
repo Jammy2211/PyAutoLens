@@ -8,7 +8,7 @@ from src.imaging import mask as msk
 from src.imaging import image as img
 from src.imaging import masked_image as mi
 from src.autopipe import model_mapper as mm
-from src.profiles import light_profiles, mass_profiles
+from src.profiles import light_profiles
 
 shape = (10, 10)
 
@@ -82,8 +82,8 @@ def make_masked_image():
 
 @pytest.fixture(name="results")
 def make_results():
-    return MockResults(np.ones(32, ),
-                       galaxy_images=[np.ones(32, ), np.ones(32, )])
+    return MockResults(np.ones((10, 10)),
+                       galaxy_images=[np.ones((10, 10)), np.ones((10, 10))])
 
 
 @pytest.fixture(name="results_collection")

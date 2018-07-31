@@ -6,7 +6,7 @@ import numpy as np
 
 class MaskedImage(im.AbstractImage):
     def __new__(cls, image, mask):
-        return np.array(mask.masked_1d_array_from_2d_array(image)).view(cls)
+        return np.array(mask.map_to_1d(image)).view(cls)
 
     def __init__(self, image, mask):
         """
@@ -21,11 +21,11 @@ class MaskedImage(im.AbstractImage):
             A mask to be applied to the image
         """
         super().__init__(array=image,
-                         effective_exposure_time=mask.masked_1d_array_from_2d_array(image.effective_exposure_time),
+                         effective_exposure_time=mask.map_to_1d(image.effective_exposure_time),
                          pixel_scale=image.pixel_scale,
                          psf=image.psf,
-                         background_noise=mask.masked_1d_array_from_2d_array(image.background_noise),
-                         poisson_noise=mask.masked_1d_array_from_2d_array(image.poisson_noise))
+                         background_noise=mask.map_to_1d(image.background_noise),
+                         poisson_noise=mask.map_to_1d(image.poisson_noise))
 
         self.coordinate_grid = mask.coordinate_grid
         self.image = image
