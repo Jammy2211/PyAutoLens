@@ -155,12 +155,19 @@ class TestPhase(object):
         assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.SourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior(), other="s")
+        phase = ph.SourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior())
 
         ph.SourceLensPhase()
 
         assert phase.lens_galaxy is not None
         assert phase.source_galaxy is not None
+
+
+class TestPixelizedPhase(object):
+    def test_constructor(self):
+        phase = ph.PixelizedSourceLensPhase()
+        assert isinstance(phase.source_galaxy, gp.GalaxyPrior)
+        assert phase.lens_galaxy is None
 
 
 class TestAnalysis(object):
