@@ -187,11 +187,6 @@ class Phase(object):
             """
             raise NotImplementedError()
 
-        @property
-        def hyper_galaxies(self):
-            return [galaxy.hyper_galaxy for galaxy in self.last_results.constant.instances_of(g.Galaxy) if
-                    galaxy.hyper_galaxy is not None]
-
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def customize_image(self, masked_image, previous_results):
         """
@@ -340,10 +335,10 @@ class SourceLensPhase(Phase):
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
-            if self.last_results is not None:
-                return fitter.fit_data_with_profiles_hyper_galaxies(self.last_results.model_image,
-                                                                    self.last_results.galaxy_images,
-                                                                    self.hyper_galaxies)
+            if self.last_results is not None and lens_galaxy:
+                return fitter.fit_data_with_profiles_and_hyper_galaxies(self.last_results.model_image,
+                                                                        self.last_results.galaxy_images,
+                                                                        self.hyper_galaxies)
 
             return fitter.fit_data_with_profiles()
 
