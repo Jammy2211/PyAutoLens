@@ -364,7 +364,10 @@ class SourceLensPhase(Phase):
             galaxy_images: [ndarray]
                 A list of images of galaxy components
             """
-            tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
+            tracer = ray_tracing.Tracer(
+                [] if model.lens_galaxy is None else [model.lens_galaxy],
+                [] if model.source_galaxy is None else [model.source_galaxy],
+                self.coordinate_collection)
             return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
 
 
