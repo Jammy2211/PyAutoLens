@@ -46,14 +46,48 @@ class Reconstructor(object):
 
         return covariance_matrix
 
+    def covariance_matrix_from_blurred_mapping_jitted(self, blurred_mapping, noise_vector):
+        flist = np.zeros(blurred_mapping.shape[0])
+        iflist = np.zeros(blurred_mapping.shape[0], dtype='int')
+        return self.covariance_matrix_from_blurred_mapping_jit(blurred_mapping, noise_vector, flist, iflist)
+
+    @staticmethod
+    @numba.jit(nopython=True)
+    def covariance_matrix_from_blurred_mapping_jit(blurred_mapping, noise_vector, flist, iflist):
+
+        mapping_shape = blurred_mapping.shape
+
+        covariance_matrix = np.zeros((mapping_shape[1], mapping_shape[1]))
+
+        for image_index in range(mapping_shape[0]):
+            index=0
+            for pix_index in range(mapping_shape[1]):
+                if blurred_mapping[image_index, pix_index] > 0.0:
+                    index += 1
+                    flist[index] = blurred_mapping[image_index, pix_index] / noise_vector[image_index]
+                    iflist[index] = pix_index
+
+            if index > 0:
+                for i1 in range(index+1):
+                    for j1 in range(index+1):
+                        ix = iflist[i1]
+                        iy = iflist[j1]
+                        covariance_matrix[ix, iy] += flist[i1]*flist[j1]
+
+        for i in range(mapping_shape[1]):
+            for j in range(mapping_shape[1]):
+                covariance_matrix[i, j] = covariance_matrix[j, i]
+
+        return covariance_matrix
+
 sub_grid_size = 4
-psf_size = (41, 41)
+psf_size = (14, 14)
 
 sie = mass_profiles.EllipticalIsothermal(centre=(0.010, 0.032), einstein_radius=1.47, axis_ratio=0.849, phi=73.6)
 shear = mass_profiles.ExternalShear(magnitude=0.0663, phi=160.5)
 lens_galaxy = galaxy.Galaxy(mass_profile_0=sie, mass_profile_1=shear)
 
-source_pix = galaxy.Galaxy(pixelization=pixelization.RectangularRegConst(shape=(19, 19)))
+source_pix = galaxy.Galaxy(pixelization=pixelization.RectangularRegConst(shape=(33, 33)))
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_size)
@@ -90,25 +124,31 @@ hst_blurred_mapping = hst.masked_image.convolver_mapping_matrix.convolve_mapping
 hst_up_blurred_mapping = hst_up.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(hst_up_recon.mapping)
 # ao_blurred_mapping = ao.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(ao_recon.mapping)
 
+cov = lsst_recon.covariance_matrix_from_blurred_mapping_jitted(lsst_blurred_mapping, lsst.masked_image.background_noise)
+euclid_recon.covariance_matrix_from_blurred_mapping_jitted(euclid_blurred_mapping, euclid.masked_image.background_noise)
+hst_recon.covariance_matrix_from_blurred_mapping_jitted(hst_blurred_mapping, hst.masked_image.background_noise)
+hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping, hst_up.masked_image.background_noise)
+# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.background_noise)
+
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst_recon.covariance_matrix_from_blurred_mapping(lsst_blurred_mapping, lsst.masked_image.estimated_noise)
+    lsst_recon.covariance_matrix_from_blurred_mapping_jitted(lsst_blurred_mapping, lsst.masked_image.background_noise)
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid_recon.covariance_matrix_from_blurred_mapping(euclid_blurred_mapping, euclid.masked_image.estimated_noise)
+    euclid_recon.covariance_matrix_from_blurred_mapping_jitted(euclid_blurred_mapping, euclid.masked_image.background_noise)
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst_recon.covariance_matrix_from_blurred_mapping(hst_blurred_mapping, hst.masked_image.estimated_noise)
+    hst_recon.covariance_matrix_from_blurred_mapping_jitted(hst_blurred_mapping, hst.masked_image.background_noise)
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up_recon.covariance_matrix_from_blurred_mapping(hst_up_blurred_mapping, hst_up.masked_image.estimated_noise)
+    hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping, hst_up.masked_image.background_noise)
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.estimated_noise)
+    ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.background_noise)
 
 if __name__ == "__main__":
     lsst_solution()
