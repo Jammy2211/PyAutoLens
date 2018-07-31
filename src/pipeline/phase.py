@@ -20,6 +20,23 @@ def default_mask_function(image):
     return msk.Mask.circular(image.shape, image.pixel_scale, 3)
 
 
+class ResultsCollection(list):
+    def __init__(self, results):
+        super().__init__(results)
+
+    @property
+    def last(self):
+        if len(self) > 0:
+            return self[-1]
+        return None
+
+    @property
+    def first(self):
+        if len(self) > 0:
+            return self[0]
+        return None
+
+
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1,
                  mask_function=default_mask_function):
@@ -43,7 +60,7 @@ class Phase(object):
 
         Parameters
         ----------
-        last_results: non_linear.Result | None
+        last_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
             An image that has been masked
@@ -67,7 +84,7 @@ class Phase(object):
         ----------
         image: im.Image
             An image that has been masked
-        previous_results: [Result]
+        previous_results: ResultsCollection
             The result from the previous phase
 
         Returns
@@ -138,7 +155,7 @@ class Phase(object):
 
             Parameters
             ----------
-            previous_results: Results
+            previous_results: ResultsCollection
                 The results of all previous phases
             masked_image: mi.MaskedImage
                 An image that has been masked
@@ -151,7 +168,8 @@ class Phase(object):
 
         @property
         def last_results(self):
-            return self.previous_results.last
+            if self.previous_results is not None:
+                return self.previous_results.last
 
         def fit(self, **kwargs):
             """
@@ -183,7 +201,7 @@ class Phase(object):
         ----------
         masked_image: mi.MaskedImage
             An image that has been masked
-        previous_results: [non_linear.Result]
+        previous_results: ResultsCollection
             The result of the previous analysis
 
         Returns
@@ -200,7 +218,7 @@ class Phase(object):
 
         Parameters
         ----------
-        previous_results: [non_linear.Result]
+        previous_results: ResultsCollection
             The result of the previous phase
         """
         pass
