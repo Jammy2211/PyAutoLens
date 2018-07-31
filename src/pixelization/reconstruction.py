@@ -28,50 +28,80 @@ class Reconstructor(object):
     def reconstruct_image(self, image, noise, convolver):
         """Fit the image data using the inversion."""
 
-        blurred_mapping = convolver.convolve_mapping_matrix(self.mapping)
-        # TODO : Use fast routines once ready.
-        covariance = self.covariance_matrix_from_blurred_mapping(blurred_mapping, noise)
-        weighted_data = self.data_vector_from_blurred_mapping_and_data(blurred_mapping, image, noise)
-        cov_reg = covariance + self.regularization
-        reconstruction = np.linalg.solve(cov_reg, weighted_data)
+        blurred_mapping = convolver.convolve_mapping_matrix_jit(self.mapping)
+        covariance = self.covariance_matrix_from_blurred_mapping_jit(blurred_mapping, noise)
+        data_vector = self.data_vector_from_blurred_mapping_and_data_jit(blurred_mapping, image, noise)
+        cov_reg = np.add(covariance, self.regularization)
+        reconstruction = np.linalg.solve(cov_reg, data_vector)
 
-        return Reconstruction(weighted_data, blurred_mapping, self.regularization, covariance, cov_reg, reconstruction)
+        return Reconstruction(data_vector, blurred_mapping, self.regularization, covariance, cov_reg, reconstruction)
 
-    def covariance_matrix_from_blurred_mapping(self, blurred_mapping, noise_vector):
-        """ Compute the covariance matrix directly - used to integration test that our covariance matrix generator approach
-        truly works."""
+    def covariance_matrix_from_blurred_mapping_jit(self, blurred_mapping, noise_vector):
+        flist = np.zeros(blurred_mapping.shape[0])
+        iflist = np.zeros(blurred_mapping.shape[0], dtype='int')
+        return self.covariance_matrix_from_blurred_mapping_jitted(blurred_mapping, noise_vector, flist, iflist)
 
-        covariance_matrix = np.zeros((self.mapping_shape[1], self.mapping_shape[1]))
+    @staticmethod
+    @numba.jit(nopython=True)
+    def covariance_matrix_from_blurred_mapping_jitted(blurred_mapping, noise_vector, flist, iflist):
 
-        for i in range(self.mapping_shape[0]):
-            for jx in range(self.mapping_shape[1]):
-                for jy in range(self.mapping_shape[1]):
-                    covariance_matrix[jx, jy] += blurred_mapping[i, jx] * blurred_mapping[i, jy] \
-                                                 / (noise_vector[i] ** 2.0)
+        mapping_shape = blurred_mapping.shape
+
+        covariance_matrix = np.zeros((mapping_shape[1], mapping_shape[1]))
+
+        for image_index in range(mapping_shape[0]):
+            index=0
+            for pix_index in range(mapping_shape[1]):
+                if blurred_mapping[image_index, pix_index] > 0.0:
+                    index += 1
+                    flist[index] = blurred_mapping[image_index, pix_index] / noise_vector[image_index]
+                    iflist[index] = pix_index
+
+            if index > 0:
+                for i1 in range(index+1):
+                    for j1 in range(index+1):
+                        ix = iflist[i1]
+                        iy = iflist[j1]
+                        covariance_matrix[ix, iy] += flist[i1]*flist[j1]
+
+        for i in range(mapping_shape[1]):
+            for j in range(mapping_shape[1]):
+                covariance_matrix[i, j] = covariance_matrix[j, i]
 
         return covariance_matrix
 
-    def data_vector_from_blurred_mapping_and_data(self, blurred_mapping, image_vector, noise_vector):
+    def data_vector_from_blurred_mapping_and_data_jit(self, blurred_mapping, image_vector, noise_vector):
         """ Compute the covariance matrix directly - used to integration test that our covariance matrix generator approach
         truly works."""
-        data_vector = np.zeros((self.mapping_shape[1],))
+        return self.data_vector_from_blurred_mapping_and_data_jitted(blurred_mapping, image_vector, noise_vector)
 
-        for i in range(self.mapping_shape[0]):
-            for j in range(self.mapping_shape[1]):
-                data_vector[j] += image_vector[i] * blurred_mapping[i, j] / (noise_vector[i] ** 2.0)
+    @staticmethod
+    @numba.jit(nopython=True)
+    def data_vector_from_blurred_mapping_and_data_jitted(blurred_mapping, image_vector, noise_vector):
+        """ Compute the covariance matrix directly - used to integration test that our covariance matrix generator approach
+        truly works."""
+
+        mapping_shape = blurred_mapping.shape
+
+        data_vector = np.zeros(mapping_shape[1])
+
+        for image_index in range(mapping_shape[0]):
+            for pix_index in range(mapping_shape[1]):
+                data_vector[pix_index] += image_vector[image_index] * \
+                                          blurred_mapping[image_index, pix_index] / (noise_vector[image_index] ** 2.0)
 
         return data_vector
 
 
 class Reconstruction(object):
 
-    def __init__(self, weighted_data, blurred_mapping, regularization, covariance, covariance_regularization,
+    def __init__(self, data_vector, blurred_mapping, regularization, covariance, covariance_regularization,
                  reconstruction):
         """The matrices, mappings which have been used to linearly invert and fit a data-set.
 
         Parameters
         -----------
-        weighted_data : ndarray | None
+        data_vector : ndarray | None
             The 1D vector representing the data, weighted by its noise in a chi squared sense, which is fitted by the \
             inversion (D).
         blurred_mapping : ndarray | None
@@ -86,24 +116,30 @@ class Reconstruction(object):
         reconstruction : ndarray | None
             The vector containing the reconstructed fit of the data.
         """
-        self.weighted_data = weighted_data
+        self.weighted_data = data_vector
         self.blurred_mapping = blurred_mapping
         self.regularization = regularization
         self.covariance = covariance
         self.covariance_regularization = covariance_regularization
         self.reconstruction = reconstruction
 
-    def model_image_from_reconstruction(self):
+    def model_image_from_reconstruction_jit(self):
         """ Map the reconstruction pix s_vector back to the image-plane to compute the pixelization's model-image.
         """
-        model_image = np.zeros(self.blurred_mapping.shape[0])
-        for i in range(self.blurred_mapping.shape[0]):
-            for j in range(len(self.reconstruction)):
-                model_image[i] += self.reconstruction[j] * self.blurred_mapping[i, j]
+        return self.model_image_from_reconstruction_jitted(self.reconstruction, self.blurred_mapping)
+    
+    @staticmethod
+    @numba.jit(nopython=True)
+    def model_image_from_reconstruction_jitted(reconstruction, blurred_mapping):
+        """ Map the reconstruction pix s_vector back to the image-plane to compute the pixelization's model-image.
+        """
+        model_image = np.zeros(blurred_mapping.shape[0])
+        for i in range(blurred_mapping.shape[0]):
+            for j in range(reconstruction.shape[0]):
+                model_image[i] += reconstruction[j] * blurred_mapping[i, j]
 
         return model_image
 
-    # TODO : Speed this up using pix_pixel neighbors list to skip sparsity (see regularization matrix calculation)
     def regularization_term_from_reconstruction(self):
         """ Compute the regularization term of a pixelization's Bayesian likelihood function. This represents the sum \
          of the difference in fluxes between every pair of neighboring pixels. This is computed as:
@@ -117,7 +153,6 @@ class Reconstruction(object):
          """
         return np.matmul(self.reconstruction.T, np.matmul(self.regularization, self.reconstruction))
 
-    # TODO : Cholesky decomposition can also use pixel neighbors list to skip sparsity.
     @staticmethod
     def log_determinant_of_matrix_cholesky(matrix):
         """There are two terms in the pixelization's Bayesian likelihood function which require the log determinant of \
