@@ -39,7 +39,7 @@ class ResultsCollection(list):
 
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1,
-                 mask_function=default_mask_function):
+                 mask_function=default_mask_function, name=None):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -50,7 +50,7 @@ class Phase(object):
         sub_grid_size: int
             The side length of the subgrid
         """
-        self.optimizer = optimizer_class()
+        self.optimizer = optimizer_class(name=name)
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
 
@@ -267,7 +267,8 @@ class SourceLensPhase(Phase):
                  source_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
-                 mask_function=default_mask_function):
+                 mask_function=default_mask_function,
+                 name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -282,7 +283,11 @@ class SourceLensPhase(Phase):
         sub_grid_size: int
             The side length of the subgrid
         """
-        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
+        super().__init__(
+            optimizer_class=optimizer_class,
+            sub_grid_size=sub_grid_size,
+            mask_function=mask_function,
+            name=name)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
@@ -407,12 +412,14 @@ class LensOnlyPhase(SourceLensPhase):
                  lens_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
-                 mask_function=default_mask_function
+                 mask_function=default_mask_function,
+                 name="lens_only_phase"
                  ):
         super(LensOnlyPhase, self).__init__(lens_galaxy=lens_galaxy,
                                             optimizer_class=optimizer_class,
                                             sub_grid_size=sub_grid_size,
-                                            mask_function=mask_function)
+                                            mask_function=mask_function,
+                                            name=name)
 
 
 class SourceOnlyPhase(SourceLensPhase):
