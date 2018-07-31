@@ -34,8 +34,3 @@ class TestPipeline(object):
         pipeline2 = pl.Pipeline(phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
-
-    def test_results(self):
-        results = pl.Results([1, 2, 3])
-        assert results == [1, 2, 3]
-        assert results.last == 3
