@@ -94,7 +94,7 @@ def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest)
                               optimizer_class=optimizer_class, name="{}/phase1".format(name))
 
     class LensSubtractedPhase(ph.SourceLensPhase):
-        def customize_image(self, masked_image, previous_results):
+        def modify_image(self, masked_image, previous_results):
             return masked_image - previous_results.last.lens_galaxy_image
 
         def pass_priors(self, previous_results):

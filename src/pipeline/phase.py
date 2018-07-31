@@ -94,8 +94,8 @@ class Phase(object):
             An analysis object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = self.mask_function(image)
+        image = self.modify_image(image, previous_results)
         masked_image = mi.MaskedImage(image, mask)
-        masked_image = self.customize_image(masked_image, previous_results)
         self.pass_priors(previous_results)
         coords_collection = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
             masked_image.mask, self.sub_grid_size, masked_image.psf.shape)
@@ -189,23 +189,23 @@ class Phase(object):
             raise NotImplementedError()
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def customize_image(self, masked_image, previous_results):
+    def modify_image(self, image, previous_results):
         """
         Customize an image. e.g. removing lens light.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
+        image: img.Image
             An image that has been masked
         previous_results: ResultsCollection
             The result of the previous analysis
 
         Returns
         -------
-        masked_image: mi.MaskedImage
+        image: img.Image
             The modified image (not changed by default)
         """
-        return masked_image
+        return image
 
     def pass_priors(self, previous_results):
         """
@@ -292,7 +292,7 @@ class SourceLensPhase(Phase):
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
-    def customize_image(self, masked_image, last_result):
+    def modify_image(self, masked_image, last_result):
         """
 
         Parameters
