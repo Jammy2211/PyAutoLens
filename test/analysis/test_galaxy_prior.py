@@ -267,3 +267,39 @@ class TestRedshift(object):
         galaxy_prior.redshift = mm.Constant(3)
         # noinspection PyUnresolvedReferences
         assert galaxy_prior.redshift.redshift == 3
+
+
+@pytest.fixture(name="galaxy")
+def make_galaxy():
+    return g.Galaxy(redshift=3, sersic=light_profiles.EllipticalSersic(),
+                    exponential=light_profiles.EllipticalExponential(),
+                    spherical=mass_profiles.SphericalIsothermal())
+
+
+class TestFromGalaxy(object):
+    def test_redshift(self, galaxy):
+        galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
+
+        assert galaxy_prior.redshift.redshift == 3
+
+    def test_profiles(self, galaxy):
+        galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
+
+        assert galaxy_prior.sersic == galaxy.sersic
+        assert galaxy_prior.exponential == galaxy.exponential
+        assert galaxy_prior.spherical == galaxy.spherical
+
+    def test_recover_galaxy(self, galaxy):
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy).instance_for_arguments({})
+
+        assert recovered.sersic == galaxy.sersic
+        assert recovered.exponential == galaxy.exponential
+        assert recovered.spherical == galaxy.spherical
+        assert recovered.redshift == galaxy.redshift
+
+    def test_override_argument(self, galaxy):
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy)
+        assert recovered.hyper_galaxy is None
+
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy, hyper_galaxy=g.HyperGalaxy)
+        assert recovered.hyper_galaxy is not None
