@@ -173,5 +173,5 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return new_model
 
     @classmethod
-    def from_galaxy(cls, g):
-        return GalaxyPrior(**g.__dict__)
+    def from_galaxy(cls, g, **kwargs):
+        return GalaxyPrior(**{**g.__dict__, **kwargs})
