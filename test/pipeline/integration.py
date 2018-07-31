@@ -49,11 +49,19 @@ def test_source_only_phase_2():
     print(result)
 
 
-def test_pipeline():
+def test_source_only_pipeline():
     pipeline = pl.make_source_only_pipeline()
     results = pipeline.run(image)
-    print([str(r) for r in results])
+    for result in results:
+        print(result)
+
+
+def test_profile_pipeline():
+    pipeline = pl.make_profile_pipeline()
+    results = pipeline.run(image)
+    for result in results:
+        print(result)
 
 
 if __name__ == "__main__":
-    test_pipeline()
+    test_source_only_pipeline()
