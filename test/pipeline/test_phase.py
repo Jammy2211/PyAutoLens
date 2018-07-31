@@ -180,14 +180,6 @@ class TestAnalysis(object):
         analysis = ph.Phase.Analysis(results_collection, masked_image, grids)
         assert (results_collection[0].model_image == analysis.last_results.model_image).all()
 
-    def test_hyper_galaxy(self, results, masked_image, grids):
-        hyper_galaxy_1 = g.HyperGalaxy()
-        hyper_galaxy_2 = g.HyperGalaxy()
-        results.constant.lens_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_1)
-        results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
-        analysis = ph.Phase.Analysis(ph.ResultsCollection([results]), masked_image, grids)
-        assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies
-
 
 class TestResult(object):
     def test_model_image(self):
