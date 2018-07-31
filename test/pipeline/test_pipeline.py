@@ -1,5 +1,4 @@
 from src.pipeline import pipeline as pl
-from src.pipeline import phase as ph
 from src.autopipe import model_mapper
 from src.autopipe import non_linear
 
@@ -25,3 +24,13 @@ class TestPipeline(object):
 
         assert phase_1.last_result is None
         assert phase_2.last_result is not None
+
+    def test_addition(self):
+        phase_1 = DummyPhase()
+        phase_2 = DummyPhase()
+        phase_3 = DummyPhase()
+
+        pipeline1 = pl.Pipeline(phase_1, phase_2)
+        pipeline2 = pl.Pipeline(phase_3)
+
+        assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases

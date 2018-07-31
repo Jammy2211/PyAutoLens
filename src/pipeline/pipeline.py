@@ -26,6 +26,22 @@ class Pipeline(object):
             self.results.append(phase.run(image, self.last_result))
         return self.results
 
+    def __add__(self, other):
+        """
+        Compose two pipelines
+
+        Parameters
+        ----------
+        other: Pipeline
+            Another pipeline
+
+        Returns
+        -------
+        composed_pipeline: Pipeline
+            A pipeline that runs all the phases from this pipeline and then all the phases from the other pipeline
+        """
+        return Pipeline(*(self.phases + other.phases))
+
 
 def make_source_only_pipeline():
     # 1) Mass: SIE+Shear
