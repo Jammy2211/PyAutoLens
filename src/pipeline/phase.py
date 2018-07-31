@@ -269,6 +269,20 @@ class SourceLensPhase(Phase):
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
+    def customize_image(self, masked_image, last_result):
+        """
+
+        Parameters
+        ----------
+        masked_image: mi.MaskedImage
+        last_result: SourceLensPhase.Result
+
+        Returns
+        -------
+
+        """
+        return masked_image
+
     class Result(Phase.Result):
         @property
         def lens_galaxy_image(self):
@@ -373,7 +387,7 @@ class PixelizedSourceLensPhase(SourceLensPhase):
             return fitter.fit_data_with_pixelization_and_profiles()
 
 
-class LensOnlyPhase(object):
+class LensOnlyPhase(SourceLensPhase):
     def __init__(self,
                  lens_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
@@ -386,7 +400,7 @@ class LensOnlyPhase(object):
                                             mask_function=mask_function)
 
 
-class SourceOnlyPhase(object):
+class SourceOnlyPhase(SourceLensPhase):
     def __init__(self,
                  source_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
