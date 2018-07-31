@@ -125,4 +125,12 @@ def make_profile_pipeline():
     phase3 = CombinedPhase(optimizer_class=nl.MultiNest,
                            mask_function=mask_function)
 
+    # 3H) Hyper-Parameters: Make Lens Galaxy and Source Galaxy Hyper-Galaxies.
+    #     Lens Light / Mass / Source - Fix parameters to phase 3 most likely esult
+    #     NLO : DownhillSimplex
+    #     Image : Observed Image
+    #     Mask : Circle - 3.0"
+
+    phase3h = ph.SourceLensHyperGalaxyPhase(mask_function=mask_function)
+
     return Pipeline(phase1, phase2, phase3)
