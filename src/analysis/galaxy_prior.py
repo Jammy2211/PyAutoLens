@@ -33,8 +33,8 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
                 prior_model.flat_prior_models]
 
-    def __init__(self, align_centres=False, align_orientations=False, variable_redshift=False, pixelization=None,
-                 hyper_galaxy=None, config=None, **kwargs):
+    def __init__(self, align_centres=False, align_orientations=False, redshift=None, variable_redshift=False,
+                 pixelization=None, hyper_galaxy=None, config=None, **kwargs):
         """
         Parameters
         ----------
@@ -74,8 +74,13 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 for profile_model in profile_models:
                     profile_model.phi = phi
 
-        self.redshift = model_mapper.PriorModel(galaxy.Redshift,
-                                                config) if variable_redshift else model_mapper.Constant(1)
+        if redshift is not None:
+            self.redshift = model_mapper.Constant(
+                redshift.redshift if isinstance(redshift, galaxy.Redshift) else redshift)
+        else:
+            self.redshift = model_mapper.PriorModel(galaxy.Redshift,
+                                                    config) if variable_redshift else model_mapper.Constant(1)
+
         self.pixelization = model_mapper.PriorModel(pixelization, config) if pixelization is not None else None
         self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if hyper_galaxy is not None else None
         self.config = config
@@ -165,3 +170,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
 
         return new_model
+
+    @classmethod
+    def from_galaxy(cls, g):
+        return GalaxyPrior(**g.__dict__)
