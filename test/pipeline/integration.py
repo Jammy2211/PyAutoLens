@@ -11,24 +11,26 @@ import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
-# Load up the weighted_data
-lens_name = 'source_sersic'
-data_dir = "{}/../../data/{}".format(dirpath, lens_name.format(os.path.dirname(os.path.realpath(__file__))))
 
-data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
-noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
-exposure_time = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/exposure_time', hdu=0,
-                                                   pixel_scale=0.1)
-psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0, pixel_scale=0.1)
+def make_toy_image():
+    # Load up the weighted_data
+    lens_name = 'source_sersic'
+    data_dir = "{}/../../data/{}".format(dirpath, lens_name.format(os.path.dirname(os.path.realpath(__file__))))
 
-image = im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=0.1, psf=psf,
-                 background_noise=noise, poisson_noise=noise)
+    data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
+    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
+    exposure_time = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/exposure_time', hdu=0,
+                                                       pixel_scale=0.1)
+    psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0, pixel_scale=0.1)
+
+    return im.Image(array=data, effective_exposure_time=exposure_time, pixel_scale=0.1, psf=psf,
+                    background_noise=noise, poisson_noise=noise)
 
 
 def test_source_only_phase_1():
     phase1 = pl.make_source_only_pipeline().phases[0]
 
-    result = phase1.run(image)
+    result = phase1.run(make_toy_image())
     print(result)
 
 
@@ -45,13 +47,13 @@ def test_source_only_phase_2():
 
     phase2 = pl.make_source_only_pipeline().phases[1]
 
-    result = phase2.run(image, last_result)
+    result = phase2.run(mass_profiles, last_result)
     print(result)
 
 
 def test_source_only_pipeline():
     pipeline = pl.make_source_only_pipeline()
-    results = pipeline.run(image)
+    results = pipeline.run(make_toy_image())
     for result in results:
         print(result)
 
