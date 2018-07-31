@@ -85,6 +85,11 @@ def make_results():
                        galaxy_images=[np.ones(32, ), np.ones(32, )])
 
 
+@pytest.fixture(name="results_collection")
+def make_results_collection(results):
+    return ph.ResultsCollection([results])
+
+
 class TestPhase(object):
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxy = galaxy
@@ -110,9 +115,9 @@ class TestPhase(object):
 
     def test_customize(self, results, image):
         class MyPhase(ph.SourceLensPhase):
-            def pass_priors(self, last_results):
-                self.lens_galaxy = last_results.constant.lens_galaxy
-                self.source_galaxy = last_results.variable.source_galaxy
+            def pass_priors(self, previous_results):
+                self.lens_galaxy = previous_results.last.constant.lens_galaxy
+                self.source_galaxy = previous_results.last.variable.source_galaxy
 
         galaxy = g.Galaxy()
         galaxy_prior = gp.GalaxyPrior()
@@ -121,7 +126,7 @@ class TestPhase(object):
         setattr(results.variable, "source_galaxy", galaxy_prior)
 
         phase = MyPhase(optimizer_class=NLO)
-        phase.make_analysis(image=image, last_results=results)
+        phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
 
         assert phase.lens_galaxy == galaxy
         assert phase.source_galaxy == galaxy_prior
@@ -171,16 +176,16 @@ class TestPixelizedPhase(object):
 
 
 class TestAnalysis(object):
-    def test_model_image(self, results, masked_image, grids):
-        analysis = ph.Phase.Analysis(results, masked_image, grids)
-        assert (results.model_image == analysis.last_results.model_image).all()
+    def test_model_image(self, results_collection, masked_image, grids):
+        analysis = ph.Phase.Analysis(results_collection, masked_image, grids)
+        assert (results_collection[0].model_image == analysis.last_results.model_image).all()
 
     def test_hyper_galaxy(self, results, masked_image, grids):
         hyper_galaxy_1 = g.HyperGalaxy()
         hyper_galaxy_2 = g.HyperGalaxy()
         results.constant.lens_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_1)
         results.constant.source_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy_2)
-        analysis = ph.Phase.Analysis(results, masked_image, grids)
+        analysis = ph.Phase.Analysis(ph.ResultsCollection([results]), masked_image, grids)
         assert [hyper_galaxy_1, hyper_galaxy_2] == analysis.hyper_galaxies
 
 
@@ -188,3 +193,9 @@ class TestResult(object):
     def test_model_image(self):
         result = ph.Phase.Result(mm.ModelInstance(), 1, mm.ModelMapper(), [np.array([1, 2, 3]), np.array([2, 3, 4])])
         assert (result.model_image == np.array([3, 5, 7])).all()
+
+    def test_results(self):
+        results = ph.ResultsCollection([1, 2, 3])
+        assert results == [1, 2, 3]
+        assert results.last == 3
+        assert results.first == 1
