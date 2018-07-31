@@ -60,7 +60,10 @@ def test_source_only_pipeline():
 
 def test_profile_pipeline():
     name = "test_pipeline"
-    shutil.rmtree("{}/../../output/{}".format(dirpath, name))
+    try:
+        shutil.rmtree("{}/../../output/{}".format(dirpath, name))
+    except FileNotFoundError:
+        pass
     pipeline = pl.make_profile_pipeline(name)
     results = pipeline.run(load_image("integration/hst_0"))
     for result in results:
