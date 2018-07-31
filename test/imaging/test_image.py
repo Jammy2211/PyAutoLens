@@ -628,6 +628,34 @@ class TestSimulateImage(object):
                                          [1.0, 2.0, 1.0],
                                          [0.0, 1.0, 0.0]])).all()
 
+        def test__setup_with_background_sky_on_and_psf_on_but_psf_does_not_blurring__image_and_sky_both_trimmed(self):
+
+            img = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0, 0.0, 0.0],
+                            [0.0, 0.0, 1.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0, 0.0, 0.0]])
+
+            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0]]), pixel_scale=0.1)
+
+            exposure_time = image.ScaledArray.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
+
+            background_sky = image.ScaledArray.single_value(value=16.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.Image.simulate(array=img, effective_exposure_time=exposure_time, psf=psf,
+                                           background_sky_map=background_sky, pixel_scale=0.1, seed=1)
+
+            assert (sim_img.effective_exposure_time == 1.0*np.ones((3, 3))).all()
+            assert sim_img.pixel_scale == 0.1
+
+            assert (sim_img == np.array([[0.0, 0.0, 0.0],
+                                         [0.0, 1.0, 0.0],
+                                         [0.0, 0.0, 0.0]])).all()
+
+            assert (sim_img.background_noise == 4.0*np.ones((3,3))).all()
+
         def test__setup_with__poisson_noise_on(self):
 
             img = np.array([[0.0, 0.0, 0.0],
