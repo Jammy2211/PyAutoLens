@@ -615,7 +615,7 @@ class SubGrid(ImageGrid):
     @Memoizer()
     def sub_to_image(self):
         """ Compute the pairing of every sub-pixel to its original image pixel from a mask. """
-        sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype=int)
+        sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype='int')
         image_pixel_count = 0
         sub_pixel_count = 0
 
