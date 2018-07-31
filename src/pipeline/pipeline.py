@@ -133,4 +133,4 @@ def make_profile_pipeline():
 
     phase3h = ph.SourceLensHyperGalaxyPhase(mask_function=mask_function)
 
-    return Pipeline(phase1, phase2, phase3)
+    return Pipeline(phase1, phase2, phase3, phase3h)
