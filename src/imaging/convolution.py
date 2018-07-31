@@ -244,40 +244,6 @@ class Convolver(object):
                     self.image_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
                     image_index += 1
 
-    def frame_at_coords(self, coords):
-        """
-        Parameters
-        ----------
-        coords: (int, int)
-            The image_grid of mask_index_array on which the frame should be centred
-        kernel_shape: (int, int)
-            The shape of the kernel for which this frame will be used
-        Returns
-        -------
-        frame: ndarray
-            A subset of mask_index_array of shape psf_shape where elements with image_grid outside of image_frame_indexes have
-            value -1
-        """
-        half_x = int(self.kernel_shape[0] / 2)
-        half_y = int(self.kernel_shape[1] / 2)
-
-        frame = -1*np.ones((self.kernel_max_size))
-        kernel_frame = -1.0*np.ones((self.kernel_max_size))
-
-        count = 0
-        for i in range(self.kernel_shape[0]):
-            for j in range(self.kernel_shape[1]):
-                x = coords[0] - half_x + i
-                y = coords[1] - half_y + j
-                if 0 <= x < self.mask_index_array.shape[0] and 0 <= y < self.mask_index_array.shape[1]:
-                    value = self.mask_index_array[x, y]
-                    if value >= 0 and not self.mask[x, y]:
-                        frame[count] = value
-                        kernel_frame[count] = self.kernel[i,j]
-                        count += 1
-
-        return frame, kernel_frame
-
     @staticmethod
     @numba.jit(nopython=True)
     def frame_at_coords_jit(coords, mask, mask_index_array, kernel):
@@ -358,63 +324,16 @@ class ConvolverImage(Convolver):
                     self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
                     image_index += 1
 
-
-    def convolve_image(self, image_array, blurring_array):
-        """
-        Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
-        sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
-        image_array: [float]
-            A 1D array
-        Returns
-        -------
-        convolved_vector: [float]
-            A vector convolved with the kernel
-        """
-
-        new_array = np.zeros(image_array.shape)
-
-        for image_index in range(len(image_array)):
-
-            frame_indexes = self.image_frame_indexes[image_index]
-            frame_kernels = self.image_frame_kernels[image_index]
-            frame_length = self.image_frame_lengths[image_index]
-            value = image_array[image_index]
-
-            for kernel_index in range(frame_length):
-
-                vector_index = frame_indexes[kernel_index]
-                kernel = frame_kernels[kernel_index]
-                new_array[vector_index] += value * kernel
-
-        for image_index in range(len(blurring_array)):
-
-            frame_indexes = self.blurring_frame_indexes[image_index]
-            frame_kernels = self.blurring_frame_kernels[image_index]
-            frame_length = self.blurring_frame_lengths[image_index]
-            value = blurring_array[image_index]
-
-            for kernel_index in range(frame_length):
-
-                vector_index = frame_indexes[kernel_index]
-                kernel = frame_kernels[kernel_index]
-                new_array[vector_index] += value * kernel
-
-        return new_array
-
-    def convolve_image_jitted(self, image_array, blurring_array):
-        return self.convolve_image_jit(image_array, self.image_frame_indexes,
-                                       self.image_frame_kernels, self.image_frame_lengths,
-                                       blurring_array, self.blurring_frame_indexes,
-                                       self.blurring_frame_kernels, self.blurring_frame_lengths)
+    def convolve_image_jit(self, image_array, blurring_array):
+        return self.convolve_image_jitted(image_array, self.image_frame_indexes,
+                                          self.image_frame_kernels, self.image_frame_lengths,
+                                          blurring_array, self.blurring_frame_indexes,
+                                          self.blurring_frame_kernels, self.blurring_frame_lengths)
 
     @staticmethod
     @numba.jit(nopython=True)
-    def convolve_image_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
-                           blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
+    def convolve_image_jitted(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
+                              blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
 
         new_array = np.zeros(image_array.shape)
 
@@ -473,61 +392,6 @@ class ConvolverMappingMatrix(Convolver):
         """
 
         super(ConvolverMappingMatrix, self).__init__(mask, kernel)
-
-    def convolve_mapping_matrix(self, mapping):
-        """
-        Simple version of function that applies this convolver_image to a whole mapping matrix.
-
-        Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
-        array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
-
-        Returns
-        -------
-        convolved_array: [float]
-            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
-            convolution
-        """
-        blurred_mapping = np.zeros(mapping.shape)
-        for i in range(mapping.shape[1]):
-            blurred_mapping[:, i] = self.convolve_matrix_image(mapping[:, i])
-        return blurred_mapping
-
-    def convolve_matrix_image(self, image_array):
-        """
-        Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
-        sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
-        image_array: [float]
-            A 1D array
-        Returns
-        -------
-        convolved_vector: [float]
-            A vector convolved with the kernel
-        """
-
-        new_array = np.zeros(image_array.shape)
-
-        for image_index in range(len(image_array)):
-
-            frame_indexes = self.image_frame_indexes[image_index]
-            frame_kernels = self.image_frame_kernels[image_index]
-            length = self.image_frame_lengths[image_index]
-            value = image_array[image_index]
-
-            for kernel_index in range(length):
-
-                vector_index = frame_indexes[kernel_index]
-                kernel = frame_kernels[kernel_index]
-                new_array[vector_index] += value * kernel
-
-        return new_array
 
     def convolve_mapping_matrix_jit(self, mapping):
         """

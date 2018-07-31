@@ -100,7 +100,9 @@ class TestFrameExtraction(object):
 
     def test_trivial_frame_at_coords(self, simple_convolver):
 
-        frame, kernel_frame = simple_convolver.frame_at_coords(coords=(1, 1))
+        frame, kernel_frame = simple_convolver.frame_at_coords_jit(coords=(1, 1), mask=simple_convolver.mask,
+                                                                   mask_index_array=simple_convolver.mask_index_array,
+                                                                   kernel=simple_convolver.kernel)
 
         assert (frame == np.array([i for i in range(9)])).all()
 
@@ -108,13 +110,17 @@ class TestFrameExtraction(object):
 
         corner_frame =  np.array([0, 1, 3, 4, -1, -1, -1, -1, -1])
 
-        frame, kernel_frame = simple_convolver.frame_at_coords(coords=(0, 0))
+        frame, kernel_frame = simple_convolver.frame_at_coords_jit(coords=(0, 0), mask=simple_convolver.mask,
+                                                                   mask_index_array=simple_convolver.mask_index_array,
+                                                                   kernel=simple_convolver.kernel)
 
         assert (frame == corner_frame).all()
 
     def test_trivial_kernel_frame_at_coords(self, simple_convolver):
 
-        frame, kernel_frame = simple_convolver.frame_at_coords(coords=(1, 1))
+        frame, kernel_frame = simple_convolver.frame_at_coords_jit(coords=(1, 1), mask=simple_convolver.mask,
+                                                                   mask_index_array=simple_convolver.mask_index_array,
+                                                                   kernel=simple_convolver.kernel)
 
         assert (kernel_frame == np.array([[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]])).all()
 
@@ -122,7 +128,9 @@ class TestFrameExtraction(object):
 
         corner_frame =  [0, 1, 3, 4]
 
-        frame, kernel_frame = simple_convolver.frame_at_coords(coords=(0, 0))
+        frame, kernel_frame = simple_convolver.frame_at_coords_jit(coords=(0, 0), mask=simple_convolver.mask,
+                                                                   mask_index_array=simple_convolver.mask_index_array,
+                                                                   kernel=simple_convolver.kernel)
 
         assert (kernel_frame == np.array([5.0, 6.0, 8.0, 9.0, -1, -1, -1, -1, -1])).all()
 
@@ -141,17 +149,23 @@ class TestFrameExtraction(object):
                                                [16.0, 17.0, 18.0, 19.0, 20.0],
                                                [21.0, 22.0, 23.0, 24.0, 25.0]]))
 
-        frame, kernel_frame = convolver.frame_at_coords(coords=(0, 0))
+        frame, kernel_frame = convolver.frame_at_coords_jit(coords=(0, 0), mask=convolver.mask,
+                                                                   mask_index_array=convolver.mask_index_array,
+                                                                   kernel=convolver.kernel)
 
         assert (kernel_frame == np.array([13.0, 14.0, 15.0, 18.0, 19.0, 20.0, 23.0, 24.0, 25.0, -1., -1., -1., -1., -1.,
                                           -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])).all()
 
-        frame, kernel_frame = convolver.frame_at_coords(coords=(1, 0))
+        frame, kernel_frame = convolver.frame_at_coords_jit(coords=(1, 0), mask=convolver.mask,
+                                                                   mask_index_array=convolver.mask_index_array,
+                                                                   kernel=convolver.kernel)
 
         assert (kernel_frame == np.array([8.0, 9.0, 10.0, 13.0, 14.0, 15.0, 18.0, 19.0, 20.0, -1., -1., -1., -1., -1.,
                                           -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1])).all()
 
-        frame, kernel_frame = convolver.frame_at_coords(coords=(1, 1))
+        frame, kernel_frame = convolver.frame_at_coords_jit(coords=(1, 1), mask=convolver.mask,
+                                                                   mask_index_array=convolver.mask_index_array,
+                                                                   kernel=convolver.kernel)
 
         assert (kernel_frame == np.array([7.0, 8.0, 9.0, 12.0, 13.0, 14.0, 17.0, 18.0, 19.0, -1., -1., -1., -1., -1.,
                                           -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1])).all()
@@ -434,7 +448,7 @@ class TestConvolution(object):
         pixel_array = np.array([1, 0, 0, 0, 0])
         blurring_array = np.array([1, 0, 0, 0])
 
-        result = convolver.convolve_image(pixel_array, blurring_array)
+        result = convolver.convolve_image_jit(pixel_array, blurring_array)
 
         assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0., 0.])).all()
 
@@ -469,7 +483,7 @@ class TestConvolveMappingMatrix(object):
                             [0, 0, 0],
                             [0, 0, 0]])
 
-        blurred_mapping = convolver.convolve_mapping_matrix(mapping)
+        blurred_mapping = convolver.convolve_mapping_matrix_jit(mapping)
 
         assert (blurred_mapping == np.array([[0,     0,   0],
                                              [0,     0,   0],
@@ -516,7 +530,7 @@ class TestConvolveMappingMatrix(object):
                             [0, 0, 0],
                             [0, 0, 0]])
 
-        blurred_mapping = convolver.convolve_mapping_matrix(mapping)
+        blurred_mapping = convolver.convolve_mapping_matrix_jit(mapping)
 
         assert blurred_mapping == pytest.approx(np.array([[0,     0.6,   0],
                                                           [0,     0.9,   0],
@@ -534,102 +548,3 @@ class TestConvolveMappingMatrix(object):
                                                           [0.1,   0,   0],
                                                           [0,     0, 0.1],
                                                           [0,     0,   0]]), 1e-4)
-
-
-class TestJitFunctions(object):
-
-    def test__frame_at_coords__identical_to_non_jit(self):
-
-        from src.imaging import image
-        from src.imaging import mask
-
-        convolver = convolution.ConvolverImage(mask=mask.Mask(np.full((5, 5), False), 1.0),
-                                               blurring_mask=(np.full((5, 5), False)),
-                                          kernel=image.PSF(np.array([[1.0, 2.0, 3.0, 4.0, 5.0],
-                                                           [6.0, 7.0, 8.0, 9.0, 10.0],
-                                                           [11.0, 12.0, 13.0, 14.0, 15.0],
-                                                           [16.0, 17.0, 18.0, 19.0, 20.0],
-                                                           [21.0, 22.0, 23.0, 24.0, 25.0]]), 1.0))
-
-        frame_0, kernel_frame_0 = convolver.frame_at_coords(coords=(0, 0))
-        frame_1, kernel_frame_1 = convolver.frame_at_coords_jit(coords=(0, 0), mask=convolver.mask,
-                                                                mask_index_array=convolver.mask_index_array,
-                                                                kernel=convolver.kernel)
-
-        assert frame_0 == pytest.approx(frame_1, 1e-4)
-        assert kernel_frame_0 == pytest.approx(kernel_frame_1, 1e-4)
-
-        frame_0, kernel_frame_0 = convolver.frame_at_coords(coords=(1, 0))
-        frame_1, kernel_frame_1 = convolver.frame_at_coords_jit(coords=(1, 0), mask=convolver.mask,
-                                                                mask_index_array=convolver.mask_index_array,
-                                                                kernel=convolver.kernel)
-
-        assert frame_0 == pytest.approx(frame_1, 1e-4)
-        assert kernel_frame_0 == pytest.approx(kernel_frame_1, 1e-4)
-
-        frame_0, kernel_frame_0 = convolver.frame_at_coords(coords=(2, 3))
-        frame_1, kernel_frame_1 = convolver.frame_at_coords_jit(coords=(2, 3), mask=convolver.mask,
-                                                                mask_index_array=convolver.mask_index_array,
-                                                                kernel=convolver.kernel)
-
-        assert frame_0 == pytest.approx(frame_1, 1e-4)
-        assert kernel_frame_0 == pytest.approx(kernel_frame_1, 1e-4)
-
-    def test__image_convolver__convolve_image__identical_to_non_jit_version(self):
-
-        mask = np.array([[True, False, True],
-                         [False, False, False],
-                         [True, False, True]])
-
-        blurring_mask = np.array([[False, True, False],
-                                  [True, True, True],
-                                  [False, True, False]])
-
-        kernel = np.array([[0.6, 0.2, 0],
-                           [0.2, 0.4, 0.2],
-                           [2.0, 0.2, 0.1]])
-
-        convolver = convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, kernel=kernel)
-
-        pixel_array = np.array([1, 2, 8, 1, 0])
-        blurring_array = np.array([1, 2, 4, 8])
-
-        result_0 = convolver.convolve_image(pixel_array, blurring_array)
-        result_1 = convolver.convolve_image_jitted(pixel_array, blurring_array)
-
-        assert result_0 == pytest.approx(result_1, 1e-4)
-
-    def test__mapping_matrix_convolver__convolve_mapping_matrix__identical_to_non_jit_version(self):
-
-        shape = (4, 4)
-        mask = np.full(shape, False)
-
-        asymmetric_kernel = np.array([[10.0, 0.0, 0],
-                                      [0.4, 0.2, 0.3],
-                                      [0, 0.1, 0]])
-
-        convolver = convolution.ConvolverMappingMatrix(mask=mask, kernel=asymmetric_kernel)
-
-        mapping = np.array([[0, 1, 0],
-                            [1, 1, 0],
-                            [0, 1, 0],
-                            [3, 3, 0],
-                            [0, 0 ,0],
-                            [0, 5, 0],
-                            [0, 0, 0],
-                            [0, 1, 0], # The 0.3 should be 'chopped' from this pixel as it is on the right-most edge
-                            [1, 0, 0],
-                            [1, 0, 0],
-                            [0, 0, 1],
-                            [0, 0, 0],
-                            [0, 0, 0],
-                            [0, 0, 0],
-                            [0, 0, 0],
-                            [0, 0, 0]])
-
-        result_0 = convolver.convolve_mapping_matrix(mapping)
-        result_1 = convolver.convolve_mapping_matrix_jit(mapping)
-
-        assert result_0[:,0] == pytest.approx(result_1[:,0], 1e-4)
-        assert result_0[:,1] == pytest.approx(result_1[:,1], 1e-4)
-        assert result_0[:,2] == pytest.approx(result_1[:,2], 1e-4)

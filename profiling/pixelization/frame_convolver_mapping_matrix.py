@@ -44,7 +44,7 @@ def tick_toc(func):
 @tick_toc
 def current_solution():
 
-    kernel_convolver.convolve_mapping_matrix(mapping)
+    kernel_convolver.convolve_mapping_matrix_jit(mapping)
 
 
 @tick_toc
