@@ -271,6 +271,8 @@ class Plane(object):
 
     def generate_image_of_galaxy_light_profiles(self):
         """Generate the image of the galaxies in this plane."""
+        if len(self.galaxies) == 0:
+            return np.zeros(self.grids.image.shape[0])
         return intensities_via_sub_grid(self.grids.sub, self.galaxies)
 
     @property
