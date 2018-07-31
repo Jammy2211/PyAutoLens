@@ -34,6 +34,14 @@ class AbstractImage(ScaledArray):
         self.poisson_noise = poisson_noise
         self.effective_exposure_time = effective_exposure_time
 
+    def __array_finalize__(self, obj):
+        super(AbstractImage, self).__array_finalize__(obj)
+        if isinstance(obj, AbstractImage):
+            self.psf = obj.psf
+            self.background_noise = obj.background_noise
+            self.poisson_noise = obj.poisson_noise
+            self.effective_exposure_time = obj.effective_exposure_time
+
     def electrons_per_second_to_counts(self, array):
         """
         For an array (in electrons per second) and exposure time array, return an array in units counts.

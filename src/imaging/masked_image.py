@@ -35,6 +35,18 @@ class MaskedImage(im.AbstractImage):
         self.convolver_image = convolution.ConvolverImage(self.mask, self.blurring_mask, self.image.psf)
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask, self.image.psf)
 
+    def __array_finalize__(self, obj):
+        super(MaskedImage, self).__array_finalize__(obj)
+        if isinstance(obj, MaskedImage):
+            self.coordinate_grid = obj.coordinate_grid
+            self.image = obj.image
+            self.image_shape = obj.image_shape
+            self.mask = obj.mask
+            self.blurring_mask = obj.blurring_mask
+            self.convolver_image = obj.convolver_image
+            self.convolver_mapping_matrix = obj.convolver_mapping_matrix
+
+
     def map_to_2d(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D image.
         Parameters
