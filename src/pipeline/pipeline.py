@@ -13,18 +13,29 @@ logger = logging.getLogger(__name__)
 class Pipeline(object):
     def __init__(self, *phases):
         self.phases = phases
-        self.results = []
-
-    @property
-    def last_result(self):
-        return None if len(self.results) == 0 else self.results[-1]
 
     def run(self, image):
-        self.results = []
+        results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.__class__.__name__, i))
-            self.results.append(phase.run(image, self.last_result))
-        return self.results
+            results.append(phase.run(image, ph.ResultsCollection(results)))
+        return results
+
+    def __add__(self, other):
+        """
+        Compose two pipelines
+
+        Parameters
+        ----------
+        other: Pipeline
+            Another pipeline
+
+        Returns
+        -------
+        composed_pipeline: Pipeline
+            A pipeline that runs all the phases from this pipeline and then all the phases from the other pipeline
+        """
+        return Pipeline(*(self.phases + other.phases))
 
 
 def make_source_only_pipeline():
@@ -32,39 +43,81 @@ def make_source_only_pipeline():
     #    Source: Sersic
     #    NLO: LM
 
+    def mask_function(img):
+        return msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2)
+
     phase1 = ph.SourceLensPhase(
         lens_galaxy=gp.GalaxyPrior(
             sie=mass_profiles.SphericalIsothermal,
             shear=mass_profiles.ExternalShear),
         source_galaxy=gp.GalaxyPrior(
             sersic=light_profiles.EllipticalSersic),
-        optimizer_class=nl.DownhillSimplex,
-        mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
+        mask_function=mask_function)
 
     # 2) Mass: SIE+Shear (priors from phase 1)
     #    Source: 'smooth' pixelization (include regularization parameter(s) in the model)
     #    NLO: LM
 
-    class PriorLensPhase(ph.SourceLensPhase):
-        def __init__(self):
-            super().__init__(source_galaxy=gp.GalaxyPrior(pixelization=px.RectangularRegConst),
-                             optimizer_class=nl.DownhillSimplex, sub_grid_size=1,
-                             mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
+    class PriorLensPhase(ph.PixelizedSourceLensPhase):
+        def pass_priors(self, previous_results):
+            self.lens_galaxy = previous_results.last.variable.lens_galaxy
 
-        def pass_priors(self, last_results):
-            self.lens_galaxy = last_results.variable.lens_galaxy
+    phase2 = PriorLensPhase(pixelization=px.RectangularRegConst,
+                            mask_function=mask_function)
 
-    phase2 = PriorLensPhase()
+    class ConstantLensPhase(ph.PixelizedSourceLensPhase):
+        def pass_priors(self, previous_results):
+            self.lens_galaxy = previous_results.last.constant.lens_galaxy
 
-    class HyperParameterPhase(ph.SourceLensPhase):
-        def __init__(self):
-            super().__init__(source_galaxy=gp.GalaxyPrior(pixelization=px.RectangularRegWeighted),
-                             optimizer_class=nl.MultiNest, sub_grid_size=1,
-                             mask_function=lambda img: msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2))
-
-        def pass_priors(self, last_results):
-            self.lens_galaxy = last_results.constant.lens_galaxy
-
-    phase3 = HyperParameterPhase()
+    phase3 = ConstantLensPhase(pixelization=px.RectangularRegConst,
+                               mask_function=mask_function)
 
     return Pipeline(phase1, phase2, phase3)
+
+
+def make_profile_pipeline():
+    # 1) Lens Light : EllipticalSersic
+    #    Mass: None
+    #    Source: None
+    #    NLO: MultiNest
+    #    Image : Observed Image
+    #    Mask : Circle - 3.0"
+
+    phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
+                              optimizer_class=nl.MultiNest)
+
+    class LensSubtractedPhase(ph.SourceLensPhase):
+        def customize_image(self, masked_image, previous_results):
+            return masked_image - previous_results.last.lens_galaxy_image
+
+        def pass_priors(self, previous_results):
+            self.lens_galaxy.sie.centre = previous_results.variable.elliptical_sersic.centre
+
+    # 2) Lens Light : None
+    #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
+    #    Source: EllipticalSersic
+    #    NLO: MultiNest
+    #    Image : Lens Subtracted Image (previous phase)
+    #    Mask : Annulus (0.4" - 3.0")
+
+    def mask_function(img):
+        return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
+                                outer_radius=3.)
+
+    phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal),
+                                 source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
+                                 optimizer_class=nl.MultiNest,
+                                 mask_function=mask_function)
+
+    # 3) Lens Light : Elliptical Sersic (Priors phase 1)
+    #    Mass: SIE (Priors phase 2)
+    #    Source : Elliptical Sesic (Priors phase 2)
+    #    NLO : MultiNest
+    #    Image : Observed Image
+    #    Mask : Circle - 3.0"
+
+    class CombinedPhase(ph.SourceLensPhase):
+        def pass_priors(self, previous_results):
+            pass
+
+    return Pipeline(phase1, phase2)

@@ -160,24 +160,24 @@ class TestMask(object):
     class TestAnnular(object):
 
         def test__3x3_mask_inner_radius_zero_outer_radius_small__mask(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0,
-                                    outer_radius_mask=0.5)
+            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius=0,
+                                    outer_radius=0.5)
 
             assert (msk == np.array([[True, True, True],
                                      [True, False, True],
                                      [True, True, True]])).all()
 
         def test__3x3_mask_inner_radius_small_outer_radius_large__mask(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
-                                    outer_radius_mask=3)
+            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius=0.5,
+                                    outer_radius=3)
 
             assert (msk == np.array([[False, False, False],
                                      [False, True, False],
                                      [False, False, False]])).all()
 
         def test__4x4_mask_inner_radius_small_outer_radius_medium__mask(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(4, 3), pixel_scale=1, inner_radius_mask=0.51,
-                                    outer_radius_mask=1.51)
+            msk = mask.Mask.annular(shape_arc_seconds=(4, 3), pixel_scale=1, inner_radius=0.51,
+                                    outer_radius=1.51)
 
             assert (msk == np.array([[True, False, True],
                                      [False, True, False],
@@ -185,8 +185,8 @@ class TestMask(object):
                                      [True, False, True]])).all()
 
         def test__4x3_mask_inner_radius_medium_outer_radius_large__mask(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(4, 3), pixel_scale=1, inner_radius_mask=1.51,
-                                    outer_radius_mask=3)
+            msk = mask.Mask.annular(shape_arc_seconds=(4, 3), pixel_scale=1, inner_radius=1.51,
+                                    outer_radius=3)
 
             assert (msk == np.array([[False, True, False],
                                      [True, True, True],
@@ -194,8 +194,8 @@ class TestMask(object):
                                      [False, True, False]])).all()
 
         def test__3x3_mask_inner_radius_small_outer_radius_medium__mask(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(4, 4), pixel_scale=1, inner_radius_mask=0.81,
-                                    outer_radius_mask=2)
+            msk = mask.Mask.annular(shape_arc_seconds=(4, 4), pixel_scale=1, inner_radius=0.81,
+                                    outer_radius=2)
 
             assert (msk == np.array([[True, False, False, True],
                                      [False, True, True, False],
@@ -203,8 +203,8 @@ class TestMask(object):
                                      [True, False, False, True]])).all()
 
         def test__4x4_mask_inner_radius_medium_outer_radius_large__mask(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(4, 4), pixel_scale=1, inner_radius_mask=1.71,
-                                    outer_radius_mask=3)
+            msk = mask.Mask.annular(shape_arc_seconds=(4, 4), pixel_scale=1, inner_radius=1.71,
+                                    outer_radius=3)
 
             assert (msk == np.array([[False, True, True, False],
                                      [True, True, True, True],
@@ -212,8 +212,8 @@ class TestMask(object):
                                      [False, True, True, False]])).all()
 
         def test__centre_shift__simple_shift_back(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
-                                    outer_radius_mask=3, centre=(-1.0, 0.0))
+            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius=0.5,
+                                    outer_radius=3, centre=(-1.0, 0.0))
 
             assert msk.shape == (3, 3)
             assert (msk == np.array([[False, True, False],
@@ -221,8 +221,8 @@ class TestMask(object):
                                      [False, False, False]])).all()
 
         def test__centre_shift__simple_shift_forward(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
-                                    outer_radius_mask=3, centre=(0.0, 1.0))
+            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius=0.5,
+                                    outer_radius=3, centre=(0.0, 1.0))
 
             assert msk.shape == (3, 3)
             assert (msk == np.array([[False, False, False],
@@ -230,8 +230,8 @@ class TestMask(object):
                                      [False, False, False]])).all()
 
         def test__centre_shift__diagonal_shift(self):
-            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius_mask=0.5,
-                                    outer_radius_mask=3, centre=(1.0, 1.0))
+            msk = mask.Mask.annular(shape_arc_seconds=(3, 3), pixel_scale=1, inner_radius=0.5,
+                                    outer_radius=3, centre=(1.0, 1.0))
 
             assert msk.shape == (3, 3)
             assert (msk == np.array([[False, False, False],
