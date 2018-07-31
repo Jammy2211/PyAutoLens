@@ -296,3 +296,10 @@ class TestFromGalaxy(object):
         assert recovered.exponential == galaxy.exponential
         assert recovered.spherical == galaxy.spherical
         assert recovered.redshift == galaxy.redshift
+
+    def test_override_argument(self, galaxy):
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy)
+        assert recovered.hyper_galaxy is None
+
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy, hyper_galaxy=g.HyperGalaxy)
+        assert recovered.hyper_galaxy is not None
