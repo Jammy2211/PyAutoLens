@@ -437,6 +437,5 @@ class SourceOnlyPhase(SourceLensPhase):
 
 class SourceLensHyperGalaxyPhase(SourceLensPhase):
     def pass_priors(self, previous_results):
-        self.lens_galaxy = previous_results.last.lens_galaxy
-        self.source_galaxy = previous_results.last.source_galaxy
-        
+        self.lens_galaxy = gp.GalaxyPrior.from_galaxy(previous_results.last.constant.lens_galaxy)
+        self.source_galaxy = gp.GalaxyPrior.from_galaxy(previous_results.last.constant.source_galaxy)
