@@ -103,10 +103,22 @@ class MockPixelization(object):
 
 
 class MockBorders(object):
-    
+
     def __init__(self, image=None, sub=None):
         self.image = image
         self.sub = sub
+
+
+class TestGalaxyImages(object):
+    def test_tracer(self, grids):
+        tracer = ray_tracing.Tracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
+                                    [galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())],
+                                    grids)
+
+        assert tracer.image_plane.hyper_galaxies == [galaxy.HyperGalaxy()]
+        assert tracer.source_plane.hyper_galaxies == [galaxy.HyperGalaxy()]
+
+        assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(), galaxy.HyperGalaxy()]
 
 
 class TestTracerGeometry(object):
@@ -248,15 +260,14 @@ class TestTracer(object):
     class TestSetup:
 
         def test__image_grid__no_galaxy__image_and_source_planes_setup__same_coordinates(self, grids, no_galaxies):
-            
             ray_trace = ray_tracing.Tracer(lens_galaxies=no_galaxies, source_galaxies=no_galaxies,
                                            image_plane_grids=grids)
 
             assert ray_trace.image_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                 1e-3)
+                                                                         1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.0, 0.0]), 1e-3)
             assert ray_trace.source_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                  1e-3)
+                                                                          1e-3)
 
         def test__image_grid__sis_lens__image_coordinates_are_grid_and_source_plane_is_deflected(self,
                                                                                                  grids,
@@ -265,7 +276,7 @@ class TestTracer(object):
                                            image_plane_grids=grids)
 
             assert ray_trace.image_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                 1e-3)
+                                                                         1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
             assert ray_trace.source_plane.grids.image[0] == pytest.approx(
                 np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-3)
@@ -277,7 +288,7 @@ class TestTracer(object):
                                            image_plane_grids=grids)
 
             assert ray_trace.image_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                 1e-3)
+                                                                         1e-3)
             assert ray_trace.image_plane.deflections.image[0] == pytest.approx(np.array([1.414, 1.414]), 1e-3)
             assert ray_trace.source_plane.grids.image[0] == pytest.approx(
                 np.array([1.0 - 1.414, 1.0 - 1.414]), 1e-3)
@@ -287,7 +298,7 @@ class TestTracer(object):
                                            image_plane_grids=grids)
 
             assert ray_trace.image_plane.grids.image[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                                 1e-3)
+                                                                         1e-3)
             assert ray_trace.image_plane.grids.sub[0] == pytest.approx(
                 np.array([1.0, 1.0]), 1e-3)
             assert ray_trace.image_plane.grids.sub[1] == pytest.approx(
@@ -355,7 +366,6 @@ class TestTracer(object):
                     light_only_source_plane.generate_image_of_galaxy_light_profiles()).all()
 
         def test__tracer_galaxy_images(self, light_only_ray_tracer):
-
             galaxy_images = light_only_ray_tracer.galaxy_images
             assert (np.add(galaxy_images[0],
                            galaxy_images[1]) == light_only_ray_tracer.generate_image_of_galaxy_light_profiles()).all()
@@ -366,7 +376,7 @@ class TestTracer(object):
                                             grids=grids,
                                             compute_deflections=True)
             deflections_grid = ray_tracing.deflections_for_grids(grids,
-                                                                                  galaxies=[galaxy_light_and_mass])
+                                                                 galaxies=[galaxy_light_and_mass])
             source_grid = ray_tracing.traced_collection_for_deflections(grids, deflections_grid)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], grids=source_grid,
                                              compute_deflections=False)
@@ -421,7 +431,7 @@ class TestTracer(object):
                                             grids=grids,
                                             compute_deflections=True)
             deflections_grid = ray_tracing.deflections_for_grids(grids,
-                                                                                  galaxies=[galaxy_light_and_mass])
+                                                                 galaxies=[galaxy_light_and_mass])
             source_grid = ray_tracing.traced_collection_for_deflections(grids, deflections_grid)
             source_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass], grids=source_grid,
                                              compute_deflections=False)
@@ -459,7 +469,6 @@ class TestTracer(object):
             assert reconstructors is None
 
         def test__source_galaxy_has_pixelization__returns_reconstructor(self, grids, sparse_mask):
-
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
 
@@ -581,11 +590,11 @@ class TestMultiTracer(object):
 
             assert tracer.planes[0].grids.image[0] == pytest.approx(np.array([1.0, 1.0]), 1e-4)
             assert tracer.planes[0].grids.sub[0] == pytest.approx(np.array([1.0, 1.0]),
-                                                                                               1e-4)
+                                                                  1e-4)
             assert tracer.planes[0].grids.sub[1] == pytest.approx(np.array([1.0, 0.0]),
-                                                                                               1e-4)
+                                                                  1e-4)
             assert tracer.planes[0].grids.blurring[0] == pytest.approx(np.array([1.0, 0.0]),
-                                                                                               1e-4)
+                                                                       1e-4)
             assert tracer.planes[0].deflections.image[0] == pytest.approx(np.array([val, val]), 1e-4)
             assert tracer.planes[0].deflections.sub[0] == pytest.approx(np.array([val, val]), 1e-4)
             assert tracer.planes[0].deflections.sub[1] == pytest.approx(np.array([1.0, 0.0]), 1e-4)
@@ -648,13 +657,13 @@ class TestMultiTracer(object):
                       tracer.planes[2].deflections.sub[1, 0])
 
             assert tracer.planes[3].grids.image[0] == pytest.approx(np.array([coord1, coord2]),
-                                                                                            1e-4)
+                                                                    1e-4)
             assert tracer.planes[3].grids.sub[0] == pytest.approx(
                 np.array([coord1, coord2]), 1e-4)
             assert tracer.planes[3].grids.sub[1] == pytest.approx(np.array([coord3, 0.0]),
-                                                                                               1e-4)
+                                                                  1e-4)
             assert tracer.planes[3].grids.blurring[0] == pytest.approx(np.array([coord3, 0.0]),
-                                                                                               1e-4)
+                                                                       1e-4)
 
     class TestImageFromGalaxies:
 
@@ -805,7 +814,6 @@ class TestMultiTracer(object):
 
 
 class TestPlane(object):
-
     class TestBasicSetup:
 
         def test__collection__sis_lens__coordinates_and_deflections_setup_for_every_grid(self,
@@ -835,10 +843,10 @@ class TestPlane(object):
 
             assert lens_plane.deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
             assert lens_plane.deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
@@ -857,10 +865,10 @@ class TestPlane(object):
 
             assert lens_plane.deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
             assert lens_plane.deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[1] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.sub[2] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]),
-                                                                              1e-3)
+                                                                  1e-3)
             assert lens_plane.deflections.sub[3] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
@@ -1005,7 +1013,6 @@ class TestPlane(object):
     class TestReconstructorFromGalaxies:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grids, sparse_mask):
-
             galaxy_no_pix = galaxy.Galaxy()
 
             plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=grids)
@@ -1015,7 +1022,6 @@ class TestPlane(object):
             assert reconstructors is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__extracts_reconstructor(self, grids, sparse_mask):
-
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
 
             plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=grids)
@@ -1025,7 +1031,6 @@ class TestPlane(object):
             assert reconstructors == 1
 
         def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grids, sparse_mask):
-            
             galaxy_pix = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = galaxy.Galaxy()
 
@@ -1037,7 +1042,6 @@ class TestPlane(object):
             assert reconstructors == 1
 
         def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grids, sparse_mask):
-
             galaxy_pix_0 = galaxy.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_pix_1 = galaxy.Galaxy(pixelization=MockPixelization(value=2))
 
@@ -1061,8 +1065,8 @@ class TestDeflectionAnglesViaGalaxy(object):
 
     def test_three_identical_lenses__deflection_angles_triple(self, grids, galaxy_mass_sis):
         deflections = ray_tracing.deflections_for_grids(grids,
-                                                                         [galaxy_mass_sis, galaxy_mass_sis,
-                                                                          galaxy_mass_sis])
+                                                        [galaxy_mass_sis, galaxy_mass_sis,
+                                                         galaxy_mass_sis])
 
         assert deflections.image[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([3.0 * 0.707, 3.0 * 0.707]), 1e-3)
@@ -1085,8 +1089,8 @@ class TestIntensityViaGrid:
 
     def test__no_galaxies__intensities_returned_as_0s(self, grids, galaxy_no_profiles):
         grids.image = np.array([[1.0, 1.0],
-                                                       [2.0, 2.0],
-                                                       [3.0, 3.0]])
+                                [2.0, 2.0],
+                                [3.0, 3.0]])
 
         intensities = ray_tracing.intensities_via_grid(image_grid=grids.image,
                                                        galaxies=[galaxy_no_profiles])
@@ -1098,8 +1102,8 @@ class TestIntensityViaGrid:
     def test__galaxy_sersic_light__intensities_returned_as_correct_values(self, grids,
                                                                           galaxy_light_sersic):
         grids.image = np.array([[1.0, 1.0],
-                                                       [1.0, 0.0],
-                                                       [-1.0, 0.0]])
+                                [1.0, 0.0],
+                                [-1.0, 0.0]])
 
         galaxy_intensities = galaxy_light_sersic.intensity_from_grid(grids.image)
 
@@ -1111,8 +1115,8 @@ class TestIntensityViaGrid:
     def test__galaxy_sis_mass_x3__intensities_tripled_from_above(self, grids,
                                                                  galaxy_light_sersic):
         grids.image = np.array([[1.0, 1.0],
-                                                       [1.0, 0.0],
-                                                       [-1.0, 0.0]])
+                                [1.0, 0.0],
+                                [-1.0, 0.0]])
 
         galaxy_intensities = galaxy_light_sersic.intensity_from_grid(grids.image)
 
@@ -1168,8 +1172,8 @@ class TestSetupTracedGrid:
 
     def test_three_identical_lenses__deflection_angles_triple(self, grids, galaxy_mass_sis):
         deflections = ray_tracing.deflections_for_grids(grids, [galaxy_mass_sis,
-                                                                                                 galaxy_mass_sis,
-                                                                                                 galaxy_mass_sis])
+                                                                galaxy_mass_sis,
+                                                                galaxy_mass_sis])
 
         grid_traced = ray_tracing.traced_collection_for_deflections(grids, deflections)
 
