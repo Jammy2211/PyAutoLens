@@ -13,7 +13,7 @@ import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-default_path = '{}/../output'.format(os.path.dirname(os.path.realpath(__file__)))
+default_path = '{}/../../output'.format(os.path.dirname(os.path.realpath(__file__)))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
@@ -208,8 +208,8 @@ class MultiNest(NonLinearOptimizer):
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper,
                                         path=path, name=name)
 
-        self.file_summary = self.path + 'summary.txt'
-        self.file_weighted_samples = self.path + 'multinest.txt'
+        self.file_summary = "{}/{}".format(self.path, 'summary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.path, 'multinest.txt')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
@@ -279,7 +279,7 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename=self.path, n_live_points=self.n_live_points,
+                 outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
                  evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
