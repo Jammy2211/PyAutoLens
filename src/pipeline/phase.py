@@ -8,7 +8,7 @@ from src.analysis import fitting
 from src.autopipe import non_linear
 from src.autopipe import model_mapper as mm
 import numpy as np
-import pixelization.pixelization as px
+from src.pixelization import pixelization as px
 import inspect
 import logging
 
