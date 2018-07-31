@@ -140,9 +140,9 @@ class NonLinearOptimizer(object):
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
-                 fmin=scipy.optimize.fmin):
+                 fmin=scipy.optimize.fmin, name=None):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              model_mapper=model_mapper, path=path)
+                                              model_mapper=model_mapper, path=path, name=name)
 
         self.xtol = self.nlo_config.get("xtol", float)
         self.ftol = self.nlo_config.get("ftol", float)
@@ -193,7 +193,7 @@ class DownhillSimplex(NonLinearOptimizer):
 class MultiNest(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
-                 sigma_limit=3, run=pymultinest.run):
+                 sigma_limit=3, run=pymultinest.run, name=None):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -206,7 +206,7 @@ class MultiNest(NonLinearOptimizer):
         """
 
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper,
-                                        path=path)
+                                        path=path, name=name)
 
         self.file_summary = self.path + 'summary.txt'
         self.file_weighted_samples = self.path + 'multinest.txt'
