@@ -265,19 +265,19 @@ class Mask(scaled_array.ScaledArray):
                             self[x, y - 1] or self[x + 1, y + 1] or self[x + 1, y - 1] \
                             or self[x - 1, y + 1] or self[x - 1, y - 1]:
 
-                            x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
-                            sub_grid = np.zeros((sub_grid_size**2, 2))
-                            sub_pixel_count = 0
+                        x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
+                        sub_grid = np.zeros((sub_grid_size ** 2, 2))
+                        sub_pixel_count = 0
 
-                            for x1 in range(sub_grid_size):
-                                for y1 in range(sub_grid_size):
-                                    sub_grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
-                                    sub_grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
-                                    sub_pixel_count += 1
+                        for x1 in range(sub_grid_size):
+                            for y1 in range(sub_grid_size):
+                                sub_grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
+                                sub_grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
+                                sub_pixel_count += 1
 
-                            sub_grid_radii =  np.add(np.square(sub_grid[:,0]), np.square(sub_grid[:, 1]))
-                            border_sub_pixel_index = image_pixel_index*(sub_grid_size**2) + np.argmax(sub_grid_radii)
-                            border_sub_pixels = np.append(border_sub_pixels, border_sub_pixel_index)
+                        sub_grid_radii = np.add(np.square(sub_grid[:, 0]), np.square(sub_grid[:, 1]))
+                        border_sub_pixel_index = image_pixel_index * (sub_grid_size ** 2) + np.argmax(sub_grid_radii)
+                        border_sub_pixels = np.append(border_sub_pixels, border_sub_pixel_index)
 
                     image_pixel_index += 1
 
@@ -477,6 +477,7 @@ class ImageGrid(np.ndarray):
     |x|x|x|x|x|x|x|x|x|x| \/   grid_coords[8] = [ 0.5, -0.5]
     |x|x|x|x|x|x|x|x|x|x|      grid_coords[9] = [ 1.5, -0.5]
     """
+
     @property
     def no_pixels(self):
         return self.shape[0]
@@ -491,7 +492,7 @@ class ImageGrid(np.ndarray):
         class_dict = {}
         for key, value in self.__dict__.items():
             class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict, )
+        new_state = pickled_state[2] + (class_dict,)
         # Return a tuple that replaces the parent's __setstate__ tuple with our own
         return (pickled_state[0], pickled_state[1], new_state)
 
@@ -503,7 +504,6 @@ class ImageGrid(np.ndarray):
 
 
 class SubGrid(ImageGrid):
-
     """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
      sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
@@ -572,6 +572,7 @@ class SubGrid(ImageGrid):
              grid_coords[0,8] = [-0.25, 0.25]
 
     """
+
     def __init__(self, array, mask, sub_grid_size=1):
         # noinspection PyArgumentList
         super(SubGrid, self).__init__()
@@ -696,9 +697,9 @@ class ImageGridBorder(np.ndarray):
         class_dict = {}
         for key, value in self.__dict__.items():
             class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict, )
+        new_state = pickled_state[2] + (class_dict,)
         # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return (pickled_state[0], pickled_state[1], new_state)
+        return pickled_state[0], pickled_state[1], new_state
 
     def __setstate__(self, state):
 
@@ -763,7 +764,8 @@ class ImageGridBorder(np.ndarray):
         grid_radii = self.grid_to_radii(grid)
         poly = self.polynomial_fit_to_border(grid)
 
-        move_factors = np.divide(np.polyval(poly, grid_thetas), grid_radii)
+        with np.errstate(divide='ignore'):
+            move_factors = np.divide(np.polyval(poly, grid_thetas), grid_radii)
         move_factors[move_factors > 1.0] = 1.0
 
         return move_factors
@@ -783,7 +785,6 @@ class SubGridBorder(ImageGridBorder):
 class BorderCollection(object):
 
     def __init__(self, image, sub):
-
         self.image = image
         self.sub = sub
 
