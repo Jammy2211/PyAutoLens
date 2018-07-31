@@ -8,6 +8,7 @@ from src.analysis import fitting
 from src.autopipe import non_linear
 from src.autopipe import model_mapper as mm
 import numpy as np
+import pixelization.pixelization as px
 import inspect
 import logging
 
@@ -15,8 +16,12 @@ logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
 
+def default_mask_function(image):
+    return msk.Mask.circular(image.shape, image.pixel_scale, 3)
+
+
 class Phase(object):
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1,
                  mask_function=lambda image: msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
@@ -240,7 +245,7 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-    def __init__(self, lens_galaxy=None, source_galaxy=None, other=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
                  mask_function=lambda image: msk.Mask.circular(image.shape, image.pixel_scale, 3)):
         """
@@ -260,7 +265,6 @@ class SourceLensPhase(Phase):
         super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
-        self.optimizer.variable.other = other
 
     class Result(Phase.Result):
         @property
@@ -320,3 +324,47 @@ class SourceLensPhase(Phase):
             """
             tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
             return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
+
+
+class PixelizedSourceLensPhase(SourceLensPhase):
+    def __init__(self,
+                 lens_galaxy=None,
+                 pixelization=px.RectangularRegConst,
+                 optimizer_class=non_linear.DownhillSimplex,
+                 sub_grid_size=1,
+                 mask_function=default_mask_function):
+        super().__init__(lens_galaxy=lens_galaxy, source_galaxy=gp.GalaxyPrior(pixelization=pixelization),
+                         optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
+
+    class Analysis(SourceLensPhase.Analysis):
+
+        def fit(self, lens_galaxy=None, source_galaxy=None):
+            """
+            Determine the fit of a lens galaxy and source galaxy to the image in this analysis.
+
+            Parameters
+            ----------
+            lens_galaxy: g.Galaxy
+                The galaxy that acts as a gravitational lens
+            source_galaxy: g.Galaxy
+                The galaxy that produces the light that is being lensed
+
+            Returns
+            -------
+            fit: Fit
+                A fractional value indicating how well this model fit and the model image itself
+            """
+            logger.debug(
+                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                    lens_galaxy,
+                    source_galaxy))
+
+            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
+            fitter = fitting.PixelizedFitter(self.masked_image, "TODO", "TODO", tracer)
+
+            if self.last_results is not None:
+                return fitter.fit_data_with_pixelization_profiles_and_hyper_galaxies(self.last_results.model_image,
+                                                                                     self.last_results.galaxy_images,
+                                                                                     self.hyper_galaxies)
+
+            return fitter.fit_data_with_pixelization_and_profiles()
