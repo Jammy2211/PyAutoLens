@@ -10,21 +10,27 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class Results(list):
+    def __init__(self, results):
+        super().__init__(results)
+
+    @property
+    def last(self):
+        if len(self) > 0:
+            return self[-1]
+        return None
+
+
 class Pipeline(object):
     def __init__(self, *phases):
         self.phases = phases
-        self.results = []
-
-    @property
-    def last_result(self):
-        return None if len(self.results) == 0 else self.results[-1]
 
     def run(self, image):
-        self.results = []
+        results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.__class__.__name__, i))
-            self.results.append(phase.run(image, self.last_result))
-        return self.results
+            results.append(phase.run(image, Results(results)))
+        return results
 
     def __add__(self, other):
         """
