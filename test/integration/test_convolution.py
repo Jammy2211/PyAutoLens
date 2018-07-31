@@ -39,6 +39,6 @@ class TestConvolutuion:
         convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, kernel=psf)
         im_1d = msk.masked_1d_array_from_2d_array(im)
         blurring_im_1d = blurring_mask.masked_1d_array_from_2d_array(im)
-        blurred_masked_im_1 = convolver.convolve_image(image_array=im_1d, blurring_array=blurring_im_1d)
+        blurred_masked_im_1 = convolver.convolve_image_jit(image_array=im_1d, blurring_array=blurring_im_1d)
 
         assert blurred_masked_im_0 == pytest.approx(blurred_masked_im_1, 1e-4)
