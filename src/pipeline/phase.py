@@ -368,7 +368,8 @@ class SourceLensPhase(Phase):
                 [] if model.lens_galaxy is None else [model.lens_galaxy],
                 [] if model.source_galaxy is None else [model.source_galaxy],
                 self.coordinate_collection)
-            return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
+            return None if model.lens_galaxy is None else tracer.image_plane.galaxy_images[
+                0], None if model.source_galaxy is None else tracer.source_plane.galaxy_images[0]
 
 
 class PixelizedSourceLensPhase(SourceLensPhase):
