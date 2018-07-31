@@ -98,6 +98,7 @@ class AbstractImage(ScaledArray):
 
 
 class Image(AbstractImage):
+
     def __init__(self, array, effective_exposure_time=1., pixel_scale=1., psf=None, background_noise=None,
                  poisson_noise=None):
         """
@@ -152,30 +153,45 @@ class Image(AbstractImage):
             A simulated image
         """
 
+        def trim_psf_edges(array):
+            psf_cut_x = np.int(np.ceil(psf.shape[0] / 2)) - 1
+            psf_cut_y = np.int(np.ceil(psf.shape[1] / 2)) - 1
+            array_x = np.int(array.shape[0])
+            array_y = np.int(array.shape[1])
+            return array[psf_cut_x:array_x - psf_cut_x, psf_cut_y:array_y - psf_cut_y]
+
         array_counts = None
 
         if background_sky_map is not None:
             array += background_sky_map
-            array_counts = np.multiply(background_sky_map, effective_exposure_time)
-            background_noise = np.sqrt(array_counts)
-            background_noise = np.divide(background_noise, effective_exposure_time)
+            background_noise = np.divide(np.sqrt(np.multiply(background_sky_map, effective_exposure_time)),
+                                         effective_exposure_time)
         else:
             background_noise = None
 
         if psf is not None:
             array = psf.convolve(array)
-        # TODO : Could create image at this point and use properties?
+            array = trim_psf_edges(array)
+            effective_exposure_time = trim_psf_edges(effective_exposure_time)
+            if background_sky_map is not None:
+                background_sky_map = trim_psf_edges(background_sky_map)
+            if background_noise is not None:
+                background_noise = trim_psf_edges(background_noise)
 
         if include_poisson_noise is True:
             array += generate_poisson_noise(array, effective_exposure_time, seed)
+
             # The poisson noise map does not include the background sky, so this estimate below removes it
             if background_sky_map is not None:
-                array_counts = np.multiply(array - background_sky_map, effective_exposure_time)
+                array_counts = np.multiply(np.subtract(array, background_sky_map), effective_exposure_time)
             elif background_sky_map is None:
                 array_counts = np.multiply(array, effective_exposure_time)
+
             # TODO: What if background_sky_map is None? array_counts doesn't exist
-            poisson_noise = np.sqrt(array_counts)
+            poisson_noise = np.sqrt(np.abs(array_counts))
             poisson_noise = np.divide(poisson_noise, effective_exposure_time)
+            if (np.isnan(poisson_noise) == True).any():
+                raise exc.MaskException('Nan found in poisson noise - increase exposure time.')
         else:
             poisson_noise = None
 
