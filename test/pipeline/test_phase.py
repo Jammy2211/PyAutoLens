@@ -8,6 +8,7 @@ from src.imaging import mask as msk
 from src.imaging import image as img
 from src.imaging import masked_image as mi
 from src.autopipe import model_mapper as mm
+from src.profiles import light_profiles
 
 shape = (10, 10)
 
@@ -81,8 +82,8 @@ def make_masked_image():
 
 @pytest.fixture(name="results")
 def make_results():
-    return MockResults(np.ones(32, ),
-                       galaxy_images=[np.ones(32, ), np.ones(32, )])
+    return MockResults(np.ones((10, 10)),
+                       galaxy_images=[np.ones((10, 10)), np.ones((10, 10))])
 
 
 @pytest.fixture(name="results_collection")
@@ -166,6 +167,27 @@ class TestPhase(object):
 
         assert phase.lens_galaxy is not None
         assert phase.source_galaxy is not None
+
+    def test_modify_image(self, image):
+        class MyPhase(ph.Phase):
+            def modify_image(self, im, previous_results):
+                assert image.shape == im.shape
+                return im
+
+        phase = MyPhase()
+        analysis = phase.make_analysis(image)
+        assert analysis.masked_image != image
+
+    def test_model_images(self, image):
+        phase = ph.SourceLensPhase()
+        analysis = phase.make_analysis(image)
+        instance = mm.ModelInstance()
+        instance.lens_galaxy = g.Galaxy(light=light_profiles.EllipticalExponential())
+        instance.source_galaxy = None
+
+        images = analysis.galaxy_images_for_model(instance)
+        assert images[0].shape == image.shape
+        assert images[1] is None
 
 
 class TestPixelizedPhase(object):
