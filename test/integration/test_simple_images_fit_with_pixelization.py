@@ -12,8 +12,6 @@ import numpy as np
 import pytest
 
 
-# TODO : Still suffer border issues described in profile integration test
-
 @pytest.fixture(name='sim_grid_9x9', scope='function')
 def sim_grid_9x9():
     sim_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(5.5, 5.5), pixel_scale=0.5, psf_size=(3, 3))
@@ -64,7 +62,7 @@ class TestCase:
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]), pixel_scale=1.0)
 
-            im = image.Image(im, psf=psf, background_noise=np.ones((5, 5)), effective_exposure_time=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
 
             mi = masked_image.MaskedImage(im, ma)
 
@@ -130,7 +128,7 @@ class TestCase:
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
-            im = image.Image(im, psf=psf, background_noise=np.ones((5, 5)), effective_exposure_time=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
 
             mi = masked_image.MaskedImage(im, ma)
 
