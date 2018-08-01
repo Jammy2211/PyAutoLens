@@ -94,8 +94,8 @@ class Phase(object):
             An analysis object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = self.mask_function(image)
+        image = self.modify_image(image, previous_results)
         masked_image = mi.MaskedImage(image, mask)
-        masked_image = self.customize_image(masked_image, previous_results)
         self.pass_priors(previous_results)
         coords_collection = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
             masked_image.mask, self.sub_grid_size, masked_image.psf.shape)
@@ -189,23 +189,23 @@ class Phase(object):
             raise NotImplementedError()
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def customize_image(self, masked_image, previous_results):
+    def modify_image(self, image, previous_results):
         """
         Customize an image. e.g. removing lens light.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
+        image: img.Image
             An image that has been masked
         previous_results: ResultsCollection
             The result of the previous analysis
 
         Returns
         -------
-        masked_image: mi.MaskedImage
+        image: img.Image
             The modified image (not changed by default)
         """
-        return masked_image
+        return image
 
     def pass_priors(self, previous_results):
         """
@@ -292,7 +292,7 @@ class SourceLensPhase(Phase):
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
-    def customize_image(self, masked_image, last_result):
+    def modify_image(self, masked_image, last_result):
         """
 
         Parameters
@@ -316,6 +316,13 @@ class SourceLensPhase(Phase):
             return self.galaxy_images[1]
 
     class Analysis(Phase.Analysis):
+        def __init__(self, coordinate_collection, masked_image, previous_results):
+            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image, coordinate_collection)
+            self.model_image = None
+            self.galaxy_images = None
+            if self.last_results is not None:
+                self.model_image = self.masked_image.mask.map_to_1d(previous_results.last.model_image)
+                self.galaxy_images = list(map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
@@ -345,8 +352,8 @@ class SourceLensPhase(Phase):
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
-                return fitter.fit_data_with_profiles_and_model_images(self.last_results.model_image,
-                                                                      self.last_results.galaxy_images)
+                return fitter.fit_data_with_profiles_and_model_images(self.model_image,
+                                                                      self.galaxy_images)
 
             return fitter.fit_data_with_profiles()
 
@@ -364,8 +371,16 @@ class SourceLensPhase(Phase):
             galaxy_images: [ndarray]
                 A list of images of galaxy components
             """
-            tracer = ray_tracing.Tracer([model.lens_galaxy], [model.source_galaxy], self.coordinate_collection)
-            return tracer.image_plane.galaxy_images, tracer.source_plane.galaxy_images
+
+            def model_image(plane):
+                if len(plane.galaxies) == 0:
+                    return None
+                return self.masked_image.map_to_2d(plane.galaxy_images[0])
+
+            lens_galaxies = [] if model.lens_galaxy is None else [model.lens_galaxy]
+            source_galaxies = [] if model.source_galaxy is None else [model.source_galaxy]
+            tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coordinate_collection)
+            return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
 
 class PixelizedSourceLensPhase(SourceLensPhase):
