@@ -29,7 +29,7 @@ class TestConvolutuion:
         # Now reproduce this image using the frame convolver_image
 
         blurring_mask = msk.blurring_mask_for_kernel_shape(psf.shape)
-        convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, kernel=psf)
+        convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, psf=psf)
         im_1d = msk.map_to_1d(im)
         blurring_im_1d = blurring_mask.map_to_1d(im)
         blurred_masked_im_1 = convolver.convolve_image_jit(image_array=im_1d, blurring_array=blurring_im_1d)

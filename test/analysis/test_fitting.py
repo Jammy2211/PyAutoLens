@@ -33,10 +33,8 @@ def make_fitter(galaxy_light_sersic, no_galaxies):
 
     image_2x2 = masked_image.MaskedImage(im, ma)
 
-    ray_tracer = ray_tracing.Tracer(
-        lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
-        image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-            image_2x2.mask, 1, (3, 3)))
+    ray_tracer = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                    image_plane_grids=image_2x2.grids)
     return fitting.Fitter(image_2x2, ray_tracer)
 
 
@@ -104,14 +102,13 @@ class TestFitData:
                                        [True, False, True],
                                        [True, True, True]]), pixel_scale=1.0)
 
-        image_1x1 = masked_image.MaskedImage(im, ma)
+        image_1x1 = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
         ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
-                                       image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                                           image_1x1.mask, 1, (3, 3)))
+                                       image_plane_grids=image_1x1.grids)
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
@@ -131,16 +128,13 @@ class TestFitData:
                                        [True, False, True],
                                        [True, True, True]]), pixel_scale=1.0)
 
-        image_1x1 = masked_image.MaskedImage(im, ma)
+        image_1x1 = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-        ray_trace = ray_tracing.Tracer(
-            lens_galaxies=[mock_galaxy],
-            source_galaxies=no_galaxies,
-            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                image_1x1.mask, 1, (3, 3)))
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=image_1x1.grids)
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
@@ -162,13 +156,10 @@ class TestGenerateBlurredLightProfileImage:
                                        [True, False, True],
                                        [True, True, True]]), pixel_scale=1.0)
 
-        image_1x1 = masked_image.MaskedImage(im, ma)
+        image_1x1 = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
-        ray_trace = ray_tracing.Tracer(
-            lens_galaxies=[galaxy_light_sersic],
-            source_galaxies=no_galaxies,
-            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                image_1x1.mask, 1, (3, 3)))
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=image_1x1.grids)
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
@@ -189,13 +180,10 @@ class TestGenerateBlurredLightProfileImage:
                                        [True, False, True],
                                        [True, True, True]]), pixel_scale=1.0)
 
-        image_1x1 = masked_image.MaskedImage(im, ma)
+        image_1x1 = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
-        ray_trace = ray_tracing.Tracer(
-            lens_galaxies=[galaxy_light_sersic],
-            source_galaxies=no_galaxies,
-            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                image_1x1.mask, 1, (1, 1)))
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=image_1x1.grids)
 
         fitter = fitting.Fitter(masked_image=image_1x1, tracer=ray_trace)
 
@@ -222,13 +210,10 @@ class TestGenerateBlurredLightProfileImage:
                                        [True, False, False, True],
                                        [True, True, True, True]]), pixel_scale=1.0)
 
-        image_2x2 = masked_image.MaskedImage(im, ma)
+        image_2x2 = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
-        ray_trace = ray_tracing.Tracer(
-            lens_galaxies=[galaxy_light_sersic],
-            source_galaxies=no_galaxies,
-            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                image_2x2.mask, 1, (3, 3)))
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
+                                       image_plane_grids=image_2x2.grids)
 
         fitter = fitting.Fitter(masked_image=image_2x2, tracer=ray_trace)
 
@@ -253,6 +238,7 @@ class TestGenerateBlurredLightProfileImage:
 class TestFitDataWithProfilesHyperGalaxy:
 
     def test__chi_sq_is_0__hyper_galaxy_adds_to_noise_term(self, no_galaxies):
+
         kernel = np.array([[0.0, 0.0, 0.0],
                            [0.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0]])
@@ -263,17 +249,14 @@ class TestFitDataWithProfilesHyperGalaxy:
                                        [True, False, True],
                                        [True, True, True]]), pixel_scale=1.0)
 
-        image_1x1 = masked_image.MaskedImage(im, ma)
+        image_1x1 = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
         # Setup as a ray trace instance, using a light profile for the lens
 
         mock_galaxy = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
 
-        ray_trace = ray_tracing.Tracer(
-            lens_galaxies=[mock_galaxy],
-            source_galaxies=no_galaxies,
-            image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-                image_1x1.mask, 1, (3, 3)))
+        ray_trace = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
+                                       image_plane_grids=image_1x1.grids)
 
         model_image = np.array([1.0])
         galaxy_images = [np.array([1.0]), np.array([1.0])]
@@ -312,7 +295,7 @@ class TestComputeBlurredImages:
         ma = mask.Mask(array=ma, pixel_scale=1.0)
         blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
 
-        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, psf=kernel)
 
         im = ma.map_to_1d(image_2d)
 
@@ -341,7 +324,7 @@ class TestComputeBlurredImages:
         ma = mask.Mask(array=ma, pixel_scale=1.0)
         blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
 
-        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, psf=kernel)
 
         im = ma.map_to_1d(image_2d)
         blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
@@ -369,7 +352,7 @@ class TestComputeBlurredImages:
         ma = mask.Mask(array=ma, pixel_scale=1.0)
         blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
 
-        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, psf=kernel)
 
         im = ma.map_to_1d(image_2d)
         blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
@@ -397,7 +380,7 @@ class TestComputeBlurredImages:
         ma = mask.Mask(array=ma, pixel_scale=1.0)
         blurring_mask = ma.blurring_mask_for_kernel_shape(kernel_shape=kernel.shape)
 
-        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, kernel=kernel)
+        convolver = convolution.ConvolverImage(mask=ma, blurring_mask=blurring_mask, psf=kernel)
 
         im = ma.map_to_1d(image_2d)
 
