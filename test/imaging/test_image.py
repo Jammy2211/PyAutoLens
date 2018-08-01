@@ -314,7 +314,7 @@ class TestPrepatoryImage:
             exposure_time = np.ones((3,3))
             background_noise = np.zeros((3,3))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -336,7 +336,7 @@ class TestPrepatoryImage:
             exposure_time = np.ones((4, 2))
             background_noise = np.zeros((4, 2))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -359,7 +359,7 @@ class TestPrepatoryImage:
 
             background_noise = np.zeros((1, 5))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -375,7 +375,7 @@ class TestPrepatoryImage:
 
             background_noise = np.zeros((2, 2))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -399,7 +399,7 @@ class TestPrepatoryImage:
 
             background_noise = 3.0 ** 0.5 * np.ones((3, 3))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -422,7 +422,7 @@ class TestPrepatoryImage:
 
             background_noise = 5 * np.ones((2, 3))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -446,7 +446,7 @@ class TestPrepatoryImage:
             exposure_time = 2.0 * np.ones((2, 3))
             background_noise = 5.0 * np.ones((2, 3))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -466,7 +466,7 @@ class TestPrepatoryImage:
             exposure_time = np.ones((3, 2))
             background_noise = 12.0 * np.ones((3, 2))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -486,7 +486,7 @@ class TestPrepatoryImage:
                                       [3.0, 4.0]])
             background_noise = 9.0 * np.ones((2, 2))
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -508,7 +508,7 @@ class TestPrepatoryImage:
             background_noise = np.array([[5.0, 6.0],
                                          [7.0, 8.0]])
 
-            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3,3)), pixel_scale=0.1),
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3)), pixel_scale=0.1),
                                        effective_exposure_time=exposure_time, background_noise=background_noise)
 
             noise_estimate = img.estimated_noise
@@ -524,7 +524,7 @@ class TestPrepatoryImage:
 
         def test__via_edges__input_all_ones__sky_bg_level_1(self):
 
-            img = image.PrepatoryImage(array=np.ones((3, 3)), noise=np.ones((3,3)), psf=np.ones((3,3)), pixel_scale=0.1)
+            img = image.PrepatoryImage(array=np.ones((3, 3)), noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -534,7 +534,7 @@ class TestPrepatoryImage:
                                     [1, 100, 1],
                                     [1, 1, 1]])
 
-            img = image.PrepatoryImage(array=image_array, noise=np.ones((3,3)), psf=np.ones((3,3)),  pixel_scale=0.1)
+            img = image.PrepatoryImage(array=image_array, noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -545,7 +545,7 @@ class TestPrepatoryImage:
                                     [1, 100, 1],
                                     [1, 1, 1]])
 
-            img = image.PrepatoryImage(array=image_array, noise=np.ones((3,3)), psf=np.ones((3,3)),  pixel_scale=0.1)
+            img = image.PrepatoryImage(array=image_array, noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -556,7 +556,7 @@ class TestPrepatoryImage:
                                     [1, 100, 100, 1],
                                     [1, 1, 1, 1]])
 
-            img = image.PrepatoryImage(array=image_array, noise=np.ones((3,3)), psf=np.ones((3,3)),  pixel_scale=0.1)
+            img = image.PrepatoryImage(array=image_array, noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=1)
 
             assert sky_noise == 0.0
@@ -568,7 +568,7 @@ class TestPrepatoryImage:
                                     [1, 1, 1, 1, 1],
                                     [1, 1, 1, 1, 1]])
 
-            img = image.PrepatoryImage(array=image_array, noise=np.ones((3,3)), psf=np.ones((3,3)),  pixel_scale=0.1)
+            img = image.PrepatoryImage(array=image_array, noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == 0.0
@@ -581,7 +581,7 @@ class TestPrepatoryImage:
                                     [18, 19, 20, 21, 22],
                                     [23, 24, 25, 26, 27]])
 
-            img = image.PrepatoryImage(array=image_array, noise=np.ones((3,3)), psf=np.ones((3,3)),  pixel_scale=0.1)
+            img = image.PrepatoryImage(array=image_array, noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=2)
 
             assert sky_noise == np.std(np.arange(28))
@@ -595,7 +595,7 @@ class TestPrepatoryImage:
                                     [34, 35, 36, 37, 38, 39, 40],
                                     [41, 42, 43, 44, 45, 46, 47]])
 
-            img = image.PrepatoryImage(array=image_array, noise=np.ones((3,3)), psf=np.ones((3,3)),  pixel_scale=0.1)
+            img = image.PrepatoryImage(array=image_array, noise=np.ones((3, 3)), psf=np.ones((3, 3)), pixel_scale=0.1)
             sky_noise = img.background_noise_from_edges(no_edges=3)
 
             assert sky_noise == np.std(np.arange(48))
