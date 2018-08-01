@@ -9,6 +9,7 @@ minimum_value_profile = 0.1
 
 
 class Fitter(object):
+
     def __init__(self, masked_image, tracer):
         """
         Class to evaluate the fit between a model described by a tracer and an actual image.
@@ -75,7 +76,7 @@ class Fitter(object):
 
 
 class PixelizedFitter(Fitter):
-    def __init__(self, masked_image, borders, sparse_mask, tracer):
+    def __init__(self, masked_image, sparse_mask, tracer):
         """
         Class to evaluate the fit between a model described by a tracer and an actual image.
 
@@ -91,7 +92,6 @@ class PixelizedFitter(Fitter):
             An object describing the model
         """
         super().__init__(masked_image, tracer)
-        self.borders = borders
         self.sparse_mask = sparse_mask
 
     def fit_data_with_pixelization(self):
@@ -99,7 +99,7 @@ class PixelizedFitter(Fitter):
         images.
         """
 
-        pix_pre_fit = self.tracer.reconstructors_from_source_plane(self.borders, self.sparse_mask)
+        pix_pre_fit = self.tracer.reconstructors_from_source_plane(self.image.borders, self.sparse_mask)
         pix_fit = pix_pre_fit.reconstruct_image(self.image, self.image.noise,
                                                 self.image.convolver_mapping_matrix)
 
