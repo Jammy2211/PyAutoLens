@@ -16,7 +16,7 @@ class Convolver(object):
     ------------
 
     For a masked image, in 2D, one can compute for every unmasked pixel all other unmasked pixels it will blur light \
-    into for a given PSF kernel size, e.g.:
+    into for a given PSF psf size, e.g.:
 
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
@@ -43,37 +43,37 @@ class Convolver(object):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    For every unmasked pixel, the Convolver over-lays the PSF kernel and computes three quantities;
+    For every unmasked pixel, the Convolver over-lays the PSF psf and computes three quantities;
 
     image_frame_indexes - The indexes of all image pixels it will blur light into.
-    image_frame_kernels - The kernel values that overlap each image pixel it will blur light into.
+    image_frame_psfs - The psf values that overlap each image pixel it will blur light into.
     image_frame_length - The number of image-pixels it will blur light into (because unmasked pixels are excluded)
 
-    For example, if we had the following 3x3 kernel:
+    For example, if we had the following 3x3 psf:
 
     |0.1|0.2|0.3|
     |0.4|0.5|0.6|
     |0.7|0.8|0.9|
 
-    For pixel 0 above, when we overlap the kernel 4 unmasked pixels overlap this kernel, such that:
+    For pixel 0 above, when we overlap the psf 4 unmasked pixels overlap this psf, such that:
 
     image_frame_indexes = [0, 1, 3, 4]
-    image_frame_kernels = [0.5, 0.6, 0.8, 0.9]
+    image_frame_psfs = [0.5, 0.6, 0.8, 0.9]
     image_frame_length = 4
 
-    Noting that the other 5 kernel values (0.1, 0.2, 0.3, 0.4, 0.7) overlap masked pixels and are thus discard.
+    Noting that the other 5 psf values (0.1, 0.2, 0.3, 0.4, 0.7) overlap masked pixels and are thus discard.
 
     For pixel 1, we get the following results:
 
     image_frame_indexes = [0, 1, 2, 3, 4, 5]
-    image_frame_kernels = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    image_frame_psfs = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 6
 
-    In the majority of cases, there will be no unmasked pixels when the kernel overlaps. This is the case above for \
+    In the majority of cases, there will be no unmasked pixels when the psf overlaps. This is the case above for \
     central pixel 4, where:
 
     image_frame_indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-    image_frame_kernels = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    image_frame_psfs = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 6
 
     Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of image
@@ -87,7 +87,7 @@ class Convolver(object):
     using blurring frames, however it is omitted for mapping matrix images.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
-    to blur light into it for a given kernel size. Following the example above, the following blurring mask is \
+    to blur light into it for a given psf size. Following the example above, the following blurring mask is \
     computed:
 
     |x|x|x|x|x|x|x|x|x|x|
@@ -114,31 +114,31 @@ class Convolver(object):
     |x|x| x| x| x| x| x|x|x|x|
     |x|x| x| x| x| x| x|x|x|x|
 
-    For every unmasked blurring-pixel, the Convolver over-lays the PSF kernel and computes three quantities;
+    For every unmasked blurring-pixel, the Convolver over-lays the PSF psf and computes three quantities;
 
     blurring_frame_indexes - The indexes of all unmasked image pixels it will blur light into.
-    bluring_frame_kernels - The kernel values that overlap each unmasked image pixel it will blur light into.
+    bluring_frame_kernels - The psf values that overlap each unmasked image pixel it will blur light into.
     blurring_frame_length - The number of image-pixels it will blur light into (because unmasked pixels are excluded)
 
     Note, therefore, that the blurring frame does not perform any blurring which blurs light into other blurring pixels.
     It only performs computations which add light inside of the mask, which is the most computationally efficient method.
 
-    For pixel 0 above, when we overlap the 3x3 kernel above only 1 unmasked image pixels overlap the kernel, such that:
+    For pixel 0 above, when we overlap the 3x3 psf above only 1 unmasked image pixels overlap the psf, such that:
 
     blurring_frame_indexes = [0]
-    blurring_frame_kernels = [0.9]
+    blurring_frame_psfs = [0.9]
     blurring_frame_length = 1
 
-    For pixel 1 above, when we overlap the 3x3 kernel above 2 unmasked image pixels overlap the kernel, such that:
+    For pixel 1 above, when we overlap the 3x3 psf above 2 unmasked image pixels overlap the psf, such that:
 
     blurring_frame_indexes = [0, 1]
-    blurring_frame_kernels = [0.8, 0.9]
+    blurring_frame_psfs = [0.8, 0.9]
     blurring_frame_length = 2
 
-    For pixel 3 above, when we overlap the 3x3 kernel above 3 unmasked image pixels overlap the kernel, such that:
+    For pixel 3 above, when we overlap the 3x3 psf above 3 unmasked image pixels overlap the psf, such that:
 
     blurring_frame_indexes = [0, 1, 2]
-    blurring_frame_kernels = [0.7, 0.8, 0.9]
+    blurring_frame_psfs = [0.7, 0.8, 0.9]
     blurring_frame_length = 3
     """
 
@@ -179,8 +179,8 @@ class Convolver(object):
         ----------
         coords: (int, int)
             The image_grid of mask_index_array on which the frame should be centred
-        kernel_shape: (int, int)
-            The shape of the kernel for which this frame will be used
+        psf_shape: (int, int)
+            The shape of the psf for which this frame will be used
         Returns
         -------
         frame: ndarray
@@ -215,8 +215,8 @@ class Convolver(object):
         ----------
         coords: (int, int)
             The image_grid of mask_index_array on which the frame should be centred
-        kernel_shape: (int, int)
-            The shape of the kernel for which this frame will be used
+        psf_shape: (int, int)
+            The shape of the psf for which this frame will be used
         Returns
         -------
         frame: ndarray
@@ -252,7 +252,7 @@ class ConvolverImage(Convolver):
 
     def __init__(self, mask, blurring_mask, kernel):
         """
-        Class to create image frames and blurring frames used to convolve a kernel with a 1D image of non-masked \
+        Class to create image frames and blurring frames used to convolve a psf with a 1D image of non-masked \
         values.
 
         Parameters
@@ -262,7 +262,7 @@ class ConvolverImage(Convolver):
         burring_mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after convolution.
         kernel : image.PSF or ndarray
-            An array representing a PSF kernel.
+            An array representing a PSF psf.
         """
 
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
@@ -309,13 +309,13 @@ class ConvolverImage(Convolver):
         blurring_array: [Float]
             An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
         sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
+            Defines a sub_grid-region of the psf for which the result should be calculated
         image_array: [float]
             A 1D array
         Returns
         -------
         convolved_vector: [float]
-            A vector convolved with the kernel
+            A vector convolved with the psf
         """
 
         new_array = np.zeros(image_array.shape)

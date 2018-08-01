@@ -28,7 +28,7 @@ class PrepatoryImage(ScaledArray):
         psf: PSF
             An array describing the PSF
         """
-        super(PrepatoryImage, self).__init__(array,  pixel_scale)
+        super(PrepatoryImage, self).__init__(array, pixel_scale)
         self.psf = psf
         self.noise = noise
         self.background_noise = background_noise
@@ -315,7 +315,7 @@ class PSF(ScaledArray):
 
         Raises
         ------
-        KernelException if either PSF kernel dimension is odd
+        KernelException if either PSF psf dimension is odd
         """
         if self.shape[0] % 2 == 0 or self.shape[1] % 2 == 0:
             raise exc.KernelException("PSF Kernel must be odd")
