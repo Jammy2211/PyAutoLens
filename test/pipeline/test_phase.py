@@ -68,13 +68,13 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), 1), noise=np.ones(shape))
     return image
 
 
 @pytest.fixture(name="masked_image")
 def make_masked_image():
-    image = img.Image(np.array(np.zeros(shape)), psf=img.PSF(np.ones((3, 3)), 1), background_noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), 1), noise=np.ones(shape))
     mask = msk.Mask.circular(shape, 1, 3)
     return mi.MaskedImage(image, mask)
 
