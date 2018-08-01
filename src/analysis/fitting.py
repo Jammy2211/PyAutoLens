@@ -50,9 +50,9 @@ class Fitter(object):
             The contribution of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
         """
         scaled_noises = list(
-            map(lambda hyper, contribution: hyper.compute_scaled_noise(self.image.background_noise, contribution),
+            map(lambda hyper, contribution: hyper.compute_scaled_noise(self.image.noise, contribution),
                 self.tracer.hyper_galaxies, contributions))
-        return self.image.background_noise + sum(scaled_noises)
+        return self.image.noise + sum(scaled_noises)
 
     def blurred_light_profile_image(self):
         """
@@ -70,7 +70,7 @@ class Fitter(object):
         images.
         """
         blurred_model_image = self.blurred_light_profile_image()
-        fitness = compute_likelihood(self.image, self.image.background_noise, blurred_model_image)
+        fitness = compute_likelihood(self.image, self.image.noise, blurred_model_image)
         return fitness
 
 
@@ -99,15 +99,13 @@ class PixelizedFitter(Fitter):
         images.
         """
 
-        # TODO : USE NOISE, NOT BACKGROUND NOISE
-
         pix_pre_fit = self.tracer.reconstructors_from_source_plane(self.borders, self.sparse_mask)
-        pix_fit = pix_pre_fit.reconstruct_image(self.image, self.image.background_noise,
+        pix_fit = pix_pre_fit.reconstruct_image(self.image, self.image.noise,
                                                 self.image.convolver_mapping_matrix)
 
         model_image = pix_fit.model_image_from_reconstruction_jit()
 
-        return compute_pixelization_evidence(self.image, self.image.background_noise, model_image, pix_fit)
+        return compute_pixelization_evidence(self.image, self.image.noise, model_image, pix_fit)
 
     def fit_data_with_pixelization_profiles_and_model_images(self, model_image, galaxy_images):
         raise NotImplementedError()

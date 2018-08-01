@@ -24,8 +24,7 @@ def make_galaxy_light_sersic():
 
 @pytest.fixture(name="fitter")
 def make_fitter(galaxy_light_sersic, no_galaxies):
-    im = image.Image(array=np.ones((4, 4)), psf=image.PSF(np.ones((3, 3)), 1), background_noise=np.ones((4, 4)),
-                     effective_exposure_time=np.ones((4, 4)))
+    im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=image.PSF(np.ones((3, 3)), 1), noise=np.ones((4, 4)))
 
     ma = mask.Mask(array=np.array([[True, True, True, True],
                                    [True, False, False, True],
@@ -35,8 +34,7 @@ def make_fitter(galaxy_light_sersic, no_galaxies):
     image_2x2 = masked_image.MaskedImage(im, ma)
 
     ray_tracer = ray_tracing.Tracer(
-        lens_galaxies=[galaxy_light_sersic],
-        source_galaxies=no_galaxies,
+        lens_galaxies=[galaxy_light_sersic], source_galaxies=no_galaxies,
         image_plane_grids=mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
             image_2x2.mask, 1, (3, 3)))
     return fitting.Fitter(image_2x2, ray_tracer)
@@ -96,13 +94,12 @@ class MockHyperGalaxy(object):
 class TestFitData:
 
     def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self, no_galaxies):
+
         kernel = np.array([[0.0, 0.0, 0.0],
                            [0.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0]])
 
-        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
-                         effective_exposure_time=np.ones((3, 3)))
-
+        im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=image.PSF(kernel, 1), noise=np.ones((3, 3)))
         ma = mask.Mask(array=np.array([[True, True, True],
                                        [True, False, True],
                                        [True, True, True]]), pixel_scale=1.0)
@@ -123,12 +120,12 @@ class TestFitData:
         assert likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
     def test___1x1_image__tracing_fits_data_perfectly__psf_blurs_model_to_5__lh_is_chi_sq_plus_noise(self, no_galaxies):
+
         kernel = np.array([[0.0, 1.0, 0.0],
                            [1.0, 1.0, 1.0],
                            [0.0, 1.0, 0.0]])
 
-        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
-                         effective_exposure_time=np.ones((3, 3)))
+        im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=image.PSF(kernel, 1), noise=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
                                        [True, False, True],
@@ -159,8 +156,7 @@ class TestGenerateBlurredLightProfileImage:
                            [0.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0]])
 
-        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
-                         effective_exposure_time=np.ones((3, 3)))
+        im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=image.PSF(kernel, 1), noise=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
                                        [True, False, True],
@@ -182,12 +178,12 @@ class TestGenerateBlurredLightProfileImage:
         assert non_blurred_value == blurred_value
 
     def test__1x1_image__psf_all_1s_so_blurs_into_image(self, galaxy_light_sersic, no_galaxies):
+
         kernel = np.array([[1.0, 1.0, 1.0],
                            [1.0, 1.0, 1.0],
                            [1.0, 1.0, 1.0]])
 
-        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
-                         effective_exposure_time=np.ones((3, 3)))
+        im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=image.PSF(kernel, 1), noise=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
                                        [True, False, True],
@@ -219,8 +215,7 @@ class TestGenerateBlurredLightProfileImage:
                            [0.0, 2.0, 1.0],
                            [0.0, 0.0, 0.0]])
 
-        im = image.Image(array=np.ones((4, 4)), psf=image.PSF(kernel, 1), background_noise=np.ones((4, 4)),
-                         effective_exposure_time=np.ones((4, 4)))
+        im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=image.PSF(kernel, 1), noise=np.ones((4, 4)))
 
         ma = mask.Mask(array=np.array([[True, True, True, True],
                                        [True, False, False, True],
@@ -262,8 +257,7 @@ class TestFitDataWithProfilesHyperGalaxy:
                            [0.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0]])
 
-        im = image.Image(np.ones((3, 3)), psf=image.PSF(kernel, 1), background_noise=np.ones((3, 3)),
-                         effective_exposure_time=np.ones((3, 3)))
+        im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=image.PSF(kernel, 1), noise=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
                                        [True, False, True],
@@ -300,6 +294,7 @@ class TestFitDataWithProfilesHyperGalaxy:
 class TestComputeBlurredImages:
 
     def test__psf_just_central_1_so_no_blurring__no_blurring_region__image_in_is_image_out(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -328,6 +323,7 @@ class TestComputeBlurredImages:
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__psf_all_1s_so_blurring_gives_4s__no_blurring_region__image_in_is_image_out(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -355,6 +351,7 @@ class TestComputeBlurredImages:
         assert (blurred_image == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
     def test__psf_just_central_1__include_blurring_region_blurring_region_not_blurred_in_so_return_image(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -382,6 +379,7 @@ class TestComputeBlurredImages:
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__psf_all_1s__include_blurring_region_image_turns_to_9s(self):
+
         image_2d = np.array([[0.0, 0.0, 0.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
                              [0.0, 1.0, 1.0, 0.0],
@@ -413,6 +411,7 @@ class TestComputeBlurredImages:
 class TestGenerateContributions:
 
     def test__x1_hyper_galaxy__model_image_is_galaxy_image__contributions_all_1(self):
+
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
         model_image = np.array([[1.0, 1.0, 1.0]])
@@ -426,6 +425,7 @@ class TestGenerateContributions:
         assert (contributions[0] == np.array([[1.0, 1.0, 1.0]])).all()
 
     def test__x1_hyper_galaxy__model_image_and_galaxy_image_different_contributions_change(self):
+
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
         model_image = np.array([[0.5, 1.0, 1.5]])
@@ -439,6 +439,7 @@ class TestGenerateContributions:
         assert (contributions[0] == np.array([[0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0]])).all()
 
     def test__x2_hyper_galaxy__model_image_and_galaxy_image_different_contributions_change(self):
+
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
@@ -454,6 +455,7 @@ class TestGenerateContributions:
         assert (contributions[1] == np.array([[0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0]])).all()
 
     def test__x2_hyper_galaxy__same_as_above_use_real_hyper_galaxy(self):
+
         hyper_galaxies = [galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
                           galaxy.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
@@ -472,22 +474,23 @@ class TestGenerateContributions:
 class TestGenerateScaledNoise:
 
     def test__x1_hyper_galaxy__noise_factor_is_0__scaled_noise_is_input_noise(self, fitter):
+
         fitter.tracer.image_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0,
                                                                              noise_power=1.0)
 
-        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 2.0])]
 
         scaled_noise = fitter.scaled_noise_for_contributions(contributions)
 
-        assert (scaled_noise == fitter.image.background_noise).all()
+        assert (scaled_noise == fitter.image.noise).all()
 
     def test__x1_hyper_galaxy__noise_factor_and_power_are_1__scaled_noise_added_to_input_noise(self, fitter):
         fitter.tracer.image_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0,
                                                                              noise_power=1.0)
 
-        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5])]
 
@@ -499,7 +502,7 @@ class TestGenerateScaledNoise:
         fitter.tracer.image_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0,
                                                                              noise_power=2.0)
 
-        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5])]
 
@@ -508,7 +511,7 @@ class TestGenerateScaledNoise:
         assert (scaled_noise == np.array([2.0, 2.0, 1.25])).all()
 
     def test__x2_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self, fitter):
-        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.noise = np.array([1.0, 1.0, 1.0])
 
         fitter.tracer.image_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0,
                                                                              noise_power=2.0)
@@ -527,7 +530,7 @@ class TestGenerateScaledNoise:
         fitter.tracer.source_plane.galaxies[0].hyper_galaxy = galaxy.HyperGalaxy(contribution_factor=1.0,
                                                                                  noise_factor=2.0, noise_power=1.0)
 
-        fitter.image.background_noise = np.array([1.0, 1.0, 1.0])
+        fitter.image.noise = np.array([1.0, 1.0, 1.0])
 
         contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
 

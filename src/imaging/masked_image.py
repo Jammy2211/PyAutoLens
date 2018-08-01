@@ -4,7 +4,7 @@ from src.imaging import convolution
 import numpy as np
 
 
-class MaskedImage(im.AbstractImage):
+class MaskedImage(im.Image):
     def __new__(cls, image, mask):
         return np.array(mask.masked_1d_array_from_2d_array(image)).view(cls)
 
@@ -20,12 +20,9 @@ class MaskedImage(im.AbstractImage):
         mask: msk.Mask
             A mask to be applied to the image
         """
-        super().__init__(array=image,
-                         effective_exposure_time=mask.masked_1d_array_from_2d_array(image.effective_exposure_time),
-                         pixel_scale=image.pixel_scale,
-                         psf=image.psf,
-                         background_noise=mask.masked_1d_array_from_2d_array(image.background_noise),
-                         poisson_noise=mask.masked_1d_array_from_2d_array(image.poisson_noise))
+        super().__init__(array=image, pixel_scale=image.pixel_scale,
+                         noise=mask.masked_1d_array_from_2d_array(image.noise),
+                         psf=image.psf)
 
         self.coordinate_grid = mask.coordinate_grid
         self.image = image
