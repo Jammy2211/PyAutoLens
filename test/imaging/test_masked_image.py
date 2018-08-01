@@ -9,8 +9,7 @@ import pytest
 @pytest.fixture(name='image')
 def make_image():
     psf = im.PSF(np.ones((1, 1)), 1)
-    return im.Image(np.ones((3, 3)), effective_exposure_time=1., pixel_scale=1., psf=psf,
-                    background_noise=np.ones((3, 3)), poisson_noise=np.ones((3, 3)))
+    return im.Image(np.ones((3, 3)), pixel_scale=1., psf=psf, noise=np.ones((3, 3)))
 
 
 @pytest.fixture(name="mask")
@@ -32,13 +31,11 @@ def make_masked_image(image, mask):
 
 class TestMaskedImage(object):
     def test_attributes(self, image, masked_image):
-        assert image.effective_exposure_time == masked_image.effective_exposure_time
         assert image.pixel_scale == masked_image.pixel_scale
         assert image.psf == masked_image.psf
 
     def test_masking(self, masked_image):
-        assert masked_image.background_noise.shape == (5,)
-        assert masked_image.poisson_noise.shape == (5,)
+        assert masked_image.noise.shape == (5,)
 
     def test_coordinate_grid(self, masked_image):
         assert masked_image.coordinate_grid.shape == (5, 2)
