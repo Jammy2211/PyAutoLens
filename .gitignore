@@ -33,3 +33,4 @@ src/profiles/integrator.py
 test/profiles/test_integrator.py
 profiling/data/output/
 output/
+test_files/non_linear/nlo/setup/

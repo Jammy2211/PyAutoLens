@@ -5,6 +5,7 @@ from src.imaging import scaled_array
 from src.analysis import galaxy_prior as gp
 from src.profiles import mass_profiles
 from src.autopipe import model_mapper as mm
+from src.autopipe import non_linear as nl
 import shutil
 import numpy as np
 
@@ -60,8 +61,11 @@ def test_source_only_pipeline():
 
 def test_profile_pipeline():
     name = "test_pipeline"
-    shutil.rmtree("{}/../../output/{}".format(dirpath, name))
-    pipeline = pl.make_profile_pipeline(name)
+    try:
+        shutil.rmtree("{}/../../output/{}".format(dirpath, name))
+    except FileNotFoundError:
+        pass
+    pipeline = pl.make_profile_pipeline(name, optimizer_class=nl.DownhillSimplex)
     results = pipeline.run(load_image("integration/hst_0"))
     for result in results:
         print(result)
