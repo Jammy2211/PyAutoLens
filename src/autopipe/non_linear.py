@@ -240,7 +240,7 @@ class MultiNest(NonLinearOptimizer):
     def pdf(self):
         return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-    def fit(self, analysis):
+    def fit(self, analysis, manual_bypass=False):
         self.save_model_info()
 
         class Fitness(object):
@@ -277,22 +277,24 @@ class MultiNest(NonLinearOptimizer):
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
-        logger.info("Running MultiNest...")
-        self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
-                 const_efficiency_mode=self.const_efficiency_mode,
-                 importance_nested_sampling=self.importance_nested_sampling,
-                 evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
-                 null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
-                 multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance,
-                 seed=self.seed,
-                 verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
-                 log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
-        logger.info("MultiNest complete")
+        if manual_bypass is False:
+
+            logger.info("Running MultiNest...")
+            self.run(fitness_function.__call__, prior, self.variable.total_parameters,
+                     outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
+                     const_efficiency_mode=self.const_efficiency_mode,
+                     importance_nested_sampling=self.importance_nested_sampling,
+                     evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
+                     null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
+                     multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance,
+                     seed=self.seed,
+                     verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
+                     log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
+            logger.info("MultiNest complete")
 
         result = fitness_function.result
 
-        result.variable = self.variable.mapper_from_gaussian_tuples(self.compute_gaussian_priors(self.sigma_limit))
+        result.variable = self.variable.mapper_from_gaussian_tuples(self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
         return result
 
@@ -322,7 +324,7 @@ class MultiNest(NonLinearOptimizer):
 
         return vector
 
-    def compute_most_probable(self):
+    def most_probable_from_summary(self):
         """
         Read the most probable or most likely model values from the 'obj_summary.txt' file which nlo from a \
         multinest analysis.
@@ -333,7 +335,7 @@ class MultiNest(NonLinearOptimizer):
         """
         return self.read_vector_from_summary(number_entries=self.variable.total_parameters, offset=0)
 
-    def compute_most_likely(self):
+    def most_likely_from_summary(self):
         """
         Read the most probable or most likely model values from the 'obj_summary.txt' file which nlo from a \
         multinest analysis.
@@ -343,21 +345,21 @@ class MultiNest(NonLinearOptimizer):
         """
         return self.read_vector_from_summary(number_entries=self.variable.total_parameters, offset=56)
 
-    def compute_max_likelihood(self):
+    def max_likelihood_from_summary(self):
         return self.read_vector_from_summary(number_entries=2, offset=112)[0]
 
-    def compute_max_log_likelihood(self):
+    def max_log_likelihood_from_summary(self):
         return self.read_vector_from_summary(number_entries=2, offset=112)[1]
 
-    def create_most_probable_model_instance(self):
-        most_probable = self.compute_most_probable()
+    def most_probable_instance_from_summary(self):
+        most_probable = self.most_probable_from_summary()
         return self.variable.instance_from_physical_vector(most_probable)
 
-    def create_most_likely_model_instance(self):
-        most_likely = self.compute_most_likely()
+    def most_likely_instance_from_summary(self):
+        most_likely = self.most_likely_from_summary()
         return self.variable.instance_from_physical_vector(most_likely)
 
-    def compute_gaussian_priors(self, sigma_limit):
+    def gaussian_priors_at_sigma_limit(self, sigma_limit):
         """Compute the Gaussian Priors these results should be initialzed with in the next phase, by taking their \
         most probable values (e.g the means of their PDF) and computing the error at an input sigma_limit.
 
@@ -368,21 +370,21 @@ class MultiNest(NonLinearOptimizer):
             PDF).
         """
 
-        means = self.compute_most_probable()
-        uppers = self.compute_model_at_upper_limit(sigma_limit)
-        lowers = self.compute_model_at_lower_limit(sigma_limit)
+        means = self.most_probable_from_summary()
+        uppers = self.model_at_upper_sigma_limit(sigma_limit)
+        lowers = self.model_at_lower_sigma_limit(sigma_limit)
 
         # noinspection PyArgumentList
         sigmas = list(map(lambda mean, upper, lower: max([upper - mean, mean - lower]), means, uppers, lowers))
 
         return list(map(lambda mean, sigma: (mean, sigma), means, sigmas))
 
-    def compute_model_at_limit(self, sigma_limit):
+    def model_at_sigma_limit(self, sigma_limit):
         limit = math.erf(0.5 * sigma_limit * math.sqrt(2))
         densities_1d = list(map(lambda p: self.pdf.get1DDensity(p), self.pdf.getParamNames().names))
         return list(map(lambda p: p.getLimits(limit), densities_1d))
 
-    def compute_model_at_upper_limit(self, sigma_limit):
+    def model_at_upper_sigma_limit(self, sigma_limit):
         """Setup 1D vectors of the upper and lower limits of the multinest nlo.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
@@ -394,9 +396,9 @@ class MultiNest(NonLinearOptimizer):
             The sigma limit within which the PDF is used to estimate errors (e.g. sigma_limit = 1.0 uses 0.6826 of the \
             PDF).
         """
-        return list(map(lambda param: param[1], self.compute_model_at_limit(sigma_limit)))
+        return list(map(lambda param: param[1], self.model_at_sigma_limit(sigma_limit)))
 
-    def compute_model_at_lower_limit(self, sigma_limit):
+    def model_at_lower_sigma_limit(self, sigma_limit):
         """Setup 1D vectors of the upper and lower limits of the multinest nlo.
 
         These are generated at an input limfrac, which gives the percentage of 1d posterior weighted samples within \
@@ -408,9 +410,9 @@ class MultiNest(NonLinearOptimizer):
             The sigma limit within which the PDF is used to estimate errors (e.g. sigma_limit = 1.0 uses 0.6826 of the \
             PDF).
         """
-        return list(map(lambda param: param[0], self.compute_model_at_limit(sigma_limit)))
+        return list(map(lambda param: param[0], self.model_at_sigma_limit(sigma_limit)))
 
-    def create_weighted_sample_model_instance(self, index):
+    def weighted_sample_instance_from_weighted_samples(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
 
         Parameters
@@ -418,13 +420,13 @@ class MultiNest(NonLinearOptimizer):
         index : int
             The index of the weighted sample to return.
         """
-        model, weight, likelihood = self.compute_weighted_sample_model(index)
+        model, weight, likelihood = self.weighted_sample_model_from_weighted_samples(index)
 
         self._weighted_sample_model = model
 
         return self.variable.instance_from_physical_vector(model), weight, likelihood
 
-    def compute_weighted_sample_model(self, index):
+    def weighted_sample_model_from_weighted_samples(self, index):
         """From a weighted sample return the model, weight and likelihood hood.
 
         NOTE: GetDist reads the log likelihood from the weighted_sample.txt file (column 2), which are defined as \
