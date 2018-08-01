@@ -4,7 +4,7 @@ from src.imaging import convolution
 import numpy as np
 
 
-class MaskedImage(im.Image):
+class MaskedImage(im.AbstractImage):
     def __new__(cls, image, mask):
         return np.array(mask.masked_1d_array_from_2d_array(image)).view(cls)
 
