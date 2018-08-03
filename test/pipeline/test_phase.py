@@ -69,13 +69,13 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), 1), noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
     return image
 
 
 @pytest.fixture(name="masked_image")
 def make_masked_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), 1), noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
     mask = msk.Mask.circular(shape, 1, 3)
     return mi.MaskedImage(image, mask)
 
@@ -200,8 +200,8 @@ class TestPixelizedPhase(object):
 
 
 class TestAnalysis(object):
-    def test_model_image(self, results_collection, masked_image, grids):
-        analysis = ph.Phase.Analysis(results_collection, masked_image, grids)
+    def test_model_image(self, results_collection, masked_image):
+        analysis = ph.Phase.Analysis(results_collection, masked_image)
         assert (results_collection[0].model_image == analysis.last_results.model_image).all()
 
 
