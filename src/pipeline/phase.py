@@ -95,13 +95,10 @@ class Phase(object):
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask)
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
-        coords_collection = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-            masked_image.mask, self.sub_grid_size, masked_image.psf.shape)
 
-        analysis = self.__class__.Analysis(coordinate_collection=coords_collection,
-                                           masked_image=masked_image, previous_results=previous_results)
+        analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results)
         return analysis
 
     @property
@@ -149,8 +146,7 @@ class Phase(object):
 
     class Analysis(object):
         def __init__(self, previous_results,
-                     masked_image,
-                     coordinate_collection):
+                     masked_image):
             """
             An analysis object
 
@@ -160,12 +156,9 @@ class Phase(object):
                 The results of all previous phases
             masked_image: mi.MaskedImage
                 An image that has been masked
-            coordinate_collection: msk.GridCollection
-                A collection of coordinates (grid, blurring and sub)
             """
             self.previous_results = previous_results
             self.masked_image = masked_image
-            self.coordinate_collection = coordinate_collection
 
         @property
         def last_results(self):
@@ -316,8 +309,8 @@ class SourceLensPhase(Phase):
             return self.galaxy_images[1]
 
     class Analysis(Phase.Analysis):
-        def __init__(self, coordinate_collection, masked_image, previous_results):
-            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image, coordinate_collection)
+        def __init__(self, masked_image, previous_results):
+            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image)
             self.model_image = None
             self.galaxy_images = None
             if self.last_results is not None:
@@ -347,8 +340,7 @@ class SourceLensPhase(Phase):
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
-                [] if source_galaxy is None else [source_galaxy],
-                self.coordinate_collection)
+                [] if source_galaxy is None else [source_galaxy], self.masked_image.grids)
             fitter = fitting.Fitter(self.masked_image, tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
@@ -379,7 +371,7 @@ class SourceLensPhase(Phase):
 
             lens_galaxies = [] if model.lens_galaxy is None else [model.lens_galaxy]
             source_galaxies = [] if model.source_galaxy is None else [model.source_galaxy]
-            tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.coordinate_collection)
+            tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.masked_image.grids)
             return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
 
@@ -416,7 +408,7 @@ class PixelizedSourceLensPhase(SourceLensPhase):
                     lens_galaxy,
                     source_galaxy))
 
-            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
+            tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.masked_image.grids)
             fitter = fitting.PixelizedFitter(self.masked_image, "TODO", tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
@@ -455,6 +447,7 @@ class SourceOnlyPhase(SourceLensPhase):
 
 
 class SourceLensHyperGalaxyPhase(SourceLensPhase):
+    # TODO: Perform hypergalaxy analyses for each hypergalaxy independently
     def pass_priors(self, previous_results):
         self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
             previous_results.last.constant.lens_galaxy,
