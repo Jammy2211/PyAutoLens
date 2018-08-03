@@ -20,11 +20,9 @@ def load_image(name):
 
     data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
     noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
-    exposure_time = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/exposure_time', hdu=0,
-                                                       pixel_scale=0.1)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0, pixel_scale=0.1)
 
-    return im.Image(array=data, pixel_scale=0.1, noise=noise, psf=psf)
+    return im.Image(array=data, pixel_scale=0.1, psf=psf, noise=noise)
 
 
 def test_source_only_phase_1():
@@ -35,7 +33,9 @@ def test_source_only_phase_1():
 
 
 def test_source_only_phase_2():
-    lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal, shear=mass_profiles.ExternalShear)
+    lens_galaxy = gp.GalaxyPrior(
+        sie=mass_profiles.SphericalIsothermal,
+        shear=mass_profiles.ExternalShear)
 
     variable = mm.ModelMapper()
     variable.lens_galaxy = lens_galaxy
