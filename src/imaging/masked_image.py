@@ -27,6 +27,7 @@ class MaskedImage(im.Image):
         self.image = image
         self.image_shape = image.shape
         self.mask = mask
+        self.sub_grid_size = sub_grid_size
 
         if profile_psf_shape is None:
             profile_psf_shape = self.image.psf.shape
