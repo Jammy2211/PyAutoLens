@@ -47,10 +47,13 @@ def make_profile_only_pipeline():
 
 @pytest.fixture(name="image")
 def make_image():
-    shape = (20, 20)
-    image = im.Image(np.ones(shape), pixel_scale=1, noise=np.ones(shape), psf=im.PSF(np.ones((3, 3))))
+    shape = (10, 10)
+    return im.Image(np.ones(shape), pixel_scale=1, noise=np.ones(shape), psf=im.PSF(np.ones((3, 3))))
 
 
 class TestProfileOnlyPipeline(object):
-    def test_phase1(self, profile_only_pipeline):
+    def test_phase1(self, profile_only_pipeline, image):
         phase1 = profile_only_pipeline.phases[0]
+        analysis = phase1.make_analysis(image)
+
+        assert analysis.masked_image.shape == (32,)
