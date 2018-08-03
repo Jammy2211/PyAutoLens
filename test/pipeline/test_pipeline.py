@@ -57,3 +57,4 @@ class TestProfileOnlyPipeline(object):
         analysis = phase1.make_analysis(image)
 
         assert analysis.masked_image.shape == (32,)
+        assert analysis.masked_image.sub_grid_size == 1
