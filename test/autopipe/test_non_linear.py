@@ -430,7 +430,7 @@ class TestMultiNest(object):
                 path=mn_summary_path + '1_class')
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            most_probable = mn.compute_most_probable()
+            most_probable = mn.most_probable_from_summary()
 
             assert most_probable == [1.0, -2.0, 3.0, 4.0]
 
@@ -443,7 +443,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            most_probable = mn.compute_most_probable()
+            most_probable = mn.most_probable_from_summary()
 
             assert most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
 
@@ -455,7 +455,7 @@ class TestMultiNest(object):
                 path=mn_summary_path + '/1_class')
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            most_probable = mn.create_most_probable_model_instance()
+            most_probable = mn.most_probable_instance_from_summary()
 
             assert most_probable.mock_class.one == 1.0
             assert most_probable.mock_class.two == -2.0
@@ -471,7 +471,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            most_probable = mn.create_most_probable_model_instance()
+            most_probable = mn.most_probable_instance_from_summary()
 
             assert most_probable.mock_class_1.one == 1.0
             assert most_probable.mock_class_1.two == 2.0
@@ -491,7 +491,7 @@ class TestMultiNest(object):
                 path=mn_summary_path + '1_class')
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            most_likely = mn.compute_most_likely()
+            most_likely = mn.most_likely_from_summary()
 
             assert most_likely == [9.0, -10.0, -11.0, 12.0]
 
@@ -504,7 +504,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            most_likely = mn.compute_most_likely()
+            most_likely = mn.most_likely_from_summary()
 
             assert most_likely == [21.0, 22.0, 23.0, 24.0, 25.0, -26.0, -27.0, 28.0, 29.0, 30.0]
 
@@ -516,7 +516,7 @@ class TestMultiNest(object):
                 path=mn_summary_path + '1_class')
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            most_likely = mn.create_most_likely_model_instance()
+            most_likely = mn.most_likely_instance_from_summary()
 
             assert most_likely.mock_class.one == 9.0
             assert most_likely.mock_class.two == -10.0
@@ -532,7 +532,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            most_likely = mn.create_most_likely_model_instance()
+            most_likely = mn.most_likely_instance_from_summary()
 
             assert most_likely.mock_class_1.one == 21.0
             assert most_likely.mock_class_1.two == 22.0
@@ -556,7 +556,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            gaussian_priors = mn.compute_gaussian_priors(sigma_limit=3.0)
+            gaussian_priors = mn.gaussian_priors_at_sigma_limit(sigma_limit=3.0)
 
             assert gaussian_priors[0][0] == 1.0
             assert gaussian_priors[1][0] == 2.0
@@ -577,10 +577,10 @@ class TestMultiNest(object):
                 path=mn_priors_path)
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
-            gaussian_priors = mn.compute_gaussian_priors(sigma_limit=1.0)
+            gaussian_priors = mn.gaussian_priors_at_sigma_limit(sigma_limit=1.0)
 
             # Use sigmas directly as rouding errors come in otherwise
-            lower_sigmas = mn.compute_model_at_lower_limit(sigma_limit=1.0)
+            lower_sigmas = mn.model_at_lower_sigma_limit(sigma_limit=1.0)
 
             assert gaussian_priors[0][0] == 1.0
             assert gaussian_priors[1][0] == 2.0
@@ -603,7 +603,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            model, weight, likelihood = mn.compute_weighted_sample_model(index=0)
+            model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=0)
 
             assert model == [1.1, 2.1, 3.1, 4.1]
             assert weight == 0.02
@@ -618,7 +618,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            model, weight, likelihood = mn.compute_weighted_sample_model(index=5)
+            model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=5)
 
             assert model == [1.0, 2.0, 3.0, 4.0]
             assert weight == 0.1
@@ -633,7 +633,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            model, weight, likelihood = mn.compute_weighted_sample_model(index=0)
+            model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=0)
 
             assert model == [1.1, 2.1, 3.1, 4.1, -5.1, -6.1, -7.1, -8.1, 9.1, 10.1]
             assert weight == 0.02
@@ -649,7 +649,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            model, weight, likelihood = mn.compute_weighted_sample_model(index=5)
+            model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=5)
 
             assert model == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
             assert weight == 0.1
@@ -665,7 +665,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            weighted_sample_model, weight, likelihood = mn.create_weighted_sample_model_instance(index=0)
+            weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=0)
 
             assert weight == 0.02
             assert likelihood == -0.5 * 9999999.9
@@ -685,7 +685,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            weighted_sample_model, weight, likelihood = mn.create_weighted_sample_model_instance(index=5)
+            weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
 
             assert weight == 0.1
             assert likelihood == -0.5 * 9999999.9
@@ -705,7 +705,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            weighted_sample_model, weight, likelihood = mn.create_weighted_sample_model_instance(index=0)
+            weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=0)
 
             assert weight == 0.02
             assert likelihood == -0.5 * 9999999.9
@@ -730,7 +730,7 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
 
-            weighted_sample_model, weight, likelihood = mn.create_weighted_sample_model_instance(index=5)
+            weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
 
             assert weight == 0.1
             assert likelihood == -0.5 * 9999999.9
@@ -757,8 +757,8 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            assert mn.compute_model_at_upper_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12], 1e-2)
-            assert mn.compute_model_at_lower_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88], 1e-2)
+            assert mn.model_at_upper_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12], 1e-2)
+            assert mn.model_at_lower_sigma_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88], 1e-2)
 
         def test__1_profile__change_limit_to_1_sigma(self, config_path, mn_samples_path):
             create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
@@ -769,8 +769,8 @@ class TestMultiNest(object):
 
             mn.variable.add_classes(mock_class=MockClassNLOx4)
 
-            assert mn.compute_model_at_upper_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07], 1e-2)
-            assert mn.compute_model_at_lower_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
+            assert mn.model_at_upper_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07], 1e-2)
+            assert mn.model_at_lower_sigma_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
 
 
 class TestConfig(object):
@@ -946,7 +946,7 @@ class TestRealClasses(object):
 
         files.save_model_info()
 
-        most_probable = files.compute_most_probable()
+        most_probable = files.most_probable_from_summary()
 
         assert most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
 
@@ -962,7 +962,7 @@ class TestRealClasses(object):
 
         files.save_model_info()
 
-        most_likely = files.compute_most_likely()
+        most_likely = files.most_likely_from_summary()
 
         assert most_likely == [21.0, 22.0, 23.0, 24.0, 25.0, -26.0, -27.0, 28.0, 29.0, 30.0]
 
@@ -978,8 +978,8 @@ class TestRealClasses(object):
 
         files.save_model_info()
 
-        max_likelihood = files.compute_max_likelihood()
-        max_log_likelihood = files.compute_max_log_likelihood()
+        max_likelihood = files.max_likelihood_from_summary()
+        max_log_likelihood = files.max_log_likelihood_from_summary()
 
         assert max_likelihood == 0.02
         assert max_log_likelihood == 9999999.9
@@ -996,8 +996,8 @@ class TestRealClasses(object):
 
         multinest.save_model_info()
 
-        most_probable = multinest.create_most_probable_model_instance()
-        most_likely = multinest.create_most_likely_model_instance()
+        most_probable = multinest.most_probable_instance_from_summary()
+        most_likely = multinest.most_likely_instance_from_summary()
 
         assert most_probable.light_profile.centre == (1.0, 2.0)
         assert most_probable.light_profile.axis_ratio == 3.0
@@ -1030,7 +1030,7 @@ class TestRealClasses(object):
 
         results.save_model_info()
 
-        gaussian_priors = results.compute_gaussian_priors(sigma_limit=3.0)
+        gaussian_priors = results.gaussian_priors_at_sigma_limit(sigma_limit=3.0)
 
         assert gaussian_priors[0][0] == 1.0
         assert gaussian_priors[1][0] == 2.0
@@ -1055,7 +1055,7 @@ class TestRealClasses(object):
 
         nlo.save_model_info()
 
-        weighted_sample_model, weight, likelihood = nlo.create_weighted_sample_model_instance(index=5)
+        weighted_sample_model, weight, likelihood = nlo.weighted_sample_instance_from_weighted_samples(index=5)
 
         assert weight == 0.1
         assert likelihood == -0.5 * 9999999.9
@@ -1082,10 +1082,10 @@ class TestRealClasses(object):
 
         results.save_model_info()
 
-        assert results.compute_model_at_upper_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12],
-                                                                                      1e-2)
-        assert results.compute_model_at_lower_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88],
-                                                                                      1e-2)
+        assert results.model_at_upper_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12],
+                                                                                    1e-2)
+        assert results.model_at_lower_sigma_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88],
+                                                                                    1e-2)
 
 
 class MockAnalysis(object):
@@ -1187,6 +1187,7 @@ class TestFitting(object):
             assert result.variable.mock_class.two.mean == -2
 
         def test_constant_and_variable(self, multi_nest, test_config):
+
             multi_nest.constant.constant = MockClassNLOx4()
             multi_nest.variable.variable = model_mapper.PriorModel(MockClassNLOx4, test_config)
 
