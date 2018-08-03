@@ -247,6 +247,13 @@ class TestRealClasses(object):
         assert isinstance(model_map.lens_mass_profile, mass_profiles.EllipticalCoredIsothermal)
         assert isinstance(model_map.lens_light_profile, light_profiles.EllipticalCoreSersic)
 
+    def test_attribute(self):
+        mm = model_mapper.ModelMapper(MockConfig())
+        mm.cls_1 = MockClassMM
+
+        assert 1 == len(mm.prior_models)
+        assert isinstance(mm.cls_1, model_mapper.PriorModel)
+
 
 class TestConfigFunctions:
 
