@@ -4,6 +4,7 @@ from src.autopipe import model_mapper
 from src.autopipe import non_linear
 from src.imaging import image as im
 from src.profiles import light_profiles
+from src.profiles import mass_profiles
 from src.analysis import galaxy_prior as gp
 from src.analysis import galaxy as g
 import numpy as np
@@ -66,6 +67,17 @@ def make_results_1():
     return ph.SourceLensPhase.Result(const, 1, var, [np.full(shape, 0.5), None])
 
 
+@pytest.fixture(name="results_2")
+def make_results_2():
+    const = model_mapper.ModelInstance()
+    var = model_mapper.ModelMapper()
+    var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
+    const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal())
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+    return ph.SourceLensPhase.Result(const, 1, var, [np.full(shape, 0.5), np.full(shape, 0.5)])
+
+
 class TestProfileOnlyPipeline(object):
     def test_phase1(self, profile_only_pipeline, image):
         phase1 = profile_only_pipeline.phases[0]
@@ -74,7 +86,7 @@ class TestProfileOnlyPipeline(object):
         assert isinstance(phase1.lens_galaxy, gp.GalaxyPrior)
         assert phase1.source_galaxy is None
 
-        assert analysis.masked_image.shape == (716,)
+        assert analysis.masked_image == np.ones((716,))
         assert analysis.masked_image.sub_grid_size == 1
         assert analysis.previous_results is None
 
@@ -88,3 +100,25 @@ class TestProfileOnlyPipeline(object):
         assert isinstance(phase2.lens_galaxy, gp.GalaxyPrior)
         assert isinstance(phase2.source_galaxy, gp.GalaxyPrior)
         assert phase2.lens_galaxy.sie.centre == previous_results.first.variable.lens_galaxy.elliptical_sersic.centre
+
+    def test_phase3(self, profile_only_pipeline, image, results_1, results_2):
+        # self.lens_galaxy = gp.GalaxyPrior(
+        #     elliptical_sersic=previous_results.first.variable.lens_galaxy.elliptical_sersic,
+        #     sie=previous_results.last.variable.lens_galaxy.sie)
+        # self.source_galaxy = previous_results.last.variable.source_galaxy
+        phase3 = profile_only_pipeline.phases[2]
+        previous_results = ph.ResultsCollection([results_1, results_2])
+
+        analysis = phase3.make_analysis(image, previous_results)
+
+        assert isinstance(phase3.lens_galaxy, gp.GalaxyPrior)
+        assert isinstance(phase3.source_galaxy, gp.GalaxyPrior)
+
+        print(analysis.masked_image.shape)
+
+        assert analysis.masked_image == np.ones((716,))
+
+        assert phase3.lens_galaxy.elliptical_sersic == results_1.variable.lens_galaxy.elliptical_sersic
+        assert phase3.lens_galaxy.sie == results_2.variable.lens_galaxy.sie
+        assert phase3.source_galaxy == results_2.variable.source_galaxy
+
