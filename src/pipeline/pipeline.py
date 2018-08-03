@@ -107,14 +107,14 @@ def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest)
     #    Image : Lens Subtracted Image (previous phase)
     #    Mask : Annulus (0.4" - 3.0")
 
-    def mask_function(img):
+    def annular_mask_function(img):
         return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
                                 outer_radius=3.)
 
     phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal),
                                  source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                                  optimizer_class=optimizer_class,
-                                 mask_function=mask_function,
+                                 mask_function=annular_mask_function,
                                  name="{}/phase2".format(name))
 
     # 3) Lens Light : Elliptical Sersic (Priors phase 1)
