@@ -12,7 +12,7 @@ class TestHyperImage(object):
 
             hyp = hyper_image.HyperImage(background_sky_scale=10.0)
 
-            scaled_image = hyp.compute_sky_scaled_image(image=image)
+            scaled_image = hyp.sky_scaled_image_from_image(image=image)
 
             assert (scaled_image == np.array([11.0, 12.0, 13.0])).all()
 
@@ -26,7 +26,7 @@ class TestHyperImage(object):
 
             hyp = hyper_image.HyperImage(background_noise_scale=2.0)
 
-            scaled_noise = hyp.compute_scaled_noise(noise=noise, background_noise=background_noise)
+            scaled_noise = hyp.scaled_noise_from_background_noise(noise=noise, background_noise=background_noise)
 
             assert (scaled_noise == np.array([3.0, 4.0, 5.0])).all()
 
@@ -37,6 +37,6 @@ class TestHyperImage(object):
 
             hyp = hyper_image.HyperImage(background_noise_scale=3.0)
 
-            scaled_noise = hyp.compute_scaled_noise(noise=noise, background_noise=background_noise)
+            scaled_noise = hyp.scaled_noise_from_background_noise(noise=noise, background_noise=background_noise)
 
             assert (scaled_noise == np.array([16.0, 5.0, 12.0])).all()

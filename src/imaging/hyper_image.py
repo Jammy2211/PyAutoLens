@@ -15,7 +15,15 @@ class HyperImage(object):
         self.background_sky_scale = background_sky_scale
         self.background_noise_scale = background_noise_scale
 
-    def compute_sky_scaled_image(self, image):
+    @property
+    def subscript(self):
+        return 'hi'
+
+    @property
+    def parameter_labels(self):
+        return [r'\sigma', r'\sigma']
+
+    def sky_scaled_image_from_image(self, image):
         """Compute a new image with the background sky level scaled. This can simply multiple by a constant factor \
         (assuming a uniform background sky) because the image is in units electrons per second.
 
@@ -26,7 +34,7 @@ class HyperImage(object):
         """
         return image + self.background_sky_scale
 
-    def compute_scaled_noise(self, noise, background_noise):
+    def scaled_noise_from_background_noise(self, noise, background_noise):
         """Compute a scaled noise map from the baseline noise map. This scales each galaxy component individually \
         using their galaxy contribution map and sums their scaled noise maps with the baseline and background noise maps.
 
