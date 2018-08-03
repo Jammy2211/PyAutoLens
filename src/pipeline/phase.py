@@ -447,6 +447,7 @@ class SourceOnlyPhase(SourceLensPhase):
 
 
 class SourceLensHyperGalaxyPhase(SourceLensPhase):
+    # TODO: Perform hypergalaxy analyses for each hypergalaxy independently
     def pass_priors(self, previous_results):
         self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
             previous_results.last.constant.lens_galaxy,
