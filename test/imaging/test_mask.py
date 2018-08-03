@@ -1772,7 +1772,7 @@ class TestBorderCollection(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            border_collection = mask.BorderCollection.from_mask_and_subgrid_size(mask=msk, subgrid_size=2)
+            border_collection = mask.BorderCollection.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=2)
 
             assert (border_collection.image == np.array([0, 1])).all()
             assert (border_collection.sub == np.array([0, 5])).all()

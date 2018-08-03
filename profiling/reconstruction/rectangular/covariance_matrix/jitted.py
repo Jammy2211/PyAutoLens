@@ -128,7 +128,7 @@ cov = lsst_recon.covariance_matrix_from_blurred_mapping_jitted(lsst_blurred_mapp
 euclid_recon.covariance_matrix_from_blurred_mapping_jitted(euclid_blurred_mapping, euclid.masked_image.background_noise)
 hst_recon.covariance_matrix_from_blurred_mapping_jitted(hst_blurred_mapping, hst.masked_image.background_noise)
 hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping, hst_up.masked_image.background_noise)
-# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.background_noise)
+# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.noise)
 
 @tools.tick_toc_x1
 def lsst_solution():
