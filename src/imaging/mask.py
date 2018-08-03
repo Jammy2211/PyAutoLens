@@ -789,9 +789,9 @@ class BorderCollection(object):
         self.sub = sub
 
     @classmethod
-    def from_mask_and_subgrid_size(cls, mask, subgrid_size, polynomial_degree=3, centre=(0.0, 0.0)):
+    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
         image_border = ImageGridBorder.from_mask(mask, polynomial_degree, centre)
-        sub_border = SubGridBorder.from_mask(mask, subgrid_size, polynomial_degree, centre)
+        sub_border = SubGridBorder.from_mask(mask, sub_grid_size, polynomial_degree, centre)
         return BorderCollection(image_border, sub_border)
 
     def relocated_grids_from_grids(self, grids):

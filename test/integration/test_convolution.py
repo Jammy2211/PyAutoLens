@@ -1,13 +1,6 @@
 from src.imaging import mask
 from src.imaging import image
 from src.imaging import convolution
-from src.imaging import masked_image
-from src.profiles import light_profiles as lp
-from src.profiles import mass_profiles as mp
-from src.pixelization import pixelization
-from src.analysis import fitting
-from src.analysis import ray_tracing
-from src.analysis import galaxy
 
 import numpy as np
 import pytest
@@ -36,7 +29,7 @@ class TestConvolutuion:
         # Now reproduce this image using the frame convolver_image
 
         blurring_mask = msk.blurring_mask_for_kernel_shape(psf.shape)
-        convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, kernel=psf)
+        convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, psf=psf)
         im_1d = msk.map_to_1d(im)
         blurring_im_1d = blurring_mask.map_to_1d(im)
         blurred_masked_im_1 = convolver.convolve_image_jit(image_array=im_1d, blurring_array=blurring_im_1d)

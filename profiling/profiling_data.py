@@ -56,7 +56,7 @@ class Data(object):
                                                                                    sub_grid_size=sub_grid_size,
                                                                                    blurring_shape=psf.shape)
 
-        self.borders = mask.BorderCollection.from_mask_and_subgrid_size(mask=ma, subgrid_size=sub_grid_size)
+        self.borders = mask.BorderCollection.from_mask_and_sub_grid_size(mask=ma, sub_grid_size=sub_grid_size)
 
         with open(pickle_path(), 'wb') as pickle_file:
             pickle.dump(self, file=pickle_file)
