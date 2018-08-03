@@ -1,4 +1,4 @@
-from src.imaging.scaled_array import ScaledArray
+from src.imaging.scaled_array import ScaledArray, AbstractArray
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
@@ -73,7 +73,6 @@ class PrepatoryImage(ScaledArray):
             background_noise_counts = None
             background_noise = None
 
-
         if psf is not None:
             array = psf.convolve(array)
             array = cls.trim_psf_edges(array, psf)
@@ -113,7 +112,7 @@ class PrepatoryImage(ScaledArray):
             noise = None
 
         if noise is not None:
-            if (np.isnan(noise) == True).any():
+            if (np.isnan(noise)).any():
                 raise exc.MaskException('Nan found in poisson noise - increase exposure time.')
 
         return PrepatoryImage(array, pixel_scale=pixel_scale, noise=noise, psf=psf, background_noise=background_noise,
@@ -222,6 +221,7 @@ class PrepatoryImage(ScaledArray):
 
         return norm.fit(edges)[1]
 
+
 class Image(ScaledArray):
 
     def __init__(self, array, pixel_scale, noise, psf):
@@ -234,8 +234,6 @@ class Image(ScaledArray):
             An array of image pixels in gray-scale
         noise: ndarray
             An array describing the noise in the image
-        effective_exposure_time: Union(ndarray, float)
-            A float or array representing the effective exposure time of the whole image or each pixel.
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
@@ -251,9 +249,11 @@ class Image(ScaledArray):
             self.psf = obj.psf
             self.noise = obj.noise
 
-class PSF(ScaledArray):
 
-    def __init__(self, array, pixel_scale, renormalize=True):
+class PSF(AbstractArray):
+
+    # noinspection PyUnusedLocal
+    def __init__(self, array, renormalize=True):
         """
         Class storing a 2D Point Spread Function (PSF), including its weighted_data and coordinate grid_coords.
 
@@ -261,14 +261,12 @@ class PSF(ScaledArray):
         ----------
         array : ndarray
             The psf weighted_data.
-        pixel_scale : float
-            The arc-second to pixel conversion factor of each pixel.
         renormalize : bool
             Renormalize the PSF such that its value added up to 1.0?
         """
 
-        super(PSF, self).__init__(array, pixel_scale)
-
+        # noinspection PyArgumentList
+        super().__init__()
         if renormalize:
             self.renormalize()
 
@@ -337,25 +335,26 @@ def setup_random_seed(seed):
                                  int(1e9))  # Use one seed, so all regions have identical column non-uniformity.
     np.random.seed(seed)
 
+
 def generate_poisson_noise(image, exposure_time, seed=-1):
-            """
-            Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
-            distribution with mean 0.0.
+    """
+    Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
+    distribution with mean 0.0.
 
-            Parameters
-            ----------
-            image : ndarray
-                The 2D image background noise is added to.
-            exposure_time : Union(ndarray, int)
-                The 2D array of pixel exposure times.
-            seed : int
-                The seed of the random number generator, used for the random noise maps.
+    Parameters
+    ----------
+    image : ndarray
+        The 2D image background noise is added to.
+    exposure_time : Union(ndarray, int)
+        The 2D array of pixel exposure times.
+    seed : int
+        The seed of the random number generator, used for the random noise maps.
 
-            Returns
-            -------
-            poisson_noise: ndarray
-                An array describing simulated poisson noise
-            """
-            setup_random_seed(seed)
-            image_counts = np.multiply(image, exposure_time)
-            return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
+    Returns
+    -------
+    poisson_noise: ndarray
+        An array describing simulated poisson noise
+    """
+    setup_random_seed(seed)
+    image_counts = np.multiply(image, exposure_time)
+    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
