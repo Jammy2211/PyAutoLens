@@ -222,6 +222,7 @@ class PrepatoryImage(ScaledArray):
 
         return norm.fit(edges)[1]
 
+
 class Image(ScaledArray):
 
     def __init__(self, array, pixel_scale, noise, psf):
@@ -250,6 +251,7 @@ class Image(ScaledArray):
         if isinstance(obj, Image):
             self.psf = obj.psf
             self.noise = obj.noise
+
 
 class PSF(ScaledArray):
 
