@@ -189,6 +189,11 @@ class TestPhase(object):
         assert images[0].shape == image.shape
         assert images[1] is None
 
+    def test_class_as_variable(self):
+        phase = ph.SourceLensPhase()
+        phase.source_galaxy = g.Galaxy
+        assert 1 == len(phase.variable.prior_models)
+
 
 class TestPixelizedPhase(object):
     def test_constructor(self):
