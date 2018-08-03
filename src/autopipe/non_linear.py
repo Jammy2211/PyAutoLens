@@ -18,31 +18,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
 
-
-class Result(object):
-
-    def __init__(self, constant, likelihood, variable=None):
-        """
-        The result of an optimization.
-
-        Parameters
-        ----------
-        constant: mm.ModelInstance
-            An instance object comprising the class instances that gave the optimal fit
-        likelihood: float
-            A value indicating the likelihood given by the optimal fit
-        variable: mm.ModelMapper
-            An object comprising priors determined by this stage of the analysis
-        """
-        self.constant = constant
-        self.likelihood = likelihood
-        self.variable = variable
-
-    def __str__(self):
-        return "Analysis Result:\n{}".format(
-            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
-
-
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
 
@@ -68,6 +43,30 @@ def generate_parameter_latex(parameters, subscript=''):
             latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
 
     return latex
+
+
+class Result(object):
+
+    def __init__(self, constant, likelihood, variable=None):
+        """
+        The result of an optimization.
+
+        Parameters
+        ----------
+        constant: mm.ModelInstance
+            An instance object comprising the class instances that gave the optimal fit
+        likelihood: float
+            A value indicating the likelihood given by the optimal fit
+        variable: mm.ModelMapper
+            An object comprising priors determined by this stage of the analysis
+        """
+        self.constant = constant
+        self.likelihood = likelihood
+        self.variable = variable
+
+    def __str__(self):
+        return "Analysis Result:\n{}".format(
+            "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
 
 
 class NonLinearOptimizer(object):
