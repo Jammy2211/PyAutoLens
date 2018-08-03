@@ -20,8 +20,6 @@ def is_profile_class(cls):
            or issubclass(cls, light_profiles.LightProfile)
 
 
-# TODO : Add in init a 'vary redshift' bool which is default False
-
 class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
     @DynamicAttrs
