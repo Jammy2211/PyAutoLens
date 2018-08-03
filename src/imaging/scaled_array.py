@@ -7,13 +7,130 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class ScaledArray(np.ndarray):
+class AbstractArray(np.ndarray):
+    def __new__(cls, array, *args, **kwargs):
+        return np.array(array, dtype='float64').view(cls)
+
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(AbstractArray, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(AbstractArray, self).__setstate__(state[0:-1])
+
+    @classmethod
+    def from_fits(cls, file_path, hdu, pixel_scale):
+        """
+        Loads the weighted_data from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image weighted_data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return cls(arrays.numpy_array_from_fits(file_path, hdu), pixel_scale)
+
+    def pad(self, new_dimensions, pad_value=0):
+        """ Pad the weighted_data array with zeros (or an input value) around its central pixel.
+
+        NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be padded to even arrays \
+        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+
+        Parameters
+        ----------
+        new_dimensions : (int, int)
+            The (x,y) new pixel dimension of the padded weighted_data-array.
+        pad_value : float
+            The value to pad the array with.
+        """
+        if new_dimensions[0] < self.shape[0]:
+            raise ValueError('grids.Grid2d.pad - You have specified a new x_size smaller than the weighted_data array')
+        elif new_dimensions[1] < self.shape[1]:
+            raise ValueError('grids.Grid2d.pad - You have specified a new y_size smaller than the weighted_data array')
+
+        x_pad = int((new_dimensions[0] - self.shape[0] + 1) / 2)
+        y_pad = int((new_dimensions[1] - self.shape[1] + 1) / 2)
+
+        array = np.pad(self, ((x_pad, y_pad), (x_pad, y_pad)), 'constant', constant_values=pad_value)
+
+        return self.new_with_array(array)
+
+    def trim(self, new_dimensions):
+        """
+        Trim the weighted_data array to a new sub_grid_size around its central pixel.
+
+        NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
+        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+
+        Parameters
+        ----------
+        new_dimensions : (int, int)
+            The (x,y) new pixel dimension of the trimmed weighted_data-array.
+        """
+        if new_dimensions[0] > self.shape[0]:
+            raise ValueError(
+                'grids.Grid2d.trim_data - You have specified a new x_size bigger than the weighted_data array')
+        elif new_dimensions[1] > self.shape[1]:
+            raise ValueError(
+                'grids.Grid2d.trim_data - You have specified a new y_size bigger than the weighted_data array')
+
+        x_trim = int((self.shape[0] - new_dimensions[0]) / 2)
+        y_trim = int((self.shape[1] - new_dimensions[1]) / 2)
+
+        array = self[x_trim:self.shape[0] - x_trim, y_trim:self.shape[1] - y_trim]
+
+        if self.shape[0] != new_dimensions[0]:
+            logger.debug(
+                'image.weighted_data.trim_data - Your specified x_size was odd (even) when the image x dimension is '
+                'even (odd)')
+            logger.debug(
+                'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
+        elif self.shape[1] != new_dimensions[1]:
+            logger.debug(
+                'image.weighted_data.trim_data - Your specified y_size was odd (even) when the image y dimension is '
+                'even (odd)')
+            logger.debug(
+                'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
+
+        return self.new_with_array(array)
+
+    def new_with_array(self, array):
+        """
+        Parameters
+        ----------
+        array: ndarray
+            An ndarray
+
+        Returns
+        -------
+        new_array: ScaledArray
+            A new instance of this class that shares all of this instances attributes with a new ndarray.
+        """
+        arguments = vars(self)
+        arguments.update({"array": array})
+
+        return self.__class__(**arguments)
+
+
+class ScaledArray(AbstractArray):
     """
     Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
     """
-
-    def __new__(cls, array, pixel_scale=1, *args, **kwargs):
-        return np.array(array, dtype='float64').view(cls)
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale=1):
@@ -32,24 +149,6 @@ class ScaledArray(np.ndarray):
     def __array_finalize__(self, obj):
         if isinstance(obj, ScaledArray):
             self.pixel_scale = obj.pixel_scale
-
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(ScaledArray, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(ScaledArray, self).__setstate__(state[0:-1])
 
     def map(self, func):
         for x in range(self.shape[0]):
@@ -126,23 +225,6 @@ class ScaledArray(np.ndarray):
         """
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
-    def new_with_array(self, array):
-        """
-        Parameters
-        ----------
-        array: ndarray
-            An ndarray
-
-        Returns
-        -------
-        new_array: ScaledArray
-            A new instance of this class that shares all of this instances attributes with a new ndarray.
-        """
-        arguments = vars(self)
-        arguments.update({"array": array})
-
-        return self.__class__(**arguments)
-
     def flatten(self, order='C'):
         """
         Returns
@@ -151,70 +233,6 @@ class ScaledArray(np.ndarray):
             A copy of this array flattened to 1D
         """
         return self.new_with_array(super(ScaledArray, self).flatten(order))
-
-    def pad(self, new_dimensions, pad_value=0):
-        """ Pad the weighted_data array with zeros (or an input value) around its central pixel.
-
-        NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be padded to even arrays \
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-        Parameters
-        ----------
-        new_dimensions : (int, int)
-            The (x,y) new pixel dimension of the padded weighted_data-array.
-        pad_value : float
-            The value to pad the array with.
-        """
-        if new_dimensions[0] < self.shape[0]:
-            raise ValueError('grids.Grid2d.pad - You have specified a new x_size smaller than the weighted_data array')
-        elif new_dimensions[1] < self.shape[1]:
-            raise ValueError('grids.Grid2d.pad - You have specified a new y_size smaller than the weighted_data array')
-
-        x_pad = int((new_dimensions[0] - self.shape[0] + 1) / 2)
-        y_pad = int((new_dimensions[1] - self.shape[1] + 1) / 2)
-
-        array = np.pad(self, ((x_pad, y_pad), (x_pad, y_pad)), 'constant', constant_values=pad_value)
-
-        return self.new_with_array(array)
-
-    def trim(self, new_dimensions):
-        """
-        Trim the weighted_data array to a new sub_grid_size around its central pixel.
-
-        NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-        Parameters
-        ----------
-        new_dimensions : (int, int)
-            The (x,y) new pixel dimension of the trimmed weighted_data-array.
-        """
-        if new_dimensions[0] > self.shape[0]:
-            raise ValueError(
-                'grids.Grid2d.trim_data - You have specified a new x_size bigger than the weighted_data array')
-        elif new_dimensions[1] > self.shape[1]:
-            raise ValueError(
-                'grids.Grid2d.trim_data - You have specified a new y_size bigger than the weighted_data array')
-
-        x_trim = int((self.shape[0] - new_dimensions[0]) / 2)
-        y_trim = int((self.shape[1] - new_dimensions[1]) / 2)
-
-        array = self[x_trim:self.shape[0] - x_trim, y_trim:self.shape[1] - y_trim]
-
-        if self.shape[0] != new_dimensions[0]:
-            logger.debug(
-                'image.weighted_data.trim_data - Your specified x_size was odd (even) when the image x dimension is '
-                'even (odd)')
-            logger.debug(
-                'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
-        elif self.shape[1] != new_dimensions[1]:
-            logger.debug(
-                'image.weighted_data.trim_data - Your specified y_size was odd (even) when the image y dimension is '
-                'even (odd)')
-            logger.debug(
-                'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
-
-        return self.new_with_array(array)
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
         """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and
@@ -243,22 +261,6 @@ class ScaledArray(np.ndarray):
                 coordinates_array[x, y, 1] = arc_second_coordinates[1]
 
         return coordinates_array
-
-    @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scale):
-        """
-        Loads the weighted_data from a .fits file.
-
-        Parameters
-        ----------
-        file_path : str
-            The full path of the fits file.
-        hdu : int
-            The HDU number in the fits file containing the image weighted_data.
-        pixel_scale: float
-            The arc-second to pixel conversion factor of each pixel.
-        """
-        return cls(arrays.numpy_array_from_fits(file_path, hdu), pixel_scale)
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):
