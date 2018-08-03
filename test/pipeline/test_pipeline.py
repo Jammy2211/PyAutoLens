@@ -102,10 +102,6 @@ class TestProfileOnlyPipeline(object):
         assert phase2.lens_galaxy.sie.centre == previous_results.first.variable.lens_galaxy.elliptical_sersic.centre
 
     def test_phase3(self, profile_only_pipeline, image, results_1, results_2):
-        # self.lens_galaxy = gp.GalaxyPrior(
-        #     elliptical_sersic=previous_results.first.variable.lens_galaxy.elliptical_sersic,
-        #     sie=previous_results.last.variable.lens_galaxy.sie)
-        # self.source_galaxy = previous_results.last.variable.source_galaxy
         phase3 = profile_only_pipeline.phases[2]
         previous_results = ph.ResultsCollection([results_1, results_2])
 
