@@ -101,7 +101,6 @@ class NonLinearOptimizer(object):
             self.hyper_image = mm.PriorModel(hyper_image.HyperImage, config=self.variable.config)
 
     def save_model_info(self):
-        print("making dir {}".format(self.path))
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 

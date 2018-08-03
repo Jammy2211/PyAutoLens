@@ -66,7 +66,6 @@ class AncestorConfig(object):
             The path to the prior config folder
         """
         self.path = config_folder_path
-        print(self.path)
         self.parser = configparser.ConfigParser()
 
     def read(self, module_name):
