@@ -5,6 +5,7 @@ from src.imaging import convolution
 import numpy as np
 import pytest
 
+
 @pytest.fixture(name='sim_image_31x31', scope='function')
 def sim_grid_9x9():
     sim_grid_9x9.ma = mask.Mask.for_simulate(shape_arc_seconds=(5.5, 5.5), pixel_scale=0.5, psf_size=(3, 3))
@@ -14,14 +15,14 @@ def sim_grid_9x9():
     sim_grid_9x9.mapping = sim_grid_9x9.ma.grid_mapping_with_sub_grid_size(sub_grid_size=1, cluster_grid_size=1)
     return sim_grid_9x9
 
+
 class TestConvolutuion:
 
     def test__compare_convolver_to_2d_convolution(self):
-
         # Setup a blurred image, using the PSF to perform the convolution in 2D, then mask it to make a 1d array.
 
-        im = np.arange(900).reshape(30,30)
-        psf = image.PSF(array=np.arange(49).reshape(7,7), pixel_scale=1.0)
+        im = np.arange(900).reshape(30, 30)
+        psf = image.PSF(array=np.arange(49).reshape(7, 7))
         blurred_im = psf.convolve(im)
         msk = mask.Mask.circular(shape_arc_seconds=(30.0, 30.0), pixel_scale=1.0, radius_mask=4.0)
         blurred_masked_im_0 = msk.map_to_1d(blurred_im)
