@@ -34,7 +34,7 @@ class FrameMakerOriginal(object):
         ----------
             An array in which non-masked elements have been numbered 0, 1, 2,...N
         kernel_shape: (int, int)
-            The shape of the kernel for which frames will be used
+            The shape of the psf for which frames will be used
         Returns
         -------
         image_frame_indexes: [ndarray]
@@ -57,7 +57,7 @@ class FrameMakerOriginal(object):
         Parameters
         ----------
         kernel_shape: (int, int)
-            The shape of the kernel
+            The shape of the psf
         blurring_region_mask: Mask
             A mask describing the boundary of the region from which values may be convoluted
 
@@ -87,7 +87,7 @@ class FrameMakerOriginal(object):
         coords: (int, int)
             The image_grid of mask_index_array on which the frame should be centred
         kernel_shape: (int, int)
-            The shape of the kernel for which this frame will be used
+            The shape of the psf for which this frame will be used
         Returns
         -------
         frame: ndarray
@@ -112,13 +112,13 @@ class FrameMakerOriginal(object):
 
     def convolver_for_kernel_shape(self, kernel_shape, blurring_region_mask=None):
         """
-        Create a convolver_image that can be used to apply a kernel of any shape to a 1D vector of non-masked values
+        Create a convolver_image that can be used to apply a psf of any shape to a 1D vector of non-masked values
         Parameters
         ----------
         blurring_region_mask: Mask
             A mask describing the blurring region. If False then that pixel is included int he blurring region.
         kernel_shape: (int, int)
-            The shape of the kernel
+            The shape of the psf
         Returns
         -------
             convolver_image: Convolver
@@ -137,14 +137,14 @@ class FrameMakerOriginal(object):
 class ConvolverOriginal(object):
     def __init__(self, frame_array, blurring_frame_array):
         """
-        Class to convolve a kernel with a 1D vector of non-masked values
+        Class to convolve a psf with a 1D vector of non-masked values
         Parameters
         ----------
         blurring_frame_array: [ndarray]
-            An array of frames created by the frame maker. Maps positions in the kernel to values in the 1D vector for
+            An array of frames created by the frame maker. Maps positions in the psf to values in the 1D vector for
             masked pixels.
         frame_array: [ndarray]
-            An array of frames created by the frame maker. A frame maps positions in the kernel to values in the 1D
+            An array of frames created by the frame maker. A frame maps positions in the psf to values in the 1D
             vector.
         """
         self.frame_array = frame_array
@@ -155,7 +155,7 @@ class ConvolverOriginal(object):
         Parameters
         ----------
         kernel: ndarray
-            An array representing a kernel
+            An array representing a psf
 
         Returns
         -------
@@ -182,13 +182,13 @@ class KernelConvolverOriginal(object):
         blurring_array: [Float]
             An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
         sub_shape: (int, int)
-            Defines a sub_grid-region of the kernel for which the result should be calculated
+            Defines a sub_grid-region of the psf for which the result should be calculated
         pixel_array: [float]
             A 1D array
         Returns
         -------
         convolved_vector: [float]
-            A vector convolved with the kernel
+            A vector convolved with the psf
         """
 
         new_array = np.zeros(pixel_array.shape)
@@ -321,7 +321,7 @@ class KernelConvolverOriginal(object):
 
     def convolution_for_value_frame_and_new_array(self, value, frame, new_array, sub_shape=None):
         """
-        Convolves a value with the kernel and populates a new array according to the entries in the frame
+        Convolves a value with the psf and populates a new array according to the entries in the frame
 
         Parameters
         ----------
@@ -332,7 +332,7 @@ class KernelConvolverOriginal(object):
         new_array: ndarray
             An array into which convolved values are inserted
         sub_shape: (int, int)
-            The shape of a reduced sub_grid_size kernel
+            The shape of a reduced sub_grid_size psf
 
         Returns
         -------
@@ -360,11 +360,11 @@ class KernelConvolverOriginal(object):
 
 def calculate_limits(shape, sub_shape):
     """
-    Finds limits from a shape and subshape for calculation of subsize kernel convolutions
+    Finds limits from a shape and subshape for calculation of subsize psf convolutions
     Parameters
     ----------
     shape: (int, int)
-        The shape of the kernel
+        The shape of the psf
     sub_shape: (int, int)
         The shape of the subkernel to be considered
 
@@ -385,11 +385,11 @@ def is_in_sub_shape(kernel_index_1d, limits, shape):
     # Parameters
     # ----------
     # kernel_index_1d: int
-    #     The index in a flattened kernel
+    #     The index in a flattened psf
     # limits: Tuple[int, int, int, int]
     #     x_min, y_min, x_max, y_max limits
     # shape: (int, int)
-    #     The shape of the kernel
+    #     The shape of the psf
     #
     # Returns
     # -------
@@ -425,7 +425,7 @@ hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up.image.psf.trim(p
                                                  blurring_frame_array=hst_up.masked_image.convolver.blurring_frame_array)
 
 # ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-# ao_kernel_convolver = KernelConvolverOriginal(kernel=ao.image.psf.trim(psf_shape),
+# ao_kernel_convolver = KernelConvolverOriginal(psf=ao.image.psf.trim(psf_shape),
 #                                                  image_frame_indexes=ao.masked_image.convolver_image.image_frame_indexes,
 #                                                  blurring_frame_indexes=ao.masked_image.convolver_image.blurring_frame_indexes)
 
