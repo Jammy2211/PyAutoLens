@@ -73,7 +73,7 @@ def fit_data_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer):
                                                                                          hyper_images.minimum_values)
 
     if hyper_noise_scale_change is True:
-        grid_datas_fit.noise = hyper_image.compute_scaled_noise(grid_datas.baseline_noise, grid_datas.background_noise,
+        grid_datas_fit.noise = hyper_image.scaled_noise_from_background_noise(grid_datas.baseline_noise, grid_datas.background_noise,
                                                                  hyper_images.contribution_maps)
 
     ### PROFILE STUFF ###

@@ -84,6 +84,10 @@ class Pixelization(object):
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
 
+    @property
+    def subscript(self):
+        return 'pix'
+
     def mapping_matrix_from_sub_to_pix_jit(self, sub_to_pix, grids):
         return self.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix, self.pixels, grids.image, grids.sub.sub_to_image,
                                                           grids.sub.sub_grid_fraction)
@@ -307,6 +311,9 @@ class RectangularRegConst(Rectangular, regularization.RegularizationConstant):
         """
         super(RectangularRegConst, self).__init__(shape, regularization_coefficients)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', r'\lambda']
 
 class RectangularRegWeighted(Rectangular, regularization.RegularizationWeighted):
 
@@ -326,6 +333,9 @@ class RectangularRegWeighted(Rectangular, regularization.RegularizationWeighted)
         super(RectangularRegWeighted, self).__init__(shape, regularization_coefficients)
         self.pix_signal_scale = pix_signal_scale
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', r'\lambda1', r'\lambda2', 'V']
 
 class Voronoi(Pixelization):
 
@@ -645,6 +655,9 @@ class ClusterRegConst(Cluster, regularization.RegularizationConstant):
         """
         super(ClusterRegConst, self).__init__(pixels, regularization_coefficients)
 
+    @property
+    def parameter_labels(self):
+        return ['N', r'\lambda1']
 
 class ClusterRegWeighted(Cluster, regularization.RegularizationWeighted):
 
@@ -666,6 +679,9 @@ class ClusterRegWeighted(Cluster, regularization.RegularizationWeighted):
         super(ClusterRegWeighted, self).__init__(pixels, regularization_coefficients)
         self.pix_signal_scale = pix_signal_scale
 
+    @property
+    def parameter_labels(self):
+        return ['N', r'\lambda1', r'\lambda2', 'V']
 
 class Amorphous(Voronoi):
 
@@ -754,6 +770,9 @@ class AmorphousRegConst(Amorphous, regularization.RegularizationConstant):
         """
         super(AmorphousRegConst, self).__init__(pixels, regularization_coefficients)
 
+    @property
+    def parameter_labels(self):
+        return ['N', r'\lambda1']
 
 class AmorphousRegWeighted(Amorphous, regularization.RegularizationWeighted):
 
@@ -774,3 +793,7 @@ class AmorphousRegWeighted(Amorphous, regularization.RegularizationWeighted):
         """
         super(AmorphousRegWeighted, self).__init__(pixels, regularization_coefficients)
         self.pix_signal_scale = pix_signal_scale
+
+    @property
+    def parameter_labels(self):
+        return ['N', r'\lambda1', r'\lambda2', 'V']

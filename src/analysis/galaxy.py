@@ -1,6 +1,6 @@
 import numpy as np
 from src.profiles import light_profiles as lps, mass_profiles as mps
-
+from itertools import count
 
 def is_light_profile(obj):
     return isinstance(obj, lps.LightProfile) and not isinstance(obj, mps.MassProfile)
@@ -358,6 +358,8 @@ class Galaxy(object):
 
 class HyperGalaxy(object):
 
+    _ids = count()
+
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
         """Class for scaling the noise in the different galaxies of an image (e.g. the lens, source).
 
@@ -373,6 +375,16 @@ class HyperGalaxy(object):
         self.contribution_factor = contribution_factor
         self.noise_factor = noise_factor
         self.noise_power = noise_power
+
+        self.component_number = next(self._ids)
+
+    @property
+    def subscript(self):
+        return 'hg'
+
+    @property
+    def parameter_labels(self):
+        return [r'\Omega', r'\omega1', r'\omega2']
 
     def compute_contributions(self, model_image, galaxy_image, minimum_value):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
