@@ -423,6 +423,7 @@ class TestMultiNest(object):
     class TestReadFromSummary:
 
         def test__read_most_probable__1_class_4_params(self, config_path, mn_summary_path):
+
             create_summary_4_parameters(path=mn_summary_path + '1_class')
 
             mn = non_linear.MultiNest(
