@@ -1,6 +1,9 @@
 from src.pipeline import pipeline as pl
 from src.autopipe import model_mapper
 from src.autopipe import non_linear
+from src.imaging import image as im
+import numpy as np
+import pytest
 
 
 class DummyPhase(object):
@@ -35,3 +38,19 @@ class TestPipeline(object):
         pipeline2 = pl.Pipeline(phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
+
+
+@pytest.fixture(name="profile_only_pipeline")
+def make_profile_only_pipeline():
+    return pl.make_profile_pipeline()
+
+
+@pytest.fixture(name="image")
+def make_image():
+    shape = (20, 20)
+    image = im.Image(np.ones(shape), pixel_scale=1, noise=np.ones(shape), psf=im.PSF(np.ones((3, 3))))
+
+
+class TestProfileOnlyPipeline(object):
+    def test_phase1(self, profile_only_pipeline):
+        phase1 = profile_only_pipeline.phases[0]
