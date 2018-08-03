@@ -145,7 +145,7 @@ class Phase(object):
 
         @property
         def model_image(self):
-            return np.sum(np.stack(self.galaxy_images), axis=0)
+            return np.sum(np.stack((image for image in self.galaxy_images if image is not None)), axis=0)
 
     class Analysis(object):
         def __init__(self, previous_results,
@@ -417,7 +417,7 @@ class PixelizedSourceLensPhase(SourceLensPhase):
                     source_galaxy))
 
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.coordinate_collection)
-            fitter = fitting.PixelizedFitter(self.masked_image, "TODO", "TODO", tracer)
+            fitter = fitting.PixelizedFitter(self.masked_image, "TODO", tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
                 return fitter.fit_data_with_pixelization_profiles_and_model_images(self.last_results.model_image,
