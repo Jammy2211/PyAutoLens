@@ -95,7 +95,7 @@ class Phase(object):
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask)
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
 
         analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results)
