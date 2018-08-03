@@ -92,6 +92,7 @@ def make_results_collection(results):
 
 
 class TestPhase(object):
+
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxy = galaxy
         assert phase.optimizer.constant.lens_galaxy == galaxy
@@ -133,6 +134,7 @@ class TestPhase(object):
         assert phase.source_galaxy == galaxy_prior
 
     def test_phase_property(self):
+
         class MyPhase(ph.SourceLensPhase):
             prop = ph.phase_property("prop")
 
