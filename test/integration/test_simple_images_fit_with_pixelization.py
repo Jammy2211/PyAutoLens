@@ -60,7 +60,7 @@ class TestCase:
 
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
-                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+                                            [0.0, 0.0, 0.0]]))
 
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
 
@@ -120,7 +120,7 @@ class TestCase:
 
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
-                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+                                            [0.0, 0.0, 0.0]]))
 
             ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
 
