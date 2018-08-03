@@ -40,7 +40,7 @@ class Pipeline(object):
         Returns
         -------
         composed_pipeline: Pipeline
-            A pipeline that runs all the phases from this pipeline and then all the phases from the other pipeline
+            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
         """
         return Pipeline(*(self.phases + other.phases))
 

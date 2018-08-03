@@ -74,6 +74,51 @@ def make_three_pixels():
     return np.array([[0, 0], [0, 1], [1, 0]])
 
 
+class TestPixelizationGrid:
+
+    class TestCoordinateGridWithinAnnulus:
+
+        def test__shape_3x3__circle_radius_15__all_9_pixels_in_grid_with_correct_coordinates(self):
+
+            pix_grid = pixelization.PixelizationGrid(shape=(3,3))
+
+            coordinate_grid = pix_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
+
+            assert (coordinate_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                  [0.0, -1.0],  [0.0, 0.0],  [0.0, 1.0],
+                                                  [1.0, -1.0],  [1.0, 0.0],  [1.0, 1.0]])).all()
+
+        def test__shape_3x3__circle_radius_3__all_9_pixels_in_grid_with_correct_coordinates(self):
+
+            pix_grid = pixelization.PixelizationGrid(shape=(3,3))
+
+            coordinate_grid = pix_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=3)
+
+            assert (coordinate_grid == np.array([[-2.0, -2.0], [-2.0, 0.0], [-2.0, 2.0],
+                                                  [0.0, -2.0],  [0.0, 0.0],  [0.0, 2.0],
+                                                  [2.0, -2.0],  [2.0, 0.0],  [2.0, 2.0]])).all()
+
+        def test__shape_3x2__circle_radius_15__all_6_pixels_in_grid_with_correct_coordinates(self):
+
+            pix_grid = pixelization.PixelizationGrid(shape=(3, 2))
+
+            coordinate_grid = pix_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
+
+            assert (coordinate_grid == np.array([[-1.0, -0.75], [-1.0, 0.75],
+                                                  [0.0, -0.75],  [0.0, 0.75],
+                                                  [1.0, -0.75],  [1.0, 0.75]])).all()
+
+        def test__shape_2x3__circle_radius_15__all_6_pixels_in_grid_with_correct_coordinates(self):
+
+            pix_grid = pixelization.PixelizationGrid(shape=(2, 3))
+
+            coordinate_grid = pix_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
+
+            assert (coordinate_grid == np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
+                                                  [0.75, -1.0],  [0.75, 0.0], [0.75, 1.0]])).all()
+
+
+
 class TestPixelization:
 
 
