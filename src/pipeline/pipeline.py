@@ -40,7 +40,7 @@ class Pipeline(object):
         Returns
         -------
         composed_pipeline: Pipeline
-            A pipeline that runs all the phases from this pipeline and then all the phases from the other pipeline
+            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
         """
         return Pipeline(*(self.phases + other.phases))
 
@@ -92,6 +92,10 @@ def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest)
 
     phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                               optimizer_class=optimizer_class, name="{}/phase1".format(name))
+
+ #   print(phase1.lens_galaxy)
+    print(phase1.lens_galaxy.elliptical_sersic.sersic_index)
+    stop
 
     class LensSubtractedPhase(ph.SourceLensPhase):
         def modify_image(self, masked_image, previous_results):
