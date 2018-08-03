@@ -386,7 +386,7 @@ class HyperGalaxy(object):
     def parameter_labels(self):
         return [r'\Omega', r'\omega1', r'\omega2']
 
-    def compute_contributions(self, model_image, galaxy_image, minimum_value):
+    def contributions_from_model_images(self, model_image, galaxy_image, minimum_value):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
         galaxy can be attributed to contain.
 
@@ -409,7 +409,7 @@ class HyperGalaxy(object):
         contributions[contributions < minimum_value] = 0.0
         return contributions
 
-    def compute_scaled_noise(self, noise, contributions):
+    def scaled_noise_for_contributions(self, noise, contributions):
         """Compute a scaled galaxy noise map from a baseline nosie map.
 
         This uses the galaxy contribution map with their noise scaling hyper-parameters.
