@@ -91,6 +91,15 @@ def make_results_3():
     return ph.SourceLensPhase.Result(const, 1, var, [np.full(shape, 0.5), np.full(shape, 0.5)])
 
 
+@pytest.fixture(name="results_3h")
+def make_results_3h():
+    const = model_mapper.ModelInstance()
+    var = model_mapper.ModelMapper()
+    const.lens_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
+    const.source_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
+    return ph.SourceLensPhase.Result(const, 1, var, [np.full(shape, 0.5), np.full(shape, 0.5)])
+
+
 class TestProfileOnlyPipeline(object):
     def test_phase1(self, profile_only_pipeline, image):
         phase1 = profile_only_pipeline.phases[0]
@@ -146,3 +155,23 @@ class TestProfileOnlyPipeline(object):
 
         assert isinstance(phase3h.lens_galaxy.hyper_galaxy, model_mapper.PriorModel)
         assert isinstance(phase3h.source_galaxy.hyper_galaxy, model_mapper.PriorModel)
+
+    def test_phase4(self, profile_only_pipeline, image, results_1, results_2, results_3, results_3h):
+        phase4 = profile_only_pipeline.phases[4]
+        previous_results = ph.ResultsCollection([results_1, results_2, results_3, results_3h])
+
+        analysis = phase4.make_analysis(image, previous_results)
+
+        assert isinstance(phase4.lens_galaxy, gp.GalaxyPrior)
+        assert isinstance(phase4.source_galaxy, gp.GalaxyPrior)
+
+        assert analysis.masked_image == np.ones((716,))
+
+        assert isinstance(phase4.lens_galaxy.hyper_galaxy, g.HyperGalaxy)
+
+        assert phase4.lens_galaxy.hyper_galaxy == results_3h.constant.lens_galaxy.hyper_galaxy
+        assert phase4.source_galaxy.hyper_galaxy == results_3h.constant.source_galaxy.hyper_galaxy
+
+        assert phase4.lens_galaxy.elliptical_sersic == results_3.variable.lens_galaxy.elliptical_sersic
+        assert phase4.lens_galaxy.sie == results_3.variable.lens_galaxy.sie
+        assert phase4.source_galaxy.elliptical_sersic == results_3.variable.source_galaxy.elliptical_sersic
