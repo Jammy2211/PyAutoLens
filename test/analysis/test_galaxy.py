@@ -804,8 +804,8 @@ class TestHyperGalaxy(object):
             galaxy_image = np.ones((3,))
 
             hyp = galaxy.HyperGalaxy(contribution_factor=0.0)
-            contributions = hyp.compute_contributions(model_image=galaxy_image, galaxy_image=galaxy_image,
-                                                      minimum_value=0.0)
+            contributions = hyp.contributions_from_model_images(model_image=galaxy_image, galaxy_image=galaxy_image,
+                                                                minimum_value=0.0)
 
             assert (contributions == np.ones((3,))).all()
 
@@ -813,8 +813,8 @@ class TestHyperGalaxy(object):
             galaxy_image = np.array([0.5, 1.0, 1.5])
 
             hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.compute_contributions(model_image=galaxy_image, galaxy_image=galaxy_image,
-                                                      minimum_value=0.0)
+            contributions = hyp.contributions_from_model_images(model_image=galaxy_image, galaxy_image=galaxy_image,
+                                                                minimum_value=0.0)
 
             assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
@@ -822,8 +822,8 @@ class TestHyperGalaxy(object):
             galaxy_image = np.array([0.5, 1.0, 1.5])
 
             hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.compute_contributions(model_image=galaxy_image, galaxy_image=galaxy_image,
-                                                      minimum_value=0.6)
+            contributions = hyp.contributions_from_model_images(model_image=galaxy_image, galaxy_image=galaxy_image,
+                                                                minimum_value=0.6)
 
             assert (contributions == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
@@ -835,7 +835,7 @@ class TestHyperGalaxy(object):
 
             hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
 
-            scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
+            scaled_noise = hyp.scaled_noise_for_contributions(noise=noise, contributions=galaxy_contributions)
 
             assert (scaled_noise == np.array([2.0, 4.0, 6.0])).all()
 
@@ -845,7 +845,7 @@ class TestHyperGalaxy(object):
 
             hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
 
-            scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
+            scaled_noise = hyp.scaled_noise_for_contributions(noise=noise, contributions=galaxy_contributions)
 
             assert (scaled_noise == np.array([0.0, 2.0, 6.0])).all()
 
@@ -855,7 +855,7 @@ class TestHyperGalaxy(object):
 
             hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=2.0)
 
-            scaled_noise = hyp.compute_scaled_noise(noise=noise, contributions=galaxy_contributions)
+            scaled_noise = hyp.scaled_noise_for_contributions(noise=noise, contributions=galaxy_contributions)
 
             assert (scaled_noise == np.array([0.0, 2.0, 18.0])).all()
 
