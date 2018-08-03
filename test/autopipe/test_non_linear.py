@@ -357,6 +357,7 @@ class TestNonLinearOptimizer(object):
             assert paramnames[8] == r'mock_class_2_three                      $x6p4_{\mathrm{b2}}$' + '\n'
             assert paramnames[9] == r'mock_class_2_four                       $x6p5_{\mathrm{b2}}$' + '\n'
 
+
     class TestMakeModelInfo(object):
 
         def test__single_class__outputs_all_info(self, config_path, nlo_model_info_path):
