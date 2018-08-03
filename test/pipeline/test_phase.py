@@ -140,9 +140,9 @@ class TestPhase(object):
 
         phase = MyPhase(optimizer_class=NLO)
 
-        phase.prop = g.Galaxy
+        phase.prop = gp.GalaxyPrior()
 
-        assert phase.variable.prop == g.Galaxy
+        assert phase.variable.prop == phase.prop
 
         galaxy = g.Galaxy()
         phase.prop = galaxy
@@ -150,7 +150,7 @@ class TestPhase(object):
         assert phase.constant.prop == galaxy
         assert not hasattr(phase.variable, "prop")
 
-        phase.prop = g.Galaxy
+        phase.prop = gp.GalaxyPrior()
         assert not hasattr(phase.constant, "prop")
 
     def test_default_mask_function(self, phase, image):

@@ -84,6 +84,8 @@ class ModelMapper(object):
     def __setattr__(self, key, value):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
             value = ListPriorModel(value)
+        elif inspect.isclass(value):
+            value = PriorModel(value, config=self.config)
         super(ModelMapper, self).__setattr__(key, value)
 
     def add_classes(self, **kwargs):
