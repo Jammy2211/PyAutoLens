@@ -51,7 +51,7 @@ class Fitter(object):
             The contribution of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
         """
         scaled_noises = list(
-            map(lambda hyper, contribution: hyper.scaled_noise_from_background_noise(self.image.noise, contribution),
+            map(lambda hyper, contribution: hyper.scaled_noise_for_contributions(self.image.noise, contribution),
                 self.tracer.hyper_galaxies, contributions))
         return self.image.noise + sum(scaled_noises)
 
@@ -130,7 +130,7 @@ def generate_contributions(model_image, galaxy_images, hyper_galaxies, minimum_v
     """
     # noinspection PyArgumentList
     return list(map(lambda hyper, galaxy_image, minimum_value:
-                    hyper.compute_contributions(model_image, galaxy_image, minimum_value),
+                    hyper.contributions_from_model_images(model_image, galaxy_image, minimum_value),
                     hyper_galaxies, galaxy_images, minimum_values))
 
 
