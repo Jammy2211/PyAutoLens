@@ -58,3 +58,6 @@ class TestProfileOnlyPipeline(object):
 
         assert analysis.masked_image.shape == (32,)
         assert analysis.masked_image.sub_grid_size == 1
+        assert analysis.previous_results is None
+
+    
