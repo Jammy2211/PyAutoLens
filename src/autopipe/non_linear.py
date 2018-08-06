@@ -120,21 +120,13 @@ class NonLinearOptimizer(object):
 
         for prior_name, prior_model in self.variable.flat_prior_models:
 
-            print(prior_name)
-            print(prior_model)
-
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
             component_number = prior_model.cls().component_number
             subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
 
             param_labels = generate_parameter_latex(param_labels, subscript)
 
-            print(param_labels)
-            print(self.variable.class_priors_dict[prior_name])
-
             for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-                print(param_no)
-                print(param)
                 line = prior_name + '_' + param[0]
                 line += ' ' * (40 - len(line)) + param_labels[param_no]
 
