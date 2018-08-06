@@ -7,7 +7,7 @@ import pymultinest
 import scipy.optimize
 import numpy as np
 from autolens.imaging import hyper_image
-from autolens.config import config
+import config
 from autolens.autopipe import model_mapper as mm
 import logging
 
