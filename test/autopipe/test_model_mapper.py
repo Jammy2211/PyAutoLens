@@ -551,8 +551,7 @@ class TestPriorReplacement(object):
 
     def test_prior_replacement(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
-        result = mapper.mapper_from_gaussian_tuples(
-            [(10, 3), (5, 3)])
+        result = mapper.mapper_from_gaussian_tuples([(10, 3), (5, 3)])
 
         assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
