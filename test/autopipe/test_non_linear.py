@@ -4,11 +4,11 @@ from functools import wraps
 from itertools import count
 
 import pytest
-from src.config import config
-from src import exc
-from src.autopipe import model_mapper
-from src.autopipe import non_linear
-from src.profiles import light_profiles, mass_profiles
+from autolens.config import config
+from autolens import exc
+from autolens.autopipe import model_mapper
+from autolens.autopipe import non_linear
+from autolens.profiles import light_profiles, mass_profiles
 
 
 @pytest.fixture(name='nlo_setup_path')

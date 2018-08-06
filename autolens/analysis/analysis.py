@@ -1,7 +1,7 @@
-from src.analysis import fitting
-from src.analysis import ray_tracing
+from autolens.analysis import fitting
+from autolens.analysis import ray_tracing
 from imaging import convolution
-from src import exc
+from autolens import exc
 import logging
 
 logging.basicConfig(level=logging.DEBUG)

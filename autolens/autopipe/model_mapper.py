@@ -2,8 +2,8 @@ import math
 from scipy.special import erfinv
 import inspect
 import os
-from src import exc
-from src.config.config import DefaultPriorConfig, WidthConfig
+from autolens import exc
+from autolens.config.config import DefaultPriorConfig, WidthConfig
 
 path = os.path.dirname(os.path.realpath(__file__))
 

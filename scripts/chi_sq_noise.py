@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../")
 
-from src.analysis import fitting
+from autolens.analysis import fitting
 
 import numpy as np
 

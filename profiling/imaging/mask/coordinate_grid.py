@@ -1,4 +1,4 @@
-from src.imaging import mask
+from autolens.imaging import mask
 import time
 
 lsst_mask = mask.Mask.circular(shape_arc_seconds=(10.0, 10.0), pixel_scale=0.2, radius_mask=4.0)

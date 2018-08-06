@@ -1,10 +1,10 @@
-import src.config.config
-from src.autopipe import model_mapper
+import autolens.config.config
+from autolens.autopipe import model_mapper
 import pytest
-from src.profiles import geometry_profiles, light_profiles, mass_profiles
+from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
 import os
-from src.analysis import galaxy_prior
-from src.analysis import galaxy as g
+from autolens.analysis import galaxy_prior
+from autolens.analysis import galaxy as g
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -21,7 +21,7 @@ def make_uniform_half():
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return src.config.config.DefaultPriorConfig(
+    return autolens.config.config.DefaultPriorConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
@@ -44,7 +44,7 @@ class MockClassMM(object):
         self.two = two
 
 
-class MockConfig(src.config.config.DefaultPriorConfig):
+class MockConfig(autolens.config.config.DefaultPriorConfig):
     def __init__(self, d=None):
         super(MockConfig, self).__init__("")
         if d is not None:
@@ -703,7 +703,7 @@ class TestConstant(object):
 
 @pytest.fixture(name="width_config")
 def make_width_config():
-    return src.config.config.WidthConfig(
+    return autolens.config.config.WidthConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/width"))
 
@@ -792,7 +792,7 @@ class TestFlatPriorModel(object):
         assert len(mapper.flat_prior_models) == 1
 
     def test_flatten_galaxy_prior_list(self, width_config):
-        from src.analysis import galaxy
+        from autolens.analysis import galaxy
 
         mapper = model_mapper.ModelMapper(width_config=width_config)
         mapper.list = [galaxy_prior.GalaxyPrior(variable_redshift=True)]
