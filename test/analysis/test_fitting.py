@@ -1,13 +1,13 @@
 import numpy as np
 import pytest
 
-from src.analysis import fitting, ray_tracing, galaxy
-from src.imaging import mask as mask
-from src.imaging import masked_image
-from src.imaging import image
-from src.imaging import convolution
-from src.profiles import light_profiles
-from src.pixelization import reconstruction
+from autolens.analysis import fitting, ray_tracing, galaxy
+from autolens.imaging import mask as mask
+from autolens.imaging import masked_image
+from autolens.imaging import image
+from autolens.imaging import convolution
+from autolens.profiles import light_profiles
+from autolens.pixelization import reconstruction
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
