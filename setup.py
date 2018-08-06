@@ -61,7 +61,8 @@ setup(
                       'pymultinest',
                       'scikit-learn',
                       'numba',
-                      'matplotlib'
+                      'matplotlib',
+                      'requests'
                       ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],
