@@ -1,3 +1,4 @@
+requests
  numpy==1.14.1
  astropy==3.0
  docopt==0.6.2
