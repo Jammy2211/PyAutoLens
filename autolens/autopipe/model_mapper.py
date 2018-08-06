@@ -70,9 +70,9 @@ class ModelMapper(object):
         """
         super(ModelMapper, self).__init__()
 
-        self.config = (config if config is not None else DefaultPriorConfig("{}/../config/priors/default".format(path)))
+        self.config = (config if config is not None else DefaultPriorConfig("{}/../../config/priors/default".format(path)))
         self.width_config = (
-            width_config if width_config is not None else WidthConfig("{}/../config/priors/width".format(path)))
+            width_config if width_config is not None else WidthConfig("{}/../../config/priors/width".format(path)))
 
         for name, cls in classes.items():
             self.__setattr__(name, cls)
@@ -606,7 +606,7 @@ class PriorModel(AbstractPriorModel):
         """
 
         self.cls = cls
-        self.config = (config if config is not None else DefaultPriorConfig("{}/../config/priors/default".format(path)))
+        self.config = (config if config is not None else DefaultPriorConfig("{}/../../config/priors/default".format(path)))
 
         arg_spec = inspect.getfullargspec(cls.__init__)
 

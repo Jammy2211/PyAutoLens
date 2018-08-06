@@ -1,4 +1,4 @@
-import config
+from autolens import config
 from autolens.analysis import galaxy_prior as gp
 from autolens.analysis import galaxy as g
 from autolens.pixelization import pixelization
