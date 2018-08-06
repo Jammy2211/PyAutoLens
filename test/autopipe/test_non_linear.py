@@ -313,49 +313,49 @@ class TestNonLinearOptimizer(object):
             nlo.variable.add_classes(class_1=MockClassNLOx4, class_2=MockClassNLOx6)
 
             assert nlo.variable.total_parameters == 10
-
-    class TestCreateParamNames(object):
-
-        def test__1_class_and_parameter_set(self, config_path, nlo_paramnames_path):
-
-            nlo = non_linear.NonLinearOptimizer(model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                                                path=nlo_paramnames_path, config_path=config_path)
-
-            nlo.variable.add_classes(mock_class=MockClassNLOx4)
-            nlo.save_model_info()
-
-            paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
-
-            paramnames = paramnames_file.readlines()
-
-            assert paramnames[0] == r'mock_class_one                          $x4p0_{\mathrm{a1}}$' + '\n'
-            assert paramnames[1] == r'mock_class_two                          $x4p1_{\mathrm{a1}}$' + '\n'
-            assert paramnames[2] == r'mock_class_three                        $x4p2_{\mathrm{a1}}$' + '\n'
-            assert paramnames[3] == r'mock_class_four                         $x4p3_{\mathrm{a1}}$' + '\n'
-
-        def test__2_classes__includes_a_tuple(self, config_path, nlo_paramnames_path):
-
-            nlo = non_linear.NonLinearOptimizer(model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-                                                path=nlo_paramnames_path, config_path=config_path)
-
-            nlo.variable.add_classes(mock_class_1=MockClassNLOx4)
-            nlo.variable.add_classes(mock_class_2=MockClassNLOx6)
-            nlo.save_model_info()
-
-            paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
-
-            paramnames = paramnames_file.readlines()
-
-            assert paramnames[0] == r'mock_class_1_one                        $x4p0_{\mathrm{a1}}$' + '\n'
-            assert paramnames[1] == r'mock_class_1_two                        $x4p1_{\mathrm{a1}}$' + '\n'
-            assert paramnames[2] == r'mock_class_1_three                      $x4p2_{\mathrm{a1}}$' + '\n'
-            assert paramnames[3] == r'mock_class_1_four                       $x4p3_{\mathrm{a1}}$' + '\n'
-            assert paramnames[4] == r'mock_class_2_one_0                      $x6p0_{\mathrm{b2}}$' + '\n'
-            assert paramnames[5] == r'mock_class_2_one_1                      $x6p1_{\mathrm{b2}}$' + '\n'
-            assert paramnames[6] == r'mock_class_2_two_0                      $x6p2_{\mathrm{b2}}$' + '\n'
-            assert paramnames[7] == r'mock_class_2_two_1                      $x6p3_{\mathrm{b2}}$' + '\n'
-            assert paramnames[8] == r'mock_class_2_three                      $x6p4_{\mathrm{b2}}$' + '\n'
-            assert paramnames[9] == r'mock_class_2_four                       $x6p5_{\mathrm{b2}}$' + '\n'
+    #
+    # class TestCreateParamNames(object):
+    #
+    #     def test__1_class_and_parameter_set(self, config_path, nlo_paramnames_path):
+    #
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
+    #                                             path=nlo_paramnames_path, config_path=config_path)
+    #
+    #         nlo.variable.add_classes(mock_class=MockClassNLOx4)
+    #         nlo.save_model_info()
+    #
+    #         paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
+    #
+    #         paramnames = paramnames_file.readlines()
+    #
+    #         assert paramnames[0] == r'mock_class_one                          $x4p0_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[1] == r'mock_class_two                          $x4p1_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[2] == r'mock_class_three                        $x4p2_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[3] == r'mock_class_four                         $x4p3_{\mathrm{a1}}$' + '\n'
+    #
+    #     def test__2_classes__includes_a_tuple(self, config_path, nlo_paramnames_path):
+    #
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
+    #                                             path=nlo_paramnames_path, config_path=config_path)
+    #
+    #         nlo.variable.add_classes(mock_class_1=MockClassNLOx4)
+    #         nlo.variable.add_classes(mock_class_2=MockClassNLOx6)
+    #         nlo.save_model_info()
+    #
+    #         paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
+    #
+    #         paramnames = paramnames_file.readlines()
+    #
+    #         assert paramnames[0] == r'mock_class_1_one                        $x4p0_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[1] == r'mock_class_1_two                        $x4p1_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[2] == r'mock_class_1_three                      $x4p2_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[3] == r'mock_class_1_four                       $x4p3_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[4] == r'mock_class_2_one_0                      $x6p0_{\mathrm{b2}}$' + '\n'
+    #         assert paramnames[5] == r'mock_class_2_one_1                      $x6p1_{\mathrm{b2}}$' + '\n'
+    #         assert paramnames[6] == r'mock_class_2_two_0                      $x6p2_{\mathrm{b2}}$' + '\n'
+    #         assert paramnames[7] == r'mock_class_2_two_1                      $x6p3_{\mathrm{b2}}$' + '\n'
+    #         assert paramnames[8] == r'mock_class_2_three                      $x6p4_{\mathrm{b2}}$' + '\n'
+    #         assert paramnames[9] == r'mock_class_2_four                       $x6p5_{\mathrm{b2}}$' + '\n'
 
 
     class TestMakeModelInfo(object):
@@ -846,47 +846,47 @@ class TestRealClasses(object):
 
         assert nlo.variable.total_parameters == 29
 
-    def test__create_param_names_2_light_models__2_mass_models(self, config_path, nlo_paramnames_path):
-
-        light_profiles.EllipticalLightProfile._ids = count()
-        mass_profiles.EllipticalMassProfile._ids = count()
-
-        nlo = non_linear.NonLinearOptimizer(
-            model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-            path=nlo_paramnames_path)
-
-        nlo.variable.add_classes(
-            light_profile_0=light_profiles.EllipticalSersic,
-            light_profile_1=light_profiles.EllipticalExponential,
-            mass_profile_0=mass_profiles.SphericalIsothermal,
-            mass_profile_1=mass_profiles.SphericalNFW)
-
-        nlo.save_model_info()
-
-        paramnames_test = open(nlo_paramnames_path + 'multinest.paramnames')
-
-        paramnames_str = paramnames_test.readlines()
-
-        assert paramnames_str[0] == r'light_profile_0_centre_0                $x_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[1] == r'light_profile_0_centre_1                $y_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[2] == r'light_profile_0_axis_ratio              $q_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[3] == r'light_profile_0_phi                     $\phi_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[4] == r'light_profile_0_intensity               $I_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[5] == r'light_profile_0_effective_radius        $R_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[6] == r'light_profile_0_sersic_index            $n_{\mathrm{l1}}$' + '\n'
-        assert paramnames_str[7] == r'light_profile_1_centre_0                $x_{\mathrm{l2}}$' + '\n'
-        assert paramnames_str[8] == r'light_profile_1_centre_1                $y_{\mathrm{l2}}$' + '\n'
-        assert paramnames_str[9] == r'light_profile_1_axis_ratio              $q_{\mathrm{l2}}$' + '\n'
-        assert paramnames_str[10] == r'light_profile_1_phi                     $\phi_{\mathrm{l2}}$' + '\n'
-        assert paramnames_str[11] == r'light_profile_1_intensity               $I_{\mathrm{l2}}$' + '\n'
-        assert paramnames_str[12] == r'light_profile_1_effective_radius        $R_{\mathrm{l2}}$' + '\n'
-        assert paramnames_str[13] == r'mass_profile_0_centre_0                 $x_{\mathrm{1}}$' + '\n'
-        assert paramnames_str[14] == r'mass_profile_0_centre_1                 $y_{\mathrm{1}}$' + '\n'
-        assert paramnames_str[15] == r'mass_profile_0_einstein_radius          $\theta_{\mathrm{1}}$' + '\n'
-        assert paramnames_str[16] == r'mass_profile_1_centre_0                 $x_{\mathrm{d2}}$' + '\n'
-        assert paramnames_str[17] == r'mass_profile_1_centre_1                 $y_{\mathrm{d2}}$' + '\n'
-        assert paramnames_str[18] == r'mass_profile_1_kappa_s                  $\kappa_{\mathrm{d2}}$' + '\n'
-        assert paramnames_str[19] == r'mass_profile_1_scale_radius             $Rs_{\mathrm{d2}}$' + '\n'
+    # def test__create_param_names_2_light_models__2_mass_models(self, config_path, nlo_paramnames_path):
+    #
+    #     light_profiles.EllipticalLightProfile._ids = count()
+    #     mass_profiles.EllipticalMassProfile._ids = count()
+    #
+    #     nlo = non_linear.NonLinearOptimizer(
+    #         model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
+    #         path=nlo_paramnames_path)
+    #
+    #     nlo.variable.add_classes(
+    #         light_profile_0=light_profiles.EllipticalSersic,
+    #         light_profile_1=light_profiles.EllipticalExponential,
+    #         mass_profile_0=mass_profiles.SphericalIsothermal,
+    #         mass_profile_1=mass_profiles.SphericalNFW)
+    #
+    #     nlo.save_model_info()
+    #
+    #     paramnames_test = open(nlo_paramnames_path + 'multinest.paramnames')
+    #
+    #     paramnames_str = paramnames_test.readlines()
+    #
+    #     assert paramnames_str[0] == r'light_profile_0_centre_0                $x_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[1] == r'light_profile_0_centre_1                $y_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[2] == r'light_profile_0_axis_ratio              $q_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[3] == r'light_profile_0_phi                     $\phi_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[4] == r'light_profile_0_intensity               $I_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[5] == r'light_profile_0_effective_radius        $R_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[6] == r'light_profile_0_sersic_index            $n_{\mathrm{l1}}$' + '\n'
+    #     assert paramnames_str[7] == r'light_profile_1_centre_0                $x_{\mathrm{l2}}$' + '\n'
+    #     assert paramnames_str[8] == r'light_profile_1_centre_1                $y_{\mathrm{l2}}$' + '\n'
+    #     assert paramnames_str[9] == r'light_profile_1_axis_ratio              $q_{\mathrm{l2}}$' + '\n'
+    #     assert paramnames_str[10] == r'light_profile_1_phi                     $\phi_{\mathrm{l2}}$' + '\n'
+    #     assert paramnames_str[11] == r'light_profile_1_intensity               $I_{\mathrm{l2}}$' + '\n'
+    #     assert paramnames_str[12] == r'light_profile_1_effective_radius        $R_{\mathrm{l2}}$' + '\n'
+    #     assert paramnames_str[13] == r'mass_profile_0_centre_0                 $x_{\mathrm{1}}$' + '\n'
+    #     assert paramnames_str[14] == r'mass_profile_0_centre_1                 $y_{\mathrm{1}}$' + '\n'
+    #     assert paramnames_str[15] == r'mass_profile_0_einstein_radius          $\theta_{\mathrm{1}}$' + '\n'
+    #     assert paramnames_str[16] == r'mass_profile_1_centre_0                 $x_{\mathrm{d2}}$' + '\n'
+    #     assert paramnames_str[17] == r'mass_profile_1_centre_1                 $y_{\mathrm{d2}}$' + '\n'
+    #     assert paramnames_str[18] == r'mass_profile_1_kappa_s                  $\kappa_{\mathrm{d2}}$' + '\n'
+    #     assert paramnames_str[19] == r'mass_profile_1_scale_radius             $Rs_{\mathrm{d2}}$' + '\n'
 
     def test__output_model_info__2_models(self, config_path, nlo_model_info_path):
         nlo = non_linear.NonLinearOptimizer(
