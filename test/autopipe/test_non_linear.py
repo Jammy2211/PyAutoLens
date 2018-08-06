@@ -1080,7 +1080,7 @@ class TestRealClasses(object):
         results = non_linear.MultiNest(
             model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
             path=mn_samples_path)
-        results.variable.add_class("mass_profile", mass_profiles.SphericalNFW)
+        results.variable.mass_profile = mass_profiles.SphericalNFW
 
         results.save_model_info()
 
