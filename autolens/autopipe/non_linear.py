@@ -5,6 +5,7 @@ import math
 import os
 import pymultinest
 import scipy.optimize
+import numpy as np
 from autolens.imaging import hyper_image
 from autolens.config import config
 from autolens.autopipe import model_mapper as mm
@@ -238,7 +239,7 @@ class MultiNest(NonLinearOptimizer):
     def pdf(self):
         return getdist.mcsamples.loadMCSamples(self.file_weighted_samples)
 
-    def fit(self, analysis, manual_bypass=False):
+    def fit(self, analysis):
         self.save_model_info()
 
         class Fitness(object):
@@ -246,7 +247,7 @@ class MultiNest(NonLinearOptimizer):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = constant
-                self.max_likelihood = 0.
+                self.max_likelihood = -np.inf
 
             def __call__(self, cube, ndim, nparams, lnew):
                 instance = self.instance_from_physical_vector(cube)
@@ -275,24 +276,26 @@ class MultiNest(NonLinearOptimizer):
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
-        if manual_bypass is False:
+        logger.info("Running MultiNest...")
+        self.run(fitness_function.__call__, prior, self.variable.total_parameters,
+                 outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
+                 const_efficiency_mode=self.const_efficiency_mode,
+                 importance_nested_sampling=self.importance_nested_sampling,
+                 evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
+                 null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
+                 multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance,
+                 seed=self.seed,
+                 verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
+                 log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
+        logger.info("MultiNest complete")
 
-            logger.info("Running MultiNest...")
-            self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                     outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
-                     const_efficiency_mode=self.const_efficiency_mode,
-                     importance_nested_sampling=self.importance_nested_sampling,
-                     evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
-                     null_log_evidence=self.null_log_evidence, n_iter_before_update=self.n_iter_before_update,
-                     multimodal=self.multimodal, max_modes=self.max_modes, mode_tolerance=self.mode_tolerance,
-                     seed=self.seed,
-                     verbose=self.verbose, resume=self.resume, context=self.context, write_output=self.write_output,
-                     log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
-            logger.info("MultiNest complete")
+        constant = self.most_likely_instance_from_summary()
+        for key, value in fitness_function.constant.__dict__.items():
+            setattr(constant, key, value)
+        likelihood = self.max_likelihood_from_summary()
+        variable = self.variable.mapper_from_gaussian_tuples(self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
-        result = fitness_function.result
-
-        result.variable = self.variable.mapper_from_gaussian_tuples(self.gaussian_priors_at_sigma_limit(self.sigma_limit))
+        result = Result(constant=constant, likelihood=likelihood, variable=variable)
 
         return result
 
