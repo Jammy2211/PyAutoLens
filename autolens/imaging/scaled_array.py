@@ -1,7 +1,7 @@
 import numpy as np
 import logging
 
-from src.tools import arrays
+from autolens.tools import arrays
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

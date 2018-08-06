@@ -1,4 +1,4 @@
-from src.imaging import scaled_array
+from autolens.imaging import scaled_array
 import numpy as np
 import pytest
 import os

@@ -1,12 +1,12 @@
-from src.analysis import analysis as an
-from src.imaging import masked_image as mi
-from src.analysis import galaxy_prior
-from src.profiles import light_profiles, mass_profiles
-from src.autopipe import model_mapper
-from src.autopipe import non_linear
-from src.pipeline import phase as ph
-from src.pixelization import pixelization
-from src.analysis import galaxy
+from autolens.analysis import analysis as an
+from autolens.imaging import masked_image as mi
+from autolens.analysis import galaxy_prior
+from autolens.profiles import light_profiles, mass_profiles
+from autolens.autopipe import model_mapper
+from autolens.autopipe import non_linear
+from autolens.pipeline import phase as ph
+from autolens.pixelization import pixelization
+from autolens.analysis import galaxy
 
 import os
 import logging

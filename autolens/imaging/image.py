@@ -1,8 +1,8 @@
-from src.imaging.scaled_array import ScaledArray, AbstractArray
+from autolens.imaging.scaled_array import ScaledArray, AbstractArray
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
-from src import exc
+from autolens import exc
 
 
 # TODO : The idea is that we don't need functions to estimate the noise or the exposure time once we set up an image

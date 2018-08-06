@@ -1,4 +1,4 @@
-from src.pixelization import reconstruction
+from autolens.pixelization import reconstruction
 
 import numpy as np
 import pytest

@@ -2,12 +2,12 @@ import numpy as np
 import sklearn.cluster
 import scipy.spatial
 
-from src import exc
-from src.pixelization import regularization
-from src.pixelization import reconstruction
+from autolens import exc
+from autolens.pixelization import regularization
+from autolens.pixelization import reconstruction
 import numba
 
-from src.imaging import mask
+from autolens.imaging import mask
 
 
 class PixelizationGrid(object):

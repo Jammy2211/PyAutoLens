@@ -1,8 +1,8 @@
-from src import exc
-from src.analysis import ray_tracing, galaxy
-from src.profiles import mass_profiles, light_profiles
+from autolens import exc
+from autolens.analysis import ray_tracing, galaxy
+from autolens.profiles import mass_profiles, light_profiles
 from astropy import cosmology as cosmo
-from src.imaging import mask
+from autolens.imaging import mask
 
 import pytest
 import numpy as np

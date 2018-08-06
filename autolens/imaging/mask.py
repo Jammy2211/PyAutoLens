@@ -1,5 +1,5 @@
-from src.imaging import scaled_array
-from src import exc
+from autolens.imaging import scaled_array
+from autolens import exc
 import numpy as np
 from functools import wraps
 import inspect

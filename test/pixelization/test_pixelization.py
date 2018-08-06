@@ -1,9 +1,9 @@
-from src.pixelization import pixelization
+from autolens.pixelization import pixelization
 
 import pytest
 import numpy as np
 
-from src.imaging import mask
+from autolens.imaging import mask
 from test.mock.mock_mask import MockSubGridCoords, MockGridCollection, MockBorderCollection
 
 
