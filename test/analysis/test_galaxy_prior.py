@@ -205,7 +205,7 @@ class TestFixedProfiles(object):
     def test_fixed_light_property(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalSersic())
 
-        assert len(galaxy_prior.fixed_light_profiles) == 1
+        assert len(galaxy_prior.constant_light_profiles) == 1
 
     def test_fixed_light(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalSersic())
@@ -219,7 +219,7 @@ class TestFixedProfiles(object):
     def test_fixed_mass_property(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, mass_profile=mass_profiles.SphericalNFW())
 
-        assert len(galaxy_prior.fixed_mass_profiles) == 1
+        assert len(galaxy_prior.constant_mass_profiles) == 1
 
     def test_fixed_mass(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, nass_profile=mass_profiles.SphericalNFW())
