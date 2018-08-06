@@ -4,6 +4,7 @@ from autolens import exc
 import os
 import requests
 import zipfile
+import shutil
 
 directory = os.path.dirname(os.path.realpath(__file__))
 
@@ -225,3 +226,10 @@ def download_config():
 
 if not is_config():
     download_config()
+
+
+def remove_config():
+    try:
+        shutil.rmtree(CONFIG_PATH)
+    except FileNotFoundError:
+        pass
