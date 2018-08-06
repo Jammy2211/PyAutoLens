@@ -60,6 +60,7 @@ setup(
                       'GetDist',
                       'pymultinest',
                       'sklearn',
+                      'numba'
                       ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],
