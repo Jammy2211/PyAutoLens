@@ -1,6 +1,6 @@
-from src.imaging import image as im
-from src.imaging import mask as msk
-from src.imaging import convolution
+from autolens.imaging import image as im
+from autolens.imaging import mask as msk
+from autolens.imaging import convolution
 import numpy as np
 
 

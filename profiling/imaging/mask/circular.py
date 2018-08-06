@@ -1,4 +1,4 @@
-from src.imaging import mask
+from autolens.imaging import mask
 import time
 
 repeats = 1

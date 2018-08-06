@@ -1,4 +1,4 @@
-from src.pixelization import pixelization
+from autolens.pixelization import pixelization
 
 import pytest
 import numpy as np
