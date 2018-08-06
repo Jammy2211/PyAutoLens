@@ -5,8 +5,10 @@ import os
 import requests
 import zipfile
 
-CONFIG_URL = 'https://drive.google.com/open?id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN'
-CONFIG_PATH = '../config'
+directory = os.path.dirname(os.path.realpath(__file__))
+
+CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'
+CONFIG_PATH = '{}/../config'.format(directory)
 
 
 class NamedConfig(object):
@@ -211,11 +213,13 @@ def is_config():
 def download_config():
     zip_path = "{}.zip".format(CONFIG_PATH)
     with requests.get(CONFIG_URL) as response:
-        with open(zip_path) as f:
+        with open(zip_path, 'wb') as f:
             f.write(response.content)
 
     with zipfile.ZipFile(zip_path, 'r') as z:
         z.extractall(CONFIG_PATH)
+
+    os.remove(zip_path)
 
 
 if not is_config():
