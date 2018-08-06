@@ -1,4 +1,4 @@
-from src.imaging import hyper_image
+from autolens.imaging import hyper_image
 
 import numpy as np
 

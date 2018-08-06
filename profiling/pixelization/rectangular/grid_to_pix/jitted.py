@@ -1,6 +1,6 @@
 from profiling import profiling_data
 from profiling import tools
-from src import exc
+from autolens import exc
 import numpy as np
 import numba
 import pytest

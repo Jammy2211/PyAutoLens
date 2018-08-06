@@ -1,4 +1,4 @@
-from src.tools import arrays
+from autolens.tools import arrays
 import numpy as np
 import os
 import pytest

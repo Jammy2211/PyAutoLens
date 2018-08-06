@@ -1,0 +1,3 @@
+[console_scripts]
+autolens = autolens.cli:main
+

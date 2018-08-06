@@ -1,5 +1,5 @@
-from src.profiles import geometry_profiles
-from src.profiles import light_profiles
+from autolens.profiles import geometry_profiles
+from autolens.profiles import light_profiles
 from scipy.integrate import quad
 from scipy import special
 from itertools import count

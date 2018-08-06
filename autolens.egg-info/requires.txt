@@ -1,0 +1,6 @@
+docopt
+
+[test]
+coverage
+pytest
+pytest-cov
