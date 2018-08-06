@@ -2,7 +2,7 @@ from __future__ import division, print_function
 
 import numpy as np
 import pytest
-from src.profiles import geometry_profiles
+from autolens.profiles import geometry_profiles
 
 
 class TestEllipticalProfile(object):
