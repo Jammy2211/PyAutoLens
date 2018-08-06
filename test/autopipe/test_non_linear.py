@@ -3,7 +3,7 @@ import shutil
 from functools import wraps
 
 import pytest
-import config
+from autolens import config
 from autolens import exc
 from autolens.autopipe import model_mapper
 from autolens.autopipe import non_linear
