@@ -5,7 +5,7 @@ import getdist
 import numpy as np
 from astropy import cosmology
 
-sys.path.append("../src/")
+sys.path.append("../autolens/")
 
 import galaxy
 from profiles import light_profiles, mass_profiles
@@ -19,7 +19,7 @@ def getModelFolders(dir):
 ltm_skip = 0
 center_skip = 0
 
-image_dir = '/gpfs/data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidence tables from
+image_dir = '/gpfs/weighted_data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidence tables from
 
 image_name = 'SLACSJ0252+0039'
 redshift = 0.2803

@@ -4,7 +4,7 @@ import sys
 from matplotlib import pyplot
 sys.path.append("../")
 
-from src.imaging import imaging, simulate
+from autolens.imaging import imaging, simulate
 from astropy.io import fits
 
 def numpy_array_to_fits(array, path, filename):
@@ -13,7 +13,7 @@ def numpy_array_to_fits(array, path, filename):
     hdu = fits.PrimaryHDU(array, new_hdr)
     hdu.writeto(path + filename + '.fits')
 
-data_path = "{}/../data/".format(os.path.dirname(os.path.realpath(__file__)))
+data_path = "{}/../weighted_data/".format(os.path.dirname(os.path.realpath(__file__)))
 
 pixel_scale = 0.05
 dimensions = (256, 256)
@@ -57,7 +57,7 @@ print(np.max(image.data), np.min(image.data))
 print(np.max(noise), np.min(noise))
 print(np.max(signal_to_noise_ratio))
 
-# pyplot.imshow(psf.data)
+# pyplot.imshow(psf.weighted_data)
 # pyplot.show()
 image.plot()
 
