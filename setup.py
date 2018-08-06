@@ -29,7 +29,7 @@ class RunTests(Command):
 
 
 setup(
-    name='PyAutoLens',
+    name='autolens',
     version=__version__,
     description='Strong Gravitational Lensing for the masses',
     long_description=long_description,
