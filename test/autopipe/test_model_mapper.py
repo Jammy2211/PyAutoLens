@@ -71,7 +71,7 @@ class MockProfile(object):
 class TestModelingCollection(object):
     def test__argument_extraction(self):
         collection = model_mapper.ModelMapper(MockConfig())
-        collection.add_class("mock_class", MockClassMM)
+        collection.mock_class = MockClassMM
         assert 1 == len(collection.prior_models)
 
         assert len(collection.priors_ordered_by_id) == 2
@@ -79,7 +79,7 @@ class TestModelingCollection(object):
     def test_config_limits(self):
         collection = model_mapper.ModelMapper(MockConfig({"MockClassMM": {"one": ["u", 1., 2.]}}))
 
-        collection.add_class("mock_class", MockClassMM)
+        collection.mock_class = MockClassMM
 
         assert collection.mock_class.one.lower_limit == 1.
         assert collection.mock_class.one.upper_limit == 2.
@@ -87,7 +87,7 @@ class TestModelingCollection(object):
     def test_config_prior_type(self):
         collection = model_mapper.ModelMapper(MockConfig({"MockClassMM": {"one": ["g", 1., 2.]}}))
 
-        collection.add_class("mock_class", MockClassMM)
+        collection.mock_class = MockClassMM
 
         assert isinstance(collection.mock_class.one, model_mapper.GaussianPrior)
 
@@ -97,7 +97,7 @@ class TestModelingCollection(object):
     def test_attribution(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_class", MockClassMM)
+        collection.mock_class = MockClassMM
 
         assert hasattr(collection, "mock_class")
         assert hasattr(collection.mock_class, "one")
@@ -105,7 +105,7 @@ class TestModelingCollection(object):
     def test_tuple_arg(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_profile", MockProfile)
+        collection.mock_profile = MockProfile
 
         assert 3 == len(collection.priors_ordered_by_id)
 
@@ -144,7 +144,7 @@ class TestModelInstance(object):
     def test_simple_model(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_class", MockClassMM)
+        collection.mock_class = MockClassMM
 
         model_map = collection.instance_from_unit_vector([1., 1.])
 
@@ -155,8 +155,8 @@ class TestModelInstance(object):
     def test_two_object_model(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_class_1", MockClassMM)
-        collection.add_class("mock_class_2", MockClassMM)
+        collection.mock_class_1 = MockClassMM
+        collection.mock_class_2 = MockClassMM
 
         model_map = collection.instance_from_unit_vector([1., 0., 0., 1.])
 
@@ -172,8 +172,8 @@ class TestModelInstance(object):
     def test_swapped_prior_construction(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_class_1", MockClassMM)
-        collection.add_class("mock_class_2", MockClassMM)
+        collection.mock_class_1 = MockClassMM
+        collection.mock_class_2 = MockClassMM
 
         collection.mock_class_2.one = collection.mock_class_1.one
 
@@ -191,7 +191,7 @@ class TestModelInstance(object):
     def test_prior_replacement(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_class", MockClassMM)
+        collection.mock_class = MockClassMM
 
         collection.mock_class.one = model_mapper.UniformPrior(100, 200)
 
@@ -202,7 +202,7 @@ class TestModelInstance(object):
     def test_tuple_arg(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_profile", MockProfile)
+        collection.mock_profile = MockProfile
 
         model_map = collection.instance_from_unit_vector([1., 0., 0.])
 
@@ -212,7 +212,7 @@ class TestModelInstance(object):
     def test_modify_tuple(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_profile", MockProfile)
+        collection.mock_profile = MockProfile
 
         collection.mock_profile.centre.centre_0 = model_mapper.UniformPrior(1., 10.)
 
@@ -223,7 +223,7 @@ class TestModelInstance(object):
     def test_match_tuple(self):
         collection = model_mapper.ModelMapper(MockConfig())
 
-        collection.add_class("mock_profile", MockProfile)
+        collection.mock_profile = MockProfile
 
         collection.mock_profile.centre.centre_1 = collection.mock_profile.centre.centre_0
 
