@@ -1,6 +1,7 @@
 import configparser
 
 from autolens import exc
+import os
 
 
 class NamedConfig(object):
@@ -196,3 +197,7 @@ class WidthConfig(AncestorConfig):
             The default width of a gaussian prior for this attribute
         """
         return float(super(WidthConfig, self).get(module_name, class_name, attribute_name))
+
+
+def is_config():
+    return os.path.isdir("../config")
