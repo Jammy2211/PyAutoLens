@@ -94,43 +94,97 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         super(GalaxyPrior, self).__setattr__(key, value)
 
     @property
-    def fixed_light_profiles(self):
+    def constant_light_profiles(self):
+        """
+        Returns
+        -------
+        light_profiles: [light_profiles.LightProfile]
+            Light profiles with set variables
+        """
         return [value for value in self.__dict__.values() if galaxy.is_light_profile(value)]
 
     @property
-    def fixed_mass_profiles(self):
+    def constant_mass_profiles(self):
+        """
+        Returns
+        -------
+        mass_profiles: [mass_profiles.MassProfile]
+            Mass profiles with set variables
+        """
         return [value for value in self.__dict__.values() if galaxy.is_mass_profile(value)]
 
     @property
     def prior_models(self):
+        """
+        Returns
+        -------
+        prior_models: [model_mapper.PriorModel]
+            A list of the prior models (e.g. variable profiles) attached to this galaxy prior
+        """
         return [value for _, value in
                 filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items())]
 
     @property
     def profile_prior_model_dict(self):
+        """
+        Returns
+        -------
+        profile_prior_model_dict: {str: PriorModel}
+            A dictionary mapping instance variable names to variable profiles.
+        """
         return {key: value for key, value in
                 filter(lambda t: isinstance(t[1], model_mapper.PriorModel) and is_profile_class(t[1].cls),
                        self.__dict__.items())}
 
     @property
-    def fixed_profile_dict(self):
+    def constant_profile_dict(self):
+        """
+        Returns
+        -------
+        constant_profile_dict: {str: geometry_profiles.Profile}
+            A dictionary mapping instance variable names to profiles with set variables.
+        """
         return {key: value for key, value in self.__dict__.items() if
                 galaxy.is_light_profile(value) or galaxy.is_mass_profile(value)}
 
     @property
     def light_profile_prior_model_dict(self):
+        """
+        Returns
+        -------
+        profile_prior_model_dict: {str: PriorModel}
+            A dictionary mapping instance variable names to variable light profiles.
+        """
         return {key: value for key, value in self.prior_model_dict.items() if is_light_profile_class(value.cls)}
 
     @property
     def mass_profile_prior_model_dict(self):
+        """
+        Returns
+        -------
+        profile_prior_model_dict: {str: PriorModel}
+            A dictionary mapping instance variable names to variable mass profiles.
+        """
         return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
     @property
     def priors(self):
+        """
+        Returns
+        -------
+        priors: [Prior]
+            A list of priors associated with prior models in this galaxy prior.
+        """
         return [prior for prior_model in self.prior_models for prior in prior_model.priors]
 
     @property
     def prior_class_dict(self):
+        """
+        Returns
+        -------
+        prior_class_dict: {Prior: class}
+            A dictionary mapping priors to the class associated with their prior model.
+        """
         return {prior: cls for prior_model in self.prior_models for prior, cls in
                 prior_model.prior_class_dict.items()}
 
@@ -149,7 +203,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         """
         profiles = {**{key: value.instance_for_arguments(arguments)
                        for key, value
-                       in self.profile_prior_model_dict.items()}, **self.fixed_profile_dict}
+                       in self.profile_prior_model_dict.items()}, **self.constant_profile_dict}
 
         if isinstance(self.redshift, galaxy.Redshift):
             redshift = self.redshift
@@ -162,6 +216,20 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                              **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
+        """
+        Create a new galaxy prior from a set of arguments, replacing the priors of some of this galaxy prior's prior
+        models with new arguments.
+
+        Parameters
+        ----------
+        arguments: dict
+            A dictionary mapping between old priors and their replacements.
+
+        Returns
+        -------
+        new_model: GalaxyPrior
+            A model with some or all priors replaced.
+        """
         new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
                                 config=self.config)
 
@@ -172,4 +240,14 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
 
     @classmethod
     def from_galaxy(cls, g, **kwargs):
+        """
+        Create a new galaxy prior with constants taken from a galaxy.
+
+        Parameters
+        ----------
+        g: galaxy.Galaxy
+            A galaxy
+        kwargs
+            Key word arguments to override GalaxyPrior constructor arguments.
+        """
         return GalaxyPrior(**{**g.__dict__, **kwargs})
