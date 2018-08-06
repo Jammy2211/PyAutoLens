@@ -75,7 +75,7 @@ class ModelMapper(object):
             width_config if width_config is not None else WidthConfig("{}/../config/priors/width".format(path)))
 
         for name, cls in classes.items():
-            self.add_class(name, cls)
+            self.__setattr__(name, cls)
 
     @property
     def total_parameters(self):
@@ -90,32 +90,7 @@ class ModelMapper(object):
 
     def add_classes(self, **kwargs):
         for key, value in kwargs.items():
-            self.add_class(key, value)
-
-    def add_class(self, name, cls):
-        """
-        Add a class to this collection. Priors are automatically generated for __init__ arguments. Prior type and
-        configuration is taken from matching module.class.attribute entries in the config.
-
-        Parameters
-        ----------
-        name: String
-            The name of this class. This is also the attribute name for the class in the collection and model_instance.
-        cls: class
-            The class for which priors are to be generated.
-
-        Returns
-        -------
-        prior_model: PriorModel
-            A prior_model instance for this class
-        """
-        if hasattr(self, name):
-            raise exc.PriorException("Model mapper already has a prior model called {}".format(name))
-
-        prior_model = PriorModel(cls, self.config)
-
-        setattr(self, name, prior_model)
-        return prior_model
+            self.__setattr__(key, value)
 
     @property
     def prior_models(self):
