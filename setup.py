@@ -60,7 +60,8 @@ setup(
                       'GetDist',
                       'pymultinest',
                       'scikit-learn',
-                      'numba'
+                      'numba',
+                      'matplotlib'
                       ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],
