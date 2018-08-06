@@ -1,4 +1,3 @@
-data/
 *.ipynb
 mass_model_catalogue.pdf
 long_paper.pdf
@@ -28,3 +27,16 @@ non_linear/files/setup/
 test/test_files/non_linear/files/setup/multinest.paramnames
 test/test_files/non_linear/files/setupmultinest.paramnames
 src/output/
+temp.txt
+*.swp
+src/profiles/integrator.py
+test/profiles/test_integrator.py
+profiling/data/output/
+output/
+test_files/non_linear/nlo/setup/
+test_files/
+.coverage
+PyAutoLens.egg-info/
+dist/
+PyAutoLens.egg-info
+autolens.egg-info/

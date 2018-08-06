@@ -1,5 +1,6 @@
-from src.analysis import non_linear, galaxy_prior
-from src.profiles import light_profiles, mass_profiles
+from autolens.analysis import galaxy_prior
+from autolens.autopipe import non_linear
+from autolens.profiles import light_profiles, mass_profiles
 
 
 # Test should work once file_param_names has been fixed
