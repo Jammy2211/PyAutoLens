@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.imaging import mask
+from autolens.imaging import mask
 
 
 class MockSubGridCoords(np.ndarray):

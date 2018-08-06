@@ -1,8 +1,8 @@
 import numpy as np
-from src.imaging import image
+from autolens.imaging import image
 import pytest
 import os
-from src import exc
+from autolens import exc
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 

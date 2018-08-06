@@ -1,6 +1,6 @@
 import configparser
 
-from src import exc
+from autolens import exc
 
 
 class NamedConfig(object):

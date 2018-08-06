@@ -1,5 +1,5 @@
 import numpy as np
-from src.profiles import light_profiles as lps, mass_profiles as mps
+from autolens.profiles import light_profiles as lps, mass_profiles as mps
 from itertools import count
 
 
