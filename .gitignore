@@ -36,3 +36,5 @@ output/
 test_files/non_linear/nlo/setup/
 test_files/
 .coverage
+PyAutoLens.egg-info/
+dist/
