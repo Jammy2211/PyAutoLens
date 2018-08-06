@@ -80,8 +80,10 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             self.redshift = model_mapper.PriorModel(galaxy.Redshift,
                                                     config) if variable_redshift else model_mapper.Constant(1)
 
-        self.pixelization = model_mapper.PriorModel(pixelization, config) if pixelization is not None else None
-        self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if hyper_galaxy is not None else None
+        self.pixelization = model_mapper.PriorModel(pixelization, config) if inspect.isclass(
+            pixelization) else pixelization
+        self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if inspect.isclass(
+            hyper_galaxy) else hyper_galaxy
         self.config = config
 
     def __setattr__(self, key, value):
@@ -209,8 +211,12 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             redshift = self.redshift
         else:
             redshift = self.redshift.instance_for_arguments(arguments)
-        pixelization = self.pixelization.instance_for_arguments(arguments) if self.pixelization is not None else None
-        hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) if self.hyper_galaxy is not None else None
+        pixelization = self.pixelization.instance_for_arguments(arguments) \
+            if isinstance(self.pixelization, model_mapper.PriorModel) \
+            else self.pixelization
+        hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) \
+            if isinstance(self.hyper_galaxy, model_mapper.PriorModel) \
+            else self.hyper_galaxy
 
         return galaxy.Galaxy(redshift=redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
                              **profiles)
