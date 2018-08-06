@@ -1,10 +1,10 @@
 import os
 import pickle
 
-from src.imaging import scaled_array
-from src.imaging import image
-from src.imaging import mask
-from src.imaging import masked_image
+from autolens.imaging import scaled_array
+from autolens.imaging import image
+from autolens.imaging import mask
+from autolens.imaging import masked_image
 
 path =  "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 

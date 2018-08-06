@@ -1,8 +1,8 @@
 import numpy as np
-from src.imaging import convolution
-from src.imaging import mask, scaled_array
+from autolens.imaging import convolution
+from autolens.imaging import mask, scaled_array
 import pytest
-from src import exc
+from autolens import exc
 
 
 @pytest.fixture(name="simple_mask_index_array")

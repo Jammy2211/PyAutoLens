@@ -1,5 +1,5 @@
-from src.analysis import galaxy
-from src.profiles import mass_profiles, light_profiles
+from autolens.analysis import galaxy
+from autolens.profiles import mass_profiles, light_profiles
 
 import pytest
 import numpy as np
