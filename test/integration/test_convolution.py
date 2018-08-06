@@ -1,6 +1,6 @@
-from src.imaging import mask
-from src.imaging import image
-from src.imaging import convolution
+from autolens.imaging import mask
+from autolens.imaging import image
+from autolens.imaging import convolution
 
 import numpy as np
 import pytest

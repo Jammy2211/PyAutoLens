@@ -1,4 +1,4 @@
-from src.profiles import geometry_profiles
+from autolens.profiles import geometry_profiles
 from scipy.integrate import quad
 import numpy as np
 from itertools import count

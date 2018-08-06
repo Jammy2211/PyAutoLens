@@ -1,14 +1,14 @@
-from src.pipeline import phase as ph
+from autolens.pipeline import phase as ph
 import pytest
-from src.analysis import galaxy as g
-from src.analysis import galaxy_prior as gp
-from src.autopipe import non_linear
+from autolens.analysis import galaxy as g
+from autolens.analysis import galaxy_prior as gp
+from autolens.autopipe import non_linear
 import numpy as np
-from src.imaging import mask as msk
-from src.imaging import image as img
-from src.imaging import masked_image as mi
-from src.autopipe import model_mapper as mm
-from src.profiles import light_profiles
+from autolens.imaging import mask as msk
+from autolens.imaging import image as img
+from autolens.imaging import masked_image as mi
+from autolens.autopipe import model_mapper as mm
+from autolens.profiles import light_profiles
 
 shape = (10, 10)
 

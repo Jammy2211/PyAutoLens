@@ -1,7 +1,7 @@
-from src.imaging import image as im
-from src.imaging import mask as msk
-from src.imaging import convolution
-from src.imaging import masked_image as mi
+from autolens.imaging import image as im
+from autolens.imaging import mask as msk
+from autolens.imaging import convolution
+from autolens.imaging import masked_image as mi
 import numpy as np
 import pytest
 

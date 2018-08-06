@@ -1,4 +1,4 @@
-from src import exc
+from autolens import exc
 
 from astropy import constants
 import math

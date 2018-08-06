@@ -4,7 +4,7 @@ import re
 import getdist
 import numpy as np
 
-sys.path.append("../src/")
+sys.path.append("../autolens/")
 
 import galaxy
 from profiles import light_profiles, mass_profiles
