@@ -1,10 +1,11 @@
 """
-skele
+autolens
 
 Usage:
-  skele hello
-  skele -h | --help
-  skele --version
+  autolens hello
+  autolens reset_config
+  autolens -h | --help
+  autolens --version
 
 Options:
   -h --help                         Show this screen.
@@ -28,8 +29,10 @@ from . import __version__ as VERSION
 def main():
     """Main CLI entrypoint."""
     import autolens.commands
+    print(autolens.__path__)
     options = docopt(__doc__, version=VERSION)
-
+    print(options)
+    print(dir(autolens.commands))
     # Here we'll try to dynamically match the command the user is trying to run
     # with a pre-defined command class we've already created.
     for (k, v) in options.items():
