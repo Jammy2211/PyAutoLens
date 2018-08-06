@@ -1,7 +1,7 @@
 import sys
 import os
 
-import autolens.config.config
+import config
 
 sys.path.append("../")
 
@@ -14,7 +14,7 @@ results_path = path + '../nlo/SLACS03/'
 
 image_name = 'SLACSJ0252+0039'
 
-mapper = model_mapper.ModelMapper(config=autolens.config.config.DefaultPriorConfig(config_folder_path=results_path),
+mapper = model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_folder_path=results_path),
                                   stellar_bulge=mp.EllipticalSersicMass, stellar_envelope=mp.EllipticalExponentialMass,
                                   dark_matter_halo=mp.SphericalNFW, shear=mp.ExternalShear)
 
