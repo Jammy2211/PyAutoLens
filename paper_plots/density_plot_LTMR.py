@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 sys.path.append("../")
 
 from paper_plots import density_plot_tools
-from src.analysis import galaxy
-from src.profiles import mass_profiles
+from autolens.analysis import galaxy
+from autolens.profiles import mass_profiles
 
 
 ltm_skip = 0
 center_skip = 0
 
-image_dir = '/gpfs/data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidence tables from
+image_dir = '/gpfs/weighted_data/pdtw24/PL_Data/SL03_2/'  # Dir of Object to make evidence tables from
 
 image_name = 'SLACSJ0252+0039'
 image_name = 'SLACSJ1250+0523'
