@@ -2,6 +2,7 @@ import configparser
 
 from autolens import exc
 import os
+import requests
 
 
 class NamedConfig(object):
@@ -201,3 +202,11 @@ class WidthConfig(AncestorConfig):
 
 def is_config():
     return os.path.isdir("../config")
+
+
+def download_config():
+    requests.get()
+
+
+if not is_config():
+    download_config()
