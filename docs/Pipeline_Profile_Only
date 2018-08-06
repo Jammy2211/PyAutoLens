@@ -1,0 +1,43 @@
+Pipeline Profile Only:
+
+PURPOSE - Fit a lens+source image using profiles (i.e. no lens light component)
+
+PHASE 1:
+
+1) Lens Light : EllipticalSersic
+   Mass: None
+   Source: None
+   NLO: MultiNest
+   Image : Observed Image
+   Mask : Circle - 3.0"
+
+
+2) Lens Light : None
+   Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
+   Source: EllipticalSersic
+   NLO: MultiNest
+   Image : Lens Subtracted Image (previous phase)
+   Mask : Annulus (0.4" - 3.0")
+
+3) Lens Light : Elliptical Sersic (Priors phase 1)
+   Mass: SIE (Priors phase 2)
+   Source : Elliptical Sesic (Priors phase 2)
+   NLO : MultiNest
+   Image : Observed Image
+   Mask : Circle - 3.0"
+
+3H) Hyper-Parameters: Make Lens Galaxy and Source Galaxy Hyper-Galaxies.
+    Lens Light / Mass / Source - Fix parameters to phase 3 most likely esult
+    NLO : DownhillSimplex
+    Image : Observed Image
+    Mask : Circle - 3.0"
+
+    Optimize lens light hyper galaxy parameters via NLO, followed by source galaxy hyper parameters via NLO.
+
+4) Repeat phase 3, using its priors and the hyper-galaxies fixed to their optimized values.
+   Lens Light : Elliptical Sersic (Priors phase 3)
+   Mass: SIE (Priors phase 3)
+   Source : Elliptical Sesic (Priors phase 3)
+   NLO : MultiNest
+   Image : Observed Image
+   Mask : Circle - 3.0".
