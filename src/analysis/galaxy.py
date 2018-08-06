@@ -2,6 +2,7 @@ import numpy as np
 from src.profiles import light_profiles as lps, mass_profiles as mps
 from itertools import count
 
+
 def is_light_profile(obj):
     return isinstance(obj, lps.LightProfile) and not isinstance(obj, mps.MassProfile)
 
@@ -357,7 +358,6 @@ class Galaxy(object):
 # TODO : Should galaxy image and minimum value be in the constructor (they aren't free parameters)?
 
 class HyperGalaxy(object):
-
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
@@ -430,10 +430,16 @@ class HyperGalaxy(object):
                    self.noise_power == other.noise_power
         return False
 
+    def __str__(self):
+        return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
+
 
 class Redshift(object):
     def __init__(self, redshift):
         self.redshift = redshift
+
+    def __str__(self):
+        return str(self.redshift)
 
     @property
     def parameter_labels(self):
