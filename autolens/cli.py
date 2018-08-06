@@ -38,3 +38,7 @@ def main():
             command = [command[1] for command in getmembers(module, isclass) if command[0] != 'Base'][0]
             command = command(options)
             command.run()
+
+
+if __name__ == "__main__":
+    main()
