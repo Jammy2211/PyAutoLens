@@ -5,7 +5,7 @@ import getdist
 import numpy as np
 from astropy import cosmology
 
-sys.path.append("../src/")
+sys.path.append("../autolens/")
 
 from profiles import light_profiles, mass_profiles
 import galaxy
