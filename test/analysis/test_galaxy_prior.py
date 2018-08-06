@@ -1,9 +1,9 @@
-import src.config.config
-from src.analysis import galaxy_prior as gp
-from src.analysis import galaxy as g
-from src.pixelization import pixelization
-from src.profiles import mass_profiles, light_profiles
-from src.autopipe import model_mapper as mm
+import autolens.config.config
+from autolens.analysis import galaxy_prior as gp
+from autolens.analysis import galaxy as g
+from autolens.pixelization import pixelization
+from autolens.profiles import mass_profiles, light_profiles
+from autolens.autopipe import model_mapper as mm
 import pytest
 import os
 
@@ -31,7 +31,7 @@ class MockModelInstance:
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return src.config.config.DefaultPriorConfig(
+    return autolens.config.config.DefaultPriorConfig(
         config_folder_path="{}/../{}/priors/default".format(os.path.dirname(os.path.realpath(__file__)),
                                                             "test_files/config"))
 

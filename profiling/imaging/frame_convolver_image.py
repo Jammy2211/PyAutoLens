@@ -1,4 +1,4 @@
-from src.profiles import light_profiles
+from autolens.profiles import light_profiles
 from profiling import profiling_data
 import time
 import pytest

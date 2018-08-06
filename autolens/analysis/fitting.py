@@ -1,7 +1,7 @@
 import numpy as np
-from src.imaging import masked_image as mi
-from src.imaging import mask
-from src.analysis import ray_tracing
+from autolens.imaging import masked_image as mi
+from autolens.imaging import mask
+from autolens.analysis import ray_tracing
 
 # TODO : Can we make model_image, galaxy_images, minimum_Values a part of hyper galaxies?
 

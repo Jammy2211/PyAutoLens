@@ -1,14 +1,14 @@
-from src.analysis import galaxy_prior as gp
-from src.analysis import galaxy as g
-from src.analysis import ray_tracing
-from src.imaging import mask as msk
-from src.imaging import masked_image as mi
-from src.imaging import image as img
-from src.analysis import fitting
-from src.autopipe import non_linear
-from src.autopipe import model_mapper as mm
+from autolens.analysis import galaxy_prior as gp
+from autolens.analysis import galaxy as g
+from autolens.analysis import ray_tracing
+from autolens.imaging import mask as msk
+from autolens.imaging import masked_image as mi
+from autolens.imaging import image as img
+from autolens.analysis import fitting
+from autolens.autopipe import non_linear
+from autolens.autopipe import model_mapper as mm
 import numpy as np
-from src.pixelization import pixelization as px
+from autolens.pixelization import pixelization as px
 import inspect
 import logging
 

@@ -1,9 +1,9 @@
-from src.pipeline import phase as ph
-from src.autopipe import non_linear as nl
-from src.analysis import galaxy_prior as gp
-from src.pixelization import pixelization as px
-from src.imaging import mask as msk
-from src.profiles import light_profiles, mass_profiles
+from autolens.pipeline import phase as ph
+from autolens.autopipe import non_linear as nl
+from autolens.analysis import galaxy_prior as gp
+from autolens.pixelization import pixelization as px
+from autolens.imaging import mask as msk
+from autolens.profiles import light_profiles, mass_profiles
 
 import logging
 

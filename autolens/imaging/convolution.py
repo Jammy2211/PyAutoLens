@@ -1,5 +1,5 @@
 import numpy as np
-from src import exc
+from autolens import exc
 import numba
 
 """
