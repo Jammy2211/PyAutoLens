@@ -1237,24 +1237,9 @@ class TestFitting(object):
             multi_nest.variable.mock_class = model_mapper.PriorModel(MockClassNLOx4, test_config)
             result = multi_nest.fit(MockAnalysis())
 
-            assert result.constant.mock_class.one == 1
-            assert result.constant.mock_class.two == 1
-            assert result.likelihood == 1
+            assert result.constant.mock_class.one == 9.0
+            assert result.constant.mock_class.two == -10.0
+            assert result.likelihood == 0.02
 
             assert result.variable.mock_class.one.mean == 1
             assert result.variable.mock_class.two.mean == -2
-
-        def test_constant_and_variable(self, multi_nest, test_config):
-
-            multi_nest.constant.constant = MockClassNLOx4()
-            multi_nest.variable.variable = model_mapper.PriorModel(MockClassNLOx4, test_config)
-
-            result = multi_nest.fit(MockAnalysis())
-
-            assert result.constant.constant.one == 1
-            assert result.constant.constant.two == 2
-            assert result.constant.variable.one == 1
-            assert result.constant.variable.two == 1
-            assert result.variable.variable.one.mean == 1
-            assert result.variable.variable.two.mean == -2
-            assert result.likelihood == 1
