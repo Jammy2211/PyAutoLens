@@ -8,6 +8,7 @@ import zipfile
 directory = os.path.dirname(os.path.realpath(__file__))
 
 CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'
+CONFIG_DIR = '{}/../'.format(directory)
 CONFIG_PATH = '{}/../config'.format(directory)
 
 
@@ -217,7 +218,7 @@ def download_config():
             f.write(response.content)
 
     with zipfile.ZipFile(zip_path, 'r') as z:
-        z.extractall(CONFIG_PATH)
+        z.extractall(CONFIG_DIR)
 
     os.remove(zip_path)
 
