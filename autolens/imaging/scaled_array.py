@@ -1,7 +1,7 @@
 import numpy as np
 import logging
 
-from autolens.tools import arrays
+from autolens.imaging import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ class AbstractArray(np.ndarray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(arrays.numpy_array_from_fits(file_path, hdu), pixel_scale)
+        return cls(array_util.numpy_array_from_fits(file_path, hdu), pixel_scale)
 
     def pad(self, new_dimensions, pad_value=0):
         """ Pad the weighted_data array with zeros (or an input value) around its central pixel.
