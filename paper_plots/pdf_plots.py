@@ -1,19 +1,20 @@
 import sys
 import os
 
-import src.config.config
+import autolens.config.config
 
 sys.path.append("../")
 
-from src.analysis import model_mapper, non_linear
-from src.profiles import mass_profiles as mp
+from autolens.autopipe import model_mapper
+from autolens.autopipe import non_linear
+from autolens.profiles import mass_profiles as mp
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 results_path = path + '../nlo/SLACS03/'
 
 image_name = 'SLACSJ0252+0039'
 
-mapper = model_mapper.ModelMapper(config=src.config.config.DefaultPriorConfig(config_folder_path=results_path),
+mapper = model_mapper.ModelMapper(config=autolens.config.config.DefaultPriorConfig(config_folder_path=results_path),
                                   stellar_bulge=mp.EllipticalSersicMass, stellar_envelope=mp.EllipticalExponentialMass,
                                   dark_matter_halo=mp.SphericalNFW, shear=mp.ExternalShear)
 

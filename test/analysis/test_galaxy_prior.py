@@ -1,9 +1,9 @@
-import src.config.config
-from src.analysis import galaxy_prior as gp
-from src.analysis import galaxy as g
-from src.pixelization import pixelization
-from src.profiles import mass_profiles, light_profiles
-from src.analysis import model_mapper as mm
+import autolens.config.config
+from autolens.analysis import galaxy_prior as gp
+from autolens.analysis import galaxy as g
+from autolens.pixelization import pixelization
+from autolens.profiles import mass_profiles, light_profiles
+from autolens.autopipe import model_mapper as mm
 import pytest
 import os
 
@@ -31,7 +31,7 @@ class MockModelInstance:
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return src.config.config.DefaultPriorConfig(
+    return autolens.config.config.DefaultPriorConfig(
         config_folder_path="{}/../{}/priors/default".format(os.path.dirname(os.path.realpath(__file__)),
                                                             "test_files/config"))
 
@@ -172,7 +172,7 @@ class TestResultForArguments:
 
 class TestPixelization(object):
     def test_pixelization(self, test_config):
-        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, pixelization=pixelization.VoronoiPixelization,
+        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, pixelization=pixelization.Voronoi,
                                       config=test_config)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
@@ -183,6 +183,17 @@ class TestPixelization(object):
 
         assert galaxy.pixelization.pixels == 10
         assert galaxy.pixelization.regularization_coefficients == (5,)
+
+    def test_fixed_pixelization(self, test_config):
+        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, pixelization=pixelization.Voronoi(),
+                                      config=test_config)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.pixelization.pixels == 100
+        assert galaxy.pixelization.regularization_coefficients == (1.,)
 
 
 class TestHyperGalaxy(object):
@@ -200,12 +211,23 @@ class TestHyperGalaxy(object):
         assert galaxy.hyper_galaxy.noise_factor == 2
         assert galaxy.hyper_galaxy.noise_power == 3
 
+    def test_fixed_hyper_galaxy(self, test_config):
+        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, hyper_galaxy=g.HyperGalaxy(), config=test_config)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.hyper_galaxy.contribution_factor == 0.
+        assert galaxy.hyper_galaxy.noise_factor == 0.
+        assert galaxy.hyper_galaxy.noise_power == 1.
+
 
 class TestFixedProfiles(object):
     def test_fixed_light_property(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalSersic())
 
-        assert len(galaxy_prior.fixed_light_profiles) == 1
+        assert len(galaxy_prior.constant_light_profiles) == 1
 
     def test_fixed_light(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalSersic())
@@ -219,7 +241,7 @@ class TestFixedProfiles(object):
     def test_fixed_mass_property(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, mass_profile=mass_profiles.SphericalNFW())
 
-        assert len(galaxy_prior.fixed_mass_profiles) == 1
+        assert len(galaxy_prior.constant_mass_profiles) == 1
 
     def test_fixed_mass(self):
         galaxy_prior = gp.GalaxyPrior(variable_redshift=True, nass_profile=mass_profiles.SphericalNFW())
@@ -267,3 +289,39 @@ class TestRedshift(object):
         galaxy_prior.redshift = mm.Constant(3)
         # noinspection PyUnresolvedReferences
         assert galaxy_prior.redshift.redshift == 3
+
+
+@pytest.fixture(name="galaxy")
+def make_galaxy():
+    return g.Galaxy(redshift=3, sersic=light_profiles.EllipticalSersic(),
+                    exponential=light_profiles.EllipticalExponential(),
+                    spherical=mass_profiles.SphericalIsothermal())
+
+
+class TestFromGalaxy(object):
+    def test_redshift(self, galaxy):
+        galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
+
+        assert galaxy_prior.redshift.redshift == 3
+
+    def test_profiles(self, galaxy):
+        galaxy_prior = gp.GalaxyPrior.from_galaxy(galaxy)
+
+        assert galaxy_prior.sersic == galaxy.sersic
+        assert galaxy_prior.exponential == galaxy.exponential
+        assert galaxy_prior.spherical == galaxy.spherical
+
+    def test_recover_galaxy(self, galaxy):
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy).instance_for_arguments({})
+
+        assert recovered.sersic == galaxy.sersic
+        assert recovered.exponential == galaxy.exponential
+        assert recovered.spherical == galaxy.spherical
+        assert recovered.redshift == galaxy.redshift
+
+    def test_override_argument(self, galaxy):
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy)
+        assert recovered.hyper_galaxy is None
+
+        recovered = gp.GalaxyPrior.from_galaxy(galaxy, hyper_galaxy=g.HyperGalaxy)
+        assert recovered.hyper_galaxy is not None
