@@ -244,6 +244,26 @@ class MockClassNLOx4(object):
         return [r'x4p0', r'x4p1', r'x4p2', r'x4p3']
 
 
+class MockClassNLOx5(object):
+
+    component_number = 0
+
+    def __init__(self, one=1, two=2, three=3, four=4, five=5):
+        self.one = one
+        self.two = two
+        self.three = three
+        self.four = four
+        self.five = five
+
+    @property
+    def subscript(self):
+        return 'a'
+
+    @property
+    def parameter_labels(self):
+        return [r'x4p0', r'x4p1', r'x4p2', r'x4p3']
+
+
 class MockClassNLOx6(object):
 
     component_number = 1
@@ -485,6 +505,24 @@ class TestMultiNest(object):
             assert most_probable.mock_class_2.three == 9.0
             assert most_probable.mock_class_2.four == 10.0
 
+        def test__most_probable__setup_model_instance__1_class_5_params_but_1_is_constant(self, config_path,
+                                                                                          mn_summary_path):
+
+            create_summary_4_parameters(path=mn_summary_path + '1_class')
+
+            mapper = model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path), mock_class=MockClassNLOx5)
+            mapper.mock_class.five = model_mapper.Constant(10.0)
+
+            mn = non_linear.MultiNest(model_mapper=mapper, path=mn_summary_path + '/1_class')
+
+            most_probable = mn.most_probable_instance_from_summary()
+
+            assert most_probable.mock_class.one == 1.0
+            assert most_probable.mock_class.two == -2.0
+            assert most_probable.mock_class.three == 3.0
+            assert most_probable.mock_class.four == 4.0
+            assert most_probable.mock_class.five == 10.0
+
         def test__read_most_likely__1_class_4_params(self, config_path, mn_summary_path):
             create_summary_4_parameters(path=mn_summary_path + '1_class')
 
@@ -545,6 +583,24 @@ class TestMultiNest(object):
             assert most_likely.mock_class_2.two == (-27.0, 28.0)
             assert most_likely.mock_class_2.three == 29.0
             assert most_likely.mock_class_2.four == 30.0
+
+        def test__most_likely__setup_model_instance__1_class_5_params_but_1_is_constant(self, config_path,
+                                                                                          mn_summary_path):
+
+            create_summary_4_parameters(path=mn_summary_path + '1_class')
+
+            mapper = model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path), mock_class=MockClassNLOx5)
+            mapper.mock_class.five = model_mapper.Constant(10.0)
+
+            mn = non_linear.MultiNest(model_mapper=mapper, path=mn_summary_path + '/1_class')
+
+            most_likely = mn.most_likely_instance_from_summary()
+
+            assert most_likely.mock_class.one == 9.0
+            assert most_likely.mock_class.two == -10.0
+            assert most_likely.mock_class.three == -11.0
+            assert most_likely.mock_class.four == 12.0
+            assert most_likely.mock_class.five == 10.0
 
     class TestGaussianPriors(object):
 
