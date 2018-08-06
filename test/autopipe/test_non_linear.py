@@ -1,10 +1,9 @@
 import os
 import shutil
 from functools import wraps
-from itertools import count
 
 import pytest
-from autolens.config import config
+import config
 from autolens import exc
 from autolens.autopipe import model_mapper
 from autolens.autopipe import non_linear
