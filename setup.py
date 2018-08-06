@@ -4,7 +4,7 @@ from subprocess import call
 
 from setuptools import Command, find_packages, setup
 
-from src import __version__
+from autolens import __version__
 
 this_dir = abspath(dirname(__file__))
 with open(join(this_dir, 'README.md'), encoding='utf-8') as file:
