@@ -38,3 +38,4 @@ test_files/
 .coverage
 PyAutoLens.egg-info/
 dist/
+autolens.egg-info/
