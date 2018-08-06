@@ -104,35 +104,35 @@ class NonLinearOptimizer(object):
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
-        self.create_param_names()
+    #    self.create_param_names()
         self.variable.output_model_info(self.file_model_info)
         self.variable.check_model_info(self.file_model_info)
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
-    def create_param_names(self):
-        """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
-
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
-        properties of each model class."""
-        param_names = open(self.file_param_names, 'w')
-
-        for prior_name, prior_model in self.variable.flat_prior_models:
-
-            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
-            component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
-
-            param_labels = generate_parameter_latex(param_labels, subscript)
-
-            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-                line = prior_name + '_' + param[0]
-                line += ' ' * (40 - len(line)) + param_labels[param_no]
-
-                param_names.write(line + '\n')
-
-        param_names.close()
+    # def create_param_names(self):
+    #     """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
+    #
+    #     The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+    #     properties of each model class."""
+    #     param_names = open(self.file_param_names, 'w')
+    #
+    #     for prior_name, prior_model in self.variable.flat_prior_models:
+    #
+    #         param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
+    #         component_number = prior_model.cls().component_number
+    #         subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+    #
+    #         param_labels = generate_parameter_latex(param_labels, subscript)
+    #
+    #         for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+    #             line = prior_name + '_' + param[0]
+    #             line += ' ' * (40 - len(line)) + param_labels[param_no]
+    #
+    #             param_names.write(line + '\n')
+    #
+    #     param_names.close()
 
 
 class DownhillSimplex(NonLinearOptimizer):
