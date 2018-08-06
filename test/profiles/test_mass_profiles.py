@@ -1,4 +1,4 @@
-from src.profiles import geometry_profiles, mass_profiles
+from src.profiles import mass_profiles, light_profiles
 import pytest
 import numpy as np
 
@@ -3346,7 +3346,7 @@ class TestProfiles(object):
                 assert defls[1,1] == pytest.approx(1.1446, 1e-3)
 
             def test__from_light_profile(self):
-                light_sersic = mass_profiles.light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
+                light_sersic = light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
                                                                              phi=110.0,
                                                                              intensity=5.0, effective_radius=0.2,
                                                                              sersic_index=2.0)
@@ -3547,7 +3547,7 @@ class TestProfiles(object):
                 assert defls[1,1] == pytest.approx(0.90493, 1e-3)
 
             def test__from_light_profile(self):
-                light_exponential = mass_profiles.light_profiles.EllipticalExponential(
+                light_exponential = light_profiles.EllipticalExponential(
                     centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0, effective_radius=0.2)
 
                 mass_exponential = mass_profiles.EllipticalExponentialMass.from_exponential_light_profile(
@@ -3759,7 +3759,7 @@ class TestProfiles(object):
 
 
             def test__from_light_profile(self):
-                light_dev_vaucouleurs = mass_profiles.light_profiles.EllipticalDevVaucouleurs(
+                light_dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(
                     centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0, intensity=2.0, effective_radius=0.8)
 
                 mass_dev_vaucouleurs = mass_profiles.EllipticalDevVaucouleursMass.from_dev_vaucouleurs_light_profile(
@@ -4065,7 +4065,7 @@ class TestProfiles(object):
                 assert defls[1,1] == pytest.approx(0.97806399756448, 1e-3)
 
             def test__from_light_profile__deflection_angles_unchanged(self):
-                light_sersic = mass_profiles.light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
+                light_sersic = light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
                                                                              phi=110.0,
                                                                              intensity=5.0, effective_radius=0.2,
                                                                              sersic_index=2.0)
