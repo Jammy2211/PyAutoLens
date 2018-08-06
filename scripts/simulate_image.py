@@ -4,13 +4,13 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.imaging import image
-from src.imaging import mask
-from src.profiles import light_profiles as lp
-from src.profiles import mass_profiles as mp
-from src.analysis import ray_tracing
-from src.analysis import galaxy
-from src.tools import arrays
+from autolens.imaging import image
+from autolens.imaging import mask
+from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
+from autolens.analysis import ray_tracing
+from autolens.analysis import galaxy
+from autolens.tools import arrays
 
 path =  "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = "{}/../data/integration/".format(os.path.dirname(os.path.realpath(__file__)))

@@ -1,9 +1,9 @@
-from src.analysis import analysis as an
-from src.analysis import galaxy as g
-from src.profiles import light_profiles, mass_profiles
-from src.imaging import image as im
-from src.imaging import mask as msk
-from src.imaging import scaled_array
+from autolens.analysis import analysis as an
+from autolens.analysis import galaxy as g
+from autolens.profiles import light_profiles, mass_profiles
+from autolens.imaging import image as im
+from autolens.imaging import mask as msk
+from autolens.imaging import scaled_array
 import os
 import time
 

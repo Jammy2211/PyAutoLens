@@ -1,7 +1,7 @@
 import numpy as np
-from src.imaging import mask
+from autolens.imaging import mask
 import pytest
-from src import exc
+from autolens import exc
 
 
 @pytest.fixture(name="msk")
