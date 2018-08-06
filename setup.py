@@ -59,7 +59,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'autolens=src.cli:main',
+            'autolens=autolens.cli:main',
         ],
     },
     cmdclass={'test': RunTests},
