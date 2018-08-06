@@ -1,7 +1,7 @@
-from src.imaging import interpolation
-from src.imaging import mask
-from src.analysis import galaxy
-from src.profiles import mass_profiles
+from autolens.imaging import interpolation
+from autolens.imaging import mask
+from autolens.analysis import galaxy
+from autolens.profiles import mass_profiles
 
 import numpy as np
 import pytest

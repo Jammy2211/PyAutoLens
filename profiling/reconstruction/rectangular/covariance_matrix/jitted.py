@@ -4,7 +4,7 @@ from analysis import ray_tracing
 from analysis import galaxy
 from profiles import mass_profiles
 from pixelization import pixelization
-from src import exc
+from autolens import exc
 import numpy as np
 import pytest
 import numba

@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 
 import pytest
-from src.profiles import light_profiles
+from autolens.profiles import light_profiles
 import math
 import numpy as np
 
