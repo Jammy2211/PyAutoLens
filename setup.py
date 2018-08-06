@@ -38,7 +38,7 @@ setup(
     author_email='james.w.nightingale@durham.ac.uk',
     license='MIT License',
     classifiers=[
-        'Intended Audience :: Researchers',
+        'Intended Audience :: Developers',
         'Topic :: Scientific',
         'License :: MIT License',
         'Natural Language :: English',
