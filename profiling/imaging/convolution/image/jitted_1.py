@@ -1,12 +1,12 @@
 import numpy as np
 
-from src.profiles import light_profiles
+from autolens.profiles import light_profiles
 from profiling import profiling_data
 from profiling import tools
 from imaging import convolution
 import pytest
 import numba
-from src import exc
+from autolens import exc
 
 
 class Convolver(object):

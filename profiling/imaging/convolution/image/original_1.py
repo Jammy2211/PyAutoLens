@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.profiles import light_profiles
+from autolens.profiles import light_profiles
 from profiling import profiling_data
 from profiling import tools
 import numba
