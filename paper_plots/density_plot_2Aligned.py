@@ -6,7 +6,7 @@ import math
 import numpy as np
 from astropy import cosmology
 
-sys.path.append("../src/")
+sys.path.append("../autolens/")
 
 import galaxy
 from profiles import light_profiles, mass_profiles

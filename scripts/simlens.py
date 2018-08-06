@@ -4,7 +4,7 @@ import sys
 from matplotlib import pyplot
 sys.path.append("../")
 
-from src.imaging import imaging, simulate
+from autolens.imaging import imaging, simulate
 from astropy.io import fits
 
 def numpy_array_to_fits(array, path, filename):

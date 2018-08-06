@@ -6,7 +6,7 @@ import math
 import numpy as np
 from astropy import cosmology
 sys.path.append("../")
-sys.path.append("../src/")
+sys.path.append("../autolens/")
 
 from paper_plots import density_plot_tools
 
