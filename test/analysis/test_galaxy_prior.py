@@ -184,6 +184,17 @@ class TestPixelization(object):
         assert galaxy.pixelization.pixels == 10
         assert galaxy.pixelization.regularization_coefficients == (5,)
 
+    def test_fixed_pixelization(self, test_config):
+        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, pixelization=pixelization.Voronoi(),
+                                      config=test_config)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.pixelization.pixels == 100
+        assert galaxy.pixelization.regularization_coefficients == (1.,)
+
 
 class TestHyperGalaxy(object):
     def test_hyper_galaxy(self, test_config):
@@ -199,6 +210,17 @@ class TestHyperGalaxy(object):
         assert galaxy.hyper_galaxy.contribution_factor == 1
         assert galaxy.hyper_galaxy.noise_factor == 2
         assert galaxy.hyper_galaxy.noise_power == 3
+
+    def test_fixed_hyper_galaxy(self, test_config):
+        galaxy_prior = gp.GalaxyPrior(variable_redshift=True, hyper_galaxy=g.HyperGalaxy(), config=test_config)
+
+        arguments = {galaxy_prior.redshift.redshift: 2.0}
+
+        galaxy = galaxy_prior.instance_for_arguments(arguments)
+
+        assert galaxy.hyper_galaxy.contribution_factor == 0.
+        assert galaxy.hyper_galaxy.noise_factor == 0.
+        assert galaxy.hyper_galaxy.noise_power == 1.
 
 
 class TestFixedProfiles(object):
