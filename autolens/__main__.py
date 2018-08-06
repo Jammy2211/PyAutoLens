@@ -1,2 +1,3 @@
-from .cli import main
+from autolens.cli import main
+
 main()
