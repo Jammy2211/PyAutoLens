@@ -59,7 +59,7 @@ setup(
                       'scipy',
                       'GetDist',
                       'pymultinest',
-                      'sklearn',
+                      'scikit-learn',
                       'numba'
                       ],
     extras_require={
