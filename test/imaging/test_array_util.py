@@ -1,78 +1,70 @@
-from autolens.tools import arrays
+from autolens.imaging import array_util
 import numpy as np
 import os
-import pytest
-
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+
 
 class TestFits:
 
     def test__numpy_array_from_fits__3x3_all_ones(self):
+        arr = array_util.numpy_array_from_fits(file_path=test_data_dir + '3x3_ones', hdu=0)
 
-        arr = arrays.numpy_array_from_fits(file_path=test_data_dir+'3x3_ones', hdu=0)
-
-        assert (arr == np.ones((3,3))).all()
+        assert (arr == np.ones((3, 3))).all()
 
     def test__numpy_array_from_fits__4x3_all_ones(self):
+        arr = array_util.numpy_array_from_fits(file_path=test_data_dir + '4x3_ones', hdu=0)
 
-        arr = arrays.numpy_array_from_fits(file_path=test_data_dir+'4x3_ones', hdu=0)
-
-        assert (arr == np.ones((4,3))).all()
+        assert (arr == np.ones((4, 3))).all()
 
     def test__numpy_array_to_fits__output_and_load(self):
-
-        if os.path.exists(test_data_dir+'test.fits'):
-            os.remove(test_data_dir+'test.fits')
+        if os.path.exists(test_data_dir + 'test.fits'):
+            os.remove(test_data_dir + 'test.fits')
 
         arr = np.array([[10., 30., 40.],
                         [92., 19., 20.]])
 
-        arrays.numpy_array_to_fits(arr, file_path=test_data_dir+'test')
+        array_util.numpy_array_to_fits(arr, file_path=test_data_dir + 'test')
 
-        array_load = arrays.numpy_array_from_fits(file_path=test_data_dir+'test', hdu=0)
+        array_load = array_util.numpy_array_from_fits(file_path=test_data_dir + 'test', hdu=0)
 
         assert (arr == array_load).all()
-        
+
 
 class TestVariancesFromNoise:
 
     def test__noise_all_1s__variances_all_1s(self):
-
         noise = np.array([[1.0, 1.0],
                           [1.0, 1.0]])
 
-        assert (arrays.compute_variances_from_noise(noise) == np.array([[1.0, 1.0],
-                                                                        [1.0, 1.0]])).all()
+        assert (array_util.compute_variances_from_noise(noise) == np.array([[1.0, 1.0],
+                                                                            [1.0, 1.0]])).all()
 
     def test__noise_all_2s__variances_all_4s(self):
-
         noise = np.array([[2.0, 2.0],
                           [2.0, 2.0]])
 
-        assert (arrays.compute_variances_from_noise(noise) == np.array([[4.0, 4.0],
-                                                                        [4.0, 4.0]])).all()
+        assert (array_util.compute_variances_from_noise(noise) == np.array([[4.0, 4.0],
+                                                                            [4.0, 4.0]])).all()
 
     def test__noise_all_05s__variances_all_025s(self):
-
         noise = np.array([[0.5, 0.5],
                           [0.5, 0.5]])
 
-        assert (arrays.compute_variances_from_noise(noise) == np.array([[0.25, 0.25],
-                                                                        [0.25, 0.25]])).all()
+        assert (array_util.compute_variances_from_noise(noise) == np.array([[0.25, 0.25],
+                                                                            [0.25, 0.25]])).all()
 
 
 class TestComputeResiduals:
 
     def test__model_matches_data__residuals_are_all_zero(self):
-
         data = np.array([[10, 10],
                          [10, 10]])
 
         model = np.array([[10, 10],
                           [10, 10]])
 
-        result = arrays.compute_residuals(data, model)
+        result = array_util.compute_residuals(data, model)
 
         assert result[0, 0] == 0
         assert result[0, 1] == 0
@@ -80,14 +72,13 @@ class TestComputeResiduals:
         assert result[1, 1] == 0
 
     def test__model_does_not_match_data__residuals_are_non_zero(self):
-
         test_image = np.array([[10, 5],
                                [-2, -4.5]])
 
         model = np.array([[10, 10],
                           [10, -5]])
 
-        result = arrays.compute_residuals(test_image, model)
+        result = array_util.compute_residuals(test_image, model)
 
         assert result[0, 0] == 0  # (10 - 10 = 0)
         assert result[0, 1] == -5  # (5 - 10 = -5)
@@ -98,7 +89,6 @@ class TestComputeResiduals:
 class TestComputeChiSquared:
 
     def test__model_matches_data__chi_squareds_all_zeros(self):
-
         data = np.array([[10, 10],
                          [10, 10]])
 
@@ -108,7 +98,7 @@ class TestComputeChiSquared:
         noise = np.array([[1, 1],
                           [1, 1]])
 
-        result = arrays.compute_chi_sq_image(data, model, noise)
+        result = array_util.compute_chi_sq_image(data, model, noise)
 
         assert result[0, 0] == 0
         assert result[0, 1] == 0
@@ -125,7 +115,7 @@ class TestComputeChiSquared:
         noise = np.array([[1, 5],
                           [-1, -2]])
 
-        result = arrays.compute_chi_sq_image(test_image, model, noise)
+        result = array_util.compute_chi_sq_image(test_image, model, noise)
 
         assert result[0, 0] == 0  # ( (10 - 10)/1 )^2 = 0
         assert result[0, 1] == 1  # ( (5 - 10)/5 )^2 = ((-)2.5)^2
@@ -136,7 +126,6 @@ class TestComputeChiSquared:
 class TestComputeLikelihood:
 
     def test__model_matches_data__likelihood_is_zero(self):
-
         data = np.array([[10, 10],
                          [10, 10]])
         model = np.array([[10, 10],
@@ -144,12 +133,11 @@ class TestComputeLikelihood:
         noise = np.array([[1, 1],
                           [1, 1]])
 
-        result = arrays.compute_likelihood(data, model, noise)
+        result = array_util.compute_likelihood(data, model, noise)
 
         assert result == 0
 
     def test___model_does_not_match_data__likelihood_computed_correctly(self):
-
         test_image = np.array([[10, 5],
                                [-2, -4.5]])
 
@@ -159,8 +147,6 @@ class TestComputeLikelihood:
         noise = np.array([[1, 5],
                           [-1, -2]])
 
-        result = arrays.compute_likelihood(test_image, model, noise)
+        result = array_util.compute_likelihood(test_image, model, noise)
 
         assert result == -72.53125  # -0.5*(0 + 1 + 144 + 0.0625)
-
-
