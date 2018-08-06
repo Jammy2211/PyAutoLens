@@ -10,7 +10,7 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.analysis import ray_tracing
 from autolens.analysis import galaxy
-from autolens.tools import arrays
+from imaging import array_util
 
 path =  "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 output_path = "{}/../data/integration/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -65,7 +65,7 @@ plt.show()
 if os.path.exists(output_path + lens_name) == False:
     os.makedirs(output_path + lens_name)
 
-arrays.numpy_array_to_fits(sim_image, file_path=output_path + lens_name + 'image')
-arrays.numpy_array_to_fits(sim_image.estimated_noise, file_path=output_path + lens_name + 'noise')
-arrays.numpy_array_to_fits(sim_image.effective_exposure_time, file_path=output_path + lens_name + 'exposure_time')
-arrays.numpy_array_to_fits(psf, file_path=output_path + lens_name + '/psf')
+array_util.numpy_array_to_fits(sim_image, file_path=output_path + lens_name + 'image')
+array_util.numpy_array_to_fits(sim_image.estimated_noise, file_path=output_path + lens_name + 'noise')
+array_util.numpy_array_to_fits(sim_image.effective_exposure_time, file_path=output_path + lens_name + 'exposure_time')
+array_util.numpy_array_to_fits(psf, file_path=output_path + lens_name + '/psf')
