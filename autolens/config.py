@@ -3,6 +3,10 @@ import configparser
 from autolens import exc
 import os
 import requests
+import zipfile
+
+CONFIG_URL = 'https://drive.google.com/open?id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN'
+CONFIG_PATH = '../config'
 
 
 class NamedConfig(object):
@@ -201,11 +205,17 @@ class WidthConfig(AncestorConfig):
 
 
 def is_config():
-    return os.path.isdir("../config")
+    return os.path.isdir(CONFIG_PATH)
 
 
 def download_config():
-    requests.get()
+    zip_path = "{}.zip".format(CONFIG_PATH)
+    with requests.get(CONFIG_URL) as response:
+        with open(zip_path) as f:
+            f.write(response.content)
+
+    with zipfile.ZipFile(zip_path, 'r') as z:
+        z.extractall(CONFIG_PATH)
 
 
 if not is_config():
