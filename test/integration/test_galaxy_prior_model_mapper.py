@@ -1,12 +1,13 @@
 from autolens.autopipe import model_mapper as mm
 from autolens.analysis import galaxy_prior as gp
 from autolens.profiles import light_profiles, mass_profiles
+from autolens import config
 import os
 
 
 class TestCase:
     def test_integration(self):
-        config = config.DefaultPriorConfig(
+        conf = config.DefaultPriorConfig(
             "{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config/priors/default"))
 
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
@@ -16,13 +17,13 @@ class TestCase:
         # galaxy which comprises an elliptical exponential and elliptical sersic light profile.
         source_galaxy_prior = gp.GalaxyPrior(variable_redshift=True,
                                              light_profile_one=light_profiles.EllipticalExponential,
-                                             light_profile_2=light_profiles.EllipticalSersic, config=config)
+                                             light_profile_2=light_profiles.EllipticalSersic, config=conf)
 
         # Create a galaxy prior for the source galaxy. Here we are describing both the light and mass profiles. We've
         # also stipulated that the centres of any galaxies generated using the galaxy prior should match.
         lens_galaxy_prior = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalExponential,
                                            mass_profile=mass_profiles.EllipticalExponentialMass,
-                                           align_centres=True, config=config)
+                                           align_centres=True, config=conf)
 
         mapper.source_galaxy = source_galaxy_prior
         mapper.lens_galaxy = lens_galaxy_prior
