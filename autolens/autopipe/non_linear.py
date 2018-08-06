@@ -5,6 +5,7 @@ import math
 import os
 import pymultinest
 import scipy.optimize
+import numpy as np
 from autolens.imaging import hyper_image
 from autolens.config import config
 from autolens.autopipe import model_mapper as mm
@@ -246,7 +247,7 @@ class MultiNest(NonLinearOptimizer):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = constant
-                self.max_likelihood = 0.
+                self.max_likelihood = -np.inf
 
             def __call__(self, cube, ndim, nparams, lnew):
                 instance = self.instance_from_physical_vector(cube)
