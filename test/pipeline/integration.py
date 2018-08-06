@@ -22,7 +22,7 @@ def load_image(name):
     noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0, pixel_scale=0.1)
 
-    return im.Image(array=data, pixel_scale=0.1, psf=psf, noise=noise)
+    return im.Image(array=data, pixel_scale=0.05, psf=psf, noise=noise)
 
 
 def test_source_only_phase_1():
