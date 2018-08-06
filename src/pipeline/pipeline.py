@@ -158,6 +158,6 @@ def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest)
             self.lens_galaxy.hyper_galaxy = previous_results.last.constant.lens_galaxy.hyper_galaxy
             self.source_galaxy.hyper_galaxy = previous_results.last.constant.source_galaxy.hyper_galaxy
 
-    phase4 = CombinedPhase2(optimizer_class=nl.MultiNest, name="{}/phase4".format(name))
+    phase4 = CombinedPhase2(optimizer_class=optimizer_class, name="{}/phase4".format(name))
 
     return Pipeline(phase1, phase2, phase3, phase3h, phase4)
