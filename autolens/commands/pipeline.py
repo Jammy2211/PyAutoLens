@@ -20,7 +20,7 @@ class Pipeline(Base):
 
     @property
     def image_path(self):
-        image_path = self.options['--image-path']
+        image_path = self.options['--image']
         if image_path is None:
             print("Please specify the path to the image folder")
             return
@@ -31,6 +31,15 @@ class Pipeline(Base):
     @property
     def pixel_scale(self):
         return float(self.options['--pixel-scale'])
+
+    @property
+    def config(self):
+        from autolens import conf
+        config_path = self.options['--config']
+        if not conf.is_config(config_path):
+            print("No config found at {}. Try running 'autolens download_config'".format(config_path))
+            exit(1)
+        return conf.Config(config_path)
 
     def load_image(self):
         from autolens.imaging import scaled_array
