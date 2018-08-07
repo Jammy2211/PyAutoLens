@@ -1,11 +1,7 @@
-"""Reset Config."""
-
 from autolens.commands.base import Base
-from autolens import config
 
 
 class Pipeline(Base):
-    """Reset Config!"""
 
     def run(self):
         print("Available Pipelines:")
