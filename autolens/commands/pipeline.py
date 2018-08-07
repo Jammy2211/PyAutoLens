@@ -1,5 +1,6 @@
 from autolens.commands.base import Base, current_directory
 from autolens import conf
+import colorama
 
 
 class Pipeline(Base):
@@ -12,10 +13,13 @@ class Pipeline(Base):
                 print("No pipeline called '{}' found".format(name))
                 return
             conf.instance = conf.Config(self.config_path, self.output_path)
-            self.run_pipeline(pipeline.pipeline_dict[name]())
+            self.run_pipeline(pipeline.pipeline_dict[name].make())
 
         print("Available Pipelines:\n")
-        print("\n".join(list(pipeline.pipeline_dict.keys())))
+        print(
+            "\n".join(
+                ["{}{}".format(colorama.Fore.BLUE + key, colorama.Fore.BLACK + value.doc) for key, value in
+                 pipeline.pipeline_dict.items()]))
 
     def run_pipeline(self, pipeline):
         pipeline.run(self.load_image())
