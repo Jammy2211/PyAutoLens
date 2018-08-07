@@ -231,17 +231,18 @@ def download_config(config_dir=CONFIG_DIR):
 def remove_config(config_path=CONFIG_PATH):
     print("Removing config...")
     try:
-        shutil.rmtree(CONFIG_PATH)
+        shutil.rmtree(config_path)
     except FileNotFoundError:
         pass
 
 
 class Config(object):
-    def __init__(self, config_path):
+    def __init__(self, config_path, data_path):
         self.config_path = config_path
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
+        self.data_path = data_path
 
 
-instance = Config("{}/config".format(CONFIG_DIR))
+instance = Config("{}/config".format(CONFIG_DIR), "{}/output".format(directory))
