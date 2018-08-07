@@ -11,14 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 class Pipeline(object):
-    def __init__(self, *phases):
+    def __init__(self, name, *phases):
         """
 
         Parameters
         ----------
+        name: str
+            The name of this pipeline
         phases: [ph.Phase]
             Phases
         """
+        self.name = name
         self.phases = phases
 
     def run(self, image):
@@ -79,7 +82,7 @@ def make_source_only_pipeline():
     phase3 = ConstantLensPhase(pixelization=px.RectangularRegConst,
                                mask_function=mask_function)
 
-    return Pipeline(phase1, phase2, phase3)
+    return Pipeline("source_only_pipeline", phase1, phase2, phase3)
 
 
 def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest):
@@ -160,4 +163,8 @@ def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest)
 
     phase4 = CombinedPhase2(optimizer_class=optimizer_class, name="{}/phase4".format(name))
 
-    return Pipeline(phase1, phase2, phase3, phase3h, phase4)
+    return Pipeline(name, phase1, phase2, phase3, phase3h, phase4)
+
+
+profile_pipeline = make_profile_pipeline()
+source_only_pipeline = make_source_only_pipeline()

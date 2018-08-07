@@ -3,6 +3,7 @@ autolens
 
 Usage:
   autolens reset_config
+  autolens pipeline
   autolens -h | --help
   autolens --version
 
@@ -12,6 +13,7 @@ Options:
 
 Examples:
   autolens reset_config
+  autolens pipeline
 
 Help:
   For help using this tool, please open an issue on the Github repository:
@@ -22,15 +24,15 @@ from inspect import getmembers, isclass
 
 from docopt import docopt
 
-from . import __version__ as VERSION
+from . import __version__
 
 
 def main():
     """Main CLI entrypoint."""
     import autolens.commands
-    print(autolens.__path__)
-    options = docopt(__doc__, version=VERSION)
-    
+
+    options = docopt(__doc__, version=__version__)
+
     # Here we'll try to dynamically match the command the user is trying to run
     # with a pre-defined command class we've already created.
     for (k, v) in options.items():
