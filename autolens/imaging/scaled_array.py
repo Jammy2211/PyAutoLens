@@ -29,22 +29,6 @@ class AbstractArray(np.ndarray):
             setattr(self, key, value)
         super(AbstractArray, self).__setstate__(state[0:-1])
 
-    @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scale):
-        """
-        Loads the weighted_data from a .fits file.
-
-        Parameters
-        ----------
-        file_path : str
-            The full path of the fits file.
-        hdu : int
-            The HDU number in the fits file containing the image weighted_data.
-        pixel_scale: float
-            The arc-second to pixel conversion factor of each pixel.
-        """
-        return cls(array_util.numpy_array_from_fits(file_path, hdu), pixel_scale)
-
     def pad(self, new_dimensions, pad_value=0):
         """ Pad the weighted_data array with zeros (or an input value) around its central pixel.
 
@@ -154,6 +138,22 @@ class ScaledArray(AbstractArray):
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 func(x, y)
+
+    @classmethod
+    def from_fits(cls, file_path, hdu, pixel_scale):
+        """
+        Loads the weighted_data from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image weighted_data.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return cls(array_util.numpy_array_from_fits(file_path, hdu), pixel_scale)
 
     @property
     def central_pixel_coordinates(self):
