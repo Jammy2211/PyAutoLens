@@ -1,4 +1,5 @@
 from autolens.imaging.scaled_array import ScaledArray, AbstractArray
+from autolens.imaging import array_util
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
@@ -271,7 +272,7 @@ class PSF(AbstractArray):
             self.renormalize()
 
     @classmethod
-    def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
+    def from_fits_renormalized(cls, file_path, hdu):
         """
         Loads a PSF from fits and renormalizes it
 
@@ -281,17 +282,29 @@ class PSF(AbstractArray):
             The path to the file containing the PSF
         hdu: int
             HDU ??
-        pixel_scale: float
-            The scale of a pixel in arcseconds
 
         Returns
         -------
         psf: PSF
             A renormalized PSF instance
         """
-        psf = PSF.from_fits(file_path, hdu, pixel_scale)
+        psf = PSF.from_fits(file_path, hdu)
         psf.renormalize()
         return psf
+
+    @classmethod
+    def from_fits(cls, file_path, hdu):
+        """
+        Loads the weighted_data from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image weighted_data.
+        """
+        return cls(array_util.numpy_array_from_fits(file_path, hdu))
 
     def renormalize(self):
         """Renormalize the PSF such that its weighted_data values sum to unity."""

@@ -4,7 +4,7 @@ autolens
 Usage:
   autolens download_config
   autolens pipeline
-  autolens pipeline <name>
+  autolens pipeline <name> [--pixel-scale=<pixel-scale>]
   autolens -h | --help
   autolens --version
 
@@ -13,7 +13,7 @@ Options:
   --version                         Show version.
   --image                           Specify the image path.
   --config                          Specify the config path.
-  --name                            Specify the name of the pipeline to use.
+  --pixel-scale=<pixel-scale>       The scale of one pixel in the image [default: 0.1].
 
 Examples:
   autolens download_config
@@ -27,6 +27,7 @@ Help:
 from inspect import getmembers, isclass
 
 from docopt import docopt
+from exc import CLIException
 
 from . import __version__
 
@@ -44,7 +45,10 @@ def main():
             module = getattr(autolens.commands, k)
             command = [command[1] for command in getmembers(module, isclass) if command[0] != 'Base'][0]
             command = command(options)
-            command.run()
+            try:
+                command.run()
+            except CLIException as e:
+                print(e.args[0])
 
 
 if __name__ == "__main__":
