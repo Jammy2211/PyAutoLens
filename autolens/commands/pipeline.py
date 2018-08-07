@@ -30,7 +30,7 @@ class Pipeline(Base):
 
     @property
     def pixel_scale(self):
-        return self.options['--pixel-scale']
+        return float(self.options['--pixel-scale'])
 
     def load_image(self):
         from autolens.imaging import scaled_array
