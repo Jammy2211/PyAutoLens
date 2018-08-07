@@ -4,17 +4,16 @@ autolens
 Usage:
   autolens download_config
   autolens pipeline
-  autolens pipeline <name> (--image-path=<image-path>) (--pixel-scale=<pixel-scale>)
+  autolens pipeline <name> (--image=<image>) (--pixel-scale=<pixel-scale>) [--config=<config>]
   autolens -h | --help
   autolens --version
 
 Options:
   -h --help                         Show this screen.
   --version                         Show version.
-  --image                           Specify the image path.
-  --config                          Specify the config path.
   --pixel-scale=<pixel-scale>       The scale of one pixel in the image.
-  --image-path=<image-path>         The path to the folder that contains the image data.
+  --image=<image>                   The path to the folder that contains the image data.
+  --config=<config>                 The path to the folder that contains the configuration [default: .].
 
 Examples:
   autolens download_config
