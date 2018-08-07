@@ -1,2 +1,2 @@
-from .pipeline import *
-from .download_config import *
+from .pipeline import Pipeline
+from .download_config import DownloadConfig

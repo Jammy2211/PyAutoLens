@@ -27,7 +27,6 @@ Help:
 from inspect import getmembers, isclass
 
 from docopt import docopt
-from exc import CLIException
 
 from . import __version__
 
@@ -45,10 +44,8 @@ def main():
             module = getattr(autolens.commands, k)
             command = [command[1] for command in getmembers(module, isclass) if command[0] != 'Base'][0]
             command = command(options)
-            try:
-                command.run()
-            except CLIException as e:
-                print(e.args[0])
+            command.run()
+
 
 
 if __name__ == "__main__":
