@@ -38,8 +38,6 @@ def transform_grid(func):
         """
         if not isinstance(grid, TransformedGrid):
             result = func(profile, profile.transform_grid_to_reference_frame_jitted(grid), *args, **kwargs)
-        #    if isinstance(result, TransformedGrid):
-        #        result = profile.transform_grid_from_reference_frame(result)
             return np.asarray(result)
         return func(profile, grid, *args, **kwargs)
 
@@ -223,7 +221,8 @@ class EllipticalProfile(Profile):
     def transform_grid_to_reference_frame_jitted(self, grid):
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
-        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 1], shifted_coordinates[:, 0]) - self.phi_radians
+        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 1],
+                                                 shifted_coordinates[:, 0]) - self.phi_radians
         transformed = np.vstack(
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
         return transformed.view(TransformedGrid)
