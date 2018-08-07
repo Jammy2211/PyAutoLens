@@ -1,3 +1,4 @@
+colorama
 requests
  numpy==1.14.1
  astropy==3.0
