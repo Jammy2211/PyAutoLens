@@ -3,8 +3,16 @@ from autolens import conf
 import colorama
 
 
+def color(text, fore):
+    return "{}{}{}".format(fore, text, colorama.Fore.RESET)
+
+
 def blue(text):
-    return "{}{}{}".format(colorama.Fore.BLUE, text, colorama.Fore.RESET)
+    return color(text, colorama.Fore.BLUE)
+
+
+def red(text):
+    return color(text, colorama.Fore.RED)
 
 
 class Pipeline(Base):
@@ -13,7 +21,11 @@ class Pipeline(Base):
         from autolens import pipeline
         name = self.options['<name>']
         if self.options['--info']:
-            print(blue(pipeline.pipeline_dict[name].doc))
+            tup = pipeline.pipeline_dict[name]
+            pl = tup.make()
+            print(blue(tup.doc))
+            print(red("Phases:\n"))
+            print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.__doc__)) for phase in pl.phases]))
             return
         if name is not None:
             if name not in pipeline.pipeline_dict:
@@ -22,13 +34,7 @@ class Pipeline(Base):
             conf.instance = conf.Config(self.config_path, self.output_path)
             self.run_pipeline(pipeline.pipeline_dict[name].make())
 
-        print("Available Pipelines:\n")
-        print(
-            "\n".join(
-                ["{}\n  {}".format(key, blue(value.short_doc)) for
-                 key, value
-                 in
-                 pipeline.pipeline_dict.items()]))
+        print_pipelines()
 
     def run_pipeline(self, pipeline):
         pipeline.run(self.load_image())
@@ -73,3 +79,14 @@ class Pipeline(Base):
         psf = im.PSF.from_fits(file_path='{}/psf'.format(self.image_path), hdu=0)
 
         return im.Image(array=data, pixel_scale=self.pixel_scale, psf=psf, noise=noise)
+
+
+def print_pipelines():
+    import pipeline
+    print("Available Pipelines:\n")
+    print(
+        "\n".join(
+            ["{}\n  {}".format(key, blue(value.short_doc)) for
+             key, value
+             in
+             pipeline.pipeline_dict.items()]))
