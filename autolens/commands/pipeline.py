@@ -11,7 +11,7 @@ class Pipeline(Base):
             if name not in pipeline.pipeline_dict:
                 print("No pipeline called '{}' found".format(name))
                 return
-            conf.instance = conf.Config(self.config_path)
+            conf.instance = conf.Config(self.config_path, self.output_path)
             self.run_pipeline(pipeline.pipeline_dict[name]())
 
         print("Available Pipelines:\n")
@@ -41,6 +41,10 @@ class Pipeline(Base):
             print("No config found at {}. Try running 'autolens download_config'".format(config_path))
             exit(1)
         return config_path
+
+    @property
+    def output_path(self):
+        return self.options['--output']
 
     def load_image(self):
         from autolens.imaging import scaled_array
