@@ -20,7 +20,7 @@ Examples:
   autolens download_config
   autolens pipeline
   autolens pipeline profile --image=hst_0/ --pixel-scale=0.05
-  autolens pipeline profile --image=hst_0/ --pixel-scale=0.05 --output=output_folder --config=config_folder
+  autolens pipeline profile --image=hst_0 --pixel-scale=0.05 --output=output_folder --config=config_folder
 
 Help:
   For help using this tool, please open an issue on the Github repository:
