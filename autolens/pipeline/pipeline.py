@@ -45,7 +45,7 @@ class Pipeline(object):
         composed_pipeline: Pipeline
             A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
         """
-        return Pipeline(*(self.phases + other.phases))
+        return Pipeline("{} + {}".format(self.name, other.name), *(self.phases + other.phases))
 
 
 def make_source_only_pipeline():
