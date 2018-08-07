@@ -1,7 +1,7 @@
 """Reset Config."""
 
 from .base import Base
-from autolens import config
+from autolens import conf
 
 
 class ResetConfig(Base):
@@ -9,5 +9,5 @@ class ResetConfig(Base):
 
     def run(self):
         if input("Are you sure? This will reset the state of your config").lower() == 'y':
-            config.remove_config()
-            config.download_config()
+            conf.remove_config()
+            conf.download_config()

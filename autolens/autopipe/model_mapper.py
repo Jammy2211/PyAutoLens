@@ -3,7 +3,7 @@ from scipy.special import erfinv
 import inspect
 import os
 from autolens import exc
-from autolens.config import DefaultPriorConfig, WidthConfig
+from autolens.conf import DefaultPriorConfig, WidthConfig
 
 path = os.path.dirname(os.path.realpath(__file__))
 
