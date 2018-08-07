@@ -4,7 +4,7 @@ autolens
 Usage:
   autolens download_config
   autolens pipeline
-  autolens pipeline <name> [--pixel-scale=<pixel-scale>]
+  autolens pipeline <name> (--pixel-scale=<pixel-scale>)
   autolens -h | --help
   autolens --version
 
@@ -13,7 +13,7 @@ Options:
   --version                         Show version.
   --image                           Specify the image path.
   --config                          Specify the config path.
-  --pixel-scale=<pixel-scale>       The scale of one pixel in the image [default: 0.1].
+  --pixel-scale=<pixel-scale>       The scale of one pixel in the image.
 
 Examples:
   autolens download_config
