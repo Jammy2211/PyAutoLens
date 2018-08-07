@@ -14,8 +14,6 @@ import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-default_path = '{}/../../output'.format(os.path.dirname(os.path.realpath(__file__)))
-dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
 
@@ -73,7 +71,7 @@ class Result(object):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path, name=None, **classes):
+    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -88,7 +86,11 @@ class NonLinearOptimizer(object):
         """
         self.named_config = conf.instance.non_linear
 
-        self.path = "{}/{}".format(path, name) if name is not None else path
+        if name is None:
+            name = ""
+        self.path = "{}/{}".format(conf.instance.data_path, name)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
@@ -154,10 +156,10 @@ class NonLinearOptimizer(object):
 
 class DownhillSimplex(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=None,
                  fmin=scipy.optimize.fmin, name=None):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              model_mapper=model_mapper, path=path, name=name)
+                                              model_mapper=model_mapper, name=name)
 
         self.xtol = self.config("xtol", float)
         self.ftol = self.config("ftol", float)
@@ -207,7 +209,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path,
+    def __init__(self, include_hyper_image=False, model_mapper=None,
                  sigma_limit=3, run=pymultinest.run, name=None):
         """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
 
@@ -220,8 +222,7 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear nlo are stored.
         """
 
-        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper,
-                                        path=path, name=name)
+        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name)
 
         self.file_summary = "{}/{}".format(self.path, 'summary.txt')
         self.file_weighted_samples = "{}/{}".format(self.path, 'multinest.txt')
