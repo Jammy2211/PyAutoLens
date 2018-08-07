@@ -4,12 +4,16 @@ autolens
 Usage:
   autolens download_config
   autolens pipeline
+  autolens pipeline --name str
   autolens -h | --help
   autolens --version
 
 Options:
   -h --help                         Show this screen.
   --version                         Show version.
+  --image                           Specify the image path.
+  --config                          Specify the config path.
+  --name                            Specify the name of the pipeline to use.
 
 Examples:
   autolens download_config

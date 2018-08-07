@@ -4,6 +4,7 @@ from autolens.commands.base import Base
 class Pipeline(Base):
 
     def run(self):
+        print(self.options)
         print("Available Pipelines:")
         from autolens.pipeline import pipeline
 
