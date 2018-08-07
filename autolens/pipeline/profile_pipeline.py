@@ -1,7 +1,7 @@
 name = "profile"
 
 
-def make(config):
+def make():
     from autolens.pipeline import phase as ph
     from autolens.pipeline import pipeline as pl
     from autolens.autopipe import non_linear as nl
