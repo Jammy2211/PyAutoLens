@@ -55,6 +55,9 @@ class Phase(object):
         self.mask_function = mask_function
         self.name = name
 
+    def doc(self):
+        return self.__doc__.replace("  ", "").replace("\n", " ")
+
     def run(self, image, last_results=None):
         """
         Run this phase.
