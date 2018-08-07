@@ -18,7 +18,9 @@ class Pipeline(Base):
         print("Available Pipelines:\n")
         print(
             "\n".join(
-                ["{}{}".format(colorama.Fore.BLUE + key, colorama.Fore.BLACK + value.doc) for key, value in
+                ["{}\n{}".format(key, colorama.Fore.BLUE + value.doc.split('\n')[1] + colorama.Fore.RESET) for
+                 key, value
+                 in
                  pipeline.pipeline_dict.items()]))
 
     def run_pipeline(self, pipeline):
