@@ -16,7 +16,7 @@ CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0
 class NamedConfig(object):
     """Parses generic config"""
 
-    def __init__(self, config_path, section_name):
+    def __init__(self, config_path):
         """
         Parameters
         ----------
@@ -24,15 +24,15 @@ class NamedConfig(object):
             The path to the config file
         """
         self.path = config_path
-        self.section_name = section_name
         self.parser = configparser.ConfigParser()
         self.parser.read(self.path)
 
-    def get(self, attribute_name, attribute_type=str):
+    def get(self, section_name, attribute_name, attribute_type=str):
         """
 
         Parameters
         ----------
+        section_name
         attribute_type: type
             The type to which the value should be cast
         attribute_name: String
@@ -43,17 +43,18 @@ class NamedConfig(object):
         prior_array: []
             An array describing a prior
         """
-        string_value = self.parser.get(self.section_name, attribute_name)
+        string_value = self.parser.get(section_name, attribute_name)
         if string_value == "None":
             return None
         if attribute_type is bool:
             return string_value == "True"
         return attribute_type(string_value)
 
-    def has(self, attribute_name):
+    def has(self, section_name, attribute_name):
         """
         Parameters
         ----------
+        section_name
         attribute_name: String
             The name of the attribute
 
@@ -62,7 +63,7 @@ class NamedConfig(object):
         has_prior: bool
             True iff a prior exists for the module, class and attribute
         """
-        return self.parser.has_option(self.section_name, attribute_name)
+        return self.parser.has_option(section_name, attribute_name)
 
 
 class AncestorConfig(object):
@@ -239,3 +240,9 @@ def remove_config(config_dir=CONFIG_DIR):
 class Config(object):
     def __init__(self, config_path):
         self.config_path = config_path
+        self.prior_default = DefaultPriorConfig("{}/default".format(config_path))
+        self.prior_width = WidthConfig("{}/width".format(config_path))
+        self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
+
+
+instance = Config("{}/config".format(CONFIG_DIR))
