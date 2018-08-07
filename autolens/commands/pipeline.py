@@ -14,7 +14,7 @@ class Pipeline(Base):
             conf.instance = conf.Config(self.config_path)
             self.run_pipeline(pipeline.pipeline_dict[name]())
 
-        print("Available Pipelines:")
+        print("Available Pipelines:\n")
         print("\n".join(list(pipeline.pipeline_dict.keys())))
 
     def run_pipeline(self, pipeline):
