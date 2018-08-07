@@ -9,7 +9,7 @@ class Pipeline(Base):
         name = self.options['<name>']
         if name is not None:
             try:
-                self.run_pipeline(pipeline.pipeline_dict[name])
+                self.run_pipeline(pipeline.pipeline_dict[name]())
             except KeyError:
                 raise CLIException("No pipeline called '{}' found".format(name))
 
@@ -17,7 +17,7 @@ class Pipeline(Base):
         print("\n".join(list(pipeline.pipeline_dict.keys())))
 
     def run_pipeline(self, pipeline):
-        pass
+        pipeline.run(self.load_image())
 
     @property
     def image_path(self):
@@ -40,6 +40,6 @@ class Pipeline(Base):
                                                   pixel_scale=self.pixel_scale)
         noise = scaled_array.ScaledArray.from_fits(file_path='{}/noise'.format(self.image_path), hdu=0,
                                                    pixel_scale=self.pixel_scale)
-        psf = im.PSF.from_fits(file_path='{}/psf'.format(self.image_path), hdu=0, pixel_scale=0.1)
+        psf = im.PSF.from_fits(file_path='{}/psf'.format(self.image_path), hdu=0)
 
-        return im.Image(array=data, pixel_scale=0.05, psf=psf, noise=noise)
+        return im.Image(array=data, pixel_scale=self.pixel_scale, psf=psf, noise=noise)
