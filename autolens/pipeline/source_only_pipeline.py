@@ -1,14 +1,14 @@
-from autolens.pipeline import phase as ph
-from autolens.pipeline import pipeline as pl
-from autolens.analysis import galaxy_prior as gp
-from autolens.pixelization import pixelization as px
-from autolens.imaging import mask as msk
-from autolens.profiles import light_profiles, mass_profiles
-
 name = "source"
 
 
 def make():
+    from autolens.pipeline import phase as ph
+    from autolens.pipeline import pipeline as pl
+    from autolens.analysis import galaxy_prior as gp
+    from autolens.pixelization import pixelization as px
+    from autolens.imaging import mask as msk
+    from autolens.profiles import light_profiles, mass_profiles
+
     # 1) Mass: SIE+Shear
     #    Source: Sersic
     #    NLO: LM
