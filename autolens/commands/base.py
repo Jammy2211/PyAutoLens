@@ -1,5 +1,9 @@
 """The base command."""
 
+import os
+
+current_directory = os.getcwd()
+
 
 class Base(object):
     """A base command."""
