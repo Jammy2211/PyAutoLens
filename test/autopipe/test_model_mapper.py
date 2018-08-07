@@ -1,4 +1,4 @@
-from autolens import config
+from autolens import conf
 from autolens.autopipe import model_mapper
 import pytest
 from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
@@ -21,7 +21,7 @@ def make_uniform_half():
 
 @pytest.fixture(name='test_config')
 def make_test_config():
-    return config.DefaultPriorConfig(
+    return conf.DefaultPriorConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
@@ -44,7 +44,7 @@ class MockClassMM(object):
         self.two = two
 
 
-class MockConfig(config.DefaultPriorConfig):
+class MockConfig(conf.DefaultPriorConfig):
     def __init__(self, d=None):
         super(MockConfig, self).__init__("")
         if d is not None:
@@ -703,7 +703,7 @@ class TestConstant(object):
 
 @pytest.fixture(name="width_config")
 def make_width_config():
-    return config.WidthConfig(
+    return conf.WidthConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/width"))
 
