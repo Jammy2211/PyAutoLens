@@ -214,6 +214,7 @@ def is_config(config_dir=CONFIG_DIR):
 
 
 def download_config(config_dir=CONFIG_DIR):
+    print("Downloading config...")
     config_path = '{}/config'.format(config_dir)
     zip_path = "{}.zip".format(config_path)
     with requests.get(CONFIG_URL) as response:
@@ -226,11 +227,8 @@ def download_config(config_dir=CONFIG_DIR):
     os.remove(zip_path)
 
 
-# if not is_config():
-#     download_config()
-
-
 def remove_config(config_dir=CONFIG_DIR):
+    print("Removing config...")
     try:
         config_path = '{}/config'.format(config_dir)
         shutil.rmtree(config_path)
