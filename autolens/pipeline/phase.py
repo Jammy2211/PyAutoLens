@@ -384,7 +384,8 @@ class SourceLensPhase(Phase):
 
                 save_image(lens_image, "lens_image")
                 save_image(source_image, "source_image")
-                save_image(sum(filter(None, [lens_image, source_image])), "model_image")
+                if lens_image is not None and source_image is not None:
+                    save_image(lens_image + source_image, "model_image")
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
