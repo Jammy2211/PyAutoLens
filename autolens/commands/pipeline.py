@@ -7,11 +7,10 @@ class Pipeline(Base):
         from autolens import pipeline
         name = self.options['<name>']
         if name is not None:
-            try:
-                self.run_pipeline(pipeline.pipeline_dict[name]())
-            except KeyError:
+            if name not in pipeline.pipeline_dict:
                 print("No pipeline called '{}' found".format(name))
                 return
+            self.run_pipeline(pipeline.pipeline_dict[name]())
 
         print("Available Pipelines:")
         print("\n".join(list(pipeline.pipeline_dict.keys())))
@@ -21,17 +20,17 @@ class Pipeline(Base):
 
     @property
     def image_path(self):
-        image_path = self.options['<image_path>']
+        image_path = self.options['--image-path']
         if image_path is None:
             print("Please specify the path to the image folder")
-            return 
+            return
         if not image_path.startswith("/"):
             image_path = "{}/{}".format(current_directory, image_path)
         return image_path
 
     @property
     def pixel_scale(self):
-        return self.options['<pixel-scale>']
+        return self.options['--pixel-scale']
 
     def load_image(self):
         from autolens.imaging import scaled_array
