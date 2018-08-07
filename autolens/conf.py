@@ -242,6 +242,7 @@ class Config(object):
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
+        self.general = NamedConfig("{}/general.ini".format(config_path))
         self.data_path = data_path
 
 
