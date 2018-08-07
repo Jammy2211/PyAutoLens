@@ -1,11 +1,11 @@
 from autolens.commands.base import Base, current_directory
+from autolens import conf
 
 
 class Pipeline(Base):
 
     def run(self):
         from autolens import pipeline
-        from autolens import conf
         name = self.options['<name>']
         if name is not None:
             if name not in pipeline.pipeline_dict:
