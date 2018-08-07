@@ -10,7 +10,7 @@ class Pipeline(Base):
             if name not in pipeline.pipeline_dict:
                 print("No pipeline called '{}' found".format(name))
                 return
-            self.run_pipeline(pipeline.pipeline_dict[name]())
+            self.run_pipeline(pipeline.pipeline_dict[name](self.config))
 
         print("Available Pipelines:")
         print("\n".join(list(pipeline.pipeline_dict.keys())))
