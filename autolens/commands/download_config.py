@@ -1,10 +1,7 @@
 """Reset Config."""
 
-from .base import Base
+from .base import Base, current_directory
 from autolens import conf
-import os
-
-current_directory = os.getcwd()
 
 
 class DownloadConfig(Base):
