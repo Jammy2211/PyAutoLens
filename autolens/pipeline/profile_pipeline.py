@@ -1,54 +1,21 @@
+from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
-from autolens.imaging import image as im
-from autolens.imaging import scaled_array
 from autolens.autopipe import non_linear as nl
-import shutil
+from autolens.analysis import galaxy_prior as gp
+from autolens.imaging import mask as msk
+from autolens.profiles import light_profiles, mass_profiles
 
-import os
-
-dirpath = os.path.dirname(os.path.realpath(__file__))
-
-
-def load_image(name):
-    # Load up the weighted_data
-    data_dir = "{}/../../data/{}".format(dirpath, name)
-
-    data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
-    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
-    psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0, pixel_scale=0.1)
-
-    return im.Image(array=data, pixel_scale=0.05, psf=psf, noise=noise)
+name = "profile"
+optimizer_class = nl.MultiNest
 
 
-def test_profile_pipeline():
-    name = "test_pipeline"
-    try:
-        shutil.rmtree("{}/../../output/{}".format(dirpath, name))
-    except FileNotFoundError:
-        pass
-    pipeline = make_profile_pipeline(name, optimizer_class=nl.DownhillSimplex)
-    results = pipeline.run(load_image("integration/hst_0"))
-    for result in results:
-        print(result)
-
-
-def make_profile_pipeline(name="profile", optimizer_class=None):
-    from autolens.pipeline import phase as ph
-    from autolens.autopipe import non_linear as nl
-    from autolens.analysis import galaxy_prior as gp
-    from autolens.imaging import mask as msk
-    from autolens.profiles import light_profiles, mass_profiles
-
-    if optimizer_class is None:
-        optimizer_class = nl.MultiNest
-
+def make():
     # 1) Lens Light : EllipticalSersic
     #    Mass: None
     #    Source: None
     #    NLO: MultiNest
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
-
     phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                               optimizer_class=optimizer_class, name="{}/phase1".format(name))
 
@@ -65,7 +32,6 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    NLO: MultiNest
     #    Image : Lens Subtracted Image (previous phase)
     #    Mask : Annulus (0.4" - 3.0")
-
     def annular_mask_function(img):
         return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
                                 outer_radius=3.)
@@ -82,7 +48,6 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    NLO : MultiNest
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
-
     class CombinedPhase(ph.SourceLensPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxy = gp.GalaxyPrior(
@@ -92,13 +57,11 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
 
     phase3 = CombinedPhase(optimizer_class=optimizer_class,
                            name="{}/phase3".format(name))
-
     # 3H) Hyper-Parameters: Make Lens Galaxy and Source Galaxy Hyper-Galaxies.
     #     Lens Light / Mass / Source - Fix parameters to phase 3 most likely result
     #     NLO : DownhillSimplex
     #     Image : Observed Image
     #     Mask : Circle - 3.0"
-
     phase3h = ph.SourceLensHyperGalaxyPhase(name="{}/phase3h".format(name))
 
     # 4) Repeat phase 3, using its priors and the hyper-galaxies fixed to their optimized values.
@@ -108,7 +71,6 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    NLO : MultiNest
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
-
     class CombinedPhase2(ph.SourceLensPhase):
         def pass_priors(self, previous_results):
             phase_3_results = previous_results[2]
@@ -118,9 +80,4 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
             self.source_galaxy.hyper_galaxy = previous_results.last.constant.source_galaxy.hyper_galaxy
 
     phase4 = CombinedPhase2(optimizer_class=optimizer_class, name="{}/phase4".format(name))
-
-    return pl.Pipeline(name, phase1, phase2, phase3, phase3h, phase4)
-
-
-if __name__ == "__main__":
-    test_profile_pipeline()
+    return pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
