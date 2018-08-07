@@ -1,15 +1,16 @@
-from autolens.pipeline import phase as ph
-from autolens.pipeline import pipeline as pl
-from autolens.autopipe import non_linear as nl
-from autolens.analysis import galaxy_prior as gp
-from autolens.imaging import mask as msk
-from autolens.profiles import light_profiles, mass_profiles
-
 name = "profile"
-optimizer_class = nl.MultiNest
 
 
 def make():
+    from autolens.pipeline import phase as ph
+    from autolens.pipeline import pipeline as pl
+    from autolens.autopipe import non_linear as nl
+    from autolens.analysis import galaxy_prior as gp
+    from autolens.imaging import mask as msk
+    from autolens.profiles import light_profiles, mass_profiles
+
+    optimizer_class = nl.MultiNest
+
     # 1) Lens Light : EllipticalSersic
     #    Mass: None
     #    Source: None
