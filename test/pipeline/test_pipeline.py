@@ -27,7 +27,7 @@ class TestPipeline(object):
     def test_run_pipeline(self):
         phase_1 = DummyPhase()
         phase_2 = DummyPhase()
-        pipeline = pl.Pipeline(phase_1, phase_2)
+        pipeline = pl.Pipeline("", phase_1, phase_2)
 
         pipeline.run(None)
 
@@ -39,8 +39,8 @@ class TestPipeline(object):
         phase_2 = DummyPhase()
         phase_3 = DummyPhase()
 
-        pipeline1 = pl.Pipeline(phase_1, phase_2)
-        pipeline2 = pl.Pipeline(phase_3)
+        pipeline1 = pl.Pipeline("", phase_1, phase_2)
+        pipeline2 = pl.Pipeline("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
