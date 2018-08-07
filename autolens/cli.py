@@ -3,6 +3,7 @@ autolens
 
 Usage:
   autolens reset_config
+  autolens download_config
   autolens pipeline
   autolens -h | --help
   autolens --version
