@@ -5,7 +5,6 @@ This pipeline fits the source light with an Elliptical Sersic profile, the lens 
 profile and the lens mass with a Spherical Isothermal profile.
 """
 
-
 name = "profile"
 
 
@@ -29,6 +28,10 @@ def make():
                               optimizer_class=optimizer_class, name="{}/phase1".format(name))
 
     class LensSubtractedPhase(ph.SourceLensPhase):
+        """
+    Subtract the lens light from the image and fit only the source galaxy's light.
+        """
+
         def modify_image(self, masked_image, previous_results):
             return masked_image - previous_results.last.lens_galaxy_image
 
@@ -58,6 +61,10 @@ def make():
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
     class CombinedPhase(ph.SourceLensPhase):
+        """
+    Use priors from the previous phases to fit both the source and the lens at the same time.
+        """
+
         def pass_priors(self, previous_results):
             self.lens_galaxy = gp.GalaxyPrior(
                 elliptical_sersic=previous_results.first.variable.lens_galaxy.elliptical_sersic,
@@ -81,6 +88,11 @@ def make():
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
     class CombinedPhase2(ph.SourceLensPhase):
+        """
+        Use priors from the previous phases in conjunction with constant values determined for hyper galaxies to fit
+        both the source and the lens at the same time.
+        """
+
         def pass_priors(self, previous_results):
             phase_3_results = previous_results[2]
             self.lens_galaxy = phase_3_results.variable.lens_galaxy
