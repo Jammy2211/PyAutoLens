@@ -1,5 +1,6 @@
 from autolens.commands.base import Base, current_directory
 from autolens import conf
+from autolens import pipeline
 import colorama
 
 
@@ -18,7 +19,6 @@ def red(text):
 class Pipeline(Base):
 
     def run(self):
-        from autolens import pipeline
         name = self.options['<name>']
         if self.options['--info']:
             tup = pipeline.pipeline_dict[name]
@@ -82,7 +82,6 @@ class Pipeline(Base):
 
 
 def print_pipelines():
-    import pipeline
     print("Available Pipelines:\n")
     print(
         "\n".join(
