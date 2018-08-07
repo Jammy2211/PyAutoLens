@@ -253,6 +253,10 @@ def phase_property(name):
 
 
 class SourceLensPhase(Phase):
+    """
+    Fit a simple source and lens system.
+    """
+
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
@@ -376,6 +380,10 @@ class SourceLensPhase(Phase):
 
 
 class PixelizedSourceLensPhase(SourceLensPhase):
+    """
+    Fit a simple source and lens system using a pixelized source.
+    """
+
     def __init__(self,
                  lens_galaxy=None,
                  pixelization=px.RectangularRegConst,
@@ -419,6 +427,9 @@ class PixelizedSourceLensPhase(SourceLensPhase):
 
 
 class LensOnlyPhase(SourceLensPhase):
+    """
+    Fit only the lens galaxy light.
+    """
     def __init__(self,
                  lens_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
@@ -434,6 +445,9 @@ class LensOnlyPhase(SourceLensPhase):
 
 
 class SourceOnlyPhase(SourceLensPhase):
+    """
+    Fit only the source galaxy light and lens galaxy mass profile.
+    """
     def __init__(self,
                  source_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
@@ -447,6 +461,9 @@ class SourceOnlyPhase(SourceLensPhase):
 
 
 class SourceLensHyperGalaxyPhase(SourceLensPhase):
+    """
+    Adjust hyper galaxy parameters to optimize the fit.
+    """
     # TODO: Perform hyper galaxy analyses for each hyper galaxy independently
     def pass_priors(self, previous_results):
         self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
