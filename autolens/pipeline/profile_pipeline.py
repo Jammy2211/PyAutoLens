@@ -1,3 +1,11 @@
+"""
+Analyse a lens source system using only profiles.
+
+This pipeline fits the source light with an Elliptical Sersic profile, the lens light with an Elliptical Sersic profile
+and the lens mass with a Spherical Isothermal profile.
+"""
+
+
 name = "profile"
 
 
@@ -11,12 +19,12 @@ def make():
 
     optimizer_class = nl.MultiNest
 
-    # 1) Lens Light : EllipticalSersic
+    # 1) Lens Light: EllipticalSersic
     #    Mass: None
     #    Source: None
     #    NLO: MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
+    #    Image: Observed Image
+    #    Mask: Circle - 3.0"
     phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                               optimizer_class=optimizer_class, name="{}/phase1".format(name))
 
@@ -31,8 +39,8 @@ def make():
     #    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
     #    Source: EllipticalSersic
     #    NLO: MultiNest
-    #    Image : Lens Subtracted Image (previous phase)
-    #    Mask : Annulus (0.4" - 3.0")
+    #    Image: Lens Subtracted Image (previous phase)
+    #    Mask: Annulus (0.4" - 3.0")
     def annular_mask_function(img):
         return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
                                 outer_radius=3.)
@@ -45,10 +53,10 @@ def make():
 
     # 3) Lens Light : Elliptical Sersic (Priors phase 1)
     #    Mass: SIE (Priors phase 2)
-    #    Source : Elliptical Sersic (Priors phase 2)
-    #    NLO : MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
+    #    Source: Elliptical Sersic (Priors phase 2)
+    #    NLO: MultiNest
+    #    Image: Observed Image
+    #    Mask: Circle - 3.0"
     class CombinedPhase(ph.SourceLensPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxy = gp.GalaxyPrior(
@@ -60,18 +68,18 @@ def make():
                            name="{}/phase3".format(name))
     # 3H) Hyper-Parameters: Make Lens Galaxy and Source Galaxy Hyper-Galaxies.
     #     Lens Light / Mass / Source - Fix parameters to phase 3 most likely result
-    #     NLO : DownhillSimplex
-    #     Image : Observed Image
-    #     Mask : Circle - 3.0"
+    #     NLO: DownhillSimplex
+    #     Image: Observed Image
+    #     Mask: Circle - 3.0"
     phase3h = ph.SourceLensHyperGalaxyPhase(name="{}/phase3h".format(name))
 
     # 4) Repeat phase 3, using its priors and the hyper-galaxies fixed to their optimized values.
-    #    Lens Light : Elliptical Sersic (Priors phase 3)
+    #    Lens Light: Elliptical Sersic (Priors phase 3)
     #    Mass: SIE (Priors phase 3)
-    #    Source : Elliptical Sersic (Priors phase 3)
-    #    NLO : MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
+    #    Source: Elliptical Sersic (Priors phase 3)
+    #    NLO: MultiNest
+    #    Image: Observed Image
+    #    Mask: Circle - 3.0"
     class CombinedPhase2(ph.SourceLensPhase):
         def pass_priors(self, previous_results):
             phase_3_results = previous_results[2]
