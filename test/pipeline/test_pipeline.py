@@ -1,4 +1,5 @@
 from autolens.pipeline import pipeline as pl
+from autolens.pipeline import profile_pipeline
 from autolens.pipeline import phase as ph
 from autolens.autopipe import model_mapper
 from autolens.autopipe import non_linear
@@ -50,7 +51,7 @@ shape = (50, 50)
 
 @pytest.fixture(name="profile_only_pipeline")
 def make_profile_only_pipeline():
-    return pl.make_profile_pipeline()
+    return profile_pipeline.make()
 
 
 @pytest.fixture(name="image")
