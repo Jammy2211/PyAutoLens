@@ -25,7 +25,3 @@ class PixelizationException(Exception):
 
 class RayTracingException(Exception):
     pass
-
-
-class CLIException(Exception):
-    pass

@@ -1,5 +1,4 @@
 from autolens.commands.base import Base, current_directory
-from autolens.exc import CLIException
 
 
 class Pipeline(Base):
@@ -11,7 +10,8 @@ class Pipeline(Base):
             try:
                 self.run_pipeline(pipeline.pipeline_dict[name]())
             except KeyError:
-                raise CLIException("No pipeline called '{}' found".format(name))
+                print("No pipeline called '{}' found".format(name))
+                return
 
         print("Available Pipelines:")
         print("\n".join(list(pipeline.pipeline_dict.keys())))
@@ -23,7 +23,8 @@ class Pipeline(Base):
     def image_path(self):
         image_path = self.options['<image_path>']
         if image_path is None:
-            raise CLIException("Please specify the path to the image folder")
+            print("Please specify the path to the image folder")
+            return 
         if not image_path.startswith("/"):
             image_path = "{}/{}".format(current_directory, image_path)
         return image_path
