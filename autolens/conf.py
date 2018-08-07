@@ -234,3 +234,8 @@ def remove_config(config_dir=CONFIG_DIR):
         shutil.rmtree(config_path)
     except FileNotFoundError:
         pass
+
+
+class Config(object):
+    def __init__(self, config_path):
+        self.config_path = config_path
