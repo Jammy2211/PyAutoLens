@@ -13,11 +13,12 @@ Options:
   --version                         Show version.
   --pixel-scale=<pixel-scale>       The scale of one pixel in the image.
   --image=<image>                   The path to the folder that contains the image data.
-  --config=<config>                 The path to the folder that contains the configuration [default: .].
+  --config=<config>                 The path to the folder that contains the configuration [default: config].
 
 Examples:
   autolens download_config
   autolens pipeline
+  autolens pipeline profile --image=hst_0/ --pixel-scale=0.05
 
 Help:
   For help using this tool, please open an issue on the Github repository:
@@ -45,7 +46,6 @@ def main():
             command = [command[1] for command in getmembers(module, isclass) if command[0] != 'Base'][0]
             command = command(options)
             command.run()
-
 
 
 if __name__ == "__main__":
