@@ -9,6 +9,7 @@ import shutil
 directory = os.path.dirname(os.path.realpath(__file__))
 
 CONFIG_DIR = '{}/..'.format(directory)
+CONFIG_PATH = '{}/config'.format(CONFIG_DIR)
 
 CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'
 
@@ -32,7 +33,7 @@ class NamedConfig(object):
 
         Parameters
         ----------
-        section_namepriors
+        section_name
         attribute_type: type
             The type to which the value should be cast
         attribute_name: String
@@ -209,8 +210,7 @@ class WidthConfig(AncestorConfig):
         return float(super(WidthConfig, self).get(module_name, class_name, attribute_name))
 
 
-def is_config(config_dir=CONFIG_DIR):
-    config_path = '{}/config'.format(config_dir)
+def is_config(config_path=CONFIG_PATH):
     return os.path.isdir(config_path)
 
 
@@ -228,11 +228,10 @@ def download_config(config_dir=CONFIG_DIR):
     os.remove(zip_path)
 
 
-def remove_config(config_dir=CONFIG_DIR):
+def remove_config(config_path=CONFIG_PATH):
     print("Removing config...")
     try:
-        config_path = '{}/config'.format(config_dir)
-        shutil.rmtree(config_path)
+        shutil.rmtree(CONFIG_PATH)
     except FileNotFoundError:
         pass
 
