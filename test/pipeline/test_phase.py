@@ -201,7 +201,7 @@ class TestPixelizedPhase(object):
 
 class TestAnalysis(object):
     def test_model_image(self, results_collection, masked_image):
-        analysis = ph.Phase.Analysis(results_collection, masked_image)
+        analysis = ph.Phase.Analysis(results_collection, masked_image, "name")
         assert (results_collection[0].model_image == analysis.last_results.model_image).all()
 
 
