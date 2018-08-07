@@ -4,6 +4,7 @@ autolens
 Usage:
   autolens download_config
   autolens pipeline
+  autolens pipeline <name> --info
   autolens pipeline <name> (--image=<image>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
   autolens -h | --help
   autolens --version

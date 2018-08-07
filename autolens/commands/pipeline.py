@@ -3,11 +3,18 @@ from autolens import conf
 import colorama
 
 
+def blue(text):
+    return "{}{}{}".format(colorama.Fore.BLUE, text, colorama.Fore.RESET)
+
+
 class Pipeline(Base):
 
     def run(self):
         from autolens import pipeline
         name = self.options['<name>']
+        if self.options['--info']:
+            print(blue(pipeline.pipeline_dict[name].doc))
+            return
         if name is not None:
             if name not in pipeline.pipeline_dict:
                 print("No pipeline called '{}' found".format(name))
@@ -18,7 +25,7 @@ class Pipeline(Base):
         print("Available Pipelines:\n")
         print(
             "\n".join(
-                ["{}\n{}".format(key, colorama.Fore.BLUE + value.doc.split('\n')[1] + colorama.Fore.RESET) for
+                ["{}\n  {}".format(key, blue(value.short_doc)) for
                  key, value
                  in
                  pipeline.pipeline_dict.items()]))
