@@ -1,7 +1,14 @@
+"""
+Analyse only the source galaxy.
+
+This pipeline fits the source galaxy with a rectangular pixelization. It assumes the foreground galaxy's mass profile
+comprises Spherical Isothermal and External Shear components.
+"""
+
 name = "source"
 
 
-def make(config):
+def make():
     from autolens.pipeline import phase as ph
     from autolens.pipeline import pipeline as pl
     from autolens.analysis import galaxy_prior as gp
