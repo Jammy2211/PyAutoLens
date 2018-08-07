@@ -19,6 +19,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 SIMPLEX_TUPLE_WIDTH = 0.1
 
+
 def generate_parameter_latex(parameters, subscript=''):
     """Generate a latex label for a non-linear search parameter.
 
@@ -86,9 +87,8 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the weighted_data being analysed (e.g. the name of the weighted_data set)
         """
-        self.nlo_config = conf.NamedConfig(
-            "{}/../../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
-            self.__class__.__name__)
+        self.named_config = conf.NamedConfig(
+            "{}/../../config/non_linear.ini".format(dir_path) if config_path is None else config_path)
 
         self.path = "{}/{}".format(path, name) if name is not None else path
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
@@ -101,11 +101,29 @@ class NonLinearOptimizer(object):
         if include_hyper_image:
             self.hyper_image = mm.PriorModel(hyper_image.HyperImage, config=self.variable.config)
 
+    def config(self, attribute_name, attribute_type=str):
+        """
+        Get a config field from this optimizer's section in non_linear.ini by a key and value type.
+
+        Parameters
+        ----------
+        attribute_name: str
+            The name of the field
+        attribute_type: type
+            The type of the value
+
+        Returns
+        -------
+        attribute
+            An attribute for the key with the specified type.
+        """
+        return self.named_config.get(self.__class__.__name__, attribute_name, attribute_type)
+
     def save_model_info(self):
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
-    #    self.create_param_names()
+        #    self.create_param_names()
         self.variable.output_model_info(self.file_model_info)
         self.variable.check_model_info(self.file_model_info)
 
@@ -143,14 +161,14 @@ class DownhillSimplex(NonLinearOptimizer):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
                                               model_mapper=model_mapper, path=path, name=name)
 
-        self.xtol = self.nlo_config.get("xtol", float)
-        self.ftol = self.nlo_config.get("ftol", float)
-        self.maxiter = self.nlo_config.get("maxiter", int)
-        self.maxfun = self.nlo_config.get("maxfun", int)
+        self.xtol = self.config("xtol", float)
+        self.ftol = self.config("ftol", float)
+        self.maxiter = self.config("maxiter", int)
+        self.maxfun = self.config("maxfun", int)
 
-        self.full_output = self.nlo_config.get("full_output", int)
-        self.disp = self.nlo_config.get("disp", int)
-        self.retall = self.nlo_config.get("retall", int)
+        self.full_output = self.config("full_output", int)
+        self.disp = self.config("disp", int)
+        self.retall = self.config("retall", int)
 
         self.fmin = fmin
 
@@ -212,25 +230,25 @@ class MultiNest(NonLinearOptimizer):
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
-        self.importance_nested_sampling = self.nlo_config.get('importance_nested_sampling', bool)
-        self.multimodal = self.nlo_config.get('multimodal', bool)
-        self.const_efficiency_mode = self.nlo_config.get('const_efficiency_mode', bool)
-        self.n_live_points = self.nlo_config.get('n_live_points', int)
-        self.evidence_tolerance = self.nlo_config.get('evidence_tolerance', float)
-        self.sampling_efficiency = self.nlo_config.get('sampling_efficiency', float)
-        self.n_iter_before_update = self.nlo_config.get('n_iter_before_update', int)
-        self.null_log_evidence = self.nlo_config.get('null_log_evidence', float)
-        self.max_modes = self.nlo_config.get('max_modes', int)
-        self.mode_tolerance = self.nlo_config.get('mode_tolerance', float)
-        self.outputfiles_basename = self.nlo_config.get('outputfiles_basename', str)
-        self.seed = self.nlo_config.get('seed', int)
-        self.verbose = self.nlo_config.get('verbose', bool)
-        self.resume = self.nlo_config.get('resume', bool)
-        self.context = self.nlo_config.get('context', int)
-        self.write_output = self.nlo_config.get('write_output', bool)
-        self.log_zero = self.nlo_config.get('log_zero', float)
-        self.max_iter = self.nlo_config.get('max_iter', int)
-        self.init_MPI = self.nlo_config.get('init_MPI', bool)
+        self.importance_nested_sampling = self.config('importance_nested_sampling', bool)
+        self.multimodal = self.config('multimodal', bool)
+        self.const_efficiency_mode = self.config('const_efficiency_mode', bool)
+        self.n_live_points = self.config('n_live_points', int)
+        self.evidence_tolerance = self.config('evidence_tolerance', float)
+        self.sampling_efficiency = self.config('sampling_efficiency', float)
+        self.n_iter_before_update = self.config('n_iter_before_update', int)
+        self.null_log_evidence = self.config('null_log_evidence', float)
+        self.max_modes = self.config('max_modes', int)
+        self.mode_tolerance = self.config('mode_tolerance', float)
+        self.outputfiles_basename = self.config('outputfiles_basename', str)
+        self.seed = self.config('seed', int)
+        self.verbose = self.config('verbose', bool)
+        self.resume = self.config('resume', bool)
+        self.context = self.config('context', int)
+        self.write_output = self.config('write_output', bool)
+        self.log_zero = self.config('log_zero', float)
+        self.max_iter = self.config('max_iter', int)
+        self.init_MPI = self.config('init_MPI', bool)
         self.run = run
 
         logger.debug("Creating MultiNest NLO")
