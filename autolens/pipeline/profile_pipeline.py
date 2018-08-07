@@ -1,8 +1,8 @@
 """
-Analyse a lens source system using only profiles.
+    Analyse a lens source system using only profiles.
 
-This pipeline fits the source light with an Elliptical Sersic profile, the lens light with an Elliptical Sersic profile
-and the lens mass with a Spherical Isothermal profile.
+    This pipeline fits the source light with an Elliptical Sersic profile, the lens light with an Elliptical Sersic profile
+    and the lens mass with a Spherical Isothermal profile.
 """
 
 
