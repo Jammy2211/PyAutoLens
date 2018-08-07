@@ -4,7 +4,7 @@ autolens
 Usage:
   autolens download_config
   autolens pipeline
-  autolens pipeline --name str
+  autolens pipeline <name>
   autolens -h | --help
   autolens --version
 
