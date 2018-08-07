@@ -2,7 +2,6 @@
 autolens
 
 Usage:
-  autolens reset_config
   autolens download_config
   autolens pipeline
   autolens -h | --help
@@ -13,7 +12,7 @@ Options:
   --version                         Show version.
 
 Examples:
-  autolens reset_config
+  autolens download_config
   autolens pipeline
 
 Help:
