@@ -44,7 +44,10 @@ class Pipeline(Base):
 
     @property
     def output_path(self):
-        return self.options['--output']
+        output_path = self.options['--output']
+        if not output_path.startswith("/"):
+            output_path = "{}/{}".format(current_directory, output_path)
+        return output_path
 
     def load_image(self):
         from autolens.imaging import scaled_array
