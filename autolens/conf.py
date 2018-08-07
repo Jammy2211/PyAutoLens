@@ -8,9 +8,9 @@ import shutil
 
 directory = os.path.dirname(os.path.realpath(__file__))
 
+CONFIG_DIR = '{}/..'.format(directory)
+
 CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'
-CONFIG_DIR = '{}/../'.format(directory)
-CONFIG_PATH = '{}/../config'.format(directory)
 
 
 class NamedConfig(object):
@@ -208,28 +208,31 @@ class WidthConfig(AncestorConfig):
         return float(super(WidthConfig, self).get(module_name, class_name, attribute_name))
 
 
-def is_config():
-    return os.path.isdir(CONFIG_PATH)
+def is_config(config_dir=CONFIG_DIR):
+    config_path = '{}/config'.format(config_dir)
+    return os.path.isdir(config_path)
 
 
-def download_config():
-    zip_path = "{}.zip".format(CONFIG_PATH)
+def download_config(config_dir=CONFIG_DIR):
+    config_path = '{}/config'.format(config_dir)
+    zip_path = "{}.zip".format(config_path)
     with requests.get(CONFIG_URL) as response:
         with open(zip_path, 'wb') as f:
             f.write(response.content)
 
     with zipfile.ZipFile(zip_path, 'r') as z:
-        z.extractall(CONFIG_DIR)
+        z.extractall(config_dir)
 
     os.remove(zip_path)
 
 
-if not is_config():
-    download_config()
+# if not is_config():
+#     download_config()
 
 
-def remove_config():
+def remove_config(config_dir=CONFIG_DIR):
     try:
-        shutil.rmtree(CONFIG_PATH)
+        config_path = '{}/config'.format(config_dir)
+        shutil.rmtree(config_path)
     except FileNotFoundError:
         pass
