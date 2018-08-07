@@ -32,7 +32,7 @@ class NamedConfig(object):
 
         Parameters
         ----------
-        section_name
+        section_namepriors
         attribute_type: type
             The type to which the value should be cast
         attribute_name: String
@@ -240,8 +240,8 @@ def remove_config(config_dir=CONFIG_DIR):
 class Config(object):
     def __init__(self, config_path):
         self.config_path = config_path
-        self.prior_default = DefaultPriorConfig("{}/default".format(config_path))
-        self.prior_width = WidthConfig("{}/width".format(config_path))
+        self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
+        self.prior_width = WidthConfig("{}/priors/width".format(config_path))
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
 
 
