@@ -8,6 +8,7 @@ class Pipeline(Base):
     """Reset Config!"""
 
     def run(self):
+        print("Available Pipelines:")
         from autolens.pipeline import pipeline
 
         pipelines = [value for value in pipeline.__dict__.values() if isinstance(value, pipeline.Pipeline)]
