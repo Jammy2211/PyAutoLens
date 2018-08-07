@@ -5,12 +5,13 @@ class Pipeline(Base):
 
     def run(self):
         from autolens import pipeline
+        from autolens import conf
         name = self.options['<name>']
         if name is not None:
             if name not in pipeline.pipeline_dict:
                 print("No pipeline called '{}' found".format(name))
                 return
-            self.config()
+            conf.instance = conf.Config(self.config_path)
             self.run_pipeline(pipeline.pipeline_dict[name]())
 
         print("Available Pipelines:")
@@ -33,13 +34,13 @@ class Pipeline(Base):
     def pixel_scale(self):
         return float(self.options['--pixel-scale'])
 
-    def config(self):
-        from autolens import conf
+    @property
+    def config_path(self):
         config_path = self.options['--config']
         if not conf.is_config(config_path):
             print("No config found at {}. Try running 'autolens download_config'".format(config_path))
             exit(1)
-        conf.instance = conf.Config(config_path)
+        return config_path
 
     def load_image(self):
         from autolens.imaging import scaled_array
