@@ -7,7 +7,7 @@ import pymultinest
 import scipy.optimize
 import numpy as np
 from autolens.imaging import hyper_image
-from autolens import config
+from autolens import conf
 from autolens.autopipe import model_mapper as mm
 import logging
 
@@ -86,7 +86,7 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the weighted_data being analysed (e.g. the name of the weighted_data set)
         """
-        self.nlo_config = config.NamedConfig(
+        self.nlo_config = conf.NamedConfig(
             "{}/../../config/non_linear.ini".format(dir_path) if config_path is None else config_path,
             self.__class__.__name__)
 
