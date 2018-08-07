@@ -82,10 +82,10 @@ def make_source_only_pipeline():
     phase3 = ConstantLensPhase(pixelization=px.RectangularRegConst,
                                mask_function=mask_function)
 
-    return Pipeline("source_only_pipeline", phase1, phase2, phase3)
+    return Pipeline("source", phase1, phase2, phase3)
 
 
-def make_profile_pipeline(name="profile_pipeline", optimizer_class=nl.MultiNest):
+def make_profile_pipeline(name="profile", optimizer_class=nl.MultiNest):
     # 1) Lens Light : EllipticalSersic
     #    Mass: None
     #    Source: None
