@@ -12,6 +12,7 @@ import numpy as np
 from autolens.pixelization import pixelization as px
 import inspect
 import logging
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -112,7 +113,7 @@ class Phase(object):
         masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
 
-        analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results)
+        analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results, name=self.name)
         return analysis
 
     @property
@@ -159,7 +160,7 @@ class Phase(object):
             return np.sum(np.stack((image for image in self.galaxy_images if image is not None)), axis=0)
 
     class Analysis(object):
-        def __init__(self, previous_results, masked_image):
+        def __init__(self, previous_results, masked_image, name):
             """
             An analysis object
 
@@ -171,6 +172,7 @@ class Phase(object):
                 An image that has been masked
             """
             self.previous_results = previous_results
+            self.name = name
             self.masked_image = masked_image
             log_interval = conf.instance.general.get('output', 'log_interval', int)
             self.__should_log = IntervalCounter(log_interval)
@@ -338,10 +340,11 @@ class SourceLensPhase(Phase):
             return self.galaxy_images[1]
 
     class Analysis(Phase.Analysis):
-        def __init__(self, masked_image, previous_results):
-            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image)
+        def __init__(self, masked_image, previous_results, name):
+            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image, name)
             self.model_image = None
             self.galaxy_images = None
+            self.plot_count = 0
             if self.last_results is not None:
                 self.model_image = self.masked_image.mask.map_to_1d(previous_results.last.model_image)
                 self.galaxy_images = list(map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
@@ -367,6 +370,21 @@ class SourceLensPhase(Phase):
                     "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                         lens_galaxy,
                         source_galaxy))
+            if self.should_visualise:
+                self.plot_count += 1
+                logger.info("Saving visualisations {}".format(self.plot_count))
+                lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
+                                                                                                source_galaxy)
+
+                def save_image(image, image_name):
+                    if image is not None:
+                        plt.imshow(image)
+                        plt.savefig(
+                            "{}/{}/{}_{}.png".format(conf.instance.data_path, self.name, image_name, self.plot_count))
+
+                save_image(lens_image, "lens_image")
+                save_image(source_image, "source_image")
+                save_image(sum(filter(None, [lens_image, source_image])), "model_image")
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
@@ -393,14 +411,16 @@ class SourceLensPhase(Phase):
             galaxy_images: [ndarray]
                 A list of images of galaxy components
             """
+            return self.galaxy_images_for_lens_galaxy_and_source_galaxy(model.lens_galaxy, model.source_galaxy)
 
+        def galaxy_images_for_lens_galaxy_and_source_galaxy(self, lens_galaxy, source_galaxy):
             def model_image(plane):
                 if len(plane.galaxies) == 0:
                     return None
                 return self.masked_image.map_to_2d(plane.galaxy_images[0])
 
-            lens_galaxies = [] if model.lens_galaxy is None else [model.lens_galaxy]
-            source_galaxies = [] if model.source_galaxy is None else [model.source_galaxy]
+            lens_galaxies = [] if lens_galaxy is None else [lens_galaxy]
+            source_galaxies = [] if source_galaxy is None else [source_galaxy]
             tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.masked_image.grids)
             return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
