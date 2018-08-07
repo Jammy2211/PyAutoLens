@@ -73,8 +73,7 @@ class Result(object):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None,
-                 config_path=None, path=default_path, name=None, **classes):
+    def __init__(self, include_hyper_image=False, model_mapper=None, path=default_path, name=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -87,8 +86,7 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the weighted_data being analysed (e.g. the name of the weighted_data set)
         """
-        self.named_config = conf.NamedConfig(
-            "{}/../../config/non_linear.ini".format(dir_path) if config_path is None else config_path)
+        self.named_config = conf.instance.non_linear
 
         self.path = "{}/{}".format(path, name) if name is not None else path
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
