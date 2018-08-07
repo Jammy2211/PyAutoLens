@@ -7,6 +7,7 @@ from autolens.imaging import image as img
 from autolens.analysis import fitting
 from autolens.autopipe import non_linear
 from autolens.autopipe import model_mapper as mm
+from autolens import conf
 import numpy as np
 from autolens.pixelization import pixelization as px
 import inspect
@@ -35,6 +36,16 @@ class ResultsCollection(list):
         if len(self) > 0:
             return self[0]
         return None
+
+
+class IntervalCounter(object):
+    def __init__(self, interval):
+        self.count = 0
+        self.interval = interval
+
+    def __call__(self):
+        self.count += 1
+        return self.count % self.interval == 0
 
 
 class Phase(object):
@@ -148,8 +159,7 @@ class Phase(object):
             return np.sum(np.stack((image for image in self.galaxy_images if image is not None)), axis=0)
 
     class Analysis(object):
-        def __init__(self, previous_results,
-                     masked_image):
+        def __init__(self, previous_results, masked_image):
             """
             An analysis object
 
@@ -162,6 +172,18 @@ class Phase(object):
             """
             self.previous_results = previous_results
             self.masked_image = masked_image
+            log_interval = conf.instance.general.get('output', 'log_interval', int)
+            self.__should_log = IntervalCounter(log_interval)
+            visualise_interval = conf.instance.general.get('output', 'visualise_interval', int)
+            self.__should_visualise = IntervalCounter(visualise_interval)
+
+        @property
+        def should_log(self):
+            return self.__should_log()
+
+        @property
+        def should_visualise(self):
+            return self.__should_visualise()
 
         @property
         def last_results(self):
@@ -340,10 +362,11 @@ class SourceLensPhase(Phase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model image itself
             """
-            logger.debug(
-                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
-                    lens_galaxy,
-                    source_galaxy))
+            if self.should_log:
+                logger.debug(
+                    "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                        lens_galaxy,
+                        source_galaxy))
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
@@ -414,10 +437,11 @@ class PixelizedSourceLensPhase(SourceLensPhase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model image itself
             """
-            logger.debug(
-                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
-                    lens_galaxy,
-                    source_galaxy))
+            if self.should_log:
+                logger.debug(
+                    "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                        lens_galaxy,
+                        source_galaxy))
 
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.masked_image.grids)
             fitter = fitting.PixelizedFitter(self.masked_image, "TODO", tracer)
@@ -433,6 +457,7 @@ class LensOnlyPhase(SourceLensPhase):
     """
     Fit only the lens galaxy light.
     """
+
     def __init__(self,
                  lens_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
@@ -451,6 +476,7 @@ class SourceOnlyPhase(SourceLensPhase):
     """
     Fit only the source galaxy light and lens galaxy mass profile.
     """
+
     def __init__(self,
                  source_galaxy=None,
                  optimizer_class=non_linear.DownhillSimplex,
@@ -467,6 +493,7 @@ class SourceLensHyperGalaxyPhase(SourceLensPhase):
     """
     Adjust hyper galaxy parameters to optimize the fit.
     """
+
     # TODO: Perform hyper galaxy analyses for each hyper galaxy independently
     def pass_priors(self, previous_results):
         self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
