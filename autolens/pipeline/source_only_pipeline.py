@@ -1,8 +1,8 @@
 """
-Analyse only the source galaxy.
+    Analyse only the source galaxy.
 
-This pipeline fits the source galaxy with a rectangular pixelization. It assumes the foreground galaxy's mass profile
-comprises Spherical Isothermal and External Shear components.
+    This pipeline fits the source galaxy with a rectangular pixelization. It assumes the foreground galaxy's mass profile
+    comprises Spherical Isothermal and External Shear components.
 """
 
 name = "source"
