@@ -97,10 +97,10 @@ def test_mn_samples():
     return mn_samples_path
 
 
-@pytest.fixture(name='config_path')
-def test_config_path():
-    return "{}/../test_files/config/priors/default/".format(os.path.dirname(os.path.realpath(__file__)))
-
+@pytest.fixture(name='mm_config')
+def test_mm_config():
+    path = "{}/../test_files/config/priors/default/".format(os.path.dirname(os.path.realpath(__file__)))
+    return conf.DefaultPriorConfig(path)
 
 def create_path(func):
     @wraps(func)
@@ -297,95 +297,82 @@ class TestGenerateLatex(object):
 
 
 class TestNonLinearOptimizer(object):
-    class TestDirectorySetup(object):
 
-        def test__1_class__correct_directory(self, config_path, nlo_setup_path):
+    class TestDirectorySetup:
+
+        def test__1_class__correct_directory(self, mm_config, nlo_setup_path):
             conf.instance.data_path = nlo_setup_path + '1_class'
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
-            nlo = non_linear.NonLinearOptimizer(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-                path=nlo_setup_path + '1_class', config_path=config_path)
-            nlo.variable.add_classes(parallel=MockClassNLOx4)
-            nlo.save_model_info()
-
-            assert os.path.exists(nlo_setup_path + '1_class')
+            assert os.path.exists(nlo_setup_path + '1_class') == True
 
     class TestTotalParameters:
 
-        def test__1_class__four_parameters(self, config_path, nlo_setup_path):
-            nlo = non_linear.NonLinearOptimizer(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-                path=nlo_setup_path + '1_class', config_path=config_path)
-            nlo.variable.add_classes(class_1=MockClassNLOx4)
+        def test__1_class__four_parameters(self, mm_config, nlo_setup_path):
+            conf.instance.data_path = nlo_setup_path + '1_class'
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
             assert nlo.variable.total_parameters == 4
 
-        def test__2_classes__six_parameters(self, config_path, nlo_setup_path):
-            nlo = non_linear.NonLinearOptimizer(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-                path=nlo_setup_path + '2_classes', config_path=config_path)
-
-            nlo.variable.add_classes(class_1=MockClassNLOx4, class_2=MockClassNLOx6)
+        def test__2_classes__six_parameters(self, mm_config, nlo_setup_path):
+            conf.instance.data_path = nlo_setup_path + '2_classes'
+            mapper = model_mapper.ModelMapper(config=mm_config, class_1=MockClassNLOx4, class_2=MockClassNLOx6)
+            nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
             assert nlo.variable.total_parameters == 10
 
+    # class TestCreateParamNames:
     #
-    # class TestCreateParamNames(object):
+    #     def test__1_class_and_parameter_set(self, mm_config, nlo_paramnames_path):
+    #         conf.instance.data_path = nlo_paramnames_path
     #
-    #     def test__1_class_and_parameter_set(self, config_path, nlo_paramnames_path):
-    #
-    #         nlo = non_linear.NonLinearOptimizer(model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-    #                                             path=nlo_paramnames_path, config_path=config_path)
-    #
-    #         nlo.variable.add_classes(mock_class=MockClassNLOx4)
+    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
     #         nlo.save_model_info()
     #
     #         paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
     #
     #         paramnames = paramnames_file.readlines()
     #
-    #         assert paramnames[0] == r'mock_class_one                          $x4p0_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[1] == r'mock_class_two                          $x4p1_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[2] == r'mock_class_three                        $x4p2_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[3] == r'mock_class_four                         $x4p3_{\mathrm{a1}}$' + '\n'
+    #         assert paramnames[0] == r'mock_class_one                          x4p0' + '\n'
+    #         assert paramnames[1] == r'mock_class_two                          x4p1' + '\n'
+    #         assert paramnames[2] == r'mock_class_three                        x4p2' + '\n'
+    #         assert paramnames[3] == r'mock_class_four                         x4p3' + '\n'
     #
-    #     def test__2_classes__includes_a_tuple(self, config_path, nlo_paramnames_path):
+    #     def test__2_classes__includes_a_tuple(self, mm_config, nlo_paramnames_path):
+    #         conf.instance.data_path = nlo_paramnames_path
     #
-    #         nlo = non_linear.NonLinearOptimizer(model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
-    #                                             path=nlo_paramnames_path, config_path=config_path)
-    #
-    #         nlo.variable.add_classes(mock_class_1=MockClassNLOx4)
-    #         nlo.variable.add_classes(mock_class_2=MockClassNLOx6)
+    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
     #         nlo.save_model_info()
     #
-    #         paramnames_file = open(nlo_paramnames_path + '/multinest.paramnames')
+    #         paramnames_file = open(nlo_paramnames_path + 'multinest.paramnames')
     #
     #         paramnames = paramnames_file.readlines()
     #
-    #         assert paramnames[0] == r'mock_class_1_one                        $x4p0_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[1] == r'mock_class_1_two                        $x4p1_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[2] == r'mock_class_1_three                      $x4p2_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[3] == r'mock_class_1_four                       $x4p3_{\mathrm{a1}}$' + '\n'
-    #         assert paramnames[4] == r'mock_class_2_one_0                      $x6p0_{\mathrm{b2}}$' + '\n'
-    #         assert paramnames[5] == r'mock_class_2_one_1                      $x6p1_{\mathrm{b2}}$' + '\n'
-    #         assert paramnames[6] == r'mock_class_2_two_0                      $x6p2_{\mathrm{b2}}$' + '\n'
-    #         assert paramnames[7] == r'mock_class_2_two_1                      $x6p3_{\mathrm{b2}}$' + '\n'
-    #         assert paramnames[8] == r'mock_class_2_three                      $x6p4_{\mathrm{b2}}$' + '\n'
-    #         assert paramnames[9] == r'mock_class_2_four                       $x6p5_{\mathrm{b2}}$' + '\n'
+    #         assert paramnames[0] == r'mock_class_1_one                        x4p0' + '\n'
+    #         assert paramnames[1] == r'mock_class_1_two                        x4p1' + '\n'
+    #         assert paramnames[2] == r'mock_class_1_three                      x4p2' + '\n'
+    #         assert paramnames[3] == r'mock_class_1_four                       x4p3' + '\n'
+    #         assert paramnames[4] == r'mock_class_2_one_0                      x6p0' + '\n'
+    #         assert paramnames[5] == r'mock_class_2_one_1                      x6p1' + '\n'
+    #         assert paramnames[6] == r'mock_class_2_two_0                      x6p2' + '\n'
+    #         assert paramnames[7] == r'mock_class_2_two_1                      x6p3' + '\n'
+    #         assert paramnames[8] == r'mock_class_2_three                      x6p4' + '\n'
+    #         assert paramnames[9] == r'mock_class_2_four                       x6p5' + '\n'
 
-    class TestMakeModelInfo(object):
+    class TestMakeModelInfo:
 
-        def test__single_class__outputs_all_info(self, config_path, nlo_model_info_path):
+        def test__single_class__outputs_all_info(self, mm_config, nlo_model_info_path):
             conf.instance.data_path = nlo_model_info_path
 
-            nlo = non_linear.NonLinearOptimizer(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-                path=nlo_model_info_path, config_path=config_path)
-
-            nlo.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
             nlo.save_model_info()
 
-            model_info_file = open(nlo_model_info_path + '/model.info')
+            model_info_file = open(nlo_model_info_path + 'model.info')
 
             model_info = model_info_file.readlines()
 
@@ -396,15 +383,14 @@ class TestNonLinearOptimizer(object):
             assert model_info[4] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
             assert model_info[5] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
 
-        def test__two_models_and_parameter_sets__output_all_info(self, config_path, nlo_model_info_path):
-            nlo = non_linear.NonLinearOptimizer(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-                path=nlo_model_info_path, config_path=config_path)
+        def test__two_models_and_parameter_sets__output_all_info(self, mm_config, nlo_model_info_path):
+            conf.instance.data_path = nlo_model_info_path
 
-            nlo.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
             nlo.save_model_info()
 
-            model_info_file = open(nlo_model_info_path + '/model.info')
+            model_info_file = open(nlo_model_info_path + 'model.info')
 
             model_info = model_info_file.readlines()
 
@@ -424,56 +410,57 @@ class TestNonLinearOptimizer(object):
             assert model_info[13] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
             assert model_info[14] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
 
-    class TestWrongModelInfo(object):
+    class TestWrongModelInfo:
 
-        def test__single_model__prior_changed_from_input_model__raises_error(self, config_path, nlo_wrong_info_path):
-            with open(nlo_wrong_info_path + '/model.info', 'w') as file: file.write('The model info is missing :(')
+        def test__single_model__prior_changed_from_input_model__raises_error(self, mm_config, nlo_wrong_info_path):
+            conf.instance.data_path = nlo_wrong_info_path
+
+            with open(nlo_wrong_info_path + 'model.info', 'w') as file: file.write('The model info is missing :(')
 
             with pytest.raises(exc.PriorException):
-                nl = non_linear.NonLinearOptimizer(
-                    model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)), path=nlo_wrong_info_path)
-                nl.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
-                nl.save_model_info()
+                mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+                nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+                nlo.save_model_info()
 
 
 class TestMultiNest(object):
+
     class TestReadFromSummary:
 
-        def test__read_most_probable__1_class_4_params(self, config_path, mn_summary_path):
-            create_summary_4_parameters(path=mn_summary_path + '1_class')
+        def test__read_most_probable__1_class_4_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            create_summary_4_parameters(path=mn_summary_path + '1_class')
+
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_probable = mn.most_probable_from_summary()
 
             assert most_probable == [1.0, -2.0, 3.0, 4.0]
 
-        def test__read_most_probable__2_classes_6_params(self, config_path, mn_summary_path):
-            create_summary_10_parameters(path=mn_summary_path + '2_classes')
+        def test__read_most_probable__2_classes_6_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_summary_10_parameters(path=mn_summary_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_probable = mn.most_probable_from_summary()
 
             assert most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
 
-        def test__most_probable__setup_model_instance__1_class_4_params(self, config_path, mn_summary_path):
+        def test__most_probable__setup_model_instance__1_class_4_params(self, mm_config, mn_summary_path):
+
+            conf.instance.data_path = mn_summary_path + '1_class'
+
             create_summary_4_parameters(path=mn_summary_path + '1_class')
 
-            conf.instance.data_path = mn_summary_path + '/1_class'
-
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_probable = mn.most_probable_instance_from_summary()
 
@@ -482,15 +469,14 @@ class TestMultiNest(object):
             assert most_probable.mock_class.three == 3.0
             assert most_probable.mock_class.four == 4.0
 
-        def test__most_probable__setup_model_instance__2_classes_6_params(self, config_path, mn_summary_path):
-            create_summary_10_parameters(path=mn_summary_path + '2_classes')
+        def test__most_probable__setup_model_instance__2_classes_6_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_summary_10_parameters(path=mn_summary_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_probable = mn.most_probable_instance_from_summary()
 
@@ -504,14 +490,15 @@ class TestMultiNest(object):
             assert most_probable.mock_class_2.three == 9.0
             assert most_probable.mock_class_2.four == 10.0
 
-        def test__most_probable__setup_model_instance__1_class_5_params_but_1_is_constant(self, config_path,
+        def test__most_probable__setup_model_instance__1_class_5_params_but_1_is_constant(self, mm_config,
                                                                                           mn_summary_path):
+
+            conf.instance.data_path = mn_summary_path + '1_class'
+
             create_summary_4_parameters(path=mn_summary_path + '1_class')
 
-            mapper = model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path), mock_class=MockClassNLOx5)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx5)
             mapper.mock_class.five = model_mapper.Constant(10.0)
-
-            conf.instance.data_path = mn_summary_path + '/1_class'
 
             mn = non_linear.MultiNest(model_mapper=mapper)
 
@@ -523,41 +510,40 @@ class TestMultiNest(object):
             assert most_probable.mock_class.four == 4.0
             assert most_probable.mock_class.five == 10.0
 
-        def test__read_most_likely__1_class_4_params(self, config_path, mn_summary_path):
-            create_summary_4_parameters(path=mn_summary_path + '1_class')
+        def test__read_most_likely__1_class_4_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            create_summary_4_parameters(path=mn_summary_path + '1_class')
+
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_likely = mn.most_likely_from_summary()
 
             assert most_likely == [9.0, -10.0, -11.0, 12.0]
 
-        def test__read_most_likely__2_classes_6_params(self, config_path, mn_summary_path):
-            create_summary_10_parameters(path=mn_summary_path + '2_classes')
+        def test__read_most_likely__2_classes_6_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_summary_10_parameters(path=mn_summary_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_likely = mn.most_likely_from_summary()
 
             assert most_likely == [21.0, 22.0, 23.0, 24.0, 25.0, -26.0, -27.0, 28.0, 29.0, 30.0]
 
-        def test__most_likely__setup_model_instance__1_class_4_params(self, config_path, mn_summary_path):
-            create_summary_4_parameters(path=mn_summary_path + '1_class')
+        def test__most_likely__setup_model_instance__1_class_4_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            create_summary_4_parameters(path=mn_summary_path + '1_class')
+
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_likely = mn.most_likely_instance_from_summary()
 
@@ -566,15 +552,14 @@ class TestMultiNest(object):
             assert most_likely.mock_class.three == -11.0
             assert most_likely.mock_class.four == 12.0
 
-        def test__most_likely__setup_model_instance__2_classes_6_params(self, config_path, mn_summary_path):
-            create_summary_10_parameters(path=mn_summary_path + '2_classes')
+        def test__most_likely__setup_model_instance__2_classes_6_params(self, mm_config, mn_summary_path):
 
             conf.instance.data_path = mn_summary_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_summary_10_parameters(path=mn_summary_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_likely = mn.most_likely_instance_from_summary()
 
@@ -588,15 +573,15 @@ class TestMultiNest(object):
             assert most_likely.mock_class_2.three == 29.0
             assert most_likely.mock_class_2.four == 30.0
 
-        def test__most_likely__setup_model_instance__1_class_5_params_but_1_is_constant(self, config_path,
-                                                                                        mn_summary_path):
+        def test__most_likely__setup_model_instance__1_class_5_params_but_1_is_constant(self, mm_config,
+                                                                                          mn_summary_path):
+
+            conf.instance.data_path = mn_summary_path + '1_class'
+
             create_summary_4_parameters(path=mn_summary_path + '1_class')
 
-            mapper = model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path), mock_class=MockClassNLOx5)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx5)
             mapper.mock_class.five = model_mapper.Constant(10.0)
-
-            conf.instance.data_path = mn_summary_path + '/1_class'
-
             mn = non_linear.MultiNest(model_mapper=mapper)
 
             most_likely = mn.most_likely_instance_from_summary()
@@ -609,16 +594,15 @@ class TestMultiNest(object):
 
     class TestGaussianPriors(object):
 
-        def test__1_class__gaussian_priors_at_3_sigma_confidence(self, config_path, mn_priors_path):
-            create_gaussian_prior_summary_4_parameters(path=mn_priors_path)
-            create_weighted_samples_4_parameters(path=mn_priors_path)
+        def test__1_class__gaussian_priors_at_3_sigma_confidence(self, mm_config, mn_priors_path):
 
             conf.instance.data_path = mn_priors_path
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_gaussian_prior_summary_4_parameters(path=mn_priors_path)
+            create_weighted_samples_4_parameters(path=mn_priors_path)
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             gaussian_priors = mn.gaussian_priors_at_sigma_limit(sigma_limit=3.0)
 
@@ -632,16 +616,15 @@ class TestMultiNest(object):
             assert gaussian_priors[2][1] == pytest.approx(0.12, 1e-2)
             assert gaussian_priors[3][1] == pytest.approx(0.22, 1e-2)
 
-        def test__1_profile__gaussian_priors_at_1_sigma_confidence(self, config_path, mn_priors_path):
-            create_gaussian_prior_summary_4_parameters(path=mn_priors_path)
-            create_weighted_samples_4_parameters(path=mn_priors_path)
+        def test__1_profile__gaussian_priors_at_1_sigma_confidence(self, mm_config, mn_priors_path):
 
             conf.instance.data_path = mn_priors_path
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_gaussian_prior_summary_4_parameters(path=mn_priors_path)
+            create_weighted_samples_4_parameters(path=mn_priors_path)
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
             gaussian_priors = mn.gaussian_priors_at_sigma_limit(sigma_limit=1.0)
 
             # Use sigmas directly as rouding errors come in otherwise
@@ -659,15 +642,14 @@ class TestMultiNest(object):
 
     class TestWeightedSamples(object):
 
-        def test__1_class__1st_first_weighted_sample__model_weight_and_likelihood(self, config_path, mn_samples_path):
-            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
+        def test__1_class__1st_first_weighted_sample__model_weight_and_likelihood(self, mm_config, mn_samples_path):
 
             conf.instance.data_path = mn_samples_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=0)
 
@@ -675,15 +657,14 @@ class TestMultiNest(object):
             assert weight == 0.02
             assert likelihood == -0.5 * 9999999.9
 
-        def test__1_class__5th_weighted_sample__model_weight_and_likelihood(self, config_path, mn_samples_path):
-            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
+        def test__1_class__5th_weighted_sample__model_weight_and_likelihood(self, mm_config, mn_samples_path):
 
             conf.instance.data_path = mn_samples_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=5)
 
@@ -691,15 +672,14 @@ class TestMultiNest(object):
             assert weight == 0.1
             assert likelihood == -0.5 * 9999999.9
 
-        def test__2_classes__1st_weighted_sample__model_weight_and_likelihood(self, config_path, mn_samples_path):
-            create_weighted_samples_10_parameters(path=mn_samples_path + '2_classes')
+        def test__2_classes__1st_weighted_sample__model_weight_and_likelihood(self, mm_config, mn_samples_path):
 
             conf.instance.data_path = mn_samples_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_10_parameters(path=mn_samples_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=0)
 
@@ -707,16 +687,15 @@ class TestMultiNest(object):
             assert weight == 0.02
             assert likelihood == -0.5 * 9999999.9
 
-        def test__2_classes__5th_weighted_sample__model_weight_and_likelihood(self, config_path,
-                                                                              mn_samples_path):
-            create_weighted_samples_10_parameters(path=mn_samples_path + '1_classes')
+        def test__2_classes__5th_weighted_sample__model_weight_and_likelihood(self, mm_config,
+                                                                                            mn_samples_path):
 
-            conf.instance.data_path = mn_samples_path + '1_classes'
+            conf.instance.data_path = mn_samples_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_10_parameters(path=mn_samples_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             model, weight, likelihood = mn.weighted_sample_model_from_weighted_samples(index=5)
 
@@ -724,16 +703,15 @@ class TestMultiNest(object):
             assert weight == 0.1
             assert likelihood == -0.5 * 9999999.9
 
-        def test__1_class__1st_weighted_sample_model_instance__include_weight_and_likelihood(self, config_path,
-                                                                                             mn_samples_path):
-            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
+        def test__1_class__1st_weighted_sample_model_instance__include_weight_and_likelihood(self, mm_config,
+                                                                                                mn_samples_path):
 
             conf.instance.data_path = mn_samples_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=0)
 
@@ -745,16 +723,15 @@ class TestMultiNest(object):
             assert weighted_sample_model.mock_class.three == 3.1
             assert weighted_sample_model.mock_class.four == 4.1
 
-        def test__1_class__5th_weighted_sample_model_instance__include_weight_and_likelihood(self, config_path,
-                                                                                             mn_samples_path):
-            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
+        def test__1_class__5th_weighted_sample_model_instance__include_weight_and_likelihood(self, mm_config,
+                                                                                                mn_samples_path):
 
             conf.instance.data_path = mn_samples_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
 
@@ -766,16 +743,15 @@ class TestMultiNest(object):
             assert weighted_sample_model.mock_class.three == 3.0
             assert weighted_sample_model.mock_class.four == 4.0
 
-        def test__2_classes__1st_weighted_sample_model_instance__include_weight_and_likelihood(self, config_path,
-                                                                                               mn_samples_path):
-            create_weighted_samples_10_parameters(path=mn_samples_path + '1_classes')
+        def test__2_classes__1st_weighted_sample_model_instance__include_weight_and_likelihood(self, mm_config,
+                                                                                                      mn_samples_path):
 
-            conf.instance.data_path = mn_samples_path + '1_classes'
+            conf.instance.data_path = mn_samples_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_10_parameters(path=mn_samples_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=0)
 
@@ -792,16 +768,15 @@ class TestMultiNest(object):
             assert weighted_sample_model.mock_class_2.three == 9.1
             assert weighted_sample_model.mock_class_2.four == 10.1
 
-        def test__2_classes__5th_weighted_sample_model_instance__include_weight_and_likelihood(self, config_path,
-                                                                                               mn_samples_path):
-            create_weighted_samples_10_parameters(path=mn_samples_path + '1_classes')
+        def test__2_classes__5th_weighted_sample_model_instance__include_weight_and_likelihood(self, mm_config,
+                                                                                                      mn_samples_path):
 
-            conf.instance.data_path = mn_samples_path + '1_classes'
+            conf.instance.data_path = mn_samples_path + '2_classes'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_10_parameters(path=mn_samples_path + '2_classes')
 
-            mn.variable.add_classes(mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
 
@@ -820,29 +795,27 @@ class TestMultiNest(object):
 
     class TestLimits(object):
 
-        def test__1_profile__limits_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self, config_path,
+        def test__1_profile__limits_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self, mm_config,
                                                                                             mn_samples_path):
-            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
             conf.instance.data_path = mn_samples_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             assert mn.model_at_upper_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12], 1e-2)
             assert mn.model_at_lower_sigma_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88], 1e-2)
 
-        def test__1_profile__change_limit_to_1_sigma(self, config_path, mn_samples_path):
-            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
+        def test__1_profile__change_limit_to_1_sigma(self, mm_config, mn_samples_path):
 
             conf.instance.data_path = mn_samples_path + '1_class'
 
-            mn = non_linear.MultiNest(
-                model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+            create_weighted_samples_4_parameters(path=mn_samples_path + '1_class')
 
-            mn.variable.add_classes(mock_class=MockClassNLOx4)
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
 
             assert mn.model_at_upper_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07], 1e-2)
             assert mn.model_at_lower_sigma_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
@@ -894,38 +867,32 @@ class TestConfig(object):
 
 class TestRealClasses(object):
 
-    def test__directory_setup__input_path_sets_up(self, config_path, nlo_setup_path):
+    def test__directory_setup__input_path_sets_up(self, mm_config, nlo_setup_path):
         conf.instance.data_path = nlo_setup_path + '1_profile'
 
-        nlo = non_linear.NonLinearOptimizer(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-            path=nlo_setup_path + '1_profile')
-
-        nlo.variable.add_classes(light_profile=light_profiles.EllipticalSersic)
-        nlo.save_model_info()
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic)
+        nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         assert os.path.exists(nlo_setup_path + '1_profile') == True
 
-    def test__number_of_params__multiple_light_and_mass_profiles(self, config_path, nlo_setup_path):
-        nlo = non_linear.NonLinearOptimizer(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-            path=nlo_setup_path)
+    def test__number_of_params__multiple_light_and_mass_profiles(self, mm_config, nlo_setup_path):
 
-        nlo.variable.add_classes(light_profile=light_profiles.EllipticalSersic,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic,
                                  light_profile_2=light_profiles.EllipticalSersic,
                                  light_profile_3=light_profiles.EllipticalSersic,
                                  mass_profile=mass_profiles.SphericalNFW,
                                  mass_profile_2=mass_profiles.SphericalNFW)
+        nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         assert nlo.variable.total_parameters == 29
 
-    # def test__create_param_names_2_light_models__2_mass_models(self, config_path, nlo_paramnames_path):
+    # def test__create_param_names_2_light_models__2_mass_models(self, mm_config, nlo_paramnames_path):
     #
     #     light_profiles.EllipticalLightProfile._ids = count()
     #     mass_profiles.EllipticalMassProfile._ids = count()
     #
     #     nlo = non_linear.NonLinearOptimizer(
-    #         model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(config_path)),
+    #         model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(mm_config)),
     #         path=nlo_paramnames_path)
     #
     #     nlo.variable.add_classes(
@@ -961,17 +928,15 @@ class TestRealClasses(object):
     #     assert paramnames_str[18] == r'mass_profile_1_kappa_s                  $\kappa_{\mathrm{d2}}$' + '\n'
     #     assert paramnames_str[19] == r'mass_profile_1_scale_radius             $Rs_{\mathrm{d2}}$' + '\n'
 
-    def test__output_model_info__2_models(self, config_path, nlo_model_info_path):
+    def test__output_model_info__2_models(self, mm_config, nlo_model_info_path):
+
         conf.instance.data_path = nlo_model_info_path
 
-        nlo = non_linear.NonLinearOptimizer(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)),
-            path=nlo_model_info_path)
-
-        nlo.variable.add_classes(light_profile_0=light_profiles.EllipticalSersic,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.EllipticalSersic,
                                  light_profile_1=light_profiles.EllipticalExponential,
                                  mass_profile_0=mass_profiles.SphericalIsothermal,
                                  mass_profile_1=mass_profiles.SphericalNFW)
+        nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         nlo.save_model_info()
 
@@ -1011,73 +976,63 @@ class TestRealClasses(object):
         assert model_info_str[29] == r'kappa_s: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
         assert model_info_str[30] == r'scale_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
 
-    def test__read_multinest_most_probable_via_summary__multiple_profiles(self, config_path, mn_summary_path):
+    def test__read_multinest_most_probable_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
+
         create_summary_10_parameters(path=mn_summary_path + 'multi_profile')
 
         conf.instance.data_path = mn_summary_path + 'multi_profile'
 
-        files = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-
-        files.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                    mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        files.save_model_info()
-
-        most_probable = files.most_probable_from_summary()
+        most_probable = mn.most_probable_from_summary()
 
         assert most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
 
-    def test__setup_most_probable_model_instance_via_multinest_summary(self, config_path, mn_summary_path):
+    def test__setup_most_probable_model_instance_via_multinest_summary(self, mm_config, mn_summary_path):
+
         create_summary_10_parameters(path=mn_summary_path + 'multi_profile')
 
         conf.instance.data_path = mn_summary_path + 'multi_profile'
 
-        files = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
 
-        files.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                    mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        files.save_model_info()
-
-        most_likely = files.most_likely_from_summary()
+        most_likely = mn.most_likely_from_summary()
 
         assert most_likely == [21.0, 22.0, 23.0, 24.0, 25.0, -26.0, -27.0, 28.0, 29.0, 30.0]
 
-    def test__read_multinest_most_likely_via_summary__multiple_profiles(self, config_path, mn_summary_path):
+    def test__read_multinest_most_likely_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
+
         create_summary_10_parameters(path=mn_summary_path + 'multi_profile')
 
         conf.instance.data_path = mn_summary_path + 'multi_profile'
 
-        files = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-
-        files.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                    mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        files.save_model_info()
-
-        max_likelihood = files.max_likelihood_from_summary()
-        max_log_likelihood = files.max_log_likelihood_from_summary()
+        max_likelihood = mn.max_likelihood_from_summary()
+        max_log_likelihood = mn.max_log_likelihood_from_summary()
 
         assert max_likelihood == 0.02
         assert max_log_likelihood == 9999999.9
 
-    def test__setup_most_likely_model_instance_via_multinest_summaryy(self, config_path, mn_summary_path):
+    def test__setup_most_likely_model_instance_via_multinest_summaryy(self, mm_config, mn_summary_path):
+
         create_summary_10_parameters(path=mn_summary_path + 'multi_profile')
 
         conf.instance.data_path = mn_summary_path + 'multi_profile'
 
-        multinest = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-        multinest.variable.add_classes(light_profile=light_profiles.EllipticalExponential,
-                                       mass_profile=mass_profiles.SphericalNFW)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                   mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        multinest.save_model_info()
-
-        most_probable = multinest.most_probable_instance_from_summary()
-        most_likely = multinest.most_likely_instance_from_summary()
+        most_probable = mn.most_probable_instance_from_summary()
+        most_likely = mn.most_likely_instance_from_summary()
 
         assert most_probable.light_profile.centre == (1.0, 2.0)
         assert most_probable.light_profile.axis_ratio == 3.0
@@ -1099,19 +1054,17 @@ class TestRealClasses(object):
         assert most_likely.mass_profile.kappa_s == 29.0
         assert most_likely.mass_profile.scale_radius == 30.0
 
-    def test__gaussian_priors_at_3_sigma_confidence__1_profile(self, config_path, mn_priors_path):
+    def test__gaussian_priors_at_3_sigma_confidence__1_profile(self, mm_config, mn_priors_path):
+
         create_gaussian_prior_summary_4_parameters(mn_priors_path)
         create_weighted_samples_4_parameters(mn_priors_path)
 
         conf.instance.data_path = mn_priors_path
 
-        results = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-        results.variable.add_classes(mass_profile=mass_profiles.SphericalNFW)
+        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        results.save_model_info()
-
-        gaussian_priors = results.gaussian_priors_at_sigma_limit(sigma_limit=3.0)
+        gaussian_priors = mn.gaussian_priors_at_sigma_limit(sigma_limit=3.0)
 
         assert gaussian_priors[0][0] == 1.0
         assert gaussian_priors[1][0] == 2.0
@@ -1123,21 +1076,17 @@ class TestRealClasses(object):
         assert gaussian_priors[2][1] == pytest.approx(0.12, 1e-2)
         assert gaussian_priors[3][1] == pytest.approx(0.22, 1e-2)
 
-    def test__multiple_profiles__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self, config_path,
+    def test__multiple_profiles__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self, mm_config,
                                                                                                   mn_samples_path):
         create_weighted_samples_10_parameters(mn_samples_path)
 
         conf.instance.data_path = mn_samples_path
 
-        nlo = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                   mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        nlo.variable.light_profile = model_mapper.PriorModel(light_profiles.EllipticalExponential)
-        nlo.variable.mass_profile = model_mapper.PriorModel(mass_profiles.SphericalNFW)
-
-        nlo.save_model_info()
-
-        weighted_sample_model, weight, likelihood = nlo.weighted_sample_instance_from_weighted_samples(index=5)
+        weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
 
         assert weight == 0.1
         assert likelihood == -0.5 * 9999999.9
@@ -1152,22 +1101,19 @@ class TestRealClasses(object):
         assert weighted_sample_model.mass_profile.kappa_s == 9.0
         assert weighted_sample_model.mass_profile.scale_radius == 10.0
 
-    def test__1_profile__limits_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self, config_path,
+    def test__1_profile__limits_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self, mm_config,
                                                                                         mn_samples_path):
         create_weighted_samples_4_parameters(
             path=mn_samples_path)
 
         conf.instance.data_path = mn_samples_path
 
-        results = non_linear.MultiNest(
-            model_mapper=model_mapper.ModelMapper(config=conf.DefaultPriorConfig(config_path)))
-        results.variable.mass_profile = mass_profiles.SphericalNFW
+        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
 
-        results.save_model_info()
-
-        assert results.model_at_upper_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12],
+        assert mn.model_at_upper_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12],
                                                                                     1e-2)
-        assert results.model_at_lower_sigma_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88],
+        assert mn.model_at_lower_sigma_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88],
                                                                                     1e-2)
 
 
