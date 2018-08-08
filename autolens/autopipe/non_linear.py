@@ -259,6 +259,7 @@ class MultiNest(NonLinearOptimizer):
 
         self.file_summary = "{}/{}".format(self.path, 'mnsummary.txt')
         self.file_weighted_samples = "{}/{}".format(self.path, 'mn.txt')
+        self.file_results = "{}/{}".format(self.path, 'mn.results')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
@@ -350,17 +351,6 @@ class MultiNest(NonLinearOptimizer):
         result = Result(constant=constant, likelihood=likelihood, variable=variable)
 
         return result
-
-    def plot_pdfs(self):
-        pdf_plot = getdist.plots.GetDistPlotter()
-        for i in range(self.variable.total_parameters):
-            pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
-            pdf_plot.export(fname=self.path+'/pdfs/'+self.paramnames_names[i]+'_1D.png')
-        try:
-            pdf_plot.triangle_plot(roots=self.pdf)
-            pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
-        except np.linalg.LinAlgError:
-            pass
 
     def open_summary_file(self):
 
@@ -502,3 +492,58 @@ class MultiNest(NonLinearOptimizer):
             The index of the weighted sample to return.
         """
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
+
+    def plot_pdfs(self):
+        pdf_plot = getdist.plots.GetDistPlotter()
+        for i in range(self.variable.total_parameters):
+            pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
+            pdf_plot.export(fname=self.path+'/pdfs/'+self.paramnames_names[i]+'_1D.png')
+        try:
+            pdf_plot.triangle_plot(roots=self.pdf)
+            pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
+        except np.linalg.LinAlgError:
+            pass
+
+    def output_results(self):
+
+        results = open(self.file_results, 'w')
+
+        max_likelihood = self.max_likelihood_from_summary()
+
+        results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
+        results.write('\n')
+
+        most_likely = self.most_likely_from_summary()
+
+        for i in range(self.variable.total_parameters):
+            line = self.paramnames_names[i]
+            line += ' ' * (40 - len(line)) + str(most_likely[i])
+            results.write(line + '\n')
+
+        most_probable = self.most_probable_from_summary()
+
+        lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
+        upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
+
+        results.write('\n')
+        results.write('Most probable model (3 sigma limits)' + '\n')
+        results.write('\n')
+
+        for i in range(self.variable.total_parameters):
+            line = self.paramnames_names[i]
+            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(upper_limit[i]) + ')'
+            results.write(line + '\n')
+
+        lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
+        upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
+
+        results.write('\n')
+        results.write('Most probable model (1 sigma limits)' + '\n')
+        results.write('\n')
+
+        for i in range(self.variable.total_parameters):
+            line = self.paramnames_names[i]
+            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(upper_limit[i]) + ')'
+            results.write(line + '\n')
+
+        results.close()

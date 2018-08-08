@@ -97,6 +97,15 @@ def test_mn_samples():
     return mn_samples_path
 
 
+@pytest.fixture(name='mn_results_path')
+def test_mn_results():
+    mn_results_path = "{}/../test_files/non_linear/multinest/results/".format(os.path.dirname(os.path.realpath(__file__)))
+
+    if os.path.exists(mn_results_path):
+        shutil.rmtree(mn_results_path)
+
+    return mn_results_path
+
 @pytest.fixture(name='mm_config')
 def test_mm_config():
     path = "{}/../test_files/config/priors/default/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -867,6 +876,52 @@ class TestMultiNest(object):
             assert mn.model_at_upper_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07], 1e-2)
             assert mn.model_at_lower_sigma_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
 
+    class TestOutputResults(object):
+
+        def test__1_class__output_results_which_are_limits_tests_above(self, mm_config, mn_results_path):
+
+            conf.instance.data_path = mn_results_path
+
+            create_gaussian_prior_summary_4_parameters(path=mn_results_path)
+            create_weighted_samples_4_parameters(path=mn_results_path)
+
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
+            mn.save_model_info()
+            mn.output_results()
+
+            results_file = open(mn_results_path + '/mn.results')
+
+            results = results_file.readlines()
+
+            assert results[0] == r'Most likely model, Likelihood = 0.02' + '\n'
+            assert results[1] == '\n'
+            assert results[2] == r'mock_class_one                          9.0' + '\n'
+            assert results[3] == r'mock_class_two                          10.0' + '\n'
+            assert results[4] == r'mock_class_three                        11.0' + '\n'
+            assert results[5] == r'mock_class_four                         12.0' + '\n'
+            assert results[6] == '\n'
+            assert results[7] == r'Most probable model (3 sigma limits)' + '\n'
+            assert results[8] == '\n'
+            assert results[
+                       9] == r'mock_class_one                          1.0 (0.8802415615355199, 1.1195259985150692)' + '\n'
+            assert results[
+                       10] == r'mock_class_two                          2.0 (1.8804740014849308, 2.1197584384644803)' + '\n'
+            assert results[
+                       11] == r'mock_class_three                        3.0 (2.8804740014849326, 3.119758438464474)' + '\n'
+            assert results[
+                       12] == r'mock_class_four                         4.1 (3.8804740014849326, 4.119758438464474)' + '\n'
+            assert results[13] == '\n'
+            assert results[14] == r'Most probable model (1 sigma limits)' + '\n'
+            assert results[15] == '\n'
+            assert results[
+                       16] == 'mock_class_one                          1.0 (0.9275915805968072, 1.071970072572093)' + '\n'
+            assert results[
+                       17] == 'mock_class_two                          2.0 (1.9280299274279094, 2.0724084194031906)' + '\n'
+            assert results[
+                       18] == 'mock_class_three                        3.0 (2.928029927428015, 3.0724084194030854)' + '\n'
+            assert results[
+                       19] == 'mock_class_four                         4.1 (3.928029927428014, 4.072408419403085)' + '\n'
 
 class TestConfig(object):
     def test_multinest_default(self):
