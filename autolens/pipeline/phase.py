@@ -68,7 +68,8 @@ class Phase(object):
         self.name = name
 
     def doc(self):
-        return self.__doc__.replace("  ", "").replace("\n", " ")
+        if self.__doc__ is not None:
+            return self.__doc__.replace("  ", "").replace("\n", " ")
 
     def run(self, image, last_results=None):
         """
