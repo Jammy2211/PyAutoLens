@@ -22,7 +22,9 @@ class Pipeline(Base):
         name = self.options['<name>']
         if self.options['--info']:
             tup = pipeline.pipeline_dict[name]
+            print()
             pl = tup.make()
+            print(red(name))
             print(tup.doc)
             print(red("Phases:\n"))
             print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc())) for phase in pl.phases]))
