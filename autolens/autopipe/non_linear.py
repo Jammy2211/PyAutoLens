@@ -94,8 +94,6 @@ class NonLinearOptimizer(object):
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
-    #    self.create_paramnames_names()
-    #    self.create_paramnames_labels()
         self.file_param_names = "{}/{}".format(self.path, '/multinest.paramnames')
         self.file_model_info = "{}/{}".format(self.path, '/model.info')
 
@@ -125,6 +123,8 @@ class NonLinearOptimizer(object):
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
+        #    self.create_paramnames_names()
+        #    self.create_paramnames_labels()
         #    self.create_param_names()
         self.variable.output_model_info(self.file_model_info)
         self.variable.check_model_info(self.file_model_info)
