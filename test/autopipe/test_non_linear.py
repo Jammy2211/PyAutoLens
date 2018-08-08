@@ -114,7 +114,7 @@ def create_path(func):
 
 @create_path
 def create_summary_4_parameters(path):
-    summary = open(path + '/summary.txt', 'w')
+    summary = open(path + '/mnsummary.txt', 'w')
     summary.write('    0.100000000000000000E+01   -0.200000000000000000E+01    0.300000000000000000E+01'
                   '    0.400000000000000000E+01   -0.500000000000000000E+01    0.600000000000000000E+01'
                   '    0.700000000000000000E+01    0.800000000000000000E+01'
@@ -135,7 +135,7 @@ def create_summary_4_parameters(path):
 
 @create_path
 def create_summary_10_parameters(path):
-    summary = open(path + '/summary.txt', 'w')
+    summary = open(path + '/mnsummary.txt', 'w')
     summary.write('    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01'
                   '    0.400000000000000000E+01   -0.500000000000000000E+01   -0.600000000000000000E+01'
                   '   -0.700000000000000000E+01   -0.800000000000000000E+01    0.900000000000000000E+01'
@@ -172,7 +172,7 @@ def create_summary_10_parameters(path):
 
 @create_path
 def create_gaussian_prior_summary_4_parameters(path):
-    summary = open(path + '/summary.txt', 'w')
+    summary = open(path + '/mnsummary.txt', 'w')
     summary.write('    0.100000000000000000E+01    0.200000000000000000E+01    0.300000000000000000E+01'
                   '    0.410000000000000000E+01    0.500000000000000000E+01    0.600000000000000000E+01'
                   '    0.700000000000000000E+01    0.800000000000000000E+01'
@@ -193,7 +193,7 @@ def create_gaussian_prior_summary_4_parameters(path):
 
 @create_path
 def create_weighted_samples_4_parameters(path):
-    with open(path + '/multinest.txt', 'w+') as weighted_samples:
+    with open(path + '/mn.txt', 'w+') as weighted_samples:
         weighted_samples.write(
             '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01\n'
             '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01\n'
@@ -209,7 +209,7 @@ def create_weighted_samples_4_parameters(path):
 
 @create_path
 def create_weighted_samples_10_parameters(path):
-    weighted_samples = open(path + '/multinest.txt', 'w')
+    weighted_samples = open(path + '/mn.txt', 'w')
     weighted_samples.write(
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.110000000000000000E+01    0.210000000000000000E+01    0.310000000000000000E+01    0.410000000000000000E+01   -0.510000000000000000E+01   -0.610000000000000000E+01   -0.710000000000000000E+01   -0.810000000000000000E+01    0.910000000000000000E+01    1.010000000000000000E+01\n'
         '    0.020000000000000000E+00    0.999999990000000000E+07    0.090000000000000000E+01    0.190000000000000000E+01    0.290000000000000000E+01    0.390000000000000000E+01   -0.490000000000000000E+01   -0.590000000000000000E+01   -0.690000000000000000E+01   -0.790000000000000000E+01    0.890000000000000000E+01    0.990000000000000000E+01\n'

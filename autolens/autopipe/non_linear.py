@@ -94,7 +94,7 @@ class NonLinearOptimizer(object):
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
-        self.file_param_names = "{}/{}".format(self.path, '/multinest.paramnames')
+        self.file_param_names = "{}/{}".format(self.path, '/mn.paramnames')
         self.file_model_info = "{}/{}".format(self.path, '/model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
@@ -245,8 +245,8 @@ class MultiNest(NonLinearOptimizer):
 
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name)
 
-        self.file_summary = "{}/{}".format(self.path, 'summary.txt')
-        self.file_weighted_samples = "{}/{}".format(self.path, 'multinest.txt')
+        self.file_summary = "{}/{}".format(self.path, 'mnsummary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.path, 'mn.txt')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
@@ -316,7 +316,7 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename="{}/".format(self.path), n_live_points=self.n_live_points,
+                 outputfiles_basename="{}/mn".format(self.path), n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
                  evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
