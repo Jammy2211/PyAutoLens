@@ -341,6 +341,7 @@ class MultiNest(NonLinearOptimizer):
         logger.info("MultiNest complete")
 
         self.plot_pdfs()
+        self.output_results()
 
         constant = self.most_likely_instance_from_summary()
         for key, value in fitness_function.constant.__dict__.items():
