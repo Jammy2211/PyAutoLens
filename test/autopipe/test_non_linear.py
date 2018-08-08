@@ -323,6 +323,53 @@ class TestNonLinearOptimizer(object):
 
             assert nlo.variable.total_parameters == 10
 
+    # class TestCreateParamNamesNames:
+    #
+    #     def test__1_class_and_parameter_set(self, mm_config, nlo_paramnames_path):
+    #
+    #         conf.instance.data_path = nlo_paramnames_path
+    #
+    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+    #
+    #         assert nlo.paramnames_names == ['mock_class_one', 'mock_class_two', 'mock_class_three', 'mock_class_four']
+    #
+    #     def test__2_classes__includes_a_tuple(self, mm_config, nlo_paramnames_path):
+    #
+    #         conf.instance.data_path = nlo_paramnames_path
+    #
+    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+    #
+    #         assert nlo.paramnames_names == ['mock_class_1_one', 'mock_class_1_two', 'mock_class_1_three',
+    #                                         'mock_class_1_four','mock_class_2_one_0', 'mock_class_2_one_1',
+    #                                         'mock_class_2_two_0', 'mock_class_2_two_1', 'mock_class_2_three',
+    #                                         'mock_class_2_four']
+    #
+    # class TestCreateParamNamesLabels:
+    #
+    #     def test__1_class_and_parameter_set(self, mm_config, nlo_paramnames_path):
+    #
+    #         conf.instance.data_path = nlo_paramnames_path
+    #
+    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+    #
+    #         assert nlo.paramnames_labels == [r'$x4p0_{\mathrm{a1}}$', r'$x4p1_{\mathrm{a1}}$',
+    #                                          r'$x4p2_{\mathrm{a1}}$', r'$x4p3_{\mathrm{a1}}$']
+    #
+    #     def test__2_classes__includes_a_tuple(self, mm_config, nlo_paramnames_path):
+    #
+    #         conf.instance.data_path = nlo_paramnames_path
+    #
+    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4, mock_class_2=MockClassNLOx6)
+    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+    #
+    #         assert nlo.paramnames_labels == [r'$x4p0_{\mathrm{a1}}$', r'$x4p1_{\mathrm{a1}}$', r'$x4p2_{\mathrm{a1}}$',
+    #                                          r'$x4p3_{\mathrm{a1}}$', r'$x6p0_{\mathrm{b2}}$', r'$x6p1_{\mathrm{b2}}$',
+    #                                          r'$x6p2_{\mathrm{b2}}$', r'$x6p3_{\mathrm{b2}}$', r'$x6p4_{\mathrm{b2}}$',
+    #                                          r'$x6p5_{\mathrm{b2}}$']
+
     # class TestCreateParamNames:
     #
     #     def test__1_class_and_parameter_set(self, mm_config, nlo_paramnames_path):

@@ -94,6 +94,8 @@ class NonLinearOptimizer(object):
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
+    #    self.create_paramnames_names()
+    #    self.create_paramnames_labels()
         self.file_param_names = "{}/{}".format(self.path, '/multinest.paramnames')
         self.file_model_info = "{}/{}".format(self.path, '/model.info')
 
@@ -130,28 +132,47 @@ class NonLinearOptimizer(object):
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
-    # def create_param_names(self):
-    #     """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
-    #
-    #     The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
-    #     properties of each model class."""
-    #     param_names = open(self.file_param_names, 'w')
-    #
-    #     for prior_name, prior_model in self.variable.flat_prior_models:
-    #
-    #         param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
-    #         component_number = prior_model.cls().component_number
-    #         subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
-    #
-    #         param_labels = generate_parameter_latex(param_labels, subscript)
-    #
-    #         for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-    #             line = prior_name + '_' + param[0]
-    #             line += ' ' * (40 - len(line)) + param_labels[param_no]
-    #
-    #             param_names.write(line + '\n')
-    #
-    #     param_names.close()
+    def create_paramnames_names(self):
+        """The param_names vector is a list each parameter's name, and is used for *GetDist* visualization.
+
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        properties of each model class."""
+
+        self.paramnames_names = []
+
+        for prior_name, prior_model in self.variable.prior_models:
+            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+                self.paramnames_names.append(prior_name+'_'+param[0])
+
+    def create_paramnames_labels(self):
+        """The param_names vector is a list each parameter's name, and is used for *GetDist* visualization.
+
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        properties of each model class."""
+
+        self.paramnames_labels = []
+
+        for prior_name, prior_model in self.variable.prior_models:
+            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
+            component_number = prior_model.cls().component_number
+            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+            param_labels = generate_parameter_latex(param_labels, subscript)
+            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+                self.paramnames_labels.append(param_labels[param_no])
+
+    def create_paramnames_file(self):
+        """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
+
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        properties of each model class."""
+        paramnames = open(self.file_param_names, 'w')
+
+        for i in range(self.variable.total_parameters):
+            line = self.paramnames_names[i]
+            line += ' ' * (40 - len(line)) + self.paramnames_labels[i]
+            paramnames.write(line + '\n')
+
+        paramnames.close()
 
 
 class DownhillSimplex(NonLinearOptimizer):
