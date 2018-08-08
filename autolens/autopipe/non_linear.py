@@ -340,7 +340,7 @@ class MultiNest(NonLinearOptimizer):
                  log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
-        self.plot_pdfs()
+        self.output_pdf_plots()
         self.output_results()
 
         constant = self.most_likely_instance_from_summary()
@@ -494,7 +494,7 @@ class MultiNest(NonLinearOptimizer):
         """
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
 
-    def plot_pdfs(self):
+    def output_pdf_plots(self):
         pdf_plot = getdist.plots.GetDistPlotter()
         for i in range(self.variable.total_parameters):
             pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
