@@ -10,12 +10,12 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 
 
 def load_image(name):
-    # Load up the weighted_data
+
     data_dir = "{}/../../data/{}".format(dirpath, name)
 
-    data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.1)
-    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.1)
-    psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0, pixel_scale=0.1)
+    data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/image', hdu=0, pixel_scale=0.05)
+    noise = scaled_array.Array.from_fits(file_path=data_dir + '/noise', hdu=0)
+    psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0)
 
     return im.Image(array=data, pixel_scale=0.05, psf=psf, noise=noise)
 
