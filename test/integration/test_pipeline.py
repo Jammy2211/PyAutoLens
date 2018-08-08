@@ -18,4 +18,4 @@ def _test_pipeline():
     optimizer_1.variable.source_galaxies = [source_galaxy_prior]
     optimizer_1.variable.lens_galaxies = [lens_galaxy_prior]
 
-    optimizer_1.create_param_names()
+    optimizer_1.create_paramnames_file()

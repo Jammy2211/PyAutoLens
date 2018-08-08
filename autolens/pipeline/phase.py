@@ -50,8 +50,8 @@ class IntervalCounter(object):
 
 
 class Phase(object):
-    def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1,
-                 mask_function=default_mask_function, name=None):
+    def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1, mask_function=default_mask_function,
+                 name=None):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
