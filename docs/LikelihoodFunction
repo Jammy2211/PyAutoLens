@@ -58,7 +58,7 @@ matrix individually and combine them to solve for S.
 
 Schematic of fitting function:
 
-def fit_data_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer):
+def fit_masked_image_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer):
 
     hyper_datas_fit = hyper_datas
     grid_datas_fit = grid_datas
@@ -81,9 +81,9 @@ def fit_data_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer):
     blurred_model_image = generate_blurred_light_profile_image(tracer, grid_datas.psf, grid_mappers)
 
     if use_pixelization is False:
-        return compute_likelihood(grid_datas_fit.image, grid_datas_fit.noise, blurred_model_image)
+        return likelihood_from_chi_squared_and_noise_terms(grid_datas_fit.image, grid_datas_fit.noise, blurred_model_image)
     elif: use_pixelization is True:
         subtracted_image =  grid_datas_fit.image - blurred_model_image
         mapping_matrix = ray_tracing.compute_mapping_matrices(grid_mappers)
         reconstructed_image = mapping_matrix.fit_image(grid_datas_fit.image, grid_datas_fit.psf, **)
-        return compute_likelihood(subtracted_image, grid_datas_fit.noise, reconstructed_image)
+        return likelihood_from_chi_squared_and_noise_terms(subtracted_image, grid_datas_fit.noise, reconstructed_image)

@@ -28,24 +28,24 @@ def grid_to_pix_pixels_via_nearest_neighbour(grid, pix_centers):
 class MockSparseMask(object):
 
     def __init__(self, sparse_to_image, image_to_sparse):
-        """ The KMeans clustering used to derive an amorphous pixelization uses a set of image-grid grid. For \
+        """ The KMeans clustering used to derive an amorphous pixelization uses a set of masked_image-grid grid. For \
         high resolution imaging, the large number of grid makes KMeans clustering (unfeasibly) slow.
 
-        Therefore, for efficiency, we define a 'clustering-grid', which is a sparsely sampled set of image-grid \
+        Therefore, for efficiency, we define a 'clustering-grid', which is a sparsely sampled set of masked_image-grid \
         grid used by the KMeans algorithm instead. However, we don't need the actual grid of this \
-        clustering grid (as they are already calculated for the image-grid). Instead, we just need a mapper between \
-        clustering-data_to_image and image-data_to_image.
+        clustering grid (as they are already calculated for the masked_image-grid). Instead, we just need a mapper between \
+        clustering-data_to_image and masked_image-data_to_image.
 
-        Thus, the *cluster_to_image* attribute maps every pixel on the clustering grid to its closest image pixel \
-        (via the image pixel's 1D index). This is used before the KMeans clustering algorithm, to extract the sub-set \
+        Thus, the *cluster_to_image* attribute maps every pixel on the clustering grid to its closest masked_image pixel \
+        (via the masked_image pixel's 1D index). This is used before the KMeans clustering algorithm, to extract the sub-set \
         of grid that the algorithm uses.
 
         By giving the KMeans algorithm only clustering-grid grid, it will only tell us the mappings between \
         pix-data_to_image and clustering-data_to_image. However, to perform the pix reconstruction, we need to
-        know all of the mappings between pix data_to_image and image data_to_image / sub-image data_to_image. This
+        know all of the mappings between pix data_to_image and masked_image data_to_image / sub-masked_image data_to_image. This
         would require a (computationally expensive) nearest-neighbor search (over all clustering data_to_image and
-        image / sub data_to_image) to calculate. The calculation can be sped-up by using the attribute
-        *image_to_cluster*, which maps every image-pixel to its closest pixel on the clustering grid (see
+        masked_image / sub data_to_image) to calculate. The calculation can be sped-up by using the attribute
+        *image_to_cluster*, which maps every masked_image-pixel to its closest pixel on the clustering grid (see
         *pixelization.sub_grid_to_pix_pixels_via_sparse_pairs*).
         """
 
@@ -550,7 +550,7 @@ class TestRectangularPixelization:
 
         def test__5_simple_grid__no_sub_grid__sets_up_correct_reconstructor(self):
 
-            # Source-plane comprises 5 grid, so 5 image pixels traced to the pix-plane.
+            # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
             pix_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
             pix_border = mask.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
@@ -565,7 +565,7 @@ class TestRectangularPixelization:
 
             borders = MockBorderCollection(image=pix_border, sub=pix_sub_border)
 
-            # There is no sub-grid, so our sub_grid are just the image grid (note the NumPy weighted_data structure
+            # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
             # ensures this has no sub-gridding)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
@@ -594,7 +594,7 @@ class TestRectangularPixelization:
 
         def test__15_grid__no_sub_grid__sets_up_correct_reconstructor(self):
 
-            # Source-plane comprises 15 grid, so 15 image pixels traced to the pix-plane.
+            # Source-plane comprises 15 grid, so 15 masked_image pixels traced to the pix-plane.
 
             pix_grid = np.array([[-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1],
                                  [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -604,7 +604,7 @@ class TestRectangularPixelization:
 
             pix_border = mask.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
 
-            # There is no sub-grid, so our sub_grid are just the image grid (note the NumPy weighted_data structure
+            # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
             # ensures this has no sub-gridding)
             pix_sub_grid = np.array([[-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1],
                                      [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -658,10 +658,10 @@ class TestRectangularPixelization:
 
         def test__5_simple_grid__include_sub_grid__sets_up_correct_reconstructor(self):
 
-            # Source-plane comprises 5 grid, so 5 image pixels traced to the pix-plane.
+            # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
             pix_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
             pix_border = mask.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
-            # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
+            # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
             # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
             # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the 
             # sub-grid.
@@ -707,10 +707,10 @@ class TestRectangularPixelization:
 
         def test__same_as_above_but_grid_requires_border_relocation(self):
 
-            # Source-plane comprises 5 grid, so 5 image pixels traced to the pix-plane.
+            # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
             pix_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
             pix_border = mask.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
-            # Assume a 2x2 sub-grid, so each of our 5 image-pixels are split into 4.
+            # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
             # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
             # happen for a real lensing calculation. This is to make a mapping matrix which explicitly tests the
             # sub-grid.

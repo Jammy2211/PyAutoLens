@@ -22,7 +22,7 @@ class Reconstructor(object):
             The matrix defining how the reconstruction's pixels are regularized with one another when fitting the
             weighted_data.
         image_to_pix : ndarray
-            The mapping between each image-grid pixel and pixelization-grid pixel.
+            The mapping between each masked_image-grid pixel and pixelization-grid pixel.
         sub_to_pix : ndarray
             The mapping between each sub-grid pixel and pixelization-grid sub-pixel.
         """
