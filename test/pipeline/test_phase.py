@@ -67,7 +67,7 @@ def make_galaxy_prior():
     return gp.GalaxyPrior()
 
 
-@pytest.fixture(name="image")
+@pytest.fixture(name="masked_image")
 def make_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
     return image

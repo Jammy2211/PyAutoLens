@@ -180,7 +180,7 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the psf for which the result should be calculated
         pixel_array: [float]
@@ -259,9 +259,9 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
+            An array representing the mapping of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
@@ -281,9 +281,9 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
+            An array representing the mapping of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
@@ -425,7 +425,7 @@ hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up.image.psf.trim(p
                                                  blurring_frame_array=hst_up.masked_image.convolver.blurring_frame_array)
 
 # ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-# ao_kernel_convolver = KernelConvolverOriginal(psf=ao.image.psf.trim(psf_shape),
+# ao_kernel_convolver = KernelConvolverOriginal(psf=ao.masked_image.psf.trim(psf_shape),
 #                                                  image_frame_indexes=ao.masked_image.convolver_image.image_frame_indexes,
 #                                                  blurring_frame_indexes=ao.masked_image.convolver_image.blurring_frame_indexes)
 
@@ -437,7 +437,7 @@ hst_image = sersic.intensity_from_grid(grid=hst.grids.image)
 hst_blurring_image = sersic.intensity_from_grid(grid=hst.grids.blurring)
 hst_up_image = sersic.intensity_from_grid(grid=hst_up.grids.image)
 hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.grids.blurring)
-# ao_image = sersic.intensity_from_grid(grid=ao.grids.image)
+# ao_image = sersic.intensity_from_grid(grid=ao.grids.masked_image)
 # ao_blurring_image = sersic.intensity_from_grid(grid=ao.grids.blurring)
 
 @tools.tick_toc_x1
