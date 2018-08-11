@@ -29,7 +29,7 @@ def make():
 
     class LensSubtractedPhase(ph.SourceLensPhase):
         """
-    Subtract the lens light from the image and fit only the source galaxy's light.
+    Subtract the lens light from the masked_image and fit only the source galaxy's light.
         """
 
         def modify_image(self, masked_image, previous_results):

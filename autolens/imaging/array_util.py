@@ -13,7 +13,7 @@ def numpy_array_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 def compute_residuals(observed_image, model_image):
-    """ Calculate the residuals between an observed image and a model of that image, \
+    """ Calculate the residuals between an observed masked_image and a model of that masked_image, \
     by subtracting the model from the weighted_data.
 
     Residuals = (Data - Model).
@@ -21,9 +21,9 @@ def compute_residuals(observed_image, model_image):
     Parameters
     ----------
     observed_image : ndarray
-        Two dimensional array containing observed image weighted_data
+        Two dimensional array containing observed masked_image weighted_data
     model_image : nddarray
-        Two dimensional array containing model_mapper of the observed image
+        Two dimensional array containing model_mapper of the observed masked_image
     """
     return np.subtract(observed_image, model_image)
 
@@ -32,9 +32,9 @@ def compute_variances_from_noise(noise):
     return np.square(noise)
 
 def compute_chi_sq_image(observed_image, model_image, noise):
-    """ Calculate the chi-squared image of an observed image, model image and signal_to_noise_ratio map.
+    """ Calculate the chi-squared masked_image of an observed masked_image, model masked_image and signal_to_noise_ratio map.
 
-    The signal_to_noise_ratio map gives the standard deviation of each image pixel, and is converted to variances (by squaring) in the
+    The signal_to_noise_ratio map gives the standard deviation of each masked_image pixel, and is converted to variances (by squaring) in the
      chi squared calculation.
 
      Chi_Sqs = ((Data - Model)/Noise)**2.0 = (Residuals/Noise)**2.0 = (Residuals**2.0/Variances).
@@ -42,21 +42,21 @@ def compute_chi_sq_image(observed_image, model_image, noise):
     Parameters
     ----------
     observed_image : ndarray
-        Two dimensional array containing observed image weighted_data
+        Two dimensional array containing observed masked_image weighted_data
     model_image : nddarray
-        Two dimensional array containing model_mapper of the observed image
+        Two dimensional array containing model_mapper of the observed masked_image
     noise : nddarray
-        Two dimensional array containing the signal_to_noise_ratio (standard deviation) in each observed image pixel.
+        Two dimensional array containing the signal_to_noise_ratio (standard deviation) in each observed masked_image pixel.
     """
     residuals = compute_residuals(observed_image, model_image)
     variances = compute_variances_from_noise(noise)
     return np.divide(np.square(residuals), variances)
 
 def compute_likelihood(observed_image, model_image, noise):
-    """ Calculate the likelihood image of an observed image, model image and signal_to_noise_ratio map. The likelihood is defined as
+    """ Calculate the likelihood masked_image of an observed masked_image, model masked_image and signal_to_noise_ratio map. The likelihood is defined as
     the sum of chi squared values multiplied by 0.5.
 
-    The signal_to_noise_ratio map gives the standard deviation of each image pixel, and is converted to variances (by squaring) in the
+    The signal_to_noise_ratio map gives the standard deviation of each masked_image pixel, and is converted to variances (by squaring) in the
     chi squared calculation.
 
     NOTE1 : For efficiency, this routine uses only numpy routines in one big calculation, thus it is 'unpythonic'.
@@ -64,10 +64,10 @@ def compute_likelihood(observed_image, model_image, noise):
     Parameters
     ----------
     observed_data : ndarray
-        Two dimensional array containing the observed image weighted_data
+        Two dimensional array containing the observed masked_image weighted_data
     model_image : nddarray
-        Two dimensional array containing the model of the observed image
+        Two dimensional array containing the model of the observed masked_image
     noise : nddarray
-        Two dimensional array containing the signal_to_noise_ratio (standard deviation) in each observed image pixel
+        Two dimensional array containing the signal_to_noise_ratio (standard deviation) in each observed masked_image pixel
     """
     return -0.5 * np.sum(np.square(np.divide(np.subtract(observed_image, model_image), noise)))
