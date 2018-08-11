@@ -15,7 +15,7 @@ class Voronoi(object):
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a Voronoi pixelization, which represents pixels as a set of centers where \
-        all of the nearest-neighbor pix-grid (i.e. traced image-pixels) are mapped to them.
+        all of the nearest-neighbor pix-grid (i.e. traced masked_image-pixels) are mapped to them.
 
         This forms a Voronoi grid pix-plane, the properties of which are used for fast calculations, defining the \
         regularization matrix and visualization.

@@ -355,13 +355,13 @@ class Galaxy(object):
         return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
 
-# TODO : Should galaxy image and minimum value be in the constructor (they aren't free parameters)?
+# TODO : Should galaxy masked_image and minimum value be in the constructor (they aren't free parameters)?
 
 class HyperGalaxy(object):
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """Class for scaling the noise in the different galaxies of an image (e.g. the lens, source).
+        """Class for scaling the noise in the different galaxies of an masked_image (e.g. the lens, source).
 
         Parameters
         -----------
@@ -386,7 +386,7 @@ class HyperGalaxy(object):
     def parameter_labels(self):
         return [r'\Omega', r'\omega1', r'\omega2']
 
-    def contributions_from_model_images(self, model_image, galaxy_image, minimum_value):
+    def contributions_from_preload_images(self, hyper_model_image, hyper_galaxy_image, minimum_value):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
         galaxy can be attributed to contain.
 
@@ -395,21 +395,21 @@ class HyperGalaxy(object):
 
         Parameters
         -----------
-        model_image : ndarray
-            The model image of the observed weighted_data (from a previous analysis phase). This tells us the total light \
-            attributed to each image pixel by the model.
-        galaxy_image : ndarray
-            A model image of the galaxy (e.g the lens light profile or source reconstruction) computed from a
+        hyper_model_image : ndarray
+            The model masked_image of the observed weighted_data (from a previous analysis phase). This tells us the total light \
+            attributed to each masked_image pixel by the model.
+        hyper_galaxy_image : ndarray
+            A model masked_image of the galaxy (e.g the lens light profile or source reconstruction) computed from a
             previous analysis.
         minimum_value : float
             The minimum fractional flux a pixel must contain to not be rounded to 0.
         """
-        contributions = galaxy_image / (model_image + self.contribution_factor)
+        contributions = hyper_galaxy_image / (hyper_model_image + self.contribution_factor)
         contributions = contributions / np.max(contributions)
         contributions[contributions < minimum_value] = 0.0
         return contributions
 
-    def scaled_noise_for_contributions(self, noise, contributions):
+    def scaled_noise_from_contributions(self, noise, contributions):
         """Compute a scaled galaxy noise map from a baseline nosie map.
 
         This uses the galaxy contribution map with their noise scaling hyper-parameters.

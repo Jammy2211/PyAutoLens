@@ -16,7 +16,7 @@ class AbstractTracer(object):
         Returns
         -------
         galaxy_images: [ndarray]
-            An image for each galaxy in this ray tracer
+            An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
 
@@ -41,7 +41,7 @@ class Tracer(AbstractTracer):
         return [self.image_plane, self.source_plane]
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, cosmology=None):
-        """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
+        """The ray-tracing calculations, defined by a lensing system with just one masked_image-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
         do not need input redshifts. For computational efficiency, it is recommend this ray-tracing class is used for \
@@ -52,12 +52,12 @@ class Tracer(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of lens galaxies in the image-plane.
+            The list of lens galaxies in the masked_image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
         image_plane_grids : mask.GridCollection
-            The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
-            image-grid, sub-grid, blurring-grid, etc.).
+            The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
+            masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
@@ -74,12 +74,12 @@ class Tracer(AbstractTracer):
         self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
 
     def generate_image_of_galaxy_light_profiles(self):
-        """Generate the image of the galaxies over the entire ray trace."""
+        """Generate the masked_image of the galaxies over the entire ray trace."""
         return self.image_plane.generate_image_of_galaxy_light_profiles(
         ) + self.source_plane.generate_image_of_galaxy_light_profiles()
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
-        """Generate the image of all galaxy light profiles in the blurring regions of the image."""
+        """Generate the masked_image of all galaxy light profiles in the blurring regions of the masked_image."""
         return self.image_plane.blurring_image_from_galaxy_light_profiles(
         ) + self.source_plane.blurring_image_from_galaxy_light_profiles()
 
@@ -94,7 +94,7 @@ class MultiTracer(AbstractTracer):
         return self.planes
 
     def __init__(self, galaxies, image_plane_grids, cosmology):
-        """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
+        """The ray-tracing calculations, defined by a lensing system with just one masked_image-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
         known redshift measurements. For computational efficiency, it is recommend this ray-tracing class is used for
@@ -105,8 +105,8 @@ class MultiTracer(AbstractTracer):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grids : mask.GridCollection
-            The image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
-            image-grid, sub-grid, blurring-grid, etc.).
+            The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
+            masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
@@ -164,12 +164,12 @@ class MultiTracer(AbstractTracer):
                                      compute_deflections=compute_deflections))
 
     def generate_image_of_galaxy_light_profiles(self):
-        """Generate the image of the galaxies over the entire ray trace."""
+        """Generate the masked_image of the galaxies over the entire ray trace."""
         return sum(np.array(list(map(lambda plane: plane.generate_image_of_galaxy_light_profiles(),
                                      self.planes))))
 
     def generate_blurring_image_of_galaxy_light_profiles(self):
-        """Generate the image of all galaxy light profiles in the blurring regions of the image."""
+        """Generate the masked_image of all galaxy light profiles in the blurring regions of the masked_image."""
         return np.ndarray.sum(np.array(list(map(lambda plane: plane.blurring_image_from_galaxy_light_profiles(),
                                                 self.planes))))
 
@@ -180,7 +180,7 @@ class MultiTracer(AbstractTracer):
 class TracerGeometry(object):
 
     def __init__(self, redshifts, cosmology):
-        """The geometry of a ray-tracing grid comprising an image-plane and source-plane.
+        """The geometry of a ray-tracing grid comprising an masked_image-plane and source-plane.
 
         This sets up the angular diameter distances between each plane and the Earth, and between one another. \
         The critical density of the lens plane is also computed.
@@ -233,7 +233,7 @@ class Plane(object):
         Represents a plane, which is a set of galaxies and grids at a given redshift in the lens ray-tracing
         calculation.
 
-        The image-plane coordinates are defined on the observed image's uniform regular grid_coords.
+        The masked_image-plane coordinates are defined on the observed masked_image's uniform regular grid_coords.
         Calculating its model images from its light profiles exploits this uniformity to perform more efficient and
         precise calculations via an iterative sub-griding approach.
 
@@ -249,7 +249,7 @@ class Plane(object):
 
 
         Parameters ---------- galaxies : [Galaxy] The galaxies in the plane. grids :
-        mask.GridCollection The grids of (x,y) coordinates in the plane, including the image grid_coords,
+        mask.GridCollection The grids of (x,y) coordinates in the plane, including the masked_image grid_coords,
         sub-grid_coords, blurring, grid_coords, etc.
         """
         self.galaxies = galaxies
@@ -270,7 +270,7 @@ class Plane(object):
         return self.grids.map_function(np.subtract, self.deflections)
 
     def generate_image_of_galaxy_light_profiles(self):
-        """Generate the image of the galaxies in this plane."""
+        """Generate the masked_image of the galaxies in this plane."""
         if len(self.galaxies) == 0:
             return np.zeros(self.grids.image.shape[0])
         return intensities_via_sub_grid(self.grids.sub, self.galaxies)
@@ -304,7 +304,7 @@ class Plane(object):
         return intensities_via_sub_grid(self.grids.sub, [galaxy])
 
     def blurring_image_from_galaxy_light_profiles(self):
-        """Generate the image of the galaxies in this plane."""
+        """Generate the masked_image of the galaxies in this plane."""
         return intensities_via_grid(self.grids.blurring, self.galaxies)
 
     def reconstructor_from_plane(self, borders, sparse_mask):
