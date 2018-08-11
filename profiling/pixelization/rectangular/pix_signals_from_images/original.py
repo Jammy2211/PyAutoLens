@@ -17,16 +17,16 @@ class RegularizationWeighted(object):
     pix_signal_scale = None
 
     def pix_signals_from_images(self, image_to_pix, galaxy_image):
-        """Compute the (scaled) signal in each pixel, where the signal is the sum of its image-pixel fluxes. \
+        """Compute the (scaled) signal in each pixel, where the signal is the sum of its masked_image-pixel fluxes. \
         These pix-signals are then used to compute the effective regularization weight of each pixel.
 
         The pix signals are scaled in the following ways:
 
-        1) Divided by the number of image-pixels in the pixel, to ensure all pixels have the same \
+        1) Divided by the number of masked_image-pixels in the pixel, to ensure all pixels have the same \
         'relative' signal (i.e. a pixel with 10 images-pixels doesn't have x2 the signal of one with 5).
 
         2) Divided by the maximum pix-signal, so that all signals vary between 0 and 1. This ensures that the \
-        regularizations weights they're used to compute are defined identically for all image units / SNR's.
+        regularizations weights they're used to compute are defined identically for all masked_image units / SNR's.
 
         3) Raised to the power of the hyper-parameter *pix_signal_scale*, so the method can control the relative \
         contribution of the different regions of regularization.
@@ -49,15 +49,15 @@ class Pixelization(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
-        Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \
-        pixels. These pixels fit an image using a linear inversion, where a regularization matrix
+        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
+        pixels. These pixels fit an masked_image using a linear inversion, where a regularization matrix
         enforces smoothness between pixel values.
 
-        A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
+        A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
         example:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
         - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
@@ -77,7 +77,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
-        Like an image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
@@ -139,7 +139,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         return self.Geometry(x_min, x_max, x_pixel_scale, y_min, y_max, y_pixel_scale)
 
     def grid_to_pix_from_grid(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters
@@ -160,7 +160,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         return grid_to_pix
 
     def grid_to_pix_from_grid_jitted(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters
@@ -194,7 +194,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
 
         1) Setup the rectangular grid geometry, by making its corner appear at the higher / lowest x and y pix sub-
         grid.
-        2) Pair image and sub-image pixels to the rectangular grid using their traced grid and its geometry.
+        2) Pair masked_image and sub-masked_image pixels to the rectangular grid using their traced grid and its geometry.
 
         Parameters
         ----------

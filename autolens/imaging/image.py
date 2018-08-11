@@ -6,7 +6,7 @@ import scipy.signal
 from autolens import exc
 
 
-# TODO : The idea is that we don't need functions to estimate the noise or the exposure time once we set up an image
+# TODO : The idea is that we don't need functions to estimate the noise or the exposure time once we set up an masked_image
 # TODO : so we'll leave this functionality to a class that loads images with what we're given.
 
 class PrepatoryImage(ScaledArray):
@@ -14,16 +14,16 @@ class PrepatoryImage(ScaledArray):
     def __init__(self, array, pixel_scale, psf, noise=None, background_noise=None, poisson_noise=None,
                  effective_exposure_time=None):
         """
-        A 2d array representing a real or simulated image.
+        A 2d array representing a real or simulated masked_image.
 
         Parameters
         ----------
         array: ndarray
-            An array of image pixels in gray-scale
+            An array of masked_image pixels in gray-scale
         noise: ndarray
-            An array describing the noise in the image
+            An array describing the noise in the masked_image
         effective_exposure_time: Union(ndarray, float)
-            A float or array representing the effective exposure time of the whole image or each pixel.
+            A float or array representing the effective exposure time of the whole masked_image or each pixel.
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
@@ -40,28 +40,28 @@ class PrepatoryImage(ScaledArray):
     def simulate(cls, array, pixel_scale, effective_exposure_time, psf=None, background_sky_map=None,
                  include_poisson_noise=False, seed=-1):
         """
-        Create a realistic simulated image by applying effects to a plain simulated image.
+        Create a realistic simulated masked_image by applying effects to a plain simulated masked_image.
 
         Parameters
         ----------
         array: ndarray
-            A plain image
+            A plain masked_image
         effective_exposure_time: Union(ndarray, float)
-            A float or array representing the effective exposure time of the whole image or each pixel.
+            A float or array representing the effective exposure time of the whole masked_image or each pixel.
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
             An array describing the PSF
         background_sky_map
         include_poisson_noise: Bool
-            If True poisson noise is simulated and added to the image
+            If True poisson noise is simulated and added to the masked_image
         seed: int
             A seed for random noise generation
 
         Returns
         -------
-        image: PrepatoryImage
-            A simulated image
+        masked_image: PrepatoryImage
+            A simulated masked_image
         """
 
         array_counts = None
@@ -100,7 +100,7 @@ class PrepatoryImage(ScaledArray):
 
             poisson_noise = None
 
-        # The final image is background subtracted.
+        # The final masked_image is background subtracted.
         if background_sky_map is not None:
             array -= background_sky_map
         if background_sky_map is not None and include_poisson_noise is False:
@@ -143,7 +143,7 @@ class PrepatoryImage(ScaledArray):
         Parameters
         ----------
         array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
+            The masked_image from which the Poisson signal_to_noise_ratio map is estimated.
         """
         return np.multiply(array, self.effective_exposure_time)
 
@@ -154,7 +154,7 @@ class PrepatoryImage(ScaledArray):
         Parameters
         ----------
         array : ndarray
-            The image from which the Poisson signal_to_noise_ratio map is estimated.
+            The masked_image from which the Poisson signal_to_noise_ratio map is estimated.
         """
         return np.divide(array, self.effective_exposure_time)
 
@@ -164,7 +164,7 @@ class PrepatoryImage(ScaledArray):
         Returns
         -------
         counts_array: ndarray
-            An array representing the image in terms of counts
+            An array representing the masked_image in terms of counts
         """
         return self.electrons_per_second_to_counts(self)
 
@@ -199,7 +199,7 @@ class PrepatoryImage(ScaledArray):
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
     def background_noise_from_edges(self, no_edges):
-        """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an image
+        """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an masked_image
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
         Gaussian gives a signal_to_noise_ratio estimate.
 
@@ -227,14 +227,14 @@ class Image(ScaledArray):
 
     def __init__(self, array, pixel_scale, noise, psf):
         """
-        A 2d array representing a real or simulated image.
+        A 2d array representing a real or simulated masked_image.
 
         Parameters
         ----------
         array: ndarray
-            An array of image pixels in gray-scale
+            An array of masked_image pixels in gray-scale
         noise: ndarray
-            An array describing the noise in the image
+            An array describing the noise in the masked_image
         pixel_scale: float
             The scale of each pixel in arc seconds
         psf: PSF
@@ -302,7 +302,7 @@ class PSF(AbstractArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the image weighted_data.
+            The HDU number in the fits file containing the masked_image weighted_data.
         """
         return cls(array_util.numpy_array_from_fits(file_path, hdu))
 
@@ -317,12 +317,12 @@ class PSF(AbstractArray):
         Parameters
         ----------
         array: ndarray
-            An array representing an image
+            An array representing an masked_image
 
         Returns
         -------
         convolved_array: ndarray
-            An array representing an image that has been convolved with this PSF
+            An array representing an masked_image that has been convolved with this PSF
 
         Raises
         ------
@@ -351,13 +351,13 @@ def setup_random_seed(seed):
 
 def generate_poisson_noise(image, exposure_time, seed=-1):
     """
-    Generate a two-dimensional background noise-map for an image, generating values from a Gaussian
+    Generate a two-dimensional background noise-map for an masked_image, generating values from a Gaussian
     distribution with mean 0.0.
 
     Parameters
     ----------
     image : ndarray
-        The 2D image background noise is added to.
+        The 2D masked_image background noise is added to.
     exposure_time : Union(ndarray, int)
         The 2D array of pixel exposure times.
     seed : int

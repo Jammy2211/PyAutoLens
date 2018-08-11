@@ -43,9 +43,9 @@ class Pipeline(Base):
 
     @property
     def image_path(self):
-        image_path = self.options['--image']
+        image_path = self.options['--masked_image']
         if image_path is None:
-            print("Please specify the path to the image folder")
+            print("Please specify the path to the masked_image folder")
             return
         if not image_path.startswith("/"):
             image_path = "{}/{}".format(current_directory, image_path)
@@ -74,7 +74,7 @@ class Pipeline(Base):
         from autolens.imaging import scaled_array
         from autolens.imaging import image as im
 
-        data = scaled_array.ScaledArray.from_fits(file_path='{}/image'.format(self.image_path), hdu=0,
+        data = scaled_array.ScaledArray.from_fits(file_path='{}/masked_image'.format(self.image_path), hdu=0,
                                                   pixel_scale=self.pixel_scale)
         noise = scaled_array.ScaledArray.from_fits(file_path='{}/noise'.format(self.image_path), hdu=0,
                                                    pixel_scale=self.pixel_scale)

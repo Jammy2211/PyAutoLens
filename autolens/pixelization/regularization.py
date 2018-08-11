@@ -35,16 +35,16 @@ class RegularizationWeighted(object):
     pix_signal_scale = None
 
     def pix_signals_from_images(self, image_to_pix, galaxy_image):
-        """Compute the (scaled) signal in each pixel, where the signal is the sum of its image-pixel fluxes. \
+        """Compute the (scaled) signal in each pixel, where the signal is the sum of its masked_image-pixel fluxes. \
         These pix-signals are then used to compute the effective regularization weight of each pixel.
 
         The pix signals are scaled in the following ways:
 
-        1) Divided by the number of image-pixels in the pixel, to ensure all pixels have the same \
+        1) Divided by the number of masked_image-pixels in the pixel, to ensure all pixels have the same \
         'relative' signal (i.e. a pixel with 10 images-pixels doesn't have x2 the signal of one with 5).
 
         2) Divided by the maximum pix-signal, so that all signals vary between 0 and 1. This ensures that the \
-        regularizations weights they're used to compute are defined identically for all image units / SNR's.
+        regularizations weights they're used to compute are defined identically for all masked_image units / SNR's.
 
         3) Raised to the power of the hyper-parameter *pix_signal_scale*, so the method can control the relative \
         contribution of the different regions of regularization.

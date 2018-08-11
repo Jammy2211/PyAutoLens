@@ -54,7 +54,7 @@ def make_profile_only_pipeline():
     return profile_pipeline.make()
 
 
-@pytest.fixture(name="image")
+@pytest.fixture(name="masked_image")
 def make_image():
     return im.Image(np.ones(shape), pixel_scale=0.2, noise=np.ones(shape), psf=im.PSF(np.ones((3, 3))))
 

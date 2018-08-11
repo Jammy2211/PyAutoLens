@@ -13,15 +13,15 @@ class Pixelization(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
-        Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \
-        pixels. These pixels fit an image using a linear inversion, where a regularization matrix
+        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
+        pixels. These pixels fit an masked_image using a linear inversion, where a regularization matrix
         enforces smoothness between pixel values.
 
-        A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
+        A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
         example:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
         - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
@@ -37,26 +37,26 @@ class Pixelization(object):
     def mapping_matrix_from_sub_to_pix(self, sub_to_pix, grids):
         """
         Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
-        image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
+        masked_image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
         Nightingale & Dye 2015 and Nightingale, Dye & Massey 2018.
 
         The matrix has dimensions [image_pixels, pix_pixels] and non-zero entries represents an \
-        image-pixel to pixel mapping. For example, if image-pixel 0 maps to pixel 2, element \
+        masked_image-pixel to pixel mapping. For example, if masked_image-pixel 0 maps to pixel 2, element \
         [0,2] of the mapping matrix will = 1.
 
-        The mapping matrix is created using sub-gridding. Here, each observed image-pixel is divided into a finer \
-        sub_grid. For example, if the sub-grid is sub_grid_size=4, each image-pixel is split into a uniform 4 x 4 \
+        The mapping matrix is created using sub-gridding. Here, each observed masked_image-pixel is divided into a finer \
+        sub_grid. For example, if the sub-grid is sub_grid_size=4, each masked_image-pixel is split into a uniform 4 x 4 \
         sub grid and all 16 sub-pixels are individually paired with pixels.
 
         The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
-        number of sub-pixel to pixel mappings. For example if 3 sub-pixels from image-pixel 4 map to \
+        number of sub-pixel to pixel mappings. For example if 3 sub-pixels from masked_image-pixel 4 map to \
         pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
 
         Parameters
         ----------
         grids
         sub_to_pix : [int, int]
-            The pixel index each image and sub-image pixel is matched with. (e.g. if the fifth
+            The pixel index each masked_image and sub-masked_image pixel is matched with. (e.g. if the fifth
             sub-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
 
         """
@@ -75,7 +75,7 @@ class Rectangular(Pixelization):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
-        Like an image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
@@ -205,7 +205,7 @@ class Rectangular(Pixelization):
         return pixel_neighbors
 
     def grid_to_pix_from_grid(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters
@@ -226,7 +226,7 @@ class Rectangular(Pixelization):
         return grid_to_pix
 
     def grid_to_pix_from_grid_jitted(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters
@@ -260,7 +260,7 @@ class Rectangular(Pixelization):
 
         1) Setup the rectangular grid geometry, by making its corner appear at the higher / lowest x and y pix sub-
         grid.
-        2) Pair image and sub-image pixels to the rectangular grid using their traced grid and its geometry.
+        2) Pair masked_image and sub-masked_image pixels to the rectangular grid using their traced grid and its geometry.
 
         Parameters
         ----------

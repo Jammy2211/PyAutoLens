@@ -15,7 +15,7 @@ class Reconstructor(object):
             The matrix defining how the reconstruction's pixels are regularized with one another when fitting the
             weighted_data.
         image_to_pix : ndarray
-            The mapping between each image-grid pixel and pixelization-grid pixel.
+            The mapping between each masked_image-grid pixel and pixelization-grid pixel.
         sub_to_pix : ndarray
             The mapping between each sub-grid pixel and pixelization-grid sub-pixel.
         """
@@ -26,7 +26,7 @@ class Reconstructor(object):
         self.sub_to_pix = sub_to_pix
 
     def reconstruct_image(self, image, noise, convolver):
-        """Fit the image data using the inversion."""
+        """Fit the masked_image data using the inversion."""
 
         blurred_mapping = convolver.convolve_mapping_matrix_jit(self.mapping)
         covariance = self.covariance_matrix_from_blurred_mapping_jit(blurred_mapping, noise)
@@ -124,14 +124,14 @@ class Reconstruction(object):
         self.reconstruction = reconstruction
 
     def model_image_from_reconstruction_jit(self):
-        """ Map the reconstruction pix s_vector back to the image-plane to compute the pixelization's model-image.
+        """ Map the reconstruction pix s_vector back to the masked_image-plane to compute the pixelization's model-masked_image.
         """
         return self.model_image_from_reconstruction_jitted(self.reconstruction, self.blurred_mapping)
     
     @staticmethod
     @numba.jit(nopython=True)
     def model_image_from_reconstruction_jitted(reconstruction, blurred_mapping):
-        """ Map the reconstruction pix s_vector back to the image-plane to compute the pixelization's model-image.
+        """ Map the reconstruction pix s_vector back to the masked_image-plane to compute the pixelization's model-masked_image.
         """
         model_image = np.zeros(blurred_mapping.shape[0])
         for i in range(blurred_mapping.shape[0]):

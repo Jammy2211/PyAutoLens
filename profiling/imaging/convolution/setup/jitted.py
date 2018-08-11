@@ -19,7 +19,7 @@ class Convolver(object):
             A mask where True eliminates data.
         mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after convolution.
-        kernel : image.PSF or ndarray
+        kernel : masked_image.PSF or ndarray
             An array representing a PSF psf.
 
         Attributes

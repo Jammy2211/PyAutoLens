@@ -137,7 +137,7 @@ class Mask(scaled_array.ScaledArray):
     @classmethod
     def unmasked(cls, shape_arc_seconds, pixel_scale):
         """
-        Setup the mask such that all values are unmasked, thus corresponding to the entire image.
+        Setup the mask such that all values are unmasked, thus corresponding to the entire masked_image.
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class Mask(scaled_array.ScaledArray):
     @property
     def coordinate_grid(self):
         """
-        Compute the image grid_coords grids from a mask, using the center of every unmasked pixel.
+        Compute the masked_image grid_coords grids from a mask, using the center of every unmasked pixel.
         """
         coordinates = self.grid_coordinates
 
@@ -183,7 +183,7 @@ class Mask(scaled_array.ScaledArray):
         return ImageGrid(grid)
 
     def map_to_1d(self, grid_data):
-        """Compute a data grid, which represents the data values of a data-set (e.g. an image, noise, in the mask.
+        """Compute a data grid, which represents the data values of a data-set (e.g. an masked_image, noise, in the mask.
 
         Parameters
         ----------
@@ -231,7 +231,7 @@ class Mask(scaled_array.ScaledArray):
 
     @property
     def border_pixel_indices(self):
-        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
         its edge, therefore neighboring a pixel with a *True* value.
         """
 
@@ -251,7 +251,7 @@ class Mask(scaled_array.ScaledArray):
         return border_pixels
 
     def border_sub_pixel_indices(self, sub_grid_size):
-        """Compute the border image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
         its edge, therefore neighboring a pixel with a *True* value.
         """
 
@@ -286,7 +286,7 @@ class Mask(scaled_array.ScaledArray):
     @Memoizer()
     def blurring_mask_for_kernel_shape(self, kernel_shape):
         """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
-        fraction of their light will be blurring in the image.
+        fraction of their light will be blurring in the masked_image.
 
         Parameters
         ----------
@@ -308,7 +308,7 @@ class Mask(scaled_array.ScaledArray):
                                 blurring_mask[x + x1, y + y1] = False
                         else:
                             raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the image"
+                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the masked_image"
                                 "before masking")
 
         self.map(fill_grid)
@@ -316,11 +316,11 @@ class Mask(scaled_array.ScaledArray):
         return Mask(blurring_mask, self.pixel_scale)
 
     def map_to_2d(self, data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D image.
+        """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
         Parameters
         -----------
         data : ndarray
-            The grid-data which is mapped to its 2D image.
+            The grid-data which is mapped to its 2D masked_image.
         """
         data_2d = np.zeros(self.shape)
 
@@ -351,10 +351,10 @@ class SparseMask(Mask):
     @Memoizer()
     def index_image(self):
         """
-        Setup an image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
+        Setup an masked_image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
 
-         This is used for computing the image_to_cluster vector, whereby each image pixel is paired to the sparse
-         pixel in this image via a neighbor search."""
+         This is used for computing the image_to_cluster vector, whereby each masked_image pixel is paired to the sparse
+         pixel in this masked_image via a neighbor search."""
 
         sparse_index_2d = np.zeros(self.shape, dtype=int)
         sparse_pixel_index = 0
@@ -371,14 +371,14 @@ class SparseMask(Mask):
     @Memoizer()
     def sparse_to_image(self):
         """
-        Compute the mapping of each sparse image pixel to its closest image pixel, defined using a mask of image \
+        Compute the mapping of each sparse masked_image pixel to its closest masked_image pixel, defined using a mask of masked_image \
         data_to_pixels.
 
         Returns
         -------
         cluster_to_image : ndarray
-            The mapping between every sparse clustering image pixel and image pixel, where each entry gives the 1D index
-            of the image pixel in the self.
+            The mapping between every sparse clustering masked_image pixel and masked_image pixel, where each entry gives the 1D index
+            of the masked_image pixel in the self.
         """
         sparse_to_image = np.empty(0, dtype=int)
         image_pixel_index = 0
@@ -397,9 +397,9 @@ class SparseMask(Mask):
     @property
     @Memoizer()
     def image_to_sparse(self):
-        """Compute the mapping between every image pixel in the mask and its closest sparse clustering pixel.
+        """Compute the mapping between every masked_image pixel in the mask and its closest sparse clustering pixel.
 
-        This is performed by going to each image pixel in the *mask*, and pairing it with its nearest neighboring pixel
+        This is performed by going to each masked_image pixel in the *mask*, and pairing it with its nearest neighboring pixel
         in the *sparse_mask*. The index of the *sparse_mask* pixel is drawn from the *sparse_index_image*. This
         neighbor search continue grows larger and larger around a pixel, until a pixel contained in the *sparse_mask* is
         successfully found.
@@ -407,7 +407,7 @@ class SparseMask(Mask):
         Returns
         -------
         image_to_cluster : ndarray
-            The mapping between every image pixel and its closest sparse clustering pixel, where each entry give the 1D
+            The mapping between every masked_image pixel and its closest sparse clustering pixel, where each entry give the 1D
             index of the sparse pixel in sparse_pixel arrays.
 
         """
@@ -438,18 +438,18 @@ class ImageGrid(np.ndarray):
     are represented by the value at the centre of the pixel.
 
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an \
-    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are \
+    masked_image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The masked_image pixel indexes are \
     also counted from the top-left.
 
     A regular *grid_coords* is a NumPy array of image_shape [image_pixels, 2]. Therefore, the first element maps \
-    to the image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
-    [3,1] gives the 4th image pixel's y coordinate.
+    to the masked_image pixel index, and second element to its (x,y) arc second coordinates. For example, the value \
+    [3,1] gives the 4th masked_image pixel's y coordinate.
 
     Below is a visual illustration of a regular grid, where a total of 10 data_to_image are unmasked and therefore \
     included in the grid.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
     |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in analysis)
@@ -459,8 +459,8 @@ class ImageGrid(np.ndarray):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    This image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
-    around the image.
+    This masked_image pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
+    around the masked_image.
 
     pixel_scale = 1.0"
 
@@ -508,12 +508,12 @@ class SubGrid(ImageGrid):
      sub-coordinates, which are used to perform over-sampling in the lens analysis.
 
     Coordinates are defined from the top-left corner, such that data_to_image in the top-left corner of an
-    image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The image pixel indexes are
+    masked_image (e.g. [0,0]) have a negative x-value and positive y-value in arc seconds. The masked_image pixel indexes are
     also counted from the top-left.
 
     A sub *grid_coords* is a NumPy array of image_shape [image_pixels, sub_grid_pixels, 2]. Therefore, the first
-    element maps to the image pixel index, the second element to the sub-pixel index and third element to that
-    sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th image pixel's
+    element maps to the masked_image pixel index, the second element to the sub-pixel index and third element to that
+    sub pixel's (x,y) arc second coordinates. For example, the value [3, 6, 1] gives the 4th masked_image pixel's
     7th sub-pixel's y coordinate.
 
     Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from
@@ -521,7 +521,7 @@ class SubGrid(ImageGrid):
     2 data_to_image, to keep the illustration brief.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from analysis)
     |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in analysis)
@@ -548,7 +548,7 @@ class SubGrid(ImageGrid):
     |x|x|x|x|x|x|x|x|x|x| \/
     |x|x|x|x|x|x|x|x|x|x|
 
-    However, we now go to each image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
+    However, we now go to each masked_image-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
     if *sub_grid_size=2*, we use a 2x2 sub-grid:
 
     Pixel 0 - (2x2):
@@ -614,7 +614,7 @@ class SubGrid(ImageGrid):
     @property
     @Memoizer()
     def sub_to_image(self):
-        """ Compute the pairing of every sub-pixel to its original image pixel from a mask. """
+        """ Compute the pairing of every sub-pixel to its original masked_image pixel from a mask. """
         sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype='int')
         image_pixel_count = 0
         sub_pixel_count = 0
@@ -636,16 +636,16 @@ class GridCollection(object):
 
     def __init__(self, image, sub, blurring):
         """
-        A collection of grids which contain the coordinates of an image. This includes the image's regular grid,
-        sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the image,
+        A collection of grids which contain the coordinates of an masked_image. This includes the masked_image's regular grid,
+        sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the masked_image,
         lens and source planes.
 
         Parameters
         -----------
         image : GridCoordsImage
-            A grid of coordinates for the regular image grid.
+            A grid of coordinates for the regular masked_image grid.
         sub : GridCoordsImageSub
-            A grid of coordinates for the sub-gridded image grid.
+            A grid of coordinates for the sub-gridded masked_image grid.
         blurring : GridCoordsBlurring
             A grid of coordinates for the blurring regions.
         """
