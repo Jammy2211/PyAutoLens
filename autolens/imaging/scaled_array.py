@@ -80,16 +80,16 @@ class AbstractArray(np.ndarray):
 
         if self.shape[0] != new_dimensions[0]:
             logger.debug(
-                'image.weighted_data.trim_data - Your specified x_size was odd (even) when the image x dimension is '
+                'masked_image.weighted_data.trim_data - Your specified x_size was odd (even) when the masked_image x dimension is '
                 'even (odd)')
             logger.debug(
-                'The method has automatically used x_size+1 to ensure the image is not miscentred by a half-pixel.')
+                'The method has automatically used x_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
         elif self.shape[1] != new_dimensions[1]:
             logger.debug(
-                'image.weighted_data.trim_data - Your specified y_size was odd (even) when the image y dimension is '
+                'masked_image.weighted_data.trim_data - Your specified y_size was odd (even) when the masked_image y dimension is '
                 'even (odd)')
             logger.debug(
-                'The method has automatically used y_size+1 to ensure the image is not miscentred by a half-pixel.')
+                'The method has automatically used y_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
 
         return self.new_with_array(array)
 
@@ -113,7 +113,7 @@ class AbstractArray(np.ndarray):
 
 class ScaledArray(AbstractArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. masked_image, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -149,7 +149,7 @@ class ScaledArray(AbstractArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the image weighted_data.
+            The HDU number in the fits file containing the masked_image weighted_data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -161,7 +161,7 @@ class ScaledArray(AbstractArray):
         Returns
         -------
         central_pixel_coordinates:
-            The coordinates of the central pixel in the image. If a dimension of the image are odd then the
+            The coordinates of the central pixel in the masked_image. If a dimension of the masked_image are odd then the
             corresponding coordinate will be fra
     @propertyctional.
         """
@@ -182,7 +182,7 @@ class ScaledArray(AbstractArray):
     def pixel_coordinates_to_arc_second_coordinates(self, pixel_coordinates):
         """
         Converts a pixel coordinate pair to an arc seconds coordinate pair. The pixel coordinate origin is at the top
-        left corner of the image whilst the arc second coordinate origin is at the centre. This means that the original
+        left corner of the masked_image whilst the arc second coordinate origin is at the centre. This means that the original
         pixel coordinates, (0, 0), will give negative arc second coordinates.
 
         Parameters
@@ -201,7 +201,7 @@ class ScaledArray(AbstractArray):
     def arc_second_coordinates_to_pixel_coordinates(self, arc_second_coordinates):
         """
         Converts an arc second coordinate pair to a pixel coordinate pair. The pixel coordinate origin is at the top
-        left corner of the image whilst the arc second coordinate origin is at the centre. This means that the original
+        left corner of the masked_image whilst the arc second coordinate origin is at the centre. This means that the original
         pixel coordinates, (0, 0), will give negative arc second coordinates.
 
         Parameters
@@ -221,7 +221,7 @@ class ScaledArray(AbstractArray):
     @property
     def shape_arc_seconds(self):
         """
-        The shape of the image in arc seconds
+        The shape of the masked_image in arc seconds
         """
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
@@ -235,7 +235,7 @@ class ScaledArray(AbstractArray):
         return self.new_with_array(super(ScaledArray, self).flatten(order))
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
-        """Convert a coordinate on the regular image-pixel grid_coords to a sub-coordinate, using the pixel scale and
+        """Convert a coordinate on the regular masked_image-pixel grid_coords to a sub-coordinate, using the pixel scale and
         sub-grid_coords sub_grid_size """
 
         half = self.pixel_scale / 2

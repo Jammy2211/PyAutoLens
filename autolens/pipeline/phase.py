@@ -67,56 +67,6 @@ class Phase(object):
         self.mask_function = mask_function
         self.name = name
 
-    def doc(self):
-        if self.__doc__ is not None:
-            return self.__doc__.replace("  ", "").replace("\n", " ")
-
-    def run(self, image, last_results=None):
-        """
-        Run this phase.
-
-        Parameters
-        ----------
-        last_results: ResultsCollection
-            An object describing the results of the last phase or None if no phase has been executed
-        image: img.Image
-            An image that has been masked
-
-        Returns
-        -------
-        result: non_linear.Result
-            A result object comprising the best fit model and other data.
-        """
-        analysis = self.make_analysis(image=image, previous_results=last_results)
-        result = self.optimizer.fit(analysis)
-        return self.__class__.Result(result.constant, result.likelihood, result.variable,
-                                     galaxy_images=analysis.galaxy_images_for_model(result.constant))
-
-    def make_analysis(self, image, previous_results=None):
-        """
-        Create an analysis object. Also calls the prior passing and image modifying functions to allow child classes to
-        change the behaviour of the phase.
-
-        Parameters
-        ----------
-        image: im.Image
-            An image that has been masked
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        analysis: Analysis
-            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
-        """
-        mask = self.mask_function(image)
-        image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-
-        analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results, name=self.name)
-        return analysis
-
     @property
     def constant(self):
         """
@@ -141,24 +91,54 @@ class Phase(object):
         """
         return self.optimizer.variable
 
-    class Result(non_linear.Result):
+    def doc(self):
+        if self.__doc__ is not None:
+            return self.__doc__.replace("  ", "").replace("\n", " ")
 
-        def __init__(self, constant, likelihood, variable, galaxy_images):
-            """
-            The result of a phase
+    def run(self, image, last_results=None):
+        """
+        Run this phase.
 
-            Parameters
-            ----------
+        Parameters
+        ----------
+        last_results: ResultsCollection
+            An object describing the results of the last phase or None if no phase has been executed
+        image: img.Image
+            An masked_image that has been masked
 
-            galaxy_images: [ndarray]
-                A collection of images created by each individual galaxy which taken together form the full model image
-            """
-            super(Phase.Result, self).__init__(constant, likelihood, variable)
-            self.galaxy_images = galaxy_images
+        Returns
+        -------
+        result: non_linear.Result
+            A result object comprising the best fit model and other data.
+        """
+        analysis = self.make_analysis(image=image, previous_results=last_results)
+        result = self.optimizer.fit(analysis)
+        self.__class__.Visualize(analysis, result.constant, self.phasename)
+        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
-        @property
-        def model_image(self):
-            return np.sum(np.stack((image for image in self.galaxy_images if image is not None)), axis=0)
+    def make_analysis(self, image, previous_results=None):
+        """
+        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child classes to
+        change the behaviour of the phase.
+
+        Parameters
+        ----------
+        image: im.Image
+            An masked_image that has been masked
+        previous_results: ResultsCollection
+            The result from the previous phase
+
+        Returns
+        -------
+        analysis: Analysis
+            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        """
+        mask = self.mask_function(image)
+        image = self.modify_image(image, previous_results)
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
+        self.pass_priors(previous_results)
+        analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results, name=self.name)
+        return analysis
 
     class Analysis(object):
         def __init__(self, previous_results, masked_image, name):
@@ -170,7 +150,7 @@ class Phase(object):
             previous_results: ResultsCollection
                 The results of all previous phases
             masked_image: mi.MaskedImage
-                An image that has been masked
+                An masked_image that has been masked
             """
             self.previous_results = previous_results
             self.name = name
@@ -209,22 +189,51 @@ class Phase(object):
             """
             raise NotImplementedError()
 
+        def residuals_for_model(self, model):
+
+            fitter = Fitting.Fitter(self.ci_datas, ci_post_ctis)
+            return fitter.residuals_from_fitting_ci_datas()
+
+        def chi_squareds_for_model(self, model):
+            fitter = Fitting.Fitter(self.ci_datas, ci_post_ctis)
+            return fitter.chi_squareds_from_fitting_ci_datas()
+
+
+    class Result(non_linear.Result):
+
+        def __init__(self, constant, likelihood, variable, galaxy_images):
+            """
+            The result of a phase
+
+            Parameters
+            ----------
+
+            galaxy_images: [ndarray]
+                A collection of images created by each individual galaxy which taken together form the full model masked_image
+            """
+            super(Phase.Result, self).__init__(constant, likelihood, variable)
+            self.galaxy_images = galaxy_images
+
+        @property
+        def model_image(self):
+            return np.sum(np.stack((image for image in self.galaxy_images if image is not None)), axis=0)
+
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, previous_results):
         """
-        Customize an image. e.g. removing lens light.
+        Customize an masked_image. e.g. removing lens light.
 
         Parameters
         ----------
         image: img.Image
-            An image that has been masked
+            An masked_image that has been masked
         previous_results: ResultsCollection
             The result of the previous analysis
 
         Returns
         -------
-        image: img.Image
-            The modified image (not changed by default)
+        masked_image: img.Image
+            The modified masked_image (not changed by default)
         """
         return image
 
@@ -352,7 +361,7 @@ class SourceLensPhase(Phase):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
-            Determine the fit of a lens galaxy and source galaxy to the image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
 
             Parameters
             ----------
@@ -364,7 +373,7 @@ class SourceLensPhase(Phase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model image itself
+                A fractional value indicating how well this model fit and the model masked_image itself
             """
             if self.should_log:
                 logger.debug(
@@ -391,13 +400,13 @@ class SourceLensPhase(Phase):
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
                 [] if source_galaxy is None else [source_galaxy], self.masked_image.grids)
-            fitter = fitting.Fitter(self.masked_image, tracer)
+            fitter = fitting.ProfileFitter(self.masked_image, tracer)
 
             if self.last_results is not None and tracer.all_with_hyper_galaxies:
-                return fitter.fit_data_with_profiles_and_model_images(self.model_image,
-                                                                      self.galaxy_images)
+                return fitter.fit_masked_image_with_profiles_and_scaled_noise(self.model_image,
+                                                                              self.galaxy_images)
 
-            return fitter.fit_data_with_profiles()
+            return fitter.fit_masked_image_with_profiles()
 
         def galaxy_images_for_model(self, model):
             """
@@ -445,7 +454,7 @@ class PixelizedSourceLensPhase(SourceLensPhase):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
-            Determine the fit of a lens galaxy and source galaxy to the image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
 
             Parameters
             ----------
@@ -457,7 +466,7 @@ class PixelizedSourceLensPhase(SourceLensPhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model image itself
+                A fractional value indicating how well this model fit and the model masked_image itself
             """
             if self.should_log:
                 logger.debug(

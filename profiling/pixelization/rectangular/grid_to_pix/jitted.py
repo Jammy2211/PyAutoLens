@@ -9,15 +9,15 @@ class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
-        Abstract base class for a pixelization, which discretizes a set of image and sub grid grid into \
+        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
         pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix
         enforces smoothness between pixel values.
 
-        A number of 1D and 2D arrays are used to represent mappings betwen image, sub, pix, and cluster pixels. The \
+        A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
         example:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th image-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
         - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
@@ -40,7 +40,7 @@ class Rectangular(Pixelization):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
-        Like an image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
@@ -101,7 +101,7 @@ class Rectangular(Pixelization):
         return self.Geometry(x_min, x_max, x_pixel_scale, y_min, y_max, y_pixel_scale)
 
     def grid_to_pix_from_grid(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters
@@ -122,7 +122,7 @@ class Rectangular(Pixelization):
         return grid_to_pix
 
     def grid_to_pix_from_grid_jitted(self, grid, geometry):
-        """Compute the mappings between a set of image pixels (or sub-pixels) and pixels, using the image's
+        """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
         traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
 
         Parameters

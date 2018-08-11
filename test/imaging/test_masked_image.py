@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='masked_image')
 def make_image():
     psf = im.PSF(np.ones((1, 1)), 1)
     return im.Image(np.ones((3, 3)), pixel_scale=3., psf=psf, noise=np.ones((3, 3)))

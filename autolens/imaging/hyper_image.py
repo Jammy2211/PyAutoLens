@@ -2,7 +2,7 @@
 class HyperImage(object):
 
     def __init__(self, background_sky_scale=0.0, background_noise_scale=0.0):
-        """Class for scaling the noise of different components in an image, primarily the different galaxies (e.g. the \
+        """Class for scaling the noise of different components in an masked_image, primarily the different galaxies (e.g. the \
         lens, source).
 
         Parameters
@@ -24,13 +24,13 @@ class HyperImage(object):
         return [r'\sigma', r'\sigma']
 
     def sky_scaled_image_from_image(self, image):
-        """Compute a new image with the background sky level scaled. This can simply multiple by a constant factor \
-        (assuming a uniform background sky) because the image is in units electrons per second.
+        """Compute a new masked_image with the background sky level scaled. This can simply multiple by a constant factor \
+        (assuming a uniform background sky) because the masked_image is in units electrons per second.
 
         Parameters
         -----------
         image : ndarray
-            The image before scaling (electrons per second).
+            The masked_image before scaling (electrons per second).
         """
         return image + self.background_sky_scale
 

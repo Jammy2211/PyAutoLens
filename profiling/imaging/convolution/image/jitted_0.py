@@ -181,7 +181,7 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the psf for which the result should be calculated
         pixel_array: [float]
@@ -260,9 +260,9 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
+            An array representing the mapping of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
@@ -282,9 +282,9 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of image pixels within the blurring region.
+            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of image pixels.
+            An array representing the mapping of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
