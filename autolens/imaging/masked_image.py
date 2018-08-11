@@ -10,15 +10,15 @@ class MaskedImage(im.Image):
 
     def __init__(self, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None):
         """
-        An image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
+        An masked_image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
         array mapping data back to 2D.
 
         Parameters
         ----------
         image: im.Image
-            A 2D image
+            A 2D masked_image
         mask: msk.Mask
-            A mask to be applied to the image
+            A mask to be applied to the masked_image
         sub_grid_size : int
 
         """
@@ -59,11 +59,11 @@ class MaskedImage(im.Image):
 
 
     def map_to_2d(self, data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D image.
+        """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
         Parameters
         -----------
         data : ndarray
-            The grid-data which is mapped to its 2D image.
+            The grid-data which is mapped to its 2D masked_image.
         """
         data_2d = np.zeros(self.image_shape)
 

@@ -36,14 +36,14 @@ class InterpolationScheme(object):
     def __init__(self, shape, image_coords, image_pixel_scale):
         """An interpolation scheme which enables efficient deflection angle computation. This works by computing a \
         sub-set of deflection angles on a uniform regular grid and bilinearly interpolating these values to determine \
-        the image-grid and sub-grid deflection angle values.
+        the masked_image-grid and sub-grid deflection angle values.
 
         This class describes the interpolation scheme that is used to do this, for example the shape of the \
         interpolation-grid and the neighbors of every pixel on the grid in the 4 directions required for bilinear \
         interpolation.
 
-        The interpolation scheme can be performed on image and sub grids that are non-uniform (e.g. after tracing them \
-        from the image-plane to a source-plane). The x_pixel and y_pixel bounds of the new grids are used to scale the \
+        The interpolation scheme can be performed on masked_image and sub grids that are non-uniform (e.g. after tracing them \
+        from the masked_image-plane to a source-plane). The x_pixel and y_pixel bounds of the new grids are used to scale the \
         interpolation scheme to the new plane.
 
         Parameters
@@ -51,7 +51,7 @@ class InterpolationScheme(object):
         shape : (int, int)
             The shape of the interpolation schemes interpolation-grid.
         image_coords : ndarray
-            The image-plane coordinates of each pixel on the interpolation-grid.
+            The masked_image-plane coordinates of each pixel on the interpolation-grid.
         """
         def bottom_right_neighbors():
             """For each pixel on the deflection-interpolation grid, compute pixels directly neighboring each pixel \
@@ -169,7 +169,7 @@ class InterpolationScheme(object):
 
     @classmethod
     def from_mask(cls, mask, shape):
-        """Determine the interpolation scheme from an image-mask. This uses the x / y_pixel bounds of the mask to setup the \
+        """Determine the interpolation scheme from an masked_image-mask. This uses the x / y_pixel bounds of the mask to setup the \
         grid 'over' the mask, padded by the pixel-scale to ensure edge pixels have their deflection angles interpolated \
         correctly.
 
