@@ -496,18 +496,25 @@ class PixelizedSourceLensPhase(ProfileSourceLensPhase):
             # TODO : Don't need a sparse mask for Rectangular pixelization. We'll remove it soon so just ignore it for now.
             sparse_mask = None
 
-            # TODO : Currently does not use ProfileFitter - will refactor in a moment.
+            # TODO : I guess there is overhead doing this, and once we do it once in a fit we dont need to do it again.
+            # TODO : Memoize or set up in class constructor?
 
-            if self.last_results is None or not tracer.all_with_hyper_galaxies:
+            if tracer.has_galaxy_with_light_profile and not tracer.has_galaxy_with_pixelization:
+
+                fitter = fitting.ProfileFitter(self.masked_image, tracer)
+                return fitter.blurred_image_likelihood
+
+            elif not tracer.has_galaxy_with_light_profile and tracer.has_galaxy_with_pixelization:
 
                 fitter = fitting.PixelizationFitter(self.masked_image, sparse_mask, tracer)
                 return fitter.reconstructed_image_evidence
 
-            elif self.last_results is not None and tracer.all_with_hyper_galaxies:
+            elif tracer.has_galaxy_with_light_profile and tracer.has_galaxy_with_pixelization:
 
-                fitter = fitting.HyperPixelizationFitter(self.masked_image, sparse_mask, tracer, self.hyper_model_image,
-                                                    self.hyper_galaxy_images, self.hyper_minimum_values)
-                return fitter.reconstructed_image_scaled_evidence
+                fitter = fitting.ProfileFitter(self.masked_image, tracer)
+                pix_fitter = fitter.pixelization_fitter_with_profile_subtracted_masked_image(sparse_mask)
+                return pix_fitter.reconstructed_image_evidence
+
 
 
 class LensOnlyPhase(ProfileSourceLensPhase):
