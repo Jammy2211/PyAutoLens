@@ -132,7 +132,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Returns
         -------
         profile_prior_model_dict: {str: PriorModel}
-            A dictionary mapping instance variable names to variable profiles.
+            A dictionary mapping_matrix instance variable names to variable profiles.
         """
         return {key: value for key, value in
                 filter(lambda t: isinstance(t[1], model_mapper.PriorModel) and is_profile_class(t[1].cls),
@@ -144,7 +144,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Returns
         -------
         constant_profile_dict: {str: geometry_profiles.Profile}
-            A dictionary mapping instance variable names to profiles with set variables.
+            A dictionary mapping_matrix instance variable names to profiles with set variables.
         """
         return {key: value for key, value in self.__dict__.items() if
                 galaxy.is_light_profile(value) or galaxy.is_mass_profile(value)}
@@ -155,7 +155,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Returns
         -------
         profile_prior_model_dict: {str: PriorModel}
-            A dictionary mapping instance variable names to variable light profiles.
+            A dictionary mapping_matrix instance variable names to variable light profiles.
         """
         return {key: value for key, value in self.prior_model_dict.items() if is_light_profile_class(value.cls)}
 
@@ -165,7 +165,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Returns
         -------
         profile_prior_model_dict: {str: PriorModel}
-            A dictionary mapping instance variable names to variable mass profiles.
+            A dictionary mapping_matrix instance variable names to variable mass profiles.
         """
         return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
@@ -185,7 +185,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Returns
         -------
         prior_class_dict: {Prior: class}
-            A dictionary mapping priors to the class associated with their prior model.
+            A dictionary mapping_matrix priors to the class associated with their prior model.
         """
         return {prior: cls for prior_model in self.prior_models for prior, cls in
                 prior_model.prior_class_dict.items()}
@@ -197,7 +197,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Parameters
         ----------
         arguments: {Prior: value}
-            Dictionary mapping priors to attribute name and value pairs
+            Dictionary mapping_matrix priors to attribute phase_name and value pairs
 
         Returns
         -------
@@ -229,7 +229,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Parameters
         ----------
         arguments: dict
-            A dictionary mapping between old priors and their replacements.
+            A dictionary mapping_matrix between old priors and their replacements.
 
         Returns
         -------

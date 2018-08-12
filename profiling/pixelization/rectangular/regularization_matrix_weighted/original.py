@@ -17,7 +17,7 @@ class RegularizationWeighted(object):
 
     def pix_signals_from_images(self, image_to_pix, galaxy_image):
         """Compute the (scaled) signal in each pixel, where the signal is the sum of its masked_image-pixel fluxes. \
-        These pix-signals are then used to compute the effective regularization weight of each pixel.
+        These pix-signals are then used to compute the effective regularization_matrix weight of each pixel.
 
         The pix signals are scaled in the following ways:
 
@@ -27,8 +27,8 @@ class RegularizationWeighted(object):
         2) Divided by the maximum pix-signal, so that all signals vary between 0 and 1. This ensures that the \
         regularizations weights they're used to compute are defined identically for all masked_image units / SNR's.
 
-        3) Raised to the power of the hyper-parameter *pix_signal_scale*, so the method can control the relative \
-        contribution of the different regions of regularization.
+        3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
+        contribution of the different regions of regularization_matrix.
         """
 
         pix_signals = np.zeros((self.pixels,))
@@ -44,10 +44,10 @@ class RegularizationWeighted(object):
         return pix_signals ** self.pix_signal_scale
 
     def regularization_weights_from_pix_signals(self, pix_signals):
-        """Compute the regularization weights, which represent the effective regularization coefficient of every \
+        """Compute the regularization_matrix weights, which represent the effective regularization_matrix coefficient of every \
         pixel. These are computed using the (scaled) pix-signal in each pixel.
 
-        Two regularization coefficients are used which map to:
+        Two regularization_matrix coefficients are used which map to:
 
         1) pix_signals - This regularizes pix-plane pixels with a high pix-signal (i.e. where the pix is).
         2) 1.0 - pix_signals - This regularizes pix-plane pixels with a low pix-signal (i.e. background sky)
@@ -57,13 +57,13 @@ class RegularizationWeighted(object):
 
     def regularization_matrix_from_pix_neighbors(self, regularization_weights, pix_neighbors):
         """
-        Setup a weighted regularization matrix, where all pixels are regularized with one another in both \
-        directions using a different effective regularization coefficient.
+        Setup a weighted regularization_matrix matrix, where all pixels are regularized with one another in both \
+        directions using a different effective regularization_matrix coefficient.
 
         Parameters
         ----------
         regularization_weights : list(float)
-            The regularization weight of each pixel
+            The regularization_matrix weight of each pixel
         pix_neighbors : [[]]
             A list of the neighbors of each pixel.
         """
@@ -86,7 +86,7 @@ class Pixelization(object):
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
-        pixels. These pixels fit an masked_image using a linear inversion, where a regularization matrix
+        pixels. These pixels fit an masked_image using a linear inversion, where a regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
@@ -94,14 +94,14 @@ class Pixelization(object):
         example:
 
         - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
@@ -120,7 +120,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
 
         if shape[0] <= 2 or shape[1] <= 2:

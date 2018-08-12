@@ -83,7 +83,7 @@ class NonLinearOptimizer(object):
         path : str
             The path where the non-linear analysis nlo are stored.
         obj_name : str
-            Unique identifier of the weighted_data being analysed (e.g. the name of the weighted_data set)
+            Unique identifier of the data_vector being analysed (e.g. the phase_name of the data_vector set)
         """
         self.named_config = conf.instance.non_linear
 
@@ -109,7 +109,7 @@ class NonLinearOptimizer(object):
         Parameters
         ----------
         attribute_name: str
-            The name of the field
+            The phase_name of the field
         attribute_type: type
             The type of the value
 
@@ -134,7 +134,7 @@ class NonLinearOptimizer(object):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
     def create_paramnames_names(self):
-        """The param_names vector is a list each parameter's name, and is used for *GetDist* visualization.
+        """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
@@ -146,7 +146,7 @@ class NonLinearOptimizer(object):
                 self.paramnames_names.append(prior_name+'_'+param[0])
 
     def create_paramnames_labels(self):
-        """The param_names vector is a list each parameter's name, and is used for *GetDist* visualization.
+        """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
@@ -162,7 +162,7 @@ class NonLinearOptimizer(object):
                 self.paramnames_labels.append(param_labels[param_no])
 
     def create_paramnames_labels_temp(self):
-        """The param_names vector is a list each parameter's name, and is used for *GetDist* visualization.
+        """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
@@ -173,7 +173,7 @@ class NonLinearOptimizer(object):
             self.paramnames_labels.append('p'+str(i))
 
     def create_paramnames_file(self):
-        """The param_names file lists every parameter's name and Latex tag, and is used for *GetDist* visualization.
+        """The param_names file lists every parameter's phase_name and Latex tag, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""

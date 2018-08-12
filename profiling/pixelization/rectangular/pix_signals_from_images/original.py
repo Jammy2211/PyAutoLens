@@ -18,7 +18,7 @@ class RegularizationWeighted(object):
 
     def pix_signals_from_images(self, image_to_pix, galaxy_image):
         """Compute the (scaled) signal in each pixel, where the signal is the sum of its masked_image-pixel fluxes. \
-        These pix-signals are then used to compute the effective regularization weight of each pixel.
+        These pix-signals are then used to compute the effective regularization_matrix weight of each pixel.
 
         The pix signals are scaled in the following ways:
 
@@ -28,8 +28,8 @@ class RegularizationWeighted(object):
         2) Divided by the maximum pix-signal, so that all signals vary between 0 and 1. This ensures that the \
         regularizations weights they're used to compute are defined identically for all masked_image units / SNR's.
 
-        3) Raised to the power of the hyper-parameter *pix_signal_scale*, so the method can control the relative \
-        contribution of the different regions of regularization.
+        3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
+        contribution of the different regions of regularization_matrix.
         """
 
         pix_signals = np.zeros((self.pixels,))
@@ -50,7 +50,7 @@ class Pixelization(object):
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
-        pixels. These pixels fit an masked_image using a linear inversion, where a regularization matrix
+        pixels. These pixels fit an masked_image using a linear inversion, where a regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
@@ -58,14 +58,14 @@ class Pixelization(object):
         example:
 
         - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
@@ -84,7 +84,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
