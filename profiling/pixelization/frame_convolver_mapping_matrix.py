@@ -27,7 +27,7 @@ convolver = frame.convolver_for_kernel_shape(kernel_shape=psf_shape)
 # This PSF leads to no blurring, so equivalent to being off.
 kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))
 
-kernel_convolver.convolve_mapping_matrix_jit(mapping)
+kernel_convolver.convolve_mapping_matrix(mapping)
 repeats = 1
 
 def tick_toc(func):
@@ -44,12 +44,12 @@ def tick_toc(func):
 @tick_toc
 def current_solution():
 
-    kernel_convolver.convolve_mapping_matrix_jit(mapping)
+    kernel_convolver.convolve_mapping_matrix(mapping)
 
 
 @tick_toc
 def jitted_solution():
-    kernel_convolver.convolve_mapping_matrix_jit(mapping)
+    kernel_convolver.convolve_mapping_matrix(mapping)
 
 if __name__ == "__main__":
     current_solution()

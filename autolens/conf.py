@@ -37,7 +37,7 @@ class NamedConfig(object):
         attribute_type: type
             The type to which the value should be cast
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
 
         Returns
         -------
@@ -57,7 +57,7 @@ class NamedConfig(object):
         ----------
         section_name
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
 
         Returns
         -------
@@ -87,20 +87,20 @@ class AncestorConfig(object):
         Parameters
         ----------
         module_name: String
-            The name of the module for which a config is to be read (priors relate one to one with configs).
+            The phase_name of the module for which a config is to be read (priors relate one to one with configs).
         """
         self.parser.read("{}/{}.ini".format(self.path, module_name.split(".")[-1]))
 
     def get_for_nearest_ancestor(self, cls, attribute_name):
         """
-        Find a prior with the attribute name from the config for this class or one of its ancestors
+        Find a prior with the attribute phase_name from the config for this class or one of its ancestors
 
         Parameters
         ----------
         cls: class
             The class of interest
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
         Returns
         -------
         prior_array: []
@@ -131,11 +131,11 @@ class AncestorConfig(object):
         Parameters
         ----------
         module_name: String
-            The name of the module
+            The phase_name of the module
         class_name: String
-            The name of the class
+            The phase_name of the class
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
 
         Returns
         -------
@@ -150,11 +150,11 @@ class AncestorConfig(object):
         Parameters
         ----------
         module_name: String
-            The name of the module
+            The phase_name of the module
         class_name: String
-            The name of the class
+            The phase_name of the class
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
 
         Returns
         -------
@@ -174,11 +174,11 @@ class DefaultPriorConfig(AncestorConfig):
         Parameters
         ----------
         module_name: String
-            The name of the module
+            The phase_name of the module
         class_name: String
-            The name of the class
+            The phase_name of the class
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
 
         Returns
         -------
@@ -196,11 +196,11 @@ class WidthConfig(AncestorConfig):
         Parameters
         ----------
         module_name: String
-            The name of the module
+            The phase_name of the module
         class_name: String
-            The name of the class
+            The phase_name of the class
         attribute_name: String
-            The name of the attribute
+            The phase_name of the attribute
 
         Returns
         -------

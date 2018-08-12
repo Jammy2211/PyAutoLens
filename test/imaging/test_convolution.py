@@ -448,7 +448,7 @@ class TestConvolution(object):
         pixel_array = np.array([1, 0, 0, 0, 0])
         blurring_array = np.array([1, 0, 0, 0])
 
-        result = convolver.convolve_image_jit(pixel_array, blurring_array)
+        result = convolver.convolve_image(pixel_array, blurring_array)
 
         assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0., 0.])).all()
 
@@ -483,7 +483,7 @@ class TestConvolveMappingMatrix(object):
                             [0, 0, 0],
                             [0, 0, 0]])
 
-        blurred_mapping = convolver.convolve_mapping_matrix_jit(mapping)
+        blurred_mapping = convolver.convolve_mapping_matrix(mapping)
 
         assert (blurred_mapping == np.array([[0,     0,   0],
                                              [0,     0,   0],
@@ -530,7 +530,7 @@ class TestConvolveMappingMatrix(object):
                             [0, 0, 0],
                             [0, 0, 0]])
 
-        blurred_mapping = convolver.convolve_mapping_matrix_jit(mapping)
+        blurred_mapping = convolver.convolve_mapping_matrix(mapping)
 
         assert blurred_mapping == pytest.approx(np.array([[0,     0.6,   0],
                                                           [0,     0.9,   0],

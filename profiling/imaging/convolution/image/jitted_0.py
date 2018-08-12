@@ -15,7 +15,7 @@ class FrameMakerOriginal(object):
         Parameters
         ----------
         mask: Mask
-                A mask where True eliminates weighted_data
+                A mask where True eliminates data_vector
         """
         self.mask = mask
 
@@ -65,8 +65,8 @@ class FrameMakerOriginal(object):
         Returns
         -------
         blurring_frame_indexes [ndarray]
-            A list of frames where the position corresponds to a position in the blurring region weighted_data grid and the
-            entries correspond to positions in the primary weighted_data grid
+            A list of frames where the position corresponds to a position in the blurring region data_vector grid and the
+            entries correspond to positions in the primary data_vector grid
         """
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
@@ -181,7 +181,7 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the psf for which the result should be calculated
         pixel_array: [float]
@@ -255,19 +255,19 @@ class KernelConvolverOriginal(object):
 
     def convolve_mapping_matrix(self, mapping):
         """
-        Simple version of function that applies this convolver_image to a whole mapping matrix.
+        Simple version of function that applies this convolver_image to a whole mapping_matrix matrix.
 
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
         convolved_array: [float]
-            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
+            A matrix representing the mapping_matrix of source data_to_image to image_grid data_to_image accounting for
             convolution
         """
         blurred_mapping = np.zeros(mapping.shape)
@@ -277,19 +277,19 @@ class KernelConvolverOriginal(object):
 
     def convolve_mapping_matrix_jit(self, mapping):
         """
-        Simple version of function that applies this convolver_image to a whole mapping matrix.
+        Simple version of function that applies this convolver_image to a whole mapping_matrix matrix.
 
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
         convolved_array: [float]
-            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
+            A matrix representing the mapping_matrix of source data_to_image to image_grid data_to_image accounting for
             convolution
         """
 

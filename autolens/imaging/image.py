@@ -256,12 +256,12 @@ class PSF(AbstractArray):
     # noinspection PyUnusedLocal
     def __init__(self, array, renormalize=True):
         """
-        Class storing a 2D Point Spread Function (PSF), including its weighted_data and coordinate grid_coords.
+        Class storing a 2D Point Spread Function (PSF), including its data_vector and coordinate grid_coords.
 
         Parameters
         ----------
         array : ndarray
-            The psf weighted_data.
+            The psf data_vector.
         renormalize : bool
             Renormalize the PSF such that its value added up to 1.0?
         """
@@ -295,19 +295,19 @@ class PSF(AbstractArray):
     @classmethod
     def from_fits(cls, file_path, hdu):
         """
-        Loads the weighted_data from a .fits file.
+        Loads the data_vector from a .fits file.
 
         Parameters
         ----------
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the masked_image weighted_data.
+            The HDU number in the fits file containing the masked_image data_vector.
         """
         return cls(array_util.numpy_array_from_fits(file_path, hdu))
 
     def renormalize(self):
-        """Renormalize the PSF such that its weighted_data values sum to unity."""
+        """Renormalize the PSF such that its data_vector values sum to unity."""
         return np.divide(self, np.sum(self))
 
     def convolve(self, array):
