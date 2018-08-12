@@ -396,10 +396,10 @@ class HyperGalaxy(object):
         Parameters
         -----------
         hyper_model_image : ndarray
-            The model masked_image of the observed weighted_data (from a previous analysis phase). This tells us the total light \
+            The model masked_image of the observed data_vector (from a previous analysis phase). This tells us the total light \
             attributed to each masked_image pixel by the model.
         hyper_galaxy_image : ndarray
-            A model masked_image of the galaxy (e.g the lens light profile or source reconstruction) computed from a
+            A model masked_image of the galaxy (e.g the lens light profile or source reconstructed_image) computed from a
             previous analysis.
         minimum_value : float
             The minimum fractional flux a pixel must contain to not be rounded to 0.

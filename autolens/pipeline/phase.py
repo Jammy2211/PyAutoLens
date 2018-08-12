@@ -51,7 +51,7 @@ class IntervalCounter(object):
 
 class Phase(object):
     def __init__(self, optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1, mask_function=default_mask_function,
-                 name=None):
+                 phase_name=None):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -62,10 +62,10 @@ class Phase(object):
         sub_grid_size: int
             The side length of the subgrid
         """
-        self.optimizer = optimizer_class(name=name)
+        self.optimizer = optimizer_class(name=phase_name)
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
-        self.name = name
+        self.phase_name = phase_name
 
     @property
     def constant(self):
@@ -113,7 +113,7 @@ class Phase(object):
         """
         analysis = self.make_analysis(image=image, previous_results=last_results)
         result = self.optimizer.fit(analysis)
-        self.__class__.Visualize(analysis, result.constant, self.phasename)
+        self.__class__.Visualize(analysis, result.constant)
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None):
@@ -137,11 +137,12 @@ class Phase(object):
         image = self.modify_image(image, previous_results)
         masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(masked_image=masked_image, previous_results=previous_results, name=self.name)
+        analysis = self.__class__.Analysis(previous_results=previous_results, masked_image=masked_image,
+                                           phase_name=self.phase_name)
         return analysis
 
     class Analysis(object):
-        def __init__(self, previous_results, masked_image, name):
+        def __init__(self, previous_results, masked_image, phase_name):
             """
             An analysis object
 
@@ -153,7 +154,7 @@ class Phase(object):
                 An masked_image that has been masked
             """
             self.previous_results = previous_results
-            self.name = name
+            self.phase_name = phase_name
             self.masked_image = masked_image
             log_interval = conf.instance.general.get('output', 'log_interval', int)
             self.__should_log = IntervalCounter(log_interval)
@@ -189,19 +190,14 @@ class Phase(object):
             """
             raise NotImplementedError()
 
-        def residuals_for_model(self, model):
+    class Visualize(object):
 
-            fitter = Fitting.Fitter(self.ci_datas, ci_post_ctis)
-            return fitter.residuals_from_fitting_ci_datas()
-
-        def chi_squareds_for_model(self, model):
-            fitter = Fitting.Fitter(self.ci_datas, ci_post_ctis)
-            return fitter.chi_squareds_from_fitting_ci_datas()
-
+        def __init__(self, analysis, model):
+            pass
 
     class Result(non_linear.Result):
 
-        def __init__(self, constant, likelihood, variable, galaxy_images):
+        def __init__(self, constant, likelihood, variable, analysis):
             """
             The result of a phase
 
@@ -212,7 +208,7 @@ class Phase(object):
                 A collection of images created by each individual galaxy which taken together form the full model masked_image
             """
             super(Phase.Result, self).__init__(constant, likelihood, variable)
-            self.galaxy_images = galaxy_images
+            self.galaxy_images = analysis.galaxy_images_for_model(constant)
 
         @property
         def model_image(self):
@@ -258,7 +254,7 @@ def phase_property(name):
     Parameters
     ----------
     name: str
-        The name of this variable
+        The phase_name of this variable
 
     Returns
     -------
@@ -289,7 +285,7 @@ def phase_property(name):
     return property(fget=fget, fset=fset, doc=name)
 
 
-class SourceLensPhase(Phase):
+class ProfileSourceLensPhase(Phase):
     """
     Fit a simple source and lens system.
     """
@@ -297,13 +293,8 @@ class SourceLensPhase(Phase):
     lens_galaxy = phase_property("lens_galaxy")
     source_galaxy = phase_property("source_galaxy")
 
-    def __init__(self,
-                 lens_galaxy=None,
-                 source_galaxy=None,
-                 optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1,
-                 mask_function=default_mask_function,
-                 name="source_lens_phase"):
+    def __init__(self, lens_galaxy=None, source_galaxy=None, optimizer_class=non_linear.DownhillSimplex,
+                 sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -318,11 +309,8 @@ class SourceLensPhase(Phase):
         sub_grid_size: int
             The side length of the subgrid
         """
-        super().__init__(
-            optimizer_class=optimizer_class,
-            sub_grid_size=sub_grid_size,
-            mask_function=mask_function,
-            name=name)
+        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function,
+                         phase_name=phase_name)
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
@@ -332,7 +320,7 @@ class SourceLensPhase(Phase):
         Parameters
         ----------
         masked_image: mi.MaskedImage
-        last_result: SourceLensPhase.Result
+        last_result: ProfileSourceLensPhase.Result
 
         Returns
         -------
@@ -340,24 +328,21 @@ class SourceLensPhase(Phase):
         """
         return masked_image
 
-    class Result(Phase.Result):
-        @property
-        def lens_galaxy_image(self):
-            return self.galaxy_images[0]
-
-        @property
-        def source_galaxy_image(self):
-            return self.galaxy_images[1]
-
     class Analysis(Phase.Analysis):
-        def __init__(self, masked_image, previous_results, name):
-            super(SourceLensPhase.Analysis, self).__init__(previous_results, masked_image, name)
-            self.model_image = None
-            self.galaxy_images = None
+
+        def __init__(self, masked_image, previous_results, phase_name):
+
+            super(ProfileSourceLensPhase.Analysis, self).__init__(previous_results, masked_image, phase_name)
+
+            self.hyper_model_image = None
+            self.hyper_galaxy_images = None
             self.plot_count = 0
             if self.last_results is not None:
-                self.model_image = self.masked_image.mask.map_to_1d(previous_results.last.model_image)
-                self.galaxy_images = list(map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
+                self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.model_image)
+                self.hyper_galaxy_images = list(map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
+                # TODO : We currently get these from tracer using defaults. Lets now set them up here via a config.
+                # TODO : This is just a placehold for now
+                self.hyper_minimum_values = len(self.hyper_galaxy_images)*[0.02]
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
@@ -375,11 +360,13 @@ class SourceLensPhase(Phase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
+
+            # TODO : call Visualization class to do the below.
+
             if self.should_log:
                 logger.debug(
                     "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
-                        lens_galaxy,
-                        source_galaxy))
+                        lens_galaxy, source_galaxy))
             if self.should_visualise:
                 self.plot_count += 1
                 logger.info("Saving visualisations {}".format(self.plot_count))
@@ -390,23 +377,27 @@ class SourceLensPhase(Phase):
                     if image is not None:
                         plt.imshow(image)
                         plt.savefig(
-                            "{}/{}/{}_{}.png".format(conf.instance.data_path, self.name, image_name, self.plot_count))
+                            "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name, self.plot_count))
 
                 save_image(lens_image, "lens_image")
                 save_image(source_image, "source_image")
                 if lens_image is not None and source_image is not None:
-                    save_image(lens_image + source_image, "model_image")
+                    save_image(lens_image + source_image, "hyper_model_image")
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
                 [] if source_galaxy is None else [source_galaxy], self.masked_image.grids)
-            fitter = fitting.ProfileFitter(self.masked_image, tracer)
 
-            if self.last_results is not None and tracer.all_with_hyper_galaxies:
-                return fitter.fit_masked_image_with_profiles_and_scaled_noise(self.model_image,
-                                                                              self.galaxy_images)
+            if self.last_results is None or not tracer.all_with_hyper_galaxies:
 
-            return fitter.fit_masked_image_with_profiles()
+                fitter = fitting.ProfileFitter(self.masked_image, tracer)
+                return fitter.blurred_image_likelihood
+
+            elif self.last_results is not None and tracer.all_with_hyper_galaxies:
+
+                fitter = fitting.HyperProfileFitter(self.masked_image, tracer, self.hyper_model_image,
+                                                    self.hyper_galaxy_images, self.hyper_minimum_values)
+                return fitter.blurred_image_scaled_likelihood
 
         def galaxy_images_for_model(self, model):
             """
@@ -419,7 +410,7 @@ class SourceLensPhase(Phase):
 
             Returns
             -------
-            galaxy_images: [ndarray]
+            hyper_galaxy_images: [ndarray]
                 A list of images of galaxy components
             """
             return self.galaxy_images_for_lens_galaxy_and_source_galaxy(model.lens_galaxy, model.source_galaxy)
@@ -436,21 +427,47 @@ class SourceLensPhase(Phase):
             return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
 
-class PixelizedSourceLensPhase(SourceLensPhase):
+    class Visualize(Phase.Visualize):
+
+        def __init__(self, analysis, model):
+
+            super().__init__(analysis, model)
+
+
+    class Result(Phase.Result):
+
+        def __init__(self, constant, likelihood, variable, analysis):
+            """
+            The result of a phase
+
+            Parameters
+            ----------
+
+            galaxy_images: [ndarray]
+                A collection of images created by each individual galaxy which taken together form the full model masked_image
+            """
+            super(ProfileSourceLensPhase.Result, self).__init__(constant, likelihood, variable, analysis)
+
+        @property
+        def lens_galaxy_image(self):
+            return self.galaxy_images[0]
+
+        @property
+        def source_galaxy_image(self):
+            return self.galaxy_images[1]
+
+
+class PixelizedSourceLensPhase(ProfileSourceLensPhase):
     """
     Fit a simple source and lens system using a pixelized source.
     """
 
-    def __init__(self,
-                 lens_galaxy=None,
-                 pixelization=px.RectangularRegConst,
-                 optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1,
-                 mask_function=default_mask_function):
+    def __init__(self, lens_galaxy=None, pixelization=px.RectangularRegConst,
+                 optimizer_class=non_linear.DownhillSimplex, sub_grid_size=1, mask_function=default_mask_function):
         super().__init__(lens_galaxy=lens_galaxy, source_galaxy=gp.GalaxyPrior(pixelization=pixelization),
                          optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
 
-    class Analysis(SourceLensPhase.Analysis):
+    class Analysis(ProfileSourceLensPhase.Analysis):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
@@ -475,16 +492,25 @@ class PixelizedSourceLensPhase(SourceLensPhase):
                         source_galaxy))
 
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.masked_image.grids)
-            fitter = fitting.PixelizedFitter(self.masked_image, "TODO", tracer)
 
-            if self.last_results is not None and tracer.all_with_hyper_galaxies:
-                return fitter.fit_data_with_pixelization_profiles_and_model_images(self.last_results.model_image,
-                                                                                   self.last_results.galaxy_images)
+            # TODO : Don't need a sparse mask for Rectangular pixelization. We'll remove it soon so just ignore it for now.
+            sparse_mask = None
 
-            return fitter.fit_data_with_pixelization_and_profiles()
+            # TODO : Currently does not use ProfileFitter - will refactor in a moment.
+
+            if self.last_results is None or not tracer.all_with_hyper_galaxies:
+
+                fitter = fitting.PixelizationFitter(self.masked_image, sparse_mask, tracer)
+                return fitter.reconstructed_image_evidence
+
+            elif self.last_results is not None and tracer.all_with_hyper_galaxies:
+
+                fitter = fitting.HyperPixelizationFitter(self.masked_image, sparse_mask, tracer, self.hyper_model_image,
+                                                    self.hyper_galaxy_images, self.hyper_minimum_values)
+                return fitter.reconstructed_image_scaled_evidence
 
 
-class LensOnlyPhase(SourceLensPhase):
+class LensOnlyPhase(ProfileSourceLensPhase):
     """
     Fit only the lens galaxy light.
     """
@@ -494,16 +520,16 @@ class LensOnlyPhase(SourceLensPhase):
                  optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1,
                  mask_function=default_mask_function,
-                 name="lens_only_phase"
+                 phase_name="lens_only_phase"
                  ):
         super(LensOnlyPhase, self).__init__(lens_galaxy=lens_galaxy,
                                             optimizer_class=optimizer_class,
                                             sub_grid_size=sub_grid_size,
                                             mask_function=mask_function,
-                                            name=name)
+                                            phase_name=phase_name)
 
 
-class SourceOnlyPhase(SourceLensPhase):
+class SourceOnlyPhase(ProfileSourceLensPhase):
     """
     Fit only the source galaxy light and lens galaxy mass profile.
     """
@@ -520,7 +546,7 @@ class SourceOnlyPhase(SourceLensPhase):
                                               mask_function=mask_function)
 
 
-class SourceLensHyperGalaxyPhase(SourceLensPhase):
+class SourceLensHyperGalaxyPhase(ProfileSourceLensPhase):
     """
     Adjust hyper galaxy parameters to optimize the fit.
     """

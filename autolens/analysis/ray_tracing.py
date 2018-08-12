@@ -15,7 +15,7 @@ class AbstractTracer(object):
         """
         Returns
         -------
-        galaxy_images: [ndarray]
+        hyper_galaxy_images: [ndarray]
             An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
@@ -280,7 +280,7 @@ class Plane(object):
         """
         Returns
         -------
-        galaxy_images: [ndarray]
+        hyper_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
         return [self.image_from_galaxy(galaxy) for galaxy in self.galaxies]
@@ -314,7 +314,7 @@ class Plane(object):
         if len(pixelized_galaxies) == 0:
             return None
         if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.reconstructor_from_pix_grids(self.grids, borders, sparse_mask)
+            return pixelized_galaxies[0].pixelization.reconstructor_from_pixelization_and_grids(self.grids, borders, sparse_mask)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 

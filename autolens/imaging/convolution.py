@@ -47,11 +47,11 @@ The convolver_image can also be applied for some sub_grid-shape of the psf:
 
 convolved_vector = convolver_image.convolve_vector(vector, sub_shape=(3, 3))
 
-Or applied to a whole mapping matrix:
+Or applied to a whole mapping_matrix matrix:
 
 convolved_mapping_matrix = convolver_image.convolve_mapping_matrix(mapping_matrix)
 
-Where the mapping matrix is an array of dictionaries with each index of the array corresponding to a source pixel.
+Where the mapping_matrix matrix is an array of dictionaries with each index of the array corresponding to a source pixel.
 
 It is also possible to specify a blurring region mask:
 
@@ -65,7 +65,7 @@ entry with a False value for mask.
 
 
 class Convolver(object):
-    """Class to setup the 1D convolution of an masked_image / mapping matrix.
+    """Class to setup the 1D convolution of an masked_image / mapping_matrix matrix.
 
     IMAGE FRAMES:
     ------------
@@ -132,14 +132,14 @@ class Convolver(object):
     image_frame_lengths = 6
 
     Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of masked_image
-    data / a mapping matrix masked_image.
+    data / a mapping_matrix matrix masked_image.
 
     BLURRING FRAMES:
     --------------
 
     Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that
     pixels outside of the mask will also blur light into it. For galaxy light profiles, this effect is accounted for \
-    using blurring frames, however it is omitted for mapping matrix images.
+    using blurring frames, however it is omitted for mapping_matrix matrix images.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
     to blur light into it for a given psf size. Following the example above, the following blurring mask is \
@@ -323,16 +323,16 @@ class ConvolverImage(Convolver):
                     self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
                     image_index += 1
 
-    def convolve_image_jit(self, image_array, blurring_array):
-        return self.convolve_image_jitted(image_array, self.image_frame_indexes,
-                                          self.image_frame_psfs, self.image_frame_lengths,
-                                          blurring_array, self.blurring_frame_indexes,
-                                          self.blurring_frame_psfs, self.blurring_frame_lengths)
+    def convolve_image(self, image_array, blurring_array):
+        return self.convolve_image_jit(image_array, self.image_frame_indexes,
+                                       self.image_frame_psfs, self.image_frame_lengths,
+                                       blurring_array, self.blurring_frame_indexes,
+                                       self.blurring_frame_psfs, self.blurring_frame_lengths)
 
     @staticmethod
     @numba.jit(nopython=True)
-    def convolve_image_jitted(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
-                              blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
+    def convolve_image_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
+                           blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
 
         new_array = np.zeros(image_array.shape)
 
@@ -392,29 +392,29 @@ class ConvolverMappingMatrix(Convolver):
 
         super(ConvolverMappingMatrix, self).__init__(mask, psf)
 
-    def convolve_mapping_matrix_jit(self, mapping):
+    def convolve_mapping_matrix(self, mapping):
         """
-        Simple version of function that applies this convolver_image to a whole mapping matrix.
+        Simple version of function that applies this convolver_image to a whole mapping_matrix matrix.
 
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         array: [float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
         convolved_array: [float]
-            A matrix representing the mapping of source data_to_image to image_grid data_to_image accounting for
+            A matrix representing the mapping_matrix of source data_to_image to image_grid data_to_image accounting for
             convolution
         """
-        return self.convolve_matrix_jitted(mapping, self.image_frame_indexes,
-                                           self.image_frame_psfs, self.image_frame_lengths)
+        return self.convolve_matrix_jit(mapping, self.image_frame_indexes,
+                                        self.image_frame_psfs, self.image_frame_lengths)
 
     @staticmethod
     @numba.jit(nopython=True)
-    def convolve_matrix_jitted(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
+    def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
 
         blurred_mapping = np.zeros(mapping_matrix.shape)
 

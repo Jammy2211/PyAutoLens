@@ -18,14 +18,14 @@ class Voronoi(object):
         all of the nearest-neighbor pix-grid (i.e. traced masked_image-pixels) are mapped to them.
 
         This forms a Voronoi grid pix-plane, the properties of which are used for fast calculations, defining the \
-        regularization matrix and visualization.
+        regularization_matrix matrix and visualization.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
 
         super(Voronoi, self).__init__(pixels, regularization_coefficients)

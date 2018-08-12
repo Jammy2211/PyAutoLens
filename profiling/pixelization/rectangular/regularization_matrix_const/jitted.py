@@ -16,7 +16,7 @@ class RegularizationConstant(object):
 
     def regularization_matrix_from_pix_neighbors(self, pix_neighbors):
         """
-        Setup a pixelization's constant regularization matrix (see test_pixelization.py)
+        Setup a pixelization's constant regularization_matrix matrix (see test_pixelization.py)
 
         Parameters
         ----------
@@ -63,7 +63,7 @@ class Pixelization(object):
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
-        pixels. These pixels fit an masked_image using a linear inversion, where a regularization matrix
+        pixels. These pixels fit an masked_image using a linear inversion, where a regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
@@ -71,14 +71,14 @@ class Pixelization(object):
         example:
 
         - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
@@ -97,7 +97,7 @@ class RectangularRegConst(Pixelization, RegularizationConstant):
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
 
         if shape[0] <= 2 or shape[1] <= 2:

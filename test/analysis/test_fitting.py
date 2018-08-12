@@ -5,8 +5,8 @@ from autolens.analysis import fitting, ray_tracing, galaxy
 from autolens.imaging import mask as mask
 from autolens.imaging import masked_image
 from autolens.imaging import image
-from autolens.imaging import convolution
 from autolens.profiles import light_profiles
+from autolens.pixelization import pixelization
 from autolens.pixelization import reconstruction
 
 
@@ -39,9 +39,9 @@ class TestChiSquareds:
         model = 10.0 * np.ones((2, 2))
 
         residuals = fitting.residuals_from_image_and_model(image, model)
-        chi_squared = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
+        chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
 
-        assert (chi_squared == np.zeros((2, 2))).all()
+        assert (chi_squareds == np.zeros((2, 2))).all()
 
     def test__model_data_mismatch__chi_sq_non_0(self):
         image = 10.0 * np.ones((2, 2))
@@ -50,9 +50,9 @@ class TestChiSquareds:
                           [9, 8]])
 
         residuals = fitting.residuals_from_image_and_model(image, model)
-        chi_squared = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
+        chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
 
-        assert (chi_squared == (np.array([[1 / 4, 0],
+        assert (chi_squareds == (np.array([[1 / 4, 0],
                                           [1 / 4, 1]]))).all()
 
 
@@ -66,16 +66,16 @@ class TestLikelihood:
         residuals = fitting.residuals_from_image_and_model(im, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
         chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-        noise_term = fitting.noise_term_from_data(noise)
+        noise_term = fitting.noise_term_from_noise(noise)
         likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
-        chi_sq_term = 0
+        chi_squared_term = 0
         noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
             2 * np.pi * 4.0)
 
-        assert likelihood == -0.5 * (chi_sq_term + noise_term)
+        assert likelihood == -0.5 * (chi_squared_term + noise_term)
 
-    def test__model_data_mismatch__chi_sq_term_contributes_to_lh(self):
+    def test__model_data_mismatch__chi_squared_term_contributes_to_lh(self):
         im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model = np.array([11.0, 10.0, 9.0, 8.0])
@@ -83,17 +83,17 @@ class TestLikelihood:
         residuals = fitting.residuals_from_image_and_model(im, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
         chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-        noise_term = fitting.noise_term_from_data(noise)
+        noise_term = fitting.noise_term_from_noise(noise)
         likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
         # chi squared = 0.25, 0, 0.25, 1.0
         # likelihood = -0.5*(0.25+0+0.25+1.0)
 
-        chi_sq_term = 1.5
+        chi_squared_term = 1.5
         noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
             2 * np.pi * 4.0)
 
-        assert likelihood == -0.5 * (chi_sq_term + noise_term)
+        assert likelihood == -0.5 * (chi_squared_term + noise_term)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
         im = np.array([10.0, 10.0, 10.0, 10.0])
@@ -103,16 +103,16 @@ class TestLikelihood:
         residuals = fitting.residuals_from_image_and_model(im, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
         chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-        noise_term = fitting.noise_term_from_data(noise)
+        noise_term = fitting.noise_term_from_noise(noise)
         likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
         # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
 
-        chi_sq_term = 1.0 + (1.0 / 9.0) + 0.25
+        chi_squared_term = 1.0 + (1.0 / 9.0) + 0.25
         noise_term = np.log(2 * np.pi * 1.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 9.0) + np.log(
             2 * np.pi * 16.0)
 
-        assert likelihood == pytest.approx(-0.5 * (chi_sq_term + noise_term), 1e-4)
+        assert likelihood == pytest.approx(-0.5 * (chi_squared_term + noise_term), 1e-4)
 
 
 class TestContributionsFromHypers:
@@ -232,96 +232,11 @@ class TestPixelizationEvidence:
 
     def test__simple_values(self):
 
-        im = np.array([10.0, 10.0, 10.0, 10.0])
-        noise = np.array([2.0, 2.0, 2.0, 2.0])
-        model = np.array([10.0, 10.0, 10.0, 10.0])
+        evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term=3.0, regularization_term=6.0,
+                                                              log_covariance_regularization_term=9.0,
+                                                              log_regularization_term=10.0, noise_term=30.0)
 
-        solution = np.array([1.0, 1.0, 1.0])
-
-        cov_reg_matrix = np.array([[2.0, -1.0, 0.0],
-                                   [-1.0, 2.0, -1.0],
-                                   [0.0, -1.0, 2.0]])
-
-        reg_matrix = np.array([[1.0, 0.0, 0.0],
-                               [0.0, 1.0, 0.0],
-                               [0.0, 0.0, 1.0]])
-
-        pix_fit = reconstruction.Reconstruction(data_vector=None, blurred_mapping=None,
-                                                regularization=reg_matrix, covariance=None,
-                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
-
-        evidence = fitting.pixelization_evidence_from_data_model_and_pix(im, noise, model, pix_fit)
-
-        chi_sq_term = 0
-        reg_term = 3.0
-        log_det_cov_reg = np.log(np.linalg.det(cov_reg_matrix))
-        log_det_reg = np.log(np.linalg.det(reg_matrix))
-        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
-            2 * np.pi * 4.0)
-
-        assert evidence == pytest.approx(-0.5 * (chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term),
-                                         1e-4)
-
-    def test__complicated_values(self):
-        im = np.array([10.0, 10.0, 10.0, 10.0])
-        noise = np.array([1.0, 2.0, 3.0, 4.0])
-        model = np.array([11.0, 10.0, 9.0, 8.0])
-
-        solution = np.array([2.0, 3.0, 5.0])
-
-        cov_reg_matrix = np.array([[1.0, 0.0, 0.0],
-                                   [0.0, 1.0, 0.0],
-                                   [0.0, 0.0, 1.0]])
-
-        reg_matrix = np.array([[2.0, -1.0, 0.0],
-                               [-1.0, 2.0, -1.0],
-                               [0.0, -1.0, 2.0]])
-
-        pix_fit = reconstruction.Reconstruction(data_vector=None, blurred_mapping=None,
-                                                regularization=reg_matrix, covariance=None,
-                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
-
-        evidence = fitting.pixelization_evidence_from_data_model_and_pix(im, noise, model, pix_fit)
-
-        chi_sq_term = 1.0 + (1.0 / 9.0) + 0.25
-        reg_term = 34.0
-        log_det_cov_reg = np.log(np.linalg.det(cov_reg_matrix))
-        log_det_reg = np.log(np.linalg.det(reg_matrix))
-        noise_term = np.log(2 * np.pi * 1.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 9.0) + np.log(
-            2 * np.pi * 16.0)
-
-        assert evidence == pytest.approx(-0.5 * (chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term),
-                                         1e-4)
-
-    def test__use_fitting_functions_to_compute_terms(self):
-        im = np.array([10.0, 100.0, 0.0, 10.0])
-        noise = np.array([1.0, 2.0, 77.0, 4.0])
-        model = np.array([11.0, 13.0, 9.0, 8.0])
-
-        solution = np.array([8.0, 7.0, 3.0])
-
-        cov_reg_matrix = np.array([[1.0, 0.0, 0.0],
-                                   [0.0, 1.0, 0.0],
-                                   [0.0, 0.0, 1.0]])
-
-        reg_matrix = np.array([[2.0, -1.0, 0.0],
-                               [-1.0, 2.0, -1.0],
-                               [0.0, -1.0, 2.0]])
-
-        pix_fit = reconstruction.Reconstruction(data_vector=None, blurred_mapping=None,
-                                                regularization=reg_matrix, covariance=None,
-                                                covariance_regularization=cov_reg_matrix, reconstruction=solution)
-
-        evidence = fitting.pixelization_evidence_from_data_model_and_pix(im, noise, model, pix_fit)
-
-        chi_sq_term = fitting.chi_squared_term_from_chi_squareds(im, noise, model)
-        reg_term = pix_fit.regularization_term_from_reconstruction()
-        log_det_cov_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.covariance_regularization)
-        log_det_reg = pix_fit.log_determinant_of_matrix_cholesky(pix_fit.regularization)
-        noise_term = fitting.noise_term_from_data(noise)
-
-        assert evidence == pytest.approx(-0.5 * (chi_sq_term + reg_term + log_det_cov_reg - log_det_reg + noise_term),
-                                         1e-4)
+        assert evidence == -0.5*(3.0 + 6.0 + 9.0 - 10.0 + 30.0)
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
@@ -435,7 +350,7 @@ class MockHyperGalaxy(object):
         return self.noise_factor * (noise * contributions) ** self.noise_power
 
 
-class TestFitter:
+class TestProfileFitter:
 
 
     class TestBlurredLightProfileImages:
@@ -601,11 +516,11 @@ class TestFitter:
 
             image_im = tracer.generate_image_of_galaxy_light_profiles()
             blurring_im = tracer.generate_blurring_image_of_galaxy_light_profiles()
-            blurred_im = mi.convolver_image.convolve_image_jit(image_im, blurring_im)
+            blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_data(mi.noise)
+            noise_term = fitting.noise_term_from_noise(mi.noise)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
             assert image_im == pytest.approx(fitter.image, 1e-4)
@@ -618,7 +533,7 @@ class TestFitter:
             assert likelihood == pytest.approx(fitter.blurred_image_likelihood, 1e-4)
 
 
-class TestHyperFitter:
+class TestHyperProfileFitter:
 
     class TestScaledLikelihood:
 
@@ -708,12 +623,13 @@ class TestHyperFitter:
 
             image_im = tracer.generate_image_of_galaxy_light_profiles()
             blurring_im = tracer.generate_blurring_image_of_galaxy_light_profiles()
-            blurred_im = mi.convolver_image.convolve_image_jit(image_im, blurring_im)
+            blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_data(mi.noise)
+            noise_term = fitting.noise_term_from_noise(mi.noise)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
+
             contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images,
                                                             [hyper_galaxy, hyper_galaxy], minimum_values=[0.2, 0.8])
             scaled_noise = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
@@ -721,7 +637,7 @@ class TestHyperFitter:
                                                                                       mi.noise)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise)
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
-            scaled_noise_term = fitting.noise_term_from_data(scaled_noise)
+            scaled_noise_term = fitting.noise_term_from_noise(scaled_noise)
             scaled_likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(scaled_chi_squared_term,
                                                                                     scaled_noise_term)
 
@@ -740,3 +656,242 @@ class TestHyperFitter:
             assert scaled_chi_squared_term == pytest.approx(fitter.blurred_image_scaled_chi_squared_term, 1e-4)
             assert scaled_noise_term == pytest.approx(fitter.scaled_noise_term, 1e-4)
             assert scaled_likelihood == pytest.approx(fitter.blurred_image_scaled_likelihood, 1e-4)
+
+
+class TestPixelizationFitter:
+
+    class TestRectangularPixelization:
+
+        def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
+            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
+            ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0]]))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            mi = masked_image.MaskedImage(im, ma, sub_grid_size=2)
+
+            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
+            galaxy_pix = galaxy.Galaxy(pixelization=pix)
+            tracer = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix], image_plane_grids=mi.grids)
+            fitter = fitting.PixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=tracer)
+
+            cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
+            reg_matrix = np.array([[2.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [-1.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, -1.0, 2.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
+                                   [-1.0, 0.0, 0.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0],
+                                   [0.0, -1.0, 0.0, -1.0, 4.0, -1.0, 0.0, -1.0, 0.0],
+                                   [0.0, 0.0, -1.0, 0.0, -1.0, 3.0, 0.0, 0.0, - 1.0],
+                                   [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.0, -1.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.0, -1.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.0]])
+            reg_matrix = reg_matrix + 1e-8 * np.identity(9)
+            cov_reg_matrix = cov_matrix + reg_matrix
+
+            chi_sq_term = 0.0
+            gl_term = 1e-8
+            det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
+            det_reg_term = np.log(np.linalg.det(reg_matrix))
+            noise_term = 9.0 * np.log(2 * np.pi * 1.0 ** 2.0)
+            evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
+
+            assert fitter.reconstructed_image_evidence == pytest.approx(evidence_expected, 1e-4)
+
+    class TestCompareToManual:
+
+        def test___random_image_and_psf(self):
+
+            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 2.0, 3.0, 0.0],
+                           [0.0, 4.0, 5.0, 6.0, 0.0],
+                           [0.0, 7.0, 8.0, 9.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0]])
+            psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
+                                             [2.0, 5.0, 1.0],
+                                             [3.0, 4.0, 0.0]])))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            ma = mask.Mask(array=np.array([[True, True, True, True, True],
+                                           [True, False, False, False, True],
+                                           [True, False, False, False, True],
+                                           [True, False, False, False, True],
+                                           [True, True, True, True, True]]), pixel_scale=1.0)
+            mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
+
+            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders, mask.SparseMask(mi.mask, 1))
+            recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, mi.noise, mi.convolver_mapping_matrix)
+
+            mock_galaxy = galaxy.Galaxy(pixelization=pix)
+            tracer = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[mock_galaxy],
+                                        image_plane_grids=mi.grids)
+
+            fitter = fitting.PixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
+                                                tracer=tracer)
+
+            residuals = fitting.residuals_from_image_and_model(mi, fitter.reconstruction.reconstructed_image)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
+            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_term_from_noise(mi.noise)
+            regularization_term = recon.regularization_term
+            covariance_regularization_term = recon.log_det_curvature_reg_matrix_term
+            regularization_matrix_term = recon.log_det_regularization_matrix_term
+            evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, regularization_term,
+                                                                  covariance_regularization_term,
+                                                                  regularization_matrix_term, noise_term)
+
+            assert residuals == pytest.approx(fitter.reconstructed_image_residuals, 1e-4)
+            assert chi_squareds == pytest.approx(fitter.reconstructed_image_chi_squareds, 1e-4)
+            assert chi_squared_term == pytest.approx(fitter.reconstructed_image_chi_squared_term, 1e-4)
+            assert noise_term == pytest.approx(fitter.noise_term, 1e-4)
+            assert regularization_term == pytest.approx(fitter.reconstruction.regularization_term, 1e-4)
+            assert covariance_regularization_term == pytest.approx(fitter.reconstruction.log_det_curvature_reg_matrix_term, 1e-4)
+            assert regularization_matrix_term == pytest.approx(fitter.reconstruction.log_det_regularization_matrix_term, 1e-4)
+            assert evidence == fitter.reconstructed_image_evidence
+
+
+class TestHyperPixelizationFitter:
+
+    class TestRectangularPixelization:
+
+        def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
+
+            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
+            ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0]]))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            mi = masked_image.MaskedImage(im, ma, sub_grid_size=2)
+
+            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
+
+            hyper_model_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+            hyper_galaxy_images = [np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])]
+
+            hyper_galaxy = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
+            galaxy_pix = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(intensity=1.0),
+                                        hyper_galaxy=hyper_galaxy, pixelization=pix)
+            tracer = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix], image_plane_grids=mi.grids)
+            fitter = fitting.HyperPixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
+                                                     tracer=tracer, hyper_model_image=hyper_model_image,
+                                                     hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0])
+
+            cov_matrix = np.array([[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0,  0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0,  0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0,  0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0,  0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0,  0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0],
+                                   [0.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0],
+                                   [0.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0],
+                                   [0.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25]])
+
+            reg_matrix = np.array([[2.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                   [-1.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
+                                   [0.0, -1.0, 2.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
+                                   [-1.0, 0.0, 0.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0],
+                                   [0.0, -1.0, 0.0, -1.0, 4.0, -1.0, 0.0, -1.0, 0.0],
+                                   [0.0, 0.0, -1.0, 0.0, -1.0, 3.0, 0.0, 0.0, - 1.0],
+                                   [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.0, -1.0, 0.0],
+                                   [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.0, -1.0],
+                                   [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.0]])
+            reg_matrix = reg_matrix + 1e-8 * np.identity(9)
+
+            cov_reg_matrix = cov_matrix + reg_matrix
+
+            chi_sq_term = 0.0
+            gl_term = 1e-8
+            det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
+            det_reg_term = np.log(np.linalg.det(reg_matrix))
+            noise_term = 9.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+            evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
+
+            assert fitter.reconstructed_image_scaled_evidence == pytest.approx(evidence_expected, 1e-4)
+
+
+    class TestCompareToManual:
+
+        def test___random_image_and_psf(self):
+
+            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 2.0, 3.0, 0.0],
+                           [0.0, 4.0, 5.0, 6.0, 0.0],
+                           [0.0, 7.0, 8.0, 9.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0]])
+            psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
+                                             [2.0, 5.0, 1.0],
+                                             [3.0, 4.0, 0.0]])))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            ma = mask.Mask(array=np.array([[True, True, True, True, True],
+                                           [True, False, False, False, True],
+                                           [True, False, False, False, True],
+                                           [True, False, False, False, True],
+                                           [True, True, True, True, True]]), pixel_scale=1.0)
+            mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
+
+            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders, mask.SparseMask(mi.mask, 1))
+
+            hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
+            hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
+                                   np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])]
+            hyper_model = galaxy.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
+            hyper_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(intensity=1.0),
+                                        hyper_galaxy=hyper_model)
+            hyper_pix_galaxy = galaxy.Galaxy(pixelization=pix, hyper_galaxy=hyper_model)
+            tracer = ray_tracing.Tracer(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
+                                        image_plane_grids=mi.grids)
+
+            fitter = fitting.HyperPixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
+                                                tracer=tracer, hyper_model_image=hyper_model_image,
+                                                hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
+
+            scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, fitter.scaled_noise, mi.convolver_mapping_matrix)
+
+            residuals = fitting.residuals_from_image_and_model(mi, fitter.reconstruction.reconstructed_image)
+            regularization_term = scaled_recon.regularization_term
+            scaled_covariance_regularization_term = scaled_recon.log_det_curvature_reg_matrix_term
+            regularization_matrix_term = scaled_recon.log_det_regularization_matrix_term
+
+            contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images,
+                                                            [hyper_model, hyper_model], minimum_values=[0.2, 0.8])
+            scaled_noise = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
+                                                                                      [hyper_model, hyper_model],
+                                                                                      mi.noise)
+
+            scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise)
+            scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
+            scaled_noise_term = fitting.noise_term_from_noise(scaled_noise)
+            scaled_evidence = fitting.evidence_from_reconstruction_terms(scaled_chi_squared_term, regularization_term,
+                                                                  scaled_covariance_regularization_term,
+                                                                  regularization_matrix_term, scaled_noise_term)
+
+            assert contributions[0] == pytest.approx(fitter.contributions[0], 1e-4)
+            assert residuals == pytest.approx(fitter.reconstructed_image_residuals, 1e-4)
+            assert scaled_noise == pytest.approx(fitter.scaled_noise, 1e-4)
+            assert scaled_chi_squareds == pytest.approx(fitter.reconstructed_image_scaled_chi_squareds, 1e-4)
+            assert scaled_chi_squared_term == pytest.approx(fitter.reconstructed_image_scaled_chi_squared_term, 1e-4)
+            assert scaled_noise_term == pytest.approx(fitter.scaled_noise_term, 1e-4)
+            assert regularization_term == pytest.approx(fitter.reconstruction.regularization_term, 1e-4)
+            assert scaled_covariance_regularization_term == pytest.approx(fitter.reconstruction.log_det_curvature_reg_matrix_term, 1e-4)
+            assert regularization_matrix_term == pytest.approx(fitter.reconstruction.log_det_regularization_matrix_term, 1e-4)
+            assert scaled_evidence == fitter.reconstructed_image_scaled_evidence
