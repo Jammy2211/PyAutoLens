@@ -208,7 +208,7 @@ class Mask(scaled_array.ScaledArray):
 
     def grid_to_pixel(self):
         """
-        Compute the mapping of every pixel in the mask to its 2D pixel coordinates.
+        Compute the mapping_matrix of every pixel in the mask to its 2D pixel coordinates.
         """
         pixels = self.pixels_in_mask
 
@@ -371,13 +371,13 @@ class SparseMask(Mask):
     @Memoizer()
     def sparse_to_image(self):
         """
-        Compute the mapping of each sparse masked_image pixel to its closest masked_image pixel, defined using a mask of masked_image \
+        Compute the mapping_matrix of each sparse masked_image pixel to its closest masked_image pixel, defined using a mask of masked_image \
         data_to_pixels.
 
         Returns
         -------
         cluster_to_image : ndarray
-            The mapping between every sparse clustering masked_image pixel and masked_image pixel, where each entry gives the 1D index
+            The mapping_matrix between every sparse clustering masked_image pixel and masked_image pixel, where each entry gives the 1D index
             of the masked_image pixel in the self.
         """
         sparse_to_image = np.empty(0, dtype=int)
@@ -397,7 +397,7 @@ class SparseMask(Mask):
     @property
     @Memoizer()
     def image_to_sparse(self):
-        """Compute the mapping between every masked_image pixel in the mask and its closest sparse clustering pixel.
+        """Compute the mapping_matrix between every masked_image pixel in the mask and its closest sparse clustering pixel.
 
         This is performed by going to each masked_image pixel in the *mask*, and pairing it with its nearest neighboring pixel
         in the *sparse_mask*. The index of the *sparse_mask* pixel is drawn from the *sparse_index_image*. This
@@ -407,7 +407,7 @@ class SparseMask(Mask):
         Returns
         -------
         image_to_cluster : ndarray
-            The mapping between every masked_image pixel and its closest sparse clustering pixel, where each entry give the 1D
+            The mapping_matrix between every masked_image pixel and its closest sparse clustering pixel, where each entry give the 1D
             index of the sparse pixel in sparse_pixel arrays.
 
         """

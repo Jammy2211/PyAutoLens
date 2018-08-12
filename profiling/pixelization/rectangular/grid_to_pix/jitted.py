@@ -10,7 +10,7 @@ class Pixelization(object):
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
         Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
-        pixels. These pixels then fit a  weighted_data-set using a linear inversion, where their regularization matrix
+        pixels. These pixels then fit a  data_vector-set using a linear inversion, where their regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
@@ -18,16 +18,16 @@ class Pixelization(object):
         example:
 
         - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         pix_signal_scale : float
-            A hyper-parameter which scales the signal attributed to each pixel, used for weighted regularization.
+            A hyper-parameter which scales the signal attributed to each pixel, used for weighted regularization_matrix.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
@@ -47,7 +47,7 @@ class Rectangular(Pixelization):
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
 
         if shape[0] <= 2 or shape[1] <= 2:

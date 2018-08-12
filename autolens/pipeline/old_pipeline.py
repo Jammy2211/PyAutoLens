@@ -86,7 +86,7 @@ def source_only_pipeline(image, mask):
     logger.info(
         """
         2) Mass: SIE+Shear (priors from phase 1)
-           Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+           Source: 'smooth' pixelization (include regularization_matrix parameter(s) in the model)
            NLO: LM
         """
     )
@@ -118,7 +118,7 @@ def source_only_pipeline(image, mask):
     logger.info(
         """
         2H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase 
-            regularization as well)
+            regularization_matrix as well)
             Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)
             Source: 'noisy' pixelization
             NLO: MN
@@ -133,7 +133,7 @@ def source_only_pipeline(image, mask):
     #  Add the variable pixelization to the optimizer
     optimizer_2h.variable.source_galaxies = [source_galaxy_prior]
 
-    # Set the regularization prior using results from analysis 2
+    # Set the regularization_matrix prior using results from analysis 2
     source_galaxy_prior.pixelization.regularization = result_2.priors.pixelization.regularization
 
     # Set a constant lens galaxy from the previous result
@@ -257,9 +257,9 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
        Mask: Circle / Ellipse containing entire lens galaxy.
        Light: None
        Mass: SIE+Shear (priors from phase 2)
-       Source: 'smooth' pixelization (include regularization parameter(s) in the model)
+       Source: 'smooth' pixelization (include regularization_matrix parameter(s) in the model)
        NLO: LM
-       Purpose: Refines mass model and sets up the source-plane pixelization regularization.
+       Purpose: Refines mass model and sets up the source-plane pixelization regularization_matrix.
     """
 
     pixelized_source_analysis = an.Analysis(source_image, combined_mask)
@@ -290,9 +290,9 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
        Light: Sersic + Exponential (shared centre / phi, include Instrumentation lens light noise scaling parameters in 
               model)
        Mass: SIE+Shear (fixed to results from phase 3)
-       Source: 'smooth' pixelization (include regularization parameter(s) in the model, using previous phase prior)
+       Source: 'smooth' pixelization (include regularization_matrix parameter(s) in the model, using previous phase prior)
        NLO: LM
-       Purpose: To fit a complex light profile, we need to do so simultaneously with the source reconstruction to avoid
+       Purpose: To fit a complex light profile, we need to do so simultaneously with the source reconstructed_image to avoid
                 systematics. Thus, this rather confusing phase sets it up so that the mass profile is fixed whilst we
                 get ourselves a good multi-component light profile.
     """
@@ -323,7 +323,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
 
 default_config_path = '{}/../../../config/'.format(os.path.dirname(os.path.realpath(__file__)))
-default_data_path = '{}/../../weighted_data/'.format(os.path.dirname(os.path.realpath(__file__)))
+default_data_path = '{}/../../data_vector/'.format(os.path.dirname(os.path.realpath(__file__)))
 # default_results_path = '{}/../../../results/'.format(os.path.dirname(os.path.realpath(__file__)))
 default_results_path = '/home/jammy/results/'
 
@@ -606,7 +606,7 @@ def profiles_pipeline(paths, image, mask):
 
 """
 
-4H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization as well)
+4H) Hyper-parameters: All included in model (most priors broad and uniform, but use previous phase regularization_matrix as well)
     Image: The lens light subtracted masked_image from phase 1.
     Mask: Circle / Ellipse containing entire lens galaxy.
     Mass: SIE+Shear (Fixed to highest likelihood model from phase 2)

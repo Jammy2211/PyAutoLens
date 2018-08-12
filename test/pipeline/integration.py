@@ -50,9 +50,9 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    Mask : Circle - 3.0"
 
     phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
-                              optimizer_class=optimizer_class, name="{}/phase1".format(name))
+                              optimizer_class=optimizer_class, phase_name="{}/phase1".format(name))
 
-    class LensSubtractedPhase(ph.SourceLensPhase):
+    class LensSubtractedPhase(ph.ProfileSourceLensPhase):
         def modify_image(self, masked_image, previous_results):
             return masked_image - previous_results.last.lens_galaxy_image
 
@@ -83,7 +83,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
-    class CombinedPhase(ph.SourceLensPhase):
+    class CombinedPhase(ph.ProfileSourceLensPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxy = gp.GalaxyPrior(
                 elliptical_sersic=previous_results.first.variable.lens_galaxy.elliptical_sersic,
@@ -109,7 +109,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
-    class CombinedPhase2(ph.SourceLensPhase):
+    class CombinedPhase2(ph.ProfileSourceLensPhase):
         def pass_priors(self, previous_results):
             phase_3_results = previous_results[2]
             self.lens_galaxy = phase_3_results.variable.lens_galaxy

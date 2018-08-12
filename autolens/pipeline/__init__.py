@@ -19,7 +19,7 @@ def add(module):
     """
     Parameters
     ----------
-    module: {name, make}
+    module: {phase_name, make}
     """
     pipeline_dict[module.name] = PipelineTuple(module)
 
