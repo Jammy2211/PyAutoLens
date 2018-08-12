@@ -337,11 +337,11 @@ hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=
                                    image_plane_grids=hst_up.grids)
 ao_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grids=ao.grids)
 
-lsst_image = lsst_tracer.source_plane.generate_image_of_galaxy_light_profiles()
-euclid_image = lsst_tracer.source_plane.generate_image_of_galaxy_light_profiles()
-hst_image = lsst_tracer.source_plane.generate_image_of_galaxy_light_profiles()
-hst_up_image = lsst_tracer.source_plane.generate_image_of_galaxy_light_profiles()
-ao_image = lsst_tracer.source_plane.generate_image_of_galaxy_light_profiles()
+lsst_image = lsst_tracer.source_plane.galaxy_light_profiles_image_from_planes()
+euclid_image = lsst_tracer.source_plane.galaxy_light_profiles_image_from_planes()
+hst_image = lsst_tracer.source_plane.galaxy_light_profiles_image_from_planes()
+hst_up_image = lsst_tracer.source_plane.galaxy_light_profiles_image_from_planes()
+ao_image = lsst_tracer.source_plane.galaxy_light_profiles_image_from_planes()
 
 lsst_image_to_pix = pix.image_to_pix_from_pix_grids(grids=lsst_tracer.source_plane.grids, borders=lsst.borders)
 euclid_image_to_pix = pix.image_to_pix_from_pix_grids(grids=euclid_tracer.source_plane.grids, borders=euclid.borders)
