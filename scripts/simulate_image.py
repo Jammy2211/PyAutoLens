@@ -46,7 +46,7 @@ source_galaxy = galaxy.Galaxy(light_profile=sersic_source)
 ray_trace = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                image_plane_grids=image_plane_grids)
 
-galaxy_image_1d = ray_trace.generate_image_of_galaxy_light_profiles()
+galaxy_image_1d = ray_trace.galaxy_light_profiles_image_from_planes()
 galaxy_image_2d = ma.map_to_2d(galaxy_image_1d)
 
 ### Setup as a simulated image_coords and output as a fits for an analysis ###
