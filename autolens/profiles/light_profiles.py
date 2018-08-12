@@ -179,7 +179,7 @@ class EllipticalSersic(EllipticalLightProfile):
 class EllipticalExponential(EllipticalSersic):
     """Used to fit flatter regions of light in a galaxy, typically a disk.
 
-    It is a subset of the Sersic profiles, corresponding exactly to the reconstruction sersic_index = 1"""
+    It is a subset of the Sersic profiles, corresponding exactly to the reconstructed_image sersic_index = 1"""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """
@@ -208,7 +208,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
     profiles of an elliptical / early-type galaxy.
 
-    It is a subset of the Sersic profiles, corresponding exactly to the reconstruction sersic_index = 4."""
+    It is a subset of the Sersic profiles, corresponding exactly to the reconstructed_image sersic_index = 4."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """

@@ -14,7 +14,7 @@ class Pixelization(object):
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
         Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
-        pixels. These pixels fit an masked_image using a linear inversion, where a regularization matrix
+        pixels. These pixels fit an masked_image using a linear inversion, where a regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
@@ -22,42 +22,42 @@ class Pixelization(object):
         example:
 
         - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pix[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
 
     def mapping_matrix_from_sub_to_pix(self, sub_to_pix, grids):
         """
-        Create a new mapping matrix, which describes the fractional unit surface brightness counts between each \
-        masked_image-pixel and pixel. The mapping matrix is denoted 'f_ij' in Warren & Dye 2003,
+        Create a new mapping_matrix matrix, which describes the fractional unit surface brightness counts between each \
+        masked_image-pixel and pixel. The mapping_matrix matrix is denoted 'f_ij' in Warren & Dye 2003,
         Nightingale & Dye 2015 and Nightingale, Dye & Massey 2018.
 
         The matrix has dimensions [image_pixels, pix_pixels] and non-zero entries represents an \
-        masked_image-pixel to pixel mapping. For example, if masked_image-pixel 0 maps to pixel 2, element \
-        [0,2] of the mapping matrix will = 1.
+        masked_image-pixel to pixel mapping_matrix. For example, if masked_image-pixel 0 maps to pixel 2, element \
+        [0,2] of the mapping_matrix matrix will = 1.
 
-        The mapping matrix is created using sub-gridding. Here, each observed masked_image-pixel is divided into a finer \
+        The mapping_matrix matrix is created using sub-gridding. Here, each observed masked_image-pixel is divided into a finer \
         sub_grid. For example, if the sub-grid is sub_grid_size=4, each masked_image-pixel is split into a uniform 4 x 4 \
         sub grid and all 16 sub-pixels are individually paired with pixels.
 
-        The entries in the mapping matrix therefore become fractional surface brightness values, representing the \
+        The entries in the mapping_matrix matrix therefore become fractional surface brightness values, representing the \
         number of sub-pixel to pixel mappings. For example if 3 sub-pixels from masked_image-pixel 4 map to \
-        pixel 2, then element [4,2] of the mapping matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
+        pixel 2, then element [4,2] of the mapping_matrix matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
 
         Parameters
         ----------
         grids
         sub_to_pix : [int, int]
             The pixel index each masked_image and sub-masked_image pixel is matched with. (e.g. if the fifth
-            sub-pixel is matched with the 3rd pixel, sub_to_pix[4] = 2).
+            sub-pixel is matched with the 3rd pixel, sub_to_pixelization[4] = 2).
 
         """
 
@@ -82,7 +82,7 @@ class Rectangular(Pixelization):
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         regularization_coefficients : (float,)
-            The regularization coefficients used to smooth the pix reconstruction.
+            The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
 
         if shape[0] <= 2 or shape[1] <= 2:

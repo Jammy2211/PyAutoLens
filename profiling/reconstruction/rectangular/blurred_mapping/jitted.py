@@ -17,14 +17,14 @@ class Reconstructor(object):
         Parameters
         -----------
         mapping : ndarray
-            The matrix representing the mapping between reconstruction-pixels and weighted_data-pixels.
+            The matrix representing the mapping_matrix between reconstructed_image-pixels and data_vector-pixels.
         regularization : ndarray
-            The matrix defining how the reconstruction's pixels are regularized with one another when fitting the
-            weighted_data.
+            The matrix defining how the reconstructed_image's pixels are regularized with one another when fitting the
+            data_vector.
         image_to_pix : ndarray
-            The mapping between each masked_image-grid pixel and pixelization-grid pixel.
+            The mapping_matrix between each masked_image-grid pixel and pixelization-grid pixel.
         sub_to_pix : ndarray
-            The mapping between each sub-grid pixel and pixelization-grid sub-pixel.
+            The mapping_matrix between each sub-grid pixel and pixelization-grid sub-pixel.
         """
         self.mapping = mapping
         self.mapping_shape = mapping.shape
@@ -45,7 +45,7 @@ lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=su
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_size)
-# ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_size)
+# ao = profiling_data.setup_class(phase_name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 
 lsst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_pix], image_plane_grids=lsst.grids)
 euclid_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_pix], image_plane_grids=euclid.grids)
@@ -67,36 +67,36 @@ hst_recon = Reconstructor(hst_recon.mapping, hst_recon.regularization, hst_recon
                            hst_recon.sub_to_pix)
 hst_up_recon = Reconstructor(hst_up_recon.mapping, hst_up_recon.regularization, hst_up_recon.image_to_pix,
                            hst_up_recon.sub_to_pix)
-# ao_recon = Reconstructor(ao_recon.mapping, ao_recon.regularization, ao_recon.image_to_pix,
- #                           ao_recon.sub_to_pix)
+# ao_recon = Reconstructor(ao_recon.mapping_matrix, ao_recon.regularization_matrix, ao_recon.image_to_pixelization,
+ #                           ao_recon.sub_to_pixelization)
 
 # Function is already jitted
 
-lsst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(lsst_recon.mapping)
-euclid.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(euclid_recon.mapping)
-hst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(hst_recon.mapping)
-hst_up.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(hst_up_recon.mapping)
-# ao.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(ao_recon.mapping)
+lsst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(lsst_recon.mapping)
+euclid.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(euclid_recon.mapping)
+hst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(hst_recon.mapping)
+hst_up.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(hst_up_recon.mapping)
+# ao.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(ao_recon.mapping_matrix)
 
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(lsst_recon.mapping)
+    lsst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(lsst_recon.mapping)
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(euclid_recon.mapping)
+    euclid.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(euclid_recon.mapping)
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(hst_recon.mapping)
+    hst.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(hst_recon.mapping)
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(hst_up_recon.mapping)
+    hst_up.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(hst_up_recon.mapping)
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(ao_recon.mapping)
+    ao.masked_image.convolver_mapping_matrix.convolve_mapping_matrix(ao_recon.mapping)
 
 
 if __name__ == "__main__":

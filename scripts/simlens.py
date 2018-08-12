@@ -13,7 +13,7 @@ def numpy_array_to_fits(array, path, filename):
     hdu = fits.PrimaryHDU(array, new_hdr)
     hdu.writeto(path + filename + '.fits')
 
-data_path = "{}/../weighted_data/".format(os.path.dirname(os.path.realpath(__file__)))
+data_path = "{}/../data_vector/".format(os.path.dirname(os.path.realpath(__file__)))
 
 pixel_scale = 0.05
 dimensions = (256, 256)
@@ -57,7 +57,7 @@ print(np.max(image.data), np.min(image.data))
 print(np.max(noise), np.min(noise))
 print(np.max(signal_to_noise_ratio))
 
-# pyplot.imshow(psf.weighted_data)
+# pyplot.imshow(psf.data_vector)
 # pyplot.show()
 image.plot()
 
