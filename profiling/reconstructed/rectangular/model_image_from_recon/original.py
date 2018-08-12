@@ -23,7 +23,7 @@ lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=su
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_size)
-# ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_size)
+# ao = profiling_data.setup_class(phase_name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 
 lsst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_pix],
                                  image_plane_grids=lsst.grids)
@@ -40,42 +40,42 @@ hst_recon = hst_tracer.reconstructors_from_source_plane(hst.borders, cluster_mas
 hst_up_recon = hst_up_tracer.reconstructors_from_source_plane(hst_up.borders, cluster_mask=None)
 # ao_recon = ao_tracer.reconstructors_from_source_plane(ao.borders, cluster_mask=None)
 
-lsst_reconstructed = lsst_recon.reconstruct_image(lsst.masked_image, lsst.masked_image.background_noise,
-                                                  lsst.masked_image.convolver_mapping_matrix)
-euclid_reconstructed = euclid_recon.reconstruct_image(euclid.masked_image, euclid.masked_image.background_noise,
-                                                  euclid.masked_image.convolver_mapping_matrix)
-hst_reconstructed = hst_recon.reconstruct_image(hst.masked_image, hst.masked_image.background_noise,
-                                                  hst.masked_image.convolver_mapping_matrix)
-hst_up_reconstructed = hst_up_recon.reconstruct_image(hst_up.masked_image, hst_up.masked_image.background_noise,
-                                                  hst_up.masked_image.convolver_mapping_matrix)
+lsst_reconstructed = lsst_recon.reconstruction_from_reconstructor_and_data(lsst.masked_image, lsst.masked_image.background_noise,
+                                                                           lsst.masked_image.convolver_mapping_matrix)
+euclid_reconstructed = euclid_recon.reconstruction_from_reconstructor_and_data(euclid.masked_image, euclid.masked_image.background_noise,
+                                                                               euclid.masked_image.convolver_mapping_matrix)
+hst_reconstructed = hst_recon.reconstruction_from_reconstructor_and_data(hst.masked_image, hst.masked_image.background_noise,
+                                                                         hst.masked_image.convolver_mapping_matrix)
+hst_up_reconstructed = hst_up_recon.reconstruction_from_reconstructor_and_data(hst_up.masked_image, hst_up.masked_image.background_noise,
+                                                                               hst_up.masked_image.convolver_mapping_matrix)
 # ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise,
 #                                                   ao.masked_image.convolver_mapping_matrix)
 
-lsst_reconstructed.model_image_from_reconstruction_jit()
-euclid_reconstructed.model_image_from_reconstruction_jit()
-hst_reconstructed.model_image_from_reconstruction_jit()
-hst_up_reconstructed.model_image_from_reconstruction_jit()
+lsst_reconstructed.reconstructed_image()
+euclid_reconstructed.reconstructed_image()
+hst_reconstructed.reconstructed_image()
+hst_up_reconstructed.reconstructed_image()
 # ao_reconstructed.model_image_from_reconstruction_jit()
 
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst_reconstructed.model_image_from_reconstruction_jit()
+    lsst_reconstructed.reconstructed_image()
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid_reconstructed.model_image_from_reconstruction_jit()
+    euclid_reconstructed.reconstructed_image()
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst_reconstructed.model_image_from_reconstruction_jit()
+    hst_reconstructed.reconstructed_image()
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up_reconstructed.model_image_from_reconstruction_jit()
+    hst_up_reconstructed.reconstructed_image()
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao_reconstructed.model_image_from_reconstruction_jit()
+    ao_reconstructed.reconstructed_image()
 
 if __name__ == "__main__":
     lsst_solution()

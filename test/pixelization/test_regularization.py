@@ -4,125 +4,6 @@ import pytest
 import numpy as np
 
 
-# The regularization matrix, H, is calculated by defining a set of B matrices which describe how pix-plane
-# pixels map to one another. For example, if we had a 3x3 square grid:
-
-# ______
-# |0|1|2|
-# |3|4|5|
-# |6|7|8|
-# ^^^^^^^
-
-# Lets say we want to regularize this grid so that each square pixel is regularized with a pixel to its right
-# and below it.
-
-# So, 0 is regularized with pixels 1 and 3, pixel 1 with 2 and 4, but pixel 2 with only pixel 5, etc. So,
-#
-# We make two 9 x 9 B matrices, which describe regularization in each direction. So for regularization to the
-# right of each pixel:
-
-# B_x = [-1,  1,  0,  0,  0,  0,  0,  0,  0] # [0->1] This, row 0, correspomds to pixel 0 (signified by the -1). The 1's in columns 1 is saying we want to regularize pixel 0 with pixel 1.
-#       [ 0, -1,  1,  0,  0,  0,  0,  0,  0] # [1->2] Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixels 2.
-#       [ 0,  0, -1,  0,  0,  0,  0,  0,  0] # [] NOTE - pixel 2 is NOT regularized with pixel 3 (check the square grid)!
-#       [ 0,  0,  0, -1,  1,  0,  0,  0,  0] # [3->4]
-#       [ 0,  0,  0,  0, -1,  1,  0,  0,  0] # [4->5]
-#       [ 0,  0,  0,  0,  0, -1,  0,  0,  0] # [] NOTE - pixel 5 not regularized with pixel 6!
-#       [ 0,  0,  0,  0,  0,  0, -1,  1,  0] # [6->7]
-#       [ 0,  0,  0,  0,  0,  0,  0, -1,  1] # [7->8]
-#       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] # [] NOTE - Not regularized with anything
-
-# We now make another B matrix for the regularization beneath each pixel:
-
-# B_y = [-1,  0,  0,  1,  0,  0,  0,  0,  0] # [0->3] This, row 0, correspodns to pixel 0 (signified by the -1). The 1's in columns 3 is saying we want to regularize pixel 0 with pixel 3.
-#       [ 0, -1,  0,  0,  1,  0,  0,  0,  0] # [1->4] Row 1 for pixel 1 (again, the -1 tells us this), regularized with pixel 4
-#       [ 0,  0, -1,  0,  0,  1,  0,  0,  0] # [2->5]
-#       [ 0,  0,  0, -1,  0,  0,  1,  0,  0] # [3->6]
-#       [ 0,  0,  0,  0, -1,  0,  0,  1,  0] # [4->7]
-#       [ 0,  0,  0,  0,  0, -1,  0,  0,  1] # [5->8]
-#       [ 0,  0,  0,  0,  0,  0, -1,  0,  0] # [] No regularized performed in these last 3 rows / pixels
-#       [ 0,  0,  0,  0,  0,  0,  0, -1,  0] # []
-#       [ 0,  0,  0,  0,  0,  0,  0,  0, -1] # []
-
-# So, we basically just make B matrices representing regularization in each direction. For each, we
-# can then compute their corresponding regularization matrix, H, as, H = B * B.T (matrix multiplication)
-
-# So, H_x = B_x.T, * B_x H_y = B_y.T * B_y
-# And our overall regularization matrix, H = H_x + H_y
-
-# For an adaptive Voronoi grid, we do this, however we make a B matrix for every shared Voronoi vertex
-# of each pix-pixel cluster. This means the number of B matrices we compute is equal to the the number of
-# Voronoi vertices in the pix-pixel with the most Voronoi vertices (i.e. the most neighbours a pix-pixel has).
-
-### COMBINING B MATRICES ###
-
-# Whereas the paper_plots above had each -1 going down the diagonal, this is not necessary. It valid to put each pairing
-# anywhere. So, if we had a 4x4 B matrix, where pixel 0 regularizes 1, 2 -> 3 and 3 -> 0, we can set this up
-# as one matrix even though the pixel 0 comes up twice!
-
-# B = [-1, 1, 0 ,0] # [0->1]
-#     [0, 0, 0 ,0] # We can skip rows by making them all zeros.
-#     [0, 0, -1 ,1] # [2->3]
-#     [1, 0, 0 ,-1] # [3->0] This is valid!
-
-# So, we don't have to make the same number of B matrices as Voronoi vertices, as we can combine them into a few B
-# matrices like this
-
-# SKIPPING THE B MATRIX CALCULATION #
-
-# The create_regularization_matrix routines in pixelization don't use the B matrices to compute H!.
-
-# This is because, if you know all the pairs between pix pixels (which the Voronoi gridding can tell you), you
-# can bypass the B matrix multiplicaion entirely and enter the values directly into the H matrix (making the
-# calculation significantly faster).
-
-# POSITIVE DEFINITE MATRIX #
-
-# The regularization matrix must be positive-definite, to ensure that its determinant is 0. To ensure this
-# criteria is met, two forms of regularization schemes are applied in slightly different ways.
-
-# CONSTANT REGULARIZATION #
-
-# For the constant regularization scheme, there is only 1 regularization coefficient that is applied to all
-# pix-pair regularizations equally. This means that we when write B, we only need to regularize pixels
-# in one direction (e.g. pix pixel 0 regularizes pix pixel 1, but NOT visa versa). For example:
-
-# B = [-1, 1]  [0->1]
-#     [0, -1]  1 does not regularization with 0
-
-# WEIGHTED REGULARIZATION #
-
-# For the weighted regularization scheme, each pixis given an 'effective regularization weight', instead
-# of applying one constant regularization coefficient to each pix-pixel pair. scheme overall. This is
-# because different regions of a pix-plane want different levels of regularization
-# (see Nightingale, Dye and Massey) 2018.
-
-# Unlike the constant regularization scheme, regularization pairs are now defined such that all pixels are
-# regularized with one another (e.g. if pix pixel 0 regularizes pix pixel 1, pix pixel 1 also
-# regularizes pix pixel 0). For example :
-#
-# B = [-1, 1]  [0->1]
-#     [-1, -1]  1 now also regularizes 0
-#
-# For a constant regularization coefficient this would NOT produce a positive-definite matrix. However, for
-# the weighted scheme, it does!
-
-# The regularize weights change the B matrix as shown below, we simply multiply each pix-pixel's effective
-# regularization weight by each row of B it has a -1 in, so:
-
-# regularization_weights = [1, 2, 3, 4]
-
-# B = [-1, 1, 0 ,0] # [0->1]
-#     [0, -2, 2 ,0] # [1->2]
-#     [0, 0, -3 ,3] # [2->3]
-#     [4, 0, 0 ,-4] # [3->0] This is valid!
-
-# If our -1's werent down the diagonal this would look like:
-
-# B = [4, 0, 0 ,-4] # [3->0]
-#     [0, -2, 2 ,0] # [1->2]
-#     [-1, 1, 0 ,0] # [0->1]
-#     [0, 0, -3 ,3] # [2->3] This is valid!
-
 class TestRegularizationConstant:
 
     class TestRegularizationMatrixFromNeighbors:
@@ -143,7 +24,7 @@ class TestRegularizationConstant:
             test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(3)
 
             pix = pixelization.ClusterRegConst(pixels=3, regularization_coefficients=(1.0,))
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
@@ -159,7 +40,7 @@ class TestRegularizationConstant:
             pix_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
 
             pix = pixelization.ClusterRegConst(pixels=4, regularization_coefficients=(1.0,))
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
@@ -175,7 +56,7 @@ class TestRegularizationConstant:
             test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(4)
 
             pix = pixelization.ClusterRegConst(pixels=4, regularization_coefficients=(2.0,))
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
@@ -211,7 +92,7 @@ class TestRegularizationConstant:
                 9)
 
             pix = pixelization.ClusterRegConst(pixels=9, regularization_coefficients=(1.0,))
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
@@ -223,7 +104,7 @@ class TestRegularizationWeighted:
 
         def test__x3_image_pixels_signals_1s__pix_scale_1__pix_signals_all_1s(self):
 
-            pix = pixelization.ClusterRegWeighted(pixels=3, pix_signal_scale=1.0)
+            pix = pixelization.ClusterRegWeighted(pixels=3, signal_scale=1.0)
 
             image_to_pix = np.array([0, 1, 2])
             galaxy_image = np.array([1.0, 1.0, 1.0])
@@ -233,7 +114,7 @@ class TestRegularizationWeighted:
             assert (pix_signals == np.array([1.0, 1.0, 1.0])).all()
 
         def test__x4_image_pixels_signals_1s__pix_signals_still_all_1s(self):
-            pix = pixelization.ClusterRegWeighted(pixels=3, pix_signal_scale=1.0)
+            pix = pixelization.ClusterRegWeighted(pixels=3, signal_scale=1.0)
 
             image_to_pix = np.array([0, 1, 2, 0])
             galaxy_image = np.array([1.0, 1.0, 1.0, 1.0])
@@ -243,7 +124,7 @@ class TestRegularizationWeighted:
             assert (pix_signals == np.array([1.0, 1.0, 1.0])).all()
 
         def test__galaxy_flux_in_a_pix_pixel_is_double_the_others__pix_signal_is_1_others_a_half(self):
-            pix = pixelization.ClusterRegWeighted(pixels=3, pix_signal_scale=1.0)
+            pix = pixelization.ClusterRegWeighted(pixels=3, signal_scale=1.0)
 
             image_to_pix = np.array([0, 1, 2])
             galaxy_image = np.array([2.0, 1.0, 1.0])
@@ -253,7 +134,7 @@ class TestRegularizationWeighted:
             assert (pix_signals == np.array([1.0, 0.5, 0.5])).all()
 
         def test__same_as_above_but_pix_scale_2__scales_pix_signals(self):
-            pix = pixelization.ClusterRegWeighted(pixels=3, pix_signal_scale=2.0)
+            pix = pixelization.ClusterRegWeighted(pixels=3, signal_scale=2.0)
 
             image_to_pix = np.array([0, 1, 2])
             galaxy_image = np.array([2.0, 1.0, 1.0])
@@ -269,7 +150,7 @@ class TestRegularizationWeighted:
 
             pix_signals = np.array([1.0, 1.0, 1.0])
 
-            weights = pix.regularization_weights_from_pix_signals(pix_signals)
+            weights = pix.regularization_weights_from_pixel_signals(pix_signals)
 
             assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
@@ -278,7 +159,7 @@ class TestRegularizationWeighted:
 
             pix_signals = np.array([0.25, 0.5, 0.75])
 
-            weights = pix.regularization_weights_from_pix_signals(pix_signals)
+            weights = pix.regularization_weights_from_pixel_signals(pix_signals)
 
             assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
@@ -287,7 +168,7 @@ class TestRegularizationWeighted:
 
             pix_signals = np.array([0.25, 0.5, 0.75])
 
-            weights = pix.regularization_weights_from_pix_signals(pix_signals)
+            weights = pix.regularization_weights_from_pixel_signals(pix_signals)
 
             assert (weights == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
 
@@ -296,7 +177,7 @@ class TestRegularizationWeighted:
 
             pix_signals = np.array([0.25, 0.5, 0.75])
 
-            weights = pix.regularization_weights_from_pix_signals(pix_signals)
+            weights = pix.regularization_weights_from_pixel_signals(pix_signals)
 
             assert (weights == np.array([0.75 ** 2.0, 0.5 ** 2.0, 0.25 ** 2.0])).all()
 
@@ -315,8 +196,8 @@ class TestRegularizationWeighted:
             regularization_weights = np.ones((4,))
 
             pix = pixelization.ClusterRegWeighted(pixels=4)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -346,8 +227,8 @@ class TestRegularizationWeighted:
             regularization_weights = np.ones((3))
 
             pix = pixelization.ClusterRegWeighted(pixels=3)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -372,8 +253,8 @@ class TestRegularizationWeighted:
             regularization_weights = np.ones((4,))
 
             pix = pixelization.ClusterRegWeighted(pixels=4)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -425,8 +306,8 @@ class TestRegularizationWeighted:
             regularization_weights = np.ones((6))
 
             pix = pixelization.ClusterRegWeighted(pixels=6)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -454,8 +335,8 @@ class TestRegularizationWeighted:
             pix_neighbors = [[1], [0], []]
 
             pix = pixelization.ClusterRegWeighted(pixels=3)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -490,8 +371,8 @@ class TestRegularizationWeighted:
             pix_neighbors = [[1, 2], [0, 2, 3], [0, 1], [1]]
 
             pix = pixelization.ClusterRegWeighted(pixels=4)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
 
@@ -540,7 +421,7 @@ class TestRegularizationWeighted:
             test_regularization_matrix = test_regularization_matrix_1 + test_regularization_matrix_2 + test_regularization_matrix_3 + test_regularization_matrix_4
 
             pix = pixelization.ClusterRegWeighted(pixels=6)
-            regularization_matrix = pix.regularization_matrix_from_pix_neighbors(regularization_weights,
-                                                                                          pix_neighbors)
+            regularization_matrix = pix.regularization_matrix_from_pixel_neighbors(regularization_weights,
+                                                                                   pix_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()

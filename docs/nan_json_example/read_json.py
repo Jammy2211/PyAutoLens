@@ -1,7 +1,7 @@
 import json
 from pprint import pprint
 
-with open('weighted_data.JSON') as f:
+with open('data_vector.JSON') as f:
     data = json.load(f)
 
 

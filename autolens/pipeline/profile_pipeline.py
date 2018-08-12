@@ -25,9 +25,9 @@ def make():
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
     phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
-                              optimizer_class=optimizer_class, name="{}/phase1".format(name))
+                              optimizer_class=optimizer_class, phase_name="{}/phase1".format(name))
 
-    class LensSubtractedPhase(ph.SourceLensPhase):
+    class LensSubtractedPhase(ph.ProfileSourceLensPhase):
         """
     Subtract the lens light from the masked_image and fit only the source galaxy's light.
         """
@@ -52,7 +52,7 @@ def make():
                                  source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                                  optimizer_class=optimizer_class,
                                  mask_function=annular_mask_function,
-                                 name="{}/phase2".format(name))
+                                 phase_name="{}/phase2".format(name))
 
     # 3) Lens Light : Elliptical Sersic (Priors phase 1)
     #    Mass: SIE (Priors phase 2)
@@ -60,7 +60,7 @@ def make():
     #    NLO: MultiNest
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
-    class CombinedPhase(ph.SourceLensPhase):
+    class CombinedPhase(ph.ProfileSourceLensPhase):
         """
     Use priors from the previous phases to fit both the source and the lens at the same time.
         """
@@ -72,13 +72,13 @@ def make():
             self.source_galaxy = previous_results.last.variable.source_galaxy
 
     phase3 = CombinedPhase(optimizer_class=optimizer_class,
-                           name="{}/phase3".format(name))
+                           phase_name="{}/phase3".format(name))
     # 3H) Hyper-Parameters: Make Lens Galaxy and Source Galaxy Hyper-Galaxies.
     #     Lens Light / Mass / Source - Fix parameters to phase 3 most likely result
     #     NLO: DownhillSimplex
     #     Image: Observed Image
     #     Mask: Circle - 3.0"
-    phase3h = ph.SourceLensHyperGalaxyPhase(name="{}/phase3h".format(name))
+    phase3h = ph.SourceLensHyperGalaxyPhase(phase_name="{}/phase3h".format(name))
 
     # 4) Repeat phase 3, using its priors and the hyper-galaxies fixed to their optimized values.
     #    Lens Light: Elliptical Sersic (Priors phase 3)
@@ -87,7 +87,7 @@ def make():
     #    NLO: MultiNest
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
-    class CombinedPhase2(ph.SourceLensPhase):
+    class CombinedPhase2(ph.ProfileSourceLensPhase):
         """
         Use priors from the previous phases in conjunction with constant values determined for hyper galaxies to fit
         both the source and the lens at the same time.
@@ -100,5 +100,5 @@ def make():
             self.lens_galaxy.hyper_galaxy = previous_results.last.constant.lens_galaxy.hyper_galaxy
             self.source_galaxy.hyper_galaxy = previous_results.last.constant.source_galaxy.hyper_galaxy
 
-    phase4 = CombinedPhase2(optimizer_class=optimizer_class, name="{}/phase4".format(name))
+    phase4 = CombinedPhase2(optimizer_class=optimizer_class, phase_name="{}/phase4".format(name))
     return pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
