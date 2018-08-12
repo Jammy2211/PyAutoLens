@@ -65,6 +65,24 @@ class Galaxy(object):
         return self.hyper_galaxy is not None
 
     @property
+    def has_light_profile(self):
+        """
+        Returns
+        -------
+        True iff there is one or more mass or light profiles associated with this galaxy
+        """
+        return len(self.light_profiles) > 0
+
+    @property
+    def has_mass_profile(self):
+        """
+        Returns
+        -------
+        True iff there is one or more mass or light profiles associated with this galaxy
+        """
+        return len(self.mass_profiles) > 0
+
+    @property
     def has_profile(self):
         """
         Returns
