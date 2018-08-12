@@ -7,7 +7,7 @@ import numba
 
 
 class Convolver(object):
-    """Class to setup the 1D convolution of an masked_image / mapping matrix.
+    """Class to setup the 1D convolution of an masked_image / mapping_matrix matrix.
 
     IMAGE FRAMES:
     ------------
@@ -74,14 +74,14 @@ class Convolver(object):
     image_frame_lengths = 6
 
     Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of masked_image
-    data / a mapping matrix masked_image.
+    data / a mapping_matrix matrix masked_image.
 
     BLURRING FRAMES:
     --------------
 
     Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that
     pixels outside of the mask will also blur light into it. For galaxy light profiles, this effect is accounted for \
-    using blurring frames, however it is omitted for mapping matrix images.
+    using blurring frames, however it is omitted for mapping_matrix matrix images.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
     to blur light into it for a given psf size. Following the example above, the following blurring mask is \
@@ -305,7 +305,7 @@ class ConvolverImage(Convolver):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping of a source pixel to a set of masked_image pixels within the blurring region.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the psf for which the result should be calculated
         image_array: [float]
@@ -370,23 +370,23 @@ ao_blurring_image = sersic.intensity_from_grid(grid=ao.grids.blurring)
 
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst.masked_image.convolver_image.convolve_image_jit(image_array=lsst_image, blurring_array=lsst_blurring_image)
+    lsst.masked_image.convolver_image.convolve_image(image_array=lsst_image, blurring_array=lsst_blurring_image)
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid.masked_image.convolver_image.convolve_image_jit(image_array=euclid_image, blurring_array=euclid_blurring_image)
+    euclid.masked_image.convolver_image.convolve_image(image_array=euclid_image, blurring_array=euclid_blurring_image)
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst.masked_image.convolver_image.convolve_image_jit(image_array=hst_image, blurring_array=hst_blurring_image)
+    hst.masked_image.convolver_image.convolve_image(image_array=hst_image, blurring_array=hst_blurring_image)
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up.masked_image.convolver_image.convolve_image_jit(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
+    hst_up.masked_image.convolver_image.convolve_image(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao.masked_image.convolver_image.convolve_image_jit(image_array=ao_image, blurring_array=ao_blurring_image)
+    ao.masked_image.convolver_image.convolve_image(image_array=ao_image, blurring_array=ao_blurring_image)
 
 if __name__ == "__main__":
     lsst_solution()

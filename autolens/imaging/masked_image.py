@@ -11,7 +11,7 @@ class MaskedImage(im.Image):
     def __init__(self, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None):
         """
         An masked_image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
-        array mapping data back to 2D.
+        array mapping_matrix data back to 2D.
 
         Parameters
         ----------

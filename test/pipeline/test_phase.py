@@ -13,6 +13,15 @@ from autolens.profiles import light_profiles
 shape = (10, 10)
 
 
+class MockAnalysis(object):
+
+    def __init__(self, number_galaxies, value):
+        self.number_galaxies = number_galaxies
+        self.value = value
+
+    def galaxy_images_for_model(self, model):
+        return self.number_galaxies*[np.array([self.value])]
+
 class MockResults(object):
     def __init__(self, model_image, galaxy_images=()):
         self.model_image = model_image
@@ -54,7 +63,7 @@ def make_grids(masked_image):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.SourceLensPhase(optimizer_class=NLO)
+    return ph.ProfileSourceLensPhase(optimizer_class=NLO)
 
 
 @pytest.fixture(name="galaxy")
@@ -67,7 +76,7 @@ def make_galaxy_prior():
     return gp.GalaxyPrior()
 
 
-@pytest.fixture(name="masked_image")
+@pytest.fixture(name="image")
 def make_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
     return image
@@ -116,7 +125,7 @@ class TestPhase(object):
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
 
     def test_customize(self, results, image):
-        class MyPhase(ph.SourceLensPhase):
+        class MyPhase(ph.ProfileSourceLensPhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxy = previous_results.last.constant.lens_galaxy
                 self.source_galaxy = previous_results.last.variable.source_galaxy
@@ -135,7 +144,7 @@ class TestPhase(object):
 
     def test_phase_property(self):
 
-        class MyPhase(ph.SourceLensPhase):
+        class MyPhase(ph.ProfileSourceLensPhase):
             prop = ph.phase_property("prop")
 
         phase = MyPhase(optimizer_class=NLO)
@@ -163,9 +172,9 @@ class TestPhase(object):
         assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.SourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior())
+        phase = ph.ProfileSourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior())
 
-        ph.SourceLensPhase()
+        ph.ProfileSourceLensPhase()
 
         assert phase.lens_galaxy is not None
         assert phase.source_galaxy is not None
@@ -181,7 +190,7 @@ class TestPhase(object):
         assert analysis.masked_image != image
 
     def test_model_images(self, image):
-        phase = ph.SourceLensPhase()
+        phase = ph.ProfileSourceLensPhase()
         analysis = phase.make_analysis(image)
         instance = mm.ModelInstance()
         instance.lens_galaxy = g.Galaxy(light=light_profiles.EllipticalExponential())
@@ -201,14 +210,21 @@ class TestPixelizedPhase(object):
 
 class TestAnalysis(object):
     def test_model_image(self, results_collection, masked_image):
-        analysis = ph.Phase.Analysis(results_collection, masked_image, "name")
+        analysis = ph.Phase.Analysis(results_collection, masked_image, "phase_name")
         assert (results_collection[0].model_image == analysis.last_results.model_image).all()
 
 
 class TestResult(object):
-    def test_model_image(self):
-        result = ph.Phase.Result(mm.ModelInstance(), 1, mm.ModelMapper(), [np.array([1, 2, 3]), np.array([2, 3, 4])])
-        assert (result.model_image == np.array([3, 5, 7])).all()
+
+    def test_hyper_galaxy_and_model_images(self):
+
+        analysis = MockAnalysis(number_galaxies=2, value=1.0)
+
+        result = ph.ProfileSourceLensPhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
+                                                  analysis=analysis)
+        assert (result.galaxy_images[0] == np.array([1.0])).all()
+        assert (result.galaxy_images[1] == np.array([1.0])).all()
+        assert (result.model_image == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])

@@ -98,7 +98,7 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def reconstructor_from_pix_grids(self, grids, borders, sparse_mask):
+    def reconstructor_from_pixelization_and_grids(self, grids, borders, sparse_mask):
         return self.value
 
 
