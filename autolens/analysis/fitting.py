@@ -85,6 +85,8 @@ class ProfileFitter(AbstractFitter):
         """
         return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_chi_squared_term, self.noise_term)
 
+    def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
+        return PixelizationFitter(self.masked_image[:] - self.blurred_image, sparse_mask, self.tracer)
 
 class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
 
@@ -121,6 +123,9 @@ class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
         return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_scaled_chi_squared_term,
                                                            self.scaled_noise_term)
 
+    def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
+        return HyperPixelizationFitter(self.masked_image[:] - self.blurred_image, sparse_mask, self.tracer,
+                                       self.hyper_model_image, self.hyper_galaxy_images, self.hyper_minimum_values)
 
 class PixelizationFitter(AbstractFitter):
 
