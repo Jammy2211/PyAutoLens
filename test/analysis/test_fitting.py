@@ -316,6 +316,33 @@ class MockTracer(object):
     def generate_blurring_image_of_galaxy_light_profiles(self):
         return self.blurring_image
 
+    def reconstructors_from_source_plane(self, borders, cluster_mask):
+        return MockReconstructor()
+
+    @property
+    def hyper_galaxies(self):
+        return [MockHyperGalaxy(), MockHyperGalaxy()]
+
+
+class MockReconstructor(object):
+
+    def __init__(self):
+        pass
+
+    def reconstruction_from_reconstructor_and_data(self, masked_image, noise, convolver_mapping_matrix):
+        return MockReconstruction()
+
+
+class MockReconstruction(object):
+
+    def __init__(self):
+
+        self.blurred_mapping_matrix = np.zeros((1, 1))
+        self.regularization_matrix = np.zeros((1, 1))
+        self.curvature_matrix = np.zeros((1, 1))
+        self.curvature_reg_matrix = np.zeros((1, 1))
+        self.solution_vector = np.zeros((1))
+
 
 # noinspection PyUnusedLocal
 class MockLightProfile(light_profiles.LightProfile):
@@ -488,6 +515,30 @@ class TestProfileFitter:
             assert fitter.blurred_image_likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
 
+    class TestPixelizationFitterFromProfileFitter:
+
+        def test__profile_subtracted_image_is_passed_with_other_attributes(self, mi_blur):
+
+            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+                                blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+
+            profile_fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
+
+            # blurred_image == np.array([4.0, 4.0, 4.0, 4.0])
+
+            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_masked_image(
+                sparse_mask=mask.SparseMask(mi_blur.mask, 1))
+
+            assert type(pix_fitter) == fitting.PixelizationFitter
+            assert (pix_fitter.masked_image[:] == np.array([-3.0, -3.0, -3.0, -3.0])).all()
+            assert (pix_fitter.masked_image.image == profile_fitter.masked_image.image).all()
+            assert (pix_fitter.masked_image.noise == profile_fitter.masked_image.noise).all()
+            assert pix_fitter.masked_image.grids == profile_fitter.masked_image.grids
+            assert pix_fitter.masked_image.borders == profile_fitter.masked_image.borders
+            assert pix_fitter.masked_image.convolver_mapping_matrix == profile_fitter.masked_image.convolver_mapping_matrix
+            assert pix_fitter.sparse_mask == mask.SparseMask(mi_blur.mask, 1)
+            assert pix_fitter.tracer == pix_fitter.tracer
+
     class TestCompareToManual:
 
         def test___random_image_and_psf(self):
@@ -547,7 +598,7 @@ class TestHyperProfileFitter:
             tracer = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                         image_plane_grids=mi_no_blur_1x1.grids)
     
-            model = np.array([1.0])
+            hyper_model_image = np.array([1.0])
             hyper_galaxy_images = [np.array([1.0]), np.array([1.0])]
     
             tracer.image_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0,
@@ -555,8 +606,10 @@ class TestHyperProfileFitter:
             tracer.source_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0,
                                                                               noise_power=1.0)
     
-            fitter = fitting.HyperProfileFitter(masked_image=mi_no_blur_1x1, tracer=tracer, hyper_model_image=model,
-                                                hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0, 0.0])
+            fitter = fitting.HyperProfileFitter(masked_image=mi_no_blur_1x1, tracer=tracer,
+                                                hyper_model_image=hyper_model_image,
+                                                hyper_galaxy_images=hyper_galaxy_images,
+                                                hyper_minimum_values=[0.0, 0.0])
     
             chi_squared_term = 0.0
             scaled_noise_term = np.log(2 * np.pi * 4.0 ** 2.0)
@@ -572,7 +625,7 @@ class TestHyperProfileFitter:
             tracer = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=no_galaxies,
                                         image_plane_grids=mi_no_blur_1x1.grids)
     
-            model = np.array([1.0])
+            hyper_model_image = np.array([1.0])
             hyper_galaxy_images = [np.array([1.0]), np.array([1.0])]
     
             tracer.image_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=0.0, noise_factor=1.0,
@@ -580,13 +633,50 @@ class TestHyperProfileFitter:
             tracer.source_plane.galaxies[0].hyper_galaxy = MockHyperGalaxy(contribution_factor=0.0, noise_factor=2.0,
                                                                               noise_power=1.0)
     
-            fitter = fitting.HyperProfileFitter(masked_image=mi_no_blur_1x1, tracer=tracer, hyper_model_image=model,
-                                                hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0, 0.0])
+            fitter = fitting.HyperProfileFitter(masked_image=mi_no_blur_1x1, tracer=tracer,
+                                                hyper_model_image=hyper_model_image,
+                                                hyper_galaxy_images=hyper_galaxy_images,
+                                                hyper_minimum_values=[0.0, 0.0])
     
             scaled_chi_squared_term = (1.0/(4.0))**2.0
             scaled_noise_term = np.log(2 * np.pi * 4.0 ** 2.0)
     
             assert fitter.blurred_image_scaled_likelihood == -0.5 * (scaled_chi_squared_term + scaled_noise_term)
+
+    class TestPixelizationFitterFromProfileFitter:
+
+        def test__profile_subtracted_image_is_passed_with_other_attributes(self, mi_blur):
+
+            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+                                blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+
+            hyper_model_image = np.array([1.0])
+            hyper_galaxy_images = [np.array([1.0]), np.array([1.0])]
+
+            profile_fitter = fitting.HyperProfileFitter(masked_image=mi_blur, tracer=tracer,
+                                                hyper_model_image=hyper_model_image,
+                                                hyper_galaxy_images=hyper_galaxy_images,
+                                                hyper_minimum_values=[0.2, 0.7])
+
+            # blurred_image == np.array([4.0, 4.0, 4.0, 4.0])
+
+            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_masked_image(
+                sparse_mask=mask.SparseMask(mi_blur.mask, 1))
+
+            assert type(pix_fitter) == fitting.HyperPixelizationFitter
+            assert (pix_fitter.masked_image[:] == np.array([-3.0, -3.0, -3.0, -3.0])).all()
+            assert (pix_fitter.masked_image.image == profile_fitter.masked_image.image).all()
+            assert (pix_fitter.masked_image.noise == profile_fitter.masked_image.noise).all()
+            assert pix_fitter.masked_image.grids == profile_fitter.masked_image.grids
+            assert pix_fitter.masked_image.borders == profile_fitter.masked_image.borders
+            assert pix_fitter.masked_image.convolver_mapping_matrix == profile_fitter.masked_image.convolver_mapping_matrix
+            assert pix_fitter.sparse_mask == mask.SparseMask(mi_blur.mask, 1)
+            assert pix_fitter.tracer == pix_fitter.tracer
+            assert (pix_fitter.hyper_model_image == profile_fitter.hyper_model_image).all()
+            assert (pix_fitter.hyper_galaxy_images[0] == profile_fitter.hyper_galaxy_images[0]).all()
+            assert (pix_fitter.hyper_galaxy_images[1] == profile_fitter.hyper_galaxy_images[1]).all()
+            assert pix_fitter.hyper_minimum_values[0] == profile_fitter.hyper_minimum_values[0]
+            assert pix_fitter.hyper_minimum_values[1] == profile_fitter.hyper_minimum_values[1]
 
     class TestCompareToManual:
 

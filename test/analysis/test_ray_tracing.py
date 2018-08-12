@@ -1,6 +1,7 @@
 from autolens import exc
 from autolens.analysis import ray_tracing, galaxy
 from autolens.profiles import mass_profiles, light_profiles
+from autolens.pixelization import pixelization
 from astropy import cosmology as cosmo
 from autolens.imaging import mask
 
@@ -1219,3 +1220,60 @@ class TestSetupTracedGrid:
         grid_traced = ray_tracing.traced_collection_for_deflections(grids, deflections)
 
         assert grid_traced.image[0] == pytest.approx(np.array([1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]), 1e-3)
+
+
+class TestBooleanProperties(object):
+
+    def test__has_galaxy_with_light_profile(self, grids):
+
+        gal = galaxy.Galaxy()
+        gal_lp = galaxy.Galaxy(light_profile=light_profiles.LightProfile())
+        gal_mp = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermal())
+
+        assert ray_tracing.Tracer([], [], grids).has_galaxy_with_light_profile == False
+        assert ray_tracing.Tracer([gal], [], grids).has_galaxy_with_light_profile == False
+        assert ray_tracing.Tracer([gal], [gal], grids).has_galaxy_with_light_profile == False
+        assert ray_tracing.Tracer([], [gal_mp], grids).has_galaxy_with_light_profile == False
+        assert ray_tracing.Tracer([gal_mp], [gal_mp], grids).has_galaxy_with_light_profile == False
+        assert ray_tracing.Tracer([gal_lp], [], grids).has_galaxy_with_light_profile == True
+        assert ray_tracing.Tracer([], [gal_lp], grids).has_galaxy_with_light_profile == True
+        assert ray_tracing.Tracer([gal_lp], [gal_lp], grids).has_galaxy_with_light_profile == True
+        assert ray_tracing.Tracer([gal_lp], [gal], grids).has_galaxy_with_light_profile == True
+        assert ray_tracing.Tracer([gal_lp], [gal_mp], grids).has_galaxy_with_light_profile == True
+        assert ray_tracing.Tracer([gal_lp, gal_lp], [], grids).has_galaxy_with_light_profile == True
+        
+    def test__has_galaxy_with_pixelization(self, grids):
+
+        gal = galaxy.Galaxy()
+        gal_lp = galaxy.Galaxy(light_profile=light_profiles.LightProfile())
+        gal_pix = galaxy.Galaxy(pixelization=pixelization.Pixelization())
+
+        assert ray_tracing.Tracer([], [], grids).has_galaxy_with_pixelization == False
+        assert ray_tracing.Tracer([gal], [], grids).has_galaxy_with_pixelization == False
+        assert ray_tracing.Tracer([gal], [gal], grids).has_galaxy_with_pixelization == False
+        assert ray_tracing.Tracer([], [gal_lp], grids).has_galaxy_with_pixelization == False
+        assert ray_tracing.Tracer([gal_lp], [gal_lp], grids).has_galaxy_with_pixelization == False
+        assert ray_tracing.Tracer([gal_pix], [], grids).has_galaxy_with_pixelization == True
+        assert ray_tracing.Tracer([], [gal_pix], grids).has_galaxy_with_pixelization == True
+        assert ray_tracing.Tracer([gal_pix], [gal_pix], grids).has_galaxy_with_pixelization == True
+        assert ray_tracing.Tracer([gal_pix], [gal], grids).has_galaxy_with_pixelization == True
+        assert ray_tracing.Tracer([gal_pix], [gal_lp], grids).has_galaxy_with_pixelization == True
+        assert ray_tracing.Tracer([gal_pix, gal_pix], [], grids).has_galaxy_with_pixelization == True
+        
+    def test__has_hyper_galaxy_with_pixelization(self, grids):
+
+        gal = galaxy.Galaxy()
+        gal_lp = galaxy.Galaxy(light_profile=light_profiles.LightProfile())
+        gal_hyper = galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy())
+
+        assert ray_tracing.Tracer([], [], grids).has_hyper_galaxy == False
+        assert ray_tracing.Tracer([gal], [], grids).has_hyper_galaxy == False
+        assert ray_tracing.Tracer([gal], [gal], grids).has_hyper_galaxy == False
+        assert ray_tracing.Tracer([], [gal_lp], grids).has_hyper_galaxy == False
+        assert ray_tracing.Tracer([gal_lp], [gal_lp], grids).has_hyper_galaxy == False
+        assert ray_tracing.Tracer([gal_hyper], [], grids).has_hyper_galaxy == True
+        assert ray_tracing.Tracer([], [gal_hyper], grids).has_hyper_galaxy == True
+        assert ray_tracing.Tracer([gal_hyper], [gal_hyper], grids).has_hyper_galaxy == True
+        assert ray_tracing.Tracer([gal_hyper], [gal], grids).has_hyper_galaxy == True
+        assert ray_tracing.Tracer([gal_hyper], [gal_lp], grids).has_hyper_galaxy == True
+        assert ray_tracing.Tracer([gal_hyper, gal_hyper], [], grids).has_hyper_galaxy == True

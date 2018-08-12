@@ -6,9 +6,22 @@ import numpy as np
 
 
 class AbstractTracer(object):
+
     @property
     def all_planes(self):
         raise NotImplementedError()
+
+    @property
+    def has_galaxy_with_light_profile(self):
+        return any(list(map(lambda galaxy : galaxy.has_light_profile, self.galaxies)))
+
+    @property
+    def has_galaxy_with_pixelization(self):
+        return any(list(map(lambda galaxy : galaxy.has_pixelization, self.galaxies)))
+
+    @property
+    def has_hyper_galaxy(self):
+        return any(list(map(lambda galaxy : galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
     def galaxy_images(self):
