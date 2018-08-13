@@ -2,8 +2,6 @@ import configparser
 
 from autolens import exc
 import os
-import requests
-import zipfile
 import shutil
 
 directory = os.path.dirname(os.path.realpath(__file__))
@@ -214,20 +212,6 @@ def is_config(config_path=CONFIG_PATH):
     return os.path.isdir(config_path)
 
 
-def download_config(config_dir=CONFIG_DIR):
-    print("Downloading config...")
-    config_path = '{}/config'.format(config_dir)
-    zip_path = "{}.zip".format(config_path)
-    with requests.get(CONFIG_URL) as response:
-        with open(zip_path, 'wb') as f:
-            f.write(response.content)
-
-    with zipfile.ZipFile(zip_path, 'r') as z:
-        z.extractall(config_dir)
-
-    os.remove(zip_path)
-
-
 def remove_config(config_path=CONFIG_PATH):
     print("Removing config...")
     try:
@@ -247,3 +231,7 @@ class Config(object):
 
 
 instance = Config("{}/config".format(CONFIG_DIR), "{}/output".format(directory))
+
+
+def copy_default(config_path):
+    shutil.copytree("{}/../config".format(directory), config_path)
