@@ -13,8 +13,8 @@ def load_image(name):
 
     data_dir = "{}/../../data/{}".format(dirpath, name)
 
-    data = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/masked_image', hdu=0, pixel_scale=0.05)
-    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.05)
+    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/masked_image', hdu=0, pixel_scale=0.05)
+    noise = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.05)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0)
 
     return im.Image(array=data, pixel_scale=0.05, psf=psf, noise=noise)
