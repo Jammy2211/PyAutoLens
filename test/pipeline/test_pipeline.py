@@ -74,8 +74,8 @@ def make_image():
 def make_results_1():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
-    const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
-    var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
+    const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
+    var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
     return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
@@ -85,9 +85,9 @@ def make_results_2():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
     var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal)
-    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal())
-    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
     return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
@@ -97,11 +97,11 @@ def make_results_3():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
     var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal,
-                                     elliptical_sersic=light_profiles.EllipticalSersic)
-    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
+                                     elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal(),
-                                 elliptical_sersic=light_profiles.EllipticalSersic())
-    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+                                 elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
     return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
