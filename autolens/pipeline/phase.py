@@ -114,7 +114,7 @@ class Phase(object):
         """
         analysis = self.make_analysis(image=image, previous_results=last_results)
         result = self.optimizer.fit(analysis)
-        self.__class__.Visualize(analysis, result.constant)
+        # self.visualise(analysis, result.constant)
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None):
@@ -191,10 +191,11 @@ class Phase(object):
             """
             raise NotImplementedError()
 
-    class Visualize(object):
+        def log(self, *args, **kwargs):
+            raise NotImplementedError()
 
-        def __init__(self, analysis, model):
-            pass
+        def visualise(self, *args, **kwargs):
+            raise NotImplementedError()
 
     class Result(non_linear.Result):
 
@@ -360,27 +361,9 @@ class ProfileSourceLensPhase(Phase):
             # TODO : call Visualization class to do the below.
 
             if self.should_log:
-                logger.debug(
-                    "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
-                        lens_galaxy, source_galaxy))
+                self.log(lens_galaxy, source_galaxy)
             if self.should_visualise:
-                self.plot_count += 1
-                logger.info("Saving visualisations {}".format(self.plot_count))
-                lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
-                                                                                                source_galaxy)
-
-                def save_image(image, image_name):
-                    if image is not None:
-                        plt.figure()
-                        plt.imshow(image)
-                        plt.savefig(
-                            "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name,
-                                                     self.plot_count))
-
-                save_image(lens_image, "lens_image")
-                save_image(source_image, "source_image")
-                if lens_image is not None and source_image is not None:
-                    save_image(lens_image + source_image, "hyper_model_image")
+                self.visualise(lens_galaxy, source_galaxy)
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
@@ -396,6 +379,31 @@ class ProfileSourceLensPhase(Phase):
                 fitter = fitting.HyperProfileFitter(self.masked_image, tracer, self.hyper_model_image,
                                                     self.hyper_galaxy_images, self.hyper_minimum_values)
                 return fitter.blurred_image_scaled_likelihood
+
+        @classmethod
+        def log(cls, lens_galaxy, source_galaxy):
+            logger.debug(
+                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                    lens_galaxy, source_galaxy))
+
+        def visualise(self, lens_galaxy, source_galaxy):
+            self.plot_count += 1
+            logger.info("Saving visualisations {}".format(self.plot_count))
+            lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
+                                                                                            source_galaxy)
+
+            def save_image(image, image_name):
+                if image is not None:
+                    plt.figure()
+                    plt.imshow(image)
+                    plt.savefig(
+                        "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name,
+                                                 self.plot_count))
+
+            save_image(lens_image, "lens_image")
+            save_image(source_image, "source_image")
+            if lens_image is not None and source_image is not None:
+                save_image(lens_image + source_image, "model_image")
 
         def galaxy_images_for_model(self, model):
             """
@@ -424,22 +432,11 @@ class ProfileSourceLensPhase(Phase):
             tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.masked_image.grids)
             return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
-    class Visualize(Phase.Visualize):
-
-        def __init__(self, analysis, model):
-            super().__init__(analysis, model)
-
     class Result(Phase.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
             The result of a phase
-
-            Parameters
-            ----------
-
-            galaxy_images: [ndarray]
-                A collection of images created by each individual galaxy which taken together form the full model masked_image
             """
             super(ProfileSourceLensPhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
@@ -488,7 +485,8 @@ class PixelizedSourceLensPhase(ProfileSourceLensPhase):
 
             tracer = ray_tracing.Tracer([lens_galaxy], [source_galaxy], self.masked_image.grids)
 
-            # TODO : Don't need a sparse mask for Rectangular pixelization. We'll remove it soon so just ignore it for now.
+            # TODO : Don't need a sparse mask for Rectangular pixelization. We'll remove it soon so just ignore it for
+            # TODO : now.
             sparse_mask = None
 
             # TODO : I guess there is overhead doing this, and once we do it once in a fit we dont need to do it again.
