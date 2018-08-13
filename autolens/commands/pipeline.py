@@ -19,7 +19,7 @@ def red(text):
 class Pipeline(Base):
 
     def run(self):
-        name = self.options['<phase_name>']
+        name = self.options['<name>']
         if self.options['--info']:
             tup = pipeline.pipeline_dict[name]
             print()
