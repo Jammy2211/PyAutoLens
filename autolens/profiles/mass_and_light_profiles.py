@@ -11,6 +11,7 @@ class EllipticalSersicMassAndLightProfile(light_profiles.EllipticalSersicLightPr
                                           mass_profiles.EllipticalSersicMass):
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
+        print(centre, axis_ratio, phi, intensity, effective_radius, sersic_index, mass_to_light_ratio)
         light_profiles.EllipticalSersicLightProfile.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
                                                              sersic_index)
         mass_profiles.EllipticalSersicMass.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
