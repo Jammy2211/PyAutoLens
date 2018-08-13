@@ -2,7 +2,7 @@
 autolens
 
 Usage:
-  autolens download_config
+  autolens reset_config
   autolens pipeline
   autolens pipeline <name> --info
   autolens pipeline <name> (--image=<image>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
@@ -18,7 +18,7 @@ Options:
   --output=<output>                 The path to the folder where data should be output [default: output].
 
 Examples:
-  autolens download_config
+  autolens reset_config
   autolens pipeline
   autolens pipeline profile --image=hst_0/ --pixel-scale=0.05
   autolens pipeline profile --image=hst_0 --pixel-scale=0.05 --output=output_folder --config=config_folder

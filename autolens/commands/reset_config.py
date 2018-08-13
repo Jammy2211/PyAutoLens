@@ -6,7 +6,7 @@ from autolens import conf
 config_path = "{}/config".format(current_directory)
 
 
-class DownloadConfig(Base):
+class ResetConfig(Base):
     """Reset Config!"""
 
     def run(self):
@@ -14,4 +14,4 @@ class DownloadConfig(Base):
             if input("Are you sure? This will reset the state of your config. (y/n)\n").lower() != 'y':
                 return
             conf.remove_config(config_path)
-        conf.download_config(current_directory)
+        conf.copy_default(current_directory)
