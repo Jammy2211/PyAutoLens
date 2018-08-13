@@ -4,7 +4,7 @@ from itertools import count
 
 
 def is_light_profile(obj):
-    return isinstance(obj, lps.LightProfile) and not isinstance(obj, mps.MassProfile)
+    return isinstance(obj, lps.LightProfile)
 
 
 def is_mass_profile(obj):

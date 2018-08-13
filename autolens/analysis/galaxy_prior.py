@@ -5,9 +5,7 @@ from autolens.autopipe import model_mapper
 
 
 def is_light_profile_class(cls):
-    return inspect.isclass(cls) and issubclass(
-        cls, light_profiles.LightProfile) and not issubclass(
-        cls, mass_profiles.MassProfile)
+    return inspect.isclass(cls) and issubclass(cls, light_profiles.LightProfile)
 
 
 def is_mass_profile_class(cls):
