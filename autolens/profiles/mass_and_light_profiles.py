@@ -40,9 +40,9 @@ class EllipticalExponentialMassAndLightProfile(EllipticalSersicMassAndLightProfi
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(EllipticalExponentialMassAndLightProfile, self).__init__(centre, axis_ratio, phi, intensity,
-                                                                       effective_radius, 1.0,
-                                                                       mass_to_light_ratio)
+        EllipticalSersicMassAndLightProfile.__init__(self, centre, axis_ratio, phi, intensity,
+                                                     effective_radius, 1.0,
+                                                     mass_to_light_ratio)
 
 
 class EllipticalDevVaucouleursMassAndLightProfile(EllipticalSersicMassAndLightProfile):
