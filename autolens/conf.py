@@ -212,6 +212,10 @@ def is_config(config_path=CONFIG_PATH):
     return os.path.isdir(config_path)
 
 
+def copy_default(config_path):
+    shutil.copytree("{}/../config".format(directory), config_path)
+
+
 def remove_config(config_path=CONFIG_PATH):
     print("Removing config...")
     try:
@@ -222,6 +226,10 @@ def remove_config(config_path=CONFIG_PATH):
 
 class Config(object):
     def __init__(self, config_path, data_path):
+        print("creating config @ {}".format(config_path))
+        if not is_config(config_path):
+            print("No config found at {}. Creating default config...".format(config_path))
+            copy_default(config_path)
         self.config_path = config_path
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
@@ -231,7 +239,3 @@ class Config(object):
 
 
 instance = Config("{}/config".format(CONFIG_DIR), "{}/output".format(directory))
-
-
-def copy_default(config_path):
-    shutil.copytree("{}/../config".format(directory), config_path)
