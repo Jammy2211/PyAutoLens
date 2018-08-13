@@ -60,8 +60,8 @@ class Pipeline(Base):
     def config_path(self):
         config_path = self.options['--config']
         if not conf.is_config(config_path):
-            print("No config found at {}. Try running 'autolens download_config'".format(config_path))
-            exit(1)
+            print(red("No config found at {}. Creating default config...".format(config_path)))
+            conf.copy_default(config_path)
         return config_path
 
     @property
