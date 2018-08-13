@@ -6,21 +6,21 @@ import numpy as np
 
 
 class TestLightProfiles(object):
-
     class TestIntensity:
 
         def test__one_profile_galaxy__intensity_is_same_individual_profile(self):
-
             sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                                  effective_radius=0.6, sersic_index=4.0)
 
             sersic_intensity = sersic.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=1.0,
-                                                                                                      effective_radius=0.6,
-                                                                                                      sersic_index=4.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=1.0,
+                                              effective_radius=0.6,
+                                              sersic_index=4.0))
 
             galaxy_sersic_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
 
@@ -39,14 +39,18 @@ class TestLightProfiles(object):
             intensity += sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
 
@@ -70,25 +74,30 @@ class TestLightProfiles(object):
             intensity += sersic_3.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.8, phi=50.0,
-                                                                                                      intensity=2.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0),
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.8,
+                                              phi=50.0,
+                                              intensity=2.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             assert intensity == galaxy_intensity
 
         def test__three_profile_galaxy__individual_intensities_can_be_extracted(self):
-
             sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                                    effective_radius=2.0,
                                                                    sersic_index=1.0)
@@ -106,18 +115,24 @@ class TestLightProfiles(object):
             intensity_3 = sersic_3.intensity_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.8, phi=50.0,
-                                                                                                      intensity=2.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0),
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.8,
+                                              phi=50.0,
+                                              intensity=2.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity = galaxy_sersic.intensity_from_grid_individual(np.array([[1.05, -0.55]]))
 
@@ -128,7 +143,8 @@ class TestLightProfiles(object):
     class TestLuminosityWithinCircle:
 
         def test__one_profile_galaxy__integral_is_same_as_individual_profile(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=1.0)
 
             integral_radius = 5.5
@@ -136,10 +152,12 @@ class TestLightProfiles(object):
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -160,14 +178,18 @@ class TestLightProfiles(object):
             intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -193,18 +215,24 @@ class TestLightProfiles(object):
             intensity_integral += sersic_3.luminosity_within_circle(radius=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.8, phi=50.0,
-                                                                                                      intensity=2.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0),
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.8,
+                                              phi=50.0,
+                                              intensity=2.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -230,18 +258,24 @@ class TestLightProfiles(object):
             intensity_integral_3 = sersic_3.luminosity_within_circle(radius=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.8, phi=50.0,
-                                                                                                      intensity=2.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0),
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.8,
+                                              phi=50.0,
+                                              intensity=2.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle_individual(
                 radius=integral_radius)
@@ -253,7 +287,8 @@ class TestLightProfiles(object):
     class TestLuminosityWithinEllipse:
 
         def test__one_profile_galaxy__integral_is_same_as_individual_profile(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=1.0)
 
             integral_radius = 0.5
@@ -261,11 +296,12 @@ class TestLightProfiles(object):
             intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5,
-                                                                                                      phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
@@ -286,14 +322,18 @@ class TestLightProfiles(object):
             intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
@@ -319,18 +359,24 @@ class TestLightProfiles(object):
             intensity_integral += sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.8, phi=50.0,
-                                                                                                      intensity=2.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0),
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.8,
+                                              phi=50.0,
+                                              intensity=2.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
@@ -356,18 +402,24 @@ class TestLightProfiles(object):
             intensity_integral_3 = sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0,
-                                                                                                      intensity=3.0,
-                                                                                                      effective_radius=2.0,
-                                                                                                      sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0,
-                                                                                                      intensity=7.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(axis_ratio=0.8, phi=50.0,
-                                                                                                      intensity=2.0,
-                                                                                                      effective_radius=3.0,
-                                                                                                      sersic_index=2.0))
+                                          light_profile_1=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=1.0,
+                                              phi=0.0,
+                                              intensity=3.0,
+                                              effective_radius=2.0,
+                                              sersic_index=1.0),
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.5,
+                                              phi=0.0,
+                                              intensity=7.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0),
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile(
+                                              axis_ratio=0.8,
+                                              phi=50.0,
+                                              intensity=2.0,
+                                              effective_radius=3.0,
+                                              sersic_index=2.0))
 
             galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse_individual(
                 major_axis=integral_radius)
@@ -379,11 +431,12 @@ class TestLightProfiles(object):
     class TestSymmetricProfiles(object):
 
         def test_1d_symmetry(self):
-
-            sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                   effective_radius=0.6,
                                                                    sersic_index=4.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic_2 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                   effective_radius=0.6,
                                                                    sersic_index=4.0, centre=(100, 0))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2)
@@ -394,16 +447,20 @@ class TestLightProfiles(object):
                 np.array([[49.0, 0.0]])) == galaxy_sersic.intensity_from_grid(np.array([[51.0, 0.0]]))
 
         def test_2d_symmetry(self):
-            sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                   effective_radius=0.6,
                                                                    sersic_index=4.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic_2 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                   effective_radius=0.6,
                                                                    sersic_index=4.0, centre=(100, 0))
 
-            sersic_3 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic_3 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                   effective_radius=0.6,
                                                                    sersic_index=4.0, centre=(0, 100))
 
-            sersic_4 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic_4 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                   effective_radius=0.6,
                                                                    sersic_index=4.0, centre=(100, 100))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2,
@@ -453,11 +510,9 @@ def make_galaxy_sie_3(sie_1, sie_2, sie_3):
 
 
 class TestMassProfiles(object):
-
     class TestSurfaceDensity:
 
         def test__one_profile_galaxy__surface_density_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-
             sie_surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sie_surface_density = galaxy_sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
@@ -484,7 +539,6 @@ class TestMassProfiles(object):
 
         def test__three_profile_galaxy__individual_surface_densities_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
-
             surface_density_1 = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
             surface_density_2 = sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
             surface_density_3 = sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
@@ -498,7 +552,6 @@ class TestMassProfiles(object):
     class TestPotential:
 
         def test__one_profile_galaxy__potential_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-
             sie_potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sie_potential = galaxy_sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
@@ -525,7 +578,6 @@ class TestMassProfiles(object):
 
         def test__three_profile_galaxy__individual_potentials_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                galaxy_sie_3):
-
             potential_1 = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
             potential_2 = sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
             potential_3 = sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
@@ -539,16 +591,14 @@ class TestMassProfiles(object):
     class TestDeflectionAngles:
 
         def test__one_profile_galaxy__deflection_angles_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-
             sie_deflection_angles = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             galaxy_sie_deflection_angles = galaxy_sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_deflection_angles[0,0] == galaxy_sie_deflection_angles[0,0]
-            assert sie_deflection_angles[0,1] == galaxy_sie_deflection_angles[0,1]
+            assert sie_deflection_angles[0, 0] == galaxy_sie_deflection_angles[0, 0]
+            assert sie_deflection_angles[0, 1] == galaxy_sie_deflection_angles[0, 1]
 
         def test__two_profile_galaxy__deflection_angles_is_sum_of_individual_profiles(self):
-
             sie_1 = mass_profiles.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
             sie_2 = mass_profiles.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
 
@@ -565,12 +615,11 @@ class TestMassProfiles(object):
 
             galaxy_deflection_angles = galaxy_sie.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            assert deflection_angles[0,0] == galaxy_deflection_angles[0,0]
-            assert deflection_angles[0,1] == galaxy_deflection_angles[0,1]
+            assert deflection_angles[0, 0] == galaxy_deflection_angles[0, 0]
+            assert deflection_angles[0, 1] == galaxy_deflection_angles[0, 1]
 
         def test__three_profile_galaxy__deflection_angles_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
                                                                                         galaxy_sie_3):
-
             deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
             deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
             deflection_angles_2 = sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
@@ -579,12 +628,11 @@ class TestMassProfiles(object):
 
             galaxy_deflection_angles = galaxy_sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            assert deflection_angles[0,0] == galaxy_deflection_angles[0,0]
-            assert deflection_angles[0,1] == galaxy_deflection_angles[0,1]
+            assert deflection_angles[0, 0] == galaxy_deflection_angles[0, 0]
+            assert deflection_angles[0, 1] == galaxy_deflection_angles[0, 1]
 
         def test__three_profile_galaxy__individual_deflection_angles_can_be_extracted(self, sie_1, sie_2, sie_3,
                                                                                       galaxy_sie_3):
-
             deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
             deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
             deflection_angles_2 = sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
@@ -706,7 +754,6 @@ class TestMassProfiles(object):
     class TestSymmetricProfiles:
 
         def test_1d_symmetry(self):
-
             isothermal_1 = mass_profiles.EllipticalIsothermal(axis_ratio=0.5, phi=45.0,
                                                               einstein_radius=1.0)
 
@@ -734,7 +781,6 @@ class TestMassProfiles(object):
                 galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
         def test_2d_symmetry(self):
-
             isothermal_1 = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
 
             isothermal_2 = mass_profiles.SphericalIsothermal(centre=(100, 0), einstein_radius=1.0)
@@ -797,14 +843,14 @@ class TestMassProfiles(object):
 
 
 class TestHyperGalaxy(object):
-
     class TestContributionMaps(object):
 
         def test__model_image_all_1s__factor_is_0__contributions_all_1s(self):
             galaxy_image = np.ones((3,))
 
             hyp = galaxy.HyperGalaxy(contribution_factor=0.0)
-            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image, hyper_galaxy_image=galaxy_image,
+            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image,
+                                                                  hyper_galaxy_image=galaxy_image,
                                                                   minimum_value=0.0)
 
             assert (contributions == np.ones((3,))).all()
@@ -813,7 +859,8 @@ class TestHyperGalaxy(object):
             galaxy_image = np.array([0.5, 1.0, 1.5])
 
             hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image, hyper_galaxy_image=galaxy_image,
+            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image,
+                                                                  hyper_galaxy_image=galaxy_image,
                                                                   minimum_value=0.0)
 
             assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
@@ -822,7 +869,8 @@ class TestHyperGalaxy(object):
             galaxy_image = np.array([0.5, 1.0, 1.5])
 
             hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image, hyper_galaxy_image=galaxy_image,
+            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image,
+                                                                  hyper_galaxy_image=galaxy_image,
                                                                   minimum_value=0.6)
 
             assert (contributions == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
