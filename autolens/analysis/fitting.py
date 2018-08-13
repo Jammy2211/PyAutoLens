@@ -16,7 +16,6 @@ class AbstractFitter(object):
 
 
 class AbstractHyperFitter(AbstractFitter):
-
     # TODO : Removing Pycharm inspectioon, can it be done better?
 
     masked_image = None
@@ -28,7 +27,7 @@ class AbstractHyperFitter(AbstractFitter):
     @property
     def contributions(self):
         return contributions_from_hyper_images_and_galaxies(self.hyper_model_image, self.hyper_galaxy_images,
-               self.tracer.hyper_galaxies, self.hyper_minimum_values)
+                                                            self.tracer.hyper_galaxies, self.hyper_minimum_values)
 
     @property
     def scaled_noise(self):
@@ -88,6 +87,7 @@ class ProfileFitter(AbstractFitter):
     def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
         return PixelizationFitter(self.masked_image[:] - self.blurred_image, sparse_mask, self.tracer)
 
+
 class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
 
     def __init__(self, masked_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
@@ -127,6 +127,7 @@ class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
         return HyperPixelizationFitter(self.masked_image[:] - self.blurred_image, sparse_mask, self.tracer,
                                        self.hyper_model_image, self.hyper_galaxy_images, self.hyper_minimum_values)
 
+
 class PixelizationFitter(AbstractFitter):
 
     def __init__(self, masked_image, sparse_mask, tracer, perform_reconstruction=True):
@@ -137,7 +138,7 @@ class PixelizationFitter(AbstractFitter):
         ----------
         masked_image: mi.MaskedImage
             An masked_image that has been masked for efficiency
-        sparse_mask: mask.SparseMask
+        sparse_mask: mask.SparseMask | None
             A mask describing which pixels should be used in clustering for pixelizations
         borders : mask.BorderCollection
             The pixels representing the border of each plane, used for relocation.
@@ -153,7 +154,8 @@ class PixelizationFitter(AbstractFitter):
 
         if perform_reconstruction:
             self.reconstruction = self.reconstructors.reconstruction_from_reconstructor_and_data(self.masked_image,
-                                               self.masked_image.noise, self.masked_image.convolver_mapping_matrix)
+                                                                                                 self.masked_image.noise,
+                                                                                                 self.masked_image.convolver_mapping_matrix)
 
     @property
     def reconstructors(self):
@@ -204,7 +206,8 @@ class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
         self._scaled_noise = self.scaled_noise
         self._scaled_noise_term = noise_term_from_noise(self._scaled_noise)
         self.reconstruction = self.reconstructors.reconstruction_from_reconstructor_and_data(self.masked_image,
-                                                self._scaled_noise, self.masked_image.convolver_mapping_matrix)
+                                                                                             self._scaled_noise,
+                                                                                             self.masked_image.convolver_mapping_matrix)
 
     @property
     def reconstructed_image_scaled_chi_squareds(self):
@@ -238,6 +241,7 @@ def blur_image_including_blurring_region(image, blurring_image, convolver):
     """
     return convolver.convolve_image(image, blurring_image)
 
+
 def residuals_from_image_and_model(image, model):
     """Compute the residuals between an observed charge injection masked_image and post-cti model masked_image.
 
@@ -251,6 +255,7 @@ def residuals_from_image_and_model(image, model):
         The model masked_image.
     """
     return np.subtract(image, model)
+
 
 def chi_squareds_from_residuals_and_noise(residuals, noise):
     """Computes a chi-squared masked_image, by calculating the squared residuals between an observed charge injection \
@@ -273,6 +278,7 @@ def chi_squareds_from_residuals_and_noise(residuals, noise):
     """
     return np.square((np.divide(residuals, noise)))
 
+
 def chi_squared_term_from_chi_squareds(chi_squareds):
     """Compute the chi-squared of a model masked_image's fit to the data_vector, by taking the difference between the
     observed masked_image and model ray-tracing masked_image, dividing by the noise in each pixel and squaring:
@@ -290,6 +296,7 @@ def chi_squared_term_from_chi_squareds(chi_squareds):
     """
     return np.sum(chi_squareds)
 
+
 def noise_term_from_noise(noise):
     """Compute the noise normalization term of an masked_image, which is computed by summing the noise in every pixel:
 
@@ -301,6 +308,7 @@ def noise_term_from_noise(noise):
         The noise in each pixel.
     """
     return np.sum(np.log(2 * np.pi * noise ** 2.0))
+
 
 def likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term):
     """Compute the likelihood of a model masked_image's fit to the data_vector, by taking the difference between the
@@ -328,6 +336,7 @@ def likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term):
     """
     return -0.5 * (chi_squared_term + noise_term)
 
+
 def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images, hyper_galaxies,
                                                  minimum_values):
     """Use the model masked_image and galaxy masked_image (computed in the previous phase of the pipeline) to determine the
@@ -348,6 +357,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
                     hyper.contributions_from_preload_images(hyper_model_image, galaxy_image, minimum_value),
                     hyper_galaxies, hyper_galaxy_images, minimum_values))
 
+
 def scaled_noise_from_hyper_galaxies_and_contributions(contributions, hyper_galaxies, noise):
     """Use the contributions of each hyper galaxy to compute the scaled noise.
     Parameters
@@ -358,6 +368,7 @@ def scaled_noise_from_hyper_galaxies_and_contributions(contributions, hyper_gala
     scaled_noises = list(map(lambda hyper, contribution: hyper.scaled_noise_from_contributions(noise, contribution),
                              hyper_galaxies, contributions))
     return noise + sum(scaled_noises)
+
 
 def evidence_from_reconstruction_terms(chi_squared_term, regularization_term,
                                        log_covariance_regularization_term,
