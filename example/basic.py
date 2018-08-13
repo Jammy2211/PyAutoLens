@@ -2,6 +2,7 @@ from autolens.imaging import image as im
 from autolens.pipeline import phase
 from autolens.analysis import galaxy_prior
 from autolens.profiles import light_profiles, mass_profiles
+from autolens.autopipe import non_linear
 
 # Load an image from the 'basic' folder. It is assumed that this folder contains image.fits, noise.fits and psf.fits.
 image = im.load('basic', pixel_scale=0.05)
@@ -18,7 +19,8 @@ lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSe
 
 # A source lens phase performs an analysis on an image using the system we've set up. There are lots of different kinds
 # of phase that can be plugged together in sophisticated pipelines but for now we'll run a single phase.
-source_lens_phase = phase.ProfileSourceLensPhase(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
+source_lens_phase = phase.ProfileSourceLensPhase(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy,
+                                                 optimizer_class=non_linear.MultiNest)
 
 # We run the phase on the image and print the results.
 results = source_lens_phase.run(image)
