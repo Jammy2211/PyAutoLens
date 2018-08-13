@@ -62,7 +62,6 @@ setup(
                       'scikit-learn',
                       'numba',
                       'matplotlib',
-                      'requests',
                       'colorama'
                       ],
     extras_require={
