@@ -12,7 +12,6 @@ import numpy as np
 from autolens.pixelization import pixelization as px
 import inspect
 import logging
-import matplotlib.pyplot as plt
 from astropy.io import fits
 
 logger = logging.getLogger(__name__)
@@ -395,7 +394,7 @@ class ProfileSourceLensPhase(Phase):
                     hdu = fits.PrimaryHDU()
                     hdu.data = image
                     hdu.writeto("{}/{}/{}_{}.fits".format(conf.instance.data_path, self.phase_name, image_name,
-                                                         self.plot_count))
+                                                          self.plot_count))
 
             save_image(lens_image, "lens_image")
             save_image(source_image, "source_image")
