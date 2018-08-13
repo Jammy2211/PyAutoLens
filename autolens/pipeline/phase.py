@@ -118,8 +118,8 @@ class Phase(object):
 
     def make_analysis(self, image, previous_results=None):
         """
-        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child classes to
-        change the behaviour of the phase.
+        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        classes to change the behaviour of the phase.
 
         Parameters
         ----------
@@ -200,12 +200,6 @@ class Phase(object):
         def __init__(self, constant, likelihood, variable, analysis):
             """
             The result of a phase
-
-            Parameters
-            ----------
-
-            galaxy_images: [ndarray]
-                A collection of images created by each individual galaxy which taken together form the full model masked_image
             """
             super(Phase.Result, self).__init__(constant, likelihood, variable)
             self.galaxy_images = analysis.galaxy_images_for_model(constant)
@@ -339,10 +333,11 @@ class ProfileSourceLensPhase(Phase):
             self.plot_count = 0
             if self.last_results is not None:
                 self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.model_image)
-                self.hyper_galaxy_images = list(map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
+                self.hyper_galaxy_images = list(
+                    map(self.masked_image.mask.map_to_1d, previous_results.last.galaxy_images))
                 # TODO : We currently get these from tracer using defaults. Lets now set them up here via a config.
                 # TODO : This is just a placehold for now
-                self.hyper_minimum_values = len(self.hyper_galaxy_images)*[0.02]
+                self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.02]
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """
@@ -377,7 +372,8 @@ class ProfileSourceLensPhase(Phase):
                     if image is not None:
                         plt.imshow(image)
                         plt.savefig(
-                            "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name, self.plot_count))
+                            "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name,
+                                                     self.plot_count))
 
                 save_image(lens_image, "lens_image")
                 save_image(source_image, "source_image")
@@ -426,13 +422,10 @@ class ProfileSourceLensPhase(Phase):
             tracer = ray_tracing.Tracer(lens_galaxies, source_galaxies, self.masked_image.grids)
             return model_image(tracer.image_plane), model_image(tracer.source_plane)
 
-
     class Visualize(Phase.Visualize):
 
         def __init__(self, analysis, model):
-
             super().__init__(analysis, model)
-
 
     class Result(Phase.Result):
 
@@ -514,7 +507,6 @@ class PixelizedSourceLensPhase(ProfileSourceLensPhase):
                 fitter = fitting.ProfileFitter(self.masked_image, tracer)
                 pix_fitter = fitter.pixelization_fitter_with_profile_subtracted_masked_image(sparse_mask)
                 return pix_fitter.reconstructed_image_evidence
-
 
 
 class LensOnlyPhase(ProfileSourceLensPhase):
