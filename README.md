@@ -38,13 +38,13 @@ More information on this pipeline can be displayed using:
 $ autolens pipeline profile --info
 ```
 
-The pipeline can be run on a specified basic.
+The pipeline can be run on an image in a specified folder.
 
 ```bash
 $ autolens pipeline profile --image=image/ --pixel-scale=0.05
 ```
 
-The folder specified by --basic should contain **basic.fits**, **noise.fits** and **psf.fits**.</br>
+The folder specified by --image should contain **basic.fits**, **noise.fits** and **psf.fits**.</br>
 
 Results are placed in the *output* folder. This includes output from the optimiser, as well as images showing the models produced throughout the analysis.
 
