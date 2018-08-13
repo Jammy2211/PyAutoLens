@@ -236,14 +236,14 @@ class TestModelInstance(object):
 class TestRealClasses(object):
 
     def test_combination(self):
-        collection = model_mapper.ModelMapper(MockConfig(), source_light_profile=light_profiles.EllipticalSersic,
+        collection = model_mapper.ModelMapper(MockConfig(), source_light_profile=light_profiles.EllipticalSersicLightProfile,
                                               lens_mass_profile=mass_profiles.EllipticalCoredIsothermal,
                                               lens_light_profile=light_profiles.EllipticalCoreSersic)
 
         model_map = collection.instance_from_unit_vector(
             [1 for _ in range(len(collection.priors_ordered_by_id))])
 
-        assert isinstance(model_map.source_light_profile, light_profiles.EllipticalSersic)
+        assert isinstance(model_map.source_light_profile, light_profiles.EllipticalSersicLightProfile)
         assert isinstance(model_map.lens_mass_profile, mass_profiles.EllipticalCoredIsothermal)
         assert isinstance(model_map.lens_light_profile, light_profiles.EllipticalCoreSersic)
 
@@ -291,7 +291,7 @@ class TestConfigFunctions:
         config = test_config
 
         collection = model_mapper.ModelMapper(config=config,
-                                              sersic_light_profile=light_profiles.EllipticalSersic,
+                                              sersic_light_profile=light_profiles.EllipticalSersicLightProfile,
                                               elliptical_profile_1=geometry_profiles.EllipticalProfile,
                                               elliptical_profile_2=geometry_profiles.EllipticalProfile,
                                               spherical_profile=geometry_profiles.SphericalProfile,
@@ -304,7 +304,7 @@ class TestConfigFunctions:
         assert isinstance(model_map.elliptical_profile_2, geometry_profiles.EllipticalProfile)
         assert isinstance(model_map.spherical_profile, geometry_profiles.SphericalProfile)
 
-        assert isinstance(model_map.sersic_light_profile, light_profiles.EllipticalSersic)
+        assert isinstance(model_map.sersic_light_profile, light_profiles.EllipticalSersicLightProfile)
         assert isinstance(model_map.exponential_light_profile, light_profiles.EllipticalExponential)
 
 

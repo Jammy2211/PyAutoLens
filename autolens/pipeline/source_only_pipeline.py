@@ -27,7 +27,7 @@ def make():
             sie=mass_profiles.SphericalIsothermal,
             shear=mass_profiles.ExternalShear),
         source_galaxy=gp.GalaxyPrior(
-            sersic=light_profiles.EllipticalSersic),
+            sersic=light_profiles.EllipticalSersicLightProfile),
         mask_function=mask_function)
 
     # 2) Mass: SIE+Shear (priors from phase 1)

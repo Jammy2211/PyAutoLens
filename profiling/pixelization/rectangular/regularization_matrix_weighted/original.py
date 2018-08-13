@@ -316,7 +316,7 @@ sie = mass_profiles.EllipticalIsothermal(centre=(0.010, 0.032), einstein_radius=
 shear = mass_profiles.ExternalShear(magnitude=0.0663, phi=160.5)
 lens_galaxy = galaxy.Galaxy(mass_profile_0=sie, mass_profile_1=shear)
 
-sersic = light_profiles.EllipticalSersic()
+sersic = light_profiles.EllipticalSersicLightProfile()
 source_galaxy = galaxy.Galaxy(light_profile=sersic)
 
 pix = RectangularRegWeight(shape=(50, 50))
