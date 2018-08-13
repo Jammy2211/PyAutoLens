@@ -12,19 +12,19 @@ def make_sersic_light():
 
 
 class TestMassAndLightProfiles(object):
-    @pytest.fixture(name="profile")
-    def make_profile(self):
+    @pytest.fixture(name="mass_and_light")
+    def make_mass_and_light_profile(self):
         return mass_and_light_profiles.EllipticalSersicRadialGradientMassAndLightProfile()
 
-    def test_single_profile(self, profile):
-        g = galaxy.Galaxy(profile=profile)
+    def test_single_profile(self, mass_and_light):
+        g = galaxy.Galaxy(profile=mass_and_light)
         assert 1 == len(g.light_profiles)
         assert 1 == len(g.mass_profiles)
-        assert g.mass_profiles[0] == profile
-        assert g.light_profiles[0] == profile
+        assert g.mass_profiles[0] == mass_and_light
+        assert g.light_profiles[0] == mass_and_light
 
-    def test_multiple_profile(self, profile, sersic_light, sie_1):
-        g = galaxy.Galaxy(profile=profile, light=sersic_light, sie=sie_1)
+    def test_multiple_profile(self, mass_and_light, sersic_light, sie_1):
+        g = galaxy.Galaxy(profile=mass_and_light, light=sersic_light, sie=sie_1)
         assert 2 == len(g.light_profiles)
         assert 2 == len(g.mass_profiles)
 
