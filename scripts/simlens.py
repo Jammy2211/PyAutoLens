@@ -43,11 +43,11 @@ exposure_time = imaging.ExposureTime.from_one_value(exposure_time=5e3, pixel_dim
 background_noise = imaging.NoiseBackground.from_one_value(background_noise=0.000005, pixel_dimensions=dimensions,
                                                           pixel_scale=pixel_scale)
 
-image = simulate.SimulateImage.from_fits(path=data_path, filename='SimLens.fits', hdu=0, pixel_scale=pixel_scale,
-                                         exposure_time=exposure_time,
-                                         sim_optics=simulate.SimulateOptics(psf=psf),
-                                         sim_poisson_noise=simulate.SimulatePoissonNoise(),
-                                         sim_background_noise=simulate.SimulateBackgroundNoise(background_noise_sigma=0.005))
+image = simulate.SimulateImage.from_fits_with_scale(path=data_path, filename='SimLens.fits', hdu=0, pixel_scale=pixel_scale,
+                                                    exposure_time=exposure_time,
+                                                    sim_optics=simulate.SimulateOptics(psf=psf),
+                                                    sim_poisson_noise=simulate.SimulatePoissonNoise(),
+                                                    sim_background_noise=simulate.SimulateBackgroundNoise(background_noise_sigma=0.005))
 
 noise = imaging.estimate_noise_from_image(image.data, image.exposure_time.data, background_noise.data)
 signal_to_noise_ratio = np.divide(image.data, noise)
