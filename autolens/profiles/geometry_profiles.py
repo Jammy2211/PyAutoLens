@@ -325,3 +325,69 @@ class EllipticalProfile(SphericalProfile):
 
     def eta_u(self, u, coordinates):
         return np.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
+
+
+class EllipticalSersicProfile(EllipticalProfile):
+    """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 sersic_index=4.0):
+        """
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The image_grid of the centre of the profiles
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall intensity normalisation in the light profiles (electrons per second)
+        effective_radius : float
+            The circular radius containing half the light of this model_mapper
+        sersic_index : Int
+            The concentration of the light profiles
+        """
+        super(EllipticalSersicProfile, self).__init__(centre, axis_ratio, phi)
+        self.intensity = intensity
+        self.effective_radius = effective_radius
+        self.sersic_index = sersic_index
+
+    @property
+    def elliptical_effective_radius(self):
+        """The effective_radius term used in a Sersic light profiles is the circular effective radius. It describes the
+         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis
+         ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
+
+         The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
+         half the light, and may be more appropriate for pixelization of highly flattened systems like disk galaxies."""
+        return self.effective_radius / np.sqrt(self.axis_ratio)
+
+    @property
+    def sersic_constant(self):
+        """
+
+        Returns
+        -------
+        sersic_constant: float
+            A parameter, derived from sersic_index, that ensures that effective_radius always contains 50% of the light.
+        """
+        return (2 * self.sersic_index) - (1. / 3.) + (4. / (405. * self.sersic_index)) + (
+                46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
+                       2194697. / (30690717750. * self.sersic_index ** 4))
+
+    def intensity_at_radius(self, radius):
+        """
+
+        Parameters
+        ----------
+        radius : float
+            The distance from the centre of the profiles
+        Returns
+        -------
+        intensity : float
+            The intensity at that distance
+        """
+        return self.intensity * np.exp(
+            -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))

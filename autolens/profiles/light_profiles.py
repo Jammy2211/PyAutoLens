@@ -45,8 +45,6 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
-        self.axis_ratio = axis_ratio
-        self.phi = phi
 
         self.component_number = next(self._ids)
 
@@ -97,7 +95,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         return 2 * np.pi * r * self.intensity_at_radius(x)
 
 
-class EllipticalSersic(EllipticalLightProfile):
+class EllipticalSersicLightProfile(geometry_profiles.EllipticalSersicProfile, EllipticalLightProfile):
     """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
@@ -119,52 +117,12 @@ class EllipticalSersic(EllipticalLightProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi)
-        self.intensity = intensity
-        self.effective_radius = effective_radius
-        self.sersic_index = sersic_index
+        super(EllipticalSersicLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
+                                                           sersic_index)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n']
-
-    @property
-    def elliptical_effective_radius(self):
-        """The effective_radius term used in a Sersic light profiles is the circular effective radius. It describes the
-         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis
-         ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
-
-         The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
-         half the light, and may be more appropriate for pixelization of highly flattened systems like disk galaxies."""
-        return self.effective_radius / np.sqrt(self.axis_ratio)
-
-    @property
-    def sersic_constant(self):
-        """
-
-        Returns
-        -------
-        sersic_constant: float
-            A parameter, derived from sersic_index, that ensures that effective_radius always contains 50% of the light.
-        """
-        return (2 * self.sersic_index) - (1. / 3.) + (4. / (405. * self.sersic_index)) + (
-                46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
-                       2194697. / (30690717750. * self.sersic_index ** 4))
-
-    def intensity_at_radius(self, radius):
-        """
-
-        Parameters
-        ----------
-        radius : float
-            The distance from the centre of the profiles
-        Returns
-        -------
-        intensity : float
-            The intensity at that distance
-        """
-        return self.intensity * np.exp(
-            -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
 
     def intensity_at_grid_radii(self, grid_radii):
         return np.multiply(self.intensity, np.exp(
@@ -176,7 +134,7 @@ class EllipticalSersic(EllipticalLightProfile):
         return self.intensity_at_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
-class EllipticalExponential(EllipticalSersic):
+class EllipticalExponential(EllipticalSersicLightProfile):
     """Used to fit flatter regions of light in a galaxy, typically a disk.
 
     It is a subset of the Sersic profiles, corresponding exactly to the reconstructed_image sersic_index = 1"""
@@ -204,7 +162,7 @@ class EllipticalExponential(EllipticalSersic):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class EllipticalDevVaucouleurs(EllipticalSersic):
+class EllipticalDevVaucouleurs(EllipticalSersicLightProfile):
     """Used to fit the concentrated regions of light in a galaxy, typically its bulge. It may also fit the entire light
     profiles of an elliptical / early-type galaxy.
 
@@ -233,7 +191,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class EllipticalCoreSersic(EllipticalSersic):
+class EllipticalCoreSersic(EllipticalSersicLightProfile):
     """The Core-Sersic profiles is used to fit the light of a galaxy. It is an extension of the Sersic profiles and \
     flattens the light profiles central values (compared to the extrapolation of a pure Sersic profiles), by forcing \
     these central regions to behave instead as a power-law."""
