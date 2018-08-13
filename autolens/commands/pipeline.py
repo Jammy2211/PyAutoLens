@@ -72,16 +72,9 @@ class Pipeline(Base):
         return output_path
 
     def load_image(self):
-        from autolens.imaging import scaled_array
         from autolens.imaging import image as im
 
-        data = scaled_array.ScaledArray.from_fits(file_path='{}/image'.format(self.image_path), hdu=0,
-                                                  pixel_scale=self.pixel_scale)
-        noise = scaled_array.ScaledArray.from_fits(file_path='{}/noise'.format(self.image_path), hdu=0,
-                                                   pixel_scale=self.pixel_scale)
-        psf = im.PSF.from_fits(file_path='{}/psf'.format(self.image_path), hdu=0)
-
-        return im.Image(array=data, pixel_scale=self.pixel_scale, psf=psf, noise=noise)
+        return im.load(self.image_path, pixel_scale=self.pixel_scale)
 
 
 def print_pipelines():

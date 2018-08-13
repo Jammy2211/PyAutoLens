@@ -1,4 +1,4 @@
-from autolens.imaging.scaled_array import ScaledArray, AbstractArray
+from autolens.imaging.scaled_array import ScaledArray, Array
 from autolens.imaging import array_util
 import numpy as np
 from scipy.stats import norm
@@ -251,7 +251,7 @@ class Image(ScaledArray):
             self.noise = obj.noise
 
 
-class PSF(AbstractArray):
+class PSF(Array):
 
     # noinspection PyUnusedLocal
     def __init__(self, array, renormalize=True):
@@ -371,3 +371,12 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
     setup_random_seed(seed)
     image_counts = np.multiply(image, exposure_time)
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
+
+
+def load(image_path, pixel_scale):
+    data = ScaledArray.from_fits_with_scale(file_path='{}/image'.format(image_path), hdu=0,
+                                            pixel_scale=pixel_scale)
+    noise = Array.from_fits(file_path='{}/noise'.format(image_path), hdu=0)
+    psf = PSF.from_fits(file_path='{}/psf'.format(image_path), hdu=0)
+
+    return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise=noise)
