@@ -1,18 +1,39 @@
 from autolens.analysis import galaxy
-from autolens.profiles import mass_profiles, light_profiles
+from autolens.profiles import mass_profiles, light_profiles, mass_and_light_profiles
 
 import pytest
 import numpy as np
 
 
+@pytest.fixture(name="sersic_light")
+def make_sersic_light():
+    return light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                       effective_radius=0.6, sersic_index=4.0)
+
+
+class TestMassAndLightProfiles(object):
+    @pytest.fixture(name="profile")
+    def make_profile(self):
+        return mass_and_light_profiles.EllipticalSersicRadialGradientMassAndLightProfile()
+
+    def test_single_profile(self, profile):
+        g = galaxy.Galaxy(profile=profile)
+        assert 1 == len(g.light_profiles)
+        assert 1 == len(g.mass_profiles)
+        assert g.mass_profiles[0] == profile
+        assert g.light_profiles[0] == profile
+
+    def test_multiple_profile(self, profile, sersic_light, sie_1):
+        g = galaxy.Galaxy(profile=profile, light=sersic_light, sie=sie_1)
+        assert 2 == len(g.light_profiles)
+        assert 2 == len(g.mass_profiles)
+
+
 class TestLightProfiles(object):
     class TestIntensity:
 
-        def test__one_profile_galaxy__intensity_is_same_individual_profile(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                                                 effective_radius=0.6, sersic_index=4.0)
-
-            sersic_intensity = sersic.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
+        def test__one_profile_galaxy__intensity_is_same_individual_profile(self, sersic_light):
+            sersic_intensity = sersic_light.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
 
             galaxy_sersic = galaxy.Galaxy(redshift=0.5,
                                           light_profile_1=light_profiles.EllipticalSersicLightProfile(
