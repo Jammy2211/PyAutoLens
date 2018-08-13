@@ -6,12 +6,6 @@ import math
 import numpy as np
 
 
-@pytest.fixture(name='circular')
-def circular_sersic():
-    return light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                       sersic_index=4.0)
-
-
 @pytest.fixture(name='elliptical')
 def elliptical_sersic():
     return light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
@@ -24,11 +18,11 @@ def vertical_sersic():
                                                        sersic_index=4.0)
 
 
-
 class TestConstructors(object):
 
     def test__setup_sersic(self):
-        sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+        sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                             effective_radius=0.6,
                                                              sersic_index=4.0)
 
         assert sersic.x_cen == 0.0
@@ -95,16 +89,20 @@ class TestConstructors(object):
 
         light_profiles.EllipticalLightProfile._ids = count()
 
-        sersic_0 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+        sersic_0 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                               effective_radius=0.6,
                                                                sersic_index=4.0)
 
-        sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+        sersic_1 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                               effective_radius=0.6,
                                                                sersic_index=4.0)
 
-        sersic_2 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+        sersic_2 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                               effective_radius=0.6,
                                                                sersic_index=4.0)
 
-        sersic_3 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+        sersic_3 = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                               effective_radius=0.6,
                                                                sersic_index=4.0)
 
         assert sersic_0.component_number == 0
@@ -114,25 +112,27 @@ class TestConstructors(object):
 
 
 class TestProfiles(object):
-    
     class TestSersic:
 
         def test__intensity_at_radius__correct_value(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                                 effective_radius=0.6,
                                                                  sersic_index=4.0)
 
             intensity = sersic.intensity_at_radius(radius=1.0)
             assert intensity == pytest.approx(0.351797, 1e-3)
 
         def test__intensity_at_radius_2__correct_value(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
             intensity = sersic.intensity_at_radius(
                 radius=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
             assert intensity == pytest.approx(4.90657319276, 1e-3)
 
         def test__intensity_from_coordinate_grid__different_axis_ratio(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             intensity = sersic.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
@@ -140,12 +140,14 @@ class TestProfiles(object):
             assert intensity == pytest.approx(5.38066670129, 1e-3)
 
         def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             intensity_1 = sersic.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             intensity_2 = sersic.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
@@ -275,7 +277,8 @@ class TestLuminosityIntegral(object):
             import math
             import scipy.special
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=1.0)
 
             integral_radius = 5.5
@@ -299,7 +302,8 @@ class TestLuminosityIntegral(object):
             import math
             import scipy.special
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             integral_radius = 0.5
@@ -323,7 +327,8 @@ class TestLuminosityIntegral(object):
             import math
             import scipy.special
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=4.0)
 
             integral_radius = 0.5
@@ -344,7 +349,8 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_exponential__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=1.0)
 
             import numpy as np
@@ -372,7 +378,8 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             import numpy as np
@@ -399,7 +406,8 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_dev_vaucauleurs__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=4.0)
 
             import numpy as np
@@ -426,7 +434,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_exponential__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=1.0)
 
             integral_radius = 0.5
@@ -451,7 +460,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.3, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.3, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             integral_radius = 0.5
@@ -478,7 +488,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_exponential__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=0.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=1.0)
 
             integral_radius = 0.5
@@ -504,7 +515,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.5, phi=90.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=2.0)
 
             integral_radius = 0.5
@@ -530,7 +542,8 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_dev_vaucauleurs__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.7, phi=30.0, intensity=3.0, effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=0.7, phi=30.0, intensity=3.0,
+                                                                 effective_radius=2.0,
                                                                  sersic_index=4.0)
 
             integral_radius = 0.5
