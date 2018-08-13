@@ -226,7 +226,6 @@ def remove_config(config_path=CONFIG_PATH):
 
 class Config(object):
     def __init__(self, config_path, data_path):
-        print("creating config @ {}".format(config_path))
         if not is_config(config_path):
             print("No config found at {}. Creating default config...".format(config_path))
             copy_default(config_path)
