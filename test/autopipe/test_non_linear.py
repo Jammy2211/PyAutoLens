@@ -961,15 +961,15 @@ class TestRealClasses(object):
     def test__directory_setup__input_path_sets_up(self, mm_config, nlo_setup_path):
         conf.instance.data_path = nlo_setup_path + '1_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersicLightProfile)
         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         assert os.path.exists(nlo_setup_path + '1_profile') == True
 
     def test__number_of_params__multiple_light_and_mass_profiles(self, mm_config, nlo_setup_path):
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic,
-                                          light_profile_2=light_profiles.EllipticalSersic,
-                                          light_profile_3=light_profiles.EllipticalSersic,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersicLightProfile,
+                                          light_profile_2=light_profiles.EllipticalSersicLightProfile,
+                                          light_profile_3=light_profiles.EllipticalSersicLightProfile,
                                           mass_profile=mass_profiles.SphericalNFW,
                                           mass_profile_2=mass_profiles.SphericalNFW)
         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
@@ -1021,7 +1021,7 @@ class TestRealClasses(object):
     def test__output_model_info__2_models(self, mm_config, nlo_model_info_path):
         conf.instance.data_path = nlo_model_info_path
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.EllipticalSersic,
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.EllipticalSersicLightProfile,
                                           light_profile_1=light_profiles.EllipticalExponential,
                                           mass_profile_0=mass_profiles.SphericalIsothermal,
                                           mass_profile_1=mass_profiles.SphericalNFW)
@@ -1033,7 +1033,7 @@ class TestRealClasses(object):
 
         model_info_str = model_info_test.readlines()
 
-        assert model_info_str[0] == r'EllipticalSersic' + '\n'
+        assert model_info_str[0] == r'EllipticalSersicLightProfile' + '\n'
         assert model_info_str[1] == r'' + '\n'
         assert model_info_str[2] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
         assert model_info_str[3] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
