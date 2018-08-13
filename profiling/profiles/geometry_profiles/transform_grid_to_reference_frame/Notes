@@ -1,4 +1,4 @@
-geometry_profile.transform_grid_to_reference_frame_jitted:
+geometry_profile.transform_grid_to_reference_frame:
 
 REPEATS x20 (divided by 20 to give time per call)
 sub-grid size = 4 (16 sub-pixels)
