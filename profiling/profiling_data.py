@@ -9,10 +9,10 @@ from autolens.imaging import masked_image
 path =  "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 
 def load_data(name, pixel_scale, psf_shape):
-    im = scaled_array.ScaledArray.from_fits(file_path=path + 'data/'+name+'/masked_image', hdu=0, pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledArray.from_fits(file_path=path + 'data/'+name+'/noise', hdu=0, pixel_scale=pixel_scale)
-    exposure_time = scaled_array.ScaledArray.from_fits(file_path=path + 'data/'+name+'/exposure_time', hdu=0,
-                                                       pixel_scale=pixel_scale)
+    im = scaled_array.ScaledArray.from_fits_with_scale(file_path=path + 'data/' + name + '/masked_image', hdu=0, pixel_scale=pixel_scale)
+    noise = scaled_array.ScaledArray.from_fits_with_scale(file_path=path + 'data/' + name + '/noise', hdu=0, pixel_scale=pixel_scale)
+    exposure_time = scaled_array.ScaledArray.from_fits_with_scale(file_path=path + 'data/' + name + '/exposure_time', hdu=0,
+                                                                  pixel_scale=pixel_scale)
     psf = image.PSF.from_fits(file_path=path + 'data/LSST/psf', hdu=0, pixel_scale=pixel_scale).trim(psf_shape)
 
     return im, noise, exposure_time, psf

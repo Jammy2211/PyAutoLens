@@ -50,8 +50,8 @@ class TestDataGrid(object):
             assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
         def test__from_fits__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledArray.from_fits(file_path=test_data_dir + '3x3_ones', hdu=0,
-                                                           pixel_scale=1.0)
+            data_grid = scaled_array.ScaledArray.from_fits_with_scale(file_path=test_data_dir + '3x3_ones', hdu=0,
+                                                                      pixel_scale=1.0)
 
             assert (data_grid == np.ones((3, 3))).all()
             assert data_grid.pixel_scale == 1.0
@@ -60,8 +60,8 @@ class TestDataGrid(object):
             assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
 
         def test__from_fits__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledArray.from_fits(file_path=test_data_dir + '4x3_ones', hdu=0,
-                                                           pixel_scale=0.1)
+            data_grid = scaled_array.ScaledArray.from_fits_with_scale(file_path=test_data_dir + '4x3_ones', hdu=0,
+                                                                      pixel_scale=0.1)
 
             assert (data_grid == np.ones((4, 3))).all()
             assert data_grid.pixel_scale == 0.1
