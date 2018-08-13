@@ -157,11 +157,11 @@ class TestNamedProfiles:
 
         mapper.galaxy = galaxy_prior
 
-        assert 15 == len(mapper.priors_ordered_by_id)
+        assert 16 == len(mapper.priors_ordered_by_id)
 
         galaxy_prior.light_profile = mm.PriorModel(light_profiles.LightProfile)
 
-        assert 8 == len(mapper.priors_ordered_by_id)
+        assert 9 == len(mapper.priors_ordered_by_id)
 
 
 class TestResultForArguments:
