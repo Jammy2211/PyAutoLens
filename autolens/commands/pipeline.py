@@ -26,8 +26,9 @@ class Pipeline(Base):
             pl = tup.make()
             print(red(name))
             print(tup.doc)
-            print(red("Phases:\n"))
-            print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc())) for phase in pl.phases]))
+            print()
+            print(red("Phases"))
+            print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc)) for phase in pl.phases]))
             return
         if name is not None:
             if name not in pipeline.pipeline_dict:

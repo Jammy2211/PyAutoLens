@@ -5,11 +5,15 @@ from autolens.pipeline import source_only_pipeline
 class PipelineTuple(object):
     def __init__(self, module):
         self.make = module.make
-        self.doc = module.__doc__
+        self.__doc__ = module.__doc__
 
     @property
     def short_doc(self):
-        return self.doc.split('\n')[1]
+        return self.__doc__.split('\n')[1]
+
+    @property
+    def doc(self):
+        return self.__doc__.replace("  ", "").replace("\n", " ")
 
 
 pipeline_dict = {}
