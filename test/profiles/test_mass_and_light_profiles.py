@@ -30,3 +30,24 @@ class TestCase(object):
 
             assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
             assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+
+    class TestEllipticalExponential(object):
+        def test__intensity_at_radius__correct_value(self):
+            exponential = mass_and_light_profiles.EllipticalExponentialMassAndLightProfile(axis_ratio=1.0, phi=0.0,
+                                                                                           intensity=1.0,
+                                                                                           effective_radius=0.6)
+
+            intensity = exponential.intensity_at_radius(radius=1.0)
+            assert intensity == pytest.approx(0.3266, 1e-3)
+
+        def test__deflections_from_grid(self):
+            exponential = mass_and_light_profiles.EllipticalExponentialMassAndLightProfile(centre=(-0.2, -0.4),
+                                                                                           axis_ratio=0.8, phi=110.0,
+                                                                                           intensity=5.0,
+                                                                                           effective_radius=0.2,
+                                                                                           mass_to_light_ratio=1.0)
+
+            exponential_defls = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
+
+            assert exponential_defls[0, 0] == pytest.approx(0.62569, 1e-3)
+            assert exponential_defls[0, 1] == pytest.approx(0.90493, 1e-3)
