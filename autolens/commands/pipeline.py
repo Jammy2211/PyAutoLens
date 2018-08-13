@@ -39,8 +39,9 @@ class Pipeline(Base):
 
         print_pipelines()
 
-    def run_pipeline(self, pipeline):
-        pipeline.run(self.load_image())
+    def run_pipeline(self, pl):
+        from autolens.imaging import image as im
+        pl.run(im.load(self.image_path, pixel_scale=self.pixel_scale))
 
     @property
     def image_path(self):
@@ -70,11 +71,6 @@ class Pipeline(Base):
         if not output_path.startswith("/"):
             output_path = "{}/{}".format(current_directory, output_path)
         return output_path
-
-    def load_image(self):
-        from autolens.imaging import image as im
-
-        return im.load(self.image_path, pixel_scale=self.pixel_scale)
 
 
 def print_pipelines():
