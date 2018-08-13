@@ -7,13 +7,13 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractArray(np.ndarray):
+class Array(np.ndarray):
     def __new__(cls, array, *args, **kwargs):
         return np.array(array, dtype='float64').view(cls)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractArray, self).__reduce__()
+        pickled_state = super(Array, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -27,7 +27,7 @@ class AbstractArray(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(AbstractArray, self).__setstate__(state[0:-1])
+        super(Array, self).__setstate__(state[0:-1])
 
     def pad(self, new_dimensions, pad_value=0):
         """ Pad the data_vector array with zeros (or an input value) around its central pixel.
@@ -110,8 +110,24 @@ class AbstractArray(np.ndarray):
 
         return self.__class__(**arguments)
 
+    @classmethod
+    def from_fits(cls, file_path, hdu):
+        """
+        Loads the data_vector from a .fits file.
 
-class ScaledArray(AbstractArray):
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the masked_image data_vector.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return cls(array_util.numpy_array_from_fits(file_path, hdu))
+
+
+class ScaledArray(Array):
     """
     Class storing the grids for 2D pixel grids (e.g. masked_image, PSF, signal_to_noise_ratio).
     """
@@ -140,7 +156,7 @@ class ScaledArray(AbstractArray):
                 func(x, y)
 
     @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scale):
+    def from_fits_with_scale(cls, file_path, hdu, pixel_scale):
         """
         Loads the data_vector from a .fits file.
 
