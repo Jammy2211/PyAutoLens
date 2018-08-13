@@ -639,6 +639,9 @@ class PriorModel(AbstractPriorModel):
             return GaussianPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "c":
             return Constant(config_arr[1])
+        raise exc.PriorException(
+            "Default prior for {} has no type indicator (u - Uniform, g - Gaussian, c - Constant".format(
+                attribute_name))
 
     @property
     def tuple_priors(self):
