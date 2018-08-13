@@ -9,7 +9,7 @@ def _test_pipeline():
     optimizer_1 = non_linear.MultiNest()
 
     # Define galaxy priors
-    source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic,
+    source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLightProfile,
                                                    variable_redshift=True)
     lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
                                                  shear_mass_profile=mass_profiles.ExternalShear, variable_redshift=True)

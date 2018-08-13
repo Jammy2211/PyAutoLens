@@ -49,7 +49,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
-    phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
+    phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile),
                               optimizer_class=optimizer_class, phase_name="{}/phase1".format(name))
 
     class LensSubtractedPhase(ph.ProfileSourceLensPhase):
@@ -71,7 +71,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
                                 outer_radius=3.)
 
     phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal),
-                                 source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
+                                 source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile),
                                  optimizer_class=optimizer_class,
                                  mask_function=annular_mask_function,
                                  name="{}/phase2".format(name))
