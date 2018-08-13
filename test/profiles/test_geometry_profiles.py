@@ -49,7 +49,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(1.0, 1e-3)
@@ -60,7 +60,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(-1.0, 1e-3)
@@ -70,7 +70,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(-1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(-1.0, 1e-3)
@@ -81,7 +81,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(-1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(1.0, 1e-3)
@@ -92,7 +92,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(1.0, 1e-3)
@@ -103,7 +103,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(0.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(2 ** 0.5, 1e-3)
@@ -114,7 +114,7 @@ class TestEllipticalProfile(object):
 
             grid = np.array([[3.0, 4.0]])
 
-            transformed_grid = elliptical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(-1.0, 1e-3)
@@ -154,11 +154,11 @@ class TestEllipticalProfile(object):
             
             elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(0, 0))
             grid1 = np.array([[1.0, 1.0]])
-            grid1 = elliptical_profile1.transform_grid_to_reference_frame_jitted(grid1)
+            grid1 = elliptical_profile1.transform_grid_to_reference_frame(grid1)
 
             elliptical_profile2 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=0.0, centre=(-1, -1))
             grid2 = np.array([[0.0, 0.0]])
-            grid2 = elliptical_profile2.transform_grid_to_reference_frame_jitted(grid2)
+            grid2 = elliptical_profile2.transform_grid_to_reference_frame(grid2)
 
             assert grid1[0,0] == grid2[0,0]
             assert grid1[0,1] == grid2[0,1]
@@ -166,11 +166,11 @@ class TestEllipticalProfile(object):
         def test__same_as_above_but_include_angle_phi_as_55__grid_are_equivalent(self):
             elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(0, 0))
             grid1 = np.array([[1.0, 1.0]])
-            grid1 = elliptical_profile1.transform_grid_to_reference_frame_jitted(grid1)
+            grid1 = elliptical_profile1.transform_grid_to_reference_frame(grid1)
 
             elliptical_profile2 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(-1, -1))
             grid2 = np.array([[0.0, 0.0]])
-            grid2 = elliptical_profile2.transform_grid_to_reference_frame_jitted(grid2)
+            grid2 = elliptical_profile2.transform_grid_to_reference_frame(grid2)
 
             assert grid1[0,0] == grid2[0,0]
             assert grid1[0,1] == grid2[0,1]
@@ -178,11 +178,11 @@ class TestEllipticalProfile(object):
         def test__grid_are_again_the_same_after_centre_shift__grid_equivalent(self):
             elliptical_profile1 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(1, 1))
             grid1 = np.array([[1.0, 1.0]])
-            grid1 = elliptical_profile1.transform_grid_to_reference_frame_jitted(grid1)
+            grid1 = elliptical_profile1.transform_grid_to_reference_frame(grid1)
 
             elliptical_profile2 = geometry_profiles.EllipticalProfile(axis_ratio=1.0, phi=55.0, centre=(-1, -1))
             grid2 = np.array([[-1.0, -1.0]])
-            grid2 = elliptical_profile2.transform_grid_to_reference_frame_jitted(grid2)
+            grid2 = elliptical_profile2.transform_grid_to_reference_frame(grid2)
 
             assert grid1[0,0] == grid2[0,0]
             assert grid1[0,1] == grid2[0,1]
@@ -194,7 +194,7 @@ class TestEllipticalProfile(object):
 
             grid_original = np.array([[5.2221, 2.6565]])
 
-            grid_elliptical = elliptical_profile.transform_grid_to_reference_frame_jitted(grid_original)
+            grid_elliptical = elliptical_profile.transform_grid_to_reference_frame(grid_original)
 
             transformed_grid = elliptical_profile.transform_grid_from_reference_frame(grid_elliptical)
 
@@ -207,7 +207,7 @@ class TestEllipticalProfile(object):
 
             grid_original = np.array([[3.2, -76.6]])
 
-            grid_elliptical = elliptical_profile.transform_grid_to_reference_frame_jitted(grid_original)
+            grid_elliptical = elliptical_profile.transform_grid_to_reference_frame(grid_original)
 
             transformed_grid = elliptical_profile.transform_grid_from_reference_frame(grid_elliptical)
 
@@ -219,7 +219,7 @@ class TestEllipticalProfile(object):
 
             grid_original = np.array([[-42.2, -93.6]])
 
-            grid_elliptical = elliptical_profile.transform_grid_to_reference_frame_jitted(grid_original)
+            grid_elliptical = elliptical_profile.transform_grid_to_reference_frame(grid_original)
 
             transformed_grid = elliptical_profile.transform_grid_from_reference_frame(grid_elliptical)
 
@@ -267,11 +267,11 @@ class TestSphericalProfile(object):
             spherical_profile1 = geometry_profiles.SphericalProfile(centre=(0, 0))
 
             grid1 = np.array([[1.0, 1.0]])
-            grid1 = spherical_profile1.transform_grid_to_reference_frame_jitted(grid1)
+            grid1 = spherical_profile1.transform_grid_to_reference_frame(grid1)
 
             spherical_profile2 = geometry_profiles.SphericalProfile(centre=(-1, -1))
             grid2 = np.array([[0.0, 0.0]])
-            grid2 = spherical_profile2.transform_grid_to_reference_frame_jitted(grid2)
+            grid2 = spherical_profile2.transform_grid_to_reference_frame(grid2)
 
             assert grid1[0,0] == grid2[0,0]
             assert grid1[0,1] == grid2[0,1]
@@ -280,11 +280,11 @@ class TestSphericalProfile(object):
 
             spherical_profile1 = geometry_profiles.SphericalProfile(centre=(1, 1))
             grid1 = np.array([[1.0, 1.0]])
-            grid1 = spherical_profile1.transform_grid_to_reference_frame_jitted(grid1)
+            grid1 = spherical_profile1.transform_grid_to_reference_frame(grid1)
 
             spherical_profile2 = geometry_profiles.SphericalProfile(centre=(-1, -1))
             grid2 = np.array([[-1.0, -1.0]])
-            grid2 = spherical_profile2.transform_grid_to_reference_frame_jitted(grid2)
+            grid2 = spherical_profile2.transform_grid_to_reference_frame(grid2)
 
             assert grid1[0,0] == grid2[0,0]
             assert grid1[0,1] == grid2[0,1]
@@ -297,7 +297,7 @@ class TestSphericalProfile(object):
 
             grid = np.array([[1.0, 1.0]])
 
-            transformed_grid = spherical_profile.transform_grid_to_reference_frame_jitted(grid)
+            transformed_grid = spherical_profile.transform_grid_to_reference_frame(grid)
 
             assert transformed_grid[0,0] == pytest.approx(1.0, 1e-3)
             assert transformed_grid[0,1] == pytest.approx(1.0, 1e-3)
@@ -307,7 +307,7 @@ class TestSphericalProfile(object):
 
             grid_original = np.array([[5.2221, 2.6565]])
 
-            grid_spherical = spherical_profile.transform_grid_to_reference_frame_jitted(grid_original)
+            grid_spherical = spherical_profile.transform_grid_to_reference_frame(grid_original)
 
             transformed_grid = spherical_profile.transform_grid_from_reference_frame(grid_spherical)
 
@@ -320,7 +320,7 @@ class TestSphericalProfile(object):
 
             grid_original = np.array([[3.2, -76.6]])
 
-            grid_spherical = spherical_profile.transform_grid_to_reference_frame_jitted(grid_original)
+            grid_spherical = spherical_profile.transform_grid_to_reference_frame(grid_original)
 
             transformed_grid = spherical_profile.transform_grid_from_reference_frame(grid_spherical)
 
