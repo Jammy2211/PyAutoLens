@@ -20,6 +20,7 @@ class Pipeline(Base):
 
     def run(self):
         name = self.options['<name>']
+        conf.instance = conf.Config(self.config_path, self.output_path)
         if self.options['--info']:
             tup = pipeline.pipeline_dict[name]
             print()
@@ -34,7 +35,6 @@ class Pipeline(Base):
             if name not in pipeline.pipeline_dict:
                 print("No pipeline called '{}' found".format(name))
                 return
-            conf.instance = conf.Config(self.config_path, self.output_path)
             self.run_pipeline(pipeline.pipeline_dict[name].make())
 
         print_pipelines()
@@ -58,10 +58,10 @@ class Pipeline(Base):
 
     @property
     def config_path(self):
-        config_path = self.options['--config']
-        if not conf.is_config(config_path):
-            print(red("No config found at {}. Creating default config...".format(config_path)))
-            conf.copy_default(config_path)
+        if '--config' in self.options:
+            config_path = self.options['--config']
+        else:
+            config_path = 'config'
         return config_path
 
     @property
