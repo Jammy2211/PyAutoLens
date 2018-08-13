@@ -13,6 +13,7 @@ from autolens.pixelization import pixelization as px
 import inspect
 import logging
 import matplotlib.pyplot as plt
+from astropy.io import fits
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -357,9 +358,6 @@ class ProfileSourceLensPhase(Phase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
-
-            # TODO : call Visualization class to do the below.
-
             if self.should_log:
                 self.log(lens_galaxy, source_galaxy)
             if self.should_visualise:
@@ -394,11 +392,10 @@ class ProfileSourceLensPhase(Phase):
 
             def save_image(image, image_name):
                 if image is not None:
-                    plt.figure()
-                    plt.imshow(image)
-                    plt.savefig(
-                        "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name,
-                                                 self.plot_count))
+                    hdu = fits.PrimaryHDU()
+                    hdu.data = image
+                    hdu.writeto("{}/{}/{}_{}.fits".format(conf.instance.data_path, self.phase_name, image_name,
+                                                         self.plot_count))
 
             save_image(lens_image, "lens_image")
             save_image(source_image, "source_image")
