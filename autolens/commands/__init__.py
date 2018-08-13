@@ -1,2 +1,2 @@
 from .pipeline import Pipeline
-from .download_config import DownloadConfig
+from .reset_config import ResetConfig
