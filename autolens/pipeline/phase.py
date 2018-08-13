@@ -91,6 +91,7 @@ class Phase(object):
         """
         return self.optimizer.variable
 
+    @property
     def doc(self):
         if self.__doc__ is not None:
             return self.__doc__.replace("  ", "").replace("\n", " ")
