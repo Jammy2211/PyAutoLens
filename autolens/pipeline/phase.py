@@ -370,6 +370,7 @@ class ProfileSourceLensPhase(Phase):
 
                 def save_image(image, image_name):
                     if image is not None:
+                        plt.figure()
                         plt.imshow(image)
                         plt.savefig(
                             "{}/{}/{}_{}.png".format(conf.instance.data_path, self.phase_name, image_name,
