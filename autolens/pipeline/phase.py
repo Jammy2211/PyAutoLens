@@ -209,6 +209,9 @@ class Phase(object):
             if image is not None:
                 hdu = fits.PrimaryHDU()
                 hdu.data = image
+                print(conf.instance.data_path)
+                print(self.phase_name)
+                print(image_name)
                 hdu.writeto("{}/{}/{}_{}.fits".format(conf.instance.data_path, self.phase_name, image_name,
                                                       self.plot_count))
 
