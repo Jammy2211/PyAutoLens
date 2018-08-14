@@ -175,14 +175,14 @@ class Phase(object):
             if self.previous_results is not None:
                 return self.previous_results.last
 
-        def fit(self, **kwargs):
+        def fit(self, instance):
             """
             Determine the fitness of a particular model
 
             Parameters
             ----------
-            kwargs: dict
-                Dictionary of objects describing the model
+            instance
+                A model instance
 
             Returns
             -------
@@ -191,10 +191,11 @@ class Phase(object):
             """
             raise NotImplementedError()
 
-        def log(self, *args, **kwargs):
+        @classmethod
+        def log(cls, instance):
             raise NotImplementedError()
 
-        def visualise(self, *args, **kwargs):
+        def visualise(self, instance):
             raise NotImplementedError()
 
     class Result(non_linear.Result):
@@ -341,26 +342,27 @@ class ProfileSourceLensPhase(Phase):
                 # TODO : This is just a placehold for now
                 self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.02]
 
-        def fit(self, lens_galaxy=None, source_galaxy=None):
+        def fit(self, instance):
             """
             Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
 
             Parameters
             ----------
-            lens_galaxy: g.Galaxy
-                The galaxy that acts as a gravitational lens
-            source_galaxy: g.Galaxy
-                The galaxy that produces the light that is being lensed
+            instance
+                A model instance with attributes
 
             Returns
             -------
             fit: Fit
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
+            lens_galaxy = instance.lens_galaxy
+            source_galaxy = instance.source_galaxy
+
             if self.should_log:
-                self.log(lens_galaxy, source_galaxy)
+                self.log(instance)
             if self.should_visualise:
-                self.visualise(lens_galaxy, source_galaxy)
+                self.visualise(instance)
 
             tracer = ray_tracing.Tracer(
                 [] if lens_galaxy is None else [lens_galaxy],
@@ -378,12 +380,16 @@ class ProfileSourceLensPhase(Phase):
                 return fitter.blurred_image_scaled_likelihood
 
         @classmethod
-        def log(cls, lens_galaxy, source_galaxy):
+        def log(cls, instance):
+            lens_galaxy = instance.lens_galaxy
+            source_galaxy = instance.source_galaxy
             logger.debug(
                 "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     lens_galaxy, source_galaxy))
 
-        def visualise(self, lens_galaxy, source_galaxy):
+        def visualise(self, instance):
+            lens_galaxy = instance.lens_galaxy
+            source_galaxy = instance.source_galaxy
             self.plot_count += 1
             logger.info("Saving visualisations {}".format(self.plot_count))
             lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,

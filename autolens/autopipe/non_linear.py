@@ -221,7 +221,7 @@ class DownhillSimplex(NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
+                likelihood = analysis.fit(instance)
                 self.result = Result(instance, likelihood)
 
                 # Return Chi squared
@@ -305,7 +305,7 @@ class MultiNest(NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
+                likelihood = analysis.fit(instance)
 
                 # TODO: Use multinest to provide best model
 
