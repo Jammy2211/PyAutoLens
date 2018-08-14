@@ -340,10 +340,7 @@ class MultiNest(NonLinearOptimizer):
                  log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
-        try:
-            self.output_pdf_plots()
-        except Exception as e:
-            logger.exception(e)
+        self.output_pdf_plots()
         self.output_results()
 
         constant = self.most_likely_instance_from_summary()
