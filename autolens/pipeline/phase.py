@@ -557,7 +557,7 @@ class SourceOnlyPhase(ProfileSourceLensPhase):
             super(SourceOnlyPhase.Analysis, self).visualise(instance)
 
 
-class SourceLensHyperGalaxyPhase(Phase):
+class SourceLensHyperGalaxyPhase(ProfileSourceLensPhase):
     """
     Adjust hyper galaxy parameters to optimize the fit.
     """
