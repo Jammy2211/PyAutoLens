@@ -529,6 +529,11 @@ class LensOnlyPhase(ProfileSourceLensPhase):
                                             mask_function=mask_function,
                                             phase_name=phase_name)
 
+    class Analysis(ProfileSourceLensPhase.Analysis):
+        def visualise(self, instance):
+            instance.source_galaxy = None
+            super(LensOnlyPhase.Analysis, self).visualise(instance)
+
 
 class SourceOnlyPhase(ProfileSourceLensPhase):
     """
@@ -545,6 +550,11 @@ class SourceOnlyPhase(ProfileSourceLensPhase):
                                               optimizer_class=optimizer_class,
                                               sub_grid_size=sub_grid_size,
                                               mask_function=mask_function)
+
+    class Analysis(ProfileSourceLensPhase.Analysis):
+        def visualise(self, instance):
+            instance.lens_galaxy = None
+            super(SourceOnlyPhase.Analysis, self).visualise(instance)
 
 
 class SourceLensHyperGalaxyPhase(ProfileSourceLensPhase):
