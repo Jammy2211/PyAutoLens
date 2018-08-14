@@ -16,6 +16,8 @@ https://arxiv.org/abs/1708.07377
 
 ## Installation
 
+AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) and [Numba](https://github.com/numba/numba).
+
 ```
 $ pip install autolens
 ```
