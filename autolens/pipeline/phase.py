@@ -114,7 +114,7 @@ class Phase(object):
         """
         analysis = self.make_analysis(image=image, previous_results=last_results)
         result = self.optimizer.fit(analysis)
-        # self.visualise(analysis, result.constant)
+        analysis.visualise(result.constant)
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None):
@@ -405,8 +405,7 @@ class ProfileSourceLensPhase(Phase):
 
             self.save_image(lens_image, "lens_image")
             self.save_image(source_image, "source_image")
-            if lens_image is not None and source_image is not None:
-                self.save_image(lens_image + source_image, "model_image")
+            self.save_image(lens_image + source_image, "model_image")
 
         def galaxy_images_for_model(self, model):
             """
