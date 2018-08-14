@@ -480,9 +480,11 @@ class UniformPrior(Prior):
         upper_limit: Float
             The highest value this prior can return
         """
+        if lower_limit == upper_limit:
+            raise exc.PriorException("Uniform priors cannot have equal lower and upper limits")
+        self.upper_limit = upper_limit
         super(UniformPrior, self).__init__()
         self.lower_limit = lower_limit
-        self.upper_limit = upper_limit
 
     def value_for(self, unit):
         """
