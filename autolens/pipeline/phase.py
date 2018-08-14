@@ -310,19 +310,19 @@ class ProfileSourceLensPhase(Phase):
         self.lens_galaxy = lens_galaxy
         self.source_galaxy = source_galaxy
 
-    def modify_image(self, masked_image, last_result):
+    def modify_image(self, image, last_result):
         """
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
+        image: im.Image
         last_result: ProfileSourceLensPhase.Result
 
         Returns
         -------
 
         """
-        return masked_image
+        return image
 
     class Analysis(Phase.Analysis):
 
