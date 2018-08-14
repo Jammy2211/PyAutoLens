@@ -17,10 +17,6 @@ phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_pro
 # In the second phase we remove the lens light found in the first phase and try to fit just the source. To do this we
 # extend ProfileSourceLensPhase class and override two methods.
 class LensSubtractedPhase(ph.ProfileSourceLensPhase):
-    """
-Subtract the lens light from the masked_image and fit only the source galaxy's light.
-    """
-
     # The modify image method provides a way for us to modify the image before a phase starts.
     def modify_image(self, image, previous_results):
         # The image is the original image we are trying to fit. Previous results is a list of results from previous
@@ -58,10 +54,6 @@ phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.Spheri
 # In the third phase we try fitting both lens and source light together. We use priors determined by both the previous
 # phases to constrain parameter space search.
 class CombinedPhase(ph.ProfileSourceLensPhase):
-    """
-Use priors from the previous phases to fit both the source and the lens at the same time.
-    """
-
     # We can take priors from both of the previous results.
     def pass_priors(self, previous_results):
         # The lens galaxy's light profile is constrained using results from the first phase whilst its mass profile
@@ -83,11 +75,6 @@ phase3h = ph.SourceLensHyperGalaxyPhase()
 
 # The final phase tries to fit the whole system again.
 class CombinedPhase2(ph.ProfileSourceLensPhase):
-    """
-    Use priors from the previous phases in conjunction with constant values determined for hyper galaxies to fit
-    both the source and the lens at the same time.
-    """
-
     # We take priors for the galaxies from phase 3 and set their hyper galaxies from phase 3h.
     def pass_priors(self, previous_results):
         phase_3_results = previous_results[2]
