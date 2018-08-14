@@ -10,11 +10,10 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 
 
 def load_image(name):
-
     data_dir = "{}/../../data/{}".format(dirpath, name)
 
-    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/masked_image', hdu=0, pixel_scale=0.05)
-    noise = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/noise', hdu=0, pixel_scale=0.05)
+    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/image', hdu=0, pixel_scale=0.05)
+    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0)
 
     return im.Image(array=data, pixel_scale=0.05, psf=psf, noise=noise)
@@ -34,7 +33,6 @@ def test_profile_pipeline():
 
 def make_profile_pipeline(name="profile", optimizer_class=None):
     from autolens.pipeline import phase as ph
-    from autolens.autopipe import non_linear as nl
     from autolens.analysis import galaxy_prior as gp
     from autolens.imaging import mask as msk
     from autolens.profiles import light_profiles, mass_profiles
@@ -71,10 +69,11 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
                                 outer_radius=3.)
 
     phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal),
-                                 source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile),
+                                 source_galaxy=gp.GalaxyPrior(
+                                     elliptical_sersic=light_profiles.EllipticalSersicLightProfile),
                                  optimizer_class=optimizer_class,
                                  mask_function=annular_mask_function,
-                                 name="{}/phase2".format(name))
+                                 phase_name="{}/phase2".format(name))
 
     # 3) Lens Light : Elliptical Sersic (Priors phase 1)
     #    Mass: SIE (Priors phase 2)
@@ -91,7 +90,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
             self.source_galaxy = previous_results.last.variable.source_galaxy
 
     phase3 = CombinedPhase(optimizer_class=optimizer_class,
-                           name="{}/phase3".format(name))
+                           phase_name="{}/phase3".format(name))
 
     # 3H) Hyper-Parameters: Make Lens Galaxy and Source Galaxy Hyper-Galaxies.
     #     Lens Light / Mass / Source - Fix parameters to phase 3 most likely result
@@ -99,7 +98,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
     #     Image : Observed Image
     #     Mask : Circle - 3.0"
 
-    phase3h = ph.SourceLensHyperGalaxyPhase(name="{}/phase3h".format(name))
+    phase3h = ph.SourceLensHyperGalaxyPhase(phase_name="{}/phase3h".format(name))
 
     # 4) Repeat phase 3, using its priors and the hyper-galaxies fixed to their optimized values.
     #    Lens Light : Elliptical Sersic (Priors phase 3)
@@ -117,7 +116,7 @@ def make_profile_pipeline(name="profile", optimizer_class=None):
             self.lens_galaxy.hyper_galaxy = previous_results.last.constant.lens_galaxy.hyper_galaxy
             self.source_galaxy.hyper_galaxy = previous_results.last.constant.source_galaxy.hyper_galaxy
 
-    phase4 = CombinedPhase2(optimizer_class=optimizer_class, name="{}/phase4".format(name))
+    phase4 = CombinedPhase2(optimizer_class=optimizer_class, phase_name="{}/phase4".format(name))
 
     return pl.Pipeline(name, phase1, phase2, phase3, phase3h, phase4)
 
