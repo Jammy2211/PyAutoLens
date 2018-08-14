@@ -1204,8 +1204,8 @@ class MockAnalysis(object):
     def __init__(self):
         self.kwargs = None
 
-    def fit(self, **kwargs):
-        self.kwargs = kwargs
+    def fit(self, instance):
+        self.instance = instance
         return 1.
 
 
