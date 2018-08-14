@@ -94,8 +94,8 @@ class NonLinearOptimizer(object):
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
         self.constant = mm.ModelInstance()
 
-        self.file_param_names = "{}/{}".format(self.path, '/mn.paramnames')
-        self.file_model_info = "{}/{}".format(self.path, '/model.info')
+        self.file_param_names = "{}/{}".format(self.path, 'mn.paramnames')
+        self.file_model_info = "{}/{}".format(self.path, 'model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
         if include_hyper_image:
@@ -177,14 +177,11 @@ class NonLinearOptimizer(object):
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
-        paramnames = open(self.file_param_names, 'w')
-
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (40 - len(line)) + self.paramnames_labels[i]
-            paramnames.write(line + '\n')
-
-        paramnames.close()
+        with open(self.file_param_names, 'w') as paramnames:
+            for i in range(self.variable.total_parameters):
+                line = self.paramnames_names[i]
+                line += ' ' * (40 - len(line)) + self.paramnames_labels[i]
+                paramnames.write(line + '\n')
 
 
 class DownhillSimplex(NonLinearOptimizer):
