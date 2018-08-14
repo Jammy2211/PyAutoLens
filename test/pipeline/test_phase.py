@@ -43,7 +43,7 @@ class NLO(non_linear.NonLinearOptimizer):
                 for key, value in self.constant.__dict__.items():
                     setattr(instance, key, value)
 
-                likelihood = analysis.fit(**instance.__dict__)
+                likelihood = analysis.fit(instance)
                 self.result = non_linear.Result(instance, likelihood)
 
                 # Return Chi squared
