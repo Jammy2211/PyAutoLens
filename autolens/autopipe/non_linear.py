@@ -15,7 +15,6 @@ import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-
 SIMPLEX_TUPLE_WIDTH = 0.1
 
 
@@ -143,7 +142,7 @@ class NonLinearOptimizer(object):
 
         for prior_name, prior_model in self.variable.prior_models:
             for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
-                self.paramnames_names.append(prior_name+'_'+param[0])
+                self.paramnames_names.append(prior_name + '_' + param[0])
 
     def create_paramnames_labels(self):
         """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
@@ -170,12 +169,13 @@ class NonLinearOptimizer(object):
         self.paramnames_labels = []
 
         for i in range(self.variable.total_parameters):
-            self.paramnames_labels.append('p'+str(i))
+            self.paramnames_labels.append('p' + str(i))
 
     def create_paramnames_file(self):
-        """The param_names file lists every parameter's phase_name and Latex tag, and is used for *GetDist* visualization.
+        """The param_names file lists every parameter's phase_name and Latex tag, and is used for *GetDist*
+        visualization.
 
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
         paramnames = open(self.file_param_names, 'w')
 
@@ -288,7 +288,7 @@ class MultiNest(NonLinearOptimizer):
 
     @property
     def pdf(self):
-        return getdist.mcsamples.loadMCSamples(self.path+'/mn')
+        return getdist.mcsamples.loadMCSamples(self.path + '/mn')
 
     def fit(self, analysis):
         self.save_model_info()
@@ -340,7 +340,10 @@ class MultiNest(NonLinearOptimizer):
                  log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
-        self.output_pdf_plots()
+        try:
+            self.output_pdf_plots()
+        except Exception as e:
+            logger.exception(e)
         self.output_results()
 
         constant = self.most_likely_instance_from_summary()
@@ -498,7 +501,7 @@ class MultiNest(NonLinearOptimizer):
         pdf_plot = getdist.plots.GetDistPlotter()
         for i in range(self.variable.total_parameters):
             pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
-            pdf_plot.export(fname=self.path+'/pdfs/'+self.paramnames_names[i]+'_1D.png')
+            pdf_plot.export(fname=self.path + '/pdfs/' + self.paramnames_names[i] + '_1D.png')
         try:
             pdf_plot.triangle_plot(roots=self.pdf)
             pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
@@ -532,7 +535,8 @@ class MultiNest(NonLinearOptimizer):
 
         for i in range(self.variable.total_parameters):
             line = self.paramnames_names[i]
-            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(upper_limit[i]) + ')'
+            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
+                upper_limit[i]) + ')'
             results.write(line + '\n')
 
         lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
@@ -544,7 +548,8 @@ class MultiNest(NonLinearOptimizer):
 
         for i in range(self.variable.total_parameters):
             line = self.paramnames_names[i]
-            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(upper_limit[i]) + ')'
+            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
+                upper_limit[i]) + ')'
             results.write(line + '\n')
 
         results.close()
