@@ -19,8 +19,10 @@ class MockAnalysis(object):
         self.number_galaxies = number_galaxies
         self.value = value
 
+    # noinspection PyUnusedLocal
     def galaxy_images_for_model(self, model):
-        return self.number_galaxies*[np.array([self.value])]
+        return self.number_galaxies * [np.array([self.value])]
+
 
 class MockResults(object):
     def __init__(self, model_image, galaxy_images=()):
@@ -101,7 +103,6 @@ def make_results_collection(results):
 
 
 class TestPhase(object):
-
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxy = galaxy
         assert phase.optimizer.constant.lens_galaxy == galaxy
@@ -143,7 +144,6 @@ class TestPhase(object):
         assert phase.source_galaxy == galaxy_prior
 
     def test_phase_property(self):
-
         class MyPhase(ph.ProfileSourceLensPhase):
             prop = ph.phase_property("prop")
 
@@ -217,7 +217,6 @@ class TestAnalysis(object):
 class TestResult(object):
 
     def test_hyper_galaxy_and_model_images(self):
-
         analysis = MockAnalysis(number_galaxies=2, value=1.0)
 
         result = ph.ProfileSourceLensPhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
