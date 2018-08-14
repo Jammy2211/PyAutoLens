@@ -154,23 +154,23 @@ class TestProfileOnlyPipeline(object):
         assert phase3.lens_galaxy.sie == results_2.variable.lens_galaxy.sie
         assert phase3.source_galaxy == results_2.variable.source_galaxy
 
-    def test_phase3h(self, profile_only_pipeline, image, results_1, results_2, results_3):
-        phase3h = profile_only_pipeline.phases[3]
-        previous_results = ph.ResultsCollection([results_1, results_2, results_3])
-
-        analysis = phase3h.make_analysis(image, previous_results)
-
-        assert isinstance(phase3h.lens_galaxy, gp.GalaxyPrior)
-        assert isinstance(phase3h.source_galaxy, gp.GalaxyPrior)
-
-        assert analysis.masked_image == np.ones((716,))
-
-        assert phase3h.lens_galaxy.elliptical_sersic == results_3.constant.lens_galaxy.elliptical_sersic
-        assert phase3h.lens_galaxy.sie == results_3.constant.lens_galaxy.sie
-        assert phase3h.source_galaxy.elliptical_sersic == results_3.constant.source_galaxy.elliptical_sersic
-
-        assert isinstance(phase3h.lens_galaxy.hyper_galaxy, model_mapper.PriorModel)
-        assert isinstance(phase3h.source_galaxy.hyper_galaxy, model_mapper.PriorModel)
+    # def test_phase3h(self, profile_only_pipeline, image, results_1, results_2, results_3):
+    #     phase3h = profile_only_pipeline.phases[3]
+    #     previous_results = ph.ResultsCollection([results_1, results_2, results_3])
+    #
+    #     analysis = phase3h.make_analysis(image, previous_results)
+    #
+    #     assert isinstance(phase3h.lens_galaxy, gp.GalaxyPrior)
+    #     assert isinstance(phase3h.source_galaxy, gp.GalaxyPrior)
+    #
+    #     assert analysis.masked_image == np.ones((716,))
+    #
+    #     assert phase3h.lens_galaxy.elliptical_sersic == results_3.constant.lens_galaxy.elliptical_sersic
+    #     assert phase3h.lens_galaxy.sie == results_3.constant.lens_galaxy.sie
+    #     assert phase3h.source_galaxy.elliptical_sersic == results_3.constant.source_galaxy.elliptical_sersic
+    #
+    #     assert isinstance(phase3h.lens_galaxy.hyper_galaxy, model_mapper.PriorModel)
+    #     assert isinstance(phase3h.source_galaxy.hyper_galaxy, model_mapper.PriorModel)
 
     def test_phase4(self, profile_only_pipeline, image, results_1, results_2, results_3, results_3h):
         phase4 = profile_only_pipeline.phases[4]
