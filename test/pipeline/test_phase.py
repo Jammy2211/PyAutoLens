@@ -9,6 +9,11 @@ from autolens.imaging import image as img
 from autolens.imaging import masked_image as mi
 from autolens.autopipe import model_mapper as mm
 from autolens.profiles import light_profiles
+from autolens import conf
+from os import path
+import os
+
+directory = path.dirname(path.realpath(__file__))
 
 shape = (10, 10)
 
@@ -102,6 +107,16 @@ def make_results_collection(results):
     return ph.ResultsCollection([results])
 
 
+def clean_images():
+    try:
+        os.remove('{}/source_lens_phase/source_image_0.fits'.format(directory))
+        os.remove('{}/source_lens_phase/lens_image_0.fits'.format(directory))
+        os.remove('{}/source_lens_phase/model_image_0.fits'.format(directory))
+    except FileNotFoundError:
+        pass
+    conf.instance.data_path = directory
+
+
 class TestPhase(object):
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxy = galaxy
@@ -119,6 +134,7 @@ class TestPhase(object):
         assert analysis.masked_image == masked_image
 
     def test_fit(self, phase, image):
+        clean_images()
         phase.source_galaxy = g.Galaxy()
         phase.lens_galaxy = g.Galaxy()
         result = phase.run(image=image)
@@ -166,6 +182,7 @@ class TestPhase(object):
         assert len(mi.MaskedImage(image, phase.mask_function(image))) == 32
 
     def test_galaxy_images(self, image, phase):
+        clean_images()
         phase.lens_galaxy = g.Galaxy()
         phase.source_galaxy = g.Galaxy()
         result = phase.run(image)
@@ -215,7 +232,6 @@ class TestAnalysis(object):
 
 
 class TestResult(object):
-
     def test_hyper_galaxy_and_model_images(self):
         analysis = MockAnalysis(number_galaxies=2, value=1.0)
 
