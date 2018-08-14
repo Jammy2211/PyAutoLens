@@ -206,11 +206,14 @@ class Phase(object):
             raise NotImplementedError()
 
         def save_image(self, image, image_name):
-            if image is not None:
-                hdu = fits.PrimaryHDU()
-                hdu.data = image
-                hdu.writeto("{}/{}/{}_{}.fits".format(conf.instance.data_path, self.phase_name, image_name,
-                                                      self.plot_count))
+            try:
+                if image is not None:
+                    hdu = fits.PrimaryHDU()
+                    hdu.data = image
+                    hdu.writeto("{}/{}/{}_{}.fits".format(conf.instance.data_path, self.phase_name, image_name,
+                                                          self.plot_count))
+            except OSError as e:
+                logger.exception(e)
 
     class Result(non_linear.Result):
 
