@@ -26,6 +26,40 @@ def make_test_config():
                                              "test_files/config/priors/default"))
 
 
+class TestAddition(object):
+    def test_abstract_plus_abstract(self):
+        one = model_mapper.AbstractModel()
+        two = model_mapper.AbstractModel()
+        one.a = 'a'
+        two.b = 'b'
+
+        three = one + two
+
+        assert three.a == 'a'
+        assert three.b == 'b'
+
+    def test_instance_plus_instance(self):
+        one = model_mapper.ModelInstance()
+        two = model_mapper.ModelInstance()
+        one.a = 'a'
+        two.b = 'b'
+
+        three = one + two
+
+        assert three.a == 'a'
+        assert three.b == 'b'
+
+    def test_mapper_plus_mapper(self):
+        one = model_mapper.ModelMapper()
+        two = model_mapper.ModelMapper()
+        one.a = model_mapper.PriorModel(geometry_profiles.EllipticalSersicProfile)
+        two.b = model_mapper.PriorModel(geometry_profiles.EllipticalSersicProfile)
+
+        three = one + two
+
+        assert three.total_parameters == 14
+
+
 class TestUniformPrior(object):
     def test__simple_assumptions(self, uniform_simple):
         assert uniform_simple.value_for(0.) == 0.
@@ -236,7 +270,8 @@ class TestModelInstance(object):
 class TestRealClasses(object):
 
     def test_combination(self):
-        collection = model_mapper.ModelMapper(MockConfig(), source_light_profile=light_profiles.EllipticalSersicLightProfile,
+        collection = model_mapper.ModelMapper(MockConfig(),
+                                              source_light_profile=light_profiles.EllipticalSersicLightProfile,
                                               lens_mass_profile=mass_profiles.EllipticalCoredIsothermal,
                                               lens_light_profile=light_profiles.EllipticalCoreSersic)
 
