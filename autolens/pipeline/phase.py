@@ -114,7 +114,7 @@ class Phase(object):
         """
         analysis = self.make_analysis(image=image, previous_results=last_results)
         result = self.optimizer.fit(analysis)
-        analysis.visualise(result.constant)
+        analysis.visualise(result.constant, 'best_fit')
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None):
@@ -202,16 +202,16 @@ class Phase(object):
         def log(cls, instance):
             raise NotImplementedError()
 
-        def visualise(self, instance):
+        def visualise(self, instance, suffix=None):
             raise NotImplementedError()
 
-        def save_image(self, image, image_name):
+        def save_image(self, image, image_name, suffix=None):
             try:
                 if image is not None:
                     hdu = fits.PrimaryHDU()
                     hdu.data = image
                     hdu.writeto("{}/{}/{}_{}.fits".format(conf.instance.data_path, self.phase_name, image_name,
-                                                          self.plot_count))
+                                                          self.plot_count if suffix is None else suffix))
             except OSError as e:
                 logger.exception(e)
 
@@ -400,15 +400,15 @@ class ProfileSourceLensPhase(Phase):
                 "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     lens_galaxy, source_galaxy))
 
-        def visualise(self, instance):
+        def visualise(self, instance, suffix=None):
             lens_galaxy = instance.lens_galaxy
             source_galaxy = instance.source_galaxy
             lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
                                                                                             source_galaxy)
 
-            self.save_image(lens_image, "lens_image")
-            self.save_image(source_image, "source_image")
-            self.save_image(lens_image + source_image, "model_image")
+            self.save_image(lens_image, "lens_image", suffix)
+            self.save_image(source_image, "source_image", suffix)
+            self.save_image(lens_image + source_image, "model_image", suffix)
 
         def galaxy_images_for_model(self, model):
             """
@@ -533,12 +533,12 @@ class LensOnlyPhase(ProfileSourceLensPhase):
                                             phase_name=phase_name)
 
     class Analysis(ProfileSourceLensPhase.Analysis):
-        def visualise(self, instance):
+        def visualise(self, instance, suffix=None):
             lens_galaxy = instance.lens_galaxy
 
             logger.info("Saving visualisations {}".format(self.plot_count))
             lens_image, _ = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy, None)
-            self.save_image(lens_image, "lens_image")
+            self.save_image(lens_image, "lens_image", suffix)
 
 
 class SourceOnlyPhase(ProfileSourceLensPhase):
@@ -558,7 +558,7 @@ class SourceOnlyPhase(ProfileSourceLensPhase):
                                               mask_function=mask_function)
 
     class Analysis(ProfileSourceLensPhase.Analysis):
-        def visualise(self, instance):
+        def visualise(self, instance, suffix=None):
             lens_galaxy = instance.lens_galaxy
             source_galaxy = instance.source_galaxy
 
@@ -566,7 +566,7 @@ class SourceOnlyPhase(ProfileSourceLensPhase):
             _, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
                                                                                    source_galaxy)
 
-            self.save_image(source_image, "source_image")
+            self.save_image(source_image, "source_image", suffix)
 
 
 class SourceLensHyperGalaxyPhase(ProfileSourceLensPhase):
