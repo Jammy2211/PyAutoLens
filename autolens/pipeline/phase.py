@@ -403,8 +403,7 @@ class ProfileSourceLensPhase(Phase):
         def visualise(self, instance, suffix=None):
             lens_galaxy = instance.lens_galaxy
             source_galaxy = instance.source_galaxy
-            lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
-                                                                                            source_galaxy)
+            lens_image, source_image = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy, source_galaxy)
 
             self.save_image(lens_image, "lens_image", suffix)
             self.save_image(source_image, "source_image", suffix)
