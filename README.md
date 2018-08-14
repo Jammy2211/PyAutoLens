@@ -88,7 +88,7 @@ print(results)
 
 Phases can be made to use different optimisers, source galaxies with pixelisations instead of profiles and much more. Phases can also be tied together into pipelines to optimise and accelerate analysis.
 
-## Pipeline Example
+## Pipeline Example
 
 Sophisticated pipelines can be written. These pipelines can fit different components of the image individually, use priors and best fit models from previous phases, prevent overfitting and modify the image on the fly.</br>
 The *profile* pipeline described here is built into AutoLens and can be run using the CLI.
