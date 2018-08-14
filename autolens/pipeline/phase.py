@@ -557,16 +557,51 @@ class SourceOnlyPhase(ProfileSourceLensPhase):
             super(SourceOnlyPhase.Analysis, self).visualise(instance)
 
 
-class SourceLensHyperGalaxyPhase(ProfileSourceLensPhase):
+class SourceLensHyperGalaxyPhase(Phase):
     """
     Adjust hyper galaxy parameters to optimize the fit.
     """
 
-    # TODO: Perform hyper galaxy analyses for each hyper galaxy independently
-    def pass_priors(self, previous_results):
-        self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
-            previous_results.last.constant.lens_galaxy,
-            hyper_galaxy=g.HyperGalaxy)
-        self.source_galaxy = gp.GalaxyPrior.from_galaxy(
-            previous_results.last.constant.source_galaxy,
-            hyper_galaxy=g.HyperGalaxy)
+    def run(self, image, last_results=None):
+        class LensPhase(ProfileSourceLensPhase):
+            def pass_priors(self, previous_results):
+                self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
+                    previous_results.last.constant.lens_galaxy,
+                    hyper_galaxy=g.HyperGalaxy)
+                self.source_galaxy = previous_results.last.constant.source_galaxy
+
+        class SourcePhase(ProfileSourceLensPhase):
+            def pass_priors(self, previous_results):
+                self.lens_galaxy = previous_results.last.constant.lens_galaxy
+                self.source_galaxy = gp.GalaxyPrior.from_galaxy(
+                    previous_results.last.constant.source_galaxy,
+                    hyper_galaxy=g.HyperGalaxy)
+
+        lens_result = LensPhase(phase_name="{}_lens".format(self.phase_name)).run(image, last_results)
+        source_result = SourcePhase(phase_name="{}_lens".format(self.phase_name)).run(image, last_results)
+
+        return self.__class__.Result(lens_result.constant + source_result.constant,
+                                     (lens_result.likelihood + source_result.likelihood) / 2,
+                                     lens_result.variable + source_result.variable,
+                                     self.make_analysis(image, last_results))
+
+        # def run(self, image, last_results=None):
+        #     """
+        #     Run this phase.
+        #
+        #     Parameters
+        #     ----------
+        #     last_results: ResultsCollection
+        #         An object describing the results of the last phase or None if no phase has been executed
+        #     image: img.Image
+        #         An masked_image that has been masked
+        #
+        #     Returns
+        #     -------
+        #     result: non_linear.Result
+        #         A result object comprising the best fit model and other data.
+        #     """
+        #     analysis = self.make_analysis(image=image, previous_results=last_results)
+        #     result = self.optimizer.fit(analysis)
+        #     # self.visualise(analysis, result.constant)
+        #     return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
