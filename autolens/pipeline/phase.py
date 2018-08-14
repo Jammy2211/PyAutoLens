@@ -535,8 +535,7 @@ class LensOnlyPhase(ProfileSourceLensPhase):
             lens_galaxy = instance.lens_galaxy
 
             logger.info("Saving visualisations {}".format(self.plot_count))
-            lens_image, _ = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy,
-                                                                                 [])
+            lens_image, _ = self.galaxy_images_for_lens_galaxy_and_source_galaxy(lens_galaxy, None)
             self.save_image(lens_image, "lens_image")
 
 
