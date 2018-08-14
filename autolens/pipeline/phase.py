@@ -595,24 +595,3 @@ class SourceLensHyperGalaxyPhase(ProfileSourceLensPhase):
                                      (lens_result.likelihood + source_result.likelihood) / 2,
                                      lens_result.variable + source_result.variable,
                                      self.make_analysis(image, last_results))
-
-        # def run(self, image, last_results=None):
-        #     """
-        #     Run this phase.
-        #
-        #     Parameters
-        #     ----------
-        #     last_results: ResultsCollection
-        #         An object describing the results of the last phase or None if no phase has been executed
-        #     image: img.Image
-        #         An masked_image that has been masked
-        #
-        #     Returns
-        #     -------
-        #     result: non_linear.Result
-        #         A result object comprising the best fit model and other data.
-        #     """
-        #     analysis = self.make_analysis(image=image, previous_results=last_results)
-        #     result = self.optimizer.fit(analysis)
-        #     # self.visualise(analysis, result.constant)
-        #     return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
