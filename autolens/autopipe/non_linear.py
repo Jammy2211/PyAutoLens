@@ -218,8 +218,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
             def __call__(self, vector):
                 instance = self.instance_from_physical_vector(vector)
-                for key, value in self.constant.__dict__.items():
-                    setattr(instance, key, value)
+
+                instance += self.constant
 
                 likelihood = analysis.fit(instance)
                 self.result = Result(instance, likelihood)
@@ -302,8 +302,8 @@ class MultiNest(NonLinearOptimizer):
 
             def __call__(self, cube, ndim, nparams, lnew):
                 instance = self.instance_from_physical_vector(cube)
-                for key, value in self.constant.__dict__.items():
-                    setattr(instance, key, value)
+
+                instance += self.constant
 
                 likelihood = analysis.fit(instance)
 
