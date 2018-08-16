@@ -353,7 +353,7 @@ class MockLightProfile(light_profiles.LightProfile):
     def __init__(self, value):
         self.value = value
 
-    def intensity_at_radius(self, radius):
+    def intensity_from_grid_radii(self, grid_radii):
         return self.value
 
     def intensity_at_coordinates(self, coordinates):

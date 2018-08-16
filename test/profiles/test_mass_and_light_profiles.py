@@ -10,7 +10,7 @@ class TestCase(object):
                                                                                  effective_radius=0.6,
                                                                                  sersic_index=4.0)
 
-            intensity = sersic.intensity_at_radius(radius=1.0)
+            intensity = sersic.intensity_from_grid_radii(grid_radii=1.0)
             assert intensity == pytest.approx(0.351797, 1e-3)
 
         def test__flip_coordinates_lens_center__same_value(self):
@@ -37,7 +37,7 @@ class TestCase(object):
                                                                                            intensity=1.0,
                                                                                            effective_radius=0.6)
 
-            intensity = exponential.intensity_at_radius(radius=1.0)
+            intensity = exponential.intensity_from_grid_radii(grid_radii=1.0)
             assert intensity == pytest.approx(0.3266, 1e-3)
 
         def test__deflections_from_grid(self):
@@ -59,7 +59,7 @@ class TestCase(object):
                                                                                                   intensity=1.0,
                                                                                                   effective_radius=0.6)
 
-            intensity = dev_vaucouleurs.intensity_at_radius(radius=1.0)
+            intensity = dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.0)
             assert intensity == pytest.approx(0.3518, 1e-3)
 
         def test__deflections_from_grid(self):

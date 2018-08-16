@@ -1050,20 +1050,20 @@ class TestRealClasses(object):
         assert model_info_str[14] == r'axis_ratio: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
         assert model_info_str[15] == r'phi: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
         assert model_info_str[16] == r'intensity: GaussianPrior, mean = 0.0, sigma = 0.5' + '\n'
-        assert model_info_str[17] == r'effective_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
+        assert model_info_str[17] == r'effective_radius: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
         assert model_info_str[18] == r'' + '\n'
         assert model_info_str[19] == r'SphericalIsothermal' + '\n'
         assert model_info_str[20] == r'' + '\n'
         assert model_info_str[21] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
         assert model_info_str[22] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
-        assert model_info_str[23] == r'einstein_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
+        assert model_info_str[23] == r'einstein_radius: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
         assert model_info_str[24] == r'' + '\n'
         assert model_info_str[25] == r'SphericalNFW' + '\n'
         assert model_info_str[26] == r'' + '\n'
         assert model_info_str[27] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
         assert model_info_str[28] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
-        assert model_info_str[29] == r'kappa_s: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
-        assert model_info_str[30] == r'scale_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
+        assert model_info_str[29] == r'kappa_s: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
+        assert model_info_str[30] == r'scale_radius: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
 
     def test__read_multinest_most_probable_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
         create_summary_10_parameters(path=mn_summary_path + 'multi_profile')
@@ -1258,6 +1258,8 @@ class TestFitting(object):
         def test_constant(self, downhill_simplex):
             downhill_simplex.constant.mock_class = MockClassNLOx4()
             result = downhill_simplex.fit(MockAnalysis())
+
+            print(result)
 
             assert result.constant.mock_class.one == 1
             assert result.constant.mock_class.two == 2
