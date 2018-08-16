@@ -5,7 +5,7 @@ HST:
 
 pixel_scale=0.05
 mask_radius=4.0
-Profile PSF Size = 41x41
+GeometryProfile PSF Size = 41x41
 Pixelizaton PSF Size = 41x41
 Image Pixels = 20106
 Source Pixels = 363
@@ -35,7 +35,7 @@ HST_up:
 
 pixel_scale=0.03
 mask_radius=4.0
-Profile PSF Size = 40x40
+GeometryProfile PSF Size = 40x40
 Pixelizaton PSF Size = 14x14
 Image Pixels = 55840
 Source Pixels = 1135
