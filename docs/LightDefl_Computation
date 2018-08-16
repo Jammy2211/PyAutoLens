@@ -41,7 +41,7 @@ Obviously, the sub-grid can be as coarse as you like - I typically use a 4x4 sub
 an adaptive sub-grid, describes next, for light profiles.
 
 ========================================================
-============ Computing a 2D Light Profile ==============
+============ Computing a 2D Light GeometryProfile ==============
 ========================================================
 
 For a 2D light profile, we what should the sub-grid we use be? Well, this depends on how rapidly changing the

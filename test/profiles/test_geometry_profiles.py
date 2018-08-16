@@ -338,11 +338,11 @@ class TestSphericalProfile(object):
 class TestFromProfile(object):
 
     def test__profile_from_profile__centre_x_1_y_1_is_passed(self):
-        p = geometry_profiles.Profile(centre=(1, 1))
-        assert geometry_profiles.Profile.from_profile(p).centre == (1, 1)
+        p = geometry_profiles.GeometryProfile(centre=(1, 1))
+        assert geometry_profiles.GeometryProfile.from_profile(p).centre == (1, 1)
 
     def test__elliptical_profile_from_profile__centre_x_1_y_1__axis_ratio_1__phi_2__all_are_passed(self):
-        p = geometry_profiles.Profile(centre=(1, 1))
+        p = geometry_profiles.GeometryProfile(centre=(1, 1))
         elliptical_profile = geometry_profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
         assert elliptical_profile.__class__ == geometry_profiles.EllipticalProfile
         assert elliptical_profile.centre == (1, 1)
@@ -351,8 +351,8 @@ class TestFromProfile(object):
 
     def test__profile_from_elliptical_profile__centre_x_1_y_1_is_passed(self):
         elliptical_profile = geometry_profiles.EllipticalProfile(centre=(1, 1), axis_ratio=1, phi=2)
-        p = geometry_profiles.Profile.from_profile(elliptical_profile)
-        assert p.__class__ == geometry_profiles.Profile
+        p = geometry_profiles.GeometryProfile.from_profile(elliptical_profile)
+        assert p.__class__ == geometry_profiles.GeometryProfile
         assert p.centre == (1, 1)
 
     def test__elliptcal_profile_from_elliptical_profile__optionally_override_axis_ratio_with_3(self):
