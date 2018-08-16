@@ -228,6 +228,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
         logger.info("Running DownhillSimplex...")
         output = self.fmin(fitness_function, x0=initial_vector)
+        print(output)
         logger.info("DownhillSimplex complete")
         res = fitness_function.result
 
@@ -341,14 +342,10 @@ class MultiNest(NonLinearOptimizer):
         self.output_results()
 
         constant = self.most_likely_instance_from_summary()
-        for key, value in fitness_function.constant.__dict__.items():
-            setattr(constant, key, value)
         likelihood = self.max_likelihood_from_summary()
         variable = self.variable.mapper_from_gaussian_tuples(self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
-        result = Result(constant=constant, likelihood=likelihood, variable=variable)
-
-        return result
+        return Result(constant=constant, likelihood=likelihood, variable=variable)
 
     def open_summary_file(self):
 
