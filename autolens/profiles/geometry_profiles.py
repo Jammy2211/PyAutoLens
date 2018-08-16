@@ -24,7 +24,7 @@ def transform_grid(func):
 
         Parameters
         ----------
-        profile : Profile
+        profile : GeometryProfile
             The profiles that owns the function
         grid : ndarray
             PlaneCoordinates in either cartesian or profiles coordinate system
@@ -47,10 +47,10 @@ class TransformedGrid(np.ndarray):
     pass
 
 
-class Profile(object):
+class GeometryProfile(object):
 
     def __init__(self, centre=(0.0, 0.0)):
-        """Abstract Profile, describing an object with x, y cartesian coordinates"""
+        """Abstract GeometryProfile, describing an object with x, y cartesian coordinates"""
         self.centre = centre
 
     @property
@@ -81,7 +81,7 @@ class Profile(object):
 
         Parameters
         ----------
-        profile: Profile
+        profile: GeometryProfile
             A child of the profiles class
         kwargs
             Key word constructor arguments for the new profiles
@@ -105,7 +105,7 @@ class Profile(object):
                                '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
 
 
-class SphericalProfile(Profile):
+class SphericalProfile(GeometryProfile):
 
     def __init__(self, centre=(0.0, 0.0)):
         """ Generic circular profiles class to contain functions shared by light and mass profiles.
@@ -328,11 +328,10 @@ class EllipticalProfile(SphericalProfile):
 
 
 class EllipticalSersicProfile(EllipticalProfile):
-    """The Sersic light profiles, used to fit and subtract the lens galaxy's light."""
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
-        """
+        """ The elliptical Sersic profile's geometry, used for computing the effective radius and Sersic constant.
 
         Parameters
         ----------
@@ -356,12 +355,12 @@ class EllipticalSersicProfile(EllipticalProfile):
 
     @property
     def elliptical_effective_radius(self):
-        """The effective_radius term used in a Sersic light profiles is the circular effective radius. It describes the
-         radius within which a circular aperture contains half the light profiles's light. For elliptical (i.e low axis
-         ratio) systems, this circle won't robustly capture the light profiles's elliptical shape.
+        """The effective_radius of a Sersic light profile is defined as the 'circular effective radius' - the \
+         radius within which a circular aperture contains half the profiles's total integrated light. For elliptical \
+        (i.e low axis ratio) systems, this won't robustly capture the light profile's elliptical shape.
 
-         The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing
-         half the light, and may be more appropriate for pixelization of highly flattened systems like disk galaxies."""
+         The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing \
+         half the light, and may be more appropriate for highly flattened systems like disk galaxies."""
         return self.effective_radius / np.sqrt(self.axis_ratio)
 
     @property

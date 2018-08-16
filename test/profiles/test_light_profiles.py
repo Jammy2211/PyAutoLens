@@ -119,15 +119,15 @@ class TestProfiles(object):
                                                                  effective_radius=0.6,
                                                                  sersic_index=4.0)
 
-            intensity = sersic.intensity_at_radius(radius=1.0)
+            intensity = sersic.intensity_from_grid_radii(grid_radii=1.0)
             assert intensity == pytest.approx(0.351797, 1e-3)
 
         def test__intensity_at_radius_2__correct_value(self):
             sersic = light_profiles.EllipticalSersicLightProfile(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                                  effective_radius=2.0,
                                                                  sersic_index=2.0)
-            intensity = sersic.intensity_at_radius(
-                radius=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
+            intensity = sersic.intensity_from_grid_radii(
+                grid_radii=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
             assert intensity == pytest.approx(4.90657319276, 1e-3)
 
         def test__intensity_from_coordinate_grid__different_axis_ratio(self):
@@ -160,13 +160,13 @@ class TestProfiles(object):
             exponential = light_profiles.EllipticalExponential(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                                effective_radius=0.6)
 
-            intensity = exponential.intensity_at_radius(radius=1.0)
+            intensity = exponential.intensity_from_grid_radii(grid_radii=1.0)
             assert intensity == pytest.approx(0.3266, 1e-3)
 
         def test__intensity_at_radius_2__correct_value(self):
             exponential = light_profiles.EllipticalExponential(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                                effective_radius=2.0)
-            intensity = exponential.intensity_at_radius(radius=1.5)
+            intensity = exponential.intensity_from_grid_radii(grid_radii=1.5)
             assert intensity == pytest.approx(4.5640, 1e-3)
 
         def test__intensity_from_coordinate_grid_1(self):
@@ -212,13 +212,13 @@ class TestProfiles(object):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                                       effective_radius=0.6)
 
-            intensity = dev_vaucouleurs.intensity_at_radius(radius=1.0)
+            intensity = dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.0)
             assert intensity == pytest.approx(0.3518, 1e-3)
 
         def test__intensity_at_radius_2__correct_value(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleurs(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                                       effective_radius=2.0)
-            intensity = dev_vaucouleurs.intensity_at_radius(radius=1.5)
+            intensity = dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.5)
             assert intensity == pytest.approx(5.1081, 1e-3)
 
         def test__intensity_from_coordinate_grid_1(self):
@@ -266,7 +266,7 @@ class TestProfiles(object):
                                                               radius_break=0.01,
                                                               intensity_break=0.1, gamma=1.0, alpha=1.0)
 
-            assert core_sersic.intensity_at_radius(0.01) == 0.1
+            assert core_sersic.intensity_from_grid_radii(0.01) == 0.1
 
 
 class TestLuminosityIntegral(object):
@@ -370,7 +370,7 @@ class TestLuminosityIntegral(object):
                     eta = math.sqrt(x ** 2 + y ** 2)
 
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -398,7 +398,7 @@ class TestLuminosityIntegral(object):
 
                     eta = math.sqrt(x ** 2 + y ** 2)
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -426,7 +426,7 @@ class TestLuminosityIntegral(object):
 
                     eta = math.sqrt(x ** 2 + y ** 2)
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -452,7 +452,7 @@ class TestLuminosityIntegral(object):
 
                     eta = math.sqrt(x ** 2 + y ** 2)
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -478,7 +478,7 @@ class TestLuminosityIntegral(object):
 
                     eta = math.sqrt(x ** 2 + y ** 2)
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
@@ -507,7 +507,7 @@ class TestLuminosityIntegral(object):
                     eta = sersic.grid_to_elliptical_radius(np.array([[x, y]]))
 
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
@@ -534,7 +534,7 @@ class TestLuminosityIntegral(object):
                     eta = sersic.grid_to_elliptical_radius(np.array([[x, y]]))
 
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
@@ -561,7 +561,7 @@ class TestLuminosityIntegral(object):
                     eta = sersic.grid_to_elliptical_radius(np.array([[x, y]]))
 
                     if eta < integral_radius:
-                        luminosity_tot += sersic.intensity_at_radius(eta) * area
+                        luminosity_tot += sersic.intensity_from_grid_radii(eta) * area
 
             intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 

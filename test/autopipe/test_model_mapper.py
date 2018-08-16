@@ -295,12 +295,12 @@ class TestConfigFunctions:
     def test_loading_config(self, test_config):
         config = test_config
 
-        assert ['u', 0, 1.0] == config.get("geometry_profiles", "Profile", "centre_0")
-        assert ['u', 0, 1.0] == config.get("geometry_profiles", "Profile", "centre_1")
+        assert ['u', 0, 1.0] == config.get("geometry_profiles", "GeometryProfile", "centre_0")
+        assert ['u', 0, 1.0] == config.get("geometry_profiles", "GeometryProfile", "centre_1")
 
     def test_model_from_unit_vector(self, test_config):
         collection = model_mapper.ModelMapper(test_config,
-                                              geometry_profile=geometry_profiles.Profile)
+                                              geometry_profile=geometry_profiles.GeometryProfile)
 
         model_map = collection.instance_from_unit_vector([1., 1.])
 
@@ -308,7 +308,7 @@ class TestConfigFunctions:
 
     def test_model_from_physical_vector(self, test_config):
         collection = model_mapper.ModelMapper(test_config,
-                                              geometry_profile=geometry_profiles.Profile)
+                                              geometry_profile=geometry_profiles.GeometryProfile)
 
         model_map = collection.instance_from_physical_vector([10., 50.])
 
@@ -355,7 +355,7 @@ class TestHyperCube:
     def test__in_order_of_class_constructor__multiple_profiles(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         unit_vector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
@@ -366,7 +366,7 @@ class TestHyperCube:
     def test__in_order_of_class_constructor__multiple_profiles_bigger_range_of_unit_values(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         unit_vector = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
@@ -377,7 +377,7 @@ class TestHyperCube:
     def test__order_maintained_with_prior_change(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         unit_vector = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
@@ -405,7 +405,7 @@ class TestModelInstancesRealClasses(object):
     def test__in_order_of_class_constructor___multiple_profiles(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         model_map = collection.instance_from_unit_vector([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
@@ -423,7 +423,7 @@ class TestModelInstancesRealClasses(object):
     def test__check_order_for_different_unit_values(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         collection.profile_1.centre.centre_0 = model_mapper.UniformPrior(0.0, 1.0)
@@ -454,7 +454,7 @@ class TestModelInstancesRealClasses(object):
     def test__check_order_for_different_unit_values_and_set_priors_equal_to_one_another(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         collection.profile_1.centre.centre_0 = model_mapper.UniformPrior(0.0, 1.0)
@@ -488,7 +488,7 @@ class TestModelInstancesRealClasses(object):
     def test__check_order_for_physical_values(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         model_map = collection.instance_from_physical_vector(
@@ -520,7 +520,7 @@ class TestModelInstancesRealClasses(object):
     def test__from_prior_medians__multiple_models(self, test_config):
         collection = model_mapper.ModelMapper(
             test_config,
-            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.Profile,
+            profile_1=geometry_profiles.EllipticalProfile, profile_2=geometry_profiles.GeometryProfile,
             profile_3=geometry_profiles.EllipticalProfile)
 
         model_map = collection.instance_from_prior_medians()
