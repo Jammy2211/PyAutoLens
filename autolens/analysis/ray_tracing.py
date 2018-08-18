@@ -28,7 +28,7 @@ class AbstractTracer(object):
         """
         Returns
         -------
-        hyper_galaxy_images: [ndarray]
+        lens_plane_galaxy_images: [ndarray]
             An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
@@ -293,7 +293,7 @@ class Plane(object):
         """
         Returns
         -------
-        hyper_galaxy_images: [ndarray]
+        lens_plane_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
         return [self.image_from_galaxy(galaxy) for galaxy in self.galaxies]

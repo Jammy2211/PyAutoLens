@@ -225,7 +225,7 @@ def remove_config(config_path=CONFIG_PATH):
 
 
 class Config(object):
-    def __init__(self, config_path, data_path):
+    def __init__(self, config_path, output_path):
         if not is_config(config_path):
             print("No config found at {}. Creating default config...".format(config_path))
             copy_default(config_path)
@@ -234,7 +234,7 @@ class Config(object):
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
         self.general = NamedConfig("{}/general.ini".format(config_path))
-        self.data_path = data_path
+        self.output_path = output_path
 
 
-instance = Config("{}/config".format(CONFIG_DIR), "{}/output".format(directory))
+instance = Config("{}/config".format(CONFIG_DIR), "{}/../output".format(directory))

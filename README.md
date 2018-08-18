@@ -65,18 +65,18 @@ from autolens.autopipe import non_linear
 image = im.load('basic', pixel_scale=0.05)
 
 # The GalaxyPrior class represents a variable galaxy object. Here we make the source galaxy by creating a galaxy prior
-# and passing it the EllipticalSersicLightProfile. The optimiser will create instances of this light profile with
+# and passing it the EllipticalSersic. The optimiser will create instances of this light profile with
 # different values for intensity, centre etc. as it runs.
-source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLightProfile)
+source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
 
 # We make a lens galaxy with both mass and light profiles. We call the light profile 'light_profile' and the mass
 # profile 'mass_profile' but really they could be called whatever we like.
-lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLightProfile,
+lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic,
                                        mass_profile=mass_profiles.SphericalIsothermal)
 
 # A source lens phase performs an analysis on an image using the system we've set up. There are lots of different kinds
 # of phase that can be plugged together in sophisticated pipelines but for now we'll run a single phase.
-source_lens_phase = phase.ProfileSourceLensPhase(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy,
+source_lens_phase = phase.LensSourcePhase(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy,
                                                  optimizer_class=non_linear.MultiNest)
 
 # We run the phase on the image and print the results.
@@ -105,20 +105,20 @@ from autolens.profiles import light_profiles, mass_profiles
 # Load an image from the 'basic' folder. It is assumed that this folder contains image.fits, noise.fits and psf.fits.
 img = im.load('basic', pixel_scale=0.05)
 
-# In the first phase we attempt to fit the lens light with an EllipticalSersicLightProfile.
-phase1 = ph.LensOnlyPhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile),
+# In the first phase we attempt to fit the lens light with an EllipticalSersic.
+phase1 = ph.LensPlanePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
                           optimizer_class=nl.MultiNest)
 
 
 # In the second phase we remove the lens light found in the first phase and try to fit just the source. To do this we
-# extend ProfileSourceLensPhase class and override two methods.
-class LensSubtractedPhase(ph.ProfileSourceLensPhase):
+# extend LensSourcePhase class and override two methods.
+class LensSubtractedPhase(ph.LensSourcePhase):
     # The modify image method provides a way for us to modify the image before a phase starts.
     def modify_image(self, image, previous_results):
         # The image is the original image we are trying to fit. Previous results is a list of results from previous
         # phases. We access the result from the last phase by calling previous_results.last. We take the image of the
         # lens galaxy from the last phase from the image.
-        return image - previous_results.last.lens_galaxy_image
+        return image - previous_results.last.lens_plane_image
 
     # The pass prior method provides us with a way to set variables and constants in this phase using those from a
     # previous phase.
@@ -142,14 +142,14 @@ def annular_mask_function(image):
 # centre of the mass profile we pass in here will be constrained by the pass_priors function defined above.
 phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal),
                              source_galaxy=gp.GalaxyPrior(
-                                 elliptical_sersic=light_profiles.EllipticalSersicLightProfile),
+                                 elliptical_sersic=light_profiles.EllipticalSersic),
                              optimizer_class=nl.MultiNest,
                              mask_function=annular_mask_function)
 
 
 # In the third phase we try fitting both lens and source light together. We use priors determined by both the previous
 # phases to constrain parameter space search.
-class CombinedPhase(ph.ProfileSourceLensPhase):
+class CombinedPhase(ph.LensSourcePhase):
     # We can take priors from both of the previous results.
     def pass_priors(self, previous_results):
         # The lens galaxy's light profile is constrained using results from the first phase whilst its mass profile
@@ -170,7 +170,7 @@ phase3h = ph.SourceLensHyperGalaxyPhase()
 
 
 # The final phase tries to fit the whole system again.
-class CombinedPhase2(ph.ProfileSourceLensPhase):
+class CombinedPhase2(ph.LensSourcePhase):
     # We take priors for the galaxies from phase 3 and set their hyper galaxies from phase 3h.
     def pass_priors(self, previous_results):
         phase_3_results = previous_results[2]

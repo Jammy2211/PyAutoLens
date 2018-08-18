@@ -66,14 +66,14 @@ class Reconstructor(object):
         return covariance_matrix
 
     def data_vector_from_blurred_mapping_matrix_and_data_jit(self, blurred_mapping_matrix, image_vector, noise_vector):
-        """ Compute the curvature_matrix matrix directly - used to integration test that our curvature_matrix matrix generator approach
+        """ Compute the curvature_matrix matrix directly - used to integration_old test that our curvature_matrix matrix generator approach
         truly works."""
         return self.data_vector_from_blurred_mapping_matrix_and_data_jitted(blurred_mapping_matrix, image_vector, noise_vector)
 
     @staticmethod
     @numba.jit(nopython=True)
     def data_vector_from_blurred_mapping_matrix_and_data_jitted(blurred_mapping_matrix, image_vector, noise_vector):
-        """ Compute the curvature_matrix matrix directly - used to integration test that our curvature_matrix matrix generator approach
+        """ Compute the curvature_matrix matrix directly - used to integration_old test that our curvature_matrix matrix generator approach
         truly works."""
 
         mapping_shape = blurred_mapping_matrix.shape
