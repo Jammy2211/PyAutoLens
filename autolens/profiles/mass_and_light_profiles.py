@@ -7,13 +7,13 @@ objects as being both mass and light profiles.
 """
 
 
-class EllipticalSersicMassAndLightProfile(light_profiles.EllipticalSersicLightProfile,
+class EllipticalSersicMassAndLightProfile(light_profiles.EllipticalSersic,
                                           mass_profiles.EllipticalSersicMass):
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
         print(centre, axis_ratio, phi, intensity, effective_radius, sersic_index, mass_to_light_ratio)
-        light_profiles.EllipticalSersicLightProfile.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
-                                                             sersic_index)
+        light_profiles.EllipticalSersic.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
+                                                 sersic_index)
         mass_profiles.EllipticalSersicMass.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
                                                     sersic_index, mass_to_light_ratio)
 
@@ -74,7 +74,7 @@ class EllipticalDevVaucouleursMassAndLightProfile(EllipticalSersicMassAndLightPr
                                                                           mass_to_light_ratio)
 
 
-class EllipticalSersicRadialGradientMassAndLightProfile(light_profiles.EllipticalSersicLightProfile,
+class EllipticalSersicRadialGradientMassAndLightProfile(light_profiles.EllipticalSersic,
                                                         mass_profiles.EllipticalSersicMassRadialGradient):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
@@ -101,8 +101,8 @@ class EllipticalSersicRadialGradientMassAndLightProfile(light_profiles.Elliptica
         mass_to_light_gradient : float
             The mass-to-light radial gradient.
         """
-        light_profiles.EllipticalSersicLightProfile.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
-                                                             sersic_index)
+        light_profiles.EllipticalSersic.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
+                                                 sersic_index)
         mass_profiles.EllipticalSersicMassRadialGradient.__init__(self, centre, axis_ratio, phi, intensity,
                                                                   effective_radius,
                                                                   sersic_index, mass_to_light_ratio,

@@ -1,0 +1,83 @@
+from autolens.pipeline import pipeline as pl
+from autolens.profiles import light_profiles as lp
+from autolens.autopipe import non_linear as nl
+from autolens.analysis import galaxy
+from autolens import conf
+from test.integration import tools
+
+import numpy as np
+import shutil
+import os
+
+dirpath = os.path.dirname(os.path.realpath(__file__))
+output_path = '/gpfs/data/pdtw24/Lens/integration/'
+
+def test_lens_x1_gal_pipeline():
+
+    pipeline_name = "lens_x1_gal"
+    data_name = '/lens_x1_gal'
+
+    try:
+        shutil.rmtree(dirpath+'/data'+data_name)
+    except FileNotFoundError:
+        pass
+
+    sersic = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                 effective_radius=1.3, sersic_index=3.0)
+
+    lens_galaxy = galaxy.Galaxy(light_profile=sersic)
+
+    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
+                                     source_galaxies=[])
+
+    conf.instance.output_path = output_path
+
+    try:
+        shutil.rmtree(output_path + pipeline_name)
+    except FileNotFoundError:
+        pass
+
+    pipeline = make_lens_x1_gal_pipeline(pipeline_name=pipeline_name)
+    image = tools.load_image(data_name=data_name, pixel_scale=0.2)
+
+    results = pipeline.run(image=image)
+    for result in results:
+        print(result)
+
+def make_lens_x1_gal_pipeline(pipeline_name):
+
+    from autolens.pipeline import phase as ph
+    from autolens.analysis import galaxy_prior as gp
+    from autolens.imaging import mask as msk
+    from autolens.profiles import light_profiles
+
+    # 1) Lens Light : EllipticalSersic
+    #    Mass: None
+    #    Source: None
+    #    Hyper Galaxy: None
+    #    NLO: MultiNest
+    #    Image : Observed Image
+    #    Mask : Circle - 3.0"
+
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)],
+                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+
+    phase1.optimizer.n_live_points = 40
+    phase1.optimizer.sampling_efficiency = 0.8
+
+    # 2) Lens Light : EllipticalSersic (fixed to phase 1)
+    #    Mass: None
+    #    Source: None
+    #    Hyper Galaxy: Yes (Model from phase 1)
+    #    NLO: MultiNest
+    #    Image : Observed Image
+    #    Mask : Circle - 3.0"
+
+    def annular_mask_function(img):
+        return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
+                                outer_radius=3.)
+
+    return pl.Pipeline(pipeline_name, phase1)
+
+if __name__ == "__main__":
+    test_lens_x1_gal_pipeline()

@@ -88,7 +88,7 @@ class NonLinearOptimizer(object):
 
         if name is None:
             name = ""
-        self.path = "{}/{}".format(conf.instance.data_path, name)
+        self.path = "{}/{}".format(conf.instance.output_path, name)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
@@ -127,7 +127,7 @@ class NonLinearOptimizer(object):
         self.create_paramnames_labels_temp()
         self.create_paramnames_file()
         self.variable.output_model_info(self.file_model_info)
-        self.variable.check_model_info(self.file_model_info)
+      #  self.variable.check_model_info(self.file_model_info)
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
@@ -141,7 +141,8 @@ class NonLinearOptimizer(object):
         self.paramnames_names = []
 
         for prior_name, prior_model in self.variable.prior_models:
-            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name], key=lambda prior : prior[1].id)
+            for param_no, param in enumerate(class_priors_dict_ordered):
                 self.paramnames_names.append(prior_name + '_' + param[0])
 
     def create_paramnames_labels(self):
@@ -157,7 +158,8 @@ class NonLinearOptimizer(object):
             component_number = prior_model.cls().component_number
             subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
             param_labels = generate_parameter_latex(param_labels, subscript)
-            for param_no, param in enumerate(self.variable.class_priors_dict[prior_name]):
+            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name], key=lambda prior : prior[1].id)
+            for param_no, param in enumerate(class_priors_dict_ordered):
                 self.paramnames_labels.append(param_labels[param_no])
 
     def create_paramnames_labels_temp(self):
@@ -228,7 +230,6 @@ class DownhillSimplex(NonLinearOptimizer):
 
         logger.info("Running DownhillSimplex...")
         output = self.fmin(fitness_function, x0=initial_vector)
-        print(output)
         logger.info("DownhillSimplex complete")
         res = fitness_function.result
 
@@ -289,6 +290,13 @@ class MultiNest(NonLinearOptimizer):
         return getdist.mcsamples.loadMCSamples(self.path + '/mn')
 
     def fit(self, analysis):
+
+        if len(self.path) > 77:
+            raise exc.MultiNestException('The path to the MultiNest results is longer than 77 characters (='
+                                         + str(len(self.path)) + ')' +
+                                        ' Unfortunately, PyMultiNest cannot use a path longer than this. ' \
+                                         'Set your results path to something with fewer characters to fix.')
+
         self.save_model_info()
 
         class Fitness(object):
@@ -343,7 +351,7 @@ class MultiNest(NonLinearOptimizer):
 
         constant = self.most_likely_instance_from_summary()
         likelihood = self.max_likelihood_from_summary()
-        variable = self.variable.mapper_from_gaussian_tuples(self.gaussian_priors_at_sigma_limit(self.sigma_limit))
+        variable = self.variable.mapper_from_gaussian_tuples(tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
         return Result(constant=constant, likelihood=likelihood, variable=variable)
 

@@ -22,12 +22,12 @@ def make():
     def mask_function(img):
         return msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2)
 
-    phase1 = ph.ProfileSourceLensPhase(
+    phase1 = ph.LensSourcePhase(
         lens_galaxy=gp.GalaxyPrior(
             sie=mass_profiles.SphericalIsothermal,
             shear=mass_profiles.ExternalShear),
-        source_galaxy=gp.GalaxyPrior(
-            sersic=light_profiles.EllipticalSersicLightProfile),
+        source_galaxies=gp.GalaxyPrior(
+            sersic=light_profiles.EllipticalSersic),
         mask_function=mask_function)
 
     # 2) Mass: SIE+Shear (priors from phase 1)

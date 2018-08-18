@@ -69,7 +69,7 @@ def source_only_pipeline(image, mask):
     phase1 = ph.ParameterizedPhase(optimizer=non_linear.MultiNest())
 
     # Define galaxy priors
-    source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLightProfile)
+    source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
     lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
@@ -212,7 +212,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_1 = non_linear.DownhillSimplex()
 
-    lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLightProfile)
+    lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
     lens_galaxy.redshift = model_mapper.Constant(1)
 
     optimizer_1.variable.lens_galaxies = [lens_galaxy]
@@ -243,7 +243,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermal,
                                            shear_mass_profile=mass_profiles.ExternalShear)
-    source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLightProfile)
+    source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
 
     optimizer_2.variable.lens_galaxies = [lens_galaxy]
     optimizer_2.variable.source_galaxies = [source_galaxy]
@@ -303,7 +303,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.instance.sie_mass_profile,
                                            shear_mass_profile=result_3.instance.shear_mass_profile,
-                                           sersic_light_profile=light_profiles.EllipticalSersicLightProfile,
+                                           sersic_light_profile=light_profiles.EllipticalSersic,
                                            exponential_light_profile=light_profiles.EllipticalExponential,
                                            hyper_galaxy=galaxy.HyperGalaxy)
 
@@ -397,7 +397,7 @@ def profiles_pipeline(paths, image, mask):
     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
 
     # Define galaxy priors
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersicLightProfile)
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
     lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((0.0, 0.0))
     lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(0.8)
     lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(90.0)
