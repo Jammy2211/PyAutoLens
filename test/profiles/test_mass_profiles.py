@@ -3257,10 +3257,10 @@ class TestProfiles(object):
                 assert defls[1, 1] == pytest.approx(1.1446, 1e-3)
 
             def test__from_light_profile(self):
-                light_sersic = light_profiles.EllipticalSersicLightProfile(centre=(-0.2, -0.4), axis_ratio=0.8,
-                                                                           phi=110.0,
-                                                                           intensity=5.0, effective_radius=0.2,
-                                                                           sersic_index=2.0)
+                light_sersic = light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
+                                                               phi=110.0,
+                                                               intensity=5.0, effective_radius=0.2,
+                                                               sersic_index=2.0)
                 mass_sersic = mass_profiles.EllipticalSersicMass.from_profile(light_sersic,
                                                                               mass_to_light_ratio=1.)
 
@@ -3962,10 +3962,10 @@ class TestProfiles(object):
                 assert defls[1, 1] == pytest.approx(0.97806399756448, 1e-3)
 
             def test__from_light_profile__deflection_angles_unchanged(self):
-                light_sersic = light_profiles.EllipticalSersicLightProfile(centre=(-0.2, -0.4), axis_ratio=0.8,
-                                                                           phi=110.0,
-                                                                           intensity=5.0, effective_radius=0.2,
-                                                                           sersic_index=2.0)
+                light_sersic = light_profiles.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8,
+                                                               phi=110.0,
+                                                               intensity=5.0, effective_radius=0.2,
+                                                               sersic_index=2.0)
 
                 mass_sersic = mass_profiles.EllipticalSersicMassRadialGradient.from_profile(light_sersic,
                                                                                             mass_to_light_ratio=1.0,

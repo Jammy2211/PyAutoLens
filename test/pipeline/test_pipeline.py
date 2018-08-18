@@ -74,10 +74,10 @@ def make_image():
 def make_results_1():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
-    const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
-    var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
-    return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
-                                            analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+    var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
+    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
+                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_2")
@@ -85,11 +85,11 @@ def make_results_2():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
     var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal)
-    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal())
-    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
-    return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
-                                            analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
+                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_3")
@@ -97,13 +97,13 @@ def make_results_3():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
     var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal,
-                                     elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
-    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLightProfile)
+                                     elliptical_sersic=light_profiles.EllipticalSersic)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal(),
-                                 elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
-    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLightProfile())
-    return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
-                                            analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+                                 elliptical_sersic=light_profiles.EllipticalSersic())
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
+                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_3h")
@@ -112,8 +112,8 @@ def make_results_3h():
     var = model_mapper.ModelMapper()
     const.lens_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
     const.source_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
-    return ph.ProfileSourceLensPhase.Result(constant=const, likelihood=1, variable=var,
-                                            analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
+                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 class TestProfileOnlyPipeline(object):
@@ -160,17 +160,17 @@ class TestProfileOnlyPipeline(object):
     #
     #     analysis = phase3h.make_analysis(image, previous_results)
     #
-    #     assert isinstance(phase3h.lens_galaxy, gp.GalaxyPrior)
-    #     assert isinstance(phase3h.source_galaxy, gp.GalaxyPrior)
+    #     assert isinstance(phase3h.lens_galaxies, gp.GalaxyPrior)
+    #     assert isinstance(phase3h.source_galaxies, gp.GalaxyPrior)
     #
     #     assert analysis.masked_image == np.ones((716,))
     #
-    #     assert phase3h.lens_galaxy.elliptical_sersic == results_3.constant.lens_galaxy.elliptical_sersic
-    #     assert phase3h.lens_galaxy.sie == results_3.constant.lens_galaxy.sie
-    #     assert phase3h.source_galaxy.elliptical_sersic == results_3.constant.source_galaxy.elliptical_sersic
+    #     assert phase3h.lens_galaxies.elliptical_sersic == results_3.constant.lens_galaxies.elliptical_sersic
+    #     assert phase3h.lens_galaxies.sie == results_3.constant.lens_galaxies.sie
+    #     assert phase3h.source_galaxies.elliptical_sersic == results_3.constant.source_galaxies.elliptical_sersic
     #
-    #     assert isinstance(phase3h.lens_galaxy.hyper_galaxy, model_mapper.PriorModel)
-    #     assert isinstance(phase3h.source_galaxy.hyper_galaxy, model_mapper.PriorModel)
+    #     assert isinstance(phase3h.lens_galaxies.hyper_galaxy, model_mapper.PriorModel)
+    #     assert isinstance(phase3h.source_galaxies.hyper_galaxy, model_mapper.PriorModel)
 
     def test_phase4(self, profile_only_pipeline, image, results_1, results_2, results_3, results_3h):
         phase4 = profile_only_pipeline.phases[4]
