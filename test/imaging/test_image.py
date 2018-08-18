@@ -587,6 +587,21 @@ class TestPrepatoryImage:
 
             assert sky_noise == np.std(np.arange(48))
 
+    class TestSignalToNoise:
+
+        def test__image_and_noise_are_values__signal_to_noise_is_ratio_of_each(self):
+
+            array = np.array([[1.0, 2.0],
+                              [3.0, 4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            img = image.PrepatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((2, 2))), noise=noise)
+
+            assert (img.signal_to_noise == np.array([[0.1, 0.2],
+                                                     [0.1, 1.0]])).all()
+            assert img.signal_to_noise_max == 1.0
 
 class TestImage(object):
     class TestConstructor:

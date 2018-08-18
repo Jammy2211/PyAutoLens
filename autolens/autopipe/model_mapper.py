@@ -284,21 +284,28 @@ class ModelMapper(AbstractModel):
 
     def mapper_from_gaussian_tuples(self, tuples):
         """
-        Creates a new model mapper from a list of tuples describing the mean and width values of gaussian priors. The
-        new gaussian priors must be provided in the same order as the priors associated with model.
+        Creates a new model mapper from a list of floats describing the mean values of gaussian priors. The widths of
+        the new priors are taken from the width_config. The new gaussian priors must be provided in the same order as
+        the priors associated with model.
 
         Parameters
         ----------
-        tuples: [(float, float)]
-            A list of tuples containing the mean and sigma of the gaussian priors.
+        means: [float]
+            A list containing the means of the gaussian priors.
 
         Returns
         -------
         mapper: ModelMapper
             A new model mapper with all priors replaced by gaussian priors.
         """
-        new_priors = map(lambda t: GaussianPrior(t[0], t[1]), tuples)
-        arguments = dict(map(lambda prior, new_prior: (prior[1], new_prior), self.priors_ordered_by_id, new_priors))
+        priors = self.priors_ordered_by_id
+        prior_class_dict = self.prior_class_dict
+        arguments = {}
+
+        for i, prior in enumerate(priors):
+            cls = prior_class_dict[prior[1]]
+            width = self.width_config.get_for_nearest_ancestor(cls, prior[0])
+            arguments[prior[1]] = GaussianPrior(tuples[i][0], max(tuples[i][1], width))
 
         return self.mapper_from_prior_arguments(arguments)
 
@@ -368,7 +375,8 @@ class ModelMapper(AbstractModel):
             model_info += prior_model.cls.__name__ + '\n' + '\n'
 
             for i, prior in enumerate(prior_model.priors):
-                param_name = str(self.class_priors_dict[prior_name][i][0])
+                class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda prior: prior[1].id)
+                param_name = str(class_priors_dict_ordered[i][0])
                 model_info += param_name + ': ' + (prior[1].model_info + '\n')
 
             model_info += '\n'
@@ -607,7 +615,7 @@ class PriorModel(AbstractPriorModel):
     def flat_prior_models(self):
         return [("", self)]
 
-    def __init__(self, cls, config=None):
+    def __init__(self, cls, config=None, width_config=None):
         """
         Parameters
         ----------
@@ -617,6 +625,7 @@ class PriorModel(AbstractPriorModel):
 
         self.cls = cls
         self.config = (config if config is not None else conf.instance.prior_default)
+        self.width_config = (config if config is not None else conf.instance.prior_width)
 
         arg_spec = inspect.getfullargspec(cls.__init__)
 

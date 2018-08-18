@@ -68,7 +68,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     def luminosity_within_circle(self, radius):
         """
         Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
-        integration and is centred on the light profile's centre.
+        integration_old and is centred on the light profile's centre.
 
         Parameters
         ----------
@@ -85,7 +85,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     def luminosity_within_ellipse(self, major_axis):
         """
         Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
-        integration and is centred, oriented and aligned with on the ellipitcal light profile.
+        integration_old and is centred, oriented and aligned with on the ellipitcal light profile.
 
         Parameters
         ----------
@@ -107,7 +107,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         return 2 * np.pi * r * self.intensity_from_grid_radii(x)
 
 
-class EllipticalSersicLightProfile(geometry_profiles.EllipticalSersicProfile, EllipticalLightProfile):
+class EllipticalSersic(geometry_profiles.EllipticalSersicGeometryProfile, EllipticalLightProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -128,8 +128,8 @@ class EllipticalSersicLightProfile(geometry_profiles.EllipticalSersicProfile, El
         sersic_index : Int
             Controls the concetration of the of the light profile.
         """
-        super(EllipticalSersicLightProfile, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
-                                                           sersic_index)
+        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
+                                               sersic_index)
 
     @property
     def parameter_labels(self):
@@ -167,7 +167,7 @@ class EllipticalSersicLightProfile(geometry_profiles.EllipticalSersicProfile, El
         return self.intensity_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
-class EllipticalExponential(EllipticalSersicLightProfile):
+class EllipticalExponential(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """ The elliptical exponential profile, used for fitting a galaxy's light.
@@ -194,7 +194,7 @@ class EllipticalExponential(EllipticalSersicLightProfile):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class EllipticalDevVaucouleurs(EllipticalSersicLightProfile):
+class EllipticalDevVaucouleurs(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """ The elliptical Dev Vaucouleurs profile, used for fitting a galaxy's light.
@@ -221,7 +221,7 @@ class EllipticalDevVaucouleurs(EllipticalSersicLightProfile):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class EllipticalCoreSersic(EllipticalSersicLightProfile):
+class EllipticalCoreSersic(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):

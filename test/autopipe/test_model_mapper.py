@@ -25,6 +25,11 @@ def make_test_config():
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
+@pytest.fixture(name="width_config")
+def make_width_config():
+    return conf.WidthConfig(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
+                                             "test_files/config/priors/width"))
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
@@ -52,8 +57,8 @@ class TestAddition(object):
     def test_mapper_plus_mapper(self):
         one = model_mapper.ModelMapper()
         two = model_mapper.ModelMapper()
-        one.a = model_mapper.PriorModel(geometry_profiles.EllipticalSersicProfile)
-        two.b = model_mapper.PriorModel(geometry_profiles.EllipticalSersicProfile)
+        one.a = model_mapper.PriorModel(geometry_profiles.EllipticalSersicGeometryProfile)
+        two.b = model_mapper.PriorModel(geometry_profiles.EllipticalSersicGeometryProfile)
 
         three = one + two
 
@@ -94,6 +99,10 @@ class MockConfig(conf.DefaultPriorConfig):
             return self.d[class_name][var_name]
         except KeyError:
             return ["u", 0, 1]
+
+
+class MockWidthConfig(conf.WidthConfig):
+    pass
 
 
 class MockProfile(object):
@@ -271,14 +280,14 @@ class TestRealClasses(object):
 
     def test_combination(self):
         collection = model_mapper.ModelMapper(MockConfig(),
-                                              source_light_profile=light_profiles.EllipticalSersicLightProfile,
+                                              source_light_profile=light_profiles.EllipticalSersic,
                                               lens_mass_profile=mass_profiles.EllipticalCoredIsothermal,
                                               lens_light_profile=light_profiles.EllipticalCoreSersic)
 
         model_map = collection.instance_from_unit_vector(
             [1 for _ in range(len(collection.priors_ordered_by_id))])
 
-        assert isinstance(model_map.source_light_profile, light_profiles.EllipticalSersicLightProfile)
+        assert isinstance(model_map.source_light_profile, light_profiles.EllipticalSersic)
         assert isinstance(model_map.lens_mass_profile, mass_profiles.EllipticalCoredIsothermal)
         assert isinstance(model_map.lens_light_profile, light_profiles.EllipticalCoreSersic)
 
@@ -326,7 +335,7 @@ class TestConfigFunctions:
         config = test_config
 
         collection = model_mapper.ModelMapper(config=config,
-                                              sersic_light_profile=light_profiles.EllipticalSersicLightProfile,
+                                              sersic_light_profile=light_profiles.EllipticalSersic,
                                               elliptical_profile_1=geometry_profiles.EllipticalProfile,
                                               elliptical_profile_2=geometry_profiles.EllipticalProfile,
                                               spherical_profile=geometry_profiles.SphericalProfile,
@@ -339,7 +348,7 @@ class TestConfigFunctions:
         assert isinstance(model_map.elliptical_profile_2, geometry_profiles.EllipticalProfile)
         assert isinstance(model_map.spherical_profile, geometry_profiles.SphericalProfile)
 
-        assert isinstance(model_map.sersic_light_profile, light_profiles.EllipticalSersicLightProfile)
+        assert isinstance(model_map.sersic_light_profile, light_profiles.EllipticalSersic)
         assert isinstance(model_map.exponential_light_profile, light_profiles.EllipticalExponential)
 
 
@@ -584,29 +593,28 @@ class TestUtility(object):
 
 class TestPriorReplacement(object):
 
-    def test_prior_replacement(self):
-        mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
+    def test_prior_replacement(self, width_config):
+        mapper = model_mapper.ModelMapper(MockConfig(), width_config=width_config, mock_class=MockClassMM)
         result = mapper.mapper_from_gaussian_tuples([(10, 3), (5, 3)])
 
         assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
-    def test_replace_priors_with_gaussians_from_tuples(self):
-        mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
+    def test_replace_priors_with_gaussians_from_tuples(self, width_config):
+        mapper = model_mapper.ModelMapper(MockConfig(), width_config=width_config, mock_class=MockClassMM)
         result = mapper.mapper_from_gaussian_tuples([(10, 3), (5, 3)])
 
         assert isinstance(result.mock_class.one, model_mapper.GaussianPrior)
 
-    def test_replacing_priors_for_profile(self):
-        mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockProfile)
-        result = mapper.mapper_from_gaussian_tuples(
-            [(10, 3), (5, 3), (5, 3)])
+    def test_replacing_priors_for_profile(self, width_config):
+        mapper = model_mapper.ModelMapper(MockConfig(), width_config=width_config, mock_class=MockProfile)
+        result = mapper.mapper_from_gaussian_tuples([(10, 3), (5, 3), (5, 3)])
 
         assert isinstance(result.mock_class.centre.priors[0][1], model_mapper.GaussianPrior)
         assert isinstance(result.mock_class.centre.priors[1][1], model_mapper.GaussianPrior)
         assert isinstance(result.mock_class.intensity, model_mapper.GaussianPrior)
 
-    def test_replace_priors_for_two_classes(self):
-        mapper = model_mapper.ModelMapper(MockConfig(), one=MockClassMM, two=MockClassMM)
+    def test_replace_priors_for_two_classes(self, width_config):
+        mapper = model_mapper.ModelMapper(MockConfig(), width_config=width_config, one=MockClassMM, two=MockClassMM)
 
         result = mapper.mapper_from_gaussian_tuples([(1, 1), (2, 1), (3, 1), (4, 1)])
 
@@ -654,6 +662,7 @@ def make_list_prior_model():
 
 
 class TestListPriorModel(object):
+
     def test_instance_from_physical_vector(self, list_prior_model):
         mapper = model_mapper.ModelMapper(MockConfig())
         mapper.list = list_prior_model
@@ -667,11 +676,11 @@ class TestListPriorModel(object):
         assert instance.list[1].one == 3
         assert instance.list[1].two == 4
 
-    def test_prior_results_for_gaussian_tuples(self, list_prior_model):
-        mapper = model_mapper.ModelMapper(MockConfig())
+    def test_prior_results_for_gaussian_tuples(self, list_prior_model, width_config):
+        mapper = model_mapper.ModelMapper(MockConfig(), width_config)
         mapper.list = list_prior_model
 
-        gaussian_mapper = mapper.mapper_from_gaussian_tuples([(1, 1), (2, 1), (3, 1), (4, 1)])
+        gaussian_mapper = mapper.mapper_from_gaussian_tuples([(1, 5), (2, 5), (3, 5), (4, 5)])
 
         assert isinstance(gaussian_mapper.list, list)
         assert len(gaussian_mapper.list) == 2
@@ -679,6 +688,28 @@ class TestListPriorModel(object):
         assert gaussian_mapper.list[0].two.mean == 2
         assert gaussian_mapper.list[1].one.mean == 3
         assert gaussian_mapper.list[1].two.mean == 4
+        assert gaussian_mapper.list[0].one.sigma == 5
+        assert gaussian_mapper.list[0].two.sigma == 5
+        assert gaussian_mapper.list[1].one.sigma == 5
+        assert gaussian_mapper.list[1].two.sigma == 5
+
+    def test_prior_results_for_gaussian_tuples__include_override_from_width_file(self, list_prior_model, width_config):
+
+        mapper = model_mapper.ModelMapper(MockConfig(), width_config)
+        mapper.list = list_prior_model
+
+        gaussian_mapper = mapper.mapper_from_gaussian_tuples([(1, 0), (2, 0), (3, 0), (4, 0)])
+
+        assert isinstance(gaussian_mapper.list, list)
+        assert len(gaussian_mapper.list) == 2
+        assert gaussian_mapper.list[0].one.mean == 1
+        assert gaussian_mapper.list[0].two.mean == 2
+        assert gaussian_mapper.list[1].one.mean == 3
+        assert gaussian_mapper.list[1].two.mean == 4
+        assert gaussian_mapper.list[0].one.sigma == 1
+        assert gaussian_mapper.list[0].two.sigma == 2
+        assert gaussian_mapper.list[1].one.sigma == 1
+        assert gaussian_mapper.list[1].two.sigma == 2
 
     def test_automatic_boxing(self):
         mapper = model_mapper.ModelMapper(MockConfig())
@@ -736,13 +767,6 @@ class TestConstant(object):
         assert len(new_mapper.mock_class.constants) == 1
 
 
-@pytest.fixture(name="width_config")
-def make_width_config():
-    return conf.WidthConfig(
-        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
-                                             "test_files/config/priors/width"))
-
-
 @pytest.fixture(name="mapper_with_one")
 def make_mapper_with_one(test_config, width_config):
     mapper = model_mapper.ModelMapper(width_config=width_config)
@@ -759,7 +783,9 @@ def make_mapper_with_list(test_config, width_config):
 
 
 class TestGaussianWidthConfig(object):
+
     def test_config(self, width_config):
+
         assert 1 == width_config.get('test_model_mapper', 'MockClassMM', 'one')
         assert 2 == width_config.get('test_model_mapper', 'MockClassMM', 'two')
 
