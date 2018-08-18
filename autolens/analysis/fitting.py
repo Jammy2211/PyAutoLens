@@ -3,7 +3,7 @@ from autolens.imaging import masked_image as mi
 from autolens.imaging import mask
 from autolens.analysis import ray_tracing
 
-# TODO : Can we make hyper_model_image, hyper_galaxy_images, minimum_Values a part of hyper galaxies?
+# TODO : Can we make hyper_model_image, lens_plane_galaxy_images, minimum_Values a part of hyper galaxies?
 
 minimum_value_profile = 0.1
 

@@ -327,7 +327,7 @@ class EllipticalProfile(SphericalProfile):
         return np.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
 
-class EllipticalSersicProfile(EllipticalProfile):
+class EllipticalSersicGeometryProfile(EllipticalProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -348,7 +348,7 @@ class EllipticalSersicProfile(EllipticalProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(EllipticalSersicProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalSersicGeometryProfile, self).__init__(centre, axis_ratio, phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index

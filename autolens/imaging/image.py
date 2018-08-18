@@ -198,6 +198,14 @@ class PrepatoryImage(ScaledArray):
         """
         return self.counts_to_electrons_per_second(self.estimated_noise_counts)
 
+    @property
+    def signal_to_noise(self):
+        return np.divide(self, self.noise)
+
+    @property
+    def signal_to_noise_max(self):
+        return np.max(self.signal_to_noise)
+
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an masked_image
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
