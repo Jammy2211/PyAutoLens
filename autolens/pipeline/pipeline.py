@@ -22,7 +22,10 @@ class Pipeline(object):
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
-            results.append(phase.run(image, ph.ResultsCollection(results)))
+            if not isinstance(phase, ph.HyperOnly):
+                results.append(phase.run(image, ph.ResultsCollection(results)))
+            elif isinstance(phase, ph.HyperOnly):
+                results[-1].hyper = phase.run(image, ph.ResultsCollection(results))
         return results
 
     def __add__(self, other):

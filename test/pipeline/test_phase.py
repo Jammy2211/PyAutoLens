@@ -8,7 +8,7 @@ from autolens.imaging import mask as msk
 from autolens.imaging import image as img
 from autolens.imaging import masked_image as mi
 from autolens.autopipe import model_mapper as mm
-from autolens.profiles import light_profiles
+from autolens.profiles import light_profiles, mass_profiles
 from autolens import conf
 from os import path
 import os
@@ -70,7 +70,7 @@ def make_grids(masked_image):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.ProfileSourceLensPhase(optimizer_class=NLO)
+    return ph.LensSourcePhase(optimizer_class=NLO)
 
 
 @pytest.fixture(name="galaxy")
@@ -121,12 +121,12 @@ class TestPhase(object):
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxy = galaxy
         assert phase.optimizer.constant.lens_galaxy == galaxy
-        assert not hasattr(phase.optimizer.variable, "lens_galaxy")
+        assert not hasattr(phase.optimizer.variable, "lens_galaxies")
 
     def test_set_variables(self, phase, galaxy_prior):
         phase.lens_galaxy = galaxy_prior
         assert phase.optimizer.variable.lens_galaxy == galaxy_prior
-        assert not hasattr(phase.optimizer.constant, "lens_galaxy")
+        assert not hasattr(phase.optimizer.constant, "lens_galaxies")
 
     def test_mask_analysis(self, phase, image, masked_image):
         analysis = phase.make_analysis(image=image)
@@ -142,7 +142,7 @@ class TestPhase(object):
         assert isinstance(result.constant.source_galaxy, g.Galaxy)
 
     def test_customize(self, results, image):
-        class MyPhase(ph.ProfileSourceLensPhase):
+        class MyPhase(ph.LensSourcePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxy = previous_results.last.constant.lens_galaxy
                 self.source_galaxy = previous_results.last.variable.source_galaxy
@@ -150,8 +150,8 @@ class TestPhase(object):
         galaxy = g.Galaxy()
         galaxy_prior = gp.GalaxyPrior()
 
-        setattr(results.constant, "lens_galaxy", galaxy)
-        setattr(results.variable, "source_galaxy", galaxy_prior)
+        setattr(results.constant, "lens_galaxies", galaxy)
+        setattr(results.variable, "source_galaxies", galaxy_prior)
 
         phase = MyPhase(optimizer_class=NLO)
         phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
@@ -160,7 +160,7 @@ class TestPhase(object):
         assert phase.source_galaxy == galaxy_prior
 
     def test_phase_property(self):
-        class MyPhase(ph.ProfileSourceLensPhase):
+        class MyPhase(ph.LensPlanePhase):
             prop = ph.phase_property("prop")
 
         phase = MyPhase(optimizer_class=NLO)
@@ -189,12 +189,12 @@ class TestPhase(object):
         assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.ProfileSourceLensPhase(lens_galaxy=gp.GalaxyPrior(), source_galaxy=gp.GalaxyPrior())
+        phase = ph.LensSourcePhase(lens_galaxy=gp.GalaxyPrior(), source_galaxies=gp.GalaxyPrior())
 
-        ph.ProfileSourceLensPhase()
+        ph.LensSourcePhase()
 
-        assert phase.lens_galaxy is not None
-        assert phase.source_galaxy is not None
+        assert phase.lens_galaxies is not None
+        assert phase.source_galaxies is not None
 
     def test_modify_image(self, image):
         class MyPhase(ph.Phase):
@@ -207,22 +207,100 @@ class TestPhase(object):
         assert analysis.masked_image != image
 
     def test_model_images(self, image):
-        phase = ph.ProfileSourceLensPhase()
+        phase = ph.LensSourcePhase()
         analysis = phase.make_analysis(image)
         instance = mm.ModelInstance()
         instance.lens_galaxy = g.Galaxy(light=light_profiles.EllipticalExponential())
         instance.source_galaxy = None
 
-        images = analysis.galaxy_images_for_model(instance)
+        images = analysis.galaxy_images_for_instance(instance)
         assert images[0].shape == image.shape
         assert images[1] is None
+
+    def test__phase_can_receive_list_of_galaxy_priors(self):
+
+        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic,
+                                                                sis=mass_profiles.SphericalIsothermal,
+                                                                variable_redshift=True),
+                                                 gp.GalaxyPrior(sis=mass_profiles.SphericalIsothermal,
+                                                                    variable_redshift=True)],
+                                  optimizer_class=non_linear.MultiNest)
+
+
+        instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3,
+                                                                0.4, 0.5, 0.6, 0.7, 0.8])
+
+        assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
+        assert instance.lens_galaxies[0].sis.centre[0] == 0.1
+        assert instance.lens_galaxies[0].sis.centre[1] == 0.2
+        assert instance.lens_galaxies[0].sis.einstein_radius == 0.3
+        assert instance.lens_galaxies[0].redshift == 0.4
+        assert instance.lens_galaxies[1].sis.centre[0] == 0.5
+        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
+        assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
+        assert instance.lens_galaxies[1].redshift == 0.8
+
+        class LensPlanePhase2(ph.LensPlanePhase):
+            def pass_priors(self, previous_results):
+                self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
+
+        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic,
+                                                                    sis=mass_profiles.SphericalIsothermal,
+                                                                    variable_redshift=True),
+                                               gp.GalaxyPrior(sis=mass_profiles.SphericalIsothermal,
+                                                                    variable_redshift=True)],
+                                optimizer_class=non_linear.MultiNest)
+
+
+        phase.pass_priors(None)
+
+        instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2,
+                                                                0.4, 0.5, 0.6, 0.7, 0.8])
+        print(phase.optimizer.constant)
+        print(phase.optimizer.constant.__dict__)
+        instance += phase.optimizer.constant
+
+        assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
+        assert instance.lens_galaxies[0].sis.centre[0] == 0.1
+        assert instance.lens_galaxies[0].sis.centre[1] == 0.2
+        assert instance.lens_galaxies[0].sis.einstein_radius == 10.0
+        assert instance.lens_galaxies[0].redshift == 0.4
+        assert instance.lens_galaxies[1].sis.centre[0] == 0.5
+        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
+        assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
+        assert instance.lens_galaxies[1].redshift == 0.8
+
+    def test__phase_can_receive_list_of_galaxy_priors_2(self):
+
+        from autolens.analysis import galaxy
+
+        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=light_profiles.EllipticalSersic,
+                                                                sis=mass_profiles.SphericalIsothermal,
+                                                                variable_redshift=True),
+                                                 gp.GalaxyPrior(sis=mass_profiles.SphericalIsothermal(centre=(11.0, 12.0),
+                                                                                                          einstein_radius=13.0),
+                                                                    variable_redshift=True)],
+                                  optimizer_class=non_linear.MultiNest)
+
+        instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                                                0.4, 0.5, 0.6, 0.7, 0.8])
+
+        assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
+        assert instance.lens_galaxies[0].sis.centre[0] == 11.0
+        assert instance.lens_galaxies[0].sis.centre[1] == 12.0
+        assert instance.lens_galaxies[0].sis.einstein_radius == 13.0
+        assert instance.lens_galaxies[0].redshift == 0.4
+        assert instance.lens_galaxies[1].sis.centre[0] == 0.5
+        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
+        assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
+        assert instance.lens_galaxies[1].redshift == 0.8
 
 
 class TestPixelizedPhase(object):
     def test_constructor(self):
         phase = ph.PixelizedSourceLensPhase()
-        assert isinstance(phase.source_galaxy, gp.GalaxyPrior)
-        assert phase.lens_galaxy is None
+        assert isinstance(phase.source_galaxies, gp.GalaxyPrior)
+        assert phase.lens_galaxies is None
 
 
 class TestAnalysis(object):
@@ -235,8 +313,8 @@ class TestResult(object):
     def test_hyper_galaxy_and_model_images(self):
         analysis = MockAnalysis(number_galaxies=2, value=1.0)
 
-        result = ph.ProfileSourceLensPhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
-                                                  analysis=analysis)
+        result = ph.LensSourcePhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
+                                           analysis=analysis)
         assert (result.galaxy_images[0] == np.array([1.0])).all()
         assert (result.galaxy_images[1] == np.array([1.0])).all()
         assert (result.model_image == np.array([2.0])).all()
