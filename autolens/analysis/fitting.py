@@ -33,6 +33,7 @@ class AbstractHyperFitter(AbstractFitter):
 
     @property
     def scaled_noise(self):
+
         return scaled_noise_from_hyper_galaxies_and_contributions(self.contributions, self.tracer.hyper_galaxies,
                                                                   self.masked_image.noise)
 
