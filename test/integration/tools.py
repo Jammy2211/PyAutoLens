@@ -41,8 +41,10 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     shape = galaxy_image_2d.shape
     sim_image = im.PrepatoryImage.simulate(array=galaxy_image_2d, effective_exposure_time=1000.0 * np.ones(shape),
                                               pixel_scale=pixel_scale, background_sky_map=10.0 * np.ones(shape),
-                                              psf=psf,
-                                              include_poisson_noise=True, seed=1)
+                                              psf=psf, include_poisson_noise=True, seed=1)
+
+    print(sim_image.signal_to_noise_max)
+    stop
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)

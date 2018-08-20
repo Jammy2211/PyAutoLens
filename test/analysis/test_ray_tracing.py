@@ -42,20 +42,20 @@ def make_galaxy_no_profiles():
 
 @pytest.fixture(name="galaxy_light_sersic")
 def make_galaxy_light_sersic():
-    sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                             sersic_index=4.0)
+    sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                               sersic_index=4.0)
     return galaxy.Galaxy(light_profile=sersic)
 
 
 @pytest.fixture(name="galaxy_mass_sis")
 def make_galaxy_mass_sis():
-    sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+    sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile=sis)
 
 
 @pytest.fixture(name='lens_sis_x3')
 def make_lens_sis_x3():
-    mass_profile = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+    mass_profile = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile_1=mass_profile, mass_profile_2=mass_profile,
                          mass_profile_3=mass_profile)
 
@@ -72,13 +72,13 @@ def make_sparse_mask():
 
 @pytest.fixture(name="galaxy_light_only")
 def make_galaxy_light_only():
-    return galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic())
+    return galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP())
 
 
 @pytest.fixture(name="galaxy_light_and_mass")
 def make_galaxy_light_and_mass():
-    return galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(),
-                         mass_profile=mass_profiles.SphericalIsothermal())
+    return galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(),
+                         mass_profile=mass_profiles.SphericalIsothermalMP())
 
 
 class MockMassProfile(object):
@@ -612,12 +612,12 @@ class TestMultiTracer(object):
                                                                                            grids):
             import math
 
-            g0 = galaxy.Galaxy(redshift=2.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
-            g1 = galaxy.Galaxy(redshift=2.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
-            g2 = galaxy.Galaxy(redshift=0.1, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
-            g3 = galaxy.Galaxy(redshift=3.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
-            g4 = galaxy.Galaxy(redshift=1.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
-            g5 = galaxy.Galaxy(redshift=3.0, mass_profile=mass_profiles.SphericalIsothermal(einstein_radius=1.0))
+            g0 = galaxy.Galaxy(redshift=2.0, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g1 = galaxy.Galaxy(redshift=2.0, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g2 = galaxy.Galaxy(redshift=0.1, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g3 = galaxy.Galaxy(redshift=3.0, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g4 = galaxy.Galaxy(redshift=1.0, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g5 = galaxy.Galaxy(redshift=3.0, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
 
             tracer = ray_tracing.MultiTracer(galaxies=[g0, g1, g2, g3, g4, g5],
                                              image_plane_grids=grids, cosmology=cosmo.Planck15)
@@ -712,8 +712,8 @@ class TestMultiTracer(object):
     class TestImageFromGalaxies:
 
         def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, grids):
-            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                     sersic_index=4.0)
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                       sersic_index=4.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic)
             g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic)
@@ -737,10 +737,10 @@ class TestMultiTracer(object):
             assert (plane_image == ray_trace_image).all()
 
         def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, grids):
-            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                     sersic_index=4.0)
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                       sersic_index=4.0)
 
-            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic, mass_profile=sis)
             g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic, mass_profile=sis)
@@ -763,8 +763,8 @@ class TestMultiTracer(object):
     class TestBlurringImageFromGalaxies:
 
         def test__galaxy_light_sersic_no_mass__image_sum_of_all_3_planes(self, grids):
-            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                     sersic_index=4.0)
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                       sersic_index=4.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic)
             g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic)
@@ -788,10 +788,10 @@ class TestMultiTracer(object):
             assert (plane_image == ray_trace_image).all()
 
         def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, grids):
-            sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                                     sersic_index=4.0)
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                                       sersic_index=4.0)
 
-            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, light_profile=sersic, mass_profile=sis)
             g1 = galaxy.Galaxy(redshift=1.0, light_profile=sersic, mass_profile=sis)
@@ -814,7 +814,7 @@ class TestMultiTracer(object):
     class TestReconstructorFromGalaxy:
 
         def test__3_galaxies__non_have_pixelization__returns_none_x3(self, grids, sparse_mask):
-            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, mass_profile=sis)
             g1 = galaxy.Galaxy(redshift=1.0, mass_profile=sis)
@@ -829,7 +829,7 @@ class TestMultiTracer(object):
 
         def test__3_galaxies__1_has_pixelization__returns_none_x2_and_pixelization(self, grids,
                                                                                    sparse_mask):
-            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, mass_profile=sis)
             g1 = galaxy.Galaxy(redshift=1.0, pixelization=MockPixelization(value=1), mass_profile=sis)
@@ -843,7 +843,7 @@ class TestMultiTracer(object):
             assert reconstructors == [None, 1, None]
 
         def test__3_galaxies__all_have_pixelization__returns_pixelizations(self, grids, sparse_mask):
-            sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
+            sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
 
             g0 = galaxy.Galaxy(redshift=0.1, pixelization=MockPixelization(value=0.5), mass_profile=sis)
             g1 = galaxy.Galaxy(redshift=1.0, pixelization=MockPixelization(value=1), mass_profile=sis)
@@ -917,10 +917,10 @@ class TestPlane(object):
             assert lens_plane.deflections.blurring[0] == pytest.approx(np.array([3.0, 0.0]), 1e-3)
 
         def test__grids__complex_mass_model(self, grids):
-            power_law = mass_profiles.EllipticalPowerLaw(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
-                                                         einstein_radius=1.0, slope=2.2)
+            power_law = mass_profiles.EllipticalPowerLawMP(centre=(1.0, 4.0), axis_ratio=0.7, phi=30.0,
+                                                           einstein_radius=1.0, slope=2.2)
 
-            nfw = mass_profiles.SphericalNFW(kappa_s=0.1, scale_radius=5.0)
+            nfw = mass_profiles.SphericalNFWMP(kappa_s=0.1, scale_radius=5.0)
 
             lens_galaxy = galaxy.Galaxy(redshift=0.1, mass_profile_1=power_law, mass_profile_2=nfw)
 
@@ -1238,7 +1238,7 @@ class TestBooleanProperties(object):
 
         gal = galaxy.Galaxy()
         gal_lp = galaxy.Galaxy(light_profile=light_profiles.LightProfile())
-        gal_mp = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermal())
+        gal_mp = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP())
 
         assert ray_tracing.Tracer([], [], grids).has_galaxy_with_light_profile == False
         assert ray_tracing.Tracer([gal], [], grids).has_galaxy_with_light_profile == False

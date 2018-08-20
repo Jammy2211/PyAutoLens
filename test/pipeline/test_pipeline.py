@@ -74,36 +74,36 @@ def make_image():
 def make_results_1():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
-    const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
-    var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
-    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
-                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
+    var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
+    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
+                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_2")
 def make_results_2():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
-    var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal)
-    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
-    const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal())
-    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
-    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
-                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermalMP)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
+    const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermalMP())
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
+    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
+                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_3")
 def make_results_3():
     const = model_mapper.ModelInstance()
     var = model_mapper.ModelMapper()
-    var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermal,
-                                     elliptical_sersic=light_profiles.EllipticalSersic)
-    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
-    const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermal(),
-                                 elliptical_sersic=light_profiles.EllipticalSersic())
-    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
-    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
-                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermalMP,
+                                     elliptical_sersic=light_profiles.EllipticalSersicLP)
+    var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
+    const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermalMP(),
+                                 elliptical_sersic=light_profiles.EllipticalSersicLP())
+    const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
+    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
+                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_3h")
@@ -112,8 +112,8 @@ def make_results_3h():
     var = model_mapper.ModelMapper()
     const.lens_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
     const.source_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
-    return ph.LensSourcePhase.Result(constant=const, likelihood=1, variable=var,
-                                     analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
+                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 class TestProfileOnlyPipeline(object):

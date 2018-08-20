@@ -245,8 +245,8 @@ def make_no_galaxies():
 
 @pytest.fixture(name="galaxy_light_sersic", scope='function')
 def make_galaxy_light_sersic():
-    sersic = light_profiles.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
-                                             sersic_index=4.0)
+    sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                               sersic_index=4.0)
     return galaxy.Galaxy(light_profile=sersic)
 
 
@@ -559,7 +559,7 @@ class TestProfileFitter:
                                            [True, True,  True,  True,  True]]), pixel_scale=1.0)
             mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
-            mock_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(intensity=1.0))
+            mock_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0))
             tracer = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=[mock_galaxy],
                                         image_plane_grids=mi.grids)
 
@@ -703,7 +703,7 @@ class TestHyperProfileFitter:
                                    np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])]
     
             hyper_galaxy = galaxy.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
-            mock_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(intensity=1.0),
+            mock_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0),
                                         hyper_galaxy=hyper_galaxy)
             tracer = ray_tracing.Tracer(lens_galaxies=[mock_galaxy], source_galaxies=[mock_galaxy],
                                         image_plane_grids=mi.grids)
@@ -877,7 +877,7 @@ class TestHyperPixelizationFitter:
             hyper_galaxy_images = [np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])]
 
             hyper_galaxy = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
-            galaxy_pix = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(intensity=1.0),
+            galaxy_pix = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0),
                                        hyper_galaxy=hyper_galaxy, pixelization=pix)
             tracer = ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[galaxy_pix], image_plane_grids=mi.grids)
             fitter = fitting.HyperPixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
@@ -945,7 +945,7 @@ class TestHyperPixelizationFitter:
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
                                    np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])]
             hyper_model = galaxy.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
-            hyper_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersic(intensity=1.0),
+            hyper_galaxy = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0),
                                          hyper_galaxy=hyper_model)
             hyper_pix_galaxy = galaxy.Galaxy(pixelization=pix, hyper_galaxy=hyper_model)
             tracer = ray_tracing.Tracer(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
