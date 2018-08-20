@@ -74,9 +74,9 @@ class GeometryProfile(object):
         Examples
         ----------
         p = profiles.Profile(centre=(1, 1))
-        elliptical_profile = profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
+        elliptical_profile = profiles.EllipticalProfileGP.from_profile(p, axis_ratio=1, phi=2)
 
-        elliptical_profile = profiles.EllipticalProfile(1, 2)
+        elliptical_profile = profiles.EllipticalProfileGP(1, 2)
         profiles.Profile.from_profile(elliptical_profile).__class__ == profiles.Profile
 
         Parameters
@@ -105,7 +105,7 @@ class GeometryProfile(object):
                                '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
 
 
-class SphericalProfile(GeometryProfile):
+class SphericalProfileGP(GeometryProfile):
 
     def __init__(self, centre=(0.0, 0.0)):
         """ Generic circular profiles class to contain functions shared by light and mass profiles.
@@ -115,7 +115,7 @@ class SphericalProfile(GeometryProfile):
         centre: (float, float)
             The coordinates of the centre of the profile.
         """
-        super(SphericalProfile, self).__init__(centre)
+        super(SphericalProfileGP, self).__init__(centre)
 
     @property
     def parameter_labels(self):
@@ -187,7 +187,7 @@ class SphericalProfile(GeometryProfile):
         return transformed.view(TransformedGrid)
 
 
-class EllipticalProfile(SphericalProfile):
+class EllipticalProfileGP(SphericalProfileGP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """ Generic elliptical profiles class to contain functions shared by light and mass profiles.
@@ -201,7 +201,7 @@ class EllipticalProfile(SphericalProfile):
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalProfile, self).__init__(centre)
+        super(EllipticalProfileGP, self).__init__(centre)
         self.axis_ratio = axis_ratio
         self.phi = phi
 
@@ -327,7 +327,7 @@ class EllipticalProfile(SphericalProfile):
         return np.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
 
-class EllipticalSersicGeometryProfile(EllipticalProfile):
+class EllipticalSersicGP(EllipticalProfileGP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -348,7 +348,7 @@ class EllipticalSersicGeometryProfile(EllipticalProfile):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(EllipticalSersicGeometryProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalSersicGP, self).__init__(centre, axis_ratio, phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
