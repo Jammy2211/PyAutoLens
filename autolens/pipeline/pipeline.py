@@ -25,7 +25,7 @@ class Pipeline(object):
             if not isinstance(phase, ph.HyperOnly):
                 results.append(phase.run(image, ph.ResultsCollection(results)))
             elif isinstance(phase, ph.HyperOnly):
-                results[-1].hyper = phase.run(image, ph.ResultsCollection(results))
+                results[-1].hyper = phase.hyper_run(image, ph.ResultsCollection(results))
         return results
 
     def __add__(self, other):

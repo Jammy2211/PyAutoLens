@@ -8,6 +8,7 @@ test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpat
 
 
 class TestPrepatoryImage:
+
     class TestSimulateImage(object):
 
         def test__setup_with_all_features_off(self):
@@ -124,6 +125,7 @@ class TestPrepatoryImage:
             assert (sim_img.background_noise == 4.0 * np.ones((3, 3))).all()
 
         def test__setup_with__poisson_noise_on(self):
+
             img = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
@@ -146,6 +148,10 @@ class TestPrepatoryImage:
             assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                     [0.0, 0.2291, 0.0],
                                                                     [0.0, 0.0, 0.0]]), 1e-2)
+
+            assert sim_img.noise == pytest.approx(np.array([[0.0, 0.0, 0.0],
+                                                            [0.0, 0.2291, 0.0],
+                                                            [0.0, 0.0, 0.0]]), 1e-2)
 
         def test__setup_with__psf_blurring_and_poisson_noise_on__poisson_noise_added_to_blurred_image(self):
             img = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -178,6 +184,56 @@ class TestPrepatoryImage:
             assert sim_img.poisson_noise == pytest.approx(np.array([[0.0, 0.2291, 0.0],
                                                                     [0.2549, 0.3427, 0.2291],
                                                                     [0.0, 0.2291, 0.0]]), 1e-2)
+
+    class TestSimulateImageToTargetSignalToNoise(object):
+
+        def test__target_signal_to_noise__poisson_noise_only(self):
+
+            img = np.array([[0.01, 0.02, 0.01],
+                            [0.01,  5.0, 0.01],
+                            [0.01, 0.01, 0.01]])
+
+            exposure_time = image.ScaledArray.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.PrepatoryImage.simulate_to_target_signal_to_noise(array=img, pixel_scale=0.1,
+                                                                              target_signal_to_noise=30.0,
+                                                                              effective_exposure_time=exposure_time,
+                                                                              include_poisson_noise=True, seed=1)
+
+            assert 29.3 < sim_img.signal_to_noise_max < 30.7
+
+        def test__target_signal_to_noise__background_sky_noise_only(self):
+
+            img = np.array([[0.01, 0.02, 0.01],
+                            [0.01,  5.0, 0.01],
+                            [0.01, 0.01, 0.01]])
+
+            exposure_time = image.ScaledArray.single_value(value=2.0, pixel_scale=0.1, shape=img.shape)
+            background_sky = image.ScaledArray.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.PrepatoryImage.simulate_to_target_signal_to_noise(array=img, pixel_scale=0.1,
+                                                                              target_signal_to_noise=30.0,
+                                                                              effective_exposure_time=exposure_time,
+                                                                              background_sky_map=background_sky, seed=1)
+
+            assert 29.9 < sim_img.signal_to_noise_max < 30.1
+
+        def test__target_signal_to_noise__background_sky_and_poisson(self):
+
+            img = np.array([[0.01, 0.02, 0.01],
+                            [0.01,  5.0, 0.01],
+                            [0.01, 0.01, 0.01]])
+
+            exposure_time = image.ScaledArray.single_value(value=2.0, pixel_scale=0.1, shape=img.shape)
+            background_sky = image.ScaledArray.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
+
+            sim_img = image.PrepatoryImage.simulate_to_target_signal_to_noise(array=img, pixel_scale=0.1,
+                                                                              target_signal_to_noise=30.0,
+                                                                              effective_exposure_time=exposure_time,
+                                                                              background_sky_map=background_sky,
+                                                                              include_poisson_noise=True, seed=1)
+
+            assert 29.2 < sim_img.signal_to_noise_max < 30.8
 
     class TestSimulatePoissonNoise(object):
         class TestSimulatePoissonNoise:
@@ -602,6 +658,7 @@ class TestPrepatoryImage:
             assert (img.signal_to_noise == np.array([[0.1, 0.2],
                                                      [0.1, 1.0]])).all()
             assert img.signal_to_noise_max == 1.0
+
 
 class TestImage(object):
     class TestConstructor:
