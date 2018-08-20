@@ -14,12 +14,13 @@ import shutil
 import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-output_path = '/gpfs/data/pdtw24/Lens/integration/'
+dirpath = os.path.dirname(dirpath)
+output_path = '/gpfs/data/pdtw24/Lens/int/lens_mass_source_profile/'
 
 def test_lens_x1_src_x1_profile_pipeline():
 
-    pipeline_name = "lens_x1_src_x1_profile_pipeline"
-    data_name = '/lens_x1_src_x1'
+    pipeline_name = "l1_s1"
+    data_name = '/l1_s1'
 
     try:
         shutil.rmtree(dirpath+'/data'+data_name)
@@ -34,7 +35,7 @@ def test_lens_x1_src_x1_profile_pipeline():
     source_galaxy = galaxy.Galaxy(sersic=source_light)
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
-                                     source_galaxies=[source_galaxy])
+                                     source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
 
     conf.instance.output_path = output_path
 
@@ -52,11 +53,11 @@ def test_lens_x1_src_x1_profile_pipeline():
 
 def make_lens_x1_src_x1_profile_pipeline(pipeline_name):
 
-    phase1 = ph.LensAndSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
-                                        source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
-                                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+    phase1 = ph.LensMassAndSourceProfilePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
+                                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+                                              optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
-    phase1.optimizer.n_live_points = 40
+    phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
     return pl.Pipeline(pipeline_name, phase1)

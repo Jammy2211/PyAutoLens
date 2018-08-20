@@ -34,6 +34,17 @@ class AbstractTracer(object):
         return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
 
     @property
+    def galaxy_blurring_images(self):
+        """
+        Returns
+        -------
+        lens_plane_galaxy_images: [ndarray]
+            An masked_image for each galaxy in this ray tracer
+        """
+        return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
+                in plane.galaxy_blurring_images]
+
+    @property
     def hyper_galaxies(self):
         return [hyper_galaxy for plane in self.all_planes for hyper_galaxy in
                 plane.hyper_galaxies]
@@ -282,12 +293,6 @@ class Plane(object):
         """
         return self.grids.map_function(np.subtract, self.deflections)
 
-    def galaxy_light_profiles_image_from_plane(self):
-        """Generate the masked_image of the galaxies in this plane."""
-        if len(self.galaxies) == 0:
-            return np.zeros(self.grids.image.shape[0])
-        return intensities_via_sub_grid(self.grids.sub, self.galaxies)
-
     @property
     def galaxy_images(self):
         """
@@ -297,10 +302,6 @@ class Plane(object):
             A list of images of galaxies in this plane
         """
         return [self.image_from_galaxy(galaxy) for galaxy in self.galaxies]
-
-    @property
-    def hyper_galaxies(self):
-        return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
 
     def image_from_galaxy(self, galaxy):
         """
@@ -315,6 +316,40 @@ class Plane(object):
             An array describing the intensity of light coming from the galaxy embedded in this plane
         """
         return intensities_via_sub_grid(self.grids.sub, [galaxy])
+
+    @property
+    def galaxy_blurring_images(self):
+        """
+        Returns
+        -------
+        lens_plane_galaxy_images: [ndarray]
+            A list of images of galaxies in this plane
+        """
+        return [self.blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
+
+    def blurring_image_from_galaxy(self, galaxy):
+        """
+        Parameters
+        ----------
+        galaxy: Galaxy
+            An individual galaxy, assumed to be in this plane
+
+        Returns
+        -------
+        galaxy_image: ndarray
+            An array describing the intensity of light coming from the galaxy embedded in this plane
+        """
+        return intensities_via_grid(self.grids.blurring, [galaxy])
+
+    @property
+    def hyper_galaxies(self):
+        return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
+
+    def galaxy_light_profiles_image_from_plane(self):
+        """Generate the masked_image of the galaxies in this plane."""
+        if len(self.galaxies) == 0:
+            return np.zeros(self.grids.image.shape[0])
+        return intensities_via_sub_grid(self.grids.sub, self.galaxies)
 
     def galaxy_light_profiles_blurring_image_from_plane(self):
         """Generate the masked_image of the galaxies in this plane."""
