@@ -414,6 +414,11 @@ class TestTracer(object):
             assert (np.add(galaxy_images[0],
                            galaxy_images[1]) == light_only_ray_tracer.galaxy_light_profiles_image_from_planes()).all()
 
+        def test__tracer_blurring_galaxy_images(self, light_only_ray_tracer):
+            blurring_galaxy_images = light_only_ray_tracer.galaxy_blurring_images
+            assert (np.add(blurring_galaxy_images[0],
+                           blurring_galaxy_images[1]) == light_only_ray_tracer.galaxy_light_profiles_blurring_image_from_planes()).all()
+
         def test__galaxy_light_sersic_mass_sis__source_plane_image_includes_deflections(self, grids,
                                                                                         galaxy_light_and_mass):
             image_plane = ray_tracing.Plane(galaxies=[galaxy_light_and_mass],
