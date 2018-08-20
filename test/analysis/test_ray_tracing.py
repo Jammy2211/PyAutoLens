@@ -121,6 +121,16 @@ class TestProperties(object):
 
         assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(), galaxy.HyperGalaxy()]
 
+    def test_tracer__hyper_galaxies_with_none_are_filtered(self, grids):
+        tracer = ray_tracing.Tracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy()), galaxy.Galaxy()],
+                                    [galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy()), galaxy.Galaxy(), galaxy.Galaxy()],
+                                    grids)
+
+        assert tracer.image_plane.hyper_galaxies == [galaxy.HyperGalaxy()]
+        assert tracer.source_plane.hyper_galaxies == [galaxy.HyperGalaxy()]
+
+        assert tracer.hyper_galaxies == [galaxy.HyperGalaxy(), galaxy.HyperGalaxy()]
+
     def test_multi_tracer(self, grids):
         tracer = ray_tracing.MultiTracer([galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(2), redshift=2),
                                           galaxy.Galaxy(hyper_galaxy=galaxy.HyperGalaxy(1), redshift=1)], grids,
