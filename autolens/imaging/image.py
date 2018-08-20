@@ -107,15 +107,15 @@ class PrepatoryImage(ScaledArray):
         if background_sky_map is not None and include_poisson_noise is False:
             noise = np.divide(background_noise_counts, effective_exposure_time)
         elif background_sky_map is None and include_poisson_noise is True:
-            noise = np.divide(np.sqrt(array_counts), effective_exposure_time)
+            noise = np.divide(np.sqrt(np.abs(array_counts)), effective_exposure_time)
         elif background_sky_map is not None and include_poisson_noise is True:
-            noise = np.divide(np.sqrt(array_counts + np.square(background_noise_counts)), effective_exposure_time)
+            noise = np.divide(np.sqrt(np.abs(array_counts) + np.square(background_noise_counts)), effective_exposure_time)
         else:
             noise = None
 
         if noise is not None:
             if (np.isnan(noise)).any():
-                raise exc.MaskException('Nan found in poisson noise - increase exposure time.')
+                raise exc.MaskException('Nan found in noise - increase exposure time.')
 
         return PrepatoryImage(array, pixel_scale=pixel_scale, noise=noise, psf=psf, background_noise=background_noise,
                               poisson_noise=poisson_noise, effective_exposure_time=effective_exposure_time)

@@ -24,10 +24,10 @@ def make():
     #    NLO: MultiNest
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
-    phase1 = ph.LensPlanePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP),
-                               optimizer_class=optimizer_class, phase_name="{}/phase1".format(name))
+    phase1 = ph.LensProfilePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP),
+                                 optimizer_class=optimizer_class, phase_name="{}/phase1".format(name))
 
-    class LensSubtractedPhase(ph.LensAndSourcePlanePhase):
+    class LensSubtractedPhase(ph.LensMassAndSourceProfilePhase):
         """
     Subtract the lens light from the masked_image and fit only the source galaxy's light.
         """
@@ -60,7 +60,7 @@ def make():
     #    NLO: MultiNest
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
-    class CombinedPhase(ph.LensAndSourcePlanePhase):
+    class CombinedPhase(ph.LensMassAndSourceProfilePhase):
         """
     Use priors from the previous phases to fit both the source and the lens at the same time.
         """
@@ -87,7 +87,7 @@ def make():
     #    NLO: MultiNest
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
-    class CombinedPhase2(ph.LensAndSourcePlanePhase):
+    class CombinedPhase2(ph.LensMassAndSourceProfilePhase):
         """
         Use priors from the previous phases in conjunction with constant values determined for hyper galaxies to fit
         both the source and the lens at the same time.
