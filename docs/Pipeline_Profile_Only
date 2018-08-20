@@ -4,7 +4,7 @@ PURPOSE - Fit a lens+source image using profiles (i.e. no lens light component)
 
 PHASE 1:
 
-1) Lens Light : EllipticalSersic
+1) Lens Light : EllipticalSersicLP
    Mass: None
    Source: None
    NLO: MultiNest
@@ -14,7 +14,7 @@ PHASE 1:
 
 2) Lens Light : None
    Mass: SIE (use lens light profile centre from previous phase as prior on mass profile centre)
-   Source: EllipticalSersic
+   Source: EllipticalSersicLP
    NLO: MultiNest
    Image : Lens Subtracted Image (previous phase)
    Mask : Annulus (0.4" - 3.0")

@@ -10,15 +10,15 @@ from autolens.profiles import light_profiles, mass_profiles
 # Load an image from the 'basic' folder. It is assumed that this folder contains image.fits, noise.fits and psf.fits.
 img = im.load('basic', pixel_scale=0.05)
 
-# In the first phase we attempt to fit the lens light with an EllipticalSersic.
-phase1 = ph.LensPlanePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic),
-                           lens_satellite_1=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
+# In the first phase we attempt to fit the lens light with an EllipticalSersicLP.
+phase1 = ph.LensPlanePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP),
+                           lens_satellite_1=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
                           optimizer_class=nl.MultiNest)
 
 
 # In the second phase we remove the lens light found in the first phase and try to fit just the source. To do this we
-# extend LensSourcePhase class and override two methods.
-class LensSubtractedPhase(ph.LensSourcePhase):
+# extend LensAndSourcePlanePhase class and override two methods.
+class LensAndSubtractedPlanePhase(ph.LensAndSourcePlanePhase):
     # The modify image method provides a way for us to modify the image before a phase starts.
     def modify_image(self, image, previous_results):
         # The image is the original image we are trying to fit. Previous results is a list of results from previous
@@ -46,13 +46,13 @@ def annular_mask_function(image):
 # We create the second phase. It's an instance of the phase class we created above with the custom mask function passed
 # in. We have a lens galaxy with an SIE mass profile and a source galaxy with an Elliptical Sersic light profile. The
 # centre of the mass profile we pass in here will be constrained by the pass_priors function defined above.
-phase2 = LensSubtractedPhase(source_galaxy=gp.GalaxyPrior(pixelization=pixelization.Rectangular),
-                             optimizer_class=nl.MultiNest)
+phase2 = LensAndSubtractedPlanePhase(source_galaxy=gp.GalaxyPrior(pixelization=pixelization.Rectangular),
+                                     optimizer_class=nl.MultiNest)
 
 
 # In the third phase we try fitting both lens and source light together. We use priors determined by both the previous
 # phases to constrain parameter space search.
-class CombinedPhase(ph.LensSourcePhase):
+class CombinedPlanePhaseAnd(ph.LensAndSourcePlanePhase):
     # We can take priors from both of the previous results.
     def pass_priors(self, previous_results):
         # The lens galaxy's light profile is constrained using results from the first phase whilst its mass profile
@@ -66,14 +66,14 @@ class CombinedPhase(ph.LensSourcePhase):
 
 # We define the lens and source galaxies explicitly in pass_priors so there's no need to pass them in when we make the
 # phase3 instance
-phase3 = CombinedPhase(optimizer_class=nl.MultiNest)
+phase3 = CombinedPlanePhaseAnd(optimizer_class=nl.MultiNest)
 
 # Phase3h is used to fit hyper galaxies. These objects are used to scale noise and prevent over fitting.
-phase3h = ph.SourceLensHyperGalaxyPhase()
+phase3h = ph.SourceLensAndHyperGalaxyPlanePhase()
 
 
 # The final phase tries to fit the whole system again.
-class CombinedPhase2(ph.LensSourcePhase):
+class CombinedPlanePhase2And(ph.LensAndSourcePlanePhase):
     # We take priors for the galaxies from phase 3 and set their hyper galaxies from phase 3h.
     def pass_priors(self, previous_results):
         phase_3_results = previous_results[2]
@@ -88,7 +88,7 @@ class CombinedPhase2(ph.LensSourcePhase):
 
 # We create phase4. Once again, both lens and source galaxies are defined in pass_priors so there's no need to pass
 # anything into the constructor.
-phase4 = CombinedPhase2(optimizer_class=nl.MultiNest)
+phase4 = CombinedPlanePhase2And(optimizer_class=nl.MultiNest)
 
 # We put all the phases together in a pipeline and give it a name.
 pipeline = pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
