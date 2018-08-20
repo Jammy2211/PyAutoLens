@@ -17,7 +17,7 @@ import os
 dirpath = os.path.dirname(os.path.realpath(__file__))
 output_path = '/gpfs/data/pdtw24/Lens/integration/'
 
-def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies):
+def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
 
     path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
@@ -39,12 +39,9 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     ### Setup as a simulated image_coords and output as a fits for an analysis ###
 
     shape = galaxy_image_2d.shape
-    sim_image = im.PrepatoryImage.simulate(array=galaxy_image_2d, effective_exposure_time=1000.0 * np.ones(shape),
-                                              pixel_scale=pixel_scale, background_sky_map=10.0 * np.ones(shape),
-                                              psf=psf, include_poisson_noise=True, seed=1)
-
-    print(sim_image.signal_to_noise_max)
-    stop
+    sim_image = im.PrepatoryImage.simulate_to_target_signal_to_noise(array=galaxy_image_2d, pixel_scale=pixel_scale,
+                target_signal_to_noise=target_signal_to_noise, effective_exposure_time=10.0 * np.ones(shape),
+                background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
