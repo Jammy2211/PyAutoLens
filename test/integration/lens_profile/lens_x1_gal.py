@@ -12,12 +12,13 @@ import shutil
 import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-output_path = '/gpfs/data/pdtw24/Lens/integration/'
+dirpath = os.path.dirname(dirpath)
+output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
 
 def test_lens_x1_gal_pipeline():
 
-    pipeline_name = "lens_x1_gal"
-    data_name = '/lens_x1_gal'
+    pipeline_name = "l1g"
+    data_name = '/l1g'
 
     try:
         shutil.rmtree(dirpath+'/data'+data_name)
@@ -30,7 +31,7 @@ def test_lens_x1_gal_pipeline():
     lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
-                                     source_galaxies=[])
+                                     source_galaxies=[], target_signal_to_noise=30.0)
 
     conf.instance.output_path = output_path
 
@@ -55,8 +56,8 @@ def make_lens_x1_gal_pipeline(pipeline_name):
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
-    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+    phase1 = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+                                 optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
