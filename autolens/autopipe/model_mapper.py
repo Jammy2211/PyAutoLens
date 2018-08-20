@@ -368,18 +368,23 @@ class ModelMapper(AbstractModel):
         This information is extracted from each priors *model_info* property.
         """
 
-        model_info = ''
+        model_info = []
+
+        model_info.append('VARIABLE:' + '\n')
+        model_info.append('')
 
         for prior_name, prior_model in self.flat_prior_models:
 
-            model_info += prior_model.cls.__name__ + '\n' + '\n'
+            model_info.append(prior_model.cls.__name__ + '\n')
+            model_info.append('\n')
 
             for i, prior in enumerate(prior_model.priors):
                 class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda prior: prior[1].id)
                 param_name = str(class_priors_dict_ordered[i][0])
-                model_info += param_name + ': ' + (prior[1].model_info + '\n')
+                line = prior_name + '_' + param_name
+                model_info.append(line + ' ' * (40 - len(line)) + (prior[1].model_info + '\n'))
 
-            model_info += '\n'
+            model_info.append('\n')
 
         return model_info
 
@@ -389,7 +394,8 @@ class ModelMapper(AbstractModel):
         model_info = self.generate_model_info()
         if not os.path.isfile(filename):
             with open(filename, 'w') as file:
-                file.write(model_info)
+                for line in model_info:
+                    file.write(line)
             file.close()
 
     def check_model_info(self, filename):

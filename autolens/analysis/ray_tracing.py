@@ -300,7 +300,7 @@ class Plane(object):
 
     @property
     def hyper_galaxies(self):
-        return [galaxy.hyper_galaxy for galaxy in self.galaxies]
+        return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
 
     def image_from_galaxy(self, galaxy):
         """

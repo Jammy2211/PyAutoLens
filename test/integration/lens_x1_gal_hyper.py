@@ -35,10 +35,10 @@ def test_lens_x1_gal_hyper_pipeline():
 
     conf.instance.output_path = output_path
 
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
+    try:
+        shutil.rmtree(output_path + pipeline_name)
+    except FileNotFoundError:
+        pass
 
     pipeline = make_lens_x1_gal_hyper_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
@@ -78,6 +78,9 @@ def make_lens_x1_gal_hyper_pipeline(pipeline_name):
             self.lens_galaxies[0].hyper_galaxy = phase1h_results.constant.lens_galaxies[0].hyper_galaxy
 
     phase2 = LensHyperPhase(optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
+
+    phase2.optimizer.n_live_points = 40
+    phase2.optimizer.sampling_efficiency = 0.8
 
     return pl.Pipeline(pipeline_name, phase1, phase1h, phase2)
 
