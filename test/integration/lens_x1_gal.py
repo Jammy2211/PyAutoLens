@@ -65,18 +65,6 @@ def make_lens_x1_gal_pipeline(pipeline_name):
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    # 2) Lens Light : EllipticalSersic (fixed to phase 1)
-    #    Mass: None
-    #    Source: None
-    #    Hyper Galaxy: Yes (Model from phase 1)
-    #    NLO: MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
-
-    def annular_mask_function(img):
-        return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
-                                outer_radius=3.)
-
     return pl.Pipeline(pipeline_name, phase1)
 
 if __name__ == "__main__":
