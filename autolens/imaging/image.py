@@ -103,10 +103,11 @@ class PrepatoryImage(ScaledArray):
         # The final masked_image is background subtracted.
         if background_sky_map is not None:
             array -= background_sky_map
+
         if background_sky_map is not None and include_poisson_noise is False:
             noise = np.divide(background_noise_counts, effective_exposure_time)
         elif background_sky_map is None and include_poisson_noise is True:
-            noise = np.divide(array_counts, effective_exposure_time)
+            noise = np.divide(np.sqrt(array_counts), effective_exposure_time)
         elif background_sky_map is not None and include_poisson_noise is True:
             noise = np.divide(np.sqrt(array_counts + np.square(background_noise_counts)), effective_exposure_time)
         else:
@@ -118,6 +119,60 @@ class PrepatoryImage(ScaledArray):
 
         return PrepatoryImage(array, pixel_scale=pixel_scale, noise=noise, psf=psf, background_noise=background_noise,
                               poisson_noise=poisson_noise, effective_exposure_time=effective_exposure_time)
+
+    @classmethod
+    def simulate_to_target_signal_to_noise(cls, array, pixel_scale, target_signal_to_noise, effective_exposure_time,
+                                           psf=None, background_sky_map=None, include_poisson_noise=False, seed=-1):
+        """
+        Create a realistic simulated masked_image by applying effects to a plain simulated masked_image.
+
+        Parameters
+        ----------
+        array: ndarray
+            A plain masked_image
+        effective_exposure_time: Union(ndarray, float)
+            A float or array representing the effective exposure time of the whole masked_image or each pixel.
+        pixel_scale: float
+            The scale of each pixel in arc seconds
+        psf: PSF
+            An array describing the PSF
+        background_sky_map
+        include_poisson_noise: Bool
+            If True poisson noise is simulated and added to the masked_image
+        seed: int
+            A seed for random noise generation
+
+        Returns
+        -------
+        masked_image: PrepatoryImage
+            A simulated masked_image
+        """
+
+        max_index = np.unravel_index(array.argmax(), array.shape)
+        max_array = array[max_index]
+        max_effective_exposure_time = effective_exposure_time[max_index]
+        max_array_counts = np.multiply(max_array, max_effective_exposure_time)
+        if background_sky_map is not None:
+            max_background_sky_map = background_sky_map[max_index]
+            max_background_sky_map_counts = np.multiply(max_background_sky_map, max_effective_exposure_time)
+        else:
+            max_background_sky_map_counts = None
+
+        if background_sky_map is not None and include_poisson_noise is False:
+            scale_factor = max_background_sky_map_counts * target_signal_to_noise ** 2.0 / max_array_counts**2.0
+        elif background_sky_map is None and include_poisson_noise is True:
+            scale_factor = target_signal_to_noise ** 2.0 / max_array_counts
+        elif background_sky_map is not None and include_poisson_noise is True:
+            scale_factor = (max_array_counts + max_background_sky_map_counts) * target_signal_to_noise **2.0 \
+            / max_array_counts**2.0
+        else:
+            scale_factor = None
+
+        scaled_effective_exposure_time = np.multiply(scale_factor, effective_exposure_time)
+
+        return cls.simulate(array=array, pixel_scale=pixel_scale, effective_exposure_time=scaled_effective_exposure_time,
+                            psf=psf, background_sky_map=background_sky_map, include_poisson_noise=include_poisson_noise,
+                            seed=seed)
 
     def __array_finalize__(self, obj):
         super(PrepatoryImage, self).__array_finalize__(obj)

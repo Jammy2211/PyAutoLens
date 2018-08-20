@@ -36,7 +36,7 @@ class LightProfile(object):
 
 
 # noinspection PyAbstractClass
-class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
+class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
     """Generic class for an elliptical light profiles"""
 
     _ids = count()
@@ -53,7 +53,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalLP, self).__init__(centre, axis_ratio, phi)
 
         self.component_number = next(self._ids)
 
@@ -107,7 +107,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         return 2 * np.pi * r * self.intensity_from_grid_radii(x)
 
 
-class EllipticalSersic(geometry_profiles.EllipticalSersicGeometryProfile, EllipticalLightProfile):
+class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -128,8 +128,8 @@ class EllipticalSersic(geometry_profiles.EllipticalSersicGeometryProfile, Ellipt
         sersic_index : Int
             Controls the concetration of the of the light profile.
         """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
-                                               sersic_index)
+        super(EllipticalSersicLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
+                                                 sersic_index)
 
     @property
     def parameter_labels(self):
@@ -167,7 +167,7 @@ class EllipticalSersic(geometry_profiles.EllipticalSersicGeometryProfile, Ellipt
         return self.intensity_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
-class EllipticalExponential(EllipticalSersic):
+class EllipticalExponentialLP(EllipticalSersicLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """ The elliptical exponential profile, used for fitting a galaxy's light.
@@ -187,14 +187,14 @@ class EllipticalExponential(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
+        super(EllipticalExponentialLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class EllipticalDevVaucouleurs(EllipticalSersic):
+class EllipticalDevVaucouleursLP(EllipticalSersicLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """ The elliptical Dev Vaucouleurs profile, used for fitting a galaxy's light.
@@ -214,14 +214,14 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
+        super(EllipticalDevVaucouleursLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
-class EllipticalCoreSersic(EllipticalSersic):
+class EllipticalCoreSersicLP(EllipticalSersicLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
@@ -250,8 +250,8 @@ class EllipticalCoreSersic(EllipticalSersic):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index,
-                                                   )
+        super(EllipticalCoreSersicLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index,
+                                                     )
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha

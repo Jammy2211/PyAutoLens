@@ -66,7 +66,7 @@ computed indepedantly and they are then added together.
 
 Mass profiles may be specified to use the same centre, axis ratio and / or rotational angle as the previous component
 (e.g. x_2 = x_1, phi_2 = phi_1) or any component in the light model (e.g. a dark matter halo may be aligned with
-the Sersic component representing a galaxy's bulge, or the EllipticalExponentialMass component representing its disk).
+the Sersic component representing a galaxy's bulge, or the EllipticalExponentialMP component representing its disk).
 
 ========================================================
 ============== Decomposed Mass Profiles ================
@@ -128,12 +128,12 @@ Stellar Halo). Therefore, we will want classes of Sersic profile (TOTAL, BULGE, 
 on parameters like the sersic_index.
 
 ============================
-======== EllipticalExponentialMass =======
+======== EllipticalExponentialMP =======
 ============================
 
 --- Description ---
 
-The EllipticalExponentialMass profile is used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is
+The EllipticalExponentialMP profile is used to fit flatter regions of light in a galaxy, typically its disks or stellar halo. It is
 a subset of the Sersic profile, corresponding exactly to the solution sersic_index = 1.
 
 --- Geometry ---
@@ -159,7 +159,7 @@ sersic_constant = (2*sersic_index) - (1./3.) + (4./(405.*sersic_index)) + (46./(
 
 --- Equation ---
 
-EllipticalExponentialMass = flux*exp(-1.678388*(((radius/effective_radius)-1))
+EllipticalExponentialMP = flux*exp(-1.678388*(((radius/effective_radius)-1))
 
 ============================
 ====== Dev Vaucouleurs =====
@@ -292,7 +292,7 @@ to be included in the lens model as SIS's (often with their centre fixed to thei
 
 The SIE model is an elliptical generalization of the SIS model.
 
-The EllipticalPowerLaw model corresponds to the SIS model for the case of circulatiry
+The EllipticalPowerLawMP model corresponds to the SIS model for the case of circulatiry
 (axis_ratio=1.0) and isothermal (slope=2.0)
 
 --- Geometry ---
@@ -330,7 +330,7 @@ defl_y = sie_norm*atanh((sqrt(1-axis_ratio**2)*yi)/(Psi))
 
 The Singular Isothermal Ellipsoid (SIE) profile is used for the mass of a galaxy. It is an ellipsoid of mass.
 
-The EllipticalPowerLaw model corresponds to the SIE model for the case of isothermal (slope=2.0)
+The EllipticalPowerLawMP model corresponds to the SIE model for the case of isothermal (slope=2.0)
 
 --- Geometry ---
 
@@ -372,7 +372,7 @@ The Cored Singular Isothermal Ellipsoid (SIE) profile is used for the mass of a 
 but includes an additional parameter which makes the central density go from a core (instead of rising steeply as a
 power-law)
 
-The EllipticalCoredPowerLaw model corresponds to the SIECore model for the case of isothermal (slope=2.0)
+The EllipticalCoredPowerLawMP model corresponds to the SIECore model for the case of isothermal (slope=2.0)
 
 --- Geometry ---
 
@@ -404,7 +404,7 @@ The calculations above are equivalent to numerically inegration the kappa functi
 below, the solution (slope=2) means that we can get the deflection angles analytically as above.
 
 ==================================================
-============ SPLE (EllipticalPowerLaw) ===========
+============ SPLE (EllipticalPowerLawMP) ===========
 ==================================================
 
 --- Description ---
@@ -583,7 +583,7 @@ The deflection angles are an even bigger mess of integrals... lets not think abo
 Ssame as above but elliptical - even bigger mess of a deflection angle calculation...
 
 =============================================================
-========== Sersic (and EllipticalExponentialMass / Dev Vaucoulers =========
+========== Sersic (and EllipticalExponentialMP / Dev Vaucoulers =========
 =============================================================
 
 --- Description ---
