@@ -76,8 +76,8 @@ def make_results_1():
     var = model_mapper.ModelMapper()
     const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
     var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
-    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
-                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    return ph.LensMassAndSourceProfilePhase.Result(constant=const, likelihood=1, variable=var,
+                                                   analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_2")
@@ -88,8 +88,8 @@ def make_results_2():
     var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermalMP())
     const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
-    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
-                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    return ph.LensMassAndSourceProfilePhase.Result(constant=const, likelihood=1, variable=var,
+                                                   analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_3")
@@ -102,8 +102,8 @@ def make_results_3():
     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermalMP(),
                                  elliptical_sersic=light_profiles.EllipticalSersicLP())
     const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
-    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
-                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    return ph.LensMassAndSourceProfilePhase.Result(constant=const, likelihood=1, variable=var,
+                                                   analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 @pytest.fixture(name="results_3h")
@@ -112,8 +112,8 @@ def make_results_3h():
     var = model_mapper.ModelMapper()
     const.lens_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
     const.source_galaxy = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
-    return ph.LensAndSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
-                                             analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
+    return ph.LensMassAndSourceProfilePhase.Result(constant=const, likelihood=1, variable=var,
+                                                   analysis=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 
 
 class TestProfileOnlyPipeline(object):

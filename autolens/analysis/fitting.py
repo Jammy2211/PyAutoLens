@@ -9,6 +9,7 @@ minimum_value_profile = 0.1
 
 
 class AbstractFitter(object):
+
     def __init__(self, masked_image):
         self.masked_image = masked_image
 
@@ -18,6 +19,7 @@ class AbstractFitter(object):
 
 
 class AbstractHyperFitter(AbstractFitter):
+
     def __init__(self, masked_image, tracer=None, hyper_model_image=None, hyper_galaxy_images=None,
                  hyper_minimum_values=None):
         super().__init__(masked_image)

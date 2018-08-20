@@ -19,8 +19,8 @@ lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSe
 
 # A source lens phase performs an analysis on an image using the system we've set up. There are lots of different kinds
 # of phase that can be plugged together in sophisticated pipelines but for now we'll run a single phase.
-source_lens_phase = phase.LensAndSourcePlanePhase(lens_galaxy=lens_galaxy, source_galaxies=source_galaxy,
-                                                  optimizer_class=non_linear.MultiNest)
+source_lens_phase = phase.LensMassAndSourceProfilePhase(lens_galaxy=lens_galaxy, source_galaxies=source_galaxy,
+                                                        optimizer_class=non_linear.MultiNest)
 
 # We run the phase on the image and print the results.
 results = source_lens_phase.run(image)
