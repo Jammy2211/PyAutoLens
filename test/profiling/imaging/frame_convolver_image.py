@@ -6,8 +6,8 @@ import pytest
 subgrid_size=2
 
 kernel_shape = (39,39)
-sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
-                                         effective_radius=0.8, sersic_index=4.0)
+sersic = light_profiles.EllipticalSersicLP(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
+                                           effective_radius=0.8, sersic_index=4.0)
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size, psf_shape=kernel_shape)
 lsst_image = sersic.intensity_from_grid(grid=lsst.coords.image_coords)

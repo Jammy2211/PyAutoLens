@@ -53,7 +53,9 @@ class IntervalCounter(object):
 
 
 class HyperOnly(object):
-    pass
+
+    def hyper_run(self, image, previous_results=None):
+        raise NotImplementedError()
 
 
 class Phase(object):
@@ -73,7 +75,6 @@ class Phase(object):
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
         self.phase_name = phase_name
-        self.hyper_index = None
 
     @property
     def constant(self):
@@ -104,13 +105,13 @@ class Phase(object):
         if self.__doc__ is not None:
             return self.__doc__.replace("  ", "").replace("\n", " ")
 
-    def run(self, image, last_results=None):
+    def run(self, image, previous_results=None):
         """
         Run this phase.
 
         Parameters
         ----------
-        last_results: ResultsCollection
+        previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
             An masked_image that has been masked
@@ -120,7 +121,7 @@ class Phase(object):
         result: non_linear.Result
             A result object comprising the best fit model and other data.
         """
-        analysis = self.make_analysis(image=image, previous_results=last_results)
+        analysis = self.make_analysis(image=image, previous_results=previous_results)
 
         result = self.optimizer.fit(analysis)
         visual_data = analysis.visual_data(result.constant, analysis)
@@ -152,8 +153,7 @@ class Phase(object):
         analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
                                            previous_results=previous_results,
                                            visual_data=self.__class__.VisualData,
-                                           visualizer=self.__class__.Visualizer,
-                                           hyper_index=self.hyper_index)
+                                           visualizer=self.__class__.Visualizer)
         return analysis
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -188,7 +188,7 @@ class Phase(object):
         pass
 
     class Analysis(object):
-        def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None, hyper_index=None):
+        def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None):
             """
             An analysis object
 
@@ -411,7 +411,7 @@ class LensPlanePhase(Phase):
 
     class Analysis(Phase.Analysis):
 
-        def __init__(self, masked_image, phase_name, visualizer, visual_data, previous_results=None, hyper_index=None):
+        def __init__(self, masked_image, phase_name, visualizer, visual_data, previous_results=None):
 
             super(LensPlanePhase.Analysis, self).__init__(masked_image, phase_name, visual_data, visualizer,
                                                           previous_results)
@@ -493,26 +493,21 @@ class LensPlaneHyperPhase(LensPlanePhase):
     lens_galaxies = phase_property("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
-                 mask_function=default_mask_function, phase_name="lens_only_hyper_phase", hyper_index=None):
+                 mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
 
         super(LensPlaneHyperPhase, self).__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class,
                                                   sub_grid_size=sub_grid_size, mask_function=mask_function,
                                                   phase_name=phase_name)
-        self.hyper_index = hyper_index
 
     class Analysis(LensPlanePhase.Analysis):
 
-        def __init__(self, masked_image, phase_name, visualizer, visual_data, previous_results=None, hyper_index=None):
+        def __init__(self, masked_image, phase_name, visualizer, visual_data, previous_results=None):
 
             super(LensPlaneHyperPhase.Analysis, self).__init__(masked_image, phase_name, visualizer, visual_data,
                                                                previous_results)
             self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.lens_plane_image)
-            if hyper_index is None:
-                self.hyper_galaxy_images = list(map(self.masked_image.mask.map_to_1d, 
-                                                previous_results.last.lens_plane_galaxy_images))
-            else:
-                hyper_galaxy_image = previous_results.last.lens_plane_galaxy_images[hyper_index]
-                self.hyper_galaxy_images = [self.masked_image.mask.map_to_1d(hyper_galaxy_image)]
+            self.hyper_galaxy_images = list(map(self.masked_image.mask.map_to_1d,
+                                            previous_results.last.lens_plane_galaxy_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fit(self, instance):
@@ -588,14 +583,15 @@ class LensPlaneHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
     lens_galaxies = phase_property("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
-                 mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
+                 mask_function=default_mask_function, phase_name="lens_only_hyper_phase", hyper_index=None):
         super(LensPlaneHyperOnlyPhase, self).__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class,
                                                       sub_grid_size=sub_grid_size, mask_function=mask_function,
                                                       phase_name=phase_name)
+        self.hyper_index = hyper_index
 
-    def run(self, image, last_results=None):
+    def hyper_run(self, image, previous_results=None):
 
-        class LensGalaxyHyperPhase(LensPlaneHyperPhase):
+        class LensGalaxyHyperPhase(LensPlaneHyperOnlyPhase):
             def pass_priors(self, previous_results):
 
                 use_hyper_galaxy = len(previous_results[-1].constant.lens_galaxies)*[None]
@@ -605,9 +601,9 @@ class LensPlaneHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
                                               gp.GalaxyPrior.from_galaxy(lens_galaxy, hyper_galaxy=use_hyper),
                                               previous_results.last.constant.lens_galaxies, use_hyper_galaxy))
 
-        overall_result = last_results[-1]
+        overall_result = previous_results[-1]
 
-        for i in range(len(last_results[-1].constant.lens_galaxies)):
+        for i in range(len(previous_results[-1].constant.lens_galaxies)):
 
             phase = LensGalaxyHyperPhase(optimizer_class=non_linear.MultiNest, sub_grid_size=self.sub_grid_size,
                                          mask_function=self.mask_function,
@@ -615,16 +611,53 @@ class LensPlaneHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
 
             phase.optimizer.n_live_points = 20
             phase.optimizer.sampling_efficiency = 0.8
-
-            result = phase.run(image, last_results)
+            result = phase.run(image, previous_results)
             overall_result.constant += result.constant
             overall_result.variable.lens_galaxies[i].hyper_galaxy = result.variable.lens_galaxies[i].hyper_galaxy
 
-        return self.__class__.Result(overall_result.constant, overall_result.likelihood, overall_result.variable,
-                                     self.make_analysis(image, last_results))
+        return overall_result
+
+    def make_analysis(self, image, previous_results=None):
+        """
+        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        classes to change the behaviour of the phase.
+
+        Parameters
+        ----------
+        image: im.Image
+            An masked_image that has been masked
+        previous_results: ResultsCollection
+            The result from the previous phase
+
+        Returns
+        -------
+        analysis: Analysis
+            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        """
+        mask = self.mask_function(image)
+        image = self.modify_image(image, previous_results)
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
+        self.pass_priors(previous_results)
+        analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
+                                           previous_results=previous_results,
+                                           visual_data=self.__class__.VisualData,
+                                           visualizer=self.__class__.Visualizer, hyper_index=self.hyper_index)
+        return analysis
+
+    class Analysis(LensPlaneHyperPhase.Analysis):
+
+        def __init__(self, masked_image, phase_name, visualizer, visual_data, previous_results=None, hyper_index=None):
+
+            super(LensPlaneHyperOnlyPhase.Analysis, self).__init__(masked_image, phase_name, visualizer, visual_data,
+                                                               previous_results)
+
+            self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.lens_plane_image)
+            hyper_galaxy_image = previous_results.last.lens_plane_galaxy_images[hyper_index]
+            self.hyper_galaxy_images = [self.masked_image.mask.map_to_1d(hyper_galaxy_image)]
+            self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
 
-class LensSourcePhase(LensPlanePhase):
+class LensAndSourcePlanePhase(LensPlanePhase):
     """
     Fit a simple source and lens system.
     """
@@ -657,7 +690,7 @@ class LensSourcePhase(LensPlanePhase):
         Parameters
         ----------
         image: im.Image
-        last_result: LensSourcePhase.Result
+        last_result: LensAndSourcePlanePhase.Result
 
         Returns
         -------
@@ -669,7 +702,7 @@ class LensSourcePhase(LensPlanePhase):
 
         def __init__(self, masked_image, phase_name, previous_results=None):
 
-            super(LensSourcePhase.Analysis, self).__init__(masked_image, phase_name, previous_results)
+            super(LensAndSourcePlanePhase.Analysis, self).__init__(masked_image, phase_name, previous_results)
 
             self.hyper_model_image = None
             self.hyper_galaxy_images = None
@@ -695,7 +728,7 @@ class LensSourcePhase(LensPlanePhase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
-            super(LensSourcePhase.Analysis, self).fit(instance)
+            super(LensAndSourcePlanePhase.Analysis, self).fit(instance)
 
             tracer = self.tracer_for_instance(instance)
 
@@ -724,7 +757,7 @@ class LensSourcePhase(LensPlanePhase):
 
         def __init__(self, analysis):
 
-            super(LensSourcePhase.Visualizer, self).__init__(analysis)
+            super(LensAndSourcePlanePhase.Visualizer, self).__init__(analysis)
 
         def output_visual_data_as_pngs(self, instance, analysis, suffix=None):
 
@@ -758,7 +791,7 @@ class LensSourcePhase(LensPlanePhase):
             """
             The result of a phase
             """
-            super(LensSourcePhase.Result, self).__init__(constant, likelihood, variable, analysis)
+            super(LensAndSourcePlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
             tracer = analysis.tracer_for_instance(constant)
             self.galaxy_images = [analysis.masked_image.mask.map_to_2d(tracer.image_plane.galaxy_images),
                                   analysis.masked_image.mask.map_to_2d(tracer.image_plane.galaxy_images)]
@@ -772,36 +805,36 @@ class LensSourcePhase(LensPlanePhase):
             return self.galaxy_images[1]
 
 
-class SourceLensHyperGalaxyPhase(LensSourcePhase):
+class SourceLensAndHyperGalaxyPlanePhase(LensAndSourcePlanePhase):
     """
     Adjust hyper galaxy parameters to optimize the fit.
     """
 
-    def run(self, image, last_results=None):
-        class LensPhase(LensSourcePhase):
+    def run(self, image, previous_results=None):
+        class LensAndPhase(LensAndSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxy = gp.GalaxyPrior.from_galaxy(
                     previous_results.last.constant.lens_galaxy,
                     hyper_galaxy=g.HyperGalaxy)
                 self.source_galaxy = previous_results.last.constant.source_galaxy
 
-        class SourcePhase(LensSourcePhase):
+        class AndSourcePlanePhase(LensAndSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxy = previous_results.last.constant.lens_galaxy
                 self.source_galaxy = gp.GalaxyPrior.from_galaxy(
                     previous_results.last.constant.source_galaxy,
                     hyper_galaxy=g.HyperGalaxy)
 
-        lens_result = LensPhase(phase_name="{}_lens".format(self.phase_name)).run(image, last_results)
-        source_result = SourcePhase(phase_name="{}_lens".format(self.phase_name)).run(image, last_results)
+        lens_result = LensAndPhase(phase_name="{}_lens".format(self.phase_name)).run(image, previous_results)
+        source_result = AndSourcePlanePhase(phase_name="{}_lens".format(self.phase_name)).run(image, previous_results)
 
         return self.__class__.Result(lens_result.constant + source_result.constant,
                                      (lens_result.likelihood + source_result.likelihood) / 2,
                                      lens_result.variable + source_result.variable,
-                                     self.make_analysis(image, last_results))
+                                     self.make_analysis(image, previous_results))
 
 
-class PixelizedSourceLensPhase(LensSourcePhase):
+class PixelizedSourceLensAndPhase(LensAndSourcePlanePhase):
     """
     Fit a simple source and lens system using a pixelized source.
     """
@@ -811,7 +844,7 @@ class PixelizedSourceLensPhase(LensSourcePhase):
         super().__init__(lens_galaxy=lens_galaxy, source_galaxies=gp.GalaxyPrior(pixelization=pixelization),
                          optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, mask_function=mask_function)
 
-    class Analysis(LensSourcePhase.Analysis):
+    class Analysis(LensAndSourcePlanePhase.Analysis):
 
         def fit(self, lens_galaxy=None, source_galaxy=None):
             """

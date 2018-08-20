@@ -12,7 +12,7 @@ transforms which rotate coordinates to and from the profile orientation.
 However, Our routine coordinates_back_to_cartesian DOES NOT shift coordinates back to their original locations. So, for example,
 if the original coordinates are (10.0, 10.0) and profile.centre is (8.0, 8.0) then the following routine:
 
-elliptical_profile = profile.EllipticalProfile(axis_ratio=1.0, phi=174.342, centre=(2.0, 2.0))
+elliptical_profile = profile.EllipticalProfileGP(axis_ratio=1.0, phi=174.342, centre=(2.0, 2.0))
 coordinates_original = (10.0, 10.0)
 coordinates_elliptical = elliptical_profile.coordinates_rotate_to_elliptical(coordinates_original)
 coordinates = elliptical_profile.coordinates_back_to_cartesian(coordinates_elliptical)

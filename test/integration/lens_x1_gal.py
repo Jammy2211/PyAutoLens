@@ -1,5 +1,7 @@
 from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
+from autolens.analysis import galaxy_prior as gp
 from autolens.autopipe import non_linear as nl
 from autolens.analysis import galaxy
 from autolens import conf
@@ -22,8 +24,8 @@ def test_lens_x1_gal_pipeline():
     except FileNotFoundError:
         pass
 
-    sersic = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
-                                 effective_radius=1.3, sersic_index=3.0)
+    sersic = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                   effective_radius=1.3, sersic_index=3.0)
 
     lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
@@ -45,13 +47,7 @@ def test_lens_x1_gal_pipeline():
         print(result)
 
 def make_lens_x1_gal_pipeline(pipeline_name):
-
-    from autolens.pipeline import phase as ph
-    from autolens.analysis import galaxy_prior as gp
-    from autolens.imaging import mask as msk
-    from autolens.profiles import light_profiles
-
-    # 1) Lens Light : EllipticalSersic
+    # 1) Lens Light : EllipticalSersicLP
     #    Mass: None
     #    Source: None
     #    Hyper Galaxy: None
@@ -59,7 +55,7 @@ def make_lens_x1_gal_pipeline(pipeline_name):
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
-    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)],
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40

@@ -26,11 +26,11 @@ ma = mask.Mask.for_simulate(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_sc
 image_plane_grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=1,
                                                                                    blurring_shape=psf_size)
 
-sersic_lens = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
-                                  effective_radius=1.3, sersic_index=3.0)
-isothermal = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, einstein_radius=2.0)
-sersic_source = lp.EllipticalSersic(centre=(0., 0.), axis_ratio=0.9, phi=90.0, intensity=1.0,
-                                    effective_radius=1.0, sersic_index=2.0)
+sersic_lens = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                    effective_radius=1.3, sersic_index=3.0)
+isothermal = mp.EllipticalIsothermalMP(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, einstein_radius=2.0)
+sersic_source = lp.EllipticalSersicLP(centre=(0., 0.), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                      effective_radius=1.0, sersic_index=2.0)
 
 lens_galaxy = galaxy.Galaxy(light_profile=sersic_lens, mass_profile=isothermal)
 source_galaxy = galaxy.Galaxy(light_profile=sersic_source)
