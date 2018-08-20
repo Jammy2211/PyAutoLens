@@ -1,7 +1,9 @@
 from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
-from autolens.analysis import galaxy
+from autolens.analysis import galaxy_prior as gp
 from autolens.autopipe import non_linear as nl
+from autolens.analysis import galaxy
 from autolens import conf
 from test.integration import tools
 
@@ -22,10 +24,10 @@ def test_lens_x1_gal_hyper_pipeline():
     except FileNotFoundError:
         pass
 
-    bulge = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
-                                 effective_radius=1.0, sersic_index=4.0)
+    bulge = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                  effective_radius=1.0, sersic_index=4.0)
 
-    disk = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.6, phi=90.0, intensity=1.0,
+    disk = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.6, phi=90.0, intensity=1.0,
                                  effective_radius=2.5, sersic_index=1.0)
 
     lens_galaxy = galaxy.Galaxy(bulge=bulge, disk=disk)
@@ -49,20 +51,7 @@ def test_lens_x1_gal_hyper_pipeline():
 
 def make_lens_x1_gal_hyper_pipeline(pipeline_name):
 
-    from autolens.pipeline import phase as ph
-    from autolens.analysis import galaxy_prior as gp
-    from autolens.imaging import mask as msk
-    from autolens.profiles import light_profiles, mass_profiles
-
-    # 1) Lens Light : EllipticalSersic
-    #    Mass: None
-    #    Source: None
-    #    Hyper Galaxy: None
-    #    NLO: MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
-
-    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)],
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40

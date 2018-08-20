@@ -22,25 +22,25 @@ def make():
     def mask_function(img):
         return msk.Mask.circular(img.shape_arc_seconds, img.pixel_scale, 2)
 
-    phase1 = ph.LensSourcePhase(
+    phase1 = ph.LensAndSourcePlanePhase(
         lens_galaxy=gp.GalaxyPrior(
-            sie=mass_profiles.SphericalIsothermal,
+            sie=mass_profiles.SphericalIsothermalMP,
             shear=mass_profiles.ExternalShear),
         source_galaxies=gp.GalaxyPrior(
-            sersic=light_profiles.EllipticalSersic),
+            sersic=light_profiles.EllipticalSersicLP),
         mask_function=mask_function)
 
     # 2) Mass: SIE+Shear (priors from phase 1)
     #    Source: 'smooth' pixelization (include regularization parameter(s) in the model)
     #    NLO: LM
-    class PriorLensPhase(ph.PixelizedSourceLensPhase):
+    class PriorLensPhase(ph.PixelizedSourceLensAndPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxy = previous_results.last.variable.lens_galaxy
 
     phase2 = PriorLensPhase(pixelization=px.RectangularRegConst,
                             mask_function=mask_function)
 
-    class ConstantLensPhase(ph.PixelizedSourceLensPhase):
+    class ConstantLensPhase(ph.PixelizedSourceLensAndPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxy = previous_results.last.constant.lens_galaxy
 

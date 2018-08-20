@@ -69,8 +69,8 @@ def source_only_pipeline(image, mask):
     phase1 = ph.ParameterizedPhase(optimizer=non_linear.MultiNest())
 
     # Define galaxy priors
-    source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
+    source_galaxy_prior = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLP)
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermalMP,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the galaxy priors to the optimizer
@@ -95,7 +95,7 @@ def source_only_pipeline(image, mask):
     optimizer_2 = non_linear.DownhillSimplex()
 
     # Define galaxy priors
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermal,
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_mass_profile=mass_profiles.EllipticalIsothermalMP,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
     # The source galaxy is now represented by a pixelization
     source_galaxy_prior = galaxy_prior.GalaxyPrior(pixelization=pixelization.Rectangular)
@@ -155,7 +155,7 @@ def source_only_pipeline(image, mask):
     optimizer_a = non_linear.MultiNest()
 
     # Define a lens galaxy prior
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_power_law_mass_profile=mass_profiles.SphericalPowerLaw,
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(spherical_power_law_mass_profile=mass_profiles.SphericalPowerLawMP,
                                                  shear_mass_profile=mass_profiles.ExternalShear)
 
     # Add the lens galaxy prior to the optimizer
@@ -212,7 +212,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_1 = non_linear.DownhillSimplex()
 
-    lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
+    lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLP)
     lens_galaxy.redshift = model_mapper.Constant(1)
 
     optimizer_1.variable.lens_galaxies = [lens_galaxy]
@@ -241,9 +241,9 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     optimizer_2 = non_linear.DownhillSimplex()
 
-    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermal,
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermalMP,
                                            shear_mass_profile=mass_profiles.ExternalShear)
-    source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersic)
+    source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLP)
 
     optimizer_2.variable.lens_galaxies = [lens_galaxy]
     optimizer_2.variable.source_galaxies = [source_galaxy]
@@ -267,7 +267,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     optimizer_3 = non_linear.DownhillSimplex()
 
     source_galaxy = galaxy_prior.GalaxyPrior(pixelization=pixelization.SquarePixelization)
-    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermal,
+    lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=mass_profiles.SphericalIsothermalMP,
                                            shear_mass_profile=mass_profiles.ExternalShear)
 
     lens_galaxy_result = result_2.priors.lens_galaxies[0]
@@ -303,8 +303,8 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     lens_galaxy = galaxy_prior.GalaxyPrior(sie_mass_profile=result_3.instance.sie_mass_profile,
                                            shear_mass_profile=result_3.instance.shear_mass_profile,
-                                           sersic_light_profile=light_profiles.EllipticalSersic,
-                                           exponential_light_profile=light_profiles.EllipticalExponential,
+                                           sersic_light_profile=light_profiles.EllipticalSersicLP,
+                                           exponential_light_profile=light_profiles.EllipticalExponentialLP,
                                            hyper_galaxy=galaxy.HyperGalaxy)
 
     lens_galaxy.sersic_light_profile.centre = lens_galaxy.exponential_light_profile.centre
@@ -397,7 +397,7 @@ def profiles_pipeline(paths, image, mask):
     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
 
     # Define galaxy priors
-    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
+    lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersicLP)
     lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((0.0, 0.0))
     lens_galaxy_prior.sersic_light_profile.axis_ratio = model_mapper.Constant(0.8)
     lens_galaxy_prior.sersic_light_profile.phi = model_mapper.Constant(90.0)
@@ -534,7 +534,7 @@ def profiles_pipeline(paths, image, mask):
 #     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
 #
 #     # Define galaxy priors
-#     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
+#     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersicLP)
 #     lens_galaxy_prior.sersic_light_profile.centre = model_mapper.Constant((1.0, 1.0))
 #     # TODO : Can we get rid of the x2 redshift?
 #     lens_galaxy_prior.redshift.redshift = model_mapper.Constant(1.0)
@@ -591,7 +591,7 @@ def profiles_pipeline(paths, image, mask):
 #     optimizer_1 = non_linear.DownhillSimplex(path=analysis_path)
 #
 #     # Define galaxy priors
-#     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersic)
+#     lens_galaxy_prior = galaxy_prior.GalaxyPrior(sersic_light_profile=light_profiles.EllipticalSersicLP)
 #     lens_galaxy_prior.sersic_light_profile.centre.centre_0 = model_mapper.GaussianPrior(1.0, 1.0)
 #     lens_galaxy_prior.sersic_light_profile.centre.centre_1 = model_mapper.GaussianPrior(1.0, 1.0)
 #
