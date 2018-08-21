@@ -120,8 +120,8 @@ class TestRegression(object):
 
         assert mm.total_parameters == 7
 
-        mm.galaxy.sersic.centre.centre_0 = model_mapper.Constant(0)
-        mm.galaxy.sersic.centre.centre_1 = model_mapper.Constant(0)
+        mm.galaxy.sersic.centre_0 = model_mapper.Constant(0)
+        mm.galaxy.sersic.centre_1 = model_mapper.Constant(0)
 
         # assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Constant)
         assert mm.total_parameters == 5
