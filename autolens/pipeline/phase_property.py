@@ -56,12 +56,25 @@ class PhaseProperty(object):
         return type(self)(self.fget, self.fset, fdel, self.__doc__)
 
 
+class ListWrapper(object):
+    def __init__(self, variable_items, constant_items):
+        self.variable_items = variable_items
+        self.constant_items = constant_items
+
+    def __setitem__(self, i, value):
+        pass
+
+    def __getitem__(self, i):
+        return sorted(self.variable_items + self.constant_items, key=lambda item: item.position)[i]
+
+    def __eq__(self, other):
+        return [item for item in self] == other
+
+
 class PhasePropertyList(PhaseProperty):
     def fget(self, obj):
-        return list(sorted(
-            getattr(obj.optimizer.variable, self.name) +
-            getattr(obj.optimizer.constant, self.name),
-            key=lambda item: item.position))
+        return ListWrapper(getattr(obj.optimizer.variable, self.name),
+                           getattr(obj.optimizer.constant, self.name))
 
     def fset(self, obj, value):
         for n in range(len(value)):
