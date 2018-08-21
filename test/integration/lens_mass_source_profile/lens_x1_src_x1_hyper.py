@@ -15,7 +15,7 @@ import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/lens_mass_source_profile/'
+output_path = '/gpfs/data/pdtw24/Lens/int/lens_mass_source/'
 
 def test_lens_x1_src_x1_profile_hyper_pipeline():
 
@@ -29,24 +29,24 @@ def test_lens_x1_src_x1_profile_hyper_pipeline():
 
     lens_mass = mp.EllipticalIsothermalMP(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
     
-    source_bulge = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
+    source_bulge_0 = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                   effective_radius=1.0, sersic_index=4.0)
 
-    source_disk = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.6, phi=90.0, intensity=20.0,
-                                 effective_radius=2.5, sersic_index=1.0)
+    source_bulge_1 = lp.EllipticalSersicLP(centre=(0.1, 0.1), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                  effective_radius=1.0, sersic_index=4.0)
 
     lens_galaxy = galaxy.Galaxy(sie=lens_mass)
-    source_galaxy = galaxy.Galaxy(bulge=source_bulge, disk=source_disk)
+    source_galaxy = galaxy.Galaxy(bulge_0=source_bulge_0, bulge_1=source_bulge_1)
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
 
     conf.instance.output_path = output_path
 
-    try:
-        shutil.rmtree(output_path + pipeline_name)
-    except FileNotFoundError:
-        pass
+    # try:
+    #     shutil.rmtree(output_path + pipeline_name)
+    # except FileNotFoundError:
+    #     pass
 
     pipeline = make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
@@ -71,10 +71,13 @@ def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
         def pass_priors(self, previous_results):
             phase1_results = previous_results[-1]
             phase1h_results = previous_results[-1].hyper
+    #        self.lens_galaxies[0] = previous_results[-1].variable.lens_galaxies[0]
             self.source_galaxies = phase1_results.variable.source_galaxies
             self.source_galaxies[0].hyper_galaxy = phase1h_results.constant.source_galaxies[0].hyper_galaxy
 
-    phase2 = SourceHyperPhase(optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
+    phase2 = SourceHyperPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
+                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+                              optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
 
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
