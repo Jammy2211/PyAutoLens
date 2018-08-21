@@ -1,3 +1,4 @@
+from autolens import exc
 import numpy as np
 import numba
 
@@ -166,4 +167,7 @@ class Reconstruction(object):
         matrix : ndarray
             The positive-definite matrix the log determinant is computed for.
         """
-        return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
+        try:
+            return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
+        except np.linalg.LinAlgError:
+            raise exc.ReconstructionException()

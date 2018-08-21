@@ -28,7 +28,7 @@ class AbstractTracer(object):
         """
         Returns
         -------
-        lens_plane_galaxy_images: [ndarray]
+        image_plane_lens_galaxy_images: [ndarray]
             An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
@@ -38,7 +38,7 @@ class AbstractTracer(object):
         """
         Returns
         -------
-        lens_plane_galaxy_images: [ndarray]
+        image_plane_lens_galaxy_images: [ndarray]
             An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
@@ -298,7 +298,7 @@ class Plane(object):
         """
         Returns
         -------
-        lens_plane_galaxy_images: [ndarray]
+        image_plane_lens_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
         return [self.image_from_galaxy(galaxy) for galaxy in self.galaxies]
@@ -322,7 +322,7 @@ class Plane(object):
         """
         Returns
         -------
-        lens_plane_galaxy_images: [ndarray]
+        image_plane_lens_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
         return [self.blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
