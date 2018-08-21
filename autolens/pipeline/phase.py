@@ -9,12 +9,10 @@ from autolens.autopipe import non_linear
 from autolens.autopipe import model_mapper as mm
 from autolens import conf
 import numpy as np
-from autolens.pixelization import pixelization as px
 import inspect
 import logging
 from astropy.io import fits
 import matplotlib.pyplot as plt
-import shutil
 import os
 
 logger = logging.getLogger(__name__)
@@ -257,7 +255,6 @@ class Phase(object):
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-
     class VisualData(object):
 
         def visual_data_from_tracer_images(self, analysis, image, blurring_image):
@@ -266,7 +263,6 @@ class Phase(object):
 
         def visual_data_2d_from_1d(self, analysis, image):
             return analysis.masked_image.map_to_2d(image)
-
 
     class Visualizer(object):
 
@@ -279,10 +275,11 @@ class Phase(object):
             make_path_if_does_not_exist(path=self.final_image_path)
 
             shape_arc_seconds = analysis.masked_image.mask.shape_arc_seconds
-            self.xticks = np.linspace(-shape_arc_seconds[1]/2.0, shape_arc_seconds[1]/2.0, 4)
-            self.yticks = np.linspace(-shape_arc_seconds[0]/2.0, shape_arc_seconds[0]/2.0, 4)
+            self.xticks = np.linspace(-shape_arc_seconds[1] / 2.0, shape_arc_seconds[1] / 2.0, 4)
+            self.yticks = np.linspace(-shape_arc_seconds[0] / 2.0, shape_arc_seconds[0] / 2.0, 4)
             self.plot_count = 0
-            self.as_fits_during_analysis = conf.instance.general.get('output', 'visualize_as_fits_during_analysis', bool)
+            self.as_fits_during_analysis = conf.instance.general.get('output', 'visualize_as_fits_during_analysis',
+                                                                     bool)
             self.as_fits_at_end = conf.instance.general.get('output', 'visualize_as_fits_at_end', bool)
 
             self.total_plots = 2
@@ -343,7 +340,6 @@ class Phase(object):
             elif during_analysis is False:
                 return self.final_image_path + filename + extension
 
-
     class Result(non_linear.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
@@ -353,10 +349,10 @@ class Phase(object):
             super(Phase.Result, self).__init__(constant, likelihood, variable)
 
         def galaxy_images_from_plane(self, analysis, images, blurring_images):
-            blurred_images = list(map(lambda image, blurring_image :
+            blurred_images = list(map(lambda image, blurring_image:
                                       analysis.masked_image.convolver_image.convolve_image(image, blurring_image),
                                       images, blurring_images))
-            return list(map(lambda blurred_image : analysis.masked_image.map_to_2d(blurred_image), blurred_images))
+            return list(map(lambda blurred_image: analysis.masked_image.map_to_2d(blurred_image), blurred_images))
 
         @property
         def model_image(self):
@@ -386,7 +382,7 @@ def phase_property(name):
             return getattr(self.optimizer.variable, name)
 
     def fset(self, value):
-        if inspect.isclass(value) or isinstance(value, mm.PriorModel) or isinstance(value, gp.GalaxyPrior) or\
+        if inspect.isclass(value) or isinstance(value, mm.PriorModel) or isinstance(value, gp.GalaxyPrior) or \
                 isinstance(value, list):
             setattr(self.optimizer.variable, name, value)
             try:
@@ -413,13 +409,12 @@ class LensProfilePhase(Phase):
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_phase"):
         super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                               mask_function=mask_function, phase_name=phase_name)
+                         mask_function=mask_function, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
 
     class Analysis(Phase.Analysis):
 
         def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None):
-
             super().__init__(masked_image, phase_name, visual_data, visualizer, previous_results)
 
         def fit(self, instance):
@@ -449,35 +444,30 @@ class LensProfilePhase(Phase):
         def tracer_for_instance(self, instance):
             return ray_tracing.Tracer(instance.lens_galaxies, [], self.masked_image.grids)
 
-
     class VisualData(Phase.VisualData):
 
         def __init__(self, instance, analysis):
-
             self.tracer = analysis.tracer_for_instance(instance)
             fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
-            self.lens_plane_image = self.visual_data_from_tracer_images(analysis, sum(self.tracer.image_plane.galaxy_images),
-                                                                       sum(self.tracer.image_plane.galaxy_blurring_images))
+            self.lens_plane_image = self.visual_data_from_tracer_images(analysis,
+                                                                        sum(self.tracer.image_plane.galaxy_images),
+                                                                        sum(
+                                                                            self.tracer.image_plane.galaxy_blurring_images))
             self.residuals = analysis.masked_image.map_to_2d(fitter.blurred_image_residuals)
             self.chi_squareds = analysis.masked_image.map_to_2d(fitter.blurred_image_chi_squareds)
-
 
     class Visualizer(Phase.Visualizer):
 
         def __init__(self, analysis):
-
             super().__init__(analysis)
 
         def output_visual_data_as_pngs(self, visual_data, suffix=None, during_analysis=False):
-
             super().output_visual_data_as_pngs(visual_data, suffix, during_analysis)
             self.output_array_as_png(visual_data.lens_plane_image, 'lens_plane', 'Lens Plane Image', during_analysis)
 
         def output_visual_data_as_fits(self, visual_data, suffix=None, during_analysis=False):
-
             super().output_visual_data_as_fits(visual_data, suffix, during_analysis)
             self.output_array_as_fits(visual_data.lens_plane_image, "lens_plane", suffix, during_analysis)
-
 
     class Result(Phase.Result):
 
@@ -504,19 +494,17 @@ class LensProfileHyperPhase(LensProfilePhase):
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
-
         super().__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class,
-                                                    sub_grid_size=sub_grid_size, mask_function=mask_function,
-                                                    phase_name=phase_name)
+                         sub_grid_size=sub_grid_size, mask_function=mask_function,
+                         phase_name=phase_name)
 
     class Analysis(LensProfilePhase.Analysis):
 
         def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None):
-
             super().__init__(masked_image, phase_name, visual_data, visualizer, previous_results)
             self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.lens_plane_image)
             self.hyper_galaxy_images = list(map(self.masked_image.mask.map_to_1d,
-                                            previous_results.last.lens_plane_galaxy_images))
+                                                previous_results.last.lens_plane_galaxy_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fit(self, instance):
@@ -535,7 +523,7 @@ class LensProfileHyperPhase(LensProfilePhase):
             """
             self.try_visualize(instance)
             tracer = self.tracer_for_instance(instance)
-            fitter = fitting.HyperProfileFitter(self.masked_image, tracer,  self.hyper_model_image,
+            fitter = fitting.HyperProfileFitter(self.masked_image, tracer, self.hyper_model_image,
                                                 self.hyper_galaxy_images, self.hyper_minimum_values)
             return fitter.blurred_image_scaled_likelihood
 
@@ -544,36 +532,30 @@ class LensProfileHyperPhase(LensProfilePhase):
             logger.debug(
                 "\nRunning lens analysis for... \n\nHyper Lens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
-
     class VisualData(LensProfilePhase.VisualData):
 
         def __init__(self, instance, analysis):
-
             super().__init__(instance, analysis)
             hyper_fitter = fitting.HyperProfileFitter(analysis.masked_image, self.tracer, analysis.hyper_model_image,
-                                                analysis.hyper_galaxy_images, analysis.hyper_minimum_values)
+                                                      analysis.hyper_galaxy_images, analysis.hyper_minimum_values)
             self.scaled_noise = analysis.masked_image.map_to_2d(hyper_fitter.scaled_noise)
             self.scaled_chi_squareds = analysis.masked_image.map_to_2d(hyper_fitter.blurred_image_scaled_chi_squareds)
-
 
     class Visualizer(LensProfilePhase.Visualizer):
 
         def __init__(self, analysis):
-
             super().__init__(analysis)
 
         def output_visual_data_as_pngs(self, visual_data, suffix=None, during_analysis=True):
-
             super().output_visual_data_as_pngs(visual_data, suffix, during_analysis)
             self.output_array_as_png(visual_data.scaled_noise, 'scaled_noise', 'Scaled Noise', during_analysis)
-            self.output_array_as_png(visual_data.scaled_chi_squareds, 'scaled_chi_squareds', 'Scaled Noise', during_analysis)
+            self.output_array_as_png(visual_data.scaled_chi_squareds, 'scaled_chi_squareds', 'Scaled Noise',
+                                     during_analysis)
 
         def output_visual_data_as_fitss(self, visual_data, suffix=None, during_analysis=True):
-
             super().output_visual_data_as_fits(visual_data, suffix, during_analysis)
             self.output_array_as_fits(visual_data.scaled_noise, "scaled_noise", suffix, during_analysis)
             self.output_array_as_fits(visual_data.scaled_chi_squareds, "scaled_chi_squareds", suffix, during_analysis)
-
 
     class Result(Phase.Result):
 
@@ -594,29 +576,26 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase", hyper_index=None):
         super().__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class,
-                                                      sub_grid_size=sub_grid_size, mask_function=mask_function,
-                                                      phase_name=phase_name)
+                         sub_grid_size=sub_grid_size, mask_function=mask_function,
+                         phase_name=phase_name)
         self.hyper_index = hyper_index
 
     def hyper_run(self, image, previous_results=None):
-
         class LensGalaxyHyperPhase(LensLightHyperOnlyPhase):
             def pass_priors(self, previous_results):
-
-                use_hyper_galaxy = len(previous_results[-1].constant.lens_galaxies)*[None]
+                use_hyper_galaxy = len(previous_results[-1].constant.lens_galaxies) * [None]
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
-                self.lens_galaxies = list(map(lambda lens_galaxy, use_hyper :
+                self.lens_galaxies = list(map(lambda lens_galaxy, use_hyper:
                                               gp.GalaxyPrior.from_galaxy(lens_galaxy, hyper_galaxy=use_hyper),
                                               previous_results.last.constant.lens_galaxies, use_hyper_galaxy))
 
         overall_result = previous_results[-1]
 
         for i in range(len(previous_results[-1].constant.lens_galaxies)):
-
             phase = LensGalaxyHyperPhase(optimizer_class=non_linear.MultiNest, sub_grid_size=self.sub_grid_size,
                                          mask_function=self.mask_function,
-                                         phase_name=self.phase_name+'/lens_gal_'+str(i), hyper_index=i)
+                                         phase_name=self.phase_name + '/lens_gal_' + str(i), hyper_index=i)
 
             phase.optimizer.n_live_points = 20
             phase.optimizer.sampling_efficiency = 0.8
@@ -656,7 +635,6 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
     class Analysis(LensProfileHyperPhase.Analysis):
 
         def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None, hyper_index=None):
-
             super().__init__(masked_image, phase_name, visual_data, visualizer, previous_results)
 
             self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.lens_plane_image)
@@ -699,9 +677,8 @@ class LensMassAndSourceProfilePhase(Phase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None):
-
             super().__init__(masked_image, phase_name, visual_data, visualizer,
-                                                                         previous_results)
+                             previous_results)
 
         def fit(self, instance):
             """
@@ -731,38 +708,33 @@ class LensMassAndSourceProfilePhase(Phase):
         def tracer_for_instance(self, instance):
             return ray_tracing.Tracer(instance.lens_galaxies, instance.source_galaxies, self.masked_image.grids)
 
-
     class VisualData(Phase.VisualData):
 
         def __init__(self, instance, analysis):
-
             self.tracer = analysis.tracer_for_instance(instance)
             fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
-            self.source_plane_image = self.visual_data_from_tracer_images(analysis, sum(self.tracer.source_plane.galaxy_images),
-                                                                       sum(self.tracer.source_plane.galaxy_blurring_images))
+            self.source_plane_image = self.visual_data_from_tracer_images(analysis,
+                                                                          sum(self.tracer.source_plane.galaxy_images),
+                                                                          sum(
+                                                                              self.tracer.source_plane.galaxy_blurring_images))
             self.residuals = analysis.masked_image.map_to_2d(fitter.blurred_image_residuals)
             self.chi_squareds = analysis.masked_image.map_to_2d(fitter.blurred_image_chi_squareds)
-
 
     class Visualizer(Phase.Visualizer):
 
         def __init__(self, analysis):
-
             super().__init__(analysis)
 
         def output_visual_data_as_pngs(self, visual_data, suffix=None, during_analysis=False):
-
             super().output_visual_data_as_pngs(visual_data, suffix,
-                                                                                             during_analysis)
+                                               during_analysis)
             self.output_array_as_png(visual_data.source_plane_image, 'source_plane', 'Source Plane Image',
                                      during_analysis)
 
         def output_visual_data_as_fits(self, visual_data, suffix=None, during_analysis=False):
-
             super().output_visual_data_as_fits(visual_data, suffix,
-                                                                                             during_analysis)
+                                               during_analysis)
             self.output_array_as_fits(visual_data.source_plane_image, "source_plane", suffix, during_analysis)
-
 
     class Result(Phase.Result):
 
@@ -773,7 +745,7 @@ class LensMassAndSourceProfilePhase(Phase):
             super().__init__(constant, likelihood, variable, analysis)
             tracer = analysis.tracer_for_instance(constant)
             self.source_plane_galaxy_images = self.galaxy_images_from_plane(analysis, tracer.source_plane.galaxy_images,
-                                                                          tracer.source_plane.galaxy_blurring_images)
+                                                                            tracer.source_plane.galaxy_blurring_images)
 
         @property
         def source_plane_image(self):
@@ -805,19 +777,18 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
             The side length of the subgrid
         """
         super().__init__(lens_galaxies=lens_galaxies,
-        source_galaxies=source_galaxies, optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                                   mask_function=mask_function, phase_name=phase_name)
+                         source_galaxies=source_galaxies, optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
+                         mask_function=mask_function, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
 
     class Analysis(LensMassAndSourceProfilePhase.Analysis):
 
         def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None):
-
             super().__init__(masked_image, phase_name, visual_data, visualizer, previous_results)
             self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.source_plane_image)
             self.hyper_galaxy_images = list(map(self.masked_image.mask.map_to_1d,
-                                            previous_results.last.source_plane_galaxy_images))
+                                                previous_results.last.source_plane_galaxy_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fit(self, instance):
@@ -835,7 +806,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
             tracer = self.tracer_for_instance(instance)
-            fitter = fitting.HyperProfileFitter(self.masked_image, tracer,  self.hyper_model_image,
+            fitter = fitting.HyperProfileFitter(self.masked_image, tracer, self.hyper_model_image,
                                                 self.hyper_galaxy_images, self.hyper_minimum_values)
             return fitter.blurred_image_scaled_likelihood
 
@@ -845,38 +816,32 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
                 "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
 
-
     class VisualData(LensMassAndSourceProfilePhase.VisualData):
 
         def __init__(self, instance, analysis):
-
             super().__init__(instance, analysis)
             hyper_fitter = fitting.HyperProfileFitter(analysis.masked_image, self.tracer, analysis.hyper_model_image,
-                                                analysis.hyper_galaxy_images, analysis.hyper_minimum_values)
+                                                      analysis.hyper_galaxy_images, analysis.hyper_minimum_values)
             self.scaled_noise = analysis.masked_image.map_to_2d(hyper_fitter.scaled_noise)
             self.scaled_chi_squareds = analysis.masked_image.map_to_2d(hyper_fitter.blurred_image_scaled_chi_squareds)
-
 
     class Visualizer(LensMassAndSourceProfilePhase.Visualizer):
 
         def __init__(self, analysis):
-
             super().__init__(analysis)
 
         def output_visual_data_as_pngs(self, visual_data, suffix=None, during_analysis=False):
-
             super().output_visual_data_as_pngs(visual_data, suffix,
-                                                                                             during_analysis)
+                                               during_analysis)
             self.output_array_as_png(visual_data.scaled_noise, 'scaled_noise', 'Scaled Noise', during_analysis)
-            self.output_array_as_png(visual_data.scaled_chi_squareds, 'scaled_chi_squareds', 'Scaled Noise', during_analysis)
+            self.output_array_as_png(visual_data.scaled_chi_squareds, 'scaled_chi_squareds', 'Scaled Noise',
+                                     during_analysis)
 
         def output_visual_data_as_fits(self, visual_data, suffix=None, during_analysis=False):
-
             super().output_visual_data_as_fits(visual_data, suffix,
-                                                                                             during_analysis)
+                                               during_analysis)
             self.output_array_as_fits(visual_data.scaled_noise, "scaled_noise", suffix, during_analysis)
             self.output_array_as_fits(visual_data.scaled_chi_squareds, "scaled_chi_squareds", suffix, during_analysis)
-
 
     class Result(Phase.Result):
 
@@ -897,33 +862,29 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
 
     def __init__(self, source_galaxies=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="source_and_len_hyper_phase", hyper_index=None):
-
         super().__init__(lens_galaxies=lens_galaxies,
-        source_galaxies=source_galaxies, optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-        mask_function=mask_function, phase_name=phase_name)
+                         source_galaxies=source_galaxies, optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
+                         mask_function=mask_function, phase_name=phase_name)
         self.hyper_index = hyper_index
 
     def hyper_run(self, image, previous_results=None):
-
         class SourceGalaxyHyperPhase(LensMassAndSourceProfileHyperOnlyPhase):
             def pass_priors(self, previous_results):
-
-                use_hyper_galaxy = len(previous_results[-1].constant.source_galaxies)*[None]
+                use_hyper_galaxy = len(previous_results[-1].constant.source_galaxies) * [None]
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
                 self.lens_galaxies = previous_results[-1].variable.lens_galaxies
                 self.lens_galaxies[0].sie = previous_results[0].constant.lens_galaxies[0].sie
-                self.source_galaxies = list(map(lambda source_galaxy, use_hyper :
-                                              gp.GalaxyPrior.from_galaxy(source_galaxy, hyper_galaxy=use_hyper),
-                                              previous_results.last.constant.source_galaxies, use_hyper_galaxy))
+                self.source_galaxies = list(map(lambda source_galaxy, use_hyper:
+                                                gp.GalaxyPrior.from_galaxy(source_galaxy, hyper_galaxy=use_hyper),
+                                                previous_results.last.constant.source_galaxies, use_hyper_galaxy))
 
         overall_result = previous_results[-1]
 
         for i in range(len(previous_results[-1].constant.source_galaxies)):
-
             phase = SourceGalaxyHyperPhase(optimizer_class=non_linear.MultiNest, sub_grid_size=self.sub_grid_size,
-                                         mask_function=self.mask_function,
-                                         phase_name=self.phase_name+'/src_gal_'+str(i), hyper_index=i)
+                                           mask_function=self.mask_function,
+                                           phase_name=self.phase_name + '/src_gal_' + str(i), hyper_index=i)
 
             phase.optimizer.n_live_points = 20
             phase.optimizer.sampling_efficiency = 0.8
@@ -963,7 +924,6 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
     class Analysis(LensMassAndSourceProfileHyperPhase.Analysis):
 
         def __init__(self, masked_image, phase_name, visual_data, visualizer, previous_results=None, hyper_index=None):
-
             super().__init__(masked_image, phase_name, visual_data, visualizer, previous_results)
 
             self.hyper_model_image = self.masked_image.mask.map_to_1d(previous_results.last.source_plane_image)
