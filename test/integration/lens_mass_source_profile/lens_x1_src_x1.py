@@ -15,7 +15,7 @@ import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/lens_mass_source_profile/'
+output_path = '/gpfs/data/pdtw24/Lens/int/lens_mass_source/'
 
 def test_lens_x1_src_x1_profile_pipeline():
 
