@@ -70,7 +70,7 @@ class ListWrapper(object):
 
     def __setitem__(self, i, value):
         original = self[i]
-        value.position = original
+        value.position = original.position
         if original in self.variable_items:
             self.variable_items.remove(original)
         if original in self.constant_items:
@@ -81,10 +81,14 @@ class ListWrapper(object):
             self.constant_items.append(value)
 
     def __getitem__(self, i):
-        return sorted(self.variable_items + self.constant_items, key=lambda item: item.position)[i]
+        return self.items[i]
+
+    @property
+    def items(self):
+        return sorted(self.variable_items + self.constant_items, key=lambda item: item.position)
 
     def __eq__(self, other):
-        return [item for item in self] == other
+        return list(self.items) == other
 
 
 class PhasePropertyList(PhaseProperty):
