@@ -47,3 +47,9 @@ output2
 pipeline/source_lens_phase/
 source_lens_phase
 test_fit
+integration/data
+integration/data
+integration/data/l2g/
+integration/lens_profile/~/
+test/integration/data/l2g/
+test/integration/lens_profile/~/
