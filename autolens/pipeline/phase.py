@@ -13,7 +13,7 @@ from astropy.io import fits
 import matplotlib.pyplot as plt
 import os
 
-from autolens.pipeline.phase_property import PhaseProperty
+from autolens.pipeline.phase_property import PhaseProperty, PhasePropertyList
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -364,7 +364,7 @@ class LensProfilePhase(Phase):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
+    lens_galaxies = PhasePropertyList("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_phase"):
@@ -450,7 +450,7 @@ class LensProfileHyperPhase(LensProfilePhase):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
+    lens_galaxies = PhasePropertyList("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
@@ -531,7 +531,7 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
+    lens_galaxies = PhasePropertyList("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase", hyper_index=None):
@@ -608,8 +608,8 @@ class LensMassAndSourceProfilePhase(Phase):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
-    source_galaxies = PhaseProperty("source_galaxies")
+    lens_galaxies = PhasePropertyList("lens_galaxies")
+    source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
@@ -631,8 +631,8 @@ class LensMassAndSourceProfilePhase(Phase):
         super(LensMassAndSourceProfilePhase, self).__init__(optimizer_class=optimizer_class,
                                                             sub_grid_size=sub_grid_size, mask_function=mask_function,
                                                             phase_name=phase_name)
-        self.lens_galaxies = lens_galaxies
-        self.source_galaxies = source_galaxies
+        self.lens_galaxies = lens_galaxies or []
+        self.source_galaxies = source_galaxies or []
 
     class Analysis(Phase.Analysis):
 
@@ -717,8 +717,8 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
-    source_galaxies = PhaseProperty("source_galaxies")
+    lens_galaxies = PhasePropertyList("lens_galaxies")
+    source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
@@ -817,8 +817,8 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = PhaseProperty("lens_galaxies")
-    source_galaxies = PhaseProperty("source_galaxies")
+    lens_galaxies = PhasePropertyList("lens_galaxies")
+    source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, source_galaxies=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="source_and_len_hyper_phase", hyper_index=None):
@@ -893,5 +893,5 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
 
 
 def make_path_if_does_not_exist(path):
-    if os.path.exists(path) == False:
+    if not os.path.exists(path):
         os.makedirs(path)
