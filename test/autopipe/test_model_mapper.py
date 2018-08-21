@@ -25,11 +25,13 @@ def make_test_config():
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
+
 @pytest.fixture(name="width_config")
 def make_width_config():
     return conf.WidthConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/width"))
+
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
@@ -109,6 +111,26 @@ class MockProfile(object):
     def __init__(self, centre=(0.0, 0.0), intensity=0.1):
         self.centre = centre
         self.intensity = intensity
+
+
+class TestRegression(object):
+    def test_set_tuple_constant(self):
+        mm = model_mapper.ModelMapper()
+        mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP)
+
+        assert mm.total_parameters == 7
+
+        mm.galaxy.sersic.centre_0 = model_mapper.Constant(0)
+        mm.galaxy.sersic.centre_1 = model_mapper.Constant(0)
+
+        assert mm.total_parameters == 5
+
+    def test_get_tuple_constants(self):
+        mm = model_mapper.ModelMapper()
+        mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP)
+
+        assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Prior)
+        assert isinstance(mm.galaxy.sersic.centre_1, model_mapper.Prior)
 
 
 class TestModelingCollection(object):
@@ -694,7 +716,6 @@ class TestListPriorModel(object):
         assert gaussian_mapper.list[1].two.sigma == 5
 
     def test_prior_results_for_gaussian_tuples__include_override_from_width_file(self, list_prior_model, width_config):
-
         mapper = model_mapper.ModelMapper(MockConfig(), width_config)
         mapper.list = list_prior_model
 
@@ -785,7 +806,6 @@ def make_mapper_with_list(test_config, width_config):
 class TestGaussianWidthConfig(object):
 
     def test_config(self, width_config):
-
         assert 1 == width_config.get('test_model_mapper', 'MockClassMM', 'one')
         assert 2 == width_config.get('test_model_mapper', 'MockClassMM', 'two')
 
