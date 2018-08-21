@@ -368,10 +368,7 @@ class ModelMapper(AbstractModel):
         This information is extracted from each priors *model_info* property.
         """
 
-        model_info = []
-
-        model_info.append('VARIABLE:' + '\n')
-        model_info.append('')
+        model_info = ['VARIABLE:' + '\n', '']
 
         for prior_name, prior_model in self.flat_prior_models:
 
@@ -668,6 +665,24 @@ class PriorModel(AbstractPriorModel):
         raise exc.PriorException(
             "Default prior for {} has no type indicator (u - Uniform, g - Gaussian, c - Constant".format(
                 attribute_name))
+
+    def __setattr__(self, key, value):
+        try:
+            if "_" in key:
+                setattr([v for k, v in self.tuple_priors if key.split("_")[0] == k][0], key, value)
+                return
+        except IndexError:
+            pass
+        super(PriorModel, self).__setattr__(key, value)
+
+    def __getattr__(self, item):
+        try:
+            if "_" in item:
+                return getattr([v for k, v in self.tuple_priors if item.split("_")[0] == k][0], item)
+
+        except IndexError:
+            pass
+        self.__getattribute__(item)
 
     @property
     def tuple_priors(self):
