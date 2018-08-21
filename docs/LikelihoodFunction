@@ -69,7 +69,7 @@ def fit_masked_image_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer
         grid_datas_fit.image = generate_scaled_sky_image(grid_datas.image)
 
     if hyper_contributions_change is True:
-        hyper_datas_fit.contribution_maps = hyper_image.compute_all_galaxy_contributions(hyper_images.galaxy_images,
+        hyper_datas_fit.contribution_maps = hyper_image.compute_all_galaxy_contributions(hyper_images.image_plane_galaxy_images,
                                                                                          hyper_images.minimum_values)
 
     if hyper_noise_scale_change is True:
