@@ -4,6 +4,8 @@ from autolens.autopipe import model_mapper as mm
 
 
 def is_prior(value):
+    print(value)
+    print(inspect.isclass(value))
     return inspect.isclass(value) or isinstance(value, mm.AbstractPriorModel)
 
 
@@ -31,8 +33,8 @@ def phase_property(name):
 
     def fset(self, value):
         if isinstance(value, list):
-            setattr(self.optimizer.variable, name, [item for item in value if is_prior(value)])
-            setattr(self.optimizer.constant, name, [item for item in value if not is_prior(value)])
+            setattr(self.optimizer.variable, name, [item for item in value if is_prior(item)])
+            setattr(self.optimizer.constant, name, [item for item in value if not is_prior(item)])
         elif is_prior(value):
             setattr(self.optimizer.variable, name, value)
             try:
