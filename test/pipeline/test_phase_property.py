@@ -34,7 +34,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name='phase')
 def make_phase():
-    class MyPhase(ph.LensProfilePhase):
+    class MyPhase(ph.Phase):
         prop = phase_property.PhaseProperty("prop")
 
     return MyPhase(optimizer_class=NLO)
@@ -42,7 +42,7 @@ def make_phase():
 
 @pytest.fixture(name='list_phase')
 def make_list_phase():
-    class MyPhase(ph.LensProfilePhase):
+    class MyPhase(ph.Phase):
         prop = phase_property.PhasePropertyList("prop")
 
     return MyPhase(optimizer_class=NLO)
