@@ -12,24 +12,13 @@ class PhaseProperty(object):
         self.name = name
 
     def fget(self, obj):
-        def attribute_from(source, other):
-            attribute = getattr(source, self.name)
-            if isinstance(attribute, list):
-                return list(sorted(attribute + getattr(other, self.name), key=lambda item: item.position))
-            return attribute
-
         if hasattr(obj.optimizer.constant, self.name):
-            return attribute_from(obj.optimizer.constant, obj.optimizer.variable)
+            return getattr(obj.optimizer.constant, self.name)
         elif hasattr(obj.optimizer.variable, self.name):
-            return attribute_from(obj.optimizer.variable, obj.optimizer.constant)
+            return getattr(obj.optimizer.variable, self.name)
 
     def fset(self, obj, value):
-        if isinstance(value, list):
-            for n in range(len(value)):
-                value[n].position = n
-            setattr(obj.optimizer.variable, self.name, [item for item in value if is_prior(item)])
-            setattr(obj.optimizer.constant, self.name, [item for item in value if not is_prior(item)])
-        elif is_prior(value):
+        if is_prior(value):
             setattr(obj.optimizer.variable, self.name, value)
             try:
                 delattr(obj.optimizer.constant, self.name)
@@ -65,3 +54,17 @@ class PhaseProperty(object):
 
     def deleter(self, fdel):
         return type(self)(self.fget, self.fset, fdel, self.__doc__)
+
+
+class PhasePropertyList(PhaseProperty):
+    def fget(self, obj):
+        return list(sorted(
+            getattr(obj.optimizer.variable, self.name) +
+            getattr(obj.optimizer.constant, self.name),
+            key=lambda item: item.position))
+
+    def fset(self, obj, value):
+        for n in range(len(value)):
+            value[n].position = n
+        setattr(obj.optimizer.variable, self.name, [item for item in value if is_prior(item)])
+        setattr(obj.optimizer.constant, self.name, [item for item in value if not is_prior(item)])
