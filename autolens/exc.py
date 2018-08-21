@@ -23,5 +23,9 @@ class PixelizationException(Exception):
     pass
 
 
+class ReconstructionException(Exception):
+    pass
+
+
 class RayTracingException(Exception):
     pass

@@ -120,9 +120,9 @@ class Rectangular(Pixelization):
         if shape[0] <= 2 or shape[1] <= 2:
             raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
 
-        super(Rectangular, self).__init__(shape[0] * shape[1], regularization_coefficients)
+        self.shape = (int(shape[0]), int(shape[1]))
 
-        self.shape = shape
+        super(Rectangular, self).__init__(self.shape[0] * self.shape[1], regularization_coefficients)
 
     class Geometry(object):
 
