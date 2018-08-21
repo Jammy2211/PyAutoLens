@@ -138,7 +138,7 @@ class TestPhase(object):
         assert analysis.last_results is None
         assert analysis.masked_image == masked_image
 
-    def test_fit(self, phase, image):
+    def test_fit(self, image):
         clean_images()
         phase = ph.LensMassAndSourceProfilePhase(optimizer_class=NLO,
                                                  lens_galaxies=g.Galaxy(), source_galaxies=g.Galaxy())
@@ -272,11 +272,10 @@ class TestResult(object):
     #
     #     analysis = MockAnalysis(number_galaxies=2, value=1.0)
     #
-    #     result = ph.LensMassAndSourceProfilePhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
-    #                                                      analysis=analysis)
-    #     assert (result.source_plane_galaxy_images[0] == np.array([1.0])).all()
-    #     assert (result.source_plane_galaxy_images[1] == np.array([1.0])).all()
-    #     assert (result.source_plane_image == np.array([2.0])).all()
+    # result = ph.LensMassAndSourceProfilePhase.Result(constant=mm.ModelInstance(), likelihood=1,
+    # variable=mm.ModelMapper(), analysis=analysis) assert (result.source_plane_galaxy_images[0] == np.array([
+    # 1.0])).all() assert (result.source_plane_galaxy_images[1] == np.array([1.0])).all() assert (
+    # result.source_plane_image == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])
