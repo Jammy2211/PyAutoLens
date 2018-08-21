@@ -3,6 +3,7 @@ from autolens.pipeline import phase_property
 from autolens.analysis import galaxy as g
 from autolens.analysis import galaxy_prior as gp
 from autolens.autopipe import non_linear
+from autolens.autopipe import model_mapper as mm
 import pytest
 
 
@@ -62,6 +63,7 @@ class TestPhasePropertyList(object):
         phase.prop = objects
 
         assert phase.constant.prop == objects
+        assert len(phase.variable.prop) == 0
 
     def test_classes(self, phase):
         objects = [g.Galaxy, g.Galaxy]
@@ -69,3 +71,20 @@ class TestPhasePropertyList(object):
         phase.prop = objects
 
         assert phase.variable.prop == objects
+        assert len(phase.constant.prop) == 0
+
+    def test_abstract_prior_models(self, phase):
+        objects = [mm.AbstractPriorModel(), mm.AbstractPriorModel]
+
+        phase.prop = objects
+
+        assert phase.variable.prop == objects
+        assert len(phase.constant.prop) == 0
+
+    def test_mix(self, phase):
+        objects = [g.Galaxy, g.Galaxy()]
+
+        phase.prop = objects
+
+        assert phase.variable.prop == [objects[0]]
+        assert phase.constant.prop == [objects[1]]
