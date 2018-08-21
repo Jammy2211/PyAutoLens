@@ -368,10 +368,7 @@ class ModelMapper(AbstractModel):
         This information is extracted from each priors *model_info* property.
         """
 
-        model_info = []
-
-        model_info.append('VARIABLE:' + '\n')
-        model_info.append('')
+        model_info = ['VARIABLE:' + '\n', '']
 
         for prior_name, prior_model in self.flat_prior_models:
 
