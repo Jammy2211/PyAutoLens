@@ -675,6 +675,15 @@ class PriorModel(AbstractPriorModel):
             pass
         super(PriorModel, self).__setattr__(key, value)
 
+    def __getattr__(self, item):
+        try:
+            if "_" in item:
+                return getattr([v for k, v in self.tuple_priors if item.split("_")[0] == k][0], item)
+
+        except IndexError:
+            pass
+        self.__getattribute__(item)
+
     @property
     def tuple_priors(self):
         """
