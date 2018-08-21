@@ -182,7 +182,7 @@ class NonLinearOptimizer(object):
         with open(self.file_param_names, 'w') as paramnames:
             for i in range(self.variable.total_parameters):
                 line = self.paramnames_names[i]
-                line += ' ' * (40 - len(line)) + self.paramnames_labels[i]
+                line += ' ' * (50 - len(line)) + self.paramnames_labels[i]
                 paramnames.write(line + '\n')
 
 
@@ -524,7 +524,7 @@ class MultiNest(NonLinearOptimizer):
 
         for i in range(self.variable.total_parameters):
             line = self.paramnames_names[i]
-            line += ' ' * (40 - len(line)) + str(most_likely[i])
+            line += ' ' * (50 - len(line)) + str(most_likely[i])
             results.write(line + '\n')
 
         most_probable = self.most_probable_from_summary()
@@ -538,7 +538,7 @@ class MultiNest(NonLinearOptimizer):
 
         for i in range(self.variable.total_parameters):
             line = self.paramnames_names[i]
-            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
+            line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
                 upper_limit[i]) + ')'
             results.write(line + '\n')
 
@@ -551,7 +551,7 @@ class MultiNest(NonLinearOptimizer):
 
         for i in range(self.variable.total_parameters):
             line = self.paramnames_names[i]
-            line += ' ' * (40 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
+            line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
                 upper_limit[i]) + ')'
             results.write(line + '\n')
 

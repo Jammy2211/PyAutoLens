@@ -24,17 +24,25 @@ class AbstractTracer(object):
         return any(list(map(lambda galaxy : galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
-    def galaxy_images(self):
+    def image_plane_image(self):
+        return sum(self.image_plane_galaxy_images)
+
+    @property
+    def image_plane_galaxy_images(self):
         """
         Returns
         -------
         image_plane_lens_galaxy_images: [ndarray]
             An masked_image for each galaxy in this ray tracer
         """
-        return [galaxy_image for plane in self.all_planes for galaxy_image in plane.galaxy_images]
+        return [galaxy_image for plane in self.all_planes for galaxy_image in plane.image_plane_galaxy_images]
 
     @property
-    def galaxy_blurring_images(self):
+    def image_plane_blurring_image(self):
+        return sum(self.image_plane_galaxy_blurring_images)
+
+    @property
+    def image_plane_galaxy_blurring_images(self):
         """
         Returns
         -------
@@ -42,7 +50,7 @@ class AbstractTracer(object):
             An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
-                in plane.galaxy_blurring_images]
+                in plane.image_plane_galaxy_blurring_images]
 
     @property
     def hyper_galaxies(self):
@@ -96,16 +104,6 @@ class Tracer(AbstractTracer):
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
         self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
-
-    def galaxy_light_profiles_image_from_planes(self):
-        """Generate the masked_image of the galaxies over the entire ray trace."""
-        return self.image_plane.galaxy_light_profiles_image_from_plane(
-        ) + self.source_plane.galaxy_light_profiles_image_from_plane()
-
-    def galaxy_light_profiles_blurring_image_from_planes(self):
-        """Generate the masked_image of all galaxy light profiles in the blurring regions of the masked_image."""
-        return self.image_plane.galaxy_light_profiles_blurring_image_from_plane(
-        ) + self.source_plane.galaxy_light_profiles_blurring_image_from_plane()
 
     def reconstructors_from_source_plane(self, borders, cluster_mask):
         return self.source_plane.reconstructor_from_plane(borders, cluster_mask)
@@ -186,16 +184,6 @@ class MultiTracer(AbstractTracer):
 
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
-
-    def galaxy_light_profiles_image_from_planes(self):
-        """Generate the masked_image of the galaxies over the entire ray trace."""
-        return sum(np.array(list(map(lambda plane: plane.galaxy_light_profiles_image_from_plane(),
-                                     self.planes))))
-
-    def galaxy_light_profiles_blurring_image_from_planes(self):
-        """Generate the masked_image of all galaxy light profiles in the blurring regions of the masked_image."""
-        return np.ndarray.sum(np.array(list(map(lambda plane: plane.galaxy_light_profiles_blurring_image_from_plane(),
-                                                self.planes))))
 
     def reconstructors_from_planes(self, borders, cluster_mask):
         return list(map(lambda plane: plane.reconstructor_from_plane(borders, cluster_mask), self.planes))
@@ -294,16 +282,22 @@ class Plane(object):
         return self.grids.map_function(np.subtract, self.deflections)
 
     @property
-    def galaxy_images(self):
+    def image_plane_image(self):
+        return sum(self.image_plane_galaxy_images)
+
+    @property
+    def image_plane_galaxy_images(self):
         """
         Returns
         -------
         image_plane_lens_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
-        return [self.image_from_galaxy(galaxy) for galaxy in self.galaxies]
+        if len(self.galaxies) == 0:
+            return np.zeros(self.grids.image.shape[0])
+        return [self.image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
-    def image_from_galaxy(self, galaxy):
+    def image_plane_image_from_galaxy(self, galaxy):
         """
         Parameters
         ----------
@@ -318,16 +312,22 @@ class Plane(object):
         return intensities_via_sub_grid(self.grids.sub, [galaxy])
 
     @property
-    def galaxy_blurring_images(self):
+    def image_plane_blurring_image(self):
+        return sum(self.image_plane_galaxy_blurring_images)
+
+    @property
+    def image_plane_galaxy_blurring_images(self):
         """
         Returns
         -------
         image_plane_lens_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
-        return [self.blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
+        if len(self.galaxies) == 0:
+            return np.zeros(self.grids.image.shape[0])
+        return [self.image_plane_blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
-    def blurring_image_from_galaxy(self, galaxy):
+    def image_plane_blurring_image_from_galaxy(self, galaxy):
         """
         Parameters
         ----------
@@ -344,16 +344,6 @@ class Plane(object):
     @property
     def hyper_galaxies(self):
         return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
-
-    def galaxy_light_profiles_image_from_plane(self):
-        """Generate the masked_image of the galaxies in this plane."""
-        if len(self.galaxies) == 0:
-            return np.zeros(self.grids.image.shape[0])
-        return intensities_via_sub_grid(self.grids.sub, self.galaxies)
-
-    def galaxy_light_profiles_blurring_image_from_plane(self):
-        """Generate the masked_image of the galaxies in this plane."""
-        return intensities_via_grid(self.grids.blurring, self.galaxies)
 
     def reconstructor_from_plane(self, borders, sparse_mask):
 
