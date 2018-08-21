@@ -118,14 +118,15 @@ def clean_images():
 
 
 class TestPhase(object):
+
     def test_set_constants(self, phase, galaxy):
-        phase.lens_galaxy = galaxy
-        assert phase.optimizer.constant.lens_galaxy == galaxy
+        phase.lens_galaxies = galaxy
+        assert phase.optimizer.constant.lens_galaxies == galaxy
         assert not hasattr(phase.optimizer.variable, "lens_galaxies")
 
     def test_set_variables(self, phase, galaxy_prior):
-        phase.lens_galaxy = galaxy_prior
-        assert phase.optimizer.variable.lens_galaxy == galaxy_prior
+        phase.lens_galaxies = galaxy_prior
+        assert phase.optimizer.variable.lens_galaxies == galaxy_prior
         assert not hasattr(phase.optimizer.constant, "lens_galaxies")
 
     def test_mask_analysis(self, phase, image, masked_image):
@@ -135,17 +136,17 @@ class TestPhase(object):
 
     def test_fit(self, phase, image):
         clean_images()
-        phase.source_galaxy = g.Galaxy()
-        phase.lens_galaxy = g.Galaxy()
+        phase = ph.LensMassAndSourceProfilePhase(optimizer_class=NLO,
+                                                 lens_galaxies=g.Galaxy(), source_galaxies=g.Galaxy())
         result = phase.run(image=image)
-        assert isinstance(result.constant.lens_galaxy, g.Galaxy)
-        assert isinstance(result.constant.source_galaxy, g.Galaxy)
+        assert isinstance(result.constant.lens_galaxies, g.Galaxy)
+        assert isinstance(result.constant.source_galaxies, g.Galaxy)
 
     def test_customize(self, results, image):
         class MyPlanePhaseAnd(ph.LensMassAndSourceProfilePhase):
             def pass_priors(self, previous_results):
-                self.lens_galaxy = previous_results.last.constant.lens_galaxy
-                self.source_galaxy = previous_results.last.variable.source_galaxy
+                self.lens_galaxies = previous_results.last.constant.lens_galaxies
+                self.source_galaxies = previous_results.last.variable.source_galaxies
 
         galaxy = g.Galaxy()
         galaxy_prior = gp.GalaxyPrior()
@@ -156,8 +157,8 @@ class TestPhase(object):
         phase = MyPlanePhaseAnd(optimizer_class=NLO)
         phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
 
-        assert phase.lens_galaxy == galaxy
-        assert phase.source_galaxy == galaxy_prior
+        assert phase.lens_galaxies == galaxy
+        assert phase.source_galaxies == galaxy_prior
 
     def test_phase_property(self):
         class MyPhase(ph.LensProfilePhase):
@@ -183,13 +184,13 @@ class TestPhase(object):
 
     def test_galaxy_images(self, image, phase):
         clean_images()
-        phase.lens_galaxy = g.Galaxy()
-        phase.source_galaxy = g.Galaxy()
+        phase.lens_galaxies = g.Galaxy()
+        phase.source_galaxies = g.Galaxy()
         result = phase.run(image)
         assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.LensMassAndSourceProfilePhase(lens_galaxy=gp.GalaxyPrior(), source_galaxies=gp.GalaxyPrior())
+        phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=gp.GalaxyPrior(), source_galaxies=gp.GalaxyPrior())
 
         ph.LensMassAndSourceProfilePhase()
 
@@ -202,20 +203,20 @@ class TestPhase(object):
                 assert image.shape == im.shape
                 return im
 
-        phase = MyPhase()
+        phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(image)
         assert analysis.masked_image != image
 
-    def test_model_images(self, image):
-        phase = ph.LensMassAndSourceProfilePhase()
+    def test_tracer_for_instance(self, image):
+        lens_galaxy = g.Galaxy()
+        source_galaxy = g.Galaxy()
+        phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
         analysis = phase.make_analysis(image)
-        instance = mm.ModelInstance()
-        instance.lens_galaxy = g.Galaxy(light=light_profiles.EllipticalExponentialLP())
-        instance.source_galaxy = None
+        instance = phase.constant
+        tracer = analysis.tracer_for_instance(instance)
 
-        images = analysis.galaxy_images_for_instance(instance)
-        assert images[0].shape == image.shape
-        assert images[1] is None
+        assert tracer.image_plane.galaxies[0] == lens_galaxy
+        assert tracer.source_plane.galaxies[0] == source_galaxy
 
     def test__phase_can_receive_list_of_galaxy_priors(self):
 
