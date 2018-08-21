@@ -40,6 +40,14 @@ def make_phase():
     return MyPhase(optimizer_class=NLO)
 
 
+@pytest.fixture(name='list_phase')
+def make_list_phase():
+    class MyPhase(ph.LensProfilePhase):
+        prop = phase_property.PhasePropertyList("prop")
+
+    return MyPhase(optimizer_class=NLO)
+
+
 class TestPhaseProperty(object):
     def test_phase_property(self, phase):
         phase.prop = gp.GalaxyPrior()
@@ -57,52 +65,52 @@ class TestPhaseProperty(object):
 
 
 class TestPhasePropertyList(object):
-    def test_constants(self, phase):
+    def test_constants(self, list_phase):
         objects = [g.Galaxy(), g.Galaxy()]
 
-        phase.prop = objects
+        list_phase.prop = objects
 
-        assert phase.constant.prop == objects
-        assert len(phase.variable.prop) == 0
+        assert list_phase.constant.prop == objects
+        assert len(list_phase.variable.prop) == 0
 
-        assert phase.prop == objects
+        assert list_phase.prop == objects
 
-    def test_classes(self, phase):
+    def test_classes(self, list_phase):
         objects = [g.Galaxy, g.Galaxy]
 
-        phase.prop = objects
+        list_phase.prop = objects
 
-        assert phase.variable.prop == objects
-        assert len(phase.constant.prop) == 0
+        assert list_phase.variable.prop == objects
+        assert len(list_phase.constant.prop) == 0
 
-        assert phase.prop == objects
+        assert list_phase.prop == objects
 
-    def test_abstract_prior_models(self, phase):
+    def test_abstract_prior_models(self, list_phase):
         objects = [mm.AbstractPriorModel(), mm.AbstractPriorModel]
 
-        phase.prop = objects
+        list_phase.prop = objects
 
-        assert phase.variable.prop == objects
-        assert len(phase.constant.prop) == 0
+        assert list_phase.variable.prop == objects
+        assert len(list_phase.constant.prop) == 0
 
-        assert phase.prop == objects
+        assert list_phase.prop == objects
 
-    def test_mix(self, phase):
+    def test_mix(self, list_phase):
         objects = [g.Galaxy, g.Galaxy()]
 
-        phase.prop = objects
+        list_phase.prop = objects
 
-        assert phase.variable.prop == [objects[0]]
-        assert phase.constant.prop == [objects[1]]
+        assert list_phase.variable.prop == [objects[0]]
+        assert list_phase.constant.prop == [objects[1]]
 
-        assert phase.prop == objects
+        assert list_phase.prop == objects
 
-    def test_set_item(self, phase):
+    def test_set_item(self, list_phase):
         objects = [g.Galaxy, g.Galaxy()]
 
-        phase.prop = objects
+        list_phase.prop = objects
 
-        phase.prop[1] = g.Galaxy
+        list_phase.prop[1] = g.Galaxy
 
-        assert phase.constant.prop == []
-        assert phase.variable.prop == [g.Galaxy, g.Galaxy]
+        assert list_phase.constant.prop == []
+        assert list_phase.variable.prop == [g.Galaxy, g.Galaxy]
