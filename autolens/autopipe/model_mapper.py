@@ -666,6 +666,15 @@ class PriorModel(AbstractPriorModel):
             "Default prior for {} has no type indicator (u - Uniform, g - Gaussian, c - Constant".format(
                 attribute_name))
 
+    def __setattr__(self, key, value):
+        try:
+            if "_" in key:
+                setattr([v for k, v in self.tuple_priors if key.split("_")[0] == k][0], key, value)
+                return
+        except IndexError:
+            pass
+        super(PriorModel, self).__setattr__(key, value)
+
     @property
     def tuple_priors(self):
         """
