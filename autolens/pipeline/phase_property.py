@@ -24,13 +24,21 @@ def phase_property(name):
     """
 
     def fget(self):
+        def attribute_from(source, other):
+            attribute = getattr(source, name)
+            if isinstance(attribute, list):
+                return list(sorted(attribute + getattr(other, name), key=lambda item: item.position))
+            return attribute
+
         if hasattr(self.optimizer.constant, name):
-            return getattr(self.optimizer.constant, name)
+            return attribute_from(self.optimizer.constant, self.optimizer.variable)
         elif hasattr(self.optimizer.variable, name):
-            return getattr(self.optimizer.variable, name)
+            return attribute_from(self.optimizer.variable, self.optimizer.constant)
 
     def fset(self, value):
         if isinstance(value, list):
+            for n in range(len(value)):
+                value[n].position = n
             setattr(self.optimizer.variable, name, [item for item in value if is_prior(item)])
             setattr(self.optimizer.constant, name, [item for item in value if not is_prior(item)])
         elif is_prior(value):
