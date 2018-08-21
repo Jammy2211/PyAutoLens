@@ -63,11 +63,11 @@ class ProfileFitter(AbstractFitter):
 
     @property
     def image(self):
-        return self.tracer.galaxy_light_profiles_image_from_planes()
+        return self.tracer.image_plane_image
 
     @property
     def blurring_region_image(self):
-        return self.tracer.galaxy_light_profiles_blurring_image_from_planes()
+        return self.tracer.image_plane_blurring_image
 
     @property
     def blurred_image_residuals(self):
