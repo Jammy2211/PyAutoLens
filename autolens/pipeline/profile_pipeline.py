@@ -24,7 +24,7 @@ def make():
     #    NLO: MultiNest
     #    Image: Observed Image
     #    Mask: Circle - 3.0"
-    phase1 = ph.LensProfilePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP),
+    phase1 = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)],
                                  optimizer_class=optimizer_class, phase_name="{}/phase1".format(name))
 
     class LensSubtractedPhase(ph.LensMassAndSourceProfilePhase):
@@ -48,8 +48,8 @@ def make():
         return msk.Mask.annular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, inner_radius=0.4,
                                 outer_radius=3.)
 
-    phase2 = LensSubtractedPhase(lens_galaxy=gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermalMP),
-                                 source_galaxy=gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP),
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermalMP)],
+                                 source_galaxies=[gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)],
                                  optimizer_class=optimizer_class,
                                  mask_function=annular_mask_function,
                                  phase_name="{}/phase2".format(name))
@@ -95,10 +95,10 @@ def make():
 
         def pass_priors(self, previous_results):
             phase_3_results = previous_results[2]
-            self.lens_galaxy = phase_3_results.variable.lens_galaxy
-            self.source_galaxy = phase_3_results.variable.source_galaxy
-            self.lens_galaxy.hyper_galaxy = previous_results.last.constant.lens_galaxy.hyper_galaxy
-            self.source_galaxy.hyper_galaxy = previous_results.last.constant.source_galaxy.hyper_galaxy
+            self.lens_galaxies = [phase_3_results.variable.lens_galaxy]
+            self.source_galaxies = [phase_3_results.variable.source_galaxy]
+            self.lens_galaxies.hyper_galaxy = [previous_results.last.constant.lens_galaxy.hyper_galaxy]
+            self.source_galaxies.hyper_galaxy = [previous_results.last.constant.source_galaxy.hyper_galaxy]
 
     phase4 = CombinedPhase2(optimizer_class=optimizer_class, phase_name="{}/phase4".format(name))
     return pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
