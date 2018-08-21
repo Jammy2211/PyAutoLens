@@ -45,6 +45,16 @@ class TestAddition(object):
         assert three.a == 'a'
         assert three.b == 'b'
 
+    def test_list_properties(self):
+        one = model_mapper.AbstractModel()
+        two = model_mapper.AbstractModel()
+        one.a = ['a']
+        two.a = ['b']
+
+        three = one + two
+
+        assert three.a == ['a', 'b']
+
     def test_instance_plus_instance(self):
         one = model_mapper.ModelInstance()
         two = model_mapper.ModelInstance()
