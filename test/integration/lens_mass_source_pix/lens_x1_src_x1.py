@@ -40,10 +40,10 @@ def test_lens_x1_src_x1_pix_pipeline():
 
     conf.instance.output_path = output_path
 
-    try:
-        shutil.rmtree(output_path + pipeline_name)
-    except FileNotFoundError:
-        pass
+    # try:
+    #     shutil.rmtree(output_path + pipeline_name)
+    # except FileNotFoundError:
+    #     pass
 
     pipeline = make_lens_x1_src_x1_pix_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
@@ -59,7 +59,8 @@ def make_lens_x1_src_x1_pix_pipeline(pipeline_name):
             self.lens_galaxies[0].sie.centre.centre_0 = mm.UniformPrior(0.0, 0.02)
             self.lens_galaxies[0].sie.centre.centre_1 = mm.UniformPrior(0.0, 0.02)
             self.lens_galaxies[0].sie.einstein_radius = mm.Constant(1.6)
-            self.source_galaxies[0].pixelization.
+            self.source_galaxies[0].pixelization.shape.shape_0 = mm.UniformPrior(19.5, 20.5)
+            self.source_galaxies[0].pixelization.shape.shape_1 = mm.UniformPrior(19.5, 20.5)
 
     phase1 = SourcePix(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
                                                    source_galaxies=[gp.GalaxyPrior(pixelization=pix.RectangularRegConst)],

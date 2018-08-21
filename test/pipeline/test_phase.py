@@ -191,7 +191,7 @@ class TestPhase(object):
         phase.lens_galaxies = g.Galaxy()
         phase.source_galaxies = g.Galaxy()
         result = phase.run(image)
-        assert len(result.galaxy_images) == 2
+        assert len(result.image_plane_galaxy_images) == 2
 
     def test_duplication(self):
         phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=gp.GalaxyPrior(), source_galaxies=gp.GalaxyPrior())

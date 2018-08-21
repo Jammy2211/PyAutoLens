@@ -457,8 +457,8 @@ class LensProfilePhase(Phase):
 
             self.tracer = analysis.tracer_for_instance(instance)
             fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
-            self.image_plane = self.visual_data_from_tracer_images(analysis, sum(self.tracer.image_plane.galaxy_images),
-                                                                   sum(self.tracer.image_plane.galaxy_blurring_images))
+            self.image_plane = self.visual_data_from_tracer_images(analysis, sum(self.tracer.image_plane.image_plane_galaxy_images),
+                                                                   sum(self.tracer.image_plane.image_plane_galaxy_blurring_images))
             self.residuals = analysis.masked_image.map_to_2d(fitter.blurred_image_residuals)
             self.chi_squareds = analysis.masked_image.map_to_2d(fitter.blurred_image_chi_squareds)
 
@@ -488,8 +488,8 @@ class LensProfilePhase(Phase):
             """
             super().__init__(constant, likelihood, variable, analysis)
             tracer = analysis.tracer_for_instance(constant)
-            self.image_plane_lens_galaxy_images = self.galaxy_images_from_plane(analysis, tracer.image_plane.galaxy_images,
-                                                                                tracer.image_plane.galaxy_blurring_images)
+            self.image_plane_lens_galaxy_images = self.galaxy_images_from_plane(analysis, tracer.image_plane.image_plane_galaxy_images,
+                                                                                tracer.image_plane.image_plane_galaxy_blurring_images)
 
         @property
         def image_plane_lens_image(self):
@@ -739,8 +739,9 @@ class LensMassAndSourceProfilePhase(Phase):
 
             self.tracer = analysis.tracer_for_instance(instance)
             fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
-            self.image_plane = self.visual_data_from_tracer_images(analysis, sum(self.tracer.source_plane.galaxy_images),
-                                                                   sum(self.tracer.source_plane.galaxy_blurring_images))
+            self.image_plane = self.visual_data_from_tracer_images(analysis, sum(self.tracer.source_plane.image_plane_galaxy_images),
+                                                                   sum(self.tracer.source_plane.image_plane_galaxy_blurring_images))
+
             self.residuals = analysis.masked_image.map_to_2d(fitter.blurred_image_residuals)
             self.chi_squareds = analysis.masked_image.map_to_2d(fitter.blurred_image_chi_squareds)
 
@@ -770,8 +771,8 @@ class LensMassAndSourceProfilePhase(Phase):
             """
             super().__init__(constant, likelihood, variable, analysis)
             tracer = analysis.tracer_for_instance(constant)
-            self.image_plane_source_galaxy_images = self.galaxy_images_from_plane(analysis, tracer.source_plane.galaxy_images,
-                                                                                  tracer.source_plane.galaxy_blurring_images)
+            self.image_plane_source_galaxy_images = self.galaxy_images_from_plane(analysis, tracer.source_plane.image_plane_galaxy_images,
+                                                                                  tracer.source_plane.image_plane_galaxy_blurring_images)
 
         @property
         def image_plane_source_image(self):
@@ -1055,15 +1056,13 @@ class LensMassAndSourcePixelizationPhase(Phase):
             super().__init__(analysis)
 
         def output_visual_data_as_pngs(self, visual_data, suffix=None, during_analysis=False):
-            pass
 
-            # super().output_visual_data_as_pngs(visual_data, suffix, during_analysis)
+            super().output_visual_data_as_pngs(visual_data, suffix, during_analysis)
             # self.output_array_as_png(visual_data.image_plane, 'image_plane', 'Image Plane', during_analysis)
 
         def output_visual_data_as_fits(self, visual_data, suffix=None, during_analysis=False):
-            pass
 
-            # super().output_visual_data_as_fits(visual_data, suffix, during_analysis)
+            super().output_visual_data_as_fits(visual_data, suffix, during_analysis)
             # self.output_array_as_fits(visual_data.image_plane, "image_plane", suffix, during_analysis)
 
 
