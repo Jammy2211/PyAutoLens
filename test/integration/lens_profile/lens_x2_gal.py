@@ -8,13 +8,15 @@ from autolens.autopipe import model_mapper as mm
 from autolens.analysis import galaxy
 from autolens import conf
 from test.integration import tools
+from pathlib import Path
 
 import os
 import shutil
 
+home = str(Path.home())
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
+output_path = '{}/data/pdtw24/Lens/int/lens_profile/'.format(home)
 
 
 def test_lens_x2_gal_pipeline():
