@@ -672,7 +672,7 @@ class TestHyperProfileFitter:
             assert pix_fitter.masked_image.convolver_mapping_matrix == profile_fitter.masked_image.convolver_mapping_matrix
             assert pix_fitter.sparse_mask == mask.SparseMask(mi_blur.mask, 1)
             assert pix_fitter.tracer == pix_fitter.tracer
-            assert (pix_fitter.model_image == profile_fitter.hyper_model_image).all()
+            assert (pix_fitter.hyper_model_image == profile_fitter.hyper_model_image).all()
             assert (pix_fitter.hyper_galaxy_images[0] == profile_fitter.hyper_galaxy_images[0]).all()
             assert (pix_fitter.hyper_galaxy_images[1] == profile_fitter.hyper_galaxy_images[1]).all()
             assert pix_fitter.hyper_minimum_values[0] == profile_fitter.hyper_minimum_values[0]

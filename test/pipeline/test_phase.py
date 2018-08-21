@@ -24,6 +24,10 @@ class MockAnalysis(object):
         self.number_galaxies = number_galaxies
         self.value = value
 
+    # def tracer_for_instance(self, instance):
+    #     from autolens.analysis import ray_tracing
+    #     return ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=)
+
     # noinspection PyUnusedLocal
     def galaxy_images_for_model(self, model):
         return self.number_galaxies * [np.array([self.value])]
@@ -257,8 +261,6 @@ class TestPhase(object):
 
         instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2,
                                                                 0.4, 0.5, 0.6, 0.7, 0.8])
-        print(phase.optimizer.constant)
-        print(phase.optimizer.constant.__dict__)
         instance += phase.optimizer.constant
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
@@ -271,54 +273,31 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
-    def test__phase_can_receive_list_of_galaxy_priors_2(self):
 
-        from autolens.analysis import galaxy
-
-        phase = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP,
-                                                                  sis=mass_profiles.SphericalIsothermalMP,
-                                                                  variable_redshift=True),
-                                                   gp.GalaxyPrior(sis=mass_profiles.SphericalIsothermalMP(centre=(11.0, 12.0),
-                                                                                                        einstein_radius=13.0),
-                                                                    variable_redshift=True)],
-                                    optimizer_class=non_linear.MultiNest)
-
-        instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                                                0.4, 0.5, 0.6, 0.7, 0.8])
-
-        assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
-        assert instance.lens_galaxies[0].sis.centre[0] == 11.0
-        assert instance.lens_galaxies[0].sis.centre[1] == 12.0
-        assert instance.lens_galaxies[0].sis.einstein_radius == 13.0
-        assert instance.lens_galaxies[0].redshift == 0.4
-        assert instance.lens_galaxies[1].sis.centre[0] == 0.5
-        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
-        assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
-        assert instance.lens_galaxies[1].redshift == 0.8
+# class TestPixelizedPhase(object):
+#     def test_constructor(self):
+#         phase = ph.PixelizedSourceLensAndPhase()
+#         assert isinstance(phase.source_galaxies, gp.GalaxyPrior)
+#         assert phase.lens_galaxies is None
 
 
-class TestPixelizedPhase(object):
-    def test_constructor(self):
-        phase = ph.PixelizedSourceLensAndPhase()
-        assert isinstance(phase.source_galaxies, gp.GalaxyPrior)
-        assert phase.lens_galaxies is None
-
-
-class TestAnalysis(object):
-    def test_model_image(self, results_collection, masked_image):
-        analysis = ph.Phase.Analysis(results_collection, masked_image, "phase_name")
-        assert (results_collection[0].model_image == analysis.last_results.model_image).all()
+# class TestAnalysis(object):
+#     def test_model_image(self, results_collection, masked_image):
+#         analysis = ph.LensProfilePhase.Analysis(results_collection, masked_image, "phase_name")
+#         assert (results_collection[0].model_image == analysis.last_results.model_image).all()
 
 
 class TestResult(object):
-    def test_hyper_galaxy_and_model_images(self):
-        analysis = MockAnalysis(number_galaxies=2, value=1.0)
 
-        result = ph.LensMassAndSourceProfilePhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
-                                                         analysis=analysis)
-        assert (result.galaxy_images[0] == np.array([1.0])).all()
-        assert (result.galaxy_images[1] == np.array([1.0])).all()
-        assert (result.model_image == np.array([2.0])).all()
+    # def test_hyper_galaxy_and_model_images(self):
+    #
+    #     analysis = MockAnalysis(number_galaxies=2, value=1.0)
+    #
+    #     result = ph.LensMassAndSourceProfilePhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
+    #                                                      analysis=analysis)
+    #     assert (result.source_plane_galaxy_images[0] == np.array([1.0])).all()
+    #     assert (result.source_plane_galaxy_images[1] == np.array([1.0])).all()
+    #     assert (result.source_plane_image == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])
