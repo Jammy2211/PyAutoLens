@@ -76,7 +76,7 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_classes(self, list_phase):
-        objects = [g.Galaxy, g.Galaxy]
+        objects = [gp.GalaxyPrior(), gp.GalaxyPrior()]
 
         list_phase.prop = objects
 
@@ -86,7 +86,7 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_abstract_prior_models(self, list_phase):
-        objects = [mm.AbstractPriorModel(), mm.AbstractPriorModel]
+        objects = [mm.AbstractPriorModel(), mm.AbstractPriorModel()]
 
         list_phase.prop = objects
 
@@ -96,7 +96,7 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_mix(self, list_phase):
-        objects = [g.Galaxy, g.Galaxy()]
+        objects = [gp.GalaxyPrior(), g.Galaxy()]
 
         list_phase.prop = objects
 
@@ -106,18 +106,31 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_set_item(self, list_phase):
-        objects = [g.Galaxy, g.Galaxy()]
+        galaxy_prior_0 = gp.GalaxyPrior()
+        objects = [galaxy_prior_0, g.Galaxy()]
 
         list_phase.prop = objects
+        assert_ordered(list_phase.prop)
 
-        list_phase.prop[1] = g.Galaxy
+        galaxy_prior_1 = gp.GalaxyPrior()
+        list_phase.prop[1] = galaxy_prior_1
+
+        assert_ordered(list_phase.prop)
 
         assert list_phase.constant.prop == []
-        assert list_phase.variable.prop == [g.Galaxy, g.Galaxy]
+        assert list_phase.variable.prop == [galaxy_prior_0, galaxy_prior_1]
 
-        list_phase.prop[0] = g.Galaxy()
+        galaxy = g.Galaxy()
 
-        assert list_phase.prop == [g.Galaxy(), g.Galaxy]
+        list_phase.prop[0] = galaxy
 
-        assert list_phase.constant.prop == [g.Galaxy()]
-        assert list_phase.variable.prop == [g.Galaxy]
+        assert_ordered(list_phase.prop)
+
+        assert list_phase.prop == [galaxy, galaxy_prior_1]
+
+        assert list_phase.constant.prop == [galaxy]
+        assert list_phase.variable.prop == [galaxy_prior_1]
+
+
+def assert_ordered(items):
+    assert [n for n in range(len(items))] == [item.position for item in items]
