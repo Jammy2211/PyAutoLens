@@ -29,18 +29,18 @@ def test_lens_x2_gal_hyper_pipeline():
 
     bulge_0 = lp.EllipticalSersicLP(centre=(-1.0, -1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                     effective_radius=1.0, sersic_index=4.0)
-    disk_0 = lp.EllipticalSersicLP(centre=(-1.0, -1.0), axis_ratio=0.6, phi=90.0, intensity=1.0,
+    disk_0 = lp.EllipticalSersicLP(centre=(-1.0, -1.0), axis_ratio=0.6, phi=90.0, intensity=20.0,
                                    effective_radius=2.5, sersic_index=1.0)
     bulge_1 = lp.EllipticalSersicLP(centre=(1.0, 1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                     effective_radius=1.0, sersic_index=4.0)
-    disk_1 = lp.EllipticalSersicLP(centre=(1.0, 1.0), axis_ratio=0.6, phi=90.0, intensity=1.0,
+    disk_1 = lp.EllipticalSersicLP(centre=(1.0, 1.0), axis_ratio=0.6, phi=90.0, intensity=20.0,
                                    effective_radius=2.5, sersic_index=1.0)
 
     lens_galaxy_0 = galaxy.Galaxy(bulge=bulge_0, disk=disk_0)
     lens_galaxy_1 = galaxy.Galaxy(bulge=bulge_1, disk=disk_1)
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
-                                     source_galaxies=[], target_signal_to_noise=30.0)
+                                     source_galaxies=[], target_signal_to_noise=50.0)
 
     conf.instance.output_path = output_path
 
