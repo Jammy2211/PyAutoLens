@@ -16,13 +16,13 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
 
-def test_lens_x2_gal_pipeline():
 
+def test_lens_x2_gal_pipeline():
     pipeline_name = "l2g"
     data_name = '/l2g'
 
     try:
-        shutil.rmtree(dirpath+'/data'+data_name)
+        shutil.rmtree(dirpath + '/data' + data_name)
     except FileNotFoundError:
         pass
 
@@ -52,8 +52,8 @@ def test_lens_x2_gal_pipeline():
     for result in results:
         print(result)
 
-def make_lens_x2_gal_pipeline(pipeline_name):
 
+def make_lens_x2_gal_pipeline(pipeline_name):
     class LensPlanex2GalPhase(ph.LensProfilePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0].elliptical_sersic.centre.centre_0 = mm.UniformPrior(-2.0, -0.0)
@@ -73,6 +73,7 @@ def make_lens_x2_gal_pipeline(pipeline_name):
     phase1.optimizer.sampling_efficiency = 0.8
 
     return pl.Pipeline(pipeline_name, phase1)
+
 
 if __name__ == "__main__":
     test_lens_x2_gal_pipeline()

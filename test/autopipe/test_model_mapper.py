@@ -114,7 +114,7 @@ class MockProfile(object):
 
 
 class TestRegression(object):
-    def test_tuple_constant(self):
+    def test_set_tuple_constant(self):
         mm = model_mapper.ModelMapper()
         mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP)
 
@@ -123,8 +123,14 @@ class TestRegression(object):
         mm.galaxy.sersic.centre_0 = model_mapper.Constant(0)
         mm.galaxy.sersic.centre_1 = model_mapper.Constant(0)
 
-        # assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Constant)
         assert mm.total_parameters == 5
+
+    def test_get_tuple_constants(self):
+        mm = model_mapper.ModelMapper()
+        mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP)
+
+        assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Prior)
+        assert isinstance(mm.galaxy.sersic.centre_1, model_mapper.Prior)
 
 
 class TestModelingCollection(object):
