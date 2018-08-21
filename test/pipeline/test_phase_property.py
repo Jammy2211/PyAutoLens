@@ -58,12 +58,14 @@ class TestPhaseProperty(object):
 
 class TestPhasePropertyList(object):
     def test_constants(self, phase):
-        objects = [object(), object()]
+        objects = [g.Galaxy(), g.Galaxy()]
 
         phase.prop = objects
 
         assert phase.constant.prop == objects
         assert len(phase.variable.prop) == 0
+
+        assert phase.prop == objects
 
     def test_classes(self, phase):
         objects = [g.Galaxy, g.Galaxy]
@@ -73,6 +75,8 @@ class TestPhasePropertyList(object):
         assert phase.variable.prop == objects
         assert len(phase.constant.prop) == 0
 
+        assert phase.prop == objects
+
     def test_abstract_prior_models(self, phase):
         objects = [mm.AbstractPriorModel(), mm.AbstractPriorModel]
 
@@ -81,6 +85,8 @@ class TestPhasePropertyList(object):
         assert phase.variable.prop == objects
         assert len(phase.constant.prop) == 0
 
+        assert phase.prop == objects
+
     def test_mix(self, phase):
         objects = [g.Galaxy, g.Galaxy()]
 
@@ -88,3 +94,5 @@ class TestPhasePropertyList(object):
 
         assert phase.variable.prop == [objects[0]]
         assert phase.constant.prop == [objects[1]]
+
+        assert phase.prop == objects
