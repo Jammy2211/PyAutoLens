@@ -25,11 +25,13 @@ def make_test_config():
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/default"))
 
+
 @pytest.fixture(name="width_config")
 def make_width_config():
     return conf.WidthConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
                                              "test_files/config/priors/width"))
+
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
@@ -694,7 +696,6 @@ class TestListPriorModel(object):
         assert gaussian_mapper.list[1].two.sigma == 5
 
     def test_prior_results_for_gaussian_tuples__include_override_from_width_file(self, list_prior_model, width_config):
-
         mapper = model_mapper.ModelMapper(MockConfig(), width_config)
         mapper.list = list_prior_model
 
@@ -785,7 +786,6 @@ def make_mapper_with_list(test_config, width_config):
 class TestGaussianWidthConfig(object):
 
     def test_config(self, width_config):
-
         assert 1 == width_config.get('test_model_mapper', 'MockClassMM', 'one')
         assert 2 == width_config.get('test_model_mapper', 'MockClassMM', 'two')
 
