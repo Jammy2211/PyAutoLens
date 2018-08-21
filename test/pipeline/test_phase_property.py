@@ -96,3 +96,13 @@ class TestPhasePropertyList(object):
         assert phase.constant.prop == [objects[1]]
 
         assert phase.prop == objects
+
+    def test_set_item(self, phase):
+        objects = [g.Galaxy, g.Galaxy()]
+
+        phase.prop = objects
+
+        phase.prop[1] = g.Galaxy
+
+        assert phase.constant.prop == []
+        assert phase.variable.prop == [g.Galaxy, g.Galaxy]
