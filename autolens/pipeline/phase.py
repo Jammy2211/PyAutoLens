@@ -13,7 +13,7 @@ from astropy.io import fits
 import matplotlib.pyplot as plt
 import os
 
-from autolens.pipeline.phase_property import phase_property
+from autolens.pipeline.phase_property import PhaseProperty
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -364,7 +364,7 @@ class LensProfilePhase(Phase):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = phase_property("lens_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_phase"):
@@ -450,7 +450,7 @@ class LensProfileHyperPhase(LensProfilePhase):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = phase_property("lens_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
@@ -531,7 +531,7 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = phase_property("lens_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase", hyper_index=None):
@@ -608,8 +608,8 @@ class LensMassAndSourceProfilePhase(Phase):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = phase_property("lens_galaxies")
-    source_galaxies = phase_property("source_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
@@ -717,8 +717,8 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = phase_property("lens_galaxies")
-    source_galaxies = phase_property("source_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
                  sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
@@ -817,8 +817,8 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = phase_property("lens_galaxies")
-    source_galaxies = phase_property("source_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
 
     def __init__(self, source_galaxies=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="source_and_len_hyper_phase", hyper_index=None):
