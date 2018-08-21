@@ -295,9 +295,9 @@ class TestResult(object):
     #
     #     result = ph.LensMassAndSourceProfilePhase.Result(constant=mm.ModelInstance(), likelihood=1, variable=mm.ModelMapper(),
     #                                                      analysis=analysis)
-    #     assert (result.source_plane_galaxy_images[0] == np.array([1.0])).all()
-    #     assert (result.source_plane_galaxy_images[1] == np.array([1.0])).all()
-    #     assert (result.source_plane_image == np.array([2.0])).all()
+    #     assert (result.image_plane_source_galaxy_images[0] == np.array([1.0])).all()
+    #     assert (result.image_plane_source_galaxy_images[1] == np.array([1.0])).all()
+    #     assert (result.image_plane == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])

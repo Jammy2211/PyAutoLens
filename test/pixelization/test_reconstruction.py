@@ -1,9 +1,11 @@
 import numpy as np
 import pytest
 from autolens.pixelization import reconstruction as recon
+from autolens import exc
 
 
 class TestReconstructor:
+
     class TestCurvatureMatrixFromBlurred(object):
 
         def test__simple_blurred_mapping_matrix__correct_covariance_matrix(self):
@@ -188,6 +190,20 @@ class TestReconstruction:
                                       solution_vector=np.zeros((1)))
 
             assert log_determinant == pytest.approx(re.log_determinant_of_matrix_cholesky(matrix), 1e-4)
+
+        def test__matrix_not_positive_definite__raises_reconstruction_exception(self):
+
+            matrix = np.array([[2.0,  0.0, 0.0],
+                               [-1.0, 2.0, -1.0],
+                               [0.0, -1.0, 0.0]])
+
+            re = recon.Reconstruction(blurred_mapping_matrix=np.zeros((1, 1)), regularization_matrix=np.zeros((1, 1)),
+                                      curvature_matrix=np.zeros((1, 1)), curvature_reg_matrix=np.zeros((1, 1)),
+                                      solution_vector=np.zeros((1)))
+
+            with pytest.raises(exc.ReconstructionException):
+                assert pytest.approx(re.log_determinant_of_matrix_cholesky(matrix), 1e-4)
+
 
     class TestReconstructedImageFromSolution:
 
