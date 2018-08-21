@@ -90,6 +90,9 @@ class ListWrapper(object):
     def __eq__(self, other):
         return list(self.items) == other
 
+    def __len__(self):
+        return len(self.items)
+
 
 class PhasePropertyList(PhaseProperty):
     def fget(self, obj):
@@ -98,6 +101,8 @@ class PhasePropertyList(PhaseProperty):
 
     def fset(self, obj, value):
         for n in range(len(value)):
+            if inspect.isclass(value[n]):
+                raise AssertionError("Classes must be wrapped in PriorModel instances to be used in PhasePropertyLists")
             value[n].position = n
         setattr(obj.optimizer.variable, self.name, [item for item in value if is_prior(item)])
         setattr(obj.optimizer.constant, self.name, [item for item in value if not is_prior(item)])
