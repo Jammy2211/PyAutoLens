@@ -114,3 +114,10 @@ class TestPhasePropertyList(object):
 
         assert list_phase.constant.prop == []
         assert list_phase.variable.prop == [g.Galaxy, g.Galaxy]
+
+        list_phase.prop[0] = g.Galaxy()
+
+        assert list_phase.prop == [g.Galaxy(), g.Galaxy]
+
+        assert list_phase.constant.prop == [g.Galaxy()]
+        assert list_phase.variable.prop == [g.Galaxy]
