@@ -4,8 +4,6 @@ from autolens.autopipe import model_mapper as mm
 
 
 def is_prior(value):
-    print(value)
-    print(inspect.isclass(value))
     return inspect.isclass(value) or isinstance(value, mm.AbstractPriorModel)
 
 
