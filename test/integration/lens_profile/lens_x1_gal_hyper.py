@@ -25,13 +25,13 @@ def test_lens_x1_gal_hyper_pipeline():
     except FileNotFoundError:
         pass
 
-    bulge = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
+    bulge_0 = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                   effective_radius=1.0, sersic_index=4.0)
 
-    disk = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.6, phi=90.0, intensity=20.0,
-                                 effective_radius=2.5, sersic_index=1.0)
+    bulge_1 = lp.EllipticalSersicLP(centre=(0.41, 0.41), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                  effective_radius=1.0, sersic_index=4.0)
 
-    lens_galaxy = galaxy.Galaxy(bulge=bulge, disk=disk)
+    lens_galaxy = galaxy.Galaxy(bulge_0=bulge_0, bulge_1=bulge_1)
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[], target_signal_to_noise=30.0)
