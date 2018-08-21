@@ -113,6 +113,20 @@ class MockProfile(object):
         self.intensity = intensity
 
 
+class TestRegression(object):
+    def test_tuple_constant(self):
+        mm = model_mapper.ModelMapper()
+        mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP)
+
+        assert mm.total_parameters == 7
+
+        mm.galaxy.sersic.centre.centre_0 = model_mapper.Constant(0)
+        mm.galaxy.sersic.centre.centre_1 = model_mapper.Constant(0)
+
+        # assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Constant)
+        assert mm.total_parameters == 5
+
+
 class TestModelingCollection(object):
     def test__argument_extraction(self):
         collection = model_mapper.ModelMapper(MockConfig())
