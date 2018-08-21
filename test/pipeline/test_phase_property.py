@@ -62,3 +62,10 @@ class TestPhasePropertyList(object):
         phase.prop = objects
 
         assert phase.constant.prop == objects
+
+    def test_classes(self, phase):
+        objects = [g.Galaxy, g.Galaxy]
+
+        phase.prop = objects
+
+        assert phase.variable.prop == objects
