@@ -310,10 +310,12 @@ class MockTracer(object):
         self.image = image
         self.blurring_image = blurring_image
 
-    def galaxy_light_profiles_image_from_planes(self):
+    @property
+    def image_plane_image(self):
         return self.image
 
-    def galaxy_light_profiles_blurring_image_from_planes(self):
+    @property
+    def image_plane_blurring_image(self):
         return self.blurring_image
 
     def reconstructors_from_source_plane(self, borders, cluster_mask):
@@ -426,7 +428,7 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
 
-            tracer_non_blurred_image = tracer.galaxy_light_profiles_image_from_planes()
+            tracer_non_blurred_image = tracer.image_plane_image
 
             assert (tracer_non_blurred_image == fitter.image).all()
             assert (tracer_non_blurred_image == fitter.blurred_image).all()
@@ -452,8 +454,8 @@ class TestProfileFitter:
 
             # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
-            central_values = tracer.galaxy_light_profiles_image_from_planes()
-            blurring_values = tracer.galaxy_light_profiles_blurring_image_from_planes()
+            central_values = tracer.image_plane_image
+            blurring_values = tracer.image_plane_blurring_image
 
             tracer_blurred_image_manual_0 = 2.0 * central_values[0] + 3.0 * central_values[2] + blurring_values[4]
             tracer_blurred_image_manual_1 = 2.0 * central_values[1] + 3.0 * central_values[3] + central_values[0]
@@ -565,8 +567,8 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(masked_image=mi, tracer=tracer)
 
-            image_im = tracer.galaxy_light_profiles_image_from_planes()
-            blurring_im = tracer.galaxy_light_profiles_blurring_image_from_planes()
+            image_im = tracer.image_plane_image
+            blurring_im = tracer.image_plane_blurring_image
             blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
@@ -711,8 +713,8 @@ class TestHyperProfileFitter:
             fitter = fitting.HyperProfileFitter(masked_image=mi, tracer=tracer, hyper_model_image=hyper_model_image, 
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
-            image_im = tracer.galaxy_light_profiles_image_from_planes()
-            blurring_im = tracer.galaxy_light_profiles_blurring_image_from_planes()
+            image_im = tracer.image_plane_image
+            blurring_im = tracer.image_plane_blurring_image
             blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
