@@ -1,7 +1,10 @@
 import inspect
 
-from autolens.analysis import galaxy_prior as gp
 from autolens.autopipe import model_mapper as mm
+
+
+def is_prior(value):
+    return inspect.isclass(value) or isinstance(value, mm.AbstractPriorModel)
 
 
 def phase_property(name):
@@ -27,8 +30,10 @@ def phase_property(name):
             return getattr(self.optimizer.variable, name)
 
     def fset(self, value):
-        if inspect.isclass(value) or isinstance(value, mm.PriorModel) or isinstance(value, gp.GalaxyPrior) or \
-                isinstance(value, list):
+        if isinstance(value, list):
+            setattr(self.optimizer.variable, name, [item for item in value if is_prior(value)])
+            setattr(self.optimizer.constant, name, [item for item in value if not is_prior(value)])
+        elif is_prior(value):
             setattr(self.optimizer.variable, name, value)
             try:
                 delattr(self.optimizer.constant, name)
