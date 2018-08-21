@@ -31,26 +31,33 @@ class PhaseProperty(object):
             except AttributeError:
                 pass
 
+    def fdel(self, obj):
+        try:
+            delattr(obj.optimizer.constant, self.name)
+        except AttributeError:
+            pass
+
+        try:
+            delattr(obj.optimizer.variable, self.name)
+        except AttributeError:
+            pass
+
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
-        if self.fget is None:
-            raise AttributeError("unreadable attribute")
         return self.fget(obj)
 
     def __set__(self, obj, value):
-        if self.fset is None:
-            raise AttributeError("can't set attribute")
         self.fset(obj, value)
 
     def __delete__(self, obj):
-        raise AttributeError("can't delete attribute")
+        return self.fdel(obj)
 
     def getter(self, fget):
-        return type(self)(fget, self.fset, None, self.__doc__)
+        return type(self)(fget, self.fset, self.fdel, self.__doc__)
 
     def setter(self, fset):
-        return type(self)(self.fget, fset, None, self.__doc__)
+        return type(self)(self.fget, fset, self.fdel, self.__doc__)
 
     def deleter(self, fdel):
         return type(self)(self.fget, self.fset, fdel, self.__doc__)
@@ -62,7 +69,16 @@ class ListWrapper(object):
         self.constant_items = constant_items
 
     def __setitem__(self, i, value):
-        pass
+        original = self[i]
+        value.position = original
+        if original in self.variable_items:
+            self.variable_items.remove(original)
+        if original in self.constant_items:
+            self.constant_items.remove(original)
+        if is_prior(value):
+            self.variable_items.append(value)
+        else:
+            self.constant_items.append(value)
 
     def __getitem__(self, i):
         return sorted(self.variable_items + self.constant_items, key=lambda item: item.position)[i]
