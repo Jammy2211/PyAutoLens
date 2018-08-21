@@ -141,10 +141,10 @@ class TestPhase(object):
     def test_fit(self, image):
         clean_images()
         phase = ph.LensMassAndSourceProfilePhase(optimizer_class=NLO,
-                                                 lens_galaxies=g.Galaxy(), source_galaxies=g.Galaxy())
+                                                 lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()])
         result = phase.run(image=image)
-        assert isinstance(result.constant.lens_galaxies, g.Galaxy)
-        assert isinstance(result.constant.source_galaxies, g.Galaxy)
+        assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
+        assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
     def test_customize(self, results, image):
         class MyPlanePhaseAnd(ph.LensMassAndSourceProfilePhase):
@@ -175,7 +175,7 @@ class TestPhase(object):
         assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=gp.GalaxyPrior(), source_galaxies=gp.GalaxyPrior())
+        phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=[gp.GalaxyPrior()], source_galaxies=[gp.GalaxyPrior()])
 
         ph.LensMassAndSourceProfilePhase()
 
@@ -236,11 +236,14 @@ class TestPhase(object):
                                                                 variable_redshift=True)],
                                   optimizer_class=non_linear.MultiNest)
 
+        # noinspection PyTypeChecker
         phase.pass_priors(None)
 
         instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2,
                                                                            0.4, 0.5, 0.6, 0.7, 0.8])
         instance += phase.optimizer.constant
+
+        print(instance.lens_galaxies)
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
