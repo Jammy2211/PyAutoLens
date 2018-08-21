@@ -691,7 +691,7 @@ class PriorModel(AbstractPriorModel):
         -------
         tuple_prior_tuples: [(String, TuplePrior)]
         """
-        return list(filter(lambda t: isinstance(t[1], TuplePrior), self.__dict__.items()))
+        return list(filter(lambda t: type(t[1]) is TuplePrior, self.__dict__.items()))
 
     @property
     def direct_priors(self):
