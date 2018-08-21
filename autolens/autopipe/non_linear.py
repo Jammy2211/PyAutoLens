@@ -311,7 +311,10 @@ class MultiNest(NonLinearOptimizer):
 
                 instance += self.constant
 
-                likelihood = analysis.fit(instance)
+                try:
+                    likelihood = analysis.fit(instance)
+                except exc.ReconstructionException:
+                    likelihood = -np.inf
 
                 # TODO: Use multinest to provide best model
 
