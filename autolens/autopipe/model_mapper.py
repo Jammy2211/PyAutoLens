@@ -11,8 +11,16 @@ path = os.path.dirname(os.path.realpath(__file__))
 class AbstractModel(object):
     def __add__(self, other):
         instance = self.__class__()
-        for key, value in {**self.__dict__, **other.__dict__}.items():
-            setattr(instance, key, value)
+
+        def add_items(item_dict):
+            for key, value in item_dict.items():
+                if isinstance(value, list) and hasattr(instance, key):
+                    setattr(instance, key, getattr(instance, key) + value)
+                else:
+                    setattr(instance, key, value)
+
+        add_items(self.__dict__)
+        add_items(other.__dict__)
         return instance
 
 
