@@ -244,7 +244,7 @@ class TestPhase(object):
                                                                            0.4, 0.5, 0.6, 0.7, 0.8])
         instance += phase.optimizer.constant
 
-        print(instance.lens_galaxies)
+        print(instance)
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
