@@ -3,6 +3,7 @@ from autolens.pipeline import phase_property
 from autolens.analysis import galaxy as g
 from autolens.analysis import galaxy_prior as gp
 from autolens.autopipe import non_linear
+import pytest
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -30,13 +31,16 @@ class NLO(non_linear.NonLinearOptimizer):
         return fitness_function.result
 
 
+@pytest.fixture(name='phase')
+def make_phase():
+    class MyPhase(ph.LensProfilePhase):
+        prop = phase_property.phase_property("prop")
+
+    return MyPhase(optimizer_class=NLO)
+
+
 class TestPhaseProperty(object):
-    def test_phase_property(self):
-        class MyPhase(ph.LensProfilePhase):
-            prop = phase_property.phase_property("prop")
-
-        phase = MyPhase(optimizer_class=NLO)
-
+    def test_phase_property(self, phase):
         phase.prop = gp.GalaxyPrior()
 
         assert phase.variable.prop == phase.prop
@@ -49,3 +53,12 @@ class TestPhaseProperty(object):
 
         phase.prop = gp.GalaxyPrior()
         assert not hasattr(phase.constant, "prop")
+
+
+class TestPhasePropertyList(object):
+    def test_constants(self, phase):
+        objects = [object(), object()]
+
+        phase.prop = objects
+
+        assert phase.constant.prop == objects
