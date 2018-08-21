@@ -24,7 +24,7 @@ class LensAndSubtractedPlanePhase(ph.LensMassAndSourceProfilePhase):
         # The image is the original image we are trying to fit. Previous results is a list of results from previous
         # phases. We access the result from the last phase by calling previous_results.last. We take the image of the
         # lens galaxy from the last phase from the image.
-        return image - previous_results.last.lens_plane_image
+        return image - previous_results.last.image_plane_lens_image
 
     # The pass prior method provides us with a way to set variables and constants in this phase using those from a
     # previous phase.
