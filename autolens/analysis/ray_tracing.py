@@ -25,7 +25,7 @@ class AbstractTracer(object):
 
     @property
     def image_plane_image(self):
-        return sum(self.image_plane_images_of_galaxies)
+        return sum(self.image_plane_images_of_planes)
 
     @property
     def image_plane_images_of_planes(self):
@@ -43,7 +43,7 @@ class AbstractTracer(object):
 
     @property
     def image_plane_blurring_image(self):
-        return sum(self.image_plane_blurring_images_of_galaxies)
+        return sum(self.image_plane_blurring_images_of_planes)
 
     @property
     def image_plane_blurring_images_of_planes(self):
@@ -384,6 +384,9 @@ class Plane(object):
         """
         return intensities_via_grid(self.grids.blurring, [galaxy])
 
+    # @property
+    # def source_plane_image(self):
+
     @property
     def hyper_galaxies(self):
         return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
@@ -424,3 +427,28 @@ def traced_collection_for_deflections(grids, deflections):
     result = grids.map_function(subtract_scaled_deflections, deflections)
 
     return result
+
+# TODO : Make more elegent
+
+def source_plane_regular_grid_from_lensed_grid(grid, shape):
+
+    x_min = np.amin(grid[:, 0])
+    x_max = np.amax(grid[:, 0])
+    y_min = np.amin(grid[:, 1])
+    y_max = np.amax(grid[:, 1])
+
+    x_pixel_scale = ((x_max - x_min) / shape[0])
+    y_pixel_scale = ((y_max - y_min) / shape[1])
+
+    x_grid = np.linspace(x_min + (x_pixel_scale/2.0), x_max - (x_pixel_scale/2.0), shape[0])
+    y_grid = np.linspace(y_min + (y_pixel_scale/2.0), y_max - (y_pixel_scale/2.0), shape[1])
+
+    source_plane_grid = np.zeros((shape[0]*shape[1], 2))
+
+    i = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            source_plane_grid[i] = np.array([x_grid[x], y_grid[y]])
+            i += 1
+
+    return source_plane_grid
