@@ -384,8 +384,34 @@ class Plane(object):
         """
         return intensities_via_grid(self.grids.blurring, [galaxy])
 
-    # @property
-    # def source_plane_image(self):
+    def plane_image(self, shape=(30, 30)):
+        return sum(self.plane_images_of_galaxies(shape))
+
+    def plane_images_of_galaxies(self, shape=(30, 30)):
+        """
+        Returns
+        -------
+        image_plane_lens_galaxy_images: [ndarray]
+            A list of images of galaxies in this plane
+        """
+        plane_grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
+        return [self.plane_image_from_galaxy(plane_grid, galaxy) for galaxy in self.galaxies]
+
+    def plane_image_from_galaxy(self, plane_grid, galaxy):
+        """
+        Parameters
+        ----------
+        plane_grid : ndarray
+            A uniform / regular grid of coordinates.
+        galaxy: Galaxy
+            An individual galaxy, assumed to be in this plane
+
+        Returns
+        -------
+        galaxy_image: ndarray
+            An array describing the intensity of light coming from the galaxy embedded in this plane
+        """
+        return intensities_via_grid(plane_grid, [galaxy])
 
     @property
     def hyper_galaxies(self):
@@ -430,7 +456,7 @@ def traced_collection_for_deflections(grids, deflections):
 
 # TODO : Make more elegent
 
-def source_plane_regular_grid_from_lensed_grid(grid, shape):
+def uniform_grid_from_lensed_grid(grid, shape):
 
     x_min = np.amin(grid[:, 0])
     x_max = np.amax(grid[:, 0])
