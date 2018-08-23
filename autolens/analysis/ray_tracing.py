@@ -25,24 +25,32 @@ class AbstractTracer(object):
 
     @property
     def image_plane_image(self):
-        return sum(self.image_plane_galaxy_images)
+        return sum(self.image_plane_images_of_galaxies)
 
     @property
-    def image_plane_galaxy_images(self):
+    def image_plane_images_of_planes(self):
+        return [plane.image_plane_image for plane in self.all_planes]
+
+    @property
+    def image_plane_images_of_galaxies(self):
         """
         Returns
         -------
         image_plane_lens_galaxy_images: [ndarray]
             An masked_image for each galaxy in this ray tracer
         """
-        return [galaxy_image for plane in self.all_planes for galaxy_image in plane.image_plane_galaxy_images]
+        return [galaxy_image for plane in self.all_planes for galaxy_image in plane.image_plane_images_of_galaxies]
 
     @property
     def image_plane_blurring_image(self):
-        return sum(self.image_plane_galaxy_blurring_images)
+        return sum(self.image_plane_blurring_images_of_galaxies)
 
     @property
-    def image_plane_galaxy_blurring_images(self):
+    def image_plane_blurring_images_of_planes(self):
+        return [plane.image_plane_blurring_image for plane in self.all_planes]
+
+    @property
+    def image_plane_blurring_images_of_galaxies(self):
         """
         Returns
         -------
@@ -50,7 +58,7 @@ class AbstractTracer(object):
             An masked_image for each galaxy in this ray tracer
         """
         return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
-                in plane.image_plane_galaxy_blurring_images]
+                in plane.image_plane_blurring_images_of_galaxies]
 
     @property
     def hyper_galaxies(self):
@@ -66,7 +74,39 @@ class AbstractTracer(object):
         return len(list(filter(None, self.hyper_galaxies))) == len(self.galaxies)
 
 
-class Tracer(AbstractTracer):
+
+class TracerImagePlane(AbstractTracer):
+
+    @property
+    def all_planes(self):
+        return [self.image_plane]
+
+    def __init__(self, lens_galaxies, image_plane_grids):
+        """The ray-tracing calculations, defined by a lensing system with just one image-plane. This doesn't actually \
+        perform any ray-tracing / lensing calculations, and is used purely for light-profile fitting of objects in \
+        the image-plane (e.g. the lens galaxy)
+
+        By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
+        do not need input redshifts. For computational efficiency, it is recommend this ray-tracing class is used for \
+        lens modeling, provided cosmological information is not necessary.
+
+        If a cosmology is supplied, the plane's angular diameter distances, conversion factors, etc. will be computed.
+
+        Parameters
+        ----------
+        lens_galaxies : [Galaxy]
+            The list of lens galaxies in the masked_image-plane.
+        image_plane_grids : mask.GridCollection
+            The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
+            masked_image-grid, sub-grid, blurring-grid, etc.).
+        """
+        if not lens_galaxies:
+            raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
+
+        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
+
+
+class TracerImageSourcePlanes(TracerImagePlane):
 
     @property
     def all_planes(self):
@@ -93,13 +133,17 @@ class Tracer(AbstractTracer):
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
+
+        super(TracerImageSourcePlanes, self).__init__(lens_galaxies, image_plane_grids)
+
+        if not source_galaxies:
+            raise exc.RayTracingException('No source galaxies have been input into the Tracer (TracerImageSourcePlanes)')
+
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift, source_galaxies[0].redshift],
                                            cosmology=cosmology)
         else:
             self.geometry = None
-
-        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
 
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
@@ -109,7 +153,7 @@ class Tracer(AbstractTracer):
         return self.source_plane.reconstructor_from_plane(borders, cluster_mask)
 
 
-class MultiTracer(AbstractTracer):
+class TracerMulti(AbstractTracer):
 
     @property
     def all_planes(self):
@@ -132,6 +176,9 @@ class MultiTracer(AbstractTracer):
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
+
+        if not galaxies:
+            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')
 
         self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
 
@@ -283,18 +330,16 @@ class Plane(object):
 
     @property
     def image_plane_image(self):
-        return sum(self.image_plane_galaxy_images)
+        return sum(self.image_plane_images_of_galaxies)
 
     @property
-    def image_plane_galaxy_images(self):
+    def image_plane_images_of_galaxies(self):
         """
         Returns
         -------
         image_plane_lens_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
-        if len(self.galaxies) == 0:
-            return np.zeros(self.grids.image.shape[0])
         return [self.image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
     def image_plane_image_from_galaxy(self, galaxy):
@@ -313,18 +358,16 @@ class Plane(object):
 
     @property
     def image_plane_blurring_image(self):
-        return sum(self.image_plane_galaxy_blurring_images)
+        return sum(self.image_plane_blurring_images_of_galaxies)
 
     @property
-    def image_plane_galaxy_blurring_images(self):
+    def image_plane_blurring_images_of_galaxies(self):
         """
         Returns
         -------
         image_plane_lens_galaxy_images: [ndarray]
             A list of images of galaxies in this plane
         """
-        if len(self.galaxies) == 0:
-            return np.zeros(self.grids.image.shape[0])
         return [self.image_plane_blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
     def image_plane_blurring_image_from_galaxy(self, galaxy):

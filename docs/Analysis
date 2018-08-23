@@ -1,6 +1,6 @@
         # If we had a pixelization, we would use it here to fit the light_profile_subtracted_image, e.g:
 
-        # self.light_profile_subtracted_image = grid_datas.image - self.light_profile_image_blurred
+        # self.light_profile_subtracted_image = grid_datas.image_plane_image - self.light_profile_image_blurred
 
         # self.mapping_matrix = ray_tracing.generate_mapping_matrix()
 
@@ -18,5 +18,5 @@
 
         # self.galaxy_subtracted_image = self.light_profile_subtracted_image - self.pixelization_image
 
-        # self.residuals = grid_datas.image - self.galaxy_subtracted_image
+        # self.residuals = grid_datas.image_plane_image - self.galaxy_subtracted_image
 
