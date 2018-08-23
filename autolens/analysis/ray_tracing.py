@@ -68,6 +68,14 @@ class AbstractTracer(object):
         return [plane.grids.image for plane in self.all_planes]
 
     @property
+    def xticks_of_planes(self):
+        return [plane.xticks_from_image_grid for plane in self.all_planes]
+
+    @property
+    def yticks_of_planes(self):
+        return [plane.yticks_from_image_grid for plane in self.all_planes]
+
+    @property
     def hyper_galaxies(self):
         return [hyper_galaxy for plane in self.all_planes for hyper_galaxy in
                 plane.hyper_galaxies]
@@ -418,6 +426,14 @@ class Plane(object):
             An array describing the intensity of light coming from the galaxy embedded in this plane
         """
         return intensities_via_grid(plane_grid, [galaxy])
+
+    @property
+    def xticks_from_image_grid(self):
+        return np.around(np.linspace(np.amin(self.grids.image[:,0]), np.amax(self.grids.image[:,0]), 4), 2)
+
+    @property
+    def yticks_from_image_grid(self):
+        return np.around(np.linspace(np.amin(self.grids.image[:,1]), np.amax(self.grids.image[:,1]), 4), 2)
 
     @property
     def hyper_galaxies(self):
