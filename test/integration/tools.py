@@ -30,16 +30,22 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     image_plane_grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=1,
                                                                                        blurring_shape=psf_size)
 
-    tracer = ray_tracing.Tracer(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
-                                image_plane_grids=image_plane_grids)
+    if not source_galaxies:
 
-    galaxy_image_1d = tracer.galaxy_light_profiles_image_from_planes()
-    galaxy_image_2d = ma.map_to_2d(galaxy_image_1d)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grids=image_plane_grids)
+
+    elif source_galaxies:
+
+        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
+                                          image_plane_grids=image_plane_grids)
+
+    image_plane_image = tracer.image_plane_image
+    image_plane_image_2d = ma.map_to_2d(image_plane_image)
 
     ### Setup as a simulated image_coords and output as a fits for an analysis ###
 
-    shape = galaxy_image_2d.shape
-    sim_image = im.PrepatoryImage.simulate_to_target_signal_to_noise(array=galaxy_image_2d, pixel_scale=pixel_scale,
+    shape = image_plane_image_2d.shape
+    sim_image = im.PrepatoryImage.simulate_to_target_signal_to_noise(array=image_plane_image_2d, pixel_scale=pixel_scale,
                 target_signal_to_noise=target_signal_to_noise, effective_exposure_time=10.0 * np.ones(shape),
                 background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
 

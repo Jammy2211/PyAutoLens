@@ -86,7 +86,7 @@ class Pixelization(object):
         return 'pix'
 
     def mapping_matrix_from_sub_to_pixelization(self, sub_to_pixelization, grids):
-        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, self.pixels, grids.image, 
+        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, self.pixels, grids.image,
                                                        grids.sub.sub_to_image, grids.sub.sub_grid_fraction)
 
     @staticmethod

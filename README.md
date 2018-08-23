@@ -40,13 +40,13 @@ More information on this pipeline can be displayed using:
 $ autolens pipeline profile --info
 ```
 
-The pipeline can be run on an image in a specified folder.
+The pipeline can be run on an image_plane_image in a specified folder.
 
 ```bash
-$ autolens pipeline profile --image=image/ --pixel-scale=0.05
+$ autolens pipeline profile --image_plane_image=image_plane_image/ --pixel-scale=0.05
 ```
 
-The folder specified by --image should contain **basic.fits**, **noise.fits** and **psf.fits**.</br>
+The folder specified by --image_plane_image should contain **basic.fits**, **noise.fits** and **psf.fits**.</br>
 
 Results are placed in the *output* folder. This includes output from the optimiser, as well as images showing the models produced throughout the analysis.
 
@@ -55,14 +55,14 @@ Results are placed in the *output* folder. This includes output from the optimis
 AutoLens can be used to create sophisticated analysis pipelines. The below example demonstrates a simple analysis which attempts to fit the system with two light profiles and a mass profile in a single phase.
 
 ```python
-from autolens.imaging import image as im
+from autolens.imaging import image_plane_image as im
 from autolens.pipeline import phase
 from autolens.analysis import galaxy_prior
 from autolens.profiles import light_profiles, mass_profiles
 from autolens.autopipe import non_linear
 
-# Load an image from the 'basic' folder. It is assumed that this folder contains image.fits, noise.fits and psf.fits.
-image = im.load('basic', pixel_scale=0.05)
+# Load an image_plane_image from the 'basic' folder. It is assumed that this folder contains image_plane_image.fits, noise.fits and psf.fits.
+image_plane_image = im.load('basic', pixel_scale=0.05)
 
 # The GalaxyPrior class represents a variable galaxy object. Here we make the source galaxy by creating a galaxy prior
 # and passing it the EllipticalSersicLP. The optimiser will create instances of this light profile with
@@ -74,13 +74,13 @@ source_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.Elliptical
 lens_galaxy = galaxy_prior.GalaxyPrior(light_profile=light_profiles.EllipticalSersicLP,
                                        mass_profile=mass_profiles.SphericalIsothermalMP)
 
-# A source lens phase performs an analysis on an image using the system we've set up. There are lots of different kinds
+# A source lens phase performs an analysis on an image_plane_image using the system we've set up. There are lots of different kinds
 # of phase that can be plugged together in sophisticated pipelines but for now we'll run a single phase.
 source_lens_phase = phase.LensMassAndSourceProfilePhase(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy,
                                                  optimizer_class=non_linear.MultiNest)
 
-# We run the phase on the image and print the results.
-results = source_lens_phase.run(image)
+# We run the phase on the image_plane_image and print the results.
+results = source_lens_phase.run(image_plane_image)
 
 # As well as these results there will be images and plots in the 'output' folder.
 print(results)
@@ -90,7 +90,7 @@ Phases can be made to use different optimisers, source galaxies with pixelisatio
 
 ## Pipeline Example
 
-Sophisticated pipelines can be written. These pipelines can fit different components of the image individually, use priors and best fit models from previous phases, prevent overfitting and modify the image on the fly.</br>
+Sophisticated pipelines can be written. These pipelines can fit different components of the image_plane_image individually, use priors and best fit models from previous phases, prevent overfitting and modify the image_plane_image on the fly.</br>
 The *profile* pipeline described here is built into AutoLens and can be run using the CLI.
 
 ```python
@@ -99,10 +99,10 @@ from autolens.pipeline import pipeline as pl
 from autolens.autopipe import non_linear as nl
 from autolens.analysis import galaxy_prior as gp
 from autolens.imaging import mask as msk
-from autolens.imaging import image as im
+from autolens.imaging import image_plane_image as im
 from autolens.profiles import light_profiles, mass_profiles
 
-# Load an image from the 'basic' folder. It is assumed that this folder contains image.fits, noise.fits and psf.fits.
+# Load an image_plane_image from the 'basic' folder. It is assumed that this folder contains image_plane_image.fits, noise.fits and psf.fits.
 img = im.load('basic', pixel_scale=0.05)
 
 # In the first phase we attempt to fit the lens light with an EllipticalSersicLP.
@@ -113,12 +113,12 @@ phase1 = ph.LensProfilePhase(lens_galaxy=gp.GalaxyPrior(elliptical_sersic=light_
 # In the second phase we remove the lens light found in the first phase and try to fit just the source. To do this we
 # extend LensMassAndSourceProfilePhase class and override two methods.
 class LensAndSubtractedPlanePhase(ph.LensMassAndSourceProfilePhase):
-    # The modify image method provides a way for us to modify the image before a phase starts.
-    def modify_image(self, image, previous_results):
-        # The image is the original image we are trying to fit. Previous results is a list of results from previous
-        # phases. We access the result from the last phase by calling previous_results.last. We take the image of the
-        # lens galaxy from the last phase from the image.
-        return image - previous_results.last.image_plane_lens_image
+    # The modify image_plane_image method provides a way for us to modify the image_plane_image before a phase starts.
+    def modify_image(self, image_plane_image, previous_results):
+        # The image_plane_image is the original image_plane_image we are trying to fit. Previous results is a list of results from previous
+        # phases. We access the result from the last phase by calling previous_results.last. We take the image_plane_image of the
+        # lens galaxy from the last phase from the image_plane_image.
+        return image_plane_image - previous_results.last.lens_plane_blurred_image_plane_image
 
     # The pass prior method provides us with a way to set variables and constants in this phase using those from a
     # previous phase.
@@ -129,11 +129,11 @@ class LensAndSubtractedPlanePhase(ph.LensMassAndSourceProfilePhase):
         self.lens_galaxy.sie.centre = previous_results.last.variable.lens_galaxy.elliptical_sersic.centre
 
 
-# A mask function determines which parts of the image should be masked out in analysis. By default the mask is a disc
+# A mask function determines which parts of the image_plane_image should be masked out in analysis. By default the mask is a disc
 # with a radius of 3 arc seconds. Here we are only interested in light from the source galaxy so we define an annular
 # mask.
-def annular_mask_function(image):
-    return msk.Mask.annular(image.shape_arc_seconds, pixel_scale=image.pixel_scale, inner_radius=0.4,
+def annular_mask_function(image_plane_image):
+    return msk.Mask.annular(image_plane_image.shape_arc_seconds, pixel_scale=image_plane_image.pixel_scale, inner_radius=0.4,
                             outer_radius=3.)
 
 
@@ -190,7 +190,7 @@ phase4 = CombinedPlanePhase2And(optimizer_class=nl.MultiNest)
 # We put all the phases together in a pipeline and give it a name.
 pipeline = pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
 
-# The pipeline is run on an image.
+# The pipeline is run on an image_plane_image.
 results = pipeline.run(img)
 
 # Let's print the results.
