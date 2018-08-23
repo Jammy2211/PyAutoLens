@@ -893,6 +893,20 @@ class TestTracerImageAndSource(object):
                     tracer.source_plane.plane_images_of_galaxies(shape=(3,3))[1]).all()
 
 
+    class TestImageGridsOfPlanes:
+
+        def test__grids_match_plane_grids(self, grids):
+
+            g0 = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g1 = galaxy.Galaxy()
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grids=grids)
+
+            assert (tracer.image_grids_of_planes[0] == tracer.image_plane.grids.image).all()
+            assert (tracer.image_grids_of_planes[1] == tracer.source_plane.grids.image).all()
+
+
     class TestReconstructorFromGalaxy:
 
         def test__image_galaxy_has_pixelization__still_returns_none(self, grids, sparse_mask):
@@ -1563,6 +1577,25 @@ class TestMultiTracer(object):
             assert (tracer.plane_images_of_planes(shape=(3,3))[2] ==
                     tracer.planes[2].plane_images_of_galaxies(shape=(3,3))[0] +
                     tracer.planes[2].plane_images_of_galaxies(shape=(3,3))[1]).all()
+
+
+    class TestImageGridsOfPlanes:
+
+        def test__grids_match_plane_grids(self, grids):
+
+            g0 = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0), redshift=0.1)
+            g1 = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0), redshift=0.2)
+            g2 = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0), redshift=0.3)
+            g3 = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0), redshift=0.4)
+
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2, g3], image_plane_grids=grids,
+                                             cosmology=cosmo.Planck15)
+
+            assert (tracer.image_grids_of_planes[0] == tracer.planes[0].grids.image).all()
+            assert (tracer.image_grids_of_planes[1] == tracer.planes[1].grids.image).all()
+            assert (tracer.image_grids_of_planes[2] == tracer.planes[2].grids.image).all()
+            assert (tracer.image_grids_of_planes[3] == tracer.planes[3].grids.image).all()
+
 
     class TestReconstructorFromGalaxy:
 
