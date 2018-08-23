@@ -19,8 +19,8 @@ Earth  --- Lens1 --- Source
 
 So, to perform ray-tracing, we:
 
-1) Compute deflection angles at Lens1 (the image-plane).
-2) Trace image-plane coordinates to source-plane.
+1) Compute deflection angles at Lens1 (the image_plane_image-plane).
+2) Trace image_plane_image-plane coordinates to source-plane.
 
 LENS + LENS + SOURCE
 --------------------
@@ -43,7 +43,7 @@ Earth-Lens1-Lens2----- Source
 
 So, to perform ray-tracing, we:
 
-1) Compute deflection angles at Lens1 (the image-plane)
+1) Compute deflection angles at Lens1 (the image_plane_image-plane)
 2) Trace to Lens2's lens-plane, by using the deflection angles scaled by the ratio of angular diameter distances, Beta.
 3) Compute deflection angles at Lens2, using Lens2's lens-plane coordinates.
 4) Trace to Source's plane, using each set of deflection angles scaled by new values of Beta to reflect the new redshifts

@@ -223,7 +223,7 @@ def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
 
     # TODO: simplify this stage of the process
     light_grid = result_1.lens_galaxies[0].light_profile.intensity_at_coordinates(
-        lens_light_analysis.coords_collection.image)
+        lens_light_analysis.coords_collection.image_plane_image)
 
     source_image = image - lens_light_analysis.mapper_collection.data_to_pixel.map_to_2d(light_grid)
 

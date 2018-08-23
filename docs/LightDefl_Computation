@@ -3,7 +3,7 @@
 =================== Sub-gridding =======================
 ========================================================
 
-For a 2D light or mass profile, we want to compute the intensity of light or deflection ange at the centre of every image
+For a 2D light or mass profile, we want to compute the intensity of light or deflection ange at the centre of every image_plane_image
 pixel:
   _________
  |         |
