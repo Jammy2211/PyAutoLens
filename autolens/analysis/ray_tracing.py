@@ -60,6 +60,9 @@ class AbstractTracer(object):
         return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
                 in plane.image_plane_blurring_images_of_galaxies]
 
+    def plane_images_of_planes(self, shape=(30, 30)):
+        return [plane.plane_image(shape) for plane in self.all_planes]
+
     @property
     def hyper_galaxies(self):
         return [hyper_galaxy for plane in self.all_planes for hyper_galaxy in
@@ -72,7 +75,6 @@ class AbstractTracer(object):
     @property
     def all_with_hyper_galaxies(self):
         return len(list(filter(None, self.hyper_galaxies))) == len(self.galaxies)
-
 
 
 class TracerImagePlane(AbstractTracer):
