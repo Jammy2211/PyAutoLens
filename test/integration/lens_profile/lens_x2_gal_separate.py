@@ -41,10 +41,10 @@ def test_lens_x2_gal_separate_pipeline():
 
     conf.instance.output_path = output_path
 
-    try:
-        shutil.rmtree(output_path + pipeline_name)
-    except FileNotFoundError:
-        pass
+    # try:
+    #     shutil.rmtree(output_path + pipeline_name)
+    # except FileNotFoundError:
+    #     pass
 
     pipeline = make_lens_x2_gal_separate_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
@@ -60,8 +60,8 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
 
     class LensProfileGalaxy0Phase(ph.LensProfilePhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].elliptical_sersic.centre.centre_0 = mm.UniformPrior(-2.0, 0.0)
-            self.lens_galaxies[0].elliptical_sersic.centre.centre_1 = mm.UniformPrior(-2.0, 0.0)
+            self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, 0.0)
+            self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, 0.0)
 
     phase1 = LensProfileGalaxy0Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
                                      mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
@@ -72,9 +72,9 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
 
     class LensProfileGalaxy1Phase(ph.LensProfilePhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].elliptical_sersic = previous_results[0].constant.lens_galaxies[0].elliptical_sersic
-            self.lens_galaxies[1].elliptical_sersic.centre.centre_0 = mm.UniformPrior(0.0, 2.0)
-            self.lens_galaxies[1].elliptical_sersic.centre.centre_1 = mm.UniformPrior(0.0, 2.0)
+            self.lens_galaxies[0] = previous_results[-1].constant.lens_galaxies[0]
+            self.lens_galaxies[1].elliptical_sersic.centre_0 = mm.UniformPrior(0.0, 2.0)
+            self.lens_galaxies[1].elliptical_sersic.centre_1 = mm.UniformPrior(0.0, 2.0)
 
     phase2 = LensProfileGalaxy1Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
                                                     gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],

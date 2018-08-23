@@ -40,10 +40,10 @@ def test_lens_x1_src_x1_pix_pipeline():
 
     conf.instance.output_path = output_path
 
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
+    try:
+        shutil.rmtree(output_path + pipeline_name)
+    except FileNotFoundError:
+        pass
 
     pipeline = make_lens_x1_src_x1_pix_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)

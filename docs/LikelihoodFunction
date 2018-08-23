@@ -1,38 +1,38 @@
-The likelihood function begins after we have set up our Tracer, and are thus able to use it to generate model images
+The likelihood function begins after we have set up our TracerImagePlane, and are thus able to use it to generate model images
 of galaxy profiles and mapping_matrices for pixelization (if pixelizations are turned on). If HyperImage features
 are on, it will also performed them.
 
 PROFILE ONLY LIKELIHOOD FUNCTION:
 
-1) Use ray tracing to compute model image of all galaxies.
-2) Blur this model image with PSF.
-3) Compare to image, using the noise map -> returns likelihood.
+1) Use ray tracing to compute model image_plane_image of all galaxies.
+2) Blur this model image_plane_image with PSF.
+3) Compare to image_plane_image, using the noise map -> returns likelihood.
 
 PIXELIZATION ONLY LIKELIHOOD FUNCTION:
 
 1) Use ray tracing to compute mapping matrix of all pixelizations (typically only 1).
-2) Use mapping matrix, image data, noise and PSF to compute f, F, D and use linear inversion to solve for S (flux in every pixel).
-3) Map S back to image, compare to image -> returns likelihood.
+2) Use mapping matrix, image_plane_image data, noise and PSF to compute f, F, D and use linear inversion to solve for S (flux in every pixel).
+3) Map S back to image_plane_image, compare to image_plane_image -> returns likelihood.
 
 PROFILE + PIXELIZATION LIKELIIHOOD FUNCTION:
 
-NOTE - This essentially commbine the two above, but instead subtracts the profile galaxy images from the image data.
+NOTE - This essentially commbine the two above, but instead subtracts the profile galaxy images from the image_plane_image data.
 
-1) Use ray tracing to compute model image of all galaxies.
-2) Blur this model image with PSF.
-3) Subtract from observed image to produce a profile subtracted image (typically, this is just a lens light subtraction)
-2) Use mapping matrix, SUBTRACTED image data and PSF to compute f, F, D and use linear inversion to solve for S (flux in every pixel).
-3) Map S back to image, compare to image, using the noise map -> returns likelihood.
+1) Use ray tracing to compute model image_plane_image of all galaxies.
+2) Blur this model image_plane_image with PSF.
+3) Subtract from observed image_plane_image to produce a profile subtracted image_plane_image (typically, this is just a lens light subtraction)
+2) Use mapping matrix, SUBTRACTED image_plane_image data and PSF to compute f, F, D and use linear inversion to solve for S (flux in every pixel).
+3) Map S back to image_plane_image, compare to image_plane_image, using the noise map -> returns likelihood.
 
 
 
 HYPERIMAGE + PROFILE + PIXELIZATION
 
-NOTE - The hyper image essentially just changes the image and noise map which are used for every other step, so its just
+NOTE - The hyper image_plane_image essentially just changes the image_plane_image and noise map which are used for every other step, so its just
 a few extra steps at the start.
 
-1) If background sky is a free hyper-parameter, use it to produce a background-sky scaled image (this image is now the
-observed image used in all of the following steps).
+1) If background sky is a free hyper-parameter, use it to produce a background-sky scaled image_plane_image (this image_plane_image is now the
+observed image_plane_image used in all of the following steps).
 2) If the contribution map hyper-parameters are free parameters, use them to produce a new contributioon map.
 3) If the noise-map scaling parameters are free parameters, use them to produce a new scaled noise map (this is the noise
 map ussed in all of the following steps)
@@ -66,10 +66,10 @@ def fit_masked_image_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer
     ### HYPER IMAGE STUFFF ##
 
     if hyper_sky_scale is True:
-        grid_datas_fit.image = generate_scaled_sky_image(grid_datas.image)
+        grid_datas_fit.image_plane_image = generate_scaled_sky_image(grid_datas.image_plane_image)
 
     if hyper_contributions_change is True:
-        hyper_datas_fit.contribution_maps = hyper_image.compute_all_galaxy_contributions(hyper_images.image_plane_galaxy_images,
+        hyper_datas_fit.contribution_maps = hyper_image.compute_all_galaxy_contributions(hyper_images.image_plane_images_of_galaxies,
                                                                                          hyper_images.minimum_values)
 
     if hyper_noise_scale_change is True:
@@ -81,9 +81,9 @@ def fit_masked_image_with_profiles(hyper_datas, grid_datas, grid_mappers, tracer
     blurred_model_image = generate_blurred_light_profile_image(tracer, grid_datas.psf, grid_mappers)
 
     if use_pixelization is False:
-        return likelihood_from_chi_squared_and_noise_terms(grid_datas_fit.image, grid_datas_fit.noise, blurred_model_image)
+        return likelihood_from_chi_squared_and_noise_terms(grid_datas_fit.image_plane_image, grid_datas_fit.noise, blurred_model_image)
     elif: use_pixelization is True:
-        subtracted_image =  grid_datas_fit.image - blurred_model_image
+        subtracted_image =  grid_datas_fit.image_plane_image - blurred_model_image
         mapping_matrix = ray_tracing.compute_mapping_matrices(grid_mappers)
-        reconstructed_image = mapping_matrix.fit_image(grid_datas_fit.image, grid_datas_fit.psf, **)
+        reconstructed_image = mapping_matrix.fit_image(grid_datas_fit.image_plane_image, grid_datas_fit.psf, **)
         return likelihood_from_chi_squared_and_noise_terms(subtracted_image, grid_datas_fit.noise, reconstructed_image)

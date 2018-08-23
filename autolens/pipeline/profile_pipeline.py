@@ -33,7 +33,7 @@ def make():
         """
 
         def modify_image(self, masked_image, previous_results):
-            return masked_image - previous_results.last.image_plane_lens_image
+            return masked_image - previous_results.last.lens_plane_blurred_image_plane_image
 
         def pass_priors(self, previous_results):
             self.lens_galaxies.sie.centre = previous_results.last.variable.lens_galaxy.elliptical_sersic.centre

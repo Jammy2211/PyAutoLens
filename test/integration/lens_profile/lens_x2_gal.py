@@ -58,10 +58,10 @@ def test_lens_x2_gal_pipeline():
 def make_lens_x2_gal_pipeline(pipeline_name):
     class LensPlanex2GalPhase(ph.LensProfilePhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].elliptical_sersic.centre.centre_0 = mm.UniformPrior(-2.0, -0.0)
-            self.lens_galaxies[0].elliptical_sersic.centre.centre_1 = mm.UniformPrior(-2.0, -0.0)
-            self.lens_galaxies[1].elliptical_sersic.centre.centre_0 = mm.UniformPrior(0.0, 2.0)
-            self.lens_galaxies[1].elliptical_sersic.centre.centre_1 = mm.UniformPrior(0.0, 2.0)
+            self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, -0.0)
+            self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, -0.0)
+            self.lens_galaxies[1].elliptical_sersic.centre_0 = mm.UniformPrior(0.0, 2.0)
+            self.lens_galaxies[1].elliptical_sersic.centre_1 = mm.UniformPrior(0.0, 2.0)
 
     def modify_mask_function(img):
         return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask=5.)

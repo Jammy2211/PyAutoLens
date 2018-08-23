@@ -13,8 +13,8 @@
 
 ### Pipeline/Analysis classes  
 - RayTracing accepts image_plane\_grid, lens\_galaxies, source\_galaxies Maybe subclassed for pixelisation?   
-- Analysis class accepts lens\_galaxy\_priors, source\_galaxy\_prior and image
-- Analysis class computes grids etc. from image
+- Analysis class accepts lens\_galaxy\_priors, source\_galaxy\_prior and image_plane_image
+- Analysis class computes grids etc. from image_plane_image
 - Analysis has compute_liklihood function
 - GalaxyPrior class wraps mass and light profile priors
 - Analysis uses lists of galaxy priors in conjunction with multinest to construct RayTracing instances to pass to compute_liklihood function
