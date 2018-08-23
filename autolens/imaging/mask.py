@@ -510,6 +510,7 @@ class ImageGrid(np.ndarray):
     def yticks(self):
         return np.around(np.linspace(np.amin(self[:,1]), np.amax(self[:,1]), 4), 2)
 
+
 class SubGrid(ImageGrid):
     """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
      sub-coordinates, which are used to perform over-sampling in the lens analysis.
