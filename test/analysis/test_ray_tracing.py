@@ -484,14 +484,40 @@ class TestPlane(object):
             assert (plane.image_plane_blurring_images_of_galaxies[2] == g2_image).all()
 
 
-    class TestSourcePlaneImageFromPlane:
+    class TestPlaneImage:
 
-        def test__source_image_from_plane__same_as_its_light_profile_image_on_regular_grid(self, grids,
-                                                                                           galaxy_light_sersic):
+        def test__shape_3x3__image_of_plane__same_as_light_profile_on_identicla_uniform_grid(self, grids):
 
-            plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], grids=grids)
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0))
 
-            source_plane_image = plane.source_plane_image
+            g0_image = g0.intensity_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                 [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
+                                                                 [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0]]))
+
+            grids.image = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+
+            assert plane.plane_image(shape=(3,3)) == pytest.approx(g0_image, 1e-4)
+
+        def test__different_shape_and_multiple_galaxies(self, grids):
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0))
+            g1 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(intensity=1.0))
+
+            g0_image = g0.intensity_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
+                                                             [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
+
+            g1_image = g1.intensity_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
+                                                             [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
+
+            grids.image = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+            plane = ray_tracing.Plane(galaxies=[g0, g1], grids=grids)
+
+            assert plane.plane_image(shape=(2,3)) == pytest.approx(g0_image + g1_image, 1e-4)
+            assert plane.plane_images_of_galaxies(shape=(2,3))[0] == pytest.approx(g0_image, 1e-4)
+            assert plane.plane_images_of_galaxies(shape=(2,3))[1] == pytest.approx(g1_image, 1e-4)
 
     class TestReconstructorFromGalaxies:
 
@@ -1539,13 +1565,13 @@ class TestSetupTracedGrid:
         assert grid_traced.image[0] == pytest.approx(np.array([1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]), 1e-3)
 
 
-class TestSourcePlaneGridFromLensedGrid:
+class TestUniformGridFromLensedGrid:
 
     def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(3,3))
+        source_plane_grid = ray_tracing.uniform_grid_from_lensed_grid(grid, shape=(3, 3))
 
         assert (source_plane_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
                                                [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
@@ -1555,7 +1581,7 @@ class TestSourcePlaneGridFromLensedGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
 
-        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(3,3))
+        source_plane_grid = ray_tracing.uniform_grid_from_lensed_grid(grid, shape=(3, 3))
 
         assert (source_plane_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
                                                [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
@@ -1565,7 +1591,7 @@ class TestSourcePlaneGridFromLensedGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(2, 3))
+        source_plane_grid = ray_tracing.uniform_grid_from_lensed_grid(grid, shape=(2, 3))
 
         assert (source_plane_grid == np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
                                                 [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]])).all()
@@ -1574,11 +1600,12 @@ class TestSourcePlaneGridFromLensedGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(3, 2))
+        source_plane_grid = ray_tracing.uniform_grid_from_lensed_grid(grid, shape=(3, 2))
 
         assert (source_plane_grid == np.array([[-1.0, -0.75], [-1.0, 0.75],
                                                [ 0.0, -0.75], [ 0.0, 0.75],
                                                [ 1.0, -0.75], [ 1.0, 0.75]])).all()
+
 
 class TestBooleanProperties(object):
 
