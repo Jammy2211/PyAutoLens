@@ -1,10 +1,10 @@
 UNITS
 
 Obviously, for images there are lots of units you can use to define things. We'll define all modeling quantities in
-units of arcseconds ("), which describe how large an angle the image / pixels subtend on the sky.
+units of arcseconds ("), which describe how large an angle the image_plane_image / pixels subtend on the sky.
 
 To make this definition, we associated a pixel_scale with our 2D imaging data (which is known for any telescope).
-So, for a 2D image with 11 x 11 pixels and a pixel scale of 0.1:
+So, for a 2D image_plane_image with 11 x 11 pixels and a pixel scale of 0.1:
 
 (-0.5", 0.5")_____0"____(0.5", 0.5")
              |          |

@@ -43,6 +43,10 @@ class AbstractHyperFitter(AbstractFitter):
     def scaled_noise_term(self):
         return noise_term_from_noise(self.scaled_noise)
 
+    @property
+    def scaled_noise_2d(self):
+        return self.masked_image.map_to_2d(self.scaled_noise)
+
 
 class ProfileFitter(AbstractFitter):
 
@@ -54,43 +58,78 @@ class ProfileFitter(AbstractFitter):
         ----------
         masked_image: mi.MaskedImage
             An masked_image that has been masked for efficiency
-        tracer: ray_tracing.Tracer
+        tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
         super(ProfileFitter, self).__init__(masked_image)
         self.tracer = tracer
-        self.blurred_image = self.masked_image.convolver_image.convolve_image(self.image, self.blurring_region_image)
-
+        self.blurred_image_plane_image = self.masked_image.convolver_image.convolve_image(self.image_plane_image, 
+                                                                                          self.image_plane_blurring_image)
     @property
-    def image(self):
+    def image_plane_image(self):
         return self.tracer.image_plane_image
 
     @property
-    def blurring_region_image(self):
+    def image_plane_blurring_image(self):
         return self.tracer.image_plane_blurring_image
 
     @property
-    def blurred_image_residuals(self):
-        return residuals_from_image_and_model(self.masked_image, self.blurred_image)
+    def blurred_image_plane_image_residuals(self):
+        return residuals_from_image_and_model(self.masked_image, self.blurred_image_plane_image)
 
     @property
-    def blurred_image_chi_squareds(self):
-        return chi_squareds_from_residuals_and_noise(self.blurred_image_residuals, self.masked_image.noise)
+    def blurred_image_plane_image_chi_squareds(self):
+        return chi_squareds_from_residuals_and_noise(self.blurred_image_plane_image_residuals, self.masked_image.noise)
 
     @property
-    def blurred_image_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self.blurred_image_chi_squareds)
+    def blurred_image_plane_image_chi_squared_term(self):
+        return chi_squared_term_from_chi_squareds(self.blurred_image_plane_image_chi_squareds)
 
     @property
-    def blurred_image_likelihood(self):
+    def blurred_image_plane_image_likelihood(self):
         """
         Fit the data_vector using the ray_tracing model, where only light_profiles are used to represent the galaxy
         images.
         """
-        return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_chi_squared_term, self.noise_term)
+        return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_plane_image_chi_squared_term, self.noise_term)
 
     def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
-        return PixelizationFitter(self.masked_image[:] - self.blurred_image, sparse_mask, self.tracer)
+        return PixelizationFitter(self.masked_image[:] - self.blurred_image_plane_image, sparse_mask, self.tracer)
+
+    @property
+    def blurred_image_plane_images_of_planes(self):
+        return list(map(lambda image_plane_image, image_plane_blurring_image :
+                        self.masked_image.convolver_image.convolve_image(image_plane_image, image_plane_blurring_image),
+                        self.tracer.image_plane_images_of_planes, self.tracer.image_plane_blurring_images_of_planes))
+
+    @property
+    def blurred_image_plane_images_of_galaxies(self):
+        return list(map(lambda image_plane_image, image_plane_blurring_image :
+                        self.masked_image.convolver_image.convolve_image(image_plane_image, image_plane_blurring_image),
+                        self.tracer.image_plane_images_of_galaxies, self.tracer.image_plane_blurring_images_of_galaxies))
+
+    @property
+    def blurred_image_plane_image_2d(self):
+        return self.masked_image.map_to_2d(self.blurred_image_plane_image)
+
+    @property
+    def blurred_image_plane_image_residuals_2d(self):
+        return self.masked_image.map_to_2d(self.blurred_image_plane_image_residuals)
+
+    @property
+    def blurred_image_plane_image_chi_squareds_2d(self):
+        return self.masked_image.map_to_2d(self.blurred_image_plane_image_chi_squareds)
+
+    @property
+    def blurred_image_plane_images_of_planes_2d(self):
+        return list(map(lambda blurred_plane_image_plane_image:
+                        self.masked_image.map_to_2d(blurred_plane_image_plane_image),
+                        self.blurred_image_plane_images_of_planes))
+
+    @property
+    def blurred_image_plane_images_of_galaxies_2d(self):
+        return list(map(lambda galaxy_image_plane_image: self.masked_image.map_to_2d(galaxy_image_plane_image),
+                        self.blurred_image_plane_images_of_galaxies))
 
 
 class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
@@ -103,7 +142,7 @@ class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
         ----------
         masked_image: mi.MaskedImage
             An masked_image that has been masked for efficiency
-        tracer: ray_tracing.Tracer
+        tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
         super(HyperProfileFitter, self).__init__(masked_image, tracer)
@@ -111,24 +150,28 @@ class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
                                      hyper_minimum_values)
 
     @property
-    def blurred_image_scaled_chi_squareds(self):
-        return chi_squareds_from_residuals_and_noise(self.blurred_image_residuals, self.scaled_noise)
+    def blurred_image_plane_image_scaled_chi_squareds(self):
+        return chi_squareds_from_residuals_and_noise(self.blurred_image_plane_image_residuals, self.scaled_noise)
 
     @property
-    def blurred_image_scaled_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self.blurred_image_scaled_chi_squareds)
+    def blurred_image_plane_image_scaled_chi_squared_term(self):
+        return chi_squared_term_from_chi_squareds(self.blurred_image_plane_image_scaled_chi_squareds)
 
     @property
-    def blurred_image_scaled_likelihood(self):
+    def blurred_image_plane_image_scaled_likelihood(self):
         """
         Fit the data_vector using the ray_tracing model, where only light_profiles are used to represent the galaxy
         images.
         """
-        return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_scaled_chi_squared_term,
+        return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_plane_image_scaled_chi_squared_term,
                                                            self.scaled_noise_term)
 
+    @property
+    def blurred_image_plane_image_scaled_chi_squareds_2d(self):
+        return self.masked_image.map_to_2d(self.blurred_image_plane_image_scaled_chi_squareds)
+
     def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
-        return HyperPixelizationFitter(self.masked_image[:] - self.blurred_image, sparse_mask, self.tracer,
+        return HyperPixelizationFitter(self.masked_image[:] - self.blurred_image_plane_image, sparse_mask, self.tracer,
                                        self.hyper_model_image, self.hyper_galaxy_images, self.hyper_minimum_values)
 
 
@@ -144,7 +187,7 @@ class PixelizationFitter(AbstractFitter):
             An masked_image that has been masked for efficiency
         sparse_mask: mask.SparseMask | None
             A mask describing which pixels should be used in clustering for pixelizations
-        tracer: ray_tracing.Tracer
+        tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
         super().__init__(masked_image)
@@ -166,24 +209,40 @@ class PixelizationFitter(AbstractFitter):
         return self.tracer.reconstructors_from_source_plane(self.masked_image.borders, self.sparse_mask)
 
     @property
-    def reconstructed_image_residuals(self):
+    def reconstructed_image_plane_image(self):
+        return self.reconstruction.reconstructed_image
+
+    @property
+    def reconstructed_image_plane_image_residuals(self):
         return residuals_from_image_and_model(self.masked_image, self.reconstruction.reconstructed_image)
 
     @property
-    def reconstructed_image_chi_squareds(self):
-        return chi_squareds_from_residuals_and_noise(self.reconstructed_image_residuals, self.masked_image.noise)
+    def reconstructed_image_plane_image_chi_squareds(self):
+        return chi_squareds_from_residuals_and_noise(self.reconstructed_image_plane_image_residuals, self.masked_image.noise)
 
     @property
-    def reconstructed_image_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self.reconstructed_image_chi_squareds)
+    def reconstructed_image_plane_image_chi_squared_term(self):
+        return chi_squared_term_from_chi_squareds(self.reconstructed_image_plane_image_chi_squareds)
 
     @property
-    def reconstructed_image_evidence(self):
-        return evidence_from_reconstruction_terms(self.reconstructed_image_chi_squared_term,
+    def reconstructed_image_plane_image_evidence(self):
+        return evidence_from_reconstruction_terms(self.reconstructed_image_plane_image_chi_squared_term,
                                                   self.reconstruction.regularization_term,
                                                   self.reconstruction.log_det_curvature_reg_matrix_term,
                                                   self.reconstruction.log_det_regularization_matrix_term,
                                                   self.noise_term)
+
+    @property
+    def reconstructed_image_plane_image_2d(self):
+        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image)
+
+    @property
+    def reconstructed_image_plane_image_residuals_2d(self):
+        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image_residuals)
+
+    @property
+    def reconstructed_image_plane_image_chi_squareds_2d(self):
+        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image_chi_squareds)
 
 
 class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
@@ -198,7 +257,7 @@ class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
             An masked_image that has been masked for efficiency
         sparse_mask: mask.SparseMask
             A mask describing which pixels should be used in clustering for pixelizations
-        tracer: ray_tracing.Tracer
+        tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
         super(HyperPixelizationFitter, self).__init__(masked_image, sparse_mask, tracer, False)
@@ -213,20 +272,24 @@ class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
             self.masked_image.convolver_mapping_matrix)
 
     @property
-    def reconstructed_image_scaled_chi_squareds(self):
-        return chi_squareds_from_residuals_and_noise(self.reconstructed_image_residuals, self._scaled_noise)
+    def reconstructed_image_plane_image_scaled_chi_squareds(self):
+        return chi_squareds_from_residuals_and_noise(self.reconstructed_image_plane_image_residuals, self._scaled_noise)
 
     @property
-    def reconstructed_image_scaled_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self.reconstructed_image_scaled_chi_squareds)
+    def reconstructed_image_plane_image_scaled_chi_squared_term(self):
+        return chi_squared_term_from_chi_squareds(self.reconstructed_image_plane_image_scaled_chi_squareds)
 
     @property
-    def reconstructed_image_scaled_evidence(self):
-        return evidence_from_reconstruction_terms(self.reconstructed_image_scaled_chi_squared_term,
+    def reconstructed_image_plane_image_scaled_evidence(self):
+        return evidence_from_reconstruction_terms(self.reconstructed_image_plane_image_scaled_chi_squared_term,
                                                   self.reconstruction.regularization_term,
                                                   self.reconstruction.log_det_curvature_reg_matrix_term,
                                                   self.reconstruction.log_det_regularization_matrix_term,
                                                   self._scaled_noise_term)
+
+    @property
+    def reconstructed_image_plane_image_scaled_chi_squareds_2d(self):
+        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image_scaled_chi_squareds)
 
 
 def blur_image_including_blurring_region(image, blurring_image, convolver):

@@ -5,6 +5,7 @@ import numpy as np
 
 
 class MaskedImage(im.Image):
+
     def __new__(cls, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None):
         return np.array(mask.map_to_1d(image)).view(cls)
 
@@ -55,8 +56,6 @@ class MaskedImage(im.Image):
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.grids = obj.grids
             self.borders = obj.borders
-
-
 
     def map_to_2d(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.

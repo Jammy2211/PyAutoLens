@@ -502,6 +502,13 @@ class ImageGrid(np.ndarray):
             setattr(self, key, value)
         super(ImageGrid, self).__setstate__(state[0:-1])
 
+    @property
+    def xticks(self):
+        return np.around(np.linspace(np.amin(self[:,0]), np.amax(self[:,0]), 4), 2)
+
+    @property
+    def yticks(self):
+        return np.around(np.linspace(np.amin(self[:,1]), np.amax(self[:,1]), 4), 2)
 
 class SubGrid(ImageGrid):
     """Abstract class for a sub of coordinates. On a sub-grid, each pixel is sub-gridded into a uniform grid of
