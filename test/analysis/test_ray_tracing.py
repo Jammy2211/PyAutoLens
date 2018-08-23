@@ -381,7 +381,7 @@ class TestPlane(object):
             assert (plane.image_plane_images_of_galaxies[2] == g2_image).all()
 
 
-    class TestBlurringImageFromGalaxies:
+    class TestBlurringImageFromPlane:
 
         def test__image_from_plane__same_as_its_light_profile_image(self, grids, galaxy_light_sersic):
             
@@ -483,6 +483,15 @@ class TestPlane(object):
             assert (plane.image_plane_blurring_images_of_galaxies[1] == g1_image).all()
             assert (plane.image_plane_blurring_images_of_galaxies[2] == g2_image).all()
 
+
+    class TestSourcePlaneImageFromPlane:
+
+        def test__source_image_from_plane__same_as_its_light_profile_image_on_regular_grid(self, grids,
+                                                                                           galaxy_light_sersic):
+
+            plane = ray_tracing.Plane(galaxies=[galaxy_light_sersic], grids=grids)
+
+            source_plane_image = plane.source_plane_image
 
     class TestReconstructorFromGalaxies:
 
@@ -1529,6 +1538,47 @@ class TestSetupTracedGrid:
 
         assert grid_traced.image[0] == pytest.approx(np.array([1.0 - 3.0 * 0.707, 1.0 - 3.0 * 0.707]), 1e-3)
 
+
+class TestSourcePlaneGridFromLensedGrid:
+
+    def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(3,3))
+
+        assert (source_plane_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                               [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
+                                               [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0]])).all()
+
+    def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self):
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
+
+        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(3,3))
+
+        assert (source_plane_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                               [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
+                                               [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0]])).all()
+
+    def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(2, 3))
+
+        assert (source_plane_grid == np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
+                                                [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]])).all()
+
+    def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        source_plane_grid = ray_tracing.source_plane_regular_grid_from_lensed_grid(grid, shape=(3, 2))
+
+        assert (source_plane_grid == np.array([[-1.0, -0.75], [-1.0, 0.75],
+                                               [ 0.0, -0.75], [ 0.0, 0.75],
+                                               [ 1.0, -0.75], [ 1.0, 0.75]])).all()
 
 class TestBooleanProperties(object):
 
