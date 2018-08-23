@@ -41,6 +41,6 @@ class MockBorderCollection(object):
 
     def relocated_grids_from_grids(self, grids):
         return MockGridCollection(image=self.image.relocated_grid_from_grid(grids.image),
-                              sub=MockSubGridCoords(self.sub.relocated_grid_from_grid(grids.sub), grids.sub.sub_to_image,
+                                  sub=MockSubGridCoords(self.sub.relocated_grid_from_grid(grids.sub), grids.sub.sub_to_image,
                                                     grids.sub.sub_grid_size),
-                              blurring=None)
+                                  blurring=None)
