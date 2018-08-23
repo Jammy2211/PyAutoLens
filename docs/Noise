@@ -28,10 +28,10 @@ def generate_background_noise_map(dimensions, background_noise, seed=-1):
     setup_random_seed(seed)
     return np.random.normal(0.0, background_noise, dimensions)
 
-def generate_poisson_noise_map(image, exposure_time_map, seed=-1):
+def generate_poisson_noise_map(image_plane_image, exposure_time_map, seed=-1):
     setup_random_seed(seed)
-    image_counts = convert_array_to_counts(image, exposure_time_map)
-    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map)
+    image_counts = convert_array_to_counts(image_plane_image, exposure_time_map)
+    return image_plane_image - np.divide(np.random.poisson(image_counts, image_plane_image.shape), exposure_time_map)
 
 BACKGROUND SKY:
 

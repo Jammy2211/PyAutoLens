@@ -1683,6 +1683,30 @@ def make_grids(centre_mask):
     return mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(centre_mask, 2, (3, 3))
 
 
+class TestImageGrid:
+
+    def test__xticks_property__include_round_to_2dp(self):
+
+        grid = mask.ImageGrid(arr=np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]]))
+        assert grid.xticks == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+
+        grid = mask.ImageGrid(arr=np.array([[-6.0, -10.5], [6.0, 0.5], [0.3, 0.3], [-0.3, -0.3]]))
+        assert grid.xticks == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+
+        grid = mask.ImageGrid(arr=np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]]))
+        assert grid.xticks == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+
+    def test__yticks_property__include_round_to_2dp(self):
+
+        grid = mask.ImageGrid(arr=np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]]))
+        assert grid.yticks == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+
+        grid = mask.ImageGrid(arr=np.array([[-10.5, -6.0], [0.5, 6.0], [0.3, 0.3], [-0.3, -0.3]]))
+        assert grid.yticks == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+
+        grid = mask.ImageGrid(arr=np.array([[-0.5, -1.0], [0.5, 1.0], [0.3, 0.3], [-0.3, -0.3]]))
+        assert grid.yticks == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+
 class TestGridCollection(object):
     def test_grids(self, grids):
         assert (grids.image == np.array([[0., 0.]])).all()
