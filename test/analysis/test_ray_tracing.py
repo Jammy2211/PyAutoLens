@@ -521,6 +521,41 @@ class TestPlane(object):
             assert plane.plane_images_of_galaxies(shape=(2,3))[1] == pytest.approx(g1_image, 1e-4)
 
 
+    class TestXYTicksOfPlane:
+
+        def test__compute_xticks_from_image_grid_correctly__are_rounded_to_2dp(self, grids):
+
+            g0 = galaxy.Galaxy()
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+            assert plane.xticks_from_image_grid == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+
+            grids.image = np.array([[-6.0, -10.5], [6.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+            assert plane.xticks_from_image_grid == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+
+            grids.image = np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+            assert plane.xticks_from_image_grid == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+
+        def test__compute_yticks_from_image_grid_correctly__are_rounded_to_2dp(self, grids):
+
+            g0 = galaxy.Galaxy()
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+            assert plane.yticks_from_image_grid == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+
+            grids.image = np.array([[-6.0, -10.5], [6.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+            assert plane.yticks_from_image_grid == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+
+            grids.image = np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            plane = ray_tracing.Plane(galaxies=[g0], grids=grids)
+            assert plane.yticks_from_image_grid ==pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+
+
     class TestReconstructorFromGalaxies:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grids, sparse_mask):
@@ -905,6 +940,82 @@ class TestTracerImageAndSource(object):
 
             assert (tracer.image_grids_of_planes[0] == tracer.image_plane.grids.image).all()
             assert (tracer.image_grids_of_planes[1] == tracer.source_plane.grids.image).all()
+
+
+    class TestXYTicksOfPlanes:
+
+        def test__compute_xticks_from_image_grids_correctly__are_rounded_to_2dp(self, grids):
+
+            g0 = galaxy.Galaxy()
+            g1 = galaxy.Galaxy()
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                          image_plane_grids=grids)
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert (tracer.xticks_of_planes[0] == tracer.image_plane.xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.source_plane.xticks_from_image_grid).all()
+
+            grids.image = np.array([[-6.0, -10.5], [6.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                          image_plane_grids=grids)
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert (tracer.xticks_of_planes[0] == tracer.image_plane.xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.source_plane.xticks_from_image_grid).all()
+
+            grids.image = np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                          image_plane_grids=grids)
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert (tracer.xticks_of_planes[0] == tracer.image_plane.xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.source_plane.xticks_from_image_grid).all()
+
+        def test__compute_yticks_from_image_grids_correctly__are_rounded_to_2dp(self, grids):
+
+            g0 = galaxy.Galaxy()
+            g1 = galaxy.Galaxy()
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                          image_plane_grids=grids)
+
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert (tracer.yticks_of_planes[0] == tracer.image_plane.yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.source_plane.yticks_from_image_grid).all()
+
+            grids.image = np.array([[-10.5, -6.0], [0.5, 6.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                          image_plane_grids=grids)
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert (tracer.yticks_of_planes[0] == tracer.image_plane.yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.source_plane.yticks_from_image_grid).all()
+
+            grids.image = np.array([[-0.5, -1.0], [0.5, 1.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                          image_plane_grids=grids)
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert (tracer.yticks_of_planes[0] == tracer.image_plane.yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.source_plane.yticks_from_image_grid).all()
+
+        def test__mass_profile_lensing_doesnt_make_ticks_wrong(self, grids):
+
+            g0 = galaxy.Galaxy(mass_profile=mass_profiles.SphericalIsothermalMP(centre=(0.1, 0.1), einstein_radius=1.0))
+            g1 = galaxy.Galaxy()
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grids=grids)
+
+            assert (tracer.xticks_of_planes[0] == tracer.image_plane.xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.source_plane.xticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[0] == tracer.image_plane.yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.source_plane.yticks_from_image_grid).all()
 
 
     class TestReconstructorFromGalaxy:
@@ -1596,6 +1707,96 @@ class TestMultiTracer(object):
             assert (tracer.image_grids_of_planes[2] == tracer.planes[2].grids.image).all()
             assert (tracer.image_grids_of_planes[3] == tracer.planes[3].grids.image).all()
 
+
+    class TestXYTicksOfPlanes:
+
+        def test__compute_xticks_from_image_grids_correctly__are_rounded_to_2dp(self, grids):
+
+            g0 = galaxy.Galaxy(redshift=0.1)
+            g1 = galaxy.Galaxy(redshift=0.2)
+            g2 = galaxy.Galaxy(redshift=0.3)
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert tracer.xticks_of_planes[2] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert (tracer.xticks_of_planes[0] == tracer.planes[0].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.planes[1].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[2] == tracer.planes[2].xticks_from_image_grid).all()
+
+            grids.image = np.array([[-6.0, -10.5], [6.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert (tracer.xticks_of_planes[0] == tracer.planes[0].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.planes[1].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[2] == tracer.planes[2].xticks_from_image_grid).all()
+
+            grids.image = np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[2] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert (tracer.xticks_of_planes[0] == tracer.planes[0].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.planes[1].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[2] == tracer.planes[2].xticks_from_image_grid).all()
+
+        def test__compute_yticks_from_image_grids_correctly__are_rounded_to_2dp(self, grids):
+
+            g0 = galaxy.Galaxy(redshift=0.1)
+            g1 = galaxy.Galaxy(redshift=0.2)
+            g2 = galaxy.Galaxy(redshift=0.3)
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert tracer.yticks_of_planes[2] == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
+            assert (tracer.yticks_of_planes[0] == tracer.planes[0].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.planes[1].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[2] == tracer.planes[2].yticks_from_image_grid).all()
+
+            grids.image = np.array([[-10.5, -6.0], [0.5, 6.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert tracer.yticks_of_planes[2] == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
+            assert (tracer.yticks_of_planes[0] == tracer.planes[0].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.planes[1].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[2] == tracer.planes[2].yticks_from_image_grid).all()
+
+            grids.image = np.array([[-0.5, -1.0], [0.5, 1.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[2] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert (tracer.yticks_of_planes[0] == tracer.planes[0].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.planes[1].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[2] == tracer.planes[2].yticks_from_image_grid).all()
+
+        def test__mass_profile_lensing_doesnt_make_ticks_wrong(self, grids):
+
+            g0 = galaxy.Galaxy(redshift=0.1, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g1 = galaxy.Galaxy(redshift=0.2, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+            g2 = galaxy.Galaxy(redshift=0.3, mass_profile=mass_profiles.SphericalIsothermalMP(einstein_radius=1.0))
+
+            grids.image = np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]])
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=grids, cosmology=cosmo.Planck15)
+
+            assert (tracer.xticks_of_planes[0] == tracer.planes[0].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[1] == tracer.planes[1].xticks_from_image_grid).all()
+            assert (tracer.xticks_of_planes[2] == tracer.planes[2].xticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[0] == tracer.planes[0].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[1] == tracer.planes[1].yticks_from_image_grid).all()
+            assert (tracer.yticks_of_planes[2] == tracer.planes[2].yticks_from_image_grid).all()
 
     class TestReconstructorFromGalaxy:
 
