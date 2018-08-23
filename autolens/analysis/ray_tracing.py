@@ -64,6 +64,10 @@ class AbstractTracer(object):
         return [plane.plane_image(shape) for plane in self.all_planes]
 
     @property
+    def image_grids_of_planes(self):
+        return [plane.grids.image for plane in self.all_planes]
+
+    @property
     def hyper_galaxies(self):
         return [hyper_galaxy for plane in self.all_planes for hyper_galaxy in
                 plane.hyper_galaxies]
