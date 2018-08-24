@@ -46,4 +46,4 @@ def make():
 
     phase3 = ConstantLensPhase(pixelization=px.RectangularRegConst,
                                mask_function=mask_function)
-    return pl.Pipeline(name, phase1, phase2, phase3)
+    return pl.PipelineImaging(name, phase1, phase2, phase3)

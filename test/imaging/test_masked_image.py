@@ -75,3 +75,18 @@ class TestMaskedImage(object):
         assert subtracted_image.pixel_scale == masked_image.pixel_scale
 
         assert subtracted_image == np.array([0, 1, 0, 1, 1])
+
+    def test__constructor_inputs(self):
+
+        psf = im.PSF(np.ones((7, 7)), 1)
+        image = im.Image(np.ones((51, 51)), pixel_scale=3., psf=psf, noise=np.ones((51, 51)))
+        mask = msk.Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds=(51.0, 51.0), pixel_scale=1.0)
+        mask[26, 26] = False
+
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=8, profile_psf_shape=(5, 5),
+                                      pixelization_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
+
+        assert masked_image.sub_grid_size == 8
+        assert masked_image.convolver_image.psf_shape == (5,5)
+        assert masked_image.convolver_mapping_matrix.psf_shape == (3, 3)
+        assert (masked_image.positions[0] == np.array([[1.0, 1.0]])).all()
