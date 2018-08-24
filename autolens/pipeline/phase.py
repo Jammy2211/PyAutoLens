@@ -373,8 +373,8 @@ class PhasePositions(Phase):
 
 class PhaseImaging(Phase):
 
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, mask_function=default_mask_function,
-                 positions=None, phase_name=None):
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
+                 pixelization_psf_shape=None, positions=None, mask_function=default_mask_function, phase_name=None):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -387,8 +387,10 @@ class PhaseImaging(Phase):
         """
 
         super().__init__(optimizer_class, phase_name)
-        self.positions = list(map(lambda position_set : np.asarray(position_set), positions))
         self.sub_grid_size = sub_grid_size
+        self.image_psf_shape = image_psf_shape
+        self.pixelization_psf_shape = pixelization_psf_shape
+        self.positions = list(map(lambda position_set : np.asarray(position_set), positions))
         self.mask_function = mask_function
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -450,7 +452,8 @@ class PhaseImaging(Phase):
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size, positions=self.positions)
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size,
+                                      image_psf_shape=self.image_psf_shape, positions=self.positions)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
                                            previous_results=previous_results)
@@ -582,9 +585,9 @@ class LensProfilePhase(PhaseImaging):
 
     lens_galaxies = PhasePropertyList("lens_galaxies")
 
-    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  mask_function=default_mask_function, phase_name="lens_only_phase"):
-        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
+        super().__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
                          mask_function=mask_function, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
 
@@ -655,9 +658,9 @@ class LensProfileHyperPhase(LensProfilePhase):
 
     lens_galaxies = PhasePropertyList("lens_galaxies")
 
-    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
-        super().__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class,
+        super().__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class, image_psf_shape=image_psf_shape,
                          sub_grid_size=sub_grid_size, mask_function=mask_function, phase_name=phase_name)
 
     class Analysis(LensProfilePhase.Analysis):
@@ -728,10 +731,10 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
 
     lens_galaxies = PhasePropertyList("lens_galaxies")
 
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase", hyper_index=None):
 
-        super().__init__(lens_galaxies=[], optimizer_class=optimizer_class,
+        super().__init__(lens_galaxies=[], optimizer_class=optimizer_class, image_psf_shape=image_psf_shape,
                          sub_grid_size=sub_grid_size, mask_function=mask_function,
                          phase_name=phase_name)
 
@@ -812,7 +815,7 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, mask_function=default_mask_function, positions=None, phase_name="source_lens_phase"):
+                 sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function, positions=None, phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -829,7 +832,9 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
         """
 
         super(LensMassAndSourceProfilePhase, self).__init__(optimizer_class=optimizer_class,
-                                                            sub_grid_size=sub_grid_size, mask_function=mask_function,
+                                                            sub_grid_size=sub_grid_size,
+                                                            image_psf_shape=image_psf_shape,
+                                                            mask_function=mask_function,
                                                             positions=positions, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
@@ -916,7 +921,8 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, mask_function=default_mask_function, positions=None, phase_name="source_lens_phase"):
+                 sub_grid_size=1, positions=None, image_psf_shape=None, mask_function=default_mask_function,
+                 phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -933,7 +939,8 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
         """
         super().__init__(lens_galaxies=lens_galaxies,
                          source_galaxies=source_galaxies, optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                         mask_function=mask_function, positions=positions, phase_name=phase_name)
+                         positions=positions, image_psf_shape=image_psf_shape, mask_function=mask_function,
+                         phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
 
@@ -1007,10 +1014,11 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
     lens_galaxies = PhasePropertyList("lens_galaxies")
     source_galaxies = PhasePropertyList("source_galaxies")
 
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  mask_function=default_mask_function, phase_name="source_and_len_hyper_phase", hyper_index=None):
         super().__init__(lens_galaxies=[], source_galaxies=[], optimizer_class=optimizer_class,
-                         sub_grid_size=sub_grid_size, mask_function=mask_function, phase_name=phase_name)
+                         sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape, mask_function=mask_function,
+                         phase_name=phase_name)
         self.hyper_index = hyper_index
 
     def hyper_run(self, image, previous_results=None):
@@ -1086,7 +1094,8 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies, source_galaxies, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, mask_function=default_mask_function, positions=None,
+                 sub_grid_size=1, image_psf_shape=None, pixelization_psf_shape=None,
+                 mask_function=default_mask_function, positions=None,
                  phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
@@ -1104,7 +1113,10 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
         """
 
         super(LensMassAndSourcePixelizationPhase, self).__init__(optimizer_class=optimizer_class,
-                                                            sub_grid_size=sub_grid_size, mask_function=mask_function,
+                                                            sub_grid_size=sub_grid_size,
+                                                            image_psf_shape=image_psf_shape,
+                                                            pixelization_psf_shape=pixelization_psf_shape,
+                                                            mask_function=mask_function,
                                                             positions=positions, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
