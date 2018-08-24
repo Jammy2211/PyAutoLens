@@ -97,7 +97,7 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
     phase3.optimizer.n_live_points = 60
     phase3.optimizer.sampling_efficiency = 0.8
 
-    return pl.Pipeline(pipeline_name, phase1, phase2, phase3)
+    return pl.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
 if __name__ == "__main__":
     test_lens_x2_gal_separate_pipeline()

@@ -45,4 +45,4 @@ def make():
     phase2.optimizer.n_live_points = 60
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return pl.Pipeline("source_pix_pipeline", phase1, phase2)
+    return pl.PipelineImaging("source_pix_pipeline", phase1, phase2)

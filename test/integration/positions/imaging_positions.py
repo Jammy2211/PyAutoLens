@@ -1,6 +1,7 @@
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
 from autolens.analysis import galaxy_prior as gp
 from autolens.autopipe import non_linear as nl
 from autolens.analysis import galaxy
@@ -13,12 +14,12 @@ import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
+output_path = '/gpfs/data/pdtw24/Lens/int/positions/'
 
 def test_lens_x1_gal_pipeline():
 
-    pipeline_name = "l1g"
-    data_name = '/l1g'
+    pipeline_name = "img_pos"
+    data_name = '/img_pos'
 
     try:
         shutil.rmtree(dirpath+'/data'+data_name)
@@ -27,11 +28,13 @@ def test_lens_x1_gal_pipeline():
 
     sersic = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
                                    effective_radius=1.3, sersic_index=3.0)
+    sis = mp.SphericalIsothermalMP(einstein_radius=1.0)
 
-    lens_galaxy = galaxy.Galaxy(light_profile=sersic)
+    lens_galaxy = galaxy.Galaxy(mass_profile=sis)
+    source_galaxy = galaxy.Galaxy(light_profile=sersic)
 
-    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
-                                     source_galaxies=[], target_signal_to_noise=30.0)
+    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy],
+                                     source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
 
     conf.instance.output_path = output_path
 
@@ -40,24 +43,18 @@ def test_lens_x1_gal_pipeline():
     except FileNotFoundError:
         pass
 
-    pipeline = make_lens_x1_gal_pipeline(pipeline_name=pipeline_name)
-    image = tools.load_image(data_name=data_name, pixel_scale=0.2)
+    pipeline = make_imaging_positions_pipeline(pipeline_name=pipeline_name)
+    image = tools.load_image(data_name=data_name, pixel_scale=0.1)
 
     results = pipeline.run(image=image)
     for result in results:
         print(result)
 
-def make_lens_x1_gal_pipeline(pipeline_name):
-    # 1) Lens Light : EllipticalSersicLP
-    #    Mass: None
-    #    Source: None
-    #    Hyper Galaxy: None
-    #    NLO: MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
+def make_imaging_positions_pipeline(pipeline_name):
 
-    phase1 = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                                 optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+    phase1 = ph.PositionsImagingPhase(positions=[[[1.0, 1.0], [1.0, -1.0], [-1.0, 1.0], [-1.0, -1.0]]],
+                                      lens_galaxies=[gp.GalaxyPrior(sis=mp.SphericalIsothermalMP)],
+                                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8

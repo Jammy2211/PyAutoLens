@@ -6,10 +6,11 @@ import numpy as np
 
 class MaskedImage(im.Image):
 
-    def __new__(cls, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None):
+    def __new__(cls, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None, positions=None):
         return np.array(mask.map_to_1d(image)).view(cls)
 
-    def __init__(self, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None):
+    def __init__(self, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None,
+                 positions=None):
         """
         An masked_image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
         array mapping_matrix data back to 2D.
@@ -44,6 +45,7 @@ class MaskedImage(im.Image):
                                                                                    blurring_shape=profile_psf_shape)
 
         self.borders = msk.BorderCollection.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
+        self.positions = positions
 
     def __array_finalize__(self, obj):
         super(MaskedImage, self).__array_finalize__(obj)
@@ -56,6 +58,7 @@ class MaskedImage(im.Image):
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.grids = obj.grids
             self.borders = obj.borders
+            self.positions = obj.positions
 
     def map_to_2d(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
