@@ -131,6 +131,10 @@ class ProfileFitter(AbstractFitter):
         return list(map(lambda galaxy_image_plane_image: self.masked_image.map_to_2d(galaxy_image_plane_image),
                         self.blurred_image_plane_images_of_galaxies))
 
+    def plane_images_of_planes_2d(self, shape=(30, 30)):
+        return list(map(lambda plane_image : self.masked_image.map_to_2d(plane_image),
+                        self.tracer.plane_images_of_planes(shape)))
+
 
 class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
 
@@ -428,3 +432,19 @@ def evidence_from_reconstruction_terms(chi_squared_term, regularization_term,
                                        noise_term):
     return -0.5 * (chi_squared_term + regularization_term + log_covariance_regularization_term -
                    log_regularization_term + noise_term)
+
+
+class FitterPositions:
+
+    def __init__(self, tracer):
+
+        self.tracer = tracer
+
+
+
+    @property
+    def maximum_separation(self):
+        return np.max(self.tracer.positions)
+
+    # @property
+    # def likelihood(self):
