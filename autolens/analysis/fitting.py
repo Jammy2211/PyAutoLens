@@ -2,6 +2,7 @@ import numpy as np
 from autolens.imaging import masked_image as mi
 from autolens.imaging import mask
 from autolens.analysis import ray_tracing
+from autolens import exc
 
 # TODO : Can we make hyper_model_image, image_plane_lens_galaxy_images, minimum_Values a part of hyper galaxies?
 
@@ -449,6 +450,12 @@ class FitterPositions:
     @property
     def likelihood(self):
         return -0.5*sum(self.chi_squareds)
+
+    def maximum_separation_within_threshold(self, threshold):
+        if max(self.maximum_separations) > threshold:
+            return False
+        else:
+            return True
 
     @property
     def maximum_separations(self):
