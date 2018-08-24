@@ -29,3 +29,7 @@ class ReconstructionException(Exception):
 
 class RayTracingException(Exception):
     pass
+
+
+class PhaseException(Exception):
+    pass
