@@ -34,7 +34,7 @@ def source_only_pipeline(image, mask):
 
     logger.info(
         """
-        Pipeline 1:
+        PipelineImaging 1:
 
         PURPOSE - Fit a source-only masked_image (i.e. no lens light component)
 
@@ -175,7 +175,7 @@ def source_only_pipeline(image, mask):
     # Add the result of the main analysis to the results
     results.append(result_a)
 
-    logger.info("Pipeline complete")
+    logger.info("PipelineImaging complete")
 
     # Return the results
     return results
@@ -183,7 +183,7 @@ def source_only_pipeline(image, mask):
 
 def lens_and_source_pipeline(image, lens_mask, source_mask, combined_mask):
     """
-    Pipeline 2:
+    PipelineImaging 2:
 
     PURPOSE - Fit a lens light + source masked_image (mass model does not decomposed the light and dark matter)
 
@@ -358,7 +358,7 @@ def profiles_pipeline(paths, image, mask):
 
     logger.info(
         """
-        Pipeline Profiles:
+        PipelineImaging Profiles:
 
         PURPOSE - Fit profiles to an masked_image.
 
@@ -417,7 +417,7 @@ def profiles_pipeline(paths, image, mask):
 
     logger.info(
         """
-        Pipeline Profiles:
+        PipelineImaging Profiles:
 
         PURPOSE - Fit profiles to an masked_image.
 
@@ -495,7 +495,7 @@ def profiles_pipeline(paths, image, mask):
 #
 #     logger.info(
 #         """
-#         Pipeline Profiles:
+#         PipelineImaging Profiles:
 #
 #         PURPOSE - Fit profiles to an masked_image.
 #
@@ -552,7 +552,7 @@ def profiles_pipeline(paths, image, mask):
 #
 #     logger.info(
 #         """
-#         Pipeline Profiles:
+#         PipelineImaging Profiles:
 #
 #         PURPOSE - Fit profiles to an masked_image.
 #

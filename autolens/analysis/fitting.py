@@ -436,10 +436,11 @@ def evidence_from_reconstruction_terms(chi_squared_term, regularization_term,
 
 class FitterPositions:
 
-    def __init__(self, noise, tracer):
+    def __init__(self, positions, noise):
 
+        self.positions = positions
         self.noise = noise
-        self.tracer = tracer
+
 
     @property
     def chi_squareds(self):
@@ -451,7 +452,7 @@ class FitterPositions:
 
     @property
     def maximum_separations(self):
-        return list(map(lambda positions : self.max_separation_of_grid(positions), self.tracer.positions))
+        return list(map(lambda positions : self.max_separation_of_grid(positions), self.positions))
 
     def max_separation_of_grid(self, grid):
         rdist_max = np.zeros((grid.shape[0]))
