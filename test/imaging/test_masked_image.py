@@ -83,7 +83,7 @@ class TestMaskedImage(object):
         mask = msk.Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds=(51.0, 51.0), pixel_scale=1.0)
         mask[26, 26] = False
 
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=8, profile_psf_shape=(5, 5),
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=8, image_psf_shape=(5, 5),
                                       pixelization_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
 
         assert masked_image.sub_grid_size == 8
