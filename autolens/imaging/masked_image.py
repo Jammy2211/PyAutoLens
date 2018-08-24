@@ -6,10 +6,10 @@ import numpy as np
 
 class MaskedImage(im.Image):
 
-    def __new__(cls, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None, positions=None):
+    def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None, positions=None):
         return np.array(mask.map_to_1d(image)).view(cls)
 
-    def __init__(self, image, mask, sub_grid_size=2, profile_psf_shape=None, pixelization_psf_shape=None,
+    def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None,
                  positions=None):
         """
         An masked_image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
@@ -31,18 +31,18 @@ class MaskedImage(im.Image):
         self.mask = mask
         self.sub_grid_size = sub_grid_size
 
-        if profile_psf_shape is None:
-            profile_psf_shape = self.image.psf.shape
+        if image_psf_shape is None:
+            image_psf_shape = self.image.psf.shape
         if pixelization_psf_shape is None:
             pixelization_psf_shape = self.image.psf.shape
 
-        self.blurring_mask = mask.blurring_mask_for_kernel_shape(profile_psf_shape)
+        self.blurring_mask = mask.blurring_mask_for_kernel_shape(image_psf_shape)
         self.convolver_image = convolution.ConvolverImage(self.mask,
-                                                          self.blurring_mask, self.image.psf.trim(profile_psf_shape))
+                                                          self.blurring_mask, self.image.psf.trim(image_psf_shape))
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
                                                                            self.image.psf.trim(pixelization_psf_shape))
         self.grids = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=mask, sub_grid_size=sub_grid_size,
-                                                                                   blurring_shape=profile_psf_shape)
+                                                                                   blurring_shape=image_psf_shape)
 
         self.borders = msk.BorderCollection.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         self.positions = positions
