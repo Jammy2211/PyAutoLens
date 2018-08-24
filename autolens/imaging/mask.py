@@ -642,7 +642,7 @@ class SubGrid(ImageGrid):
 
 class GridCollection(object):
 
-    def __init__(self, image, sub, blurring):
+    def __init__(self, image, sub, blurring, positional=None):
         """
         A collection of grids which contain the coordinates of an masked_image. This includes the masked_image's regular grid,
         sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the masked_image,
