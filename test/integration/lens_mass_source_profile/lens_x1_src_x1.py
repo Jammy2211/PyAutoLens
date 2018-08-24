@@ -34,18 +34,18 @@ def test_lens_x1_src_x1_profile_pipeline():
     lens_galaxy = galaxy.Galaxy(sie=lens_mass)
     source_galaxy = galaxy.Galaxy(sersic=source_light)
 
-    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.08, lens_galaxies=[lens_galaxy],
+    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
 
     conf.instance.output_path = output_path
 
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
+    try:
+        shutil.rmtree(output_path + pipeline_name)
+    except FileNotFoundError:
+        pass
 
     pipeline = make_lens_x1_src_x1_profile_pipeline(pipeline_name=pipeline_name)
-    image = tools.load_image(data_name=data_name, pixel_scale=0.08)
+    image = tools.load_image(data_name=data_name, pixel_scale=0.2)
 
     results = pipeline.run(image=image)
     for result in results:

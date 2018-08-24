@@ -6,6 +6,7 @@ from autolens.imaging import masked_image as mi
 from autolens.imaging import image as img
 from autolens.analysis import fitting
 from autolens.autopipe import non_linear
+from autolens import exc
 from autolens import conf
 import numpy as np
 import logging
@@ -134,6 +135,7 @@ class Phase(object):
 
             visualise_interval = conf.instance.general.get('output', 'visualise_interval', int)
             self.__should_visualise = IntervalCounter(visualise_interval)
+            self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
             self.as_fits_during_analysis = conf.instance.general.get('output', 'visualize_as_fits_during_analysis', bool)
             self.as_fits_at_end = conf.instance.general.get('output', 'visualize_as_fits_at_end', bool)
@@ -465,6 +467,18 @@ class PhaseImaging(Phase):
             self.output_array_as_png(self.masked_image.image, 'observed_image', 'Observed Image',
                                      self.masked_image.grids.image.xticks, self.masked_image.grids.image.yticks, True)
 
+        def check_positions_trace_within_threshold(self, instance):
+
+            if self.masked_image.positions is not None:
+
+                tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
+                                                                      positions=self.masked_image.positions)
+                fitter = fitting.FitterPositions(positions=tracer.source_plane.positions,
+                                                 noise=self.masked_image.image.pixel_scale)
+
+                if not fitter.maximum_separation_within_threshold(self.position_threshold):
+                    return exc.RayTracingException
+
         def visualize(self, instance, suffix, during_analysis):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
@@ -644,9 +658,7 @@ class LensProfileHyperPhase(LensProfilePhase):
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name="lens_only_hyper_phase"):
         super().__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class,
-                         sub_grid_size=sub_grid_size, mask_function=mask_function,
-                         phase_name=phase_name)
-
+                         sub_grid_size=sub_grid_size, mask_function=mask_function, phase_name=phase_name)
 
     class Analysis(LensProfilePhase.Analysis):
 
@@ -800,7 +812,7 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
+                 sub_grid_size=1, mask_function=default_mask_function, positions=None, phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -818,7 +830,7 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
 
         super(LensMassAndSourceProfilePhase, self).__init__(optimizer_class=optimizer_class,
                                                             sub_grid_size=sub_grid_size, mask_function=mask_function,
-                                                            phase_name=phase_name)
+                                                            positions=positions, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
 
@@ -842,6 +854,7 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
             self.try_visualize(instance)
+            self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
             fitter = self.fitter_for_tracer(tracer)
             return fitter.blurred_image_plane_image_likelihood
@@ -903,7 +916,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
+                 sub_grid_size=1, mask_function=default_mask_function, positions=None, phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -920,7 +933,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
         """
         super().__init__(lens_galaxies=lens_galaxies,
                          source_galaxies=source_galaxies, optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                         mask_function=mask_function, phase_name=phase_name)
+                         mask_function=mask_function, positions=positions, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
 
@@ -1073,7 +1086,8 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies, source_galaxies, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, mask_function=default_mask_function, phase_name="source_lens_phase"):
+                 sub_grid_size=1, mask_function=default_mask_function, positions=None,
+                 phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 
@@ -1091,7 +1105,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
 
         super(LensMassAndSourcePixelizationPhase, self).__init__(optimizer_class=optimizer_class,
                                                             sub_grid_size=sub_grid_size, mask_function=mask_function,
-                                                            phase_name=phase_name)
+                                                            positions=positions, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
 
@@ -1115,6 +1129,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
             fit: Fit
                 A fractional value indicating how well this model fit and the model masked_image itself
             """
+            self.check_positions_trace_within_threshold(instance)
             self.try_visualize(instance)
             tracer = self.tracer_for_instance(instance)
             fitter = self.fitter_for_tracer(tracer)

@@ -7,7 +7,7 @@ from autolens.imaging import masked_image
 from autolens.imaging import image
 from autolens.profiles import light_profiles
 from autolens.pixelization import pixelization
-from autolens.pixelization import reconstruction
+from autolens import exc
 
 
 class TestResiduals:
@@ -1533,46 +1533,46 @@ class TestFitterPositions:
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(2)
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 3.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [-9.0, -4.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0], [0.1, 0.1], [-0.1, -0.1],
                                                           [0.3, 0.4], [-0.6, 0.5]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])])
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
@@ -1581,7 +1581,7 @@ class TestFitterPositions:
                                                 np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
                                                 np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
 
-        fitter = fitting.FitterPositions(tracer=tracer)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
 
         assert fitter.maximum_separations[0] == 1.0
         assert fitter.maximum_separations[1] == np.sqrt(18)
@@ -1593,15 +1593,23 @@ class TestFitterPositions:
                                                 np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
                                                 np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
 
-        fitter = fitting.FitterPositions(tracer=tracer, noise=1.0)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
         assert fitter.chi_squareds[0] == 1.0
         assert fitter.chi_squareds[1] == pytest.approx(18.0, 1e-4)
         assert fitter.chi_squareds[2] == pytest.approx(18.0, 1e-4)
         assert fitter.likelihood == pytest.approx(-0.5*(1.0 + 18 + 18), 1e-4)
 
-        fitter = fitting.FitterPositions(tracer=tracer, noise=2.0)
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=2.0)
         assert fitter.chi_squareds[0] == (1.0 / 2.0) ** 2.0
         assert fitter.chi_squareds[1] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
         assert fitter.chi_squareds[2] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
         assert fitter.likelihood == pytest.approx(-0.5*((1.0 / 2.0) ** 2.0 + (np.sqrt(18.0) / 2.0) ** 2.0 +
                                                         (np.sqrt(18.0) / 2.0) ** 2.0), 1e-4)
+
+    def test__threshold__if_not_met_returns_ray_tracing_exception(self):
+
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
+        fitter = fitting.FitterPositions(positions=tracer.positions, noise=1.0)
+
+        assert fitter.maximum_separation_within_threshold(threshold=100.0) == True
+        assert fitter.maximum_separation_within_threshold(threshold=0.1) == False
