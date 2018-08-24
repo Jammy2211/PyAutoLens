@@ -91,7 +91,7 @@ class CombinedPlanePhase2And(ph.LensMassAndSourceProfilePhase):
 phase4 = CombinedPlanePhase2And(optimizer_class=nl.MultiNest)
 
 # We put all the phases together in a pipeline and give it a name.
-pipeline = pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
+pipeline = pl.PipelineImaging("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
 
 # The pipeline is run on an image.
 results = pipeline.run(img)

@@ -58,4 +58,4 @@ def make():
                         optimizer_class=nl.MultiNest, phase_name="{}/phase4".format(pipeline_name))
 
 
-    return pl.Pipeline("source_pix_pipeline", phase1, phase2, phase3, phase4)
+    return pl.PipelineImaging("source_pix_pipeline", phase1, phase2, phase3, phase4)
