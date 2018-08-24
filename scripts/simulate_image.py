@@ -26,12 +26,12 @@ def simulate_image(data_name, pixel_scale, psf_shape, lens_galaxies, source_gala
 
     if not source_galaxies:
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grids=image_plane_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_grids=image_plane_grids)
 
     elif source_galaxies:
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
-                                          image_plane_grids=image_plane_grids)
+                                                     image_grids=image_plane_grids)
 
     image_plane_image = tracer.image_plane_image
     image_plane_image_2d = ma.map_to_2d(image_plane_image)
