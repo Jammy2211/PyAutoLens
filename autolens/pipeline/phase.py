@@ -309,6 +309,30 @@ class Phase(object):
                 except OSError as e:
                     logger.exception(e)
 
+        def output_plane_image_as_png(self, array, filename, title, grid, xticks, yticks, during_analysis):
+
+            if during_analysis is True:
+                file = self.output_image_path + str(self.plot_count) + '_' + filename + '.png'
+            elif during_analysis is False:
+                file = self.output_image_path + filename + '.png'
+
+            if os.path.isfile(file):
+                os.remove(file)
+
+            plt.figure(figsize=(28, 20))
+            plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
+            plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
+            plt.tick_params(labelsize=30)
+            plt.imshow(array, aspect='auto')
+            plt.scatter(x=grid[:,0], y=grid[:,1])
+            plt.title(title, fontsize=32)
+            plt.xlabel('x (arcsec)', fontsize=36)
+            plt.ylabel('y (arcsec)', fontsize=36)
+            cb = plt.colorbar()
+            cb.ax.tick_params(labelsize=28)
+            plt.savefig(file, bbox_inches='tight')
+            plt.close()
+
         @classmethod
         def log(cls, instance):
             raise NotImplementedError()
@@ -623,9 +647,17 @@ class LensMassAndSourceProfilePhase(Phase):
             tracer, fitter, xticks, yticks = super().visualize(instance, suffix, during_analysis)
 
             self.output_array_as_png(fitter.blurred_image_plane_image_2d, 'source_blurred_image_plane_image',
-                                     'Source Plane Image', xticks, yticks, during_analysis)
+                                     'Source Image-Plane Image', xticks, yticks, during_analysis)
+
+
+            self.output_plane_image_as_png(fitter.plane_images_of_planes_2d()[1], 'source_plane_image',
+                                           'Source Plane', tracer.image_grids_of_planes[1],
+                                           tracer.xticks_of_planes[1], tracer.yticks_of_planes[1], during_analysis)
 
             self.output_array_as_fits(fitter.blurred_image_plane_image_2d, "source_blurred_image_plane_image", suffix,
+                                      during_analysis)
+
+            self.output_array_as_fits(fitter.plane_images_of_planes_2d()[1], "source_plane_image", suffix,
                                       during_analysis)
 
             return tracer, fitter, xticks, yticks
