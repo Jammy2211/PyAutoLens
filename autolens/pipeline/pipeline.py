@@ -2,9 +2,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+import numpy as np
 
 class Pipeline(object):
-    def __init__(self, pipeline_name, *phases):
+
+    def __init__(self, pipeline_name):
         """
 
         Parameters
@@ -15,7 +17,30 @@ class Pipeline(object):
             Phases
         """
         self.pipeline_name = pipeline_name
+
+    def __add__(self, other):
+        """
+        Compose two pipelines
+
+        Parameters
+        ----------
+        other: PipelineImaging
+            Another pipeline
+
+        Returns
+        -------
+        composed_pipeline: PipelineImaging
+            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
+        """
+        return Pipeline("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
+
+
+class PipelineImaging(Pipeline):
+
+    def __init__(self, pipeline_name, *phases):
+
         self.phases = phases
+        super(PipelineImaging, self).__init__(pipeline_name)
 
     def run(self, image):
         from autolens.pipeline import phase as ph
@@ -28,18 +53,19 @@ class Pipeline(object):
                 results[-1].hyper = phase.hyper_run(image, ph.ResultsCollection(results))
         return results
 
-    def __add__(self, other):
-        """
-        Compose two pipelines
 
-        Parameters
-        ----------
-        other: Pipeline
-            Another pipeline
+class PipelinePositions(Pipeline):
 
-        Returns
-        -------
-        composed_pipeline: Pipeline
-            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
-        """
-        return Pipeline("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
+    def __init__(self, pipeline_name, *phases):
+
+        self.phases = phases
+        super(PipelinePositions, self).__init__(pipeline_name)
+
+    def run(self, positions, pixel_scale):
+        from autolens.pipeline import phase as ph
+
+        results = []
+        for i, phase in enumerate(self.phases):
+            logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
+            results.append(phase.run(positions, pixel_scale, ph.ResultsCollection(results)))
+        return results

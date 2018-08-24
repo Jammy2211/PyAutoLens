@@ -82,7 +82,7 @@ def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    return pl.Pipeline(pipeline_name, phase1, phase1h, phase2)
+    return pl.PipelineImaging(pipeline_name, phase1, phase1h, phase2)
 
 
 if __name__ == "__main__":

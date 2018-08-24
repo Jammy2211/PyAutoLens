@@ -1,4 +1,4 @@
-Pipeline GeometryProfile Only:
+PipelineImaging GeometryProfile Only:
 
 PURPOSE - Fit a lens+source image_plane_image using profiles (i.e. no lens light component)
 

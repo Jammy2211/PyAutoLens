@@ -42,7 +42,7 @@ bias in the lens model. However, it is very slow - so we want to avoid it in ini
 - In the pipelines below, I'll refer to the pixelization and 'noisy' or 'smooth'.
 
 
-Pipeline 1:
+PipelineImaging 1:
 
 PURPOSE - Fit a source-only image_plane_image (i.e. no lens light component)
 
@@ -81,7 +81,7 @@ a) Mass: SPLE+Shear (priors from Init phase 2)
 
 
 
-Pipeline 2:
+PipelineImaging 2:
 
 PURPOSE - Fit a lens light + source image_plane_image (mass model does not decomposed the light and dark matter)
 

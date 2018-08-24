@@ -57,8 +57,8 @@ class HyperOnly(object):
 
 
 class Phase(object):
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, mask_function=default_mask_function,
-                 phase_name=None):
+
+    def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None):
         """
         A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
@@ -70,8 +70,6 @@ class Phase(object):
             The side length of the subgrid
         """
         self.optimizer = optimizer_class(name=phase_name)
-        self.sub_grid_size = sub_grid_size
-        self.mask_function = mask_function
         self.phase_name = phase_name
 
     @property
@@ -103,71 +101,6 @@ class Phase(object):
         if self.__doc__ is not None:
             return self.__doc__.replace("  ", "").replace("\n", " ")
 
-    def run(self, image, previous_results=None):
-        """
-        Run this phase.
-
-        Parameters
-        ----------
-        previous_results: ResultsCollection
-            An object describing the results of the last phase or None if no phase has been executed
-        image: img.Image
-            An masked_image that has been masked
-
-        Returns
-        -------
-        result: non_linear.Result
-            A result object comprising the best fit model and other data.
-        """
-        analysis = self.make_analysis(image=image, previous_results=previous_results)
-        result = self.optimizer.fit(analysis)
-        analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
-        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
-
-    def make_analysis(self, image, previous_results=None):
-        """
-        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
-        classes to change the behaviour of the phase.
-
-        Parameters
-        ----------
-        image: im.Image
-            An masked_image that has been masked
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        analysis: Analysis
-            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
-        """
-        mask = self.mask_function(image)
-        image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
-                                           previous_results=previous_results)
-        return analysis
-
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def modify_image(self, image, previous_results):
-        """
-        Customize an masked_image. e.g. removing lens light.
-
-        Parameters
-        ----------
-        image: img.Image
-            An masked_image that has been masked
-        previous_results: ResultsCollection
-            The result of the previous analysis
-
-        Returns
-        -------
-        masked_image: img.Image
-            The modified masked_image (not changed by default)
-        """
-        return image
-
     def pass_priors(self, previous_results):
         """
         Perform any prior or constant passing. This could involve setting model attributes equal to priors or constants
@@ -182,7 +115,7 @@ class Phase(object):
 
     class Analysis(object):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
+        def __init__(self, phase_name, previous_results=None):
             """
             An analysis object
 
@@ -196,7 +129,6 @@ class Phase(object):
 
             self.previous_results = previous_results
             self.phase_name = phase_name
-            self.masked_image = masked_image
             log_interval = conf.instance.general.get('output', 'log_interval', int)
             self.__should_log = IntervalCounter(log_interval)
 
@@ -207,9 +139,6 @@ class Phase(object):
             self.as_fits_at_end = conf.instance.general.get('output', 'visualize_as_fits_at_end', bool)
             self.output_image_path = "{}/".format(conf.instance.output_path) + '/' + self.phase_name + '/images/'
             make_path_if_does_not_exist(path=self.output_image_path)
-            
-            self.output_array_as_png(self.masked_image.image, 'observed_image', 'Observed Image', 
-                                     self.masked_image.grids.image.xticks, self.masked_image.grids.image.yticks, True)
             
         @property
         def should_log(self):
@@ -253,21 +182,8 @@ class Phase(object):
             
             tracer = self.tracer_for_instance(instance)
             fitter = self.fitter_for_tracer(tracer)
-            xticks = self.masked_image.grids.image.xticks
-            yticks = self.masked_image.grids.image.yticks
 
-            self.output_array_as_png(fitter.blurred_image_plane_image_residuals_2d, 'residuals', 'Image Residuals',
-                                     xticks, yticks, during_analysis)
-            self.output_array_as_png(fitter.blurred_image_plane_image_chi_squareds_2d, 'chi_squareds', 'Chi Squareds',
-                                     xticks, yticks, during_analysis)
-
-            self.output_array_as_fits(fitter.blurred_image_plane_image_residuals_2d, "residuals", suffix,
-                                      during_analysis)
-            self.output_array_as_fits(fitter.blurred_image_plane_image_chi_squareds_2d, "chi_squareds", suffix,
-                                      during_analysis)
-
-
-            return tracer, fitter, xticks, yticks
+            return tracer, fitter
 
         def output_array_as_png(self, array, filename, title, xticks, yticks, during_analysis):
 
@@ -343,9 +259,6 @@ class Phase(object):
         def fitter_for_tracer(self, tracer):
             raise NotImplementedError()
 
-        def map_to_1d(self, data):
-            """Convinience method"""
-            return self.masked_image.mask.map_to_1d(data)
 
     class Result(non_linear.Result):
 
@@ -357,7 +270,298 @@ class Phase(object):
             self.tracer = analysis.tracer_for_instance(constant)
 
 
-class LensProfilePhase(Phase):
+class PhasePositions(Phase):
+
+    lens_galaxies = PhasePropertyList("lens_galaxies")
+
+    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, phase_name=None):
+
+        super().__init__(optimizer_class, phase_name)
+        self.lens_galaxies = lens_galaxies
+
+    def run(self, positions, pixel_scale, previous_results=None):
+        """
+        Run this phase.
+
+        Parameters
+        ----------
+        previous_results: ResultsCollection
+            An object describing the results of the last phase or None if no phase has been executed
+        image: img.Image
+            An masked_image that has been masked
+
+        Returns
+        -------
+        result: non_linear.Result
+            A result object comprising the best fit model and other data.
+        """
+        analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
+        result = self.optimizer.fit(analysis)
+        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
+
+    def make_analysis(self, positions, pixel_scale, previous_results=None):
+        """
+        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        classes to change the behaviour of the phase.
+
+        Parameters
+        ----------
+        image: im.Image
+            An masked_image that has been masked
+        previous_results: ResultsCollection
+            The result from the previous phase
+
+        Returns
+        -------
+        analysis: Analysis
+            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        """
+        self.pass_priors(previous_results)
+        analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, phase_name=self.phase_name,
+                                           previous_results=previous_results)
+        return analysis
+
+    class Analysis(Phase.Analysis):
+
+        def __init__(self, positions, pixel_scale, phase_name, previous_results=None):
+
+            super().__init__(phase_name, previous_results)
+
+            self.positions = list(map(lambda position_set : np.asarray(position_set), positions))
+            self.pixel_scale = pixel_scale
+
+        def fit(self, instance):
+            """
+            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+
+            Parameters
+            ----------
+            instance
+                A model instance with attributes
+
+            Returns
+            -------
+            fit: Fit
+                A fractional value indicating how well this model fit and the model masked_image itself
+            """
+            tracer = self.tracer_for_instance(instance)
+            fitter = self.fitter_for_tracer(tracer)
+            return fitter.likelihood
+
+        def tracer_for_instance(self, instance):
+            return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
+                                                                positions=self.positions)
+
+        def fitter_for_tracer(self, tracer):
+            return fitting.FitterPositions(positions=tracer.source_plane.positions, noise=self.pixel_scale)
+
+        @classmethod
+        def log(cls, instance):
+            logger.debug(
+                "\nRunning lens analysis for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+
+    class Result(Phase.Result):
+
+        def __init__(self, constant, likelihood, variable, analysis):
+            """
+            The result of a phase
+            """
+            super(PhasePositions.Result, self).__init__(constant, likelihood, variable, analysis)
+
+
+class PhaseImaging(Phase):
+
+    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, mask_function=default_mask_function,
+                 positions=None, phase_name=None):
+        """
+        A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
+
+        Parameters
+        ----------
+        optimizer_class: class
+            The class of a non_linear optimizer
+        sub_grid_size: int
+            The side length of the subgrid
+        """
+
+        super().__init__(optimizer_class, phase_name)
+        self.positions = list(map(lambda position_set : np.asarray(position_set), positions))
+        self.sub_grid_size = sub_grid_size
+        self.mask_function = mask_function
+
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    def modify_image(self, image, previous_results):
+        """
+        Customize an masked_image. e.g. removing lens light.
+
+        Parameters
+        ----------
+        image: img.Image
+            An masked_image that has been masked
+        previous_results: ResultsCollection
+            The result of the previous analysis
+
+        Returns
+        -------
+        masked_image: img.Image
+            The modified masked_image (not changed by default)
+        """
+        return image
+
+    def run(self, image, previous_results=None):
+        """
+        Run this phase.
+
+        Parameters
+        ----------
+        previous_results: ResultsCollection
+            An object describing the results of the last phase or None if no phase has been executed
+        image: img.Image
+            An masked_image that has been masked
+
+        Returns
+        -------
+        result: non_linear.Result
+            A result object comprising the best fit model and other data.
+        """
+        analysis = self.make_analysis(image=image, previous_results=previous_results)
+        result = self.optimizer.fit(analysis)
+        analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
+        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
+
+    def make_analysis(self, image, previous_results=None):
+        """
+        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        classes to change the behaviour of the phase.
+
+        Parameters
+        ----------
+        image: im.Image
+            An masked_image that has been masked
+        previous_results: ResultsCollection
+            The result from the previous phase
+
+        Returns
+        -------
+        analysis: Analysis
+            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        """
+        mask = self.mask_function(image)
+        image = self.modify_image(image, previous_results)
+        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size, positions=self.positions)
+        self.pass_priors(previous_results)
+        analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
+                                           previous_results=previous_results)
+        return analysis
+
+    class Analysis(Phase.Analysis):
+
+        def __init__(self, masked_image, phase_name, previous_results=None):
+
+            super().__init__(phase_name, previous_results)
+
+            self.masked_image = masked_image
+
+            self.output_array_as_png(self.masked_image.image, 'observed_image', 'Observed Image',
+                                     self.masked_image.grids.image.xticks, self.masked_image.grids.image.yticks, True)
+
+        def visualize(self, instance, suffix, during_analysis):
+
+            tracer, fitter = super().visualize(instance, suffix, during_analysis)
+
+            xticks = self.masked_image.grids.image.xticks
+            yticks = self.masked_image.grids.image.yticks
+
+            self.output_array_as_png(fitter.blurred_image_plane_image_residuals_2d, 'residuals', 'Image Residuals',
+                                     xticks, yticks, during_analysis)
+            self.output_array_as_png(fitter.blurred_image_plane_image_chi_squareds_2d, 'chi_squareds', 'Chi Squareds',
+                                     xticks, yticks, during_analysis)
+
+            self.output_array_as_fits(fitter.blurred_image_plane_image_residuals_2d, "residuals", suffix,
+                                      during_analysis)
+            self.output_array_as_fits(fitter.blurred_image_plane_image_chi_squareds_2d, "chi_squareds", suffix,
+                                      during_analysis)
+
+            return tracer, fitter, xticks, yticks
+
+        def map_to_1d(self, data):
+            """Convinience method"""
+            return self.masked_image.mask.map_to_1d(data)
+
+
+    class Result(Phase.Result):
+
+        def __init__(self, constant, likelihood, variable, analysis):
+            """
+            The result of a phase
+            """
+            super(PhaseImaging.Result, self).__init__(constant, likelihood, variable, analysis)
+
+
+class PositionsImagingPhase(PhaseImaging):
+
+    lens_galaxies = PhasePropertyList("lens_galaxies")
+
+    def __init__(self, positions, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+                 phase_name="positions_phase"):
+
+        super().__init__(optimizer_class=optimizer_class, sub_grid_size=1, mask_function=default_mask_function,
+                         positions=positions, phase_name=phase_name)
+
+        self.lens_galaxies = lens_galaxies
+
+
+    class Analysis(PhaseImaging.Analysis):
+
+        def __init__(self, masked_image, phase_name, previous_results=None):
+
+            super().__init__(masked_image, phase_name, previous_results)
+
+        def fit(self, instance):
+            """
+            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+
+            Parameters
+            ----------
+            instance
+                A model instance with attributes
+
+            Returns
+            -------
+            fit: Fit
+                A fractional value indicating how well this model fit and the model masked_image itself
+            """
+            tracer = self.tracer_for_instance(instance)
+            fitter = self.fitter_for_tracer(tracer)
+            return fitter.likelihood
+
+        def visualize(self, instance, suffix, during_analysis):
+            pass
+
+        def tracer_for_instance(self, instance):
+            return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
+                                                                positions=self.masked_image.positions)
+
+        def fitter_for_tracer(self, tracer):
+            return fitting.FitterPositions(positions=tracer.source_plane.positions,
+                                           noise=self.masked_image.image.pixel_scale)
+
+        @classmethod
+        def log(cls, instance):
+            logger.debug(
+                "\nRunning lens analysis for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+
+
+    class Result(Phase.Result):
+
+        def __init__(self, constant, likelihood, variable, analysis):
+            """
+            The result of a phase
+            """
+            super(PositionsImagingPhase.Result, self).__init__(constant, likelihood, variable, analysis)
+
+
+class LensProfilePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
     """
@@ -370,7 +574,7 @@ class LensProfilePhase(Phase):
                          mask_function=mask_function, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
 
-    class Analysis(Phase.Analysis):
+    class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, masked_image, phase_name, previous_results=None):
             super().__init__(masked_image, phase_name, previous_results)
@@ -418,7 +622,7 @@ class LensProfilePhase(Phase):
                 "\nRunning lens analysis for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
 
-    class Result(Phase.Result):
+    class Result(PhaseImaging.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
@@ -496,7 +700,7 @@ class LensProfileHyperPhase(LensProfilePhase):
                 "\nRunning lens analysis for... \n\nHyper Lens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
 
-    class Result(Phase.Result):
+    class Result(PhaseImaging.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
@@ -587,7 +791,7 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
 
-class LensMassAndSourceProfilePhase(Phase):
+class LensMassAndSourceProfilePhase(PhaseImaging):
     """
     Fit a simple source and lens system.
     """
@@ -618,7 +822,7 @@ class LensMassAndSourceProfilePhase(Phase):
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
 
-    class Analysis(Phase.Analysis):
+    class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, masked_image, phase_name, previous_results=None):
             super().__init__(masked_image, phase_name, previous_results)
@@ -676,7 +880,7 @@ class LensMassAndSourceProfilePhase(Phase):
                     instance.lens_galaxies, instance.source_galaxies))
 
 
-    class Result(Phase.Result):
+    class Result(PhaseImaging.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
@@ -773,7 +977,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
                     instance.lens_galaxies, instance.source_galaxies))
 
 
-    class Result(Phase.Result):
+    class Result(PhaseImaging.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
@@ -860,7 +1064,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
 
-class LensMassAndSourcePixelizationPhase(Phase):
+class LensMassAndSourcePixelizationPhase(PhaseImaging):
     """
     Fit a simple source and lens system.
     """
@@ -891,7 +1095,7 @@ class LensMassAndSourcePixelizationPhase(Phase):
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
 
-    class Analysis(Phase.Analysis):
+    class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, masked_image, phase_name, previous_results=None):
 
@@ -934,7 +1138,7 @@ class LensMassAndSourcePixelizationPhase(Phase):
                     instance.lens_galaxies, instance.source_galaxies))
 
 
-    class Result(Phase.Result):
+    class Result(PhaseImaging.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """

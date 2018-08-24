@@ -101,4 +101,4 @@ def make():
             self.source_galaxies.hyper_galaxy = [previous_results.last.constant.source_galaxy.hyper_galaxy]
 
     phase4 = CombinedPhase2(optimizer_class=optimizer_class, phase_name="{}/phase4".format(name))
-    return pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
+    return pl.PipelineImaging("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
