@@ -101,7 +101,7 @@ def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
                                                    gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
                                      optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
 
-    return pl.Pipeline(pipeline_name, phase1, phase1h, phase2, phase2h, phase3)
+    return pl.PipelineImaging(pipeline_name, phase1, phase1h, phase2, phase2h, phase3)
 
 
 if __name__ == "__main__":

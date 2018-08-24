@@ -88,7 +88,7 @@ print(results)
 
 Phases can be made to use different optimisers, source galaxies with pixelisations instead of profiles and much more. Phases can also be tied together into pipelines to optimise and accelerate analysis.
 
-## Pipeline Example
+## PipelineImaging Example
 
 Sophisticated pipelines can be written. These pipelines can fit different components of the image_plane_image individually, use priors and best fit models from previous phases, prevent overfitting and modify the image_plane_image on the fly.</br>
 The *profile* pipeline described here is built into AutoLens and can be run using the CLI.
@@ -188,7 +188,7 @@ class CombinedPlanePhase2And(ph.LensMassAndSourceProfilePhase):
 phase4 = CombinedPlanePhase2And(optimizer_class=nl.MultiNest)
 
 # We put all the phases together in a pipeline and give it a name.
-pipeline = pl.Pipeline("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
+pipeline = pl.PipelineImaging("profile_pipeline", phase1, phase2, phase3, phase3h, phase4)
 
 # The pipeline is run on an image_plane_image.
 results = pipeline.run(img)
