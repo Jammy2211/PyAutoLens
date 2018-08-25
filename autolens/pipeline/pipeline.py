@@ -6,7 +6,7 @@ import numpy as np
 
 class Pipeline(object):
 
-    def __init__(self, pipeline_name, *phases):
+    def __init__(self, pipeline_name):
         """
 
         Parameters
@@ -17,7 +17,6 @@ class Pipeline(object):
             Phases
         """
         self.pipeline_name = pipeline_name
-        self.phases = phases
 
     def __add__(self, other):
         """
@@ -33,7 +32,7 @@ class Pipeline(object):
         composed_pipeline: PipelineImaging
             A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
         """
-        return Pipeline("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
+        return self.__class__("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
 
 
 class PipelineImaging(Pipeline):
