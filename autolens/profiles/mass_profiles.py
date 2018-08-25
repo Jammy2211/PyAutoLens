@@ -52,13 +52,13 @@ class MassProfile(object):
         raise NotImplementedError("surface_density_at_radius should be overridden")
 
     def surface_density_from_grid(self, grid):
-        raise NotImplementedError("surface_density_from_coordinate_grid should be overridden")
+        raise NotImplementedError("surface_density_from_grid should be overridden")
 
     def potential_from_grid(self, grid):
-        raise NotImplementedError("potential_from_coordinate_grid should be overridden")
+        raise NotImplementedError("potential_from_grid should be overridden")
 
     def deflections_from_grid(self, grid):
-        raise NotImplementedError("deflections_from_coordinate_grid should be overridden")
+        raise NotImplementedError("deflections_from_grid should be overridden")
 
 
 # noinspection PyAbstractClass
@@ -82,26 +82,6 @@ class EllipticalMP(geometry_profiles.EllipticalProfileGP, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
         self.component_number = next(self._ids)
-
-    def tabulate_integral(self, grid, tabulate_bins):
-        """Tabulate an integral over the surface density of deflection potential of a mass profile. This is used in \
-        the GeneralizedNFW profile classes to speed up the integration_old procedure.
-        
-        Parameters
-        -----------
-        grid : mask.ImageGrid
-            The grid of coordinates the potential / deflections are computed on.
-        tabulate_bins : int
-            The number of bins used to tabulate the integral over.
-        """
-        eta_min = 1.0e-4
-        eta_max = 1.05 * np.max(self.grid_to_elliptical_radii(grid))
-
-        minimum_log_eta = np.log10(eta_min)
-        maximum_log_eta = np.log10(eta_max)
-        bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
-
-        return eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size
 
     @property
     def subscript(self):
@@ -151,36 +131,35 @@ class EllipticalMP(geometry_profiles.EllipticalProfileGP, MassProfile):
         return 2 * np.pi * r * self.surface_density_func(x)
 
 
-class EllipticalPowerLawMP(EllipticalMP, MassProfile):
+class EllipticalCoredPowerLawMP(EllipticalMP, MassProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0, core_radius=0.01):
         """
-        Represents an elliptical power-law density distribution.
+        Represents a cored elliptical power-law density distribution
 
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the centre of the profile.
+            The image_grid of the centre of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
             Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
         einstein_radius : float
-            Einstein radius of power-law mass profile.
+            Einstein radius of power-law mass profiles
         slope : float
-            power-law density slope of mass profile.
+            power-law density slope of mass profiles
+        core_radius : float
+            The radius of the inner core
         """
-
-        super(EllipticalPowerLawMP, self).__init__(centre, axis_ratio, phi)
-        super(MassProfile, self).__init__()
-
+        super(EllipticalCoredPowerLawMP, self).__init__(centre, axis_ratio, phi)
         self.einstein_radius = einstein_radius
         self.slope = slope
-        self.core_radius = 0.0
+        self.core_radius = core_radius
 
     @property
     def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', r'\theta', r'\alpha']
+        return ['x', 'y', 'q', r'\phi', r'\theta', r'\alpha', 'S']
 
     @property
     def einstein_radius_rescaled(self):
@@ -256,6 +235,91 @@ class EllipticalPowerLawMP(EllipticalMP, MassProfile):
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
     def surface_density_func(self, radius):
+        return self.einstein_radius_rescaled * (self.core_radius ** 2 + radius ** 2) ** (-(self.slope - 1) / 2.0)
+
+    @staticmethod
+    @jit_integrand
+    def potential_func(u, x, y, axis_ratio, slope, core_radius):
+        eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+        return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
+               ((core_radius ** 2 + eta ** 2) ** ((3.0 - slope) / 2.0) -
+                core_radius ** (3 - slope)) / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
+
+    @staticmethod
+    @jit_integrand
+    def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
+        eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+        return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) \
+               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+
+
+class SphericalCoredPowerLawMP(EllipticalCoredPowerLawMP):
+
+    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, core_radius=0.0):
+        """
+        Represents a cored spherical power-law density distribution
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The image_grid of the centre of the profiles
+        einstein_radius : float
+            Einstein radius of power-law mass profiles
+        slope : float
+            power-law density slope of mass profiles
+        core_radius : float
+            The radius of the inner core
+        """
+        super(SphericalCoredPowerLawMP, self).__init__(centre, 1.0, 0.0, einstein_radius, slope, core_radius)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', r'\theta', r'\alpha', 'S']
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid):
+        """
+        Calculate the deflection angles at a given set of gridded coordinates.
+
+        Parameters
+        ----------
+        grid : mask.ImageGrid
+            The grid of coordinates the deflection angles are computed on.
+        """
+        eta = self.grid_to_radius(grid)
+        deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
+            np.add(np.power(np.add(self.core_radius ** 2, np.square(eta)), (3. - self.slope) / 2.),
+                   -self.core_radius ** (3 - self.slope)), np.multiply((3. - self.slope), eta)))
+        return self.grid_radius_to_cartesian(grid, deflection)
+
+
+class EllipticalPowerLawMP(EllipticalCoredPowerLawMP):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0):
+        """
+        Represents an elliptical power-law density distribution.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The (x,y) coordinates of the centre of the profile.
+        axis_ratio : float
+            Elliptical mass profile's minor-to-major axis ratio (b/a)
+        phi : float
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profile.
+        slope : float
+            power-law density slope of mass profile.
+        """
+
+        super(EllipticalPowerLawMP, self).__init__(centre, axis_ratio, phi, einstein_radius, slope, 0.0)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', r'\theta', r'\alpha']
+
+    def surface_density_func(self, radius):
         return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
 
     @staticmethod
@@ -300,6 +364,59 @@ class SphericalPowerLawMP(EllipticalPowerLawMP):
         deflection_r = 2.0 * self.einstein_radius_rescaled * \
                        np.divide(np.power(eta, (3.0 - self.slope)), np.multiply((3.0 - self.slope), eta))
         return self.grid_radius_to_cartesian(grid, deflection_r)
+
+
+class EllipticalCoredIsothermalMP(EllipticalCoredPowerLawMP):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, core_radius=0.05):
+        """
+        Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
+        density distribution for the value slope=2.0
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The image_grid of the centre of the profiles
+        axis_ratio : float
+            Elliptical mass profile's minor-to-major axis ratio (b/a)
+        phi : float
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
+        einstein_radius : float
+            Einstein radius of power-law mass profiles
+        core_radius : float
+            The radius of the inner core
+        """
+
+        super(EllipticalCoredIsothermalMP, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0,
+                                                          core_radius)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', r'\theta', 'S']
+
+
+class SphericalCoredIsothermalMP(SphericalCoredPowerLawMP):
+
+    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.05):
+        """
+        Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
+        density distribution for the value slope=2.0
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The image_grid of the centre of the profiles
+        einstein_radius : float
+            Einstein radius of power-law mass profiles
+        core_radius : float
+            The radius of the inner core
+        """
+
+        super(SphericalCoredIsothermalMP, self).__init__(centre, einstein_radius, 2.0, core_radius)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', r'\theta', 'S']
 
 
 class EllipticalIsothermalMP(EllipticalPowerLawMP):
@@ -398,367 +515,8 @@ class SphericalIsothermalMP(EllipticalIsothermalMP):
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
-class EllipticalCoredPowerLawMP(EllipticalPowerLawMP):
+class EllipticalGeneralizedNFWMP(geometry_profiles.EllipticalProfileGP, MassProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0, core_radius=0.05):
-        """
-        Represents a cored elliptical power-law density distribution
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        axis_ratio : float
-            Elliptical mass profile's minor-to-major axis ratio (b/a)
-        phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
-        einstein_radius : float
-            Einstein radius of power-law mass profiles
-        slope : float
-            power-law density slope of mass profiles
-        core_radius : float
-            The radius of the inner core
-        """
-        super(EllipticalCoredPowerLawMP, self).__init__(centre, axis_ratio, phi, einstein_radius, slope)
-
-        self.core_radius = core_radius
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', r'\theta', r'\alpha', 'S']
-
-    def surface_density_func(self, radius):
-        return self.einstein_radius_rescaled * (self.core_radius ** 2 + radius ** 2) ** (-(self.slope - 1) / 2.0)
-
-    @staticmethod
-    @jit_integrand
-    def potential_func(u, x, y, axis_ratio, slope, core_radius):
-        eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
-               ((core_radius ** 2 + eta ** 2) ** ((3.0 - slope) / 2.0) -
-                core_radius ** (3 - slope)) / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
-
-    @staticmethod
-    @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
-        eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) \
-               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
-
-
-class SphericalCoredPowerLawMP(EllipticalCoredPowerLawMP):
-
-    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, core_radius=0.05):
-        """
-        Represents a cored spherical power-law density distribution
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        einstein_radius : float
-            Einstein radius of power-law mass profiles
-        slope : float
-            power-law density slope of mass profiles
-        core_radius : float
-            The radius of the inner core
-        """
-        super(SphericalCoredPowerLawMP, self).__init__(centre, 1.0, 0.0, einstein_radius, slope, core_radius)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', r'\theta', r'\alpha', 'S']
-
-    # TODO : Same problem as SphericalPowerLawMP - however at coordinates / grid give the same defleciton_r value. Its the
-    # TODO : self.grid_radius_to_cartesian method which is causing the problem.
-
-    @geometry_profiles.transform_grid
-    def deflections_from_grid(self, grid):
-        """
-        Calculate the deflection angles at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.ImageGrid
-            The grid of coordinates the deflection angles are computed on.
-        """
-        eta = self.grid_to_radius(grid)
-        deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
-            np.add(np.power(np.add(self.core_radius ** 2, np.square(eta)), (3. - self.slope) / 2.),
-                   -self.core_radius ** (3 - self.slope)), np.multiply((3. - self.slope), eta)))
-        return self.grid_radius_to_cartesian(grid, deflection)
-
-
-class EllipticalCoredIsothermalMP(EllipticalCoredPowerLawMP):
-
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, core_radius=0.05):
-        """
-        Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
-        density distribution for the value slope=2.0
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        axis_ratio : float
-            Elliptical mass profile's minor-to-major axis ratio (b/a)
-        phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
-        einstein_radius : float
-            Einstein radius of power-law mass profiles
-        core_radius : float
-            The radius of the inner core
-        """
-
-        super(EllipticalCoredIsothermalMP, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0,
-                                                          core_radius)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', r'\theta', 'S']
-
-
-class SphericalCoredIsothermalMP(SphericalCoredPowerLawMP):
-
-    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.05):
-        """
-        Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
-        density distribution for the value slope=2.0
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        einstein_radius : float
-            Einstein radius of power-law mass profiles
-        core_radius : float
-            The radius of the inner core
-        """
-
-        super(SphericalCoredIsothermalMP, self).__init__(centre, einstein_radius, 2.0, core_radius)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', r'\theta', 'S']
-
-
-class EllipticalNFWMP(EllipticalMP, MassProfile):
-
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
-        """
-        The elliptical NFW profiles, used to fit the dark matter halo of the lens.
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
-        phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
-        kappa_s : float
-            The overall normalization of the dark matter halo
-        scale_radius : float
-            The radius containing half the light of this model_mapper
-        """
-
-        super(EllipticalNFWMP, self).__init__(centre, axis_ratio, phi)
-        super(MassProfile, self).__init__()
-        self.kappa_s = kappa_s
-        self.scale_radius = scale_radius
-        self.inner_slope = 1.0
-
-    @property
-    def subscript(self):
-        return 'd'
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', r'\kappa', 'Rs']
-
-    @staticmethod
-    def coord_func(r):
-        if r > 1:
-            return (1.0 / np.sqrt(r ** 2 - 1)) * np.arctan(np.sqrt(r ** 2 - 1))
-        elif r < 1:
-            return (1.0 / np.sqrt(1 - r ** 2)) * np.arctanh(np.sqrt(1 - r ** 2))
-        elif r == 1:
-            return 1
-
-    @geometry_profiles.transform_grid
-    def surface_density_from_grid(self, grid):
-        """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.ImageGrid
-            The grid of coordinates the surface density is computed on.
-        """
-
-        surface_density_grid = np.zeros(grid.shape[0])
-
-        grid_eta = self.grid_to_elliptical_radii(grid)
-
-        for i in range(grid.shape[0]):
-            surface_density_grid[i] = self.surface_density_func(grid_eta[i])
-
-        return surface_density_grid
-
-    @geometry_profiles.transform_grid
-    def potential_from_grid(self, grid):
-        """
-        Calculate the potential at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.ImageGrid
-            The grid of coordinates the deflection angles are computed on.
-        """
-
-        potential_grid = np.zeros(grid.shape[0])
-
-        for i in range(grid.shape[0]):
-            potential_grid[i] = quad(self.potential_func, a=0.0, b=1.0,
-                                     args=(grid[i, 0], grid[i, 1], self.axis_ratio, self.kappa_s, self.scale_radius),
-                                     epsrel=1.49e-5)[0]
-
-        return potential_grid
-
-    @geometry_profiles.transform_grid
-    def deflections_from_grid(self, grid):
-        """
-        Calculate the deflection angles at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.ImageGrid
-            The grid of coordinates the deflection angles are computed on.
-        """
-
-        def calculate_deflection_component(grid, npow, index):
-            deflection_grid = np.zeros(grid.shape[0])
-
-            for i in range(grid.shape[0]):
-                deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
-                                                                             args=(grid[i, 0], grid[i, 1], npow,
-                                                                                   self.axis_ratio, self.kappa_s,
-                                                                                   self.scale_radius))[0]
-
-            return deflection_grid
-
-        deflection_x = calculate_deflection_component(grid, 0.0, 0)
-        deflection_y = calculate_deflection_component(grid, 1.0, 1)
-
-        return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
-
-    def surface_density_func(self, radius):
-        radius = (1.0 / self.scale_radius) * radius
-        return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
-
-    @staticmethod
-    @jit_integrand
-    def potential_func(u, x, y, axis_ratio, kappa_s, scale_radius):
-
-        eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-
-        if eta_u > 1:
-            eta_u_2 = (1.0 / np.sqrt(eta_u ** 2 - 1)) * np.arctan(np.sqrt(eta_u ** 2 - 1))
-        elif eta_u < 1:
-            eta_u_2 = (1.0 / np.sqrt(1 - eta_u ** 2)) * np.arctanh(np.sqrt(1 - eta_u ** 2))
-        else:
-            eta_u_2 = 1
-
-        return 4.0 * kappa_s * scale_radius * (axis_ratio / 2.0) * (eta_u / u) * (
-                (np.log(eta_u / 2.0) + eta_u_2) / eta_u) / (
-                       (1 - (1 - axis_ratio ** 2) * u) ** 0.5)
-
-    @staticmethod
-    @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, kappa_s, scale_radius):
-
-        eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-
-        if eta_u > 1:
-            eta_u_2 = (1.0 / np.sqrt(eta_u ** 2 - 1)) * np.arctan(np.sqrt(eta_u ** 2 - 1))
-        elif eta_u < 1:
-            eta_u_2 = (1.0 / np.sqrt(1 - eta_u ** 2)) * np.arctanh(np.sqrt(1 - eta_u ** 2))
-        else:
-            eta_u_2 = 1
-
-        return 2.0 * kappa_s * (1 - eta_u_2) / (eta_u ** 2 - 1) / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
-
-
-class SphericalNFWMP(EllipticalNFWMP):
-
-    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
-        """
-        The spherical NFW profiles, used to fit the dark matter halo of the lens.
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        kappa_s : float
-            The overall normalization of the dark matter halo
-        scale_radius : float
-            The radius containing half the light of this model_mapper
-        """
-
-        super(SphericalNFWMP, self).__init__(centre, 1.0, 0.0, kappa_s, scale_radius)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', r'\kappa', 'Rs']
-
-    # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
-    # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
-
-    # TODO : Make this use numpy arthimitic
-
-    @geometry_profiles.transform_grid
-    def potential_from_grid(self, grid):
-        """
-        Calculate the potential at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.ImageGrid
-            The grid of coordinates the deflection angles are computed on.
-        """
-        eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
-        return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
-
-    @geometry_profiles.transform_grid
-    def deflections_from_grid(self, grid):
-        """
-        Calculate the deflection angles at a given set of gridded coordinates.
-
-        Parameters
-        ----------
-        grid : mask.ImageGrid
-            The grid of coordinates the deflection angles are computed on.
-        """
-        eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
-        deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta))
-
-        return self.grid_radius_to_cartesian(grid, deflection_r)
-
-    @staticmethod
-    def potential_func_sph(eta):
-        return ((np.log(eta / 2.0)) ** 2) - (np.arctanh(np.sqrt(1 - eta ** 2))) ** 2
-
-    @staticmethod
-    def deflection_func_sph(eta):
-        conditional_eta = np.copy(eta)
-        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
-                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
-        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
-                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
-
-        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
-
-
-class EllipticalGeneralizedNFWMP(EllipticalNFWMP):
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -781,12 +539,54 @@ class EllipticalGeneralizedNFWMP(EllipticalNFWMP):
             The radius containing half the light of this model_mapper
         """
 
-        super(EllipticalGeneralizedNFWMP, self).__init__(centre, axis_ratio, phi, kappa_s, scale_radius)
+        super(EllipticalGeneralizedNFWMP, self).__init__(centre, axis_ratio, phi)
+        super(MassProfile, self).__init__()
+        self.kappa_s = kappa_s
+        self.scale_radius = scale_radius
         self.inner_slope = inner_slope
 
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', r'\kappa', r'\gamma' 'Rs']
+
+    def tabulate_integral(self, grid, tabulate_bins):
+        """Tabulate an integral over the surface density of deflection potential of a mass profile. This is used in \
+        the GeneralizedNFW profile classes to speed up the integration_old procedure.
+
+        Parameters
+        -----------
+        grid : mask.ImageGrid
+            The grid of coordinates the potential / deflections are computed on.
+        tabulate_bins : int
+            The number of bins used to tabulate the integral over.
+        """
+        eta_min = 1.0e-4
+        eta_max = 1.05 * np.max(self.grid_to_elliptical_radii(grid))
+
+        minimum_log_eta = np.log10(eta_min)
+        maximum_log_eta = np.log10(eta_max)
+        bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
+
+        return eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size
+
+    @geometry_profiles.transform_grid
+    def surface_density_from_grid(self, grid):
+        """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
+
+        Parameters
+        ----------
+        grid : mask.ImageGrid
+            The grid of coordinates the surface density is computed on.
+        """
+
+        surface_density_grid = np.zeros(grid.shape[0])
+
+        grid_eta = self.grid_to_elliptical_radii(grid)
+
+        for i in range(grid.shape[0]):
+            surface_density_grid[i] = self.surface_density_func(grid_eta[i])
+
+        return surface_density_grid
 
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid, tabulate_bins=1000):
@@ -971,11 +771,198 @@ class SphericalGeneralizedNFWMP(EllipticalGeneralizedNFWMP):
                                                 special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope,
                                                                4 - self.inner_slope, -eta) + integral_y_2)
 
-    #     deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph_grid(grid))
-    #
-    # def deflection_func_sph_grid(self, grid):
-    #     # TODO
-    #     pass
+
+class EllipticalNFWMP(EllipticalGeneralizedNFWMP):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
+        """
+        The elliptical NFW profiles, used to fit the dark matter halo of the lens.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The image_grid of the centre of the profiles
+        axis_ratio : float
+            Ratio of profiles ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+        kappa_s : float
+            The overall normalization of the dark matter halo
+        scale_radius : float
+            The radius containing half the light of this model_mapper
+        """
+
+        super(EllipticalNFWMP, self).__init__(centre, axis_ratio, phi, kappa_s, 1.0, scale_radius)
+
+    @property
+    def subscript(self):
+        return 'd'
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', r'\kappa', 'Rs']
+
+    @staticmethod
+    def coord_func(r):
+        if r > 1:
+            return (1.0 / np.sqrt(r ** 2 - 1)) * np.arctan(np.sqrt(r ** 2 - 1))
+        elif r < 1:
+            return (1.0 / np.sqrt(1 - r ** 2)) * np.arctanh(np.sqrt(1 - r ** 2))
+        elif r == 1:
+            return 1
+
+    @geometry_profiles.transform_grid
+    def potential_from_grid(self, grid):
+        """
+        Calculate the potential at a given set of gridded coordinates.
+
+        Parameters
+        ----------
+        grid : mask.ImageGrid
+            The grid of coordinates the deflection angles are computed on.
+        """
+
+        potential_grid = np.zeros(grid.shape[0])
+
+        for i in range(grid.shape[0]):
+            potential_grid[i] = quad(self.potential_func, a=0.0, b=1.0,
+                                     args=(grid[i, 0], grid[i, 1], self.axis_ratio, self.kappa_s, self.scale_radius),
+                                     epsrel=1.49e-5)[0]
+
+        return potential_grid
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid):
+        """
+        Calculate the deflection angles at a given set of gridded coordinates.
+
+        Parameters
+        ----------
+        grid : mask.ImageGrid
+            The grid of coordinates the deflection angles are computed on.
+        """
+
+        def calculate_deflection_component(grid, npow, index):
+            deflection_grid = np.zeros(grid.shape[0])
+
+            for i in range(grid.shape[0]):
+                deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
+                                                                             args=(grid[i, 0], grid[i, 1], npow,
+                                                                                   self.axis_ratio, self.kappa_s,
+                                                                                   self.scale_radius))[0]
+
+            return deflection_grid
+
+        deflection_x = calculate_deflection_component(grid, 0.0, 0)
+        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+
+        return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
+
+    def surface_density_func(self, radius):
+        radius = (1.0 / self.scale_radius) * radius
+        return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
+
+    @staticmethod
+    @jit_integrand
+    def potential_func(u, x, y, axis_ratio, kappa_s, scale_radius):
+
+        eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        if eta_u > 1:
+            eta_u_2 = (1.0 / np.sqrt(eta_u ** 2 - 1)) * np.arctan(np.sqrt(eta_u ** 2 - 1))
+        elif eta_u < 1:
+            eta_u_2 = (1.0 / np.sqrt(1 - eta_u ** 2)) * np.arctanh(np.sqrt(1 - eta_u ** 2))
+        else:
+            eta_u_2 = 1
+
+        return 4.0 * kappa_s * scale_radius * (axis_ratio / 2.0) * (eta_u / u) * (
+                (np.log(eta_u / 2.0) + eta_u_2) / eta_u) / (
+                       (1 - (1 - axis_ratio ** 2) * u) ** 0.5)
+
+    @staticmethod
+    @jit_integrand
+    def deflection_func(u, x, y, npow, axis_ratio, kappa_s, scale_radius):
+
+        eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        if eta_u > 1:
+            eta_u_2 = (1.0 / np.sqrt(eta_u ** 2 - 1)) * np.arctan(np.sqrt(eta_u ** 2 - 1))
+        elif eta_u < 1:
+            eta_u_2 = (1.0 / np.sqrt(1 - eta_u ** 2)) * np.arctanh(np.sqrt(1 - eta_u ** 2))
+        else:
+            eta_u_2 = 1
+
+        return 2.0 * kappa_s * (1 - eta_u_2) / (eta_u ** 2 - 1) / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+
+
+class SphericalNFWMP(EllipticalNFWMP):
+
+    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
+        """
+        The spherical NFW profiles, used to fit the dark matter halo of the lens.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The image_grid of the centre of the profiles
+        kappa_s : float
+            The overall normalization of the dark matter halo
+        scale_radius : float
+            The radius containing half the light of this model_mapper
+        """
+
+        super(SphericalNFWMP, self).__init__(centre, 1.0, 0.0, kappa_s, scale_radius)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', r'\kappa', 'Rs']
+
+    # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
+    # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
+
+    # TODO : Make this use numpy arthimitic
+
+    @geometry_profiles.transform_grid
+    def potential_from_grid(self, grid):
+        """
+        Calculate the potential at a given set of gridded coordinates.
+
+        Parameters
+        ----------
+        grid : mask.ImageGrid
+            The grid of coordinates the deflection angles are computed on.
+        """
+        eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
+        return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid):
+        """
+        Calculate the deflection angles at a given set of gridded coordinates.
+
+        Parameters
+        ----------
+        grid : mask.ImageGrid
+            The grid of coordinates the deflection angles are computed on.
+        """
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
+        deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta))
+
+        return self.grid_radius_to_cartesian(grid, deflection_r)
+
+    @staticmethod
+    def potential_func_sph(eta):
+        return ((np.log(eta / 2.0)) ** 2) - (np.arctanh(np.sqrt(1 - eta ** 2))) ** 2
+
+    @staticmethod
+    def deflection_func_sph(eta):
+        conditional_eta = np.copy(eta)
+        conditional_eta[eta > 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(np.square(eta[eta > 1]), - 1))),
+                                               np.arctan(np.sqrt(np.add(np.square(eta[eta > 1]), - 1))))
+        conditional_eta[eta < 1] = np.multiply(np.divide(1.0, np.sqrt(np.add(1, - np.square(eta[eta < 1])))),
+                                               np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
+
+        return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
 
 class EllipticalSersicMP(geometry_profiles.EllipticalSersicGP, EllipticalMP):
@@ -1096,6 +1083,7 @@ class SphericalSersicMP(EllipticalSersicMP):
     def parameter_labels(self):
         return ['x', 'y', 'I', 'R', 'n', r'\Psi']
 
+
 class EllipticalExponentialMP(EllipticalSersicMP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
@@ -1157,6 +1145,7 @@ class SphericalExponentialMP(EllipticalExponentialMP):
     @property
     def parameter_labels(self):
         return ['x', 'y', 'I', 'R', r'\Psi']
+
 
 class EllipticalDevVaucouleursMP(EllipticalSersicMP):
 
@@ -1220,6 +1209,7 @@ class SphericalDevVaucouleursMP(EllipticalDevVaucouleursMP):
     @property
     def parameter_labels(self):
         return ['x', 'y', 'I', 'R', r'\Psi']
+
 
 class EllipticalSersicRadialGradientMP(EllipticalSersicMP):
 
@@ -1343,6 +1333,7 @@ class SphericalSersicRadialGradientMP(EllipticalSersicRadialGradientMP):
     @property
     def parameter_labels(self):
         return ['x', 'y', 'I', 'R', 'n', r'\Psi', r'\Tau']
+
 
 class ExternalShear(geometry_profiles.EllipticalProfileGP, MassProfile):
     def __init__(self, magnitude=0.2, phi=0.0):
