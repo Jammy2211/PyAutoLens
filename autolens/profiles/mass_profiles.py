@@ -95,7 +95,7 @@ class EllipticalMP(geometry_profiles.EllipticalProfileGP, MassProfile):
             The number of bins used to tabulate the integral over.
         """
         eta_min = 1.0e-4
-        eta_max = 1.05 * np.max(self.grid_to_elliptical_radius(grid))
+        eta_max = 1.05 * np.max(self.grid_to_elliptical_radii(grid))
 
         minimum_log_eta = np.log10(eta_min)
         maximum_log_eta = np.log10(eta_max)
@@ -200,7 +200,7 @@ class EllipticalPowerLawMP(EllipticalMP, MassProfile):
 
         surface_density_grid = np.zeros(grid.shape[0])
 
-        grid_eta = self.grid_to_elliptical_radius(grid)
+        grid_eta = self.grid_to_elliptical_radii(grid)
 
         for i in range(grid.shape[0]):
             surface_density_grid[i] = self.surface_density_func(grid_eta[i])
@@ -382,7 +382,7 @@ class SphericalIsothermalMP(EllipticalIsothermalMP):
         grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        eta = self.grid_to_elliptical_radius(grid)
+        eta = self.grid_to_elliptical_radii(grid)
         return 2.0 * self.einstein_radius_rescaled * eta
 
     @geometry_profiles.transform_grid
@@ -597,7 +597,7 @@ class EllipticalNFWMP(EllipticalMP, MassProfile):
 
         surface_density_grid = np.zeros(grid.shape[0])
 
-        grid_eta = self.grid_to_elliptical_radius(grid)
+        grid_eta = self.grid_to_elliptical_radii(grid)
 
         for i in range(grid.shape[0]):
             surface_density_grid[i] = self.surface_density_func(grid_eta[i])
