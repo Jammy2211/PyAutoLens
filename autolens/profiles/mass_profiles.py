@@ -1092,6 +1092,9 @@ class SphericalSersicMP(EllipticalSersicMP):
         super(SphericalSersicMP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
                                                 mass_to_light_ratio)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R', 'n', r'\Psi']
 
 class EllipticalExponentialMP(EllipticalSersicMP):
 
@@ -1131,8 +1134,7 @@ class EllipticalExponentialMP(EllipticalSersicMP):
 
 class SphericalExponentialMP(EllipticalExponentialMP):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
-                 mass_to_light_ratio=1.0):
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
         The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
         galaxy's light.
@@ -1152,6 +1154,9 @@ class SphericalExponentialMP(EllipticalExponentialMP):
         """
         super(SphericalExponentialMP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, mass_to_light_ratio)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R', r'\Psi']
 
 class EllipticalDevVaucouleursMP(EllipticalSersicMP):
 
@@ -1191,8 +1196,7 @@ class EllipticalDevVaucouleursMP(EllipticalSersicMP):
 
 class SphericalDevVaucouleursMP(EllipticalDevVaucouleursMP):
 
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, DevVaucouleurs_index=4.0,
-                 mass_to_light_ratio=1.0):
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
         The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
         galaxy's light.
@@ -1213,6 +1217,9 @@ class SphericalDevVaucouleursMP(EllipticalDevVaucouleursMP):
         super(SphericalDevVaucouleursMP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
                                                         mass_to_light_ratio)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R', r'\Psi']
 
 class EllipticalSersicRadialGradientMP(EllipticalSersicMP):
 
@@ -1319,10 +1326,6 @@ class SphericalSersicRadialGradientMP(EllipticalSersicRadialGradientMP):
         ----------
         centre: (float, float)
             The centre of the profiles
-        axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
-        phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1337,6 +1340,9 @@ class SphericalSersicRadialGradientMP(EllipticalSersicRadialGradientMP):
         super(SphericalSersicRadialGradientMP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
                                                              sersic_index, mass_to_light_ratio, mass_to_light_gradient)
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R', 'n', r'\Psi', r'\Tau']
 
 class ExternalShear(geometry_profiles.EllipticalProfileGP, MassProfile):
     def __init__(self, magnitude=0.2, phi=0.0):
