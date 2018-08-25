@@ -71,3 +71,4 @@ def compute_likelihood(observed_image, model_image, noise):
         Two dimensional array containing the signal_to_noise_ratio (standard deviation) in each observed masked_image pixel
     """
     return -0.5 * np.sum(np.square(np.divide(np.subtract(observed_image, model_image), noise)))
+

@@ -633,7 +633,6 @@ class TestDataGrid(object):
             grid = scaled_array.ScaledArray(array=np.zeros((4, 4)), pixel_scale=0.5)
 
             grid_coordinates = grid.grid_coordinates
-            print(list(grid_coordinates))
 
             assert (grid_coordinates == np.array([[[-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75]],
                                                   [[-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75]],
