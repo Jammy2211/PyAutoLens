@@ -4,6 +4,8 @@ import pytest
 from autolens.profiles import light_profiles
 import math
 import numpy as np
+import math
+import scipy.special
 
 
 @pytest.fixture(name='elliptical')
@@ -192,47 +194,41 @@ class TestProfiles(object):
             assert elliptical.intensity_from_grid(grid=np.array([[3.0, -4.0]])) == \
                    spherical.intensity_from_grid(grid=np.array([[3.0, -4.0]]))
 
+
     class TestSersic:
 
         def test__intensity_at_radius__correct_value(self):
             sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                        effective_radius=0.6,
                                                        sersic_index=4.0)
+            assert sersic.intensity_from_grid_radii(grid_radii=1.0) == pytest.approx(0.351797, 1e-3)
 
-            intensity = sersic.intensity_from_grid_radii(grid_radii=1.0)
-            assert intensity == pytest.approx(0.351797, 1e-3)
-
-        def test__intensity_at_radius_2__correct_value(self):
             sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                        effective_radius=2.0,
                                                        sersic_index=2.0)
-            intensity = sersic.intensity_from_grid_radii(
-                grid_radii=1.5)  # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
-            assert intensity == pytest.approx(4.90657319276, 1e-3)
+             # 3.0 * exp(-3.67206544592 * (1,5/2.0) ** (1.0 / 2.0)) - 1) = 0.351797
+            assert sersic.intensity_from_grid_radii(grid_radii=1.5)  == pytest.approx(4.90657319276, 1e-3)
 
-        def test__intensity_from_coordinate_grid__different_axis_ratio(self):
+
+        def test__intensity_from_grid__correct_values(self):
+            
             sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                        effective_radius=2.0,
                                                        sersic_index=2.0)
+            assert sersic.intensity_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(5.38066670129, 1e-3)
 
-            intensity = sersic.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
-
-            assert intensity == pytest.approx(5.38066670129, 1e-3)
-
-        def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
+        def test__intensity_from_grid__change_geometry(self):
+            
+            sersic_0 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                        effective_radius=2.0,
                                                        sersic_index=2.0)
 
-            intensity_1 = sersic.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
-
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
+            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                        effective_radius=2.0,
                                                        sersic_index=2.0)
 
-            intensity_2 = sersic.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
-
-            assert intensity_1 == intensity_2
+            assert sersic_0.intensity_from_grid(grid=np.array([[0.0, 1.0]])) == \
+                   sersic_1.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
 
         def test__spherical_and_elliptical_match(self):
 
@@ -250,52 +246,35 @@ class TestProfiles(object):
         def test__intensity_at_radius__correct_value(self):
             exponential = light_profiles.EllipticalExponentialLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                                  effective_radius=0.6)
+            assert exponential.intensity_from_grid_radii(grid_radii=1.0) == pytest.approx(0.3266, 1e-3)
 
-            intensity = exponential.intensity_from_grid_radii(grid_radii=1.0)
-            assert intensity == pytest.approx(0.3266, 1e-3)
-
-        def test__intensity_at_radius_2__correct_value(self):
             exponential = light_profiles.EllipticalExponentialLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                                  effective_radius=2.0)
-            intensity = exponential.intensity_from_grid_radii(grid_radii=1.5)
-            assert intensity == pytest.approx(4.5640, 1e-3)
+            assert exponential.intensity_from_grid_radii(grid_radii=1.5) == pytest.approx(4.5640, 1e-3)
 
-        def test__intensity_from_coordinate_grid_1(self):
+        def test__intensity_from_grid__correct_values(self):
             exponential = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                  effective_radius=2.0)
+            assert exponential.intensity_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(4.9047, 1e-3)
 
-            intensity = exponential.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
-
-            assert intensity == pytest.approx(4.9047, 1e-3)
-
-        def test__intensity_from_coordinate_grid_2(self):
             exponential = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                                  effective_radius=3.0)
+            assert exponential.intensity_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(4.8566, 1e-3)
 
-            intensity = exponential.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
-
-            assert intensity == pytest.approx(4.8566, 1e-3)
-
-        def test__double_intensity_doubles_intensity_value(self):
             exponential = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                                  effective_radius=3.0)
+            assert exponential.intensity_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 4.8566, 1e-3)
 
-            intensity = exponential.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
+        def test__intensity_from_grid__change_geometry(self):
 
-            assert intensity == pytest.approx(2.0 * 4.8566, 1e-3)
-
-        def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
-            exponential = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
+            exponential_0 = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                  effective_radius=2.0)
 
-            intensity_1 = exponential.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
-
-            exponential = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
+            exponential_1 = light_profiles.EllipticalExponentialLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                                  effective_radius=2.0)
 
-            intensity_2 = exponential.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
-
-            assert intensity_1 == intensity_2
+            assert exponential_0.intensity_from_grid(grid=np.array([[0.0, 1.0]])) == \
+                exponential_1.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
 
         def test__spherical_and_elliptical_match(self):
 
@@ -311,54 +290,40 @@ class TestProfiles(object):
     class TestDevVaucouleurs:
 
         def test__intensity_at_radius__correct_value(self):
+
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                                         effective_radius=0.6)
+            assert dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.0) == pytest.approx(0.3518, 1e-3)
 
-            intensity = dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.0)
-            assert intensity == pytest.approx(0.3518, 1e-3)
-
-        def test__intensity_at_radius_2__correct_value(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                                         effective_radius=2.0)
-            intensity = dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.5)
-            assert intensity == pytest.approx(5.1081, 1e-3)
+            assert dev_vaucouleurs.intensity_from_grid_radii(grid_radii=1.5) == pytest.approx(5.1081, 1e-3)
 
-        def test__intensity_from_coordinate_grid_1(self):
+        def test__intensity_from_grid__correct_values(self):
+
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                         effective_radius=2.0)
+            assert dev_vaucouleurs.intensity_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(5.6697, 1e-3)
 
-            intensity = dev_vaucouleurs.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
-
-            assert intensity == pytest.approx(5.6697, 1e-3)
-
-        def test__intensity_from_coordinate_grid_2(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                                         effective_radius=3.0)
 
-            intensity = dev_vaucouleurs.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
+            assert dev_vaucouleurs.intensity_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(7.4455, 1e-3)
 
-            assert intensity == pytest.approx(7.4455, 1e-3)
-
-        def test__double_intensity_doubles_intensity_value(self):
             dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                                         effective_radius=3.0)
+            assert dev_vaucouleurs.intensity_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 7.4455, 1e-3)
 
-            intensity = dev_vaucouleurs.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
+        def test__intensity_from_grid__change_geometry(self):
 
-            assert intensity == pytest.approx(2.0 * 7.4455, 1e-3)
-
-        def test__intensity_from_coordinate_grid__different_rotate_phi_90_same_result(self):
-            dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
+            dev_vaucouleurs_0 = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                                         effective_radius=2.0)
 
-            intensity_1 = dev_vaucouleurs.intensity_from_grid(grid=np.array([[0.0, 1.0]]))
-
-            dev_vaucouleurs = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
+            dev_vaucouleurs_1 = light_profiles.EllipticalDevVaucouleursLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
                                                                         effective_radius=2.0)
 
-            intensity_2 = dev_vaucouleurs.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
-
-            assert intensity_1 == intensity_2
+            assert dev_vaucouleurs_0.intensity_from_grid(grid=np.array([[0.0, 1.0]])) \
+                   == dev_vaucouleurs_1.intensity_from_grid(grid=np.array([[1.0, 0.0]]))
 
         def test__spherical_and_elliptical_match(self):
 
@@ -374,11 +339,11 @@ class TestProfiles(object):
     class TestCoreSersic(object):
 
         def test__intensity_at_radius__correct_value(self):
+
             core_sersic = light_profiles.EllipticalCoreSersicLP(axis_ratio=0.5, phi=0.0, intensity=1.0,
                                                                 effective_radius=5.0, sersic_index=4.0,
                                                                 radius_break=0.01,
                                                                 intensity_break=0.1, gamma=1.0, alpha=1.0)
-
             assert core_sersic.intensity_from_grid_radii(0.01) == 0.1
 
         def test__spherical_and_elliptical_match(self):
@@ -397,16 +362,13 @@ class TestProfiles(object):
 
 
 class TestLuminosityIntegral(object):
+
+
     class TestWithinCircle(object):
 
         def test__spherical_exponential__compare_to_analytic(self):
 
-            import math
-            import scipy.special
-
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
-                                                       sersic_index=1.0)
+            sersic = light_profiles.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=1.0)
 
             integral_radius = 5.5
 
@@ -426,12 +388,7 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_sersic_index_2__compare_to_analytic(self):
 
-            import math
-            import scipy.special
-
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
-                                                       sersic_index=2.0)
+            sersic = light_profiles.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=2.0)
 
             integral_radius = 0.5
 
@@ -451,12 +408,7 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_dev_vaucouleurs__compare_to_analytic(self):
 
-            import math
-            import scipy.special
-
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
-                                                       sersic_index=4.0)
+            sersic = light_profiles.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=4.0)
 
             integral_radius = 0.5
 
@@ -476,11 +428,7 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_exponential__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
-                                                       sersic_index=1.0)
-
-            import numpy as np
+            sersic = light_profiles.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=1.0)
 
             integral_radius = 1.0
             luminosity_tot = 0.0
@@ -505,11 +453,7 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
-                                                       sersic_index=2.0)
-
-            import numpy as np
+            sersic = light_profiles.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=2.0)
 
             integral_radius = 1.0
             luminosity_tot = 0.0
@@ -533,11 +477,7 @@ class TestLuminosityIntegral(object):
 
         def test__spherical_dev_vaucauleurs__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
-                                                       sersic_index=4.0)
-
-            import numpy as np
+            sersic = light_profiles.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=4.0)
 
             integral_radius = 1.0
             luminosity_tot = 0.0
@@ -561,8 +501,7 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_exponential__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=1.0)
 
             integral_radius = 0.5
@@ -587,8 +526,7 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.3, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.3, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=2.0)
 
             integral_radius = 0.5
@@ -611,12 +549,12 @@ class TestLuminosityIntegral(object):
 
             assert luminosity_tot == pytest.approx(intensity_integral, 0.02)
 
+
     class TestWithinEllipse(object):
 
         def test__elliptical_exponential__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
-                                                       effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=1.0)
 
             integral_radius = 0.5
@@ -642,8 +580,7 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_sersic_2__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=90.0, intensity=3.0,
-                                                       effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=2.0)
 
             integral_radius = 0.5
@@ -669,8 +606,7 @@ class TestLuminosityIntegral(object):
 
         def test__elliptical_dev_vaucauleurs__compare_to_grid(self):
 
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.7, phi=30.0, intensity=3.0,
-                                                       effective_radius=2.0,
+            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.7, phi=30.0, intensity=3.0, effective_radius=2.0,
                                                        sersic_index=4.0)
 
             integral_radius = 0.5
@@ -695,11 +631,12 @@ class TestLuminosityIntegral(object):
             assert luminosity_tot == pytest.approx(intensity_integral, 0.01)
 
 
-class TestCoordinates(object):
+class TestGrids(object):
+
     def test__grid_to_eccentric_radius(self, elliptical):
         assert elliptical.grid_to_eccentric_radii(np.array([[1, 1]])) == pytest.approx(
             elliptical.grid_to_eccentric_radii(np.array([[-1, -1]])), 1e-10)
 
-    def test__intensity_from_coordinate_grid(self, elliptical):
+    def test__intensity_from_grid(self, elliptical):
         assert elliptical.intensity_from_grid(np.array([[1, 1]])) == \
                pytest.approx(elliptical.intensity_from_grid(np.array([[-1, -1]])), 1e-4)
