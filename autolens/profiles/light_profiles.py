@@ -110,7 +110,23 @@ class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
 class EllipticalGaussianLP(EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01):
+        """ The elliptical Gaussian profile, used for modeling a PSF.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the light profile.
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a).
+        phi : float
+            Rotation angle of light profile counter-clockwise from positive x-axis.
+        intensity : float
+            Overall intensity normalisation of the light profiles (electrons per second).
+        sigma : float
+            The full-width half-maximum of the Gaussian.
+        """
         super(EllipticalGaussianLP, self).__init__(centre, axis_ratio, phi)
+
         self.intensity = intensity
         self.sigma = sigma
 
@@ -147,7 +163,17 @@ class EllipticalGaussianLP(EllipticalLP):
 class SphericalGaussianLP(EllipticalGaussianLP):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01):
+        """ The spherical Gaussian profile, used for modeling a PSF.
 
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the light profile.
+        intensity : float
+            Overall intensity normalisation of the light profiles (electrons per second).
+        sigma : float
+            The full-width half-maximum of the Gaussian.
+        """
         super(SphericalGaussianLP, self).__init__(centre, 1.0, 0.0, intensity, sigma)
 
 
