@@ -69,8 +69,8 @@ class TestAddition(object):
     def test_mapper_plus_mapper(self):
         one = model_mapper.ModelMapper()
         two = model_mapper.ModelMapper()
-        one.a = model_mapper.PriorModel(geometry_profiles.EllipticalSersicGP)
-        two.b = model_mapper.PriorModel(geometry_profiles.EllipticalSersicGP)
+        one.a = model_mapper.PriorModel(light_profiles.EllipticalSersicLP)
+        two.b = model_mapper.PriorModel(light_profiles.EllipticalSersicLP)
 
         three = one + two
 
