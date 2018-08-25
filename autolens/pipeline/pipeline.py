@@ -2,8 +2,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-import numpy as np
-
 
 class Pipeline(object):
 
