@@ -255,7 +255,7 @@ class EllipticalProfileGP(SphericalProfileGP):
         return np.vstack((x, y)).T
 
     @transform_grid
-    def grid_to_elliptical_radius(self, grid):
+    def grid_to_elliptical_radii(self, grid):
         """
         Convert coordinates to an elliptical radius.
 
@@ -288,7 +288,7 @@ class EllipticalProfileGP(SphericalProfileGP):
         -------
         The radius at those coordinates
         """
-        return np.multiply(np.sqrt(self.axis_ratio), self.grid_to_elliptical_radius(grid)).view(np.ndarray)
+        return np.multiply(np.sqrt(self.axis_ratio), self.grid_to_elliptical_radii(grid)).view(np.ndarray)
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (x,y) coordinates to the reference frame of the profile, including a translation to \
