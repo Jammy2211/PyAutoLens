@@ -1,13 +1,6 @@
 from autolens.pipeline import pipeline as pl
-from pipelines import profile_pipeline
-from autolens.pipeline import phase as ph
 from autolens.autopipe import model_mapper
 from autolens.autopipe import non_linear
-from autolens.imaging import image as im
-from autolens.profiles import light_profiles
-from autolens.profiles import mass_profiles
-from autolens.analysis import galaxy_prior as gp
-from autolens.analysis import galaxy as g
 import numpy as np
 import pytest
 
@@ -23,9 +16,10 @@ class MockAnalysis(object):
         return self.number_galaxies*[np.full(self.shape, self.value)]
 
 
-class DummyPhase(object):
+class DummyPhaseImaging(object):
     def __init__(self):
         self.masked_image = None
+        self.positions = None
         self.previous_results = None
         self.phase_name = "dummy_phase"
 
@@ -35,10 +29,10 @@ class DummyPhase(object):
         return non_linear.Result(model_mapper.ModelInstance(), 1)
 
 
-class TestPipeline(object):
+class TestPipelineImaging(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhase()
-        phase_2 = DummyPhase()
+        phase_1 = DummyPhaseImaging()
+        phase_2 = DummyPhaseImaging()
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
 
         pipeline.run(None)
@@ -47,11 +41,46 @@ class TestPipeline(object):
         assert len(phase_2.previous_results) == 1
 
     def test_addition(self):
-        phase_1 = DummyPhase()
-        phase_2 = DummyPhase()
-        phase_3 = DummyPhase()
+        phase_1 = DummyPhaseImaging()
+        phase_2 = DummyPhaseImaging()
+        phase_3 = DummyPhaseImaging()
 
         pipeline1 = pl.PipelineImaging("", phase_1, phase_2)
         pipeline2 = pl.PipelineImaging("", phase_3)
+
+        assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
+
+
+class DummyPhasePositions(object):
+    def __init__(self):
+        self.positions = None
+        self.previous_results = None
+        self.phase_name = "dummy_phase"
+
+    def run(self, positions, pixel_scale, previous_results):
+        self.positions = positions
+        self.pixel_scale = pixel_scale
+        self.previous_results = previous_results
+        return non_linear.Result(model_mapper.ModelInstance(), 1)
+
+
+class TestPipelinePositions(object):
+    def test_run_pipeline(self):
+        phase_1 = DummyPhasePositions()
+        phase_2 = DummyPhasePositions()
+        pipeline = pl.PipelinePositions("", phase_1, phase_2)
+
+        pipeline.run(None, None)
+
+        assert len(phase_1.previous_results) == 0
+        assert len(phase_2.previous_results) == 1
+
+    def test_addition(self):
+        phase_1 = DummyPhasePositions()
+        phase_2 = DummyPhasePositions()
+        phase_3 = DummyPhasePositions()
+
+        pipeline1 = pl.PipelinePositions("", phase_1, phase_2)
+        pipeline2 = pl.PipelinePositions("", phase_3)
 
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
