@@ -241,7 +241,7 @@ class PrepatoryImage(ScaledArray):
         estimated_noise_counts: ndarray
             An array representing estimated noise in terms of counts
         """
-        return np.sqrt(self.counts_array + np.square(self.background_noise_counts_array))
+        return np.sqrt(np.abs(self.counts_array + np.square(self.background_noise_counts_array)))
 
     @property
     def estimated_noise(self):
