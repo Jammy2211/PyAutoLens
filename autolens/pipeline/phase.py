@@ -137,6 +137,7 @@ class Phase(object):
             self.__should_visualise = IntervalCounter(visualise_interval)
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
+            self.visualize_results = conf.instance.general.get('output', 'visualize_results', bool)
             self.as_fits_during_analysis = conf.instance.general.get('output', 'visualize_as_fits_during_analysis', bool)
             self.as_fits_at_end = conf.instance.general.get('output', 'visualize_as_fits_at_end', bool)
             self.output_image_path = "{}/".format(conf.instance.output_path) + '/' + self.phase_name + '/images/'
@@ -172,12 +173,13 @@ class Phase(object):
             fit: fitting.Fit
                 How fit the model is and the model
             """
-            if self.should_log:
-                self.log(instance)
-            if self.should_visualise:
-                self.plot_count += 1
-                logger.info("Saving visualisations {}".format(self.plot_count))
-                self.visualize(instance, suffix=None, during_analysis=True)
+            if self.visualize_results:
+                if self.should_log:
+                    self.log(instance)
+                if self.should_visualise:
+                    self.plot_count += 1
+                    logger.info("Saving visualisations {}".format(self.plot_count))
+                    self.visualize(instance, suffix=None, during_analysis=True)
             return None
 
         def visualize(self, instance, suffix, during_analysis):
@@ -237,17 +239,18 @@ class Phase(object):
             if os.path.isfile(file):
                 os.remove(file)
 
-            plt.figure(figsize=(28, 20))
+            fig = plt.figure(figsize=(28, 20))
             plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
             plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
             plt.tick_params(labelsize=30)
-            plt.imshow(array, aspect='auto')
-            plt.scatter(x=grid[:,0], y=grid[:,1])
+            plt.imshow(array, aspect='auto', extent=(np.min(grid[:,0]), np.max(grid[:,0]),
+                                                     np.min(grid[:,1]), np.max(grid[:,1])))
             plt.title(title, fontsize=32)
             plt.xlabel('x (arcsec)', fontsize=36)
             plt.ylabel('y (arcsec)', fontsize=36)
             cb = plt.colorbar()
             cb.ax.tick_params(labelsize=28)
+            plt.scatter(x=grid[:,0], y=grid[:,1])
             plt.savefig(file, bbox_inches='tight')
             plt.close()
 
@@ -390,7 +393,10 @@ class PhaseImaging(Phase):
         self.sub_grid_size = sub_grid_size
         self.image_psf_shape = image_psf_shape
         self.pixelization_psf_shape = pixelization_psf_shape
-        self.positions = list(map(lambda position_set : np.asarray(position_set), positions))
+        if positions is not None:
+            self.positions = list(map(lambda position_set : np.asarray(position_set), positions))
+        else:
+            self.positions = None
         self.mask_function = mask_function
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -430,7 +436,8 @@ class PhaseImaging(Phase):
         """
         analysis = self.make_analysis(image=image, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
-        analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
+        if analysis.visualize_results:
+            analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None):
@@ -815,7 +822,8 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
     source_galaxies = PhasePropertyList("source_galaxies")
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
-                 sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function, positions=None, phase_name="source_lens_phase"):
+                 sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function,
+                 positions=None, phase_name="source_lens_phase"):
         """
         A phase with a simple source/lens model
 

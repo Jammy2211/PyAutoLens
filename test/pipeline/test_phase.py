@@ -15,8 +15,10 @@ import os
 
 directory = path.dirname(path.realpath(__file__))
 
-shape = (10, 10)
+general_conf = directory+'/../test_files/config/'
+conf.instance.general = conf.NamedConfig("{}/general.ini".format(general_conf))
 
+shape = (10, 10)
 
 class MockAnalysis(object):
 
@@ -139,7 +141,9 @@ class TestPhase(object):
         assert analysis.masked_image == masked_image
 
     def test_fit(self, image):
+
         clean_images()
+
         phase = ph.LensMassAndSourceProfilePhase(optimizer_class=NLO,
                                                  lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()])
         result = phase.run(image=image)
@@ -184,7 +188,7 @@ class TestPhase(object):
         assert phase.source_galaxies is not None
 
     def test_modify_image(self, image):
-        class MyPhase(ph.Phase):
+        class MyPhase(ph.PhaseImaging):
             def modify_image(self, im, previous_results):
                 assert image.shape == im.shape
                 return im

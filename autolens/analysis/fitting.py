@@ -133,8 +133,19 @@ class ProfileFitter(AbstractFitter):
                         self.blurred_image_plane_images_of_galaxies))
 
     def plane_images_of_planes_2d(self, shape=(30, 30)):
-        return list(map(lambda plane_image : self.masked_image.map_to_2d(plane_image),
-                        self.tracer.plane_images_of_planes(shape)))
+
+        def map_to_2d(image, shape):
+
+            image_2d = np.zeros(shape)
+
+            for x in range(shape[0]):
+                for y in range(shape[1]):
+
+                    image_2d[y, x] = image[(x)*shape[0] + y]
+
+            return image_2d
+
+        return list(map(lambda plane_image : map_to_2d(plane_image, shape), self.tracer.plane_images_of_planes(shape)))
 
 
 class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
