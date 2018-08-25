@@ -4,9 +4,10 @@ logger = logging.getLogger(__name__)
 
 import numpy as np
 
+
 class Pipeline(object):
 
-    def __init__(self, pipeline_name):
+    def __init__(self, pipeline_name, *phases):
         """
 
         Parameters
@@ -17,6 +18,7 @@ class Pipeline(object):
             Phases
         """
         self.pipeline_name = pipeline_name
+        self.phases = phases
 
     def __add__(self, other):
         """
@@ -38,9 +40,7 @@ class Pipeline(object):
 class PipelineImaging(Pipeline):
 
     def __init__(self, pipeline_name, *phases):
-
-        self.phases = phases
-        super(PipelineImaging, self).__init__(pipeline_name)
+        super(PipelineImaging, self).__init__(pipeline_name, *phases)
 
     def run(self, image):
         from autolens.pipeline import phase as ph
@@ -57,9 +57,7 @@ class PipelineImaging(Pipeline):
 class PipelinePositions(Pipeline):
 
     def __init__(self, pipeline_name, *phases):
-
-        self.phases = phases
-        super(PipelinePositions, self).__init__(pipeline_name)
+        super(PipelinePositions, self).__init__(pipeline_name, *phases)
 
     def run(self, positions, pixel_scale):
         from autolens.pipeline import phase as ph
