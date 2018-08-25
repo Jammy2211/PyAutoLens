@@ -107,6 +107,50 @@ class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
         return 2 * np.pi * r * self.intensity_from_grid_radii(x)
 
 
+class EllipticalGaussianLP(EllipticalLP):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01):
+        super(EllipticalGaussianLP, self).__init__(centre, axis_ratio, phi)
+        self.intensity = intensity
+        self.sigma = sigma
+
+    def intensity_from_grid_radii(self, grid_radii):
+        """
+        Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
+
+        Parameters
+        ----------
+        grid_radii : float
+            The radial distance from the centre of the profiles for each coordinate on the grid.
+        """
+        return np.multiply(np.divide(self.intensity, self.sigma*np.sqrt(2.0*np.pi)),
+                           np.exp(-0.5*np.square(np.divide(grid_radii, self.sigma))))
+
+    @geometry_profiles.transform_grid
+    def intensity_from_grid(self, grid):
+        """
+        Calculate the intensity of the light profile on a grid of Cartesian (x,y) coordinates.
+
+        If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
+
+        Parameters
+        ----------
+        grid : ndarray
+            The (x, y) coordinates in the original reference frame of the observed image.
+        Returns
+        -------
+        intensity : float
+            The value of intensity at the given radius
+        """
+        return self.intensity_from_grid_radii(self.grid_to_elliptical_radii(grid))
+
+class SphericalGaussianLP(EllipticalGaussianLP):
+
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01):
+
+        super(SphericalGaussianLP, self).__init__(centre, 1.0, 0.0, intensity, sigma)
+
+
 class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
@@ -189,7 +233,6 @@ class SphericalSersicLP(EllipticalSersicLP):
         """
         super(SphericalSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
                                                  sersic_index)
-
 
 
 class EllipticalExponentialLP(EllipticalSersicLP):
