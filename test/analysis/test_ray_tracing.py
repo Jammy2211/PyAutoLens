@@ -928,6 +928,34 @@ class TestTracerImageAndSource(object):
                     tracer.source_plane.plane_images_of_galaxies(shape=(3,3))[0] +
                     tracer.source_plane.plane_images_of_galaxies(shape=(3,3))[1]).all()
 
+        def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, grids):
+
+            # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
+            # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
+            # index 0 of the 1D grid and (0,0) of the 2d plane image.
+
+            grids.image = np.array([[-2.0, -2.0], [2.0, 2.0]])
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(-1.6, -1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0], image_grids=grids)
+
+            assert tracer.plane_images_of_planes(shape=(5,5))[1].argmax() == 0
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(-1.6, 1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0], image_grids=grids)
+
+            assert tracer.plane_images_of_planes(shape=(5,5))[1].argmax() == 4
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(1.6, -1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0], image_grids=grids)
+
+            assert tracer.plane_images_of_planes(shape=(5,5))[1].argmax() == 20
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(1.6, 1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0], image_grids=grids)
+
+            assert tracer.plane_images_of_planes(shape=(5,5))[1].argmax() == 24
+
 
     class TestImageGridsOfPlanes:
 
