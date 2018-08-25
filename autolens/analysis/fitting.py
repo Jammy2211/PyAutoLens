@@ -66,6 +66,7 @@ class ProfileFitter(AbstractFitter):
         self.tracer = tracer
         self.blurred_image_plane_image = self.masked_image.convolver_image.convolve_image(self.image_plane_image, 
                                                                                           self.image_plane_blurring_image)
+
     @property
     def image_plane_image(self):
         return self.tracer.image_plane_image

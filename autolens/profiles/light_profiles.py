@@ -167,6 +167,31 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
         return self.intensity_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
+class SphericalSersicLP(EllipticalSersicLP):
+
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0):
+        """ The spherical Sersic profile, used for fitting a galaxy's light.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the light profile.
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a).
+        phi : float
+            Rotation angle of light profile counter-clockwise from positive x-axis.
+        intensity : float
+            Overall intensity normalisation of the light profiles (electrons per second).
+        effective_radius : float
+            The circular radius containing half the light of this profile.
+        sersic_index : Int
+            Controls the concetration of the of the light profile.
+        """
+        super(SphericalSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
+                                                 sersic_index)
+
+
+
 class EllipticalExponentialLP(EllipticalSersicLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
@@ -194,6 +219,29 @@ class EllipticalExponentialLP(EllipticalSersicLP):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
 
 
+class SphericalExponentialLP(EllipticalExponentialLP):
+
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
+        """ The spherical exponential profile, used for fitting a galaxy's light.
+
+        This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the light profile.
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a).
+        phi : float
+            Rotation angle of light profile counter-clockwise from positive x-axis.
+        intensity : float
+            Overall intensity normalisation of the light profiles (electrons per second).
+        effective_radius : float
+            The circular radius containing half the light of this profile.
+        """
+        super(SphericalExponentialLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+
+
 class EllipticalDevVaucouleursLP(EllipticalSersicLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
@@ -219,6 +267,29 @@ class EllipticalDevVaucouleursLP(EllipticalSersicLP):
     @property
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R']
+
+
+class SphericalDevVaucouleursLP(EllipticalDevVaucouleursLP):
+
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
+        """ The spherical Dev Vaucouleurs profile, used for fitting a galaxy's light.
+
+        This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the light profile.
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a).
+        phi : float
+            Rotation angle of light profile counter-clockwise from positive x-axis.
+        intensity : float
+            Overall intensity normalisation of the light profiles (electrons per second).
+        effective_radius : float
+            The circular radius containing half the light of this profile.
+        """
+        super(SphericalDevVaucouleursLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
 
 
 class EllipticalCoreSersicLP(EllipticalSersicLP):
@@ -284,3 +355,40 @@ class EllipticalCoreSersicLP(EllipticalSersicLP):
                                                       self.radius_break ** self.alpha)),
                                                                   (self.effective_radius ** self.alpha)), (
                                                                 1.0 / (self.alpha * self.sersic_index)))))))
+
+
+class SphericalCoreSersicLP(EllipticalCoreSersicLP):
+
+    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
+                 sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
+        """ The elliptical cored-Sersic profile, used for fitting a galaxy's light.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The centre of the light profile.
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a).
+        phi : float
+            Rotation angle of light profile counter-clockwise from positive x-axis.
+        intensity : float
+            Overall intensity normalisation of the light profiles (electrons per second).
+        effective_radius : float
+            The circular radius containing half the light of this profile.
+        sersic_index : Int
+            Controls the concetration of the of the light profile.
+        radius_break : Float
+            The break radius separating the inner power-law (with logarithmic slope gamma) and outer Sersic function.
+        intensity_break : Float
+            The intensity at the break radius.
+        gamma : Float
+            The logarithmic power-law slope of the inner core profiles
+        alpha :
+            Controls the sharpness of the transition between the inner core / outer Sersic profiles.
+        """
+        super(SphericalCoreSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
+                                                     radius_break, intensity_break, gamma, alpha)
+        self.radius_break = radius_break
+        self.intensity_break = intensity_break
+        self.alpha = alpha
+        self.gamma = gamma

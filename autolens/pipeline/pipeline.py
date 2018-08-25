@@ -18,22 +18,6 @@ class Pipeline(object):
         """
         self.pipeline_name = pipeline_name
 
-    def __add__(self, other):
-        """
-        Compose two pipelines
-
-        Parameters
-        ----------
-        other: PipelineImaging
-            Another pipeline
-
-        Returns
-        -------
-        composed_pipeline: PipelineImaging
-            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
-        """
-        return Pipeline("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
-
 
 class PipelineImaging(Pipeline):
 
@@ -53,6 +37,23 @@ class PipelineImaging(Pipeline):
                 results[-1].hyper = phase.hyper_run(image, ph.ResultsCollection(results))
         return results
 
+    def __add__(self, other):
+        """
+        Compose two pipelines
+
+        Parameters
+        ----------
+        other: PipelineImaging
+            Another pipeline
+
+        Returns
+        -------
+        composed_pipeline: PipelineImaging
+            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
+        """
+        return PipelineImaging("{} + {}".format(self.pipeline_name, other.pipeline_name),
+                               *(self.phases + other.phases))
+
 
 class PipelinePositions(Pipeline):
 
@@ -69,3 +70,21 @@ class PipelinePositions(Pipeline):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
             results.append(phase.run(positions, pixel_scale, ph.ResultsCollection(results)))
         return results
+
+
+    def __add__(self, other):
+        """
+        Compose two pipelines
+
+        Parameters
+        ----------
+        other: PipelineImaging
+            Another pipeline
+
+        Returns
+        -------
+        composed_pipeline: PipelineImaging
+            A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
+        """
+        return PipelinePositions("{} + {}".format(self.pipeline_name, other.pipeline_name),
+                                 *(self.phases + other.phases))
