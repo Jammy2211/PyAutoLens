@@ -1,4 +1,4 @@
-from pipelines import profile_pipeline, source_only_pipeline
+from pipelines import profile_pipeline, source_only_pipeline, source_pix_pipeline
 
 
 class PipelineTuple(object):
@@ -29,3 +29,4 @@ def add(module):
 
 add(profile_pipeline)
 add(source_only_pipeline)
+add(source_pix_pipeline)
