@@ -7,6 +7,7 @@ profile and the lens mass with a Spherical Isothermal profile.
 
 name = "source_pixelization"
 
+
 def make():
     from autolens.pipeline import phase as ph
     from autolens.pipeline import pipeline as pl
@@ -39,8 +40,8 @@ def make():
             self.source_galaxies[0].pixelization.shape_1 = mm.UniformPrior(19.5, 20.5)
 
     phase2 = SourcePix(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
-                        source_galaxies=[gp.GalaxyPrior(pixelization=pix.RectangularRegConst)],
-                        optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(name))
+                       source_galaxies=[gp.GalaxyPrior(pixelization=pix.RectangularRegConst)],
+                       optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(name))
 
     phase2.optimizer.n_live_points = 60
     phase2.optimizer.sampling_efficiency = 0.8
