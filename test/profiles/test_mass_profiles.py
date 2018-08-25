@@ -3,6 +3,9 @@ import pytest
 import numpy as np
 
 
+grid = np.array([[3.0, -3.0]])
+
+
 class TestConstructors(object):
 
     def test__setup_elliptical_power_law(self):
@@ -218,6 +221,7 @@ class TestConstructors(object):
 
 
 class TestProfiles(object):
+
     class TestEllipticalPowerLaw(object):
         class TestSurfaceDensity(object):
 
@@ -523,6 +527,7 @@ class TestProfiles(object):
                 assert defls[1, 0] == pytest.approx(0.50734, 1e-3)
                 assert defls[1, 1] == pytest.approx(0.79421, 1e-3)
 
+
     class TestSphericalPowerLaw(object):
         class TestSurfaceDensity(object):
 
@@ -727,6 +732,7 @@ class TestProfiles(object):
                 assert defls[1, 0] == pytest.approx(-0.18861, 1e-3)
                 assert defls[1, 1] == pytest.approx(-0.06287, 1e-3)
 
+
     class TestSphericalIsothermal(object):
         class TestSurfaceDensity(object):
             def test__flip_coordinates_lens_center__same_value(self):
@@ -877,6 +883,7 @@ class TestProfiles(object):
                 assert deflections[0, 1] == pytest.approx(4.88588, 1e-4)
                 assert deflections[1, 0] == pytest.approx(1.06214, 1e-4)
                 assert deflections[1, 1] == pytest.approx(4.88588, 1e-4)
+
 
     class TestEllipticalIsothermal(object):
         class TestSurfaceDensity(object):
@@ -1145,6 +1152,7 @@ class TestProfiles(object):
                 assert defls[0, 1] == pytest.approx(0.57002, 1e-3)
                 assert defls[1, 0] == pytest.approx(0.57002, 1e-3)
                 assert defls[1, 1] == pytest.approx(0.57002, 1e-3)
+
 
     class TestEllipticalCoredPowerLaw(object):
         class TestSurfaceDensity(object):
@@ -1499,6 +1507,7 @@ class TestProfiles(object):
                 assert deflections[1, 0] == pytest.approx(0.11403, 1e-3)
                 assert deflections[1, 1] == pytest.approx(0.01111, 1e-3)
 
+
     class TestSphericalCoredPowerLaw(object):
         class TestSurfaceDensity(object):
             def test__function__gives_correct_values(self):
@@ -1756,6 +1765,7 @@ class TestProfiles(object):
                 assert deflections[0, 1] == pytest.approx(-0.00321, 1e-3)
                 assert deflections[1, 0] == pytest.approx(0.09316, 1e-3)
                 assert deflections[1, 1] == pytest.approx(-0.00321, 1e-3)
+
 
     class TestEllipticalCoredIsothermal(object):
         class TestSurfaceDensity(object):
@@ -2113,6 +2123,7 @@ class TestProfiles(object):
                 assert deflections[1, 0] == pytest.approx(0.20500, 1e-3)
                 assert deflections[1, 1] == pytest.approx(0.02097, 1e-3)
 
+
     class TestSphericalCoredIsothermal(object):
         class TestSurfaceDensity(object):
             def test__function__gives_correct_values(self):
@@ -2401,6 +2412,7 @@ class TestProfiles(object):
                 assert deflections[1, 0] == pytest.approx(0.16216, 1e-3)
                 assert deflections[1, 1] == pytest.approx(-0.00559, 1e-3)
 
+
     class TestEllipticalNFW(object):
         class TestCoordFuncc(object):
             def test__coord_func_x_above_1(self):
@@ -2643,6 +2655,7 @@ class TestProfiles(object):
                 assert defls[1, 0] == pytest.approx(-0.44204, 1e-3)
                 assert defls[1, 1] == pytest.approx(-2.59480, 1e-3)
 
+
     class TestSphericalNFW(object):
         class TestSurfaceDensity(object):
 
@@ -2741,6 +2754,7 @@ class TestProfiles(object):
                 assert defls[0, 1] == pytest.approx(-2.08909, 1e-3)
                 assert defls[1, 0] == pytest.approx(-0.69636, 1e-3)
                 assert defls[1, 1] == pytest.approx(-2.08909, 1e-3)
+
 
     class TestEllipticalGeneralizedNFW(object):
         class TestSurfaceDensity(object):
@@ -2908,6 +2922,7 @@ class TestProfiles(object):
                 assert defls_0[0, 0] == pytest.approx(defls_1[0, 0], 1e-4)
                 assert defls_0[0, 1] == pytest.approx(defls_1[0, 1], 1e-4)
 
+
     class TestSphericalGeneralizedNFW(object):
         class TestSurfaceDensity(object):
 
@@ -3036,7 +3051,10 @@ class TestProfiles(object):
                 assert defls[1, 0] == pytest.approx(-3.10418, 1e-3)
                 assert defls[1, 1] == pytest.approx(-9.31254, 1e-3)
 
+
     class TestSersicMass(object):
+
+
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3143,6 +3161,7 @@ class TestProfiles(object):
                 surface_density = sersic.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
 
                 assert surface_density == pytest.approx(5.38066670129, 1e-3)
+
 
         class TestDeflections(object):
 
@@ -3269,7 +3288,27 @@ class TestProfiles(object):
                 assert defls[0, 0] == pytest.approx(0.79374, 1e-3)
                 assert defls[0, 1] == pytest.approx(1.1446, 1e-3)
 
+
+        class TestSpherical(object):
+
+            def test__spherical_and_elliptical_identical(self):
+
+                elliptical = mass_profiles.EllipticalSersicMP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                          effective_radius=1.0, sersic_index=4.0,
+                                                              mass_to_light_ratio=1.0)
+
+                spherical = mass_profiles.SphericalSersicMP(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0,
+                                                            sersic_index=4.0, mass_to_light_ratio=1.0)
+
+                assert elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)
+               # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
+                assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+
+
+
     class TestExponentialMass(object):
+
+
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3370,6 +3409,7 @@ class TestProfiles(object):
 
                 assert surface_density == pytest.approx(4.8566, 1e-3)
 
+
         class TestDeflections(object):
             def test__flip_coordinates_lens_center__same_value(self):
                 exponential = mass_profiles.EllipticalExponentialMP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
@@ -3466,7 +3506,25 @@ class TestProfiles(object):
                 assert defls[0, 0] == pytest.approx(0.62569, 1e-3)
                 assert defls[0, 1] == pytest.approx(0.90493, 1e-3)
 
+
+        class TestSpherical(object):
+
+            def test__spherical_and_elliptical_identical(self):
+
+                elliptical = mass_profiles.EllipticalExponentialMP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                                          effective_radius=1.0, mass_to_light_ratio=1.0)
+
+                spherical = mass_profiles.SphericalExponentialMP(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0,
+                                                                 mass_to_light_ratio=1.0)
+
+                assert elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)
+               # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
+                assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+
+
     class TestDevVaucouleursMass(object):
+
+
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3573,6 +3631,7 @@ class TestProfiles(object):
 
                 assert surface_density == pytest.approx(2.0 * 7.4455, 1e-3)
 
+
         class TestDeflections(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3674,7 +3733,26 @@ class TestProfiles(object):
                 assert defls[0, 0] == pytest.approx(-3.37605, 1e-3)
                 assert defls[0, 1] == pytest.approx(-24.528, 1e-3)
 
+
+        class TestSpherical(object):
+
+            def test__spherical_and_elliptical_identical(self):
+
+                elliptical = mass_profiles.EllipticalDevVaucouleursMP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                      intensity=1.0, effective_radius=1.0,
+                                                                      mass_to_light_ratio=1.0)
+
+                spherical = mass_profiles.SphericalDevVaucouleursMP(centre=(0.0, 0.0), intensity=1.0,
+                                                                    effective_radius=1.0, mass_to_light_ratio=1.0)
+
+                assert elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)
+               # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
+                assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+
+
     class TestSersicMassRadialGradient(object):
+
+
         class TestSurfaceDensity(object):
 
             def test__flip_coordinates_lens_center__same_value(self):
@@ -3807,6 +3885,7 @@ class TestProfiles(object):
                 surface_density = sersic.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
 
                 assert surface_density == pytest.approx((2.836879) * 5.38066670129, 1e-2)
+
 
         class TestDeflections(object):
 
@@ -3975,6 +4054,27 @@ class TestProfiles(object):
 
                 assert defls[0, 0] == pytest.approx(0.79374, 1e-3)
                 assert defls[0, 1] == pytest.approx(1.1446, 1e-3)
+
+
+        class TestSpherical(object):
+
+            def test__spherical_and_elliptical_identical(self):
+
+                elliptical = mass_profiles.EllipticalSersicRadialGradientMP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
+                                                                        intensity=1.0,
+                                                                        effective_radius=1.0, sersic_index=4.0,
+                                                                        mass_to_light_ratio=1.0,
+                                                                        mass_to_light_gradient=1.0)
+
+                spherical = mass_profiles.EllipticalSersicRadialGradientMP(centre=(0.0, 0.0), intensity=1.0,
+                                                                        effective_radius=1.0, sersic_index=4.0,
+                                                                        mass_to_light_ratio=1.0,
+                                                                           mass_to_light_gradient=1.0)
+
+                assert elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)
+               # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
+                assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+
 
     class TestExternalShear(object):
         class TestDeflections(object):
