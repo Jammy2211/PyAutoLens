@@ -655,7 +655,7 @@ class LensProfilePhase(PhaseImaging):
             super().__init__(constant, likelihood, variable, analysis)
             fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
             self.blurred_image_plane_image = fitter.blurred_image_plane_image_2d
-            self.lens_galaxies_blurred_image_plane_images = fitter.blurred_image_plane_images_of_galaxies_2d
+            self.lens_subtracted_image = analysis.masked_image.image - fitter.blurred_image_plane_images_of_planes_2d[0]
 
 
 class LensProfileHyperPhase(LensProfilePhase):
