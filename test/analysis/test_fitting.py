@@ -337,6 +337,16 @@ class MockTracer(object):
     def reconstructors_from_source_plane(self, borders, cluster_mask):
         return MockReconstructor()
 
+    def plane_images_of_planes(self, shape=(30, 30)):
+        image = np.zeros(shape)
+        k=0
+        for i in range(shape[0]):
+            for j in range(shape[1]):
+                image[i,j] = k
+                k += 1
+
+        return [image]*2
+
     @property
     def hyper_galaxies(self):
         return [MockHyperGalaxy(), MockHyperGalaxy()]
@@ -879,8 +889,51 @@ class TestProfileFitter:
             assert (fitter.blurred_image_plane_images_of_galaxies_2d[1] ==
                     mi.map_to_2d(fitter.blurred_image_plane_images_of_galaxies[1])).all()
 
-            assert (fitter.plane_images_of_planes_2d(shape=(3,3))[0] ==
-                    mi.map_to_2d(tracer.plane_images_of_planes(shape=(3,3))[0])).all()
+        def test__plane_image_of_plane_2d__ensure_index_goes_from_top_left(self, mi_no_blur):
+
+            # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
+            # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
+            # index 0 of the 1D grid and (0,0) of the 2d plane image.
+
+            mi_no_blur.grids.image = np.array([[-2.0, -2.0], [2.0, 2.0]])
+
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(-1.6, -1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_grids=mi_no_blur.grids)
+            fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
+            plane_image = fitter.plane_images_of_planes_2d(shape=(5,5))[1]
+
+            assert plane_image.shape == (5,5)
+            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0,0)
+
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(1.6, -1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_grids=mi_no_blur.grids)
+            fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
+            plane_image = fitter.plane_images_of_planes_2d(shape=(5,5))[1]
+
+            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0,4)
+
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(-1.6, 1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_grids=mi_no_blur.grids)
+            fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
+            plane_image = fitter.plane_images_of_planes_2d(shape=(5,5))[1]
+
+            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4,0)
+
+
+            g0 = galaxy.Galaxy(light_profile=light_profiles.EllipticalSersicLP(centre=(1.6, 1.6), intensity=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_grids=mi_no_blur.grids)
+            fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
+            plane_image = fitter.plane_images_of_planes_2d(shape=(5,5))[1]
+
+            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4,4)
+
 
     class TestPixelizationFitterFromProfileFitter:
 

@@ -1,5 +1,4 @@
-from autolens.pipeline import profile_pipeline
-from autolens.pipeline import source_only_pipeline
+from pipelines import profile_pipeline, source_only_pipeline
 
 
 class PipelineTuple(object):
