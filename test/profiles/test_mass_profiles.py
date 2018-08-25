@@ -4303,7 +4303,7 @@ class TestMassIntegral(object):
             for x in xs:
                 for y in ys:
 
-                    eta = sie.grid_to_elliptical_radius(np.array([[x, y]]))
+                    eta = sie.grid_to_elliptical_radii(np.array([[x, y]]))
 
                     if eta < integral_radius:
                         dimensionless_mass_tot += sie.surface_density_func(eta) * area
@@ -4331,7 +4331,7 @@ class TestMassIntegral(object):
             for x in xs:
                 for y in ys:
 
-                    eta = sple.grid_to_elliptical_radius(np.array([[x, y]]))
+                    eta = sple.grid_to_elliptical_radii(np.array([[x, y]]))
 
                     if eta < integral_radius:
                         dimensionless_mass_tot += sple.surface_density_func(eta) * area
@@ -4359,7 +4359,7 @@ class TestMassIntegral(object):
             for x in xs:
                 for y in ys:
 
-                    eta = sple_core.grid_to_elliptical_radius(np.array([[x, y]]))
+                    eta = sple_core.grid_to_elliptical_radii(np.array([[x, y]]))
 
                     if eta < integral_radius:
                         dimensionless_mass_tot += sple_core.surface_density_func(eta) * area
@@ -4386,7 +4386,7 @@ class TestMassIntegral(object):
             for x in xs:
                 for y in ys:
 
-                    eta = nfw.grid_to_elliptical_radius(np.array([[x, y]]))
+                    eta = nfw.grid_to_elliptical_radii(np.array([[x, y]]))
 
                     if eta < integral_radius:
                         dimensionless_mass_tot += nfw.surface_density_func(eta) * area
@@ -4414,7 +4414,7 @@ class TestMassIntegral(object):
             for x in xs:
                 for y in ys:
 
-                    eta = gnfw.grid_to_elliptical_radius(np.array([[x, y]]))
+                    eta = gnfw.grid_to_elliptical_radii(np.array([[x, y]]))
 
                     if eta < integral_radius:
                         dimensionless_mass_tot += gnfw.surface_density_func(eta) * area
