@@ -160,6 +160,11 @@ class EllipticalGaussianLP(EllipticalLP):
         """
         return self.intensity_from_grid_radii(self.grid_to_elliptical_radii(grid))
 
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'q', r'\phi', 'I', r'\sigma']
+
+
 class SphericalGaussianLP(EllipticalGaussianLP):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01):
@@ -175,6 +180,10 @@ class SphericalGaussianLP(EllipticalGaussianLP):
             The full-width half-maximum of the Gaussian.
         """
         super(SphericalGaussianLP, self).__init__(centre, 1.0, 0.0, intensity, sigma)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', r'\sigma']
 
 
 class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
@@ -246,10 +255,6 @@ class SphericalSersicLP(EllipticalSersicLP):
         ----------
         centre: (float, float)
             The centre of the light profile.
-        axis_ratio : float
-            Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
-            Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -257,8 +262,11 @@ class SphericalSersicLP(EllipticalSersicLP):
         sersic_index : Int
             Controls the concetration of the of the light profile.
         """
-        super(SphericalSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
-                                                 sersic_index)
+        super(SphericalSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R', 'n']
 
 
 class EllipticalExponentialLP(EllipticalSersicLP):
@@ -299,16 +307,16 @@ class SphericalExponentialLP(EllipticalExponentialLP):
         ----------
         centre: (float, float)
             The centre of the light profile.
-        axis_ratio : float
-            Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
-            Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
         super(SphericalExponentialLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R']
 
 
 class EllipticalDevVaucouleursLP(EllipticalSersicLP):
@@ -349,16 +357,16 @@ class SphericalDevVaucouleursLP(EllipticalDevVaucouleursLP):
         ----------
         centre: (float, float)
             The centre of the light profile.
-        axis_ratio : float
-            Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
-            Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
         super(SphericalDevVaucouleursLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R']
 
 
 class EllipticalCoreSersicLP(EllipticalSersicLP):
@@ -436,10 +444,6 @@ class SphericalCoreSersicLP(EllipticalCoreSersicLP):
         ----------
         centre: (float, float)
             The centre of the light profile.
-        axis_ratio : float
-            Ratio of light profiles ellipse's minor and major axes (b/a).
-        phi : float
-            Rotation angle of light profile counter-clockwise from positive x-axis.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -461,3 +465,7 @@ class SphericalCoreSersicLP(EllipticalCoreSersicLP):
         self.intensity_break = intensity_break
         self.alpha = alpha
         self.gamma = gamma
+
+    @property
+    def parameter_labels(self):
+        return ['x', 'y', 'I', 'R', 'n', 'Rb', 'Ib', '\gamma', r'\alpha']
