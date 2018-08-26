@@ -18,8 +18,8 @@ def make_centre_mask():
                                [True, True, True]]))
 
 
-@pytest.fixture(name="sub_coordinate_grid")
-def make_sub_coordinate_grid(msk):
+@pytest.fixture(name="sub_grid")
+def make_sub_grid(msk):
     return mask.SubGrid.from_mask(msk)
 
 
@@ -1762,15 +1762,15 @@ class TestImageGrid:
 
 class TestSubGrid(object):
 
-    def test_sub_grid_grid(self, sub_grid_grid):
-        assert sub_grid_grid.shape == (5, 2)
-        assert (sub_grid_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
+    def test_sub_grid(self, sub_grid):
+        assert sub_grid.shape == (5, 2)
+        assert (sub_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
 
-    def test_sub_to_pixel(self, sub_grid_grid):
-        assert (sub_grid_grid.sub_to_image == np.array(range(5))).all()
+    def test_sub_to_pixel(self, sub_grid):
+        assert (sub_grid.sub_to_image == np.array(range(5))).all()
 
-    def test_sub_data_to_image(self, sub_grid_grid):
-        assert (sub_grid_grid.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
+    def test_sub_data_to_image(self, sub_grid):
+        assert (sub_grid.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
 
     def test_setup_mappings_using_mask(self):
         msk = np.array([[True, False, True],
@@ -1779,11 +1779,11 @@ class TestSubGrid(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        sub_grid_grid = mask.SubGrid.from_mask(msk, 2)
+        sub_grid = mask.SubGrid.from_mask(msk, 2)
 
-        assert sub_grid_grid.sub_grid_size == 2
-        assert sub_grid_grid.sub_grid_fraction == (1.0 / 4.0)
-        assert (sub_grid_grid.sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3,
+        assert sub_grid.sub_grid_size == 2
+        assert sub_grid.sub_grid_fraction == (1.0 / 4.0)
+        assert (sub_grid.sub_to_image == np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3,
                                                         3, 4, 4, 4, 4])).all()
 
 
