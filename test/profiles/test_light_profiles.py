@@ -1,6 +1,7 @@
 from __future__ import division, print_function
 
 import pytest
+from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 import math
 import numpy as np
@@ -8,8 +9,6 @@ import math
 import scipy.special
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-grid2d = np.array([[[1.0, 1.0], [2.0, 2.0]],
-                    [3.0, 3.0], [4.0, 4.0]])
 
 @pytest.fixture(name='elliptical')
 def elliptical_sersic():
@@ -50,19 +49,6 @@ def test_component_numbers_four_profiles():
     assert sersic_1.component_number == 1
     assert sersic_2.component_number == 2
     assert sersic_3.component_number == 3
-
-
-class TestMapTo2D(object):
-
-    def test__2d_grid_in__2d_array_out(self):
-
-        gaussian = lp.EllipticalGaussianLP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=0.1)
-
-        intensities_1d = gaussian.intensity_from_grid(grid)
-
-        intensities_2d = gaussian.intensity_from_grid(grid2d)
-
-
 
 class TestGaussianLP:
 
@@ -503,3 +489,22 @@ class TestGrids(object):
     def test__intensity_from_grid(self, elliptical):
         assert elliptical.intensity_from_grid(np.array([[1, 1]])) == \
                pytest.approx(elliptical.intensity_from_grid(np.array([[-1, -1]])), 1e-4)
+
+class TestGridMapperMapsOutputTo2D(object):
+
+    def test__grid_mapper_in__2d_intensities(self):
+
+        gaussian = lp.SphericalGaussianLP(intensity=1.0, sigma=0.5)
+
+        intensity_1d = gaussian.intensity_from_grid(grid)
+
+        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+
+        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+
+        intensity_2d = gaussian.intensity_from_grid(mapper_grid)
+
+        assert intensity_2d[1,1] == intensity_1d[0]
+        assert intensity_2d[1,2] == intensity_1d[1]
+        assert intensity_2d[2,1] == intensity_1d[2]
+        assert intensity_2d[2,2] == intensity_1d[3]
