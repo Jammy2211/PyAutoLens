@@ -21,23 +21,23 @@ def tick_toc(func):
 
 @tick_toc
 def lsst_current_solution():
-    lsst_mask.coordinate_grid
+    lsst_mask.grid_masked
 
 @tick_toc
 def euclid_current_solution():
-    euclid_mask.coordinate_grid
+    euclid_mask.grid_masked
 
 @tick_toc
 def hst_current_solution():
-    hst_mask.coordinate_grid
+    hst_mask.grid_masked
 
 @tick_toc
 def hst_up_current_solution():
-    hst_up_mask.coordinate_grid
+    hst_up_mask.grid_masked
 
 @tick_toc
 def ao_current_solution():
-    ao_mask.coordinate_grid
+    ao_mask.grid_masked
 
 if __name__ == "__main__":
     lsst_current_solution()

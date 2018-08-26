@@ -1,6 +1,6 @@
 
-sub-grid 4x4
-source grid 20x20
+sub-grid_2d 4x4
+source grid_2d 20x20
 
 Original:
 
@@ -19,8 +19,8 @@ hst_up_solution: 0.0036954879760742188
 ao_solution: 0.07099747657775879
 
 
-sub-grid 4x4
-source grid 50x50
+sub-grid_2d 4x4
+source grid_2d 50x50
 
 Original:
 
