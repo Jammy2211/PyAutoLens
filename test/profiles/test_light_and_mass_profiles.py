@@ -4,8 +4,7 @@ from autolens.profiles import light_and_mass_profiles as lmp
 import pytest
 import numpy as np
 
-
-grid = np.array([[3.0, -3.0], [2.0, -2.0], [1.0, 8.0]])
+grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
 class TestSersic(object):
 

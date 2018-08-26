@@ -4,7 +4,7 @@ import pytest
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 
-grid = np.array([[3.0, -3.0], [2.0, -2.0], [1.0, 8.0]])
+grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
 
 class TestCoredPowerLawMP(object):
@@ -177,9 +177,9 @@ class TestCoredPowerLawMP(object):
 
     def test__spherical_and_elliptical_match(self):
 
-        elliptical = mp.EllipticalCoredPowerLawMP(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, einstein_radius=3.0,
+        elliptical = mp.EllipticalCoredPowerLawMP(centre=(1.1, 1.1), axis_ratio=1.0, phi=0.0, einstein_radius=3.0,
                                                   slope=2.2, core_radius=0.1)
-        spherical = mp.SphericalCoredPowerLawMP(centre=(1.0, 1.0), einstein_radius=3.0, slope=2.2, core_radius=0.1)
+        spherical = mp.SphericalCoredPowerLawMP(centre=(1.1, 1.1), einstein_radius=3.0, slope=2.2, core_radius=0.1)
 
         assert elliptical.surface_density_from_grid(grid) == pytest.approx(spherical.surface_density_from_grid(grid),
                                                                            1e-4)
@@ -298,9 +298,9 @@ class TestPowerLawMP(object):
 
     def test__spherical_and_elliptical_match(self):
 
-        elliptical = mp.EllipticalPowerLawMP(centre=(1.0, 1.0), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0,
+        elliptical = mp.EllipticalPowerLawMP(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0,
                                                     slope=2.4)
-        spherical = mp.SphericalPowerLawMP(centre=(1.0, 1.0), einstein_radius=3.0, slope=2.4)
+        spherical = mp.SphericalPowerLawMP(centre=(1.1, 1.1), einstein_radius=3.0, slope=2.4)
 
         assert elliptical.surface_density_from_grid(grid) == pytest.approx(spherical.surface_density_from_grid(grid),
                                                                            1e-4)
@@ -430,9 +430,9 @@ class TestCoredIsothermalMP(object):
 
     def test__spherical_and_elliptical_match(self):
 
-        elliptical = mp.EllipticalCoredIsothermalMP(centre=(1.0, 1.0), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0,
+        elliptical = mp.EllipticalCoredIsothermalMP(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0,
                                                     core_radius=1.0)
-        spherical = mp.SphericalCoredIsothermalMP(centre=(1.0, 1.0), einstein_radius=3.0, core_radius=1.0)
+        spherical = mp.SphericalCoredIsothermalMP(centre=(1.1, 1.1), einstein_radius=3.0, core_radius=1.0)
 
         assert elliptical.surface_density_from_grid(grid) == pytest.approx(spherical.surface_density_from_grid(grid),
                                                                            1e-4)
@@ -522,8 +522,8 @@ class TestIsothermalMP(object):
         assert isothermal.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid), 1e-3)
 
     def test__spherical_and_elliptical_match(self):
-        elliptical = mp.EllipticalIsothermalMP(centre=(1.0, 1.0), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0)
-        spherical = mp.SphericalIsothermalMP(centre=(1.0, 1.0), einstein_radius=3.0)
+        elliptical = mp.EllipticalIsothermalMP(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0)
+        spherical = mp.SphericalIsothermalMP(centre=(1.1, 1.1), einstein_radius=3.0)
 
         assert elliptical.surface_density_from_grid(grid) == pytest.approx(spherical.surface_density_from_grid(grid),
                                                                            1e-4)

@@ -1,6 +1,6 @@
 
 REPEATS x20 (divided by 20 to give time per call)
-sub-grid size = 4 (16 sub-pixels)
+sub-grid_2d size = 4 (16 sub-pixels)
 
 ELLIPTICAL ORIGINAL:
 

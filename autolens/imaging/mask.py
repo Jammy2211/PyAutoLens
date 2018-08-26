@@ -163,11 +163,11 @@ class Mask(scaled_array.ScaledArray):
         return int(np.size(self) - np.sum(self))
 
     @property
-    def coordinate_grid(self):
+    def grid_masked(self):
         """
         Compute the masked_image grid_coords grids from a mask, using the center of every unmasked pixel.
         """
-        coordinates = self.grid_coordinates
+        coordinates = self.grid_2d
 
         pixels = self.pixels_in_mask
 
@@ -181,30 +181,6 @@ class Mask(scaled_array.ScaledArray):
                     pixel_count += 1
 
         return ImageGrid(grid)
-
-    def map_to_1d(self, grid_data):
-        """Compute a data grid, which represents the data values of a data-set (e.g. an masked_image, noise, in the mask.
-
-        Parameters
-        ----------
-        grid_data: ndarray | float | None
-
-        """
-        if grid_data is None or isinstance(grid_data, float):
-            return grid_data
-
-        pixels = self.pixels_in_mask
-
-        grid = np.zeros(shape=pixels)
-        pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    grid[pixel_count] = grid_data[x, y]
-                    pixel_count += 1
-
-        return grid
 
     def grid_to_pixel(self):
         """
@@ -314,6 +290,30 @@ class Mask(scaled_array.ScaledArray):
         self.map(fill_grid)
 
         return Mask(blurring_mask, self.pixel_scale)
+
+    def map_to_1d(self, grid_data):
+        """Compute a data grid, which represents the data values of a data-set (e.g. an masked_image, noise, in the mask.
+
+        Parameters
+        ----------
+        grid_data: ndarray | float | None
+
+        """
+        if grid_data is None or isinstance(grid_data, float):
+            return grid_data
+
+        pixels = self.pixels_in_mask
+
+        grid = np.zeros(shape=pixels)
+        pixel_count = 0
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+                if not self[x, y]:
+                    grid[pixel_count] = grid_data[x, y]
+                    pixel_count += 1
+
+        return grid
 
     def map_to_2d(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
@@ -640,6 +640,30 @@ class SubGrid(ImageGrid):
         return sub_to_image
 
 
+class ImageGridMapper(ImageGrid):
+
+    def __new__(cls, arr, shape_2d, grid_to_pixel, *args, **kwargs):
+        arr = arr.view(cls)
+        arr.shape_2d = shape_2d
+        arr.grid_to_pixel = grid_to_pixel
+        return arr
+
+    def map_to_2d(self, data):
+        """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
+        Parameters
+        -----------
+        data : ndarray
+            The grid-data which is mapped to its 2D masked_image.
+        """
+        data_2d = np.zeros(self.shape_2d)
+
+        for (i, pixel) in enumerate(self.grid_to_pixel):
+            data_2d[pixel[0], pixel[1]] = data[i]
+
+        return data_2d
+
+
+
 class GridCollection(object):
 
     def __init__(self, image, sub, blurring, positional=None):
@@ -663,9 +687,9 @@ class GridCollection(object):
 
     @classmethod
     def from_mask_sub_grid_size_and_blurring_shape(cls, mask, sub_grid_size, blurring_shape):
-        image_coords = mask.coordinate_grid
+        image_coords = mask.grid_masked
         sub_grid_coords = SubGrid.from_mask(mask, sub_grid_size)
-        blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).coordinate_grid
+        blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).grid_masked
         return GridCollection(image_coords, sub_grid_coords, blurring_coords)
 
     def apply_function(self, func):

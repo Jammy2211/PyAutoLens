@@ -260,7 +260,7 @@ class ScaledArray(Array):
         return arcsec - half + (sub_pixel + 1) * step
 
     @property
-    def grid_coordinates(self):
+    def grid_2d(self):
         """
         Computes the arc second grids of every pixel on the data_vector-grid_coords.
 
@@ -268,15 +268,15 @@ class ScaledArray(Array):
         value and positive y value in arc seconds.
         """
 
-        coordinates_array = np.zeros((self.shape[0], self.shape[1], 2))
+        grid_2d = np.zeros((self.shape[0], self.shape[1], 2))
 
         for x in range(self.shape[0]):
             for y in range(self.shape[1]):
                 arc_second_coordinates = self.pixel_coordinates_to_arc_second_coordinates((x, y))
-                coordinates_array[x, y, 0] = arc_second_coordinates[0]
-                coordinates_array[x, y, 1] = arc_second_coordinates[1]
+                grid_2d[x, y, 0] = arc_second_coordinates[0]
+                grid_2d[x, y, 1] = arc_second_coordinates[1]
 
-        return coordinates_array
+        return grid_2d
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):

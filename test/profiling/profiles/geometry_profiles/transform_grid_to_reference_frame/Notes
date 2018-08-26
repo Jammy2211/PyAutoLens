@@ -1,7 +1,7 @@
 geometry_profile.transform_grid_to_reference_frame:
 
 REPEATS x20 (divided by 20 to give time per call)
-sub-grid size = 4 (16 sub-pixels)
+sub-grid_2d size = 4 (16 sub-pixels)
 
 ELLIPTICAL ORIGINAL:
 
@@ -46,10 +46,10 @@ Even the hst_up run-times are problematic for a large number of galaxies / profi
 It is important to remember that we can significantly reduce the calls to this function for both light and
 mass profiles by:
 
-light-profiles and mass-profiles - Setup an adaptive sub-pixel grid, with the majority of pixels (away from the centre)
+light-profiles and mass-profiles - Setup an adaptive sub-pixel grid_2d, with the majority of pixels (away from the centre)
 having just 1 central sub-pixel.
 
-mass-profiles - Use the interpolation defleciton angle grid (provided the interpolation itself isn't super slow...)
+mass-profiles - Use the interpolation defleciton angle grid_2d (provided the interpolation itself isn't super slow...)
 
 
 A non-ideal speed-up nwould be to move the coordinate transforms into the jitted light profile intensity / mass profile
