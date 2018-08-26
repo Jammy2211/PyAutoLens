@@ -182,6 +182,11 @@ class Mask(scaled_array.ScaledArray):
 
         return ImageGrid(grid)
 
+    @property
+    def grid_mapper_masked(self):
+        return GridMapper(self.grid_masked, self.shape, self.grid_to_pixel)
+
+    @property
     def grid_to_pixel(self):
         """
         Compute the mapping_matrix of every pixel in the mask to its 2D pixel coordinates.
@@ -324,7 +329,7 @@ class Mask(scaled_array.ScaledArray):
         """
         data_2d = np.zeros(self.shape)
 
-        for (i, pixel) in enumerate(self.grid_to_pixel()):
+        for (i, pixel) in enumerate(self.grid_to_pixel):
             data_2d[pixel[0], pixel[1]] = data[i]
 
         return data_2d
@@ -640,7 +645,7 @@ class SubGrid(ImageGrid):
         return sub_to_image
 
 
-class ImageGridMapper(ImageGrid):
+class GridMapper(ImageGrid):
 
     def __new__(cls, arr, shape_2d, grid_to_pixel, *args, **kwargs):
         arr = arr.view(cls)
@@ -661,7 +666,6 @@ class ImageGridMapper(ImageGrid):
             data_2d[pixel[0], pixel[1]] = data[i]
 
         return data_2d
-
 
 
 class GridCollection(object):

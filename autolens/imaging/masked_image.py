@@ -69,7 +69,7 @@ class MaskedImage(im.Image):
         """
         data_2d = np.zeros(self.image_shape)
 
-        for (i, pixel) in enumerate(self.mask.grid_to_pixel()):
+        for (i, pixel) in enumerate(self.mask.grid_to_pixel):
             data_2d[pixel[0], pixel[1]] = data[i]
 
         return data_2d
