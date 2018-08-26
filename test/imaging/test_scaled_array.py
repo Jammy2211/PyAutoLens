@@ -605,7 +605,7 @@ class TestDataGrid(object):
         def test__array_1x1__sets_up_arcsecond_coordinates(self):
             grid = scaled_array.ScaledArray(array=np.zeros((1, 1)), pixel_scale=1.0)
 
-            grid_coordinates = grid.grid_coordinates
+            grid_coordinates = grid.grid_2d
 
             assert (grid_coordinates == np.array([[[0.0, 0.0]]])).all()
 
@@ -614,7 +614,7 @@ class TestDataGrid(object):
         def test__array_2x2__sets_up_arcsecond_coordinates(self):
             grid = scaled_array.ScaledArray(array=np.zeros((2, 2)), pixel_scale=1.0)
 
-            grid_coordinates = grid.grid_coordinates
+            grid_coordinates = grid.grid_2d
 
             assert (grid_coordinates == np.array([[[-0.5, -0.5], [-0.5, 0.5]],
                                                   [[0.5, -0.5], [0.5, 0.5]]])).all()
@@ -622,7 +622,7 @@ class TestDataGrid(object):
         def test__array_3x3__sets_up_arcsecond_coordinates(self):
             grid = scaled_array.ScaledArray(array=np.zeros((3, 3)), pixel_scale=1.0)
 
-            grid_coordinates = grid.grid_coordinates
+            grid_coordinates = grid.grid_2d
             print(list(grid_coordinates))
 
             assert (grid_coordinates == np.array([[[-1., -1.], [-1., 0.], [-1., 1.]],
@@ -632,7 +632,7 @@ class TestDataGrid(object):
         def test__array_4x4__sets_up_arcsecond_coordinates(self):
             grid = scaled_array.ScaledArray(array=np.zeros((4, 4)), pixel_scale=0.5)
 
-            grid_coordinates = grid.grid_coordinates
+            grid_coordinates = grid.grid_2d
 
             assert (grid_coordinates == np.array([[[-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75]],
                                                   [[-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75]],
@@ -642,7 +642,7 @@ class TestDataGrid(object):
         def test__array_2x3__sets_up_arcsecond_coordinates(self):
             grid = scaled_array.ScaledArray(array=np.zeros((2, 3)), pixel_scale=1.0)
 
-            grid_coordinates = grid.grid_coordinates
+            grid_coordinates = grid.grid_2d
             print(list(grid_coordinates))
 
             assert (grid_coordinates == np.array([[[-0.5, -1.], [-0.5, 0.], [-0.5, 1.]],
@@ -651,7 +651,7 @@ class TestDataGrid(object):
         def test__array_3x2__sets_up_arcsecond_coordinates(self):
             grid = scaled_array.ScaledArray(array=np.zeros((3, 2)), pixel_scale=1.0)
 
-            grid_coordinates = grid.grid_coordinates
+            grid_coordinates = grid.grid_2d
 
             assert (grid_coordinates == np.array([[[-1., -0.5], [-1., 0.5]],
                                                   [[0., -0.5], [0., 0.5]],

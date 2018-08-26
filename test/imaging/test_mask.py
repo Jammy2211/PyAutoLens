@@ -380,7 +380,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_grid = msk.coordinate_grid
+            image_grid = msk.grid_masked
 
             assert (image_grid[0] == np.array([0.0, 0.0])).all()
 
@@ -391,7 +391,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_grid = msk.coordinate_grid
+            image_grid = msk.grid_masked
 
             assert (image_grid == np.array([[-3., 0.], [0., -3.], [0., 0.], [0., 3.], [3., 0.]])).all()
 
@@ -403,7 +403,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=1.0)
 
-            image_grid = msk.coordinate_grid
+            image_grid = msk.grid_masked
 
             assert (image_grid == np.array(
                 [[-1.5, -0.5], [-1.5, 0.5], [-0.5, -1.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
@@ -416,7 +416,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            image_grid = msk.coordinate_grid
+            image_grid = msk.grid_masked
 
             assert (image_grid == np.array(
                 [[-3., -1.5], [0., -4.5], [0., -1.5], [0., 1.5], [3., -1.5], [3., 4.5]])).all()
@@ -576,7 +576,7 @@ class TestMask(object):
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
-            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)).coordinate_grid
+            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(3, 3)).grid_masked
 
             assert (blurring_grid == np.array(
                 [[-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.], [3., 0.], [3., 3.]])).all()
@@ -602,7 +602,7 @@ class TestMask(object):
             # [True, True, False, False, False, True, True],
             # [True, True, True, True, True, True, True]])
 
-            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(3, 5)).coordinate_grid
+            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(3, 5)).grid_masked
 
             assert (blurring_grid == np.array(
                 [[-3., -6.], [-3., -3.], [-3., 0.], [-3., 3.], [-3., 6.], [0., -6.], [0., -3.], [0., 3.], [0., 6.],
@@ -629,7 +629,7 @@ class TestMask(object):
             #  [True, True, True, True, True, True, True],
             #  [True, True, True, True, True, True, True]]
 
-            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(5, 3)).coordinate_grid
+            blurring_grid = msk.blurring_mask_for_kernel_shape(kernel_shape=(5, 3)).grid_masked
 
             assert (blurring_grid == np.array(
                 [[-6., -3.], [-6., 0.], [-6., 3.], [-3., -3.], [-3., 0.], [-3., 3.], [0., -3.], [0., 3.], [3., -3.],
@@ -1707,6 +1707,51 @@ class TestImageGrid:
         grid = mask.ImageGrid(arr=np.array([[-0.5, -1.0], [0.5, 1.0], [0.3, 0.3], [-0.3, -0.3]]))
         assert grid.yticks == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
 
+
+class TestImageGridMapper:
+
+    def test__1d_array_in__can_map_it_to_2x2_2d_array(self):
+
+        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+        shape_2d = (2,2)
+        grid_to_pixel = np.array([[0,0], [0,1], [1,0], [1,1]], dtype='int')
+
+        grid = mask.ImageGridMapper(grid_1d, shape_2d, grid_to_pixel)
+
+        data = np.array([1.0, 2.0, 3.0, 4.0])
+        grid_2d = grid.map_to_2d(data)
+
+        assert (grid_2d == np.array([[1.0, 2.0],
+                                     [3.0, 4.0]])).all()
+
+    def test__1d_array_in__can_map_it_to_2x3_2d_array(self):
+
+        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+        shape_2d = (2,3)
+        grid_to_pixel = np.array([[0,0], [0,1], [0,2], [1,0], [1,1], [1,2]], dtype='int')
+
+        grid = mask.ImageGridMapper(grid_1d, shape_2d, grid_to_pixel)
+
+        data = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+        grid_2d = grid.map_to_2d(data)
+
+        assert (grid_2d == np.array([[1.0, 2.0, 3.0],
+                                     [4.0, 5.0, 6.0]])).all()
+
+    def test__1d_array_in__can_map_it_to_3x2_2d_array(self):
+
+        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+        shape_2d = (3,2)
+        grid_to_pixel = np.array([[0,0], [0,1], [1,0], [1,1], [2,0], [2,1]], dtype='int')
+
+        grid = mask.ImageGridMapper(grid_1d, shape_2d, grid_to_pixel)
+
+        data = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+        grid_2d = grid.map_to_2d(data)
+
+        assert (grid_2d == np.array([[1.0, 2.0],
+                                     [3.0, 4.0],
+                                     [5.0, 6.0]])).all()
 
 class TestGridCollection(object):
     def test_grids(self, grids):

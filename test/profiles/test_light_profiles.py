@@ -7,7 +7,9 @@ import numpy as np
 import math
 import scipy.special
 
-grid = np.array([[3.0, -4.0]])
+grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+grid2d = np.array([[[1.0, 1.0], [2.0, 2.0]],
+                    [3.0, 3.0], [4.0, 4.0]])
 
 @pytest.fixture(name='elliptical')
 def elliptical_sersic():
@@ -48,6 +50,18 @@ def test_component_numbers_four_profiles():
     assert sersic_1.component_number == 1
     assert sersic_2.component_number == 2
     assert sersic_3.component_number == 3
+
+
+class TestMapTo2D(object):
+
+    def test__2d_grid_in__2d_array_out(self):
+
+        gaussian = lp.EllipticalGaussianLP(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0, sigma=0.1)
+
+        intensities_1d = gaussian.intensity_from_grid(grid)
+
+        intensities_2d = gaussian.intensity_from_grid(grid2d)
+
 
 
 class TestGaussianLP:
@@ -137,7 +151,7 @@ class TestGaussianLP:
         elliptical = lp.EllipticalGaussianLP(axis_ratio=1.0, phi=0.0, intensity=3.0, sigma=2.0)
         spherical = lp.SphericalGaussianLP(intensity=3.0, sigma=2.0)
 
-        assert elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)
+        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
 
 
 class TestSersicLP:
@@ -197,8 +211,7 @@ class TestSersicLP:
 
         spherical = lp.SphericalSersicLP(intensity=3.0, effective_radius=2.0, sersic_index=2.0)
 
-        assert elliptical.intensity_from_grid(grid=np.array([[3.0, -4.0]])) == \
-               spherical.intensity_from_grid(grid=np.array([[3.0, -4.0]]))
+        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
 
 
 class TestExponentialLP:
@@ -257,7 +270,7 @@ class TestExponentialLP:
 
         spherical = lp.SphericalExponentialLP(intensity=3.0, effective_radius=2.0)
 
-        assert elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)
+        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
 
 
 class TestDevVaucouleursLP:
@@ -321,7 +334,7 @@ class TestDevVaucouleursLP:
 
         spherical = lp.SphericalDevVaucouleursLP(intensity=3.0, effective_radius=2.0)
 
-        assert elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)
+        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
 
 
 class TestCoreSersicLP(object):
@@ -365,7 +378,7 @@ class TestCoreSersicLP(object):
                                                             radius_break=0.01,
                                                             intensity_break=0.1, gamma=1.0, alpha=1.0)
 
-        assert elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)
+        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
 
 
 class TestLuminosityIntegral(object):
