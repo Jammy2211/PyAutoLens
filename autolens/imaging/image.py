@@ -334,6 +334,14 @@ class PSF(Array):
         if renormalize:
             self.renormalize()
 
+    # @classmethod
+    # def simulate_via_gaussian(cls, shape, pixel_scale, axis_ratio, phi, sigma):
+    #     from autolens.imaging import mask
+    #     from autolens.profiles.light_profiles import EllipticalGaussianLP
+    #     gaussian = EllipticalGaussianLP(centre=(0.0, 0.0), axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
+    #     msk = mask.Mask.unmasked()
+    #     return PSF(gaussian)
+
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu):
         """
