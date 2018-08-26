@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import pytest
+from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 
@@ -1298,3 +1299,62 @@ class TestMassIntegral(object):
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.1)
+
+
+class TestGridMapperMapsOutputTo2D(object):
+
+    def test__grid_mapper_in__2d_surface_densities_out(self):
+
+        gaussian = mp.SphericalIsothermalMP(einstein_radius=2.0)
+
+        surface_density_1d = gaussian.surface_density_from_grid(grid)
+
+        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+
+        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+
+        surface_density_2d = gaussian.surface_density_from_grid(mapper_grid)
+
+        assert surface_density_2d[1,1] == surface_density_1d[0]
+        assert surface_density_2d[1,2] == surface_density_1d[1]
+        assert surface_density_2d[2,1] == surface_density_1d[2]
+        assert surface_density_2d[2,2] == surface_density_1d[3]
+        
+    def test__grid_mapper_in__2d_potential_out(self):
+
+        gaussian = mp.SphericalIsothermalMP(einstein_radius=2.0)
+
+        potential_1d = gaussian.potential_from_grid(grid)
+
+        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+
+        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+
+        potential_2d = gaussian.potential_from_grid(mapper_grid)
+
+        assert potential_2d[1,1] == potential_1d[0]
+        assert potential_2d[1,2] == potential_1d[1]
+        assert potential_2d[2,1] == potential_1d[2]
+        assert potential_2d[2,2] == potential_1d[3]
+        
+    def test__grid_mapper_in__2d_deflections_out(self):
+
+        gaussian = mp.SphericalIsothermalMP(einstein_radius=2.0)
+
+        deflections_1d = gaussian.deflections_from_grid(grid)
+
+        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+
+        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+
+        deflections_2d = gaussian.deflections_from_grid(mapper_grid)
+
+        assert deflections_2d[0][1,1] == deflections_1d[0,0]
+        assert deflections_2d[0][1,2] == deflections_1d[1,0]
+        assert deflections_2d[0][2,1] == deflections_1d[2,0]
+        assert deflections_2d[0][2,2] == deflections_1d[3,0]
+
+        assert deflections_2d[1][1,1] == deflections_1d[0,1]
+        assert deflections_2d[1][1,2] == deflections_1d[1,1]
+        assert deflections_2d[1][2,1] == deflections_1d[2,1]
+        assert deflections_2d[1][2,2] == deflections_1d[3,1]
