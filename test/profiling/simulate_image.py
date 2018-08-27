@@ -34,7 +34,7 @@ pixel_scale = 0.01
 
 psf = image.PSF.from_fits(file_path=path+'../profiling/data/psf', hdu=3, pixel_scale=pixel_scale)
 psf = psf.trim(psf_size)
-ma = mask.Mask.for_simulate(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, psf_size=psf_size)
+ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, pad_size=psf_size)
 
 image_plane_grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=4,
                                                                                    blurring_shape=psf_size)
@@ -52,7 +52,7 @@ ray_trace = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxy], source_gal
                                          image_grids=image_plane_grids)
 
 galaxy_image_1d = ray_trace.galaxy_light_profiles_image_from_planes()
-galaxy_image_2d = ma.map_to_2d(galaxy_image_1d)
+galaxy_image_2d = ma.map_unmasked_1d_array_to_2d_array(galaxy_image_1d)
 
 plt.imshow(galaxy_image_2d)
 plt.show()

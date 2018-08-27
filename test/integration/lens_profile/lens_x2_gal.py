@@ -64,7 +64,7 @@ def make_lens_x2_gal_pipeline(pipeline_name):
             self.lens_galaxies[1].elliptical_sersic.centre_1 = mm.UniformPrior(0.0, 2.0)
 
     def modify_mask_function(img):
-        return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask=5.)
+        return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
     phase1 = LensPlanex2GalPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
                                                 gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
