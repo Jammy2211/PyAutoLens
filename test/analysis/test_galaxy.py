@@ -1,170 +1,149 @@
-from autolens.analysis import galaxy
-from autolens.profiles import mass_profiles, light_profiles, light_and_mass_profiles
+from autolens.imaging import mask
+from autolens.analysis import galaxy as g
+from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
+from autolens.profiles import light_and_mass_profiles as lmp
 
 import pytest
 import numpy as np
 
 
-@pytest.fixture(name="sersic_light")
-def make_sersic_light():
-    return light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                             effective_radius=0.6, sersic_index=4.0)
+@pytest.fixture(name="sersic_0")
+def make_sersic_0():
+    return lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0)
 
+@pytest.fixture(name="sersic_1")
+def make_sersic_1():
+    return lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=2.0, effective_radius=0.4, sersic_index=2.0)
 
-class TestMassAndLightProfiles(object):
-    @pytest.fixture(name="mass_and_light")
-    def make_mass_and_light_profile(self):
-        return light_and_mass_profiles.EllipticalSersicRadialGradientLMP()
+@pytest.fixture(name="gal_sersic_x1")
+def make_gal_sersic_x1(sersic_0):
+    return g.Galaxy(redshift=0.5, lp0=sersic_0)
 
-    def test_single_profile(self, mass_and_light):
-        g = galaxy.Galaxy(profile=mass_and_light)
-        assert 1 == len(g.light_profiles)
-        assert 1 == len(g.mass_profiles)
-        assert g.mass_profiles[0] == mass_and_light
-        assert g.light_profiles[0] == mass_and_light
-
-    def test_multiple_profile(self, mass_and_light, sersic_light, sie_1):
-        g = galaxy.Galaxy(profile=mass_and_light, light=sersic_light, sie=sie_1)
-        assert 2 == len(g.light_profiles)
-        assert 2 == len(g.mass_profiles)
+@pytest.fixture(name="gal_sersic_x2")
+def make_gal_sersic_x2(sersic_0, sersic_1):
+    return g.Galaxy(redshift=0.5, lp0=sersic_0, lp1=sersic_1)
 
 
 class TestLightProfiles(object):
+
+
     class TestIntensity:
 
-        def test__one_profile_galaxy__intensity_is_same_individual_profile(self, sersic_light):
-            sersic_intensity = sersic_light.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
+        def test__one_profile_gal__intensity_is_same_individual_profile(self, sersic_0, gal_sersic_x1):
+            
+            sersic_intensity = sersic_0.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=1.0,
-                                              phi=0.0,
-                                              intensity=1.0,
-                                              effective_radius=0.6,
-                                              sersic_index=4.0))
+            gal_sersic_intensity = gal_sersic_x1.intensity_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_sersic_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
+            assert sersic_intensity == gal_sersic_intensity
 
-            assert sersic_intensity == galaxy_sersic_intensity
+        def test__two_profile_gal__intensity_is_sum_of_individual_profiles(self, sersic_0, sersic_1, gal_sersic_x2):
 
-        def test__two_profile_galaxy__intensity_is_sum_of_individual_profiles(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                         effective_radius=2.0,
-                                                         sersic_index=1.0)
+            intensity = sersic_0.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity += sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
-                                                         effective_radius=3.0,
-                                                         sersic_index=2.0)
+            gal_intensity = gal_sersic_x2.intensity_from_grid(np.array([[1.05, -0.55]]))
 
-            intensity = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
+            assert intensity == gal_intensity
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=1.0,
-                                              phi=0.0,
-                                              intensity=3.0,
-                                              effective_radius=2.0,
-                                              sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=0.5,
-                                              phi=0.0,
-                                              intensity=7.0,
-                                              effective_radius=3.0,
-                                              sersic_index=2.0))
+        def test__three_profile_gal__individual_intensities_can_be_extracted(self, sersic_0, sersic_1, gal_sersic_x2):
 
-            galaxy_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_1 = sersic_0.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_2 = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
 
-            assert intensity == galaxy_intensity
+            gal_intensity = gal_sersic_x2.intensity_from_grid_individual(np.array([[1.05, -0.55]]))
 
-        def test__three_profile_galaxy__intensity_is_sum_of_individual_profiles(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                         effective_radius=2.0,
-                                                         sersic_index=1.0)
+            assert intensity_1 == gal_intensity[0]
+            assert intensity_2 == gal_intensity[1]
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
-                                                         effective_radius=3.0,
-                                                         sersic_index=2.0)
+        def test__grid_mapper_in__intensities_returned_on_2d_array(self, gal_sersic_x2):
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
-                                                         effective_radius=3.0,
-                                                         sersic_index=2.0)
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-            intensity = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_3.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_1d = gal_sersic_x2.intensity_from_grid(grid)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=1.0,
-                                              phi=0.0,
-                                              intensity=3.0,
-                                              effective_radius=2.0,
-                                              sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=0.5,
-                                              phi=0.0,
-                                              intensity=7.0,
-                                              effective_radius=3.0,
-                                              sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=0.8,
-                                              phi=50.0,
-                                              intensity=2.0,
-                                              effective_radius=3.0,
-                                              sersic_index=2.0))
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-            galaxy_intensity = galaxy_sersic.intensity_from_grid(np.array([[1.05, -0.55]]))
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
 
-            assert intensity == galaxy_intensity
+            intensity_2d = gal_sersic_x2.intensity_from_grid(image_grid_mapper)
 
-        def test__three_profile_galaxy__individual_intensities_can_be_extracted(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
-                                                         effective_radius=2.0,
-                                                         sersic_index=1.0)
+            assert intensity_2d[0, 0] == intensity_1d[0]
+            assert intensity_2d[0, 1] == intensity_1d[1]
+            assert intensity_2d[0, 2] == intensity_1d[2]
+            assert intensity_2d[0, 3] == intensity_1d[3]
+            assert intensity_2d[1, 0] == intensity_1d[0]
+            assert intensity_2d[1, 1] == intensity_1d[1]
+            assert intensity_2d[1, 2] == intensity_1d[2]
+            assert intensity_2d[1, 3] == intensity_1d[3]
+            assert intensity_2d[2, 0] == intensity_1d[0]
+            assert intensity_2d[2, 1] == intensity_1d[1]
+            assert intensity_2d[2, 2] == intensity_1d[2]
+            assert intensity_2d[2, 3] == intensity_1d[3]
+            assert intensity_2d[3, 0] == intensity_1d[0]
+            assert intensity_2d[3, 1] == intensity_1d[1]
+            assert intensity_2d[3, 2] == intensity_1d[2]
+            assert intensity_2d[3, 3] == intensity_1d[3]
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
-                                                         effective_radius=3.0,
-                                                         sersic_index=2.0)
+        def test__grid_mapper_in__indvidual_intensities_returned_as_list_of_2d_arrays(self, sersic_0, sersic_1,
+                                                                                      gal_sersic_x2):
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
-                                                         effective_radius=3.0,
-                                                         sersic_index=2.0)
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-            intensity_1 = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity_2 = sersic_2.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity_3 = sersic_3.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_1d_0 = sersic_0.intensity_from_grid(np.array(grid))
+            intensity_1d_1 = sersic_1.intensity_from_grid(np.array(grid))
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=1.0,
-                                              phi=0.0,
-                                              intensity=3.0,
-                                              effective_radius=2.0,
-                                              sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=0.5,
-                                              phi=0.0,
-                                              intensity=7.0,
-                                              effective_radius=3.0,
-                                              sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLP(
-                                              axis_ratio=0.8,
-                                              phi=50.0,
-                                              intensity=2.0,
-                                              effective_radius=3.0,
-                                              sersic_index=2.0))
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-            galaxy_intensity = galaxy_sersic.intensity_from_grid_individual(np.array([[1.05, -0.55]]))
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
 
-            assert intensity_1 == galaxy_intensity[0]
-            assert intensity_2 == galaxy_intensity[1]
-            assert intensity_3 == galaxy_intensity[2]
+            intensity_2d = gal_sersic_x2.intensity_from_grid_individual(image_grid_mapper)
+
+            assert intensity_2d[0][0, 0] == intensity_1d_0[0]
+            assert intensity_2d[0][0, 1] == intensity_1d_0[1]
+            assert intensity_2d[0][0, 2] == intensity_1d_0[2]
+            assert intensity_2d[0][0, 3] == intensity_1d_0[3]
+            assert intensity_2d[0][1, 0] == intensity_1d_0[0]
+            assert intensity_2d[0][1, 1] == intensity_1d_0[1]
+            assert intensity_2d[0][1, 2] == intensity_1d_0[2]
+            assert intensity_2d[0][1, 3] == intensity_1d_0[3]
+            assert intensity_2d[0][2, 0] == intensity_1d_0[0]
+            assert intensity_2d[0][2, 1] == intensity_1d_0[1]
+            assert intensity_2d[0][2, 2] == intensity_1d_0[2]
+            assert intensity_2d[0][2, 3] == intensity_1d_0[3]
+            assert intensity_2d[0][3, 0] == intensity_1d_0[0]
+            assert intensity_2d[0][3, 1] == intensity_1d_0[1]
+            assert intensity_2d[0][3, 2] == intensity_1d_0[2]
+            assert intensity_2d[0][3, 3] == intensity_1d_0[3]
+            
+            assert intensity_2d[1][0, 1] == intensity_1d_1[1]
+            assert intensity_2d[1][0, 2] == intensity_1d_1[2]
+            assert intensity_2d[1][0, 3] == intensity_1d_1[3]
+            assert intensity_2d[1][1, 0] == intensity_1d_1[0]
+            assert intensity_2d[1][1, 1] == intensity_1d_1[1]
+            assert intensity_2d[1][1, 2] == intensity_1d_1[2]
+            assert intensity_2d[1][1, 3] == intensity_1d_1[3]
+            assert intensity_2d[1][2, 0] == intensity_1d_1[0]
+            assert intensity_2d[1][2, 1] == intensity_1d_1[1]
+            assert intensity_2d[1][2, 2] == intensity_1d_1[2]
+            assert intensity_2d[1][2, 3] == intensity_1d_1[3]
+            assert intensity_2d[1][3, 0] == intensity_1d_1[0]
+            assert intensity_2d[1][3, 1] == intensity_1d_1[1]
+            assert intensity_2d[1][3, 2] == intensity_1d_1[2]
+            assert intensity_2d[1][3, 3] == intensity_1d_1[3]
+
 
     class TestLuminosityWithinCircle:
 
-        def test__one_profile_galaxy__integral_is_same_as_individual_profile(self):
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__one_profile_gal__integral_is_same_as_individual_profile(self):
+            sersic = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                        effective_radius=2.0,
                                                        sersic_index=1.0)
 
@@ -172,24 +151,24 @@ class TestLightProfiles(object):
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle(radius=integral_radius)
+            gal_intensity_integral = gal_sersic.luminosity_within_circle(radius=integral_radius)
 
-            assert intensity_integral == galaxy_intensity_integral
+            assert intensity_integral == gal_intensity_integral
 
-        def test__two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__two_profile_gal__integral_is_sum_of_individual_profiles(self):
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                          effective_radius=2.0,
                                                          sersic_index=1.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
@@ -198,34 +177,34 @@ class TestLightProfiles(object):
             intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius)
             intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
+                                          light_profile_2=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=7.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle(radius=integral_radius)
+            gal_intensity_integral = gal_sersic.luminosity_within_circle(radius=integral_radius)
 
-            assert intensity_integral == galaxy_intensity_integral
+            assert intensity_integral == gal_intensity_integral
 
-        def test__three_profile_galaxy__integral_is_sum_of_individual_profiles(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__three_profile_gal__integral_is_sum_of_individual_profiles(self):
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                          effective_radius=2.0,
                                                          sersic_index=1.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
+            sersic_3 = lp.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
@@ -235,40 +214,40 @@ class TestLightProfiles(object):
             intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
             intensity_integral += sersic_3.luminosity_within_circle(radius=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
+                                          light_profile_2=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=7.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLP(
+                                          light_profile_3=lp.EllipticalSersicLP(
                                               axis_ratio=0.8,
                                               phi=50.0,
                                               intensity=2.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle(radius=integral_radius)
+            gal_intensity_integral = gal_sersic.luminosity_within_circle(radius=integral_radius)
 
-            assert intensity_integral == galaxy_intensity_integral
+            assert intensity_integral == gal_intensity_integral
 
-        def test__three_profile_galaxy__individual_integrals_can_be_extracted(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__three_profile_gal__individual_integrals_can_be_extracted(self):
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                          effective_radius=2.0,
                                                          sersic_index=1.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
+            sersic_3 = lp.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
@@ -278,37 +257,38 @@ class TestLightProfiles(object):
             intensity_integral_2 = sersic_2.luminosity_within_circle(radius=integral_radius)
             intensity_integral_3 = sersic_3.luminosity_within_circle(radius=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
+                                          light_profile_2=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=7.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLP(
+                                          light_profile_3=lp.EllipticalSersicLP(
                                               axis_ratio=0.8,
                                               phi=50.0,
                                               intensity=2.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_circle_individual(
+            gal_intensity_integral = gal_sersic.luminosity_within_circle_individual(
                 radius=integral_radius)
 
-            assert intensity_integral_1 == galaxy_intensity_integral[0]
-            assert intensity_integral_2 == galaxy_intensity_integral[1]
-            assert intensity_integral_3 == galaxy_intensity_integral[2]
+            assert intensity_integral_1 == gal_intensity_integral[0]
+            assert intensity_integral_2 == gal_intensity_integral[1]
+            assert intensity_integral_3 == gal_intensity_integral[2]
+
 
     class TestLuminosityWithinEllipse:
 
-        def test__one_profile_galaxy__integral_is_same_as_individual_profile(self):
-            sersic = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
+        def test__one_profile_gal__integral_is_same_as_individual_profile(self):
+            sersic = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                        effective_radius=2.0,
                                                        sersic_index=1.0)
 
@@ -316,24 +296,24 @@ class TestLightProfiles(object):
 
             intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse(major_axis=integral_radius)
+            gal_intensity_integral = gal_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
-            assert intensity_integral == galaxy_intensity_integral
+            assert intensity_integral == gal_intensity_integral
 
-        def test__two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__two_profile_gal__integral_is_sum_of_individual_profiles(self):
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                          effective_radius=2.0,
                                                          sersic_index=1.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
@@ -342,34 +322,34 @@ class TestLightProfiles(object):
             intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius)
             intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
+                                          light_profile_2=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=7.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse(major_axis=integral_radius)
+            gal_intensity_integral = gal_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
-            assert intensity_integral == galaxy_intensity_integral
+            assert intensity_integral == gal_intensity_integral
 
-        def test__three_profile_galaxy__integral_is_sum_of_individual_profiles(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__three_profile_gal__integral_is_sum_of_individual_profiles(self):
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                          effective_radius=2.0,
                                                          sersic_index=1.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
+            sersic_3 = lp.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
@@ -379,40 +359,40 @@ class TestLightProfiles(object):
             intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
             intensity_integral += sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
+                                          light_profile_2=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=7.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLP(
+                                          light_profile_3=lp.EllipticalSersicLP(
                                               axis_ratio=0.8,
                                               phi=50.0,
                                               intensity=2.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse(major_axis=integral_radius)
+            gal_intensity_integral = gal_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
-            assert intensity_integral == galaxy_intensity_integral
+            assert intensity_integral == gal_intensity_integral
 
-        def test__three_profile_galaxy__individual_integrals_can_be_extracted(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
+        def test__three_profile_gal__individual_integrals_can_be_extracted(self):
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                                          effective_radius=2.0,
                                                          sersic_index=1.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=0.5, phi=0.0, intensity=7.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
+            sersic_3 = lp.EllipticalSersicLP(axis_ratio=0.8, phi=50.0, intensity=2.0,
                                                          effective_radius=3.0,
                                                          sersic_index=2.0)
 
@@ -422,533 +402,744 @@ class TestLightProfiles(object):
             intensity_integral_2 = sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
             intensity_integral_3 = sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5,
-                                          light_profile_1=light_profiles.EllipticalSersicLP(
+            gal_sersic = g.Galaxy(redshift=0.5,
+                                          light_profile_1=lp.EllipticalSersicLP(
                                               axis_ratio=1.0,
                                               phi=0.0,
                                               intensity=3.0,
                                               effective_radius=2.0,
                                               sersic_index=1.0),
-                                          light_profile_2=light_profiles.EllipticalSersicLP(
+                                          light_profile_2=lp.EllipticalSersicLP(
                                               axis_ratio=0.5,
                                               phi=0.0,
                                               intensity=7.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0),
-                                          light_profile_3=light_profiles.EllipticalSersicLP(
+                                          light_profile_3=lp.EllipticalSersicLP(
                                               axis_ratio=0.8,
                                               phi=50.0,
                                               intensity=2.0,
                                               effective_radius=3.0,
                                               sersic_index=2.0))
 
-            galaxy_intensity_integral = galaxy_sersic.luminosity_within_ellipse_individual(
+            gal_intensity_integral = gal_sersic.luminosity_within_ellipse_individual(
                 major_axis=integral_radius)
 
-            assert intensity_integral_1 == galaxy_intensity_integral[0]
-            assert intensity_integral_2 == galaxy_intensity_integral[1]
-            assert intensity_integral_3 == galaxy_intensity_integral[2]
+            assert intensity_integral_1 == gal_intensity_integral[0]
+            assert intensity_integral_2 == gal_intensity_integral[1]
+            assert intensity_integral_3 == gal_intensity_integral[2]
+
 
     class TestSymmetricProfiles(object):
 
         def test_1d_symmetry(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                          effective_radius=0.6,
                                                          sersic_index=4.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                          effective_radius=0.6,
                                                          sersic_index=4.0, centre=(100, 0))
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2)
+            gal_sersic = g.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2)
 
-            assert galaxy_sersic.intensity_from_grid(
-                np.array([[0.0, 0.0]])) == galaxy_sersic.intensity_from_grid(np.array([[100.0, 0.0]]))
-            assert galaxy_sersic.intensity_from_grid(
-                np.array([[49.0, 0.0]])) == galaxy_sersic.intensity_from_grid(np.array([[51.0, 0.0]]))
+            assert gal_sersic.intensity_from_grid(
+                np.array([[0.0, 0.0]])) == gal_sersic.intensity_from_grid(np.array([[100.0, 0.0]]))
+            assert gal_sersic.intensity_from_grid(
+                np.array([[49.0, 0.0]])) == gal_sersic.intensity_from_grid(np.array([[51.0, 0.0]]))
 
         def test_2d_symmetry(self):
-            sersic_1 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
+            sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                          effective_radius=0.6,
                                                          sersic_index=4.0)
 
-            sersic_2 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
+            sersic_2 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                          effective_radius=0.6,
                                                          sersic_index=4.0, centre=(100, 0))
 
-            sersic_3 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
+            sersic_3 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                          effective_radius=0.6,
                                                          sersic_index=4.0, centre=(0, 100))
 
-            sersic_4 = light_profiles.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
+            sersic_4 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                          effective_radius=0.6,
                                                          sersic_index=4.0, centre=(100, 100))
 
-            galaxy_sersic = galaxy.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2,
+            gal_sersic = g.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2,
                                           light_profile_3=sersic_3, light_profile_4=sersic_4)
 
-            assert galaxy_sersic.intensity_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert gal_sersic.intensity_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_sersic.intensity_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert galaxy_sersic.intensity_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_sersic.intensity_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_sersic.intensity_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert galaxy_sersic.intensity_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_sersic.intensity_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_sersic.intensity_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert galaxy_sersic.intensity_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                galaxy_sersic.intensity_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_sersic.intensity_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_sersic.intensity_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+
+
+@pytest.fixture(name="sie_0")
+def make_sie_0():
+    return mp.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
 
 
 @pytest.fixture(name="sie_1")
 def make_sie_1():
-    return mass_profiles.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
+    return mp.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
 
 
-@pytest.fixture(name="sie_2")
-def make_sie_2():
-    return mass_profiles.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
+@pytest.fixture(name="gal_sie_x1")
+def make_gal_sie_x1(sie_0):
+    return g.Galaxy(redshift=0.5, mass_profile_1=sie_0)
 
 
-@pytest.fixture(name="sie_3")
-def make_sie_3():
-    return mass_profiles.EllipticalIsothermalMP(axis_ratio=0.9, phi=130.0, einstein_radius=1.6)
-
-
-@pytest.fixture(name="galaxy_sie_1")
-def make_galaxy_sie_1(sie_1):
-    return galaxy.Galaxy(redshift=0.5, mass_profile_1=sie_1)
-
-
-@pytest.fixture(name="galaxy_sie_2")
-def make_galaxy_sie_2(sie_1, sie_2):
-    return galaxy.Galaxy(redshift=0.5, mass_profile_1=sie_1, mass_profile_2=sie_2)
-
-
-@pytest.fixture(name="galaxy_sie_3")
-def make_galaxy_sie_3(sie_1, sie_2, sie_3):
-    return galaxy.Galaxy(redshift=0.5, mass_profile_1=sie_1, mass_profile_2=sie_2, mass_profile_3=sie_3)
+@pytest.fixture(name="gal_sie_x2")
+def make_gal_sie_x2(sie_0, sie_1):
+    return g.Galaxy(redshift=0.5, mass_profile_1=sie_0, mass_profile_2=sie_1)
 
 
 class TestMassProfiles(object):
+    
     class TestSurfaceDensity:
 
-        def test__one_profile_galaxy__surface_density_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-            sie_surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+        def test__one_profile_gal__surface_density_is_same_individual_profile(self, sie_0, gal_sie_x1):
 
-            galaxy_sie_surface_density = galaxy_sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            sie_surface_density = sie_0.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_surface_density == galaxy_sie_surface_density
+            gal_sie_surface_density = gal_sie_x1.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-        def test__two_profile_galaxy__surface_density_is_sum_of_individual_profiles(self, sie_1, sie_2, galaxy_sie_2):
-            surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            assert sie_surface_density == gal_sie_surface_density
 
-            galaxy_surface_density = galaxy_sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
+        def test__two_profile_gal__surface_density_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
 
-            assert surface_density == galaxy_surface_density
+            surface_density = sie_0.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            surface_density += sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-        def test__three_profile_galaxy__surface_density_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
-                                                                                      galaxy_sie_3):
-            surface_density = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            gal_surface_density = gal_sie_x2.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_surface_density = galaxy_sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            assert surface_density == gal_surface_density
 
-            assert surface_density == galaxy_surface_density
+        def test__two_profile_gal__individual_surface_densities_can_be_extracted(self, sie_0, sie_1, gal_sie_x2):
 
-        def test__three_profile_galaxy__individual_surface_densities_can_be_extracted(self, sie_1, sie_2, sie_3,
-                                                                                      galaxy_sie_3):
+            surface_density_0 = sie_0.surface_density_from_grid(np.array([[1.05, -0.55]]))
             surface_density_1 = sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
-            surface_density_2 = sie_2.surface_density_from_grid(np.array([[1.05, -0.55]]))
-            surface_density_3 = sie_3.surface_density_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_surface_density = galaxy_sie_3.surface_density_from_grid_individual(np.array([[1.05, -0.55]]))
+            gal_surface_density = gal_sie_x2.surface_density_from_grid_individual(np.array([[1.05, -0.55]]))
 
-            assert surface_density_1 == galaxy_surface_density[0]
-            assert surface_density_2 == galaxy_surface_density[1]
-            assert surface_density_3 == galaxy_surface_density[2]
+            assert surface_density_0 == gal_surface_density[0]
+            assert surface_density_1 == gal_surface_density[1]
+
+        def test__grid_mapper_in__surface_density_returned_on_2d_array(self, gal_sie_x2):
+
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            surface_density_0d = gal_sie_x2.surface_density_from_grid(grid)
+
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
+
+            surface_density_1d = gal_sie_x2.surface_density_from_grid(image_grid_mapper)
+
+            assert surface_density_1d[0, 0] == surface_density_0d[0]
+            assert surface_density_1d[0, 1] == surface_density_0d[1]
+            assert surface_density_1d[0, 2] == surface_density_0d[2]
+            assert surface_density_1d[0, 3] == surface_density_0d[3]
+            assert surface_density_1d[1, 0] == surface_density_0d[0]
+            assert surface_density_1d[1, 1] == surface_density_0d[1]
+            assert surface_density_1d[1, 2] == surface_density_0d[2]
+            assert surface_density_1d[1, 3] == surface_density_0d[3]
+            assert surface_density_1d[2, 0] == surface_density_0d[0]
+            assert surface_density_1d[2, 1] == surface_density_0d[1]
+            assert surface_density_1d[2, 2] == surface_density_0d[2]
+            assert surface_density_1d[2, 3] == surface_density_0d[3]
+            assert surface_density_1d[3, 0] == surface_density_0d[0]
+            assert surface_density_1d[3, 1] == surface_density_0d[1]
+            assert surface_density_1d[3, 2] == surface_density_0d[2]
+            assert surface_density_1d[3, 3] == surface_density_0d[3]
+
+        def test__grid_mapper_in__indvidual_surface_densities_returned_as_list_of_2d_arrays(self, sie_0, sie_1,
+                                                                                      gal_sie_x2):
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            surface_density_1d_0 = sie_0.surface_density_from_grid(np.array(grid))
+            surface_density_1d_1 = sie_1.surface_density_from_grid(np.array(grid))
+
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
+
+            surface_density_2d = gal_sie_x2.surface_density_from_grid_individual(image_grid_mapper)
+
+            assert surface_density_2d[0][0, 0] == surface_density_1d_0[0]
+            assert surface_density_2d[0][0, 1] == surface_density_1d_0[1]
+            assert surface_density_2d[0][0, 2] == surface_density_1d_0[2]
+            assert surface_density_2d[0][0, 3] == surface_density_1d_0[3]
+            assert surface_density_2d[0][1, 0] == surface_density_1d_0[0]
+            assert surface_density_2d[0][1, 1] == surface_density_1d_0[1]
+            assert surface_density_2d[0][1, 2] == surface_density_1d_0[2]
+            assert surface_density_2d[0][1, 3] == surface_density_1d_0[3]
+            assert surface_density_2d[0][2, 0] == surface_density_1d_0[0]
+            assert surface_density_2d[0][2, 1] == surface_density_1d_0[1]
+            assert surface_density_2d[0][2, 2] == surface_density_1d_0[2]
+            assert surface_density_2d[0][2, 3] == surface_density_1d_0[3]
+            assert surface_density_2d[0][3, 0] == surface_density_1d_0[0]
+            assert surface_density_2d[0][3, 1] == surface_density_1d_0[1]
+            assert surface_density_2d[0][3, 2] == surface_density_1d_0[2]
+            assert surface_density_2d[0][3, 3] == surface_density_1d_0[3]
+
+            assert surface_density_2d[1][0, 1] == surface_density_1d_1[1]
+            assert surface_density_2d[1][0, 2] == surface_density_1d_1[2]
+            assert surface_density_2d[1][0, 3] == surface_density_1d_1[3]
+            assert surface_density_2d[1][1, 0] == surface_density_1d_1[0]
+            assert surface_density_2d[1][1, 1] == surface_density_1d_1[1]
+            assert surface_density_2d[1][1, 2] == surface_density_1d_1[2]
+            assert surface_density_2d[1][1, 3] == surface_density_1d_1[3]
+            assert surface_density_2d[1][2, 0] == surface_density_1d_1[0]
+            assert surface_density_2d[1][2, 1] == surface_density_1d_1[1]
+            assert surface_density_2d[1][2, 2] == surface_density_1d_1[2]
+            assert surface_density_2d[1][2, 3] == surface_density_1d_1[3]
+            assert surface_density_2d[1][3, 0] == surface_density_1d_1[0]
+            assert surface_density_2d[1][3, 1] == surface_density_1d_1[1]
+            assert surface_density_2d[1][3, 2] == surface_density_1d_1[2]
+            assert surface_density_2d[1][3, 3] == surface_density_1d_1[3]
+
 
     class TestPotential:
 
-        def test__one_profile_galaxy__potential_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-            sie_potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
+        def test__one_profile_gal__potential_is_same_individual_profile(self, sie_0, gal_sie_x1):
 
-            galaxy_sie_potential = galaxy_sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
+            sie_potential = sie_0.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_potential == galaxy_sie_potential
+            gal_sie_potential = gal_sie_x1.potential_from_grid(np.array([[1.05, -0.55]]))
 
-        def test__two_profile_galaxy__potential_is_sum_of_individual_profiles(self, sie_1, sie_2, galaxy_sie_2):
-            potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
-            potential += sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
+            assert sie_potential == gal_sie_potential
 
-            galaxy_potential = galaxy_sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
+        def test__two_profile_gal__potential_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
+            potential = sie_0.potential_from_grid(np.array([[1.05, -0.55]]))
+            potential += sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            assert potential == galaxy_potential
+            gal_potential = gal_sie_x2.potential_from_grid(np.array([[1.05, -0.55]]))
 
-        def test__three_profile_galaxy__potential_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
-                                                                                galaxy_sie_3):
-            potential = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
-            potential += sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
-            potential += sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
+            assert potential == gal_potential
 
-            galaxy_potential = galaxy_sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
+        def test__two_profile_gal__individual_potentials_can_be_extracted(self, sie_0, sie_1, gal_sie_x2):
 
-            assert potential == galaxy_potential
-
-        def test__three_profile_galaxy__individual_potentials_can_be_extracted(self, sie_1, sie_2, sie_3,
-                                                                               galaxy_sie_3):
+            potential_0 = sie_0.potential_from_grid(np.array([[1.05, -0.55]]))
             potential_1 = sie_1.potential_from_grid(np.array([[1.05, -0.55]]))
-            potential_2 = sie_2.potential_from_grid(np.array([[1.05, -0.55]]))
-            potential_3 = sie_3.potential_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_potential = galaxy_sie_3.potential_from_grid_individual(np.array([[1.05, -0.55]]))
+            gal_potential = gal_sie_x2.potential_from_grid_individual(np.array([[1.05, -0.55]]))
 
-            assert potential_1 == galaxy_potential[0]
-            assert potential_2 == galaxy_potential[1]
-            assert potential_3 == galaxy_potential[2]
+            assert potential_0 == gal_potential[0]
+            assert potential_1 == gal_potential[1]
+
+        def test__grid_mapper_in__potential_returned_on_2d_array(self, gal_sie_x2):
+
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            potential_0d = gal_sie_x2.potential_from_grid(grid)
+
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
+
+            potential_1d = gal_sie_x2.potential_from_grid(image_grid_mapper)
+
+            assert potential_1d[0, 0] == potential_0d[0]
+            assert potential_1d[0, 1] == potential_0d[1]
+            assert potential_1d[0, 2] == potential_0d[2]
+            assert potential_1d[0, 3] == potential_0d[3]
+            assert potential_1d[1, 0] == potential_0d[0]
+            assert potential_1d[1, 1] == potential_0d[1]
+            assert potential_1d[1, 2] == potential_0d[2]
+            assert potential_1d[1, 3] == potential_0d[3]
+            assert potential_1d[2, 0] == potential_0d[0]
+            assert potential_1d[2, 1] == potential_0d[1]
+            assert potential_1d[2, 2] == potential_0d[2]
+            assert potential_1d[2, 3] == potential_0d[3]
+            assert potential_1d[3, 0] == potential_0d[0]
+            assert potential_1d[3, 1] == potential_0d[1]
+            assert potential_1d[3, 2] == potential_0d[2]
+            assert potential_1d[3, 3] == potential_0d[3]
+
+        def test__grid_mapper_in__indvidual_potentials_returned_as_list_of_2d_arrays(self, sie_0, sie_1,
+                                                                                      gal_sie_x2):
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            potential_1d_0 = sie_0.potential_from_grid(np.array(grid))
+            potential_1d_1 = sie_1.potential_from_grid(np.array(grid))
+
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
+
+            potential_2d = gal_sie_x2.potential_from_grid_individual(image_grid_mapper)
+
+            assert potential_2d[0][0, 0] == potential_1d_0[0]
+            assert potential_2d[0][0, 1] == potential_1d_0[1]
+            assert potential_2d[0][0, 2] == potential_1d_0[2]
+            assert potential_2d[0][0, 3] == potential_1d_0[3]
+            assert potential_2d[0][1, 0] == potential_1d_0[0]
+            assert potential_2d[0][1, 1] == potential_1d_0[1]
+            assert potential_2d[0][1, 2] == potential_1d_0[2]
+            assert potential_2d[0][1, 3] == potential_1d_0[3]
+            assert potential_2d[0][2, 0] == potential_1d_0[0]
+            assert potential_2d[0][2, 1] == potential_1d_0[1]
+            assert potential_2d[0][2, 2] == potential_1d_0[2]
+            assert potential_2d[0][2, 3] == potential_1d_0[3]
+            assert potential_2d[0][3, 0] == potential_1d_0[0]
+            assert potential_2d[0][3, 1] == potential_1d_0[1]
+            assert potential_2d[0][3, 2] == potential_1d_0[2]
+            assert potential_2d[0][3, 3] == potential_1d_0[3]
+
+            assert potential_2d[1][0, 1] == potential_1d_1[1]
+            assert potential_2d[1][0, 2] == potential_1d_1[2]
+            assert potential_2d[1][0, 3] == potential_1d_1[3]
+            assert potential_2d[1][1, 0] == potential_1d_1[0]
+            assert potential_2d[1][1, 1] == potential_1d_1[1]
+            assert potential_2d[1][1, 2] == potential_1d_1[2]
+            assert potential_2d[1][1, 3] == potential_1d_1[3]
+            assert potential_2d[1][2, 0] == potential_1d_1[0]
+            assert potential_2d[1][2, 1] == potential_1d_1[1]
+            assert potential_2d[1][2, 2] == potential_1d_1[2]
+            assert potential_2d[1][2, 3] == potential_1d_1[3]
+            assert potential_2d[1][3, 0] == potential_1d_1[0]
+            assert potential_2d[1][3, 1] == potential_1d_1[1]
+            assert potential_2d[1][3, 2] == potential_1d_1[2]
+            assert potential_2d[1][3, 3] == potential_1d_1[3]
+
 
     class TestDeflectionAngles:
 
-        def test__one_profile_galaxy__deflection_angles_is_same_individual_profile(self, sie_1, galaxy_sie_1):
-            sie_deflection_angles = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
+        def test__one_profile_gal__deflection_angles_is_same_individual_profile(self, sie_0, gal_sie_x1):
 
-            galaxy_sie_deflection_angles = galaxy_sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
+            sie_deflection_angles = sie_0.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_deflection_angles[0, 0] == galaxy_sie_deflection_angles[0, 0]
-            assert sie_deflection_angles[0, 1] == galaxy_sie_deflection_angles[0, 1]
+            gal_sie_deflection_angles = gal_sie_x1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-        def test__two_profile_galaxy__deflection_angles_is_sum_of_individual_profiles(self):
-            sie_1 = mass_profiles.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
-            sie_2 = mass_profiles.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
+            assert sie_deflection_angles[0, 0] == gal_sie_deflection_angles[0, 0]
+            assert sie_deflection_angles[0, 1] == gal_sie_deflection_angles[0, 1]
 
-            deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
+        def test__two_profile_gal__deflection_angles_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
+
+            deflection_angles_0 = sie_0.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_1 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
             deflection_angles = deflection_angles_0 + deflection_angles_1
 
-            galaxy_sie = galaxy.Galaxy(redshift=0.5,
-                                       mass_profile_1=mass_profiles.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0,
-                                                                                           einstein_radius=1.0),
-                                       mass_profile_2=mass_profiles.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0,
-                                                                                           einstein_radius=1.2))
+            gal_deflection_angles = gal_sie_x2.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            galaxy_deflection_angles = galaxy_sie.deflections_from_grid(np.array([[1.05, -0.55]]))
+            assert deflection_angles[0, 0] == gal_deflection_angles[0, 0]
+            assert deflection_angles[0, 1] == gal_deflection_angles[0, 1]
 
-            assert deflection_angles[0, 0] == galaxy_deflection_angles[0, 0]
-            assert deflection_angles[0, 1] == galaxy_deflection_angles[0, 1]
+        def test__three_profile_gal__individual_deflection_angles_can_be_extracted(self, sie_0, sie_1, gal_sie_x2):
 
-        def test__three_profile_galaxy__deflection_angles_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
-                                                                                        galaxy_sie_3):
-            deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_2 = sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_0 = sie_0.deflections_from_grid(np.array([[1.05, -0.55]]))
+            deflection_angles_1 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
 
-            deflection_angles = deflection_angles_0 + deflection_angles_1 + deflection_angles_2
+            gal_deflection_angles = gal_sie_x2.deflections_from_grid_individual(np.array([[1.05, -0.55]]))
 
-            galaxy_deflection_angles = galaxy_sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
+            assert (deflection_angles_0 == gal_deflection_angles[0]).all()
+            assert (deflection_angles_1 == gal_deflection_angles[1]).all()
 
-            assert deflection_angles[0, 0] == galaxy_deflection_angles[0, 0]
-            assert deflection_angles[0, 1] == galaxy_deflection_angles[0, 1]
+        def test__grid_mapper_in__deflections_returned_on_2d_array(self, gal_sie_x2):
 
-        def test__three_profile_galaxy__individual_deflection_angles_can_be_extracted(self, sie_1, sie_2, sie_3,
-                                                                                      galaxy_sie_3):
-            deflection_angles_0 = sie_1.deflections_from_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_1 = sie_2.deflections_from_grid(np.array([[1.05, -0.55]]))
-            deflection_angles_2 = sie_3.deflections_from_grid(np.array([[1.05, -0.55]]))
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-            galaxy_deflection_angles = galaxy_sie_3.deflections_from_grid_individual(np.array([[1.05, -0.55]]))
+            deflections_1d = gal_sie_x2.deflections_from_grid(grid)
 
-            assert (deflection_angles_0 == galaxy_deflection_angles[0]).all()
-            assert (deflection_angles_1 == galaxy_deflection_angles[1]).all()
-            assert (deflection_angles_2 == galaxy_deflection_angles[2]).all()
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
+
+            deflections_2d = gal_sie_x2.deflections_from_grid(image_grid_mapper)
+
+            assert deflections_2d[0, 0, 0] == deflections_1d[0, 0]
+            assert deflections_2d[0, 1, 0] == deflections_1d[1, 0]
+            assert deflections_2d[0, 2, 0] == deflections_1d[2, 0]
+            assert deflections_2d[0, 3, 0] == deflections_1d[3, 0]
+            assert deflections_2d[1, 0, 0] == deflections_1d[0, 0]
+            assert deflections_2d[1, 1, 0] == deflections_1d[1, 0]
+            assert deflections_2d[1, 2, 0] == deflections_1d[2, 0]
+            assert deflections_2d[1, 3, 0] == deflections_1d[3, 0]
+            assert deflections_2d[2, 0, 0] == deflections_1d[0, 0]
+            assert deflections_2d[2, 1, 0] == deflections_1d[1, 0]
+            assert deflections_2d[2, 2, 0] == deflections_1d[2, 0]
+            assert deflections_2d[2, 3, 0] == deflections_1d[3, 0]
+            assert deflections_2d[3, 0, 0] == deflections_1d[0, 0]
+            assert deflections_2d[3, 1, 0] == deflections_1d[1, 0]
+            assert deflections_2d[3, 2, 0] == deflections_1d[2, 0]
+            assert deflections_2d[3, 3, 0] == deflections_1d[3, 0]
+
+            assert deflections_2d[0, 0, 1] == deflections_1d[0, 1]
+            assert deflections_2d[0, 1, 1] == deflections_1d[1, 1]
+            assert deflections_2d[0, 2, 1] == deflections_1d[2, 1]
+            assert deflections_2d[0, 3, 1] == deflections_1d[3, 1]
+            assert deflections_2d[1, 0, 1] == deflections_1d[0, 1]
+            assert deflections_2d[1, 1, 1] == deflections_1d[1, 1]
+            assert deflections_2d[1, 2, 1] == deflections_1d[2, 1]
+            assert deflections_2d[1, 3, 1] == deflections_1d[3, 1]
+            assert deflections_2d[2, 0, 1] == deflections_1d[0, 1]
+            assert deflections_2d[2, 1, 1] == deflections_1d[1, 1]
+            assert deflections_2d[2, 2, 1] == deflections_1d[2, 1]
+            assert deflections_2d[2, 3, 1] == deflections_1d[3, 1]
+            assert deflections_2d[3, 0, 1] == deflections_1d[0, 1]
+            assert deflections_2d[3, 1, 1] == deflections_1d[1, 1]
+            assert deflections_2d[3, 2, 1] == deflections_1d[2, 1]
+            assert deflections_2d[3, 3, 1] == deflections_1d[3, 1]
+
+        def test__grid_mapper_in__individual_deflections_returned_as_list_of_2d_arrays(self, sie_0, sie_1,
+                                                                                      gal_sie_x2):
+            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            deflections_1d_0 = sie_0.deflections_from_grid(np.array(grid))
+            deflections_1d_1 = sie_1.deflections_from_grid(np.array(grid))
+
+            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
+
+            deflections_2d = gal_sie_x2.deflections_from_grid_individual(image_grid_mapper)
+
+            assert deflections_2d[0][0, 0, 0] == deflections_1d_0[0, 0]
+            assert deflections_2d[0][0, 1, 0] == deflections_1d_0[1, 0]
+            assert deflections_2d[0][0, 2, 0] == deflections_1d_0[2, 0]
+            assert deflections_2d[0][0, 3, 0] == deflections_1d_0[3, 0]
+            assert deflections_2d[0][1, 0, 0] == deflections_1d_0[0, 0]
+            assert deflections_2d[0][1, 1, 0] == deflections_1d_0[1, 0]
+            assert deflections_2d[0][1, 2, 0] == deflections_1d_0[2, 0]
+            assert deflections_2d[0][1, 3, 0] == deflections_1d_0[3, 0]
+            assert deflections_2d[0][2, 0, 0] == deflections_1d_0[0, 0]
+            assert deflections_2d[0][2, 1, 0] == deflections_1d_0[1, 0]
+            assert deflections_2d[0][2, 2, 0] == deflections_1d_0[2, 0]
+            assert deflections_2d[0][2, 3, 0] == deflections_1d_0[3, 0]
+            assert deflections_2d[0][3, 0, 0] == deflections_1d_0[0, 0]
+            assert deflections_2d[0][3, 1, 0] == deflections_1d_0[1, 0]
+            assert deflections_2d[0][3, 2, 0] == deflections_1d_0[2, 0]
+            assert deflections_2d[0][3, 3, 0] == deflections_1d_0[3, 0]
+
+            assert deflections_2d[1][0, 0, 1] == deflections_1d_1[0, 1]
+            assert deflections_2d[1][0, 1, 1] == deflections_1d_1[1, 1]
+            assert deflections_2d[1][0, 2, 1] == deflections_1d_1[2, 1]
+            assert deflections_2d[1][0, 3, 1] == deflections_1d_1[3, 1]
+            assert deflections_2d[1][1, 0, 1] == deflections_1d_1[0, 1]
+            assert deflections_2d[1][1, 1, 1] == deflections_1d_1[1, 1]
+            assert deflections_2d[1][1, 2, 1] == deflections_1d_1[2, 1]
+            assert deflections_2d[1][1, 3, 1] == deflections_1d_1[3, 1]
+            assert deflections_2d[1][2, 0, 1] == deflections_1d_1[0, 1]
+            assert deflections_2d[1][2, 1, 1] == deflections_1d_1[1, 1]
+            assert deflections_2d[1][2, 2, 1] == deflections_1d_1[2, 1]
+            assert deflections_2d[1][2, 3, 1] == deflections_1d_1[3, 1]
+            assert deflections_2d[1][3, 0, 1] == deflections_1d_1[0, 1]
+            assert deflections_2d[1][3, 1, 1] == deflections_1d_1[1, 1]
+            assert deflections_2d[1][3, 2, 1] == deflections_1d_1[2, 1]
+            assert deflections_2d[1][3, 3, 1] == deflections_1d_1[3, 1]
+
 
     class TestDimensionlessMassWithinCircle:
 
-        def test__one_profile_galaxy__integral_is_same_as_individual_profile(self, sie_1, galaxy_sie_1):
-            integral_radius = 5.5
-
-            mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-
-            galaxy_mass_integral = galaxy_sie_1.dimensionless_mass_within_circles(radius=integral_radius)
-
-            assert mass_integral == galaxy_mass_integral
-
-        def test__two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
-            sie_1 = mass_profiles.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
-            sie_2 = mass_profiles.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
+        def test__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
 
             integral_radius = 5.5
 
-            mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-            mass_integral += sie_2.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral = sie_0.dimensionless_mass_within_circle(radius=integral_radius)
 
-            galaxy_sie = galaxy.Galaxy(redshift=0.5,
-                                       mass_profile_1=mass_profiles.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0,
+            gal_mass_integral = gal_sie_x1.dimensionless_mass_within_circles(radius=integral_radius)
+
+            assert mass_integral == gal_mass_integral
+
+        def test__two_profile_gal__integral_is_sum_of_individual_profiles(self):
+
+            sie_0 = mp.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
+            sie_1 = mp.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
+
+            integral_radius = 5.5
+
+            mass_integral = sie_0.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral += sie_1.dimensionless_mass_within_circle(radius=integral_radius)
+
+            gal_sie = g.Galaxy(redshift=0.5,
+                                       mass_profile_1=mp.EllipticalIsothermalMP(axis_ratio=0.8, phi=10.0,
                                                                                            einstein_radius=1.0),
-                                       mass_profile_2=mass_profiles.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0,
+                                       mass_profile_2=mp.EllipticalIsothermalMP(axis_ratio=0.6, phi=30.0,
                                                                                            einstein_radius=1.2))
 
-            galaxy_mass_integral = galaxy_sie.dimensionless_mass_within_circles(radius=integral_radius)
+            gal_mass_integral = gal_sie.dimensionless_mass_within_circles(radius=integral_radius)
 
-            assert mass_integral == galaxy_mass_integral
+            assert mass_integral == gal_mass_integral
 
-        def test__three_profile_galaxy__integral_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
-                                                                               galaxy_sie_3):
+        def test__three_profile_gal__individual_integrals_can_be_extracted(self, sie_0, sie_1, gal_sie_x2):
+
             integral_radius = 5.5
 
-            mass_integral = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-            mass_integral += sie_2.dimensionless_mass_within_circle(radius=integral_radius)
-            mass_integral += sie_3.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_1 = sie_0.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral_2 = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
 
-            galaxy_mass_integral = galaxy_sie_3.dimensionless_mass_within_circles(radius=integral_radius)
-
-            assert mass_integral == galaxy_mass_integral
-
-        def test__three_profile_galaxy__individual_integrals_can_be_extracted(self, sie_1, sie_2, sie_3,
-                                                                              galaxy_sie_3):
-            integral_radius = 5.5
-
-            mass_integral_1 = sie_1.dimensionless_mass_within_circle(radius=integral_radius)
-            mass_integral_2 = sie_2.dimensionless_mass_within_circle(radius=integral_radius)
-            mass_integral_3 = sie_3.dimensionless_mass_within_circle(radius=integral_radius)
-
-            galaxy_mass_integral = galaxy_sie_3.dimensionless_mass_within_circles_individual(
+            gal_mass_integral = gal_sie_x2.dimensionless_mass_within_circles_individual(
                 radius=integral_radius)
 
-            assert mass_integral_1 == galaxy_mass_integral[0]
-            assert mass_integral_2 == galaxy_mass_integral[1]
-            assert mass_integral_3 == galaxy_mass_integral[2]
+            assert mass_integral_1 == gal_mass_integral[0]
+            assert mass_integral_2 == gal_mass_integral[1]
+
 
     class TestDimensionlessMassWithinEllipse:
 
-        def test__one_profile_galaxy__integral_is_same_as_individual_profile(self, sie_1, galaxy_sie_1):
+        def test__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
-            dimensionless_mass_integral = sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
-            galaxy_dimensionless_mass_integral = galaxy_sie_1.dimensionless_mass_within_ellipses(
+            gal_dimensionless_mass_integral = gal_sie_x1.dimensionless_mass_within_ellipses(
                 major_axis=integral_radius)
 
-            assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
+            assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 
-        def test__two_profile_galaxy__integral_is_sum_of_individual_profiles(self, sie_1, sie_2, galaxy_sie_2):
+        def test__two_profile_gal__integral_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral += sie_2.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral += sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
-            galaxy_dimensionless_mass_integral = galaxy_sie_2.dimensionless_mass_within_ellipses(
+            gal_dimensionless_mass_integral = gal_sie_x2.dimensionless_mass_within_ellipses(
                 major_axis=integral_radius)
 
-            assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
+            assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 
-        def test__three_profile_galaxy__integral_is_sum_of_individual_profiles(self, sie_1, sie_2, sie_3,
-                                                                               galaxy_sie_3):
+        def test__three_profile_gal__individual_integrals_can_be_extracted(self, sie_0, sie_1, gal_sie_x2):
+            
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral += sie_2.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral += sie_3.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral_1 = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral_2 = sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
-            galaxy_dimensionless_mass_integral = galaxy_sie_3.dimensionless_mass_within_ellipses(
+            gal_dimensionless_mass_integral = gal_sie_x2.dimensionless_mass_within_ellipses_individual(
                 major_axis=integral_radius)
 
-            assert dimensionless_mass_integral == galaxy_dimensionless_mass_integral
+            assert dimensionless_mass_integral_1 == gal_dimensionless_mass_integral[0]
+            assert dimensionless_mass_integral_2 == gal_dimensionless_mass_integral[1]
 
-        def test__three_profile_galaxy__individual_integrals_can_be_extracted(self, sie_1, sie_2, sie_3,
-                                                                              galaxy_sie_3):
-            integral_radius = 5.5
-
-            dimensionless_mass_integral_1 = sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral_2 = sie_2.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral_3 = sie_3.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-
-            galaxy_dimensionless_mass_integral = galaxy_sie_3.dimensionless_mass_within_ellipses_individual(
-                major_axis=integral_radius)
-
-            assert dimensionless_mass_integral_1 == galaxy_dimensionless_mass_integral[0]
-            assert dimensionless_mass_integral_2 == galaxy_dimensionless_mass_integral[1]
-            assert dimensionless_mass_integral_3 == galaxy_dimensionless_mass_integral[2]
 
     class TestSymmetricProfiles:
 
         def test_1d_symmetry(self):
-            isothermal_1 = mass_profiles.EllipticalIsothermalMP(axis_ratio=0.5, phi=45.0,
+            isothermal_1 = mp.EllipticalIsothermalMP(axis_ratio=0.5, phi=45.0,
                                                                 einstein_radius=1.0)
 
-            isothermal_2 = mass_profiles.EllipticalIsothermalMP(centre=(100, 0), axis_ratio=0.5, phi=45.0,
+            isothermal_2 = mp.EllipticalIsothermalMP(centre=(100, 0), axis_ratio=0.5, phi=45.0,
                                                                 einstein_radius=1.0)
 
-            galaxy_isothermal = galaxy.Galaxy(redshift=0.5, mass_profile_1=isothermal_1, mass_profile_2=isothermal_2)
+            gal_isothermal = g.Galaxy(redshift=0.5, mass_profile_1=isothermal_1, mass_profile_2=isothermal_2)
 
-            assert galaxy_isothermal.surface_density_from_grid(
-                np.array([[1.0, 0.0]])) == galaxy_isothermal.surface_density_from_grid(np.array([[99.0, 0.0]]))
+            assert gal_isothermal.surface_density_from_grid(
+                np.array([[1.0, 0.0]])) == gal_isothermal.surface_density_from_grid(np.array([[99.0, 0.0]]))
 
-            assert galaxy_isothermal.surface_density_from_grid(
-                np.array([[49.0, 0.0]])) == galaxy_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]]))
+            assert gal_isothermal.surface_density_from_grid(
+                np.array([[49.0, 0.0]])) == gal_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]]))
 
-            assert galaxy_isothermal.potential_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_grid(np.array([[99.0, 0.0]])), 1e-6)
+            assert gal_isothermal.potential_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
+                gal_isothermal.potential_from_grid(np.array([[99.0, 0.0]])), 1e-6)
 
-            assert galaxy_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-6)
+            assert gal_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
-            assert galaxy_isothermal.deflections_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[99.0, 0.0]])), 1e-6)
+            assert gal_isothermal.deflections_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[99.0, 0.0]])), 1e-6)
 
-            assert galaxy_isothermal.deflections_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]])), 1e-6)
+            assert gal_isothermal.deflections_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[51.0, 0.0]])), 1e-6)
 
         def test_2d_symmetry(self):
-            isothermal_1 = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
+            isothermal_1 = mp.SphericalIsothermalMP(einstein_radius=1.0)
 
-            isothermal_2 = mass_profiles.SphericalIsothermalMP(centre=(100, 0), einstein_radius=1.0)
+            isothermal_2 = mp.SphericalIsothermalMP(centre=(100, 0), einstein_radius=1.0)
 
-            isothermal_3 = mass_profiles.SphericalIsothermalMP(centre=(0, 100), einstein_radius=1.0)
+            isothermal_3 = mp.SphericalIsothermalMP(centre=(0, 100), einstein_radius=1.0)
 
-            isothermal_4 = mass_profiles.SphericalIsothermalMP(centre=(100, 100), einstein_radius=1.0)
+            isothermal_4 = mp.SphericalIsothermalMP(centre=(100, 100), einstein_radius=1.0)
 
-            galaxy_isothermal = galaxy.Galaxy(redshift=0.5,
+            gal_isothermal = g.Galaxy(redshift=0.5,
                                               mass_profile_1=isothermal_1, mass_profile_2=isothermal_2,
                                               mass_profile_3=isothermal_3, mass_profile_4=isothermal_4)
 
-            assert galaxy_isothermal.surface_density_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert gal_isothermal.surface_density_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert galaxy_isothermal.surface_density_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_isothermal.surface_density_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_isothermal.surface_density_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.surface_density_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_isothermal.surface_density_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_isothermal.surface_density_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.surface_density_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.surface_density_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_isothermal.surface_density_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_isothermal.surface_density_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert gal_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_isothermal.potential_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_isothermal.potential_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_isothermal.potential_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_isothermal.potential_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert galaxy_isothermal.potential_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                galaxy_isothermal.potential_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_isothermal.potential_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_isothermal.potential_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 0] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 0], 1e-5)
+            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 0] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 0] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 0], 1e-5)
+            assert 1.0 * gal_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 0] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 0] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 0], 1e-5)
+            assert 1.0 * gal_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 0] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 0], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 0] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 0], 1e-5)
+            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 0] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 0], 1e-5)
 
-            assert 1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 1] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 1], 1e-5)
+            assert 1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 0.0]]))[0, 1] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[51.0, 0.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 1] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 1], 1e-5)
+            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[0.0, 49.0]]))[0, 1] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[0.0, 51.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 1] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 1], 1e-5)
+            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[100.0, 49.0]]))[0, 1] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[100.0, 51.0]]))[0, 1], 1e-5)
 
-            assert -1.0 * galaxy_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 1] == pytest.approx(
-                galaxy_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 1], 1e-5)
+            assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 1] == pytest.approx(
+                gal_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 1], 1e-5)
+
+
+class TestMassAndLightProfiles(object):
+
+    @pytest.fixture(name="mass_and_light")
+    def make_mass_and_light_profile(self):
+        return lmp.EllipticalSersicRadialGradientLMP()
+
+    def test_single_profile(self, mass_and_light):
+        gal = g.Galaxy(profile=mass_and_light)
+        assert 1 == len(gal.light_profiles)
+        assert 1 == len(gal.mass_profiles)
+        assert gal.mass_profiles[0] == mass_and_light
+        assert gal.light_profiles[0] == mass_and_light
+
+    def test_multiple_profile(self, mass_and_light, sersic_0, sie_0):
+        gal = g.Galaxy(profile=mass_and_light, light=sersic_0, sie=sie_0)
+        assert 2 == len(gal.light_profiles)
+        assert 2 == len(gal.mass_profiles)
 
 
 class TestHyperGalaxy(object):
+    
+
     class TestContributionMaps(object):
 
         def test__model_image_all_1s__factor_is_0__contributions_all_1s(self):
-            galaxy_image = np.ones((3,))
+            
+            gal_image = np.ones((3,))
 
-            hyp = galaxy.HyperGalaxy(contribution_factor=0.0)
-            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image,
-                                                                  hyper_galaxy_image=galaxy_image,
-                                                                  minimum_value=0.0)
+            hyp = g.HyperGalaxy(contribution_factor=0.0)
+            contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
+                                                                hyper_galaxy_image=gal_image,
+                                                                minimum_value=0.0)
 
             assert (contributions == np.ones((3,))).all()
 
         def test__different_values__factor_is_1__contributions_are_value_divided_by_factor_and_max(self):
-            galaxy_image = np.array([0.5, 1.0, 1.5])
+            gal_image = np.array([0.5, 1.0, 1.5])
 
-            hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image,
-                                                                  hyper_galaxy_image=galaxy_image,
-                                                                  minimum_value=0.0)
+            hyp = g.HyperGalaxy(contribution_factor=1.0)
+            contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
+                                                                hyper_galaxy_image=gal_image,
+                                                                minimum_value=0.0)
 
             assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
         def test__different_values__threshold_is_1_minimum_threshold_included__wipes_1st_value_to_0(self):
-            galaxy_image = np.array([0.5, 1.0, 1.5])
+            gal_image = np.array([0.5, 1.0, 1.5])
 
-            hyp = galaxy.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_preload_images(hyper_model_image=galaxy_image,
-                                                                  hyper_galaxy_image=galaxy_image,
-                                                                  minimum_value=0.6)
+            hyp = g.HyperGalaxy(contribution_factor=1.0)
+            contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
+                                                                hyper_galaxy_image=gal_image,
+                                                                minimum_value=0.6)
 
             assert (contributions == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
+
 
     class TestScaledNoise(object):
 
         def test__contribution_all_1s__noise_factor_2__noise_adds_double(self):
             noise = np.array([1.0, 2.0, 3.0])
-            galaxy_contributions = np.ones((3, 1))
+            gal_contributions = np.ones((3, 1))
 
-            hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
+            hyp = g.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
 
-            scaled_noise = hyp.scaled_noise_from_contributions(noise=noise, contributions=galaxy_contributions)
+            scaled_noise = hyp.scaled_noise_from_contributions(noise=noise, contributions=gal_contributions)
 
             assert (scaled_noise == np.array([2.0, 4.0, 6.0])).all()
 
         def test__same_as_above_but_contributions_vary(self):
             noise = np.array([1.0, 2.0, 3.0])
-            galaxy_contributions = np.array([[0.0, 0.5, 1.0]])
+            gal_contributions = np.array([[0.0, 0.5, 1.0]])
 
-            hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
+            hyp = g.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=1.0)
 
-            scaled_noise = hyp.scaled_noise_from_contributions(noise=noise, contributions=galaxy_contributions)
+            scaled_noise = hyp.scaled_noise_from_contributions(noise=noise, contributions=gal_contributions)
 
             assert (scaled_noise == np.array([0.0, 2.0, 6.0])).all()
 
         def test__same_as_above_but_change_noise_scale_terms(self):
             noise = np.array([1.0, 2.0, 3.0])
-            galaxy_contributions = np.array([[0.0, 0.5, 1.0]])
+            gal_contributions = np.array([[0.0, 0.5, 1.0]])
 
-            hyp = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=2.0)
+            hyp = g.HyperGalaxy(contribution_factor=0.0, noise_factor=2.0, noise_power=2.0)
 
-            scaled_noise = hyp.scaled_noise_from_contributions(noise=noise, contributions=galaxy_contributions)
+            scaled_noise = hyp.scaled_noise_from_contributions(noise=noise, contributions=gal_contributions)
 
             assert (scaled_noise == np.array([0.0, 2.0, 18.0])).all()
 
 
 class TestBooleanProperties(object):
     def test_has_pixelization(self):
-        assert galaxy.Galaxy().has_pixelization is False
-        assert galaxy.Galaxy(pixelization=object()).has_pixelization is True
+        assert g.Galaxy().has_pixelization is False
+        assert g.Galaxy(pixelization=object()).has_pixelization is True
 
     def test_has_hyper_galaxy(self):
-        assert galaxy.Galaxy().has_pixelization is False
-        assert galaxy.Galaxy(hyper_galaxy=object()).has_hyper_galaxy is True
+        assert g.Galaxy().has_pixelization is False
+        assert g.Galaxy(hyper_galaxy=object()).has_hyper_galaxy is True
 
     def test_has_light_profile(self):
-        assert galaxy.Galaxy().has_light_profile is False
-        assert galaxy.Galaxy(light_profile=light_profiles.LightProfile()).has_light_profile is True
-        assert galaxy.Galaxy(mass_profile=mass_profiles.MassProfile()).has_light_profile is False
+        assert g.Galaxy().has_light_profile is False
+        assert g.Galaxy(light_profile=lp.LightProfile()).has_light_profile is True
+        assert g.Galaxy(mass_profile=mp.MassProfile()).has_light_profile is False
 
     def test_has_mass_profile(self):
-        assert galaxy.Galaxy().has_mass_profile is False
-        assert galaxy.Galaxy(light_profile=light_profiles.LightProfile()).has_mass_profile is False
-        assert galaxy.Galaxy(mass_profile=mass_profiles.MassProfile()).has_mass_profile is True
+        assert g.Galaxy().has_mass_profile is False
+        assert g.Galaxy(light_profile=lp.LightProfile()).has_mass_profile is False
+        assert g.Galaxy(mass_profile=mp.MassProfile()).has_mass_profile is True
 
     def test_has_profile(self):
-        assert galaxy.Galaxy().has_profile is False
-        assert galaxy.Galaxy(light_profile=light_profiles.LightProfile()).has_profile is True
-        assert galaxy.Galaxy(mass_profile=mass_profiles.MassProfile()).has_profile is True
+        assert g.Galaxy().has_profile is False
+        assert g.Galaxy(light_profile=lp.LightProfile()).has_profile is True
+        assert g.Galaxy(mass_profile=mp.MassProfile()).has_profile is True

@@ -46,8 +46,7 @@ def transform_grid(func):
         if isinstance(grid, mask.GridMapper) and len(result.shape) is 1:
             return np.asarray(grid.map_unmasked_1d_array_to_2d_array(result))
         elif isinstance(grid, mask.GridMapper) and len(result.shape) is 2:
-            return list(map(lambda deflections : np.asarray(grid.map_unmasked_1d_array_to_2d_array(deflections)),
-                            [result[:, 0], result[:, 1]]))
+            return np.asarray(grid.map_unmasked_deflections_to_2d_deflections(result))
         else:
             return np.asarray(result)
 
