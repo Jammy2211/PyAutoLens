@@ -16,9 +16,9 @@ grid = load("deflection_data/grid")
 
 psf_shape = (11, 11)
 
-ma = mask.Mask.for_simulate(shape_arc_seconds=(4.0, 4.0), pixel_scale=0.1, psf_size=psf_shape)
+ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(4.0, 4.0), pixel_scale=0.1, pad_size=psf_shape)
 
-data = ma.map_to_1d(np.ones(ma.shape))
+data = ma.map_2d_array_to_masked_1d_array(np.ones(ma.shape))
 
 mapping = np.ones((len(data), 60))
 

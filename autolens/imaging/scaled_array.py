@@ -29,31 +29,6 @@ class Array(np.ndarray):
             setattr(self, key, value)
         super(Array, self).__setstate__(state[0:-1])
 
-    def pad(self, new_dimensions, pad_value=0):
-        """ Pad the data_vector array with zeros (or an input value) around its central pixel.
-
-        NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be padded to even arrays \
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-        Parameters
-        ----------
-        new_dimensions : (int, int)
-            The (x,y) new pixel dimension of the padded data_vector-array.
-        pad_value : float
-            The value to pad the array with.
-        """
-        if new_dimensions[0] < self.shape[0]:
-            raise ValueError('grids.Grid2d.pad - You have specified a new x_size smaller than the data_vector array')
-        elif new_dimensions[1] < self.shape[1]:
-            raise ValueError('grids.Grid2d.pad - You have specified a new y_size smaller than the data_vector array')
-
-        x_pad = int((new_dimensions[0] - self.shape[0] + 1) / 2)
-        y_pad = int((new_dimensions[1] - self.shape[1] + 1) / 2)
-
-        array = np.pad(self, ((x_pad, y_pad), (x_pad, y_pad)), 'constant', constant_values=pad_value)
-
-        return self.new_with_array(array)
-
     def trim(self, new_dimensions):
         """
         Trim the data_vector array to a new sub_grid_size around its central pixel.
@@ -267,16 +242,17 @@ class ScaledArray(Array):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value and positive y value in arc seconds.
         """
+        return array_util.image_grid_2d_from_shape_and_pixel_scale(self.shape, self.pixel_scale)
 
-        grid_2d = np.zeros((self.shape[0], self.shape[1], 2))
+    def padded_image_grid_for_psf_edges(self, psf_shape):
+        padded_shape = (self.shape[0] + psf_shape[0] - 1, self.shape[1] + psf_shape[1] - 1)
+        return array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full(padded_shape, False),
+                                                                      pixel_scale=self.pixel_scale)
 
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                arc_second_coordinates = self.pixel_coordinates_to_arc_second_coordinates((x, y))
-                grid_2d[x, y, 0] = arc_second_coordinates[0]
-                grid_2d[x, y, 1] = arc_second_coordinates[1]
-
-        return grid_2d
+    def padded_sub_grid_for_psf_edges_from_sub_grid_size(self, psf_shape, sub_grid_size):
+        padded_shape = (self.shape[0] + psf_shape[0] - 1, self.shape[1] + psf_shape[1] - 1)
+        return array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full(padded_shape, False),
+                                                          pixel_scale=self.pixel_scale, sub_grid_size=sub_grid_size)
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):
@@ -299,6 +275,10 @@ class ScaledArray(Array):
         """
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
+
+    def sub_grid_mapper(self, sub_grid_size):
+        return SubGridMapper(arr=self.grid_masked, mask=self, original_shape=self.original_shape,
+                             padded_shape=self.padded_shape, sub_grid_size=sub_grid_size)
 
     def __eq__(self, other):
         super_result = super(ScaledArray, self).__eq__(other)

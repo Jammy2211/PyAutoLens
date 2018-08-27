@@ -600,7 +600,7 @@ class Cluster(Voronoi):
         """
         super(Cluster, self).__init__(pixels, regularization_coefficients)
 
-    def reconstructor_from_pixelization_and_grids(self, grids, borders, cluster_mask):
+    def reconstructor_from_pixelization_and_grids(self, grids, borders, cluster_mask=None):
         """
         Compute the mapping_matrix matrix of the cluster pixelization by following these steps:
 
@@ -721,7 +721,7 @@ class Amorphous(Voronoi):
         km = kmeans.fit(cluster_grid)
         return km.cluster_centers_, km.labels_
 
-    def reconstructor_from_pixelization_and_grids(self, grids, borders, cluster_mask):
+    def reconstructor_from_pixelization_and_grids(self, grids, borders, cluster_mask=None):
         """
         Compute the mapping_matrix matrix of the amorphous pixelization by following these steps:
 
