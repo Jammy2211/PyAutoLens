@@ -59,7 +59,7 @@ def test_lens_x2_gal_hyper_pipeline():
 def make_lens_x2_gal_hyper_pipeline(pipeline_name):
 
     def modify_mask_function(img):
-        return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask=5.)
+        return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
     class LensProfileGalaxy0Phase(ph.LensProfilePhase):
         def pass_priors(self, previous_results):

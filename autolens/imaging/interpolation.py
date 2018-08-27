@@ -180,7 +180,7 @@ class InterpolationScheme(object):
         shape : (int, int)
             The shape of the interpolation schemes interpolation-grid.
         """
-        coordinate_grid = mask.grid_masked
+        coordinate_grid = mask.masked_image_grid
 
         x_max = np.max(coordinate_grid[:,0]) + mask.pixel_scale
         x_min = np.min(coordinate_grid[:,0]) - mask.pixel_scale

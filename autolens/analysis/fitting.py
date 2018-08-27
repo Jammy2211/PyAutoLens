@@ -46,7 +46,7 @@ class AbstractHyperFitter(AbstractFitter):
 
     @property
     def scaled_noise_2d(self):
-        return self.masked_image.map_to_2d(self.scaled_noise)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.scaled_noise)
 
 
 class ProfileFitter(AbstractFitter):
@@ -95,8 +95,8 @@ class ProfileFitter(AbstractFitter):
         """
         return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_plane_image_chi_squared_term, self.noise_term)
 
-    def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
-        return PixelizationFitter(self.masked_image[:] - self.blurred_image_plane_image, sparse_mask, self.tracer)
+    def pixelization_fitter_with_profile_subtracted_masked_image(self):
+        return PixelizationFitter(self.masked_image[:] - self.blurred_image_plane_image, self.tracer)
 
     @property
     def blurred_image_plane_images_of_planes(self):
@@ -112,25 +112,25 @@ class ProfileFitter(AbstractFitter):
 
     @property
     def blurred_image_plane_image_2d(self):
-        return self.masked_image.map_to_2d(self.blurred_image_plane_image)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.blurred_image_plane_image)
 
     @property
     def blurred_image_plane_image_residuals_2d(self):
-        return self.masked_image.map_to_2d(self.blurred_image_plane_image_residuals)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.blurred_image_plane_image_residuals)
 
     @property
     def blurred_image_plane_image_chi_squareds_2d(self):
-        return self.masked_image.map_to_2d(self.blurred_image_plane_image_chi_squareds)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.blurred_image_plane_image_chi_squareds)
 
     @property
     def blurred_image_plane_images_of_planes_2d(self):
         return list(map(lambda blurred_plane_image_plane_image:
-                        self.masked_image.map_to_2d(blurred_plane_image_plane_image),
+                        self.masked_image.map_masked_1d_array_to_2d_array(blurred_plane_image_plane_image),
                         self.blurred_image_plane_images_of_planes))
 
     @property
     def blurred_image_plane_images_of_galaxies_2d(self):
-        return list(map(lambda galaxy_image_plane_image: self.masked_image.map_to_2d(galaxy_image_plane_image),
+        return list(map(lambda galaxy_image_plane_image: self.masked_image.map_masked_1d_array_to_2d_array(galaxy_image_plane_image),
                         self.blurred_image_plane_images_of_galaxies))
 
     def plane_images_of_planes_2d(self, shape=(30, 30)):
@@ -185,16 +185,16 @@ class HyperProfileFitter(ProfileFitter, AbstractHyperFitter):
 
     @property
     def blurred_image_plane_image_scaled_chi_squareds_2d(self):
-        return self.masked_image.map_to_2d(self.blurred_image_plane_image_scaled_chi_squareds)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.blurred_image_plane_image_scaled_chi_squareds)
 
-    def pixelization_fitter_with_profile_subtracted_masked_image(self, sparse_mask):
-        return HyperPixelizationFitter(self.masked_image[:] - self.blurred_image_plane_image, sparse_mask, self.tracer,
+    def pixelization_fitter_with_profile_subtracted_masked_image(self):
+        return HyperPixelizationFitter(self.masked_image[:] - self.blurred_image_plane_image, self.tracer,
                                        self.hyper_model_image, self.hyper_galaxy_images, self.hyper_minimum_values)
 
 
 class PixelizationFitter(AbstractFitter):
 
-    def __init__(self, masked_image, sparse_mask, tracer, perform_reconstruction=True):
+    def __init__(self, masked_image, tracer, perform_reconstruction=True):
         """
         Class to evaluate the fit between a model described by a tracer and an actual masked_image.
 
@@ -202,15 +202,12 @@ class PixelizationFitter(AbstractFitter):
         ----------
         masked_image: mi.MaskedImage
             An masked_image that has been masked for efficiency
-        sparse_mask: mask.SparseMask | None
-            A mask describing which pixels should be used in clustering for pixelizations
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
         super().__init__(masked_image)
         self.masked_image = masked_image
         self.tracer = tracer
-        self.sparse_mask = sparse_mask
 
         # TODO : This if loop is required to stop the HyperPixelizationFitter waste time fitting the data with the
         # TODO : unscaled noise during inheritance. Prob a better way to handle this.
@@ -223,7 +220,7 @@ class PixelizationFitter(AbstractFitter):
 
     @property
     def reconstructors(self):
-        return self.tracer.reconstructors_from_source_plane(self.masked_image.borders, self.sparse_mask)
+        return self.tracer.reconstructors_from_source_plane(self.masked_image.borders)
 
     @property
     def reconstructed_image_plane_image(self):
@@ -251,20 +248,20 @@ class PixelizationFitter(AbstractFitter):
 
     @property
     def reconstructed_image_plane_image_2d(self):
-        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.reconstructed_image_plane_image)
 
     @property
     def reconstructed_image_plane_image_residuals_2d(self):
-        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image_residuals)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.reconstructed_image_plane_image_residuals)
 
     @property
     def reconstructed_image_plane_image_chi_squareds_2d(self):
-        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image_chi_squareds)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.reconstructed_image_plane_image_chi_squareds)
 
 
 class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
 
-    def __init__(self, masked_image, sparse_mask, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
+    def __init__(self, masked_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
         """
         Class to evaluate the fit between a model described by a tracer and an actual masked_image.
 
@@ -272,12 +269,10 @@ class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
         ----------
         masked_image: mi.MaskedImage
             An masked_image that has been masked for efficiency
-        sparse_mask: mask.SparseMask
-            A mask describing which pixels should be used in clustering for pixelizations
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        super(HyperPixelizationFitter, self).__init__(masked_image, sparse_mask, tracer, False)
+        super(HyperPixelizationFitter, self).__init__(masked_image, tracer, False)
         self.hyper_model_image = hyper_model_image
         self.hyper_galaxy_images = hyper_galaxy_images
         self.hyper_minimum_values = hyper_minimum_values
@@ -306,7 +301,7 @@ class HyperPixelizationFitter(PixelizationFitter, AbstractHyperFitter):
 
     @property
     def reconstructed_image_plane_image_scaled_chi_squareds_2d(self):
-        return self.masked_image.map_to_2d(self.reconstructed_image_plane_image_scaled_chi_squareds)
+        return self.masked_image.map_masked_1d_array_to_2d_array(self.reconstructed_image_plane_image_scaled_chi_squareds)
 
 
 def blur_image_including_blurring_region(image, blurring_image, convolver):
