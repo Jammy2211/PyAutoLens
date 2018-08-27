@@ -25,7 +25,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     psf = im.PSF.from_fits(file_path=path + '/data/psf', hdu=0).trim(psf_size)
     psf = psf.renormalize()
-    ma = mask.Mask.for_simulate(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, psf_size=psf_size)
+    ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, pad_size=psf_size)
 
     image_plane_grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=1,
                                                                                        blurring_shape=psf_size)
@@ -40,7 +40,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
                                                      image_grids=image_plane_grids)
 
     image_plane_image = tracer.image_plane_image
-    image_plane_image_2d = ma.map_to_2d(image_plane_image)
+    image_plane_image_2d = ma.map_unmasked_1d_array_to_2d_array(image_plane_image)
 
     ### Setup as a simulated image_coords and output as a fits for an analysis ###
 

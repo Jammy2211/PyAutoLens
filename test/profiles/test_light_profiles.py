@@ -492,19 +492,34 @@ class TestGrids(object):
 
 class TestGridMapperMapsOutputTo2D(object):
 
-    def test__grid_mapper_in__2d_intensities(self):
+    def test__grid_mappers_in__2d_intensity(self):
 
         gaussian = lp.SphericalGaussianLP(intensity=1.0, sigma=0.5)
 
         intensity_1d = gaussian.intensity_from_grid(grid)
 
-        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+        padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+        image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2,2), padded_shape=(4,4))
 
-        intensity_2d = gaussian.intensity_from_grid(mapper_grid)
+        intensity_2d = gaussian.intensity_from_grid(image_grid_mapper)
 
-        assert intensity_2d[1,1] == intensity_1d[0]
-        assert intensity_2d[1,2] == intensity_1d[1]
-        assert intensity_2d[2,1] == intensity_1d[2]
-        assert intensity_2d[2,2] == intensity_1d[3]
+        assert intensity_2d[0,0] == intensity_1d[0]
+        assert intensity_2d[0,1] == intensity_1d[1]
+        assert intensity_2d[0,2] == intensity_1d[2]
+        assert intensity_2d[0,3] == intensity_1d[3]
+        assert intensity_2d[1,0] == intensity_1d[0]
+        assert intensity_2d[1,1] == intensity_1d[1]
+        assert intensity_2d[1,2] == intensity_1d[2]
+        assert intensity_2d[1,3] == intensity_1d[3]
+        assert intensity_2d[2,0] == intensity_1d[0]
+        assert intensity_2d[2,1] == intensity_1d[1]
+        assert intensity_2d[2,2] == intensity_1d[2]
+        assert intensity_2d[2,3] == intensity_1d[3]
+        assert intensity_2d[3,0] == intensity_1d[0]
+        assert intensity_2d[3,1] == intensity_1d[1]
+        assert intensity_2d[3,2] == intensity_1d[2]
+        assert intensity_2d[3,3] == intensity_1d[3]

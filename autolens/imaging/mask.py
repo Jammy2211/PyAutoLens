@@ -1,8 +1,7 @@
+from autolens.imaging import array_util
 from autolens.imaging import scaled_array
 from autolens import exc
 import numpy as np
-from functools import wraps
-import inspect
 
 import logging
 
@@ -10,97 +9,43 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Memoizer(object):
-    def __init__(self):
-        """
-        Class to store the results of a function given a set of inputs.
-        """
-        self.results = {}
-        self.calls = 0
-        self.arg_names = None
-
-    def __call__(self, func):
-        """
-        Memoize decorator. Any time a function is called that a memoizer has been attached to its results are stored in
-        the results dictionary or retrieved from the dictionary if the function has already been called with those
-        arguments.
-
-        Note that the same memoizer persists over all instances of a class. Any state for a given instance that is not
-        given in the representation of that instance will be ignored. That is, it is possible that the memoizer will
-        give incorrect results if instance state does not affect __str__ but does affect the value returned by the
-        memoized method.
-
-        Parameters
-        ----------
-        func: function
-            A function for which results should be memoized
-
-        Returns
-        -------
-        decorated: function
-            A function that memoizes results
-        """
-        if self.arg_names is not None:
-            raise AssertionError("Instantiate a new Memoizer for each function")
-        self.arg_names = inspect.getfullargspec(func).args
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            key = ", ".join(
-                ["('{}', {})".format(arg_name, arg) for arg_name, arg in
-                 list(zip(self.arg_names, args)) + [(k, v) for k, v in kwargs.items()]])
-            if key not in self.results:
-                self.calls += 1
-            self.results[key] = func(*args, **kwargs)
-            return self.results[key]
-
-        return wrapper
-
-
 class Mask(scaled_array.ScaledArray):
     """
     A mask represented by an ndarray where True is masked.
     """
+
+    def __getitem__(self, coords):
+        try:
+            return super(Mask, self).__getitem__(coords)
+        except IndexError:
+            return True
 
     @classmethod
     def empty_for_shape_arc_seconds_and_pixel_scale(cls, shape_arc_seconds, pixel_scale):
         return cls(np.full(tuple(map(lambda d: int(d / pixel_scale), shape_arc_seconds)), True), pixel_scale)
 
     @classmethod
-    def circular(cls, shape_arc_seconds, pixel_scale, radius_mask, centre=(0., 0.)):
+    def circular(cls, shape, pixel_scale, radius_mask_arcsec, centre=(0., 0.)):
         """
         Setup the mask as a circle, using a specified arc second radius.
 
         Parameters
         ----------
-        shape_arc_seconds: (float, float)
+        shape: (float, float)
             The (x,y) image_shape
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
-        radius_mask : float
+        radius_mask_arcsec : float
             The radius of the circular mask in arc seconds.
         centre: (float, float)
             The centre of the mask.
         """
-
-        grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
-
-        def fill_grid(x, y):
-            x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
-
-            x_arcsec -= centre[0]
-            y_arcsec -= centre[1]
-
-            radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-            grid[x, y] = radius_arcsec > radius_mask
-
-        grid.map(fill_grid)
-
-        return cls(grid, pixel_scale)
+        mask = array_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_mask_arcsec,
+                                                                          centre)
+        return cls(mask, pixel_scale)
 
     @classmethod
-    def annular(cls, shape_arc_seconds, pixel_scale, inner_radius, outer_radius, centre=(0., 0.)):
+    def annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.)):
         """
         Setup the mask as a circle, using a specified inner and outer radius in arc seconds.
 
@@ -117,22 +62,9 @@ class Mask(scaled_array.ScaledArray):
         centre: (float, float)
             The centre of the mask.
         """
-
-        grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
-
-        def fill_grid(x, y):
-            x_arcsec, y_arcsec = grid.pixel_coordinates_to_arc_second_coordinates((x, y))
-
-            x_arcsec -= centre[0]
-            y_arcsec -= centre[1]
-
-            radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-            grid[x, y] = radius_arcsec > outer_radius or radius_arcsec < inner_radius
-
-        grid.map(fill_grid)
-
-        return cls(grid, pixel_scale)
+        mask = array_util.mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
+                                                                        outer_radius_arcsec, centre)
+        return cls(mask, pixel_scale)
 
     @classmethod
     def unmasked(cls, shape_arc_seconds, pixel_scale):
@@ -146,296 +78,81 @@ class Mask(scaled_array.ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        grid = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
-        return cls(np.ma.make_mask_none(grid.shape), pixel_scale)
-
-    @classmethod
-    def for_simulate(cls, shape_arc_seconds, pixel_scale, psf_size):
-
-        if psf_size[0] % 2 == 0 or psf_size[1] % 2 == 0 or psf_size[0] != psf_size[1]:
-            raise exc.KernelException("PSF Kernel must be odd and square")
-
-        ma = cls.unmasked(shape_arc_seconds, pixel_scale)
-        return ma.pad(new_dimensions=(ma.shape[0] + psf_size[0] - 1, ma.shape[1] + psf_size[1] - 1), pad_value=1)
+        msk = Mask.empty_for_shape_arc_seconds_and_pixel_scale(shape_arc_seconds, pixel_scale)
+        return Mask(np.ma.make_mask_none(msk.shape), pixel_scale)
 
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
 
     @property
-    def grid_masked(self):
-        """
-        Compute the masked_image grid_coords grids from a mask, using the center of every unmasked pixel.
-        """
-        coordinates = self.grid_2d
-
-        pixels = self.pixels_in_mask
-
-        grid = np.zeros(shape=(pixels, 2))
-        pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    grid[pixel_count, :] = coordinates[x, y]
-                    pixel_count += 1
-
-        return ImageGrid(grid)
-
-    @property
-    def grid_mapper_masked(self):
-        return GridMapper(self.grid_masked, self.shape, self.grid_to_pixel)
-
-    @property
     def grid_to_pixel(self):
         """
         Compute the mapping_matrix of every pixel in the mask to its 2D pixel coordinates.
         """
-        pixels = self.pixels_in_mask
+        return array_util.grid_to_pixel_from_mask(self).astype('int')
 
-        grid = np.zeros(shape=(pixels, 2), dtype='int')
-        pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    grid[pixel_count, :] = x, y
-                    pixel_count += 1
-
-        return grid
-
-    def __getitem__(self, coords):
-        try:
-            return super(Mask, self).__getitem__(coords)
-        except IndexError:
-            return True
-
-    @property
-    def border_pixel_indices(self):
-        """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
-        its edge, therefore neighboring a pixel with a *True* value.
-        """
-
-        border_pixels = np.empty(0, dtype='int')
-        image_pixel_index = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    if self[x + 1, y] or self[x - 1, y] or self[x, y + 1] or \
-                            self[x, y - 1] or self[x + 1, y + 1] or self[x + 1, y - 1] \
-                            or self[x - 1, y + 1] or self[x - 1, y - 1]:
-                        border_pixels = np.append(border_pixels, image_pixel_index)
-
-                    image_pixel_index += 1
-
-        return border_pixels
-
-    def border_sub_pixel_indices(self, sub_grid_size):
-        """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
-        its edge, therefore neighboring a pixel with a *True* value.
-        """
-
-        border_sub_pixels = np.empty(0, dtype='int')
-        image_pixel_index = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    if self[x + 1, y] or self[x - 1, y] or self[x, y + 1] or \
-                            self[x, y - 1] or self[x + 1, y + 1] or self[x + 1, y - 1] \
-                            or self[x - 1, y + 1] or self[x - 1, y - 1]:
-
-                        x_arcsec, y_arcsec = self.pixel_coordinates_to_arc_second_coordinates((x, y))
-                        sub_grid = np.zeros((sub_grid_size ** 2, 2))
-                        sub_pixel_count = 0
-
-                        for x1 in range(sub_grid_size):
-                            for y1 in range(sub_grid_size):
-                                sub_grid[sub_pixel_count, 0] = self.sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
-                                sub_grid[sub_pixel_count, 1] = self.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
-                                sub_pixel_count += 1
-
-                        sub_grid_radii = np.add(np.square(sub_grid[:, 0]), np.square(sub_grid[:, 1]))
-                        border_sub_pixel_index = image_pixel_index * (sub_grid_size ** 2) + np.argmax(sub_grid_radii)
-                        border_sub_pixels = np.append(border_sub_pixels, border_sub_pixel_index)
-
-                    image_pixel_index += 1
-
-        return border_sub_pixels
-
-    @Memoizer()
-    def blurring_mask_for_kernel_shape(self, kernel_shape):
-        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
-        fraction of their light will be blurring in the masked_image.
-
-        Parameters
-        ----------
-        kernel_shape : (int, int)
-           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
-        """
-
-        if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
-            raise exc.MaskException("psf_size of exterior region must be odd")
-
-        blurring_mask = np.full(self.shape, True)
-
-        def fill_grid(x, y):
-            if not self[x, y]:
-                for y1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
-                    for x1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
-                        if 0 <= x + x1 <= self.shape[0] - 1 and 0 <= y + y1 <= self.shape[1] - 1:
-                            if self[x + x1, y + y1]:
-                                blurring_mask[x + x1, y + y1] = False
-                        else:
-                            raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the masked_image"
-                                "before masking")
-
-        self.map(fill_grid)
-
-        return Mask(blurring_mask, self.pixel_scale)
-
-    def map_to_1d(self, grid_data):
+    def map_2d_array_to_masked_1d_array(self, array):
         """Compute a data grid, which represents the data values of a data-set (e.g. an masked_image, noise, in the mask.
 
         Parameters
         ----------
-        grid_data: ndarray | float | None
+        array: ndarray | float | None
 
         """
-        if grid_data is None or isinstance(grid_data, float):
-            return grid_data
+        if array is None or isinstance(array, float):
+            return array
+        return array_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(self, array)
 
-        pixels = self.pixels_in_mask
-
-        grid = np.zeros(shape=pixels)
-        pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    grid[pixel_count] = grid_data[x, y]
-                    pixel_count += 1
-
-        return grid
-
-    def map_to_2d(self, data):
+    def map_masked_1d_array_to_2d_array(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
         Parameters
         -----------
         data : ndarray
             The grid-data which is mapped to its 2D masked_image.
         """
-        data_2d = np.zeros(self.shape)
-
-        for (i, pixel) in enumerate(self.grid_to_pixel):
-            data_2d[pixel[0], pixel[1]] = data[i]
-
-        return data_2d
-
-
-class SparseMask(Mask):
-    def __new__(cls, mask, sparse_grid_size, *args, **kwargs):
-        sparse_mask = np.full(mask.shape, True)
-
-        for x in range(mask.shape[0]):
-            for y in range(mask.shape[1]):
-                if not mask[x, y]:
-                    if x % sparse_grid_size == 0 and y % sparse_grid_size == 0:
-                        sparse_mask[x, y] = False
-
-        return np.array(sparse_mask).view(cls)
-
-    def __init__(self, mask, sparse_grid_size):
-        super().__init__(mask)
-        self.mask = mask
-        self.sparse_grid_size = sparse_grid_size
+        return array_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(data, self.shape,
+                                                                                             self.grid_to_pixel)
 
     @property
-    @Memoizer()
-    def index_image(self):
+    def masked_image_grid(self):
         """
-        Setup an masked_image which, for each *False* entry in the sparse mask, puts the sparse pixel index in that pixel.
+        Compute the masked_image grid_coords grids from a mask, using the center of every unmasked pixel.
+        """
+        grid = array_util.image_grid_masked_from_mask_and_pixel_scale(self, self.pixel_scale)
+        return ImageGrid(grid)
 
-         This is used for computing the image_to_cluster vector, whereby each masked_image pixel is paired to the sparse
-         pixel in this masked_image via a neighbor search."""
+    @array_util.Memoizer()
+    def blurring_mask_for_psf_shape(self, psf_shape):
+        """Compute the blurring mask, which represents all data_to_pixels not in the mask but close enough to it that a
+        fraction of their light will be blurring in the masked_image.
 
-        sparse_index_2d = np.zeros(self.shape, dtype=int)
-        sparse_pixel_index = 0
+        Parameters
+        ----------
+        psf_shape : (int, int)
+           The sub_grid_size of the psf which defines the blurring region (e.g. the shape of the PSF)
+        """
 
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self[x, y]:
-                    sparse_pixel_index += 1
-                    sparse_index_2d[x, y] = sparse_pixel_index
+        if psf_shape[0] % 2 == 0 or psf_shape[1] % 2 == 0:
+            raise exc.MaskException("psf_size of exterior region must be odd")
 
-        return sparse_index_2d
+        blurring_mask = array_util.mask_blurring_from_mask_and_psf_shape(self, psf_shape)
+
+        return Mask(blurring_mask, self.pixel_scale)
 
     @property
-    @Memoizer()
-    def sparse_to_image(self):
+    def border_pixel_indices(self):
+        """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        its edge, therefore neighboring a pixel with a *True* value.
         """
-        Compute the mapping_matrix of each sparse masked_image pixel to its closest masked_image pixel, defined using a mask of masked_image \
-        data_to_pixels.
+        return array_util.border_pixels_from_mask(self).astype('int')
 
-        Returns
-        -------
-        cluster_to_image : ndarray
-            The mapping_matrix between every sparse clustering masked_image pixel and masked_image pixel, where each entry gives the 1D index
-            of the masked_image pixel in the self.
+    def border_sub_pixel_indices(self, sub_grid_size):
+        """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
+        its edge, therefore neighboring a pixel with a *True* value.
         """
-        sparse_to_image = np.empty(0, dtype=int)
-        image_pixel_index = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-
-                if not self[x, y]:
-                    sparse_to_image = np.append(sparse_to_image, image_pixel_index)
-
-                if not self.mask[x, y]:
-                    image_pixel_index += 1
-
-        return sparse_to_image
-
-    @property
-    @Memoizer()
-    def image_to_sparse(self):
-        """Compute the mapping_matrix between every masked_image pixel in the mask and its closest sparse clustering pixel.
-
-        This is performed by going to each masked_image pixel in the *mask*, and pairing it with its nearest neighboring pixel
-        in the *sparse_mask*. The index of the *sparse_mask* pixel is drawn from the *sparse_index_image*. This
-        neighbor search continue grows larger and larger around a pixel, until a pixel contained in the *sparse_mask* is
-        successfully found.
-
-        Returns
-        -------
-        image_to_cluster : ndarray
-            The mapping_matrix between every masked_image pixel and its closest sparse clustering pixel, where each entry give the 1D
-            index of the sparse pixel in sparse_pixel arrays.
-
-        """
-        image_to_sparse = np.empty(0, dtype=int)
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-                if not self.mask[x, y]:
-                    iboarder = 0
-                    pixel_match = False
-                    while not pixel_match:
-                        for x1 in range(x - iboarder, x + iboarder + 1):
-                            for y1 in range(y - iboarder, y + iboarder + 1):
-                                if 0 <= x1 < self.shape[0] and 0 <= y1 < self.shape[1]:
-                                    if not self[x1, y1] and not pixel_match:
-                                        image_to_sparse = np.append(image_to_sparse, self.index_image[x1, y1] - 1)
-                                        pixel_match = True
-
-                        iboarder += 1
-                        if iboarder == 100:
-                            raise exc.MaskException('compute_image_to_sparse - Stuck in infinite loop')
-
-        return image_to_sparse
+        return array_util.border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(self, self.pixel_scale,
+                                                                                    sub_grid_size).astype('int')
 
 
 class ImageGrid(np.ndarray):
@@ -486,6 +203,11 @@ class ImageGrid(np.ndarray):
     @property
     def no_pixels(self):
         return self.shape[0]
+
+    @classmethod
+    def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
+        blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape)
+        return ImageGrid(blurring_mask.masked_image_grid)
 
     def __new__(cls, arr, *args, **kwargs):
         return arr.view(cls)
@@ -594,6 +316,12 @@ class SubGrid(ImageGrid):
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
         self.mask = mask
 
+    @classmethod
+    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
+        sub_grid_masked = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask, mask.pixel_scale,
+                                                                                             sub_grid_size)
+        return SubGrid(sub_grid_masked, mask, sub_grid_size)
+
     def __array_finalize__(self, obj):
         if isinstance(obj, SubGrid):
             self.sub_grid_size = obj.sub_grid_size
@@ -601,76 +329,71 @@ class SubGrid(ImageGrid):
             self.sub_grid_fraction = obj.sub_grid_fraction
             self.mask = obj.mask
 
-    @classmethod
-    def from_mask(cls, mask, sub_grid_size=1):
-        sub_pixel_count = 0
-
-        grid = np.zeros(shape=(mask.pixels_in_mask * sub_grid_size ** 2, 2))
-
-        for x in range(mask.shape[0]):
-            for y in range(mask.shape[1]):
-                if not mask[x, y]:
-                    x_arcsec, y_arcsec = mask.pixel_coordinates_to_arc_second_coordinates((x, y))
-
-                    for x1 in range(sub_grid_size):
-                        for y1 in range(sub_grid_size):
-                            grid[sub_pixel_count, 0] = mask.sub_pixel_to_coordinate(x1, x_arcsec, sub_grid_size)
-
-                            grid[sub_pixel_count, 1] = mask.sub_pixel_to_coordinate(y1, y_arcsec, sub_grid_size)
-
-                            sub_pixel_count += 1
-        return SubGrid(grid, mask, sub_grid_size=sub_grid_size)
-
     def sub_data_to_image(self, data):
         return np.multiply(self.sub_grid_fraction, data.reshape(-1, self.sub_grid_length).sum(axis=1))
 
     @property
-    @Memoizer()
+    @array_util.Memoizer()
     def sub_to_image(self):
         """ Compute the pairing of every sub-pixel to its original masked_image pixel from a mask. """
-        sub_to_image = np.zeros(shape=(self.mask.pixels_in_mask * self.sub_grid_size ** 2,), dtype='int')
-        image_pixel_count = 0
-        sub_pixel_count = 0
-
-        for x in range(self.mask.shape[0]):
-            for y in range(self.mask.shape[1]):
-                if not self.mask[x, y]:
-                    for x1 in range(self.sub_grid_size):
-                        for y1 in range(self.sub_grid_size):
-                            sub_to_image[sub_pixel_count] = image_pixel_count
-                            sub_pixel_count += 1
-
-                    image_pixel_count += 1
-
-        return sub_to_image
+        return array_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
 
 
-class GridMapper(ImageGrid):
+class GridMapper(object):
 
-    def __new__(cls, arr, shape_2d, grid_to_pixel, *args, **kwargs):
-        arr = arr.view(cls)
-        arr.shape_2d = shape_2d
-        arr.grid_to_pixel = grid_to_pixel
-        return arr
-
-    def map_to_2d(self, data):
+    def map_unmasked_1d_array_to_2d_array(self, array_1d):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
         Parameters
         -----------
-        data : ndarray
+        array_1d : ndarray
             The grid-data which is mapped to its 2D masked_image.
         """
-        data_2d = np.zeros(self.shape_2d)
+        return array_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, self.padded_shape)
 
-        for (i, pixel) in enumerate(self.grid_to_pixel):
-            data_2d[pixel[0], pixel[1]] = data[i]
 
-        return data_2d
+class ImageGridMapper(ImageGrid, GridMapper):
+
+    def __new__(cls, arr, original_shape, padded_shape, *args, **kwargs):
+        arr = arr.view(cls)
+        arr.original_shape = original_shape
+        arr.padded_shape = padded_shape
+        return arr
+
+    @classmethod
+    def from_scaled_array_and_psf_shape(self, scaled_array, psf_shape):
+        padded_shape = (scaled_array.shape[0] + psf_shape[0] - 1, scaled_array.shape[1] + psf_shape[1] - 1)
+        padded_image_grid = scaled_array.padded_image_grid_for_psf_edges(psf_shape)
+        return ImageGridMapper(arr=padded_image_grid, original_shape=scaled_array.shape, padded_shape=padded_shape)
+
+
+class SubGridMapper(SubGrid, GridMapper):
+
+    def __init__(self, arr, mask, original_shape, padded_shape, sub_grid_size=1):
+
+        super(SubGridMapper, self).__init__(arr, mask, sub_grid_size)
+        self.original_shape = original_shape
+        self.padded_shape = padded_shape
+
+    @classmethod
+    def from_mask_sub_grid_size_and_psf_shape(self, mask, sub_grid_size, psf_shape):
+        padded_shape = (mask.shape[0] + psf_shape[0] - 1, mask.shape[1] + psf_shape[1] - 1)
+        padded_sub_grid = mask.padded_sub_grid_for_psf_edges_from_sub_grid_size(psf_shape, sub_grid_size)
+        return SubGridMapper(arr=padded_sub_grid, mask=mask, original_shape=mask.shape, padded_shape=padded_shape,
+                             sub_grid_size=sub_grid_size)
+
+    def __array_finalize__(self, obj):
+        if isinstance(obj, SubGridMapper):
+            self.sub_grid_size = obj.sub_grid_size
+            self.sub_grid_length = obj.sub_grid_length
+            self.sub_grid_fraction = obj.sub_grid_fraction
+            self.mask = obj.mask
+            self.original_shape = obj.original_shape
+            self.padded_shape = obj.padded_shape
 
 
 class GridCollection(object):
 
-    def __init__(self, image, sub, blurring, positional=None):
+    def __init__(self, image, sub, blurring):
         """
         A collection of grids which contain the coordinates of an masked_image. This includes the masked_image's regular grid,
         sub-grid, blurring region, etc. Coordinate grids are passed through the ray-tracing module to set up the masked_image,
@@ -691,10 +414,16 @@ class GridCollection(object):
 
     @classmethod
     def from_mask_sub_grid_size_and_blurring_shape(cls, mask, sub_grid_size, blurring_shape):
-        image_coords = mask.grid_masked
-        sub_grid_coords = SubGrid.from_mask(mask, sub_grid_size)
-        blurring_coords = mask.blurring_mask_for_kernel_shape(blurring_shape).grid_masked
-        return GridCollection(image_coords, sub_grid_coords, blurring_coords)
+        image_grid = mask.masked_image_grid
+        sub_grid = SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size)
+        blurring_grid = ImageGrid.blurring_grid_from_mask_and_psf_shape(mask, blurring_shape)
+        return GridCollection(image_grid, sub_grid, blurring_grid)
+
+    @classmethod
+    def grid_mappers_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
+        image_grid_mapper = ImageGridMapper.from_scaled_array_and_psf_shape(mask, psf_shape)
+        sub_grid_mapper = SubGridMapper.from_mask_sub_grid_size_and_psf_shape(mask, sub_grid_size, psf_shape)
+        return GridCollection(image_grid_mapper, sub_grid_mapper, None)
 
     def apply_function(self, func):
         return GridCollection(func(self.image), func(self.sub), func(self.blurring))

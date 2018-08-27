@@ -334,7 +334,7 @@ class MockTracer(object):
     def image_plane_blurring_images_of_galaxies(self):
         return [self.blurring_image]
 
-    def reconstructors_from_source_plane(self, borders, cluster_mask):
+    def reconstructors_from_source_plane(self, borders):
         return MockReconstructor()
 
     def plane_images_of_planes(self, shape=(30, 30)):
@@ -412,7 +412,7 @@ class TestProfileFitter:
 
         def test__mock_tracer__2x2_image_all_1s__3x3__psf_central_1__no_blurring(self, mi_no_blur):
 
-            tracer = MockTracer(image=mi_no_blur.mask.map_to_1d(mi_no_blur.image),
+            tracer = MockTracer(image=mi_no_blur.mask.map_2d_array_to_masked_1d_array(mi_no_blur.image),
                                 blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
 
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
@@ -421,7 +421,7 @@ class TestProfileFitter:
 
         def test__mock_tracer__2x2_image_all_1s__3x3_psf_all_1s__image_blurs_to_4s(self, mi_blur):
 
-            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+            tracer = MockTracer(image=mi_blur.mask.map_2d_array_to_masked_1d_array(mi_blur.image),
                                 blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
 
             fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
@@ -431,7 +431,7 @@ class TestProfileFitter:
         def test__mock_tracer__2x2_image_all_1s__3x3_psf_central_1__include_blurring_region__still_no_blurring(self,
                                                                                                                mi_no_blur):
 
-            tracer = MockTracer(image=mi_no_blur.mask.map_to_1d(mi_no_blur.image),
+            tracer = MockTracer(image=mi_no_blur.mask.map_2d_array_to_masked_1d_array(mi_no_blur.image),
                                 blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
 
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
@@ -440,14 +440,14 @@ class TestProfileFitter:
 
         def test__mock_tracer__2x2_image_all_1s__3x3_psf_all_1s__include_blurring_region_image_blur_to_9s(self, mi_blur):
 
-            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+            tracer = MockTracer(image=mi_blur.mask.map_2d_array_to_masked_1d_array(mi_blur.image),
                                 blurring_image=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
 
             fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
 
             assert (fitter.blurred_image_plane_image == np.array([9.0, 9.0, 9.0, 9.0])).all()
 
-        def test__real_tracer__2x2_image__no_psf_blurring(self, mi_no_blur, galaxy_light_sersic, no_galaxies):
+        def test__real_tracer__2x2_image__no_psf_blurring(self, mi_no_blur, galaxy_light_sersic):
 
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light_sersic],
                                                   image_grids=mi_no_blur.grids)
@@ -497,7 +497,7 @@ class TestProfileFitter:
 
         def test__mock_tracer__2x2_image_all_1s__3x3_psf_all_1s__include_blurring_region_image_blur_to_9s(self, mi_blur):
 
-            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+            tracer = MockTracer(image=mi_blur.mask.map_2d_array_to_masked_1d_array(mi_blur.image),
                                 blurring_image=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
 
             fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
@@ -576,7 +576,7 @@ class TestProfileFitter:
 
         def test__mock_tracer__2x2_image_all_1s__3x3_psf_all_1s__include_blurring_region_image_blur_to_9s(self, mi_blur):
 
-            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+            tracer = MockTracer(image=mi_blur.mask.map_2d_array_to_masked_1d_array(mi_blur.image),
                                 blurring_image=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
 
             fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
@@ -869,25 +869,25 @@ class TestProfileFitter:
             fitter = fitting.ProfileFitter(masked_image=mi, tracer=tracer)
 
             assert (fitter.blurred_image_plane_image_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image)).all()
 
             assert (fitter.blurred_image_plane_image_residuals_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image_residuals)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image_residuals)).all()
 
             assert (fitter.blurred_image_plane_image_chi_squareds_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image_chi_squareds)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image_chi_squareds)).all()
 
             assert (fitter.blurred_image_plane_images_of_planes_2d[0] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_planes[0])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_planes[0])).all()
 
             assert (fitter.blurred_image_plane_images_of_planes_2d[1] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_planes[1])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_planes[1])).all()
 
             assert (fitter.blurred_image_plane_images_of_galaxies_2d[0] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_galaxies[0])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_galaxies[0])).all()
 
             assert (fitter.blurred_image_plane_images_of_galaxies_2d[1] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_galaxies[1])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_galaxies[1])).all()
 
         def test__plane_image_of_plane_2d__ensure_index_goes_from_top_left(self, mi_no_blur):
 
@@ -939,15 +939,14 @@ class TestProfileFitter:
 
         def test__profile_subtracted_image_is_passed_with_other_attributes(self, mi_blur):
 
-            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+            tracer = MockTracer(image=mi_blur.mask.map_2d_array_to_masked_1d_array(mi_blur.image),
                                 blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
 
             profile_fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
 
             # blurred_image_plane_image == np.array([4.0, 4.0, 4.0, 4.0])
 
-            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_masked_image(
-                sparse_mask=mask.SparseMask(mi_blur.mask, 1))
+            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_masked_image()
 
             assert type(pix_fitter) == fitting.PixelizationFitter
             assert (pix_fitter.masked_image[:] == np.array([-3.0, -3.0, -3.0, -3.0])).all()
@@ -956,7 +955,6 @@ class TestProfileFitter:
             assert pix_fitter.masked_image.grids == profile_fitter.masked_image.grids
             assert pix_fitter.masked_image.borders == profile_fitter.masked_image.borders
             assert pix_fitter.masked_image.convolver_mapping_matrix == profile_fitter.masked_image.convolver_mapping_matrix
-            assert pix_fitter.sparse_mask == mask.SparseMask(mi_blur.mask, 1)
             assert pix_fitter.tracer == pix_fitter.tracer
 
 
@@ -1103,37 +1101,37 @@ class TestHyperProfileFitter:
                                                 hyper_minimum_values=[0.0, 0.0])
 
             assert (fitter.blurred_image_plane_image_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image)).all()
 
             assert (fitter.blurred_image_plane_image_residuals_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image_residuals)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image_residuals)).all()
 
             assert (fitter.blurred_image_plane_image_chi_squareds_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image_chi_squareds)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image_chi_squareds)).all()
 
             assert (fitter.blurred_image_plane_images_of_planes_2d[0] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_planes[0])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_planes[0])).all()
 
             assert (fitter.blurred_image_plane_images_of_planes_2d[1] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_planes[1])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_planes[1])).all()
 
             assert (fitter.blurred_image_plane_images_of_galaxies_2d[0] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_galaxies[0])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_galaxies[0])).all()
 
             assert (fitter.blurred_image_plane_images_of_galaxies_2d[1] ==
-                    mi.map_to_2d(fitter.blurred_image_plane_images_of_galaxies[1])).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_images_of_galaxies[1])).all()
 
-            assert (fitter.scaled_noise_2d == mi.map_to_2d(fitter.scaled_noise)).all()
+            assert (fitter.scaled_noise_2d == mi.map_masked_1d_array_to_2d_array(fitter.scaled_noise)).all()
 
             assert (fitter.blurred_image_plane_image_scaled_chi_squareds_2d ==
-                    mi.map_to_2d(fitter.blurred_image_plane_image_scaled_chi_squareds)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.blurred_image_plane_image_scaled_chi_squareds)).all()
 
 
     class TestPixelizationFitterFromProfileFitter:
 
         def test__profile_subtracted_image_is_passed_with_other_attributes(self, mi_blur):
 
-            tracer = MockTracer(image=mi_blur.mask.map_to_1d(mi_blur.image),
+            tracer = MockTracer(image=mi_blur.mask.map_2d_array_to_masked_1d_array(mi_blur.image),
                                 blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
 
             hyper_model_image = np.array([1.0])
@@ -1146,8 +1144,7 @@ class TestHyperProfileFitter:
 
             # blurred_image_plane_image == np.array([4.0, 4.0, 4.0, 4.0])
 
-            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_masked_image(
-                sparse_mask=mask.SparseMask(mi_blur.mask, 1))
+            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_masked_image()
 
             assert type(pix_fitter) == fitting.HyperPixelizationFitter
             assert (pix_fitter.masked_image[:] == np.array([-3.0, -3.0, -3.0, -3.0])).all()
@@ -1156,7 +1153,6 @@ class TestHyperProfileFitter:
             assert pix_fitter.masked_image.grids == profile_fitter.masked_image.grids
             assert pix_fitter.masked_image.borders == profile_fitter.masked_image.borders
             assert pix_fitter.masked_image.convolver_mapping_matrix == profile_fitter.masked_image.convolver_mapping_matrix
-            assert pix_fitter.sparse_mask == mask.SparseMask(mi_blur.mask, 1)
             assert pix_fitter.tracer == pix_fitter.tracer
             assert (pix_fitter.hyper_model_image == profile_fitter.hyper_model_image).all()
             assert (pix_fitter.hyper_galaxy_images[0] == profile_fitter.hyper_galaxy_images[0]).all()
@@ -1248,7 +1244,14 @@ class TestPixelizationFitter:
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
-            ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+
+            ma = np.array([[True,  True,  True,  True, True],
+                           [True, False, False, False, True],
+                           [True, False, False, False, True],
+                           [True, False, False, False, True],
+                           [True,  True,  True,  True, True]])
+            ma = mask.Mask(ma, pixel_scale=1.0)
+
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]))
@@ -1259,7 +1262,7 @@ class TestPixelizationFitter:
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_grids=mi.grids)
-            fitter = fitting.PixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1), tracer=tracer)
+            fitter = fitting.PixelizationFitter(masked_image=mi, tracer=tracer)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1296,7 +1299,6 @@ class TestPixelizationFitter:
 
         def test__real_tracer__compare_to_masked_image_map(self):
 
-
             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 2.0, 3.0, 0.0],
                            [0.0, 4.0, 5.0, 6.0, 0.0],
@@ -1314,24 +1316,23 @@ class TestPixelizationFitter:
             mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders, mask.SparseMask(mi.mask, 1))
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
             recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, mi.noise, mi.convolver_mapping_matrix)
 
             g0 = galaxy.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[g0],
                                                          image_grids=mi.grids)
 
-            fitter = fitting.PixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
-                                                tracer=tracer)
+            fitter = fitting.PixelizationFitter(masked_image=mi, tracer=tracer)
 
             assert (fitter.reconstructed_image_plane_image_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image)).all()
 
             assert (fitter.reconstructed_image_plane_image_residuals_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image_residuals)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image_residuals)).all()
 
             assert (fitter.reconstructed_image_plane_image_chi_squareds_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image_chi_squareds)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image_chi_squareds)).all()
 
 
     class TestCompareToManual:
@@ -1355,15 +1356,14 @@ class TestPixelizationFitter:
             mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders, mask.SparseMask(mi.mask, 1))
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
             recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, mi.noise, mi.convolver_mapping_matrix)
 
             g0 = galaxy.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[g0],
                                                          image_grids=mi.grids)
 
-            fitter = fitting.PixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
-                                                tracer=tracer)
+            fitter = fitting.PixelizationFitter(masked_image=mi, tracer=tracer)
 
             residuals = fitting.residuals_from_image_and_model(mi, fitter.reconstruction.reconstructed_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
@@ -1397,7 +1397,12 @@ class TestHyperPixelizationFitter:
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 1.0, 1.0, 1.0, 0.0],
                            [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
-            ma = mask.Mask.for_simulate(shape_arc_seconds=(3.0, 3.0), pixel_scale=1.0, psf_size=(3, 3))
+            ma = np.array([[True,  True,  True,  True, True],
+                           [True, False, False, False, True],
+                           [True, False, False, False, True],
+                           [True, False, False, False, True],
+                           [True,  True,  True,  True, True]])
+            ma = mask.Mask(ma, pixel_scale=1.0)
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]))
@@ -1414,8 +1419,7 @@ class TestHyperPixelizationFitter:
                                        hyper_galaxy=hyper_galaxy, pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_grids=mi.grids)
-            fitter = fitting.HyperPixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
-                                                     tracer=tracer, hyper_model_image=hyper_model_image,
+            fitter = fitting.HyperPixelizationFitter(masked_image=mi, tracer=tracer, hyper_model_image=hyper_model_image,
                                                      hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0])
 
             cov_matrix = np.array([[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1473,7 +1477,7 @@ class TestHyperPixelizationFitter:
             mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders, mask.SparseMask(mi.mask, 1))
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
 
             hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
@@ -1485,23 +1489,22 @@ class TestHyperPixelizationFitter:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
                                                          image_grids=mi.grids)
 
-            fitter = fitting.HyperPixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
-                                                tracer=tracer, hyper_model_image=hyper_model_image,
+            fitter = fitting.HyperPixelizationFitter(masked_image=mi, tracer=tracer, hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
             assert (fitter.reconstructed_image_plane_image_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image)).all()
 
             assert (fitter.reconstructed_image_plane_image_residuals_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image_residuals)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image_residuals)).all()
 
             assert (fitter.reconstructed_image_plane_image_chi_squareds_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image_chi_squareds)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image_chi_squareds)).all()
 
-            assert (fitter.scaled_noise_2d == mi.map_to_2d(fitter.scaled_noise)).all()
+            assert (fitter.scaled_noise_2d == mi.map_masked_1d_array_to_2d_array(fitter.scaled_noise)).all()
 
             assert (fitter.reconstructed_image_plane_image_scaled_chi_squareds_2d ==
-                    mi.map_to_2d(fitter.reconstructed_image_plane_image_scaled_chi_squareds)).all()
+                    mi.map_masked_1d_array_to_2d_array(fitter.reconstructed_image_plane_image_scaled_chi_squareds)).all()
 
 
     class TestCompareToManual:
@@ -1525,7 +1528,7 @@ class TestHyperPixelizationFitter:
             mi = masked_image.MaskedImage(im, ma, sub_grid_size=1)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders, mask.SparseMask(mi.mask, 1))
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
 
             hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
@@ -1537,8 +1540,7 @@ class TestHyperPixelizationFitter:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
                                                          image_grids=mi.grids)
 
-            fitter = fitting.HyperPixelizationFitter(masked_image=mi, sparse_mask=mask.SparseMask(mi.mask, 1),
-                                                tracer=tracer, hyper_model_image=hyper_model_image,
+            fitter = fitting.HyperPixelizationFitter(masked_image=mi, tracer=tracer, hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
             scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, fitter.scaled_noise, mi.convolver_mapping_matrix)
