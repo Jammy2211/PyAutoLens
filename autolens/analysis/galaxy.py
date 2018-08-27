@@ -1,14 +1,14 @@
 import numpy as np
-from autolens.profiles import light_profiles as lps, mass_profiles as mps
+from autolens.profiles import light_profiles as lp, mass_profiles as mp
 from itertools import count
 
 
 def is_light_profile(obj):
-    return isinstance(obj, lps.LightProfile)
+    return isinstance(obj, lp.LightProfile)
 
 
 def is_mass_profile(obj):
-    return isinstance(obj, mps.MassProfile)
+    return isinstance(obj, mp.MassProfile)
 
 
 class Galaxy(object):
@@ -272,11 +272,7 @@ class Galaxy(object):
 
     def deflections_from_grid(self, grid):
         if self.mass_profiles is not None and len(self.mass_profiles) > 0:
-
-            deflections = sum(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles))
-
-            # return sum(map(lambda p: p.deflections_from_coordinate_grid(grid), self.mass_profiles))
-            return deflections
+            return sum(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles))
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
@@ -404,7 +400,7 @@ class HyperGalaxy(object):
     def parameter_labels(self):
         return [r'\Omega', r'\omega1', r'\omega2']
 
-    def contributions_from_preload_images(self, hyper_model_image, hyper_galaxy_image, minimum_value):
+    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, minimum_value):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
         galaxy can be attributed to contain.
 

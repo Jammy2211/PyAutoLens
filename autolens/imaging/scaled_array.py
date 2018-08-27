@@ -1,7 +1,7 @@
 import numpy as np
 import logging
 
-from autolens.imaging import array_util
+from autolens.imaging import imaging_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ class Array(np.ndarray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(array_util.numpy_array_from_fits(file_path, hdu))
+        return cls(imaging_util.numpy_array_from_fits(file_path, hdu))
 
 
 class ScaledArray(Array):
@@ -144,7 +144,7 @@ class ScaledArray(Array):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(array_util.numpy_array_from_fits(file_path, hdu), pixel_scale)
+        return cls(imaging_util.numpy_array_from_fits(file_path, hdu), pixel_scale)
 
     @property
     def central_pixel_coordinates(self):
@@ -242,17 +242,17 @@ class ScaledArray(Array):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value and positive y value in arc seconds.
         """
-        return array_util.image_grid_2d_from_shape_and_pixel_scale(self.shape, self.pixel_scale)
+        return imaging_util.image_grid_2d_from_shape_and_pixel_scale(self.shape, self.pixel_scale)
 
     def padded_image_grid_for_psf_edges(self, psf_shape):
         padded_shape = (self.shape[0] + psf_shape[0] - 1, self.shape[1] + psf_shape[1] - 1)
-        return array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full(padded_shape, False),
-                                                                      pixel_scale=self.pixel_scale)
+        return imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full(padded_shape, False),
+                                                                        pixel_scale=self.pixel_scale)
 
     def padded_sub_grid_for_psf_edges_from_sub_grid_size(self, psf_shape, sub_grid_size):
         padded_shape = (self.shape[0] + psf_shape[0] - 1, self.shape[1] + psf_shape[1] - 1)
-        return array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full(padded_shape, False),
-                                                          pixel_scale=self.pixel_scale, sub_grid_size=sub_grid_size)
+        return imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full(padded_shape, False),
+                                                                                    pixel_scale=self.pixel_scale, sub_grid_size=sub_grid_size)
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):

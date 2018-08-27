@@ -351,6 +351,17 @@ def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
     return array_2d
 
 @numba.jit(nopython=True)
+def map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections, shape, one_to_two):
+
+    deflections_2d = np.zeros((shape[0], shape[1], 2))
+
+    for index in range(len(one_to_two)):
+        deflections_2d[one_to_two[index,0], one_to_two[index,1 ], 0] = deflections[index, 0]
+        deflections_2d[one_to_two[index,0], one_to_two[index, 1], 1] = deflections[index, 1]
+
+    return deflections_2d
+
+@numba.jit(nopython=True)
 def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     array_2d = np.zeros(shape)
@@ -362,6 +373,20 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
             index += 1
 
     return array_2d
+
+@numba.jit(nopython=True)
+def map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections, shape):
+
+    deflections_2d = np.zeros((shape[0], shape[1], 2))
+
+    index = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            deflections_2d[x, y, 0] = deflections[index, 0]
+            deflections_2d[x, y, 1] = deflections[index, 1]
+            index += 1
+
+    return deflections_2d
 
 def numpy_array_to_fits(array, file_path):
 
