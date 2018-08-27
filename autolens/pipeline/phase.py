@@ -21,7 +21,7 @@ logger.level = logging.DEBUG
 
 
 def default_mask_function(image):
-    return msk.Mask.circular(image.shape_arc_seconds, image.pixel_scale, 3)
+    return msk.Mask.circular(image.shape, image.pixel_scale, 3.0)
 
 
 class ResultsCollection(list):
@@ -510,7 +510,7 @@ class PhaseImaging(Phase):
 
         def map_to_1d(self, data):
             """Convinience method"""
-            return self.masked_image.mask.map_to_1d(data)
+            return self.masked_image.mask.map_2d_array_to_masked_1d_array(data)
 
 
     class Result(Phase.Result):

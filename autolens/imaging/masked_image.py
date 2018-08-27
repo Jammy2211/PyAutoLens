@@ -7,7 +7,7 @@ import numpy as np
 class MaskedImage(im.Image):
 
     def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None, positions=None):
-        return np.array(mask.map_to_1d(image)).view(cls)
+        return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
 
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None,
                  positions=None):
@@ -24,7 +24,7 @@ class MaskedImage(im.Image):
         sub_grid_size : int
 
         """
-        super().__init__(array=image, pixel_scale=image.pixel_scale, noise=mask.map_to_1d(image.noise), psf=image.psf)
+        super().__init__(array=image, pixel_scale=image.pixel_scale, noise=mask.map_2d_array_to_masked_1d_array(image.noise), psf=image.psf)
 
         self.image = image
         self.image_shape = image.shape
@@ -36,13 +36,16 @@ class MaskedImage(im.Image):
         if pixelization_psf_shape is None:
             pixelization_psf_shape = self.image.psf.shape
 
-        self.blurring_mask = mask.blurring_mask_for_kernel_shape(image_psf_shape)
+        self.blurring_mask = mask.blurring_mask_for_psf_shape(image_psf_shape)
         self.convolver_image = convolution.ConvolverImage(self.mask,
                                                           self.blurring_mask, self.image.psf.trim(image_psf_shape))
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
                                                                            self.image.psf.trim(pixelization_psf_shape))
         self.grids = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=mask, sub_grid_size=sub_grid_size,
                                                                                    blurring_shape=image_psf_shape)
+
+        self.grid_mappers = msk.GridCollection.grid_mappers_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                            sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.borders = msk.BorderCollection.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         self.positions = positions
@@ -60,16 +63,11 @@ class MaskedImage(im.Image):
             self.borders = obj.borders
             self.positions = obj.positions
 
-    def map_to_2d(self, data):
+    def map_masked_1d_array_to_2d_array(self, data):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
         Parameters
         -----------
         data : ndarray
             The grid-data which is mapped to its 2D masked_image.
         """
-        data_2d = np.zeros(self.image_shape)
-
-        for (i, pixel) in enumerate(self.mask.grid_to_pixel):
-            data_2d[pixel[0], pixel[1]] = data[i]
-
-        return data_2d
+        return self.mask.map_masked_1d_array_to_2d_array(data)
