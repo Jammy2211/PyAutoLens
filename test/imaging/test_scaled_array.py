@@ -1,4 +1,4 @@
-from autolens.imaging import array_util
+from autolens.imaging import imaging_util
 from autolens.imaging import scaled_array
 import numpy as np
 import pytest
@@ -373,7 +373,7 @@ class TestGrids:
 
     def test__grid_2d__compare_to_array_util(self):
 
-        grid_2d_util = array_util.image_grid_2d_from_shape_and_pixel_scale(shape=(4, 7), pixel_scale=0.56)
+        grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scale(shape=(4, 7), pixel_scale=0.56)
 
         sca = scaled_array.ScaledArray(array=np.zeros((4, 7)), pixel_scale=0.56)
 
@@ -458,25 +458,25 @@ class TestPaddedGridForPSFEdges:
 
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((4,4)), pixel_scale=3.0)
         padded_image_grid = sca_for_padding.padded_image_grid_for_psf_edges(psf_shape=(3, 3))
-        image_grid = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6,6), False), pixel_scale=3.0)
+        image_grid = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6, 6), False), pixel_scale=3.0)
         assert (padded_image_grid == image_grid).all()
 
 
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((4,5)), pixel_scale=2.0)
         padded_image_grid = sca_for_padding.padded_image_grid_for_psf_edges(psf_shape=(3, 3))
-        image_grid = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6,7), False), pixel_scale=2.0)
+        image_grid = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6, 7), False), pixel_scale=2.0)
         assert (padded_image_grid == image_grid).all()
 
 
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((5,4)), pixel_scale=1.0)
         padded_image_grid = sca_for_padding.padded_image_grid_for_psf_edges(psf_shape=(3, 3))
-        image_grid = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((7,6), False), pixel_scale=1.0)
+        image_grid = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((7, 6), False), pixel_scale=1.0)
         assert (padded_image_grid == image_grid).all()
 
 
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((2,5)), pixel_scale=8.0)
         padded_image_grid = sca_for_padding.padded_image_grid_for_psf_edges(psf_shape=(5, 5))
-        image_grid = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6,9), False), pixel_scale=8.0)
+        image_grid = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6, 9), False), pixel_scale=8.0)
         assert (padded_image_grid == image_grid).all()
 
     def test__sub_grid_coordinates__match_grid_2d_after_padding(self):
@@ -484,7 +484,7 @@ class TestPaddedGridForPSFEdges:
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((4,4)), pixel_scale=3.0)
         padded_sub_grid = sca_for_padding.padded_sub_grid_for_psf_edges_from_sub_grid_size(psf_shape=(3, 3),
                                                                                              sub_grid_size=3)
-        sub_grid = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((6,6), False),
+        sub_grid = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((6, 6), False),
                                                                                         pixel_scale=3.0,
                                                                                         sub_grid_size=3)
         assert (padded_sub_grid == sub_grid).all()
@@ -493,7 +493,7 @@ class TestPaddedGridForPSFEdges:
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((4,5)), pixel_scale=2.0)
         padded_sub_grid = sca_for_padding.padded_sub_grid_for_psf_edges_from_sub_grid_size(psf_shape=(3, 3),
                                                                                              sub_grid_size=1)
-        sub_grid = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((6,7), False),
+        sub_grid = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((6, 7), False),
                                                                                         pixel_scale=2.0,
                                                                                         sub_grid_size=1)
         assert (padded_sub_grid == sub_grid).all()
@@ -502,7 +502,7 @@ class TestPaddedGridForPSFEdges:
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((5,4)), pixel_scale=1.0)
         padded_sub_grid = sca_for_padding.padded_sub_grid_for_psf_edges_from_sub_grid_size(psf_shape=(3, 3),
                                                                                              sub_grid_size=2)
-        sub_grid = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((7,6), False),
+        sub_grid = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((7, 6), False),
                                                                                         pixel_scale=1.0,
                                                                                         sub_grid_size=2)
         assert (padded_sub_grid == sub_grid).all()
@@ -511,6 +511,6 @@ class TestPaddedGridForPSFEdges:
         sca_for_padding = scaled_array.ScaledArray(array=np.zeros((2,5)), pixel_scale=8.0)
         padded_sub_grid = sca_for_padding.padded_sub_grid_for_psf_edges_from_sub_grid_size(psf_shape=(5, 5),
                                                                                              sub_grid_size=3)
-        sub_grid = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((6,9), False),
+        sub_grid = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((6, 9), False),
                                                                                         pixel_scale=8.0, sub_grid_size=3)
         assert (padded_sub_grid == sub_grid).all()

@@ -1,5 +1,5 @@
 from autolens import exc
-from autolens.imaging import array_util as util
+from autolens.imaging import imaging_util as util
 import numpy as np
 import os
 import pytest
@@ -1104,7 +1104,7 @@ class TestMaskBlurring(object):
             util.mask_blurring_from_mask_and_psf_shape(mask, psf_shape=(5, 5))
 
 
-class TestMapArrayTo1d(object):
+class TestMap2DArrayTo1d(object):
 
     def test__setup_3x3_data(self):
         
@@ -1205,6 +1205,50 @@ class TestMapMasked1DArrayTo2d(object):
                                       [-1.0, -2.0, 0.0, -3.0]])).all()
 
 
+class TestMapMaskedDeflectionsArrayTo2d(object):
+
+    def test__2d_array_is_2x2__is_not_masked__maps_correctly(self):
+
+        deflections = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+
+        one_to_two = np.array([[0,0], [0,1], [1,0], [1,1]])
+        shape = (2,2)
+
+        deflections_2d = util.map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections,
+                                                                                                       shape, one_to_two)
+
+        assert (deflections_2d == np.array([[[1.0, 2.0], [3.0, 4.0]],
+                                            [[5.0, 6.0], [7.0, 8.0]]])).all()
+
+    def test__2d_array_is_2x2__is_masked__maps_correctly(self):
+
+        deflections = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+
+        one_to_two = np.array([[0,0], [0,1], [1,0]])
+        shape = (2,2)
+
+        deflections_2d = util.map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections,
+                                                                                                       shape, one_to_two)
+
+        assert (deflections_2d == np.array([[[1.0, 2.0], [3.0, 4.0]],
+                                            [[5.0, 6.0], [0.0, 0.0]]])).all()
+
+
+    def test__different_shape_and_mappings(self):
+
+        deflections = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0], [-1.0, -2.0], [-3.0, -4.0]])
+
+        one_to_two = np.array([[0,0], [0,1], [1,0], [2,0], [2,1], [2,3]])
+        shape = (3,4)
+
+        deflections_2d = util.map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections,
+                                                                                                       shape, one_to_two)
+
+        assert (deflections_2d == np.array([[[1.0, 2.0],   [3.0, 4.0], [0.0, 0.0],   [0.0, 0.0]],
+                                            [[5.0, 6.0],   [0.0, 0.0], [0.0, 0.0],   [0.0, 0.0]],
+                                            [[7.0, 8.0], [-1.0, -2.0], [0.0, 0.0], [-3.0, -4.0]]])).all()
+
+
 class TestMapUnmasked1dArrayTo2d(object):
     
     def test__1d_array_in__maps_it_to_4x4_2d_array(self):
@@ -1233,6 +1277,44 @@ class TestMapUnmasked1dArrayTo2d(object):
         assert (array_2d == np.array([[1.0, 2.0],
                                      [3.0, 4.0],
                                      [5.0, 6.0]])).all()
+
+
+class TestMapUnmaskedDeflections1dToDeflections2d(object):
+
+    def test__1d_array_in__maps_it_to_4x4_2d_array(self):
+        
+        deflections_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0], [6.0, 6.0], [7.0, 7.0], 
+                                   [8.0, 8.0], [9.0, 9.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0],
+                                   [6.0, 6.0], [7.0, 7.0]])
+        
+        deflections_2d = util.map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections_1d,
+                                                                                                    shape=(4,4))
+
+        assert (deflections_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]],
+                                            [[5.0, 5.0], [6.0, 6.0], [7.0, 7.0], [8.0, 8.0]],
+                                            [[9.0, 9.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]],
+                                            [[4.0, 4.0], [5.0, 5.0], [6.0, 6.0], [7.0, 7.0]]])).all()
+
+    def test__1d_deflections_in__can_map_it_to_2x3_2d_array(self):
+
+        deflections_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0], [6.0, 6.0]])
+
+        deflections_2d = util.map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections_1d,
+                                                                                                    shape=(2, 3))
+
+        assert (deflections_2d == np.array([[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]],
+                                            [[4.0, 4.0], [5.0, 5.0], [6.0, 6.0]]])).all()
+
+    def test__1d_deflections_in__can_map_it_to_3x2_2d_array(self):
+
+        deflections_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0], [6.0, 6.0]])
+
+        deflections_2d = util.map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections_1d,
+                                                                                                    shape=(3, 2))
+
+        assert (deflections_2d == np.array([[[1.0, 1.0], [2.0, 2.0]],
+                                            [[3.0, 3.0], [4.0, 4.0]],
+                                            [[5.0, 5.0], [6.0, 6.0]]])).all()
 
 
 class TestFits:
