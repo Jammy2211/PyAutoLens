@@ -47,8 +47,8 @@ class Data(object):
         im = image.Image(array=im, effective_exposure_time=exposure_time, pixel_scale=pixel_scale, psf=psf,
                          background_noise=noise, poisson_noise=noise)
 
-        ma = mask.Mask.circular(shape_arc_seconds=im.shape_arc_seconds, pixel_scale=im.pixel_scale,
-                                radius_mask=radius_mask)
+        ma = mask.Mask.circular(shape=im.shape_arc_seconds, pixel_scale=im.pixel_scale,
+                                radius_mask_arcsec=radius_mask)
 
         self.masked_image = masked_image.MaskedImage(image=im, mask=ma)
 

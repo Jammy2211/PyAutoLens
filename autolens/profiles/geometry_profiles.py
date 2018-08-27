@@ -41,14 +41,13 @@ def transform_grid(func):
         else:
             result = func(profile, grid, *args, **kwargs)
 
-        result_shape = result.shape
-
         # TODO : result.shape distinguishes 1d arrays (intensities) and 2d arrays (deflections) - make more explicit
 
         if isinstance(grid, mask.GridMapper) and len(result.shape) is 1:
-            return np.asarray(grid.map_to_2d(result))
+            return np.asarray(grid.map_unmasked_1d_array_to_2d_array(result))
         elif isinstance(grid, mask.GridMapper) and len(result.shape) is 2:
-            return list(map(lambda deflections : np.asarray(grid.map_to_2d(deflections)), [result[:,0], result[:,1]]))
+            return list(map(lambda deflections : np.asarray(grid.map_unmasked_1d_array_to_2d_array(deflections)),
+                            [result[:, 0], result[:, 1]]))
         else:
             return np.asarray(result)
 
