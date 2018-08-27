@@ -1,4 +1,4 @@
-from autolens.imaging import array_util
+from autolens.imaging import imaging_util
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.imaging import convolution
@@ -50,11 +50,11 @@ class TestMaskedImage(object):
 
     def test_mapper_grids(self, masked_image):
 
-        image_mapper_util = array_util.image_grid_masked_from_mask_and_pixel_scale(np.full((6,6), False),
-                                                                                   masked_image.image.pixel_scale)
+        image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(np.full((6, 6), False),
+                                                                                     masked_image.image.pixel_scale)
 
-        sub_mapper_util = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(np.full((6,6), False),
-                                          masked_image.image.pixel_scale, masked_image.grids.sub.sub_grid_size)
+        sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(np.full((6, 6), False),
+                                                                                               masked_image.image.pixel_scale, masked_image.grids.sub.sub_grid_size)
 
         assert (masked_image.grid_mappers.image == image_mapper_util).all()
         assert masked_image.grid_mappers.image.original_shape == (4,4)

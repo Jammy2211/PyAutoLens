@@ -395,8 +395,8 @@ class MockHyperGalaxy(object):
         self.noise_factor = noise_factor
         self.noise_power = noise_power
 
-    def contributions_from_preload_images(self, model, galaxy_image, minimum_value):
-        contributions = galaxy_image / (model + self.contribution_factor)
+    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_images, minimum_value):
+        contributions = hyper_galaxy_images / (hyper_model_image + self.contribution_factor)
         contributions = contributions / np.max(contributions)
         contributions[contributions < minimum_value] = 0.0
         return contributions
