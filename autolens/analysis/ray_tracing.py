@@ -163,8 +163,8 @@ class TracerImageSourcePlanes(TracerImagePlane):
 
         self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
 
-    def reconstructors_from_source_plane(self, borders, cluster_mask):
-        return self.source_plane.reconstructor_from_plane(borders, cluster_mask)
+    def reconstructors_from_source_plane(self, borders):
+        return self.source_plane.reconstructor_from_plane(borders)
 
 
 class AbstractTracerMulti(AbstractTracer):
@@ -272,8 +272,8 @@ class TracerMulti(AbstractTracerMulti):
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
 
-    def reconstructors_from_planes(self, borders, cluster_mask):
-        return list(map(lambda plane: plane.reconstructor_from_plane(borders, cluster_mask), self.planes))
+    def reconstructors_from_planes(self, borders):
+        return list(map(lambda plane: plane.reconstructor_from_plane(borders), self.planes))
 
 
 class TracerGeometry(object):
@@ -465,14 +465,14 @@ class Plane(object):
     def hyper_galaxies(self):
         return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
 
-    def reconstructor_from_plane(self, borders, sparse_mask):
+    def reconstructor_from_plane(self, borders):
 
         pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
 
         if len(pixelized_galaxies) == 0:
             return None
         if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.reconstructor_from_pixelization_and_grids(self.grids, borders, sparse_mask)
+            return pixelized_galaxies[0].pixelization.reconstructor_from_pixelization_and_grids(self.grids, borders)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 

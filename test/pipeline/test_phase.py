@@ -98,7 +98,7 @@ def make_image():
 @pytest.fixture(name="masked_image")
 def make_masked_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
-    mask = msk.Mask.circular(shape, 1, 3)
+    mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return mi.MaskedImage(image, mask)
 
 

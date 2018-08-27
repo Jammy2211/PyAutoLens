@@ -1303,58 +1303,115 @@ class TestMassIntegral(object):
 
 class TestGridMapperMapsOutputTo2D(object):
 
-    def test__grid_mapper_in__2d_surface_densities_out(self):
+    def test__grid_mappers_in__2d_surface_density(self):
 
-        gaussian = mp.SphericalIsothermalMP(einstein_radius=2.0)
+        gaussian = mp.SphericalIsothermalMP(einstein_radius=1.0)
 
         surface_density_1d = gaussian.surface_density_from_grid(grid)
 
-        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+        padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+        image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2,2), padded_shape=(4,4))
 
-        surface_density_2d = gaussian.surface_density_from_grid(mapper_grid)
+        surface_density_2d = gaussian.surface_density_from_grid(image_grid_mapper)
 
-        assert surface_density_2d[1,1] == surface_density_1d[0]
-        assert surface_density_2d[1,2] == surface_density_1d[1]
-        assert surface_density_2d[2,1] == surface_density_1d[2]
-        assert surface_density_2d[2,2] == surface_density_1d[3]
+        assert surface_density_2d[0,0] == surface_density_1d[0]
+        assert surface_density_2d[0,1] == surface_density_1d[1]
+        assert surface_density_2d[0,2] == surface_density_1d[2]
+        assert surface_density_2d[0,3] == surface_density_1d[3]
+        assert surface_density_2d[1,0] == surface_density_1d[0]
+        assert surface_density_2d[1,1] == surface_density_1d[1]
+        assert surface_density_2d[1,2] == surface_density_1d[2]
+        assert surface_density_2d[1,3] == surface_density_1d[3]
+        assert surface_density_2d[2,0] == surface_density_1d[0]
+        assert surface_density_2d[2,1] == surface_density_1d[1]
+        assert surface_density_2d[2,2] == surface_density_1d[2]
+        assert surface_density_2d[2,3] == surface_density_1d[3]
+        assert surface_density_2d[3,0] == surface_density_1d[0]
+        assert surface_density_2d[3,1] == surface_density_1d[1]
+        assert surface_density_2d[3,2] == surface_density_1d[2]
+        assert surface_density_2d[3,3] == surface_density_1d[3]
         
-    def test__grid_mapper_in__2d_potential_out(self):
+    def test__grid_mappers_in__2d_potential(self):
 
-        gaussian = mp.SphericalIsothermalMP(einstein_radius=2.0)
+        gaussian = mp.SphericalIsothermalMP(einstein_radius=1.0)
 
         potential_1d = gaussian.potential_from_grid(grid)
 
-        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+        padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+        image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2,2), padded_shape=(4,4))
 
-        potential_2d = gaussian.potential_from_grid(mapper_grid)
+        potential_2d = gaussian.potential_from_grid(image_grid_mapper)
 
-        assert potential_2d[1,1] == potential_1d[0]
-        assert potential_2d[1,2] == potential_1d[1]
-        assert potential_2d[2,1] == potential_1d[2]
-        assert potential_2d[2,2] == potential_1d[3]
+        assert potential_2d[0,0] == potential_1d[0]
+        assert potential_2d[0,1] == potential_1d[1]
+        assert potential_2d[0,2] == potential_1d[2]
+        assert potential_2d[0,3] == potential_1d[3]
+        assert potential_2d[1,0] == potential_1d[0]
+        assert potential_2d[1,1] == potential_1d[1]
+        assert potential_2d[1,2] == potential_1d[2]
+        assert potential_2d[1,3] == potential_1d[3]
+        assert potential_2d[2,0] == potential_1d[0]
+        assert potential_2d[2,1] == potential_1d[1]
+        assert potential_2d[2,2] == potential_1d[2]
+        assert potential_2d[2,3] == potential_1d[3]
+        assert potential_2d[3,0] == potential_1d[0]
+        assert potential_2d[3,1] == potential_1d[1]
+        assert potential_2d[3,2] == potential_1d[2]
+        assert potential_2d[3,3] == potential_1d[3]
         
-    def test__grid_mapper_in__2d_deflections_out(self):
+    def test__grid_mappers_in__2d_deflections(self):
 
-        gaussian = mp.SphericalIsothermalMP(einstein_radius=2.0)
+        gaussian = mp.SphericalIsothermalMP(einstein_radius=1.0)
 
         deflections_1d = gaussian.deflections_from_grid(grid)
 
-        grid_to_pixel = np.array([[1,1], [1,2], [2,1], [2,2]], dtype='int')
+        padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+                                [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        mapper_grid = mask.GridMapper(arr=grid, shape_2d=(4,4), grid_to_pixel=grid_to_pixel)
+        image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2,2), padded_shape=(4,4))
 
-        deflections_2d = gaussian.deflections_from_grid(mapper_grid)
+        deflections_2d = gaussian.deflections_from_grid(image_grid_mapper)
 
-        assert deflections_2d[0][1,1] == deflections_1d[0,0]
-        assert deflections_2d[0][1,2] == deflections_1d[1,0]
-        assert deflections_2d[0][2,1] == deflections_1d[2,0]
-        assert deflections_2d[0][2,2] == deflections_1d[3,0]
-
-        assert deflections_2d[1][1,1] == deflections_1d[0,1]
-        assert deflections_2d[1][1,2] == deflections_1d[1,1]
-        assert deflections_2d[1][2,1] == deflections_1d[2,1]
-        assert deflections_2d[1][2,2] == deflections_1d[3,1]
+        assert deflections_2d[0][0,0] == deflections_1d[0,0]
+        assert deflections_2d[0][0,1] == deflections_1d[1,0]
+        assert deflections_2d[0][0,2] == deflections_1d[2,0]
+        assert deflections_2d[0][0,3] == deflections_1d[3,0]
+        assert deflections_2d[0][1,0] == deflections_1d[0,0]
+        assert deflections_2d[0][1,1] == deflections_1d[1,0]
+        assert deflections_2d[0][1,2] == deflections_1d[2,0]
+        assert deflections_2d[0][1,3] == deflections_1d[3,0]
+        assert deflections_2d[0][2,0] == deflections_1d[0,0]
+        assert deflections_2d[0][2,1] == deflections_1d[1,0]
+        assert deflections_2d[0][2,2] == deflections_1d[2,0]
+        assert deflections_2d[0][2,3] == deflections_1d[3,0]
+        assert deflections_2d[0][3,0] == deflections_1d[0,0]
+        assert deflections_2d[0][3,1] == deflections_1d[1,0]
+        assert deflections_2d[0][3,2] == deflections_1d[2,0]
+        assert deflections_2d[0][3,3] == deflections_1d[3,0]
+        
+        assert deflections_2d[1][0,0] == deflections_1d[0,1]
+        assert deflections_2d[1][0,1] == deflections_1d[1,1]
+        assert deflections_2d[1][0,2] == deflections_1d[2,1]
+        assert deflections_2d[1][0,3] == deflections_1d[3,1]
+        assert deflections_2d[1][1,0] == deflections_1d[0,1]
+        assert deflections_2d[1][1,1] == deflections_1d[1,1]
+        assert deflections_2d[1][1,2] == deflections_1d[2,1]
+        assert deflections_2d[1][1,3] == deflections_1d[3,1]
+        assert deflections_2d[1][2,0] == deflections_1d[0,1]
+        assert deflections_2d[1][2,1] == deflections_1d[1,1]
+        assert deflections_2d[1][2,2] == deflections_1d[2,1]
+        assert deflections_2d[1][2,3] == deflections_1d[3,1]
+        assert deflections_2d[1][3,0] == deflections_1d[0,1]
+        assert deflections_2d[1][3,1] == deflections_1d[1,1]
+        assert deflections_2d[1][3,2] == deflections_1d[2,1]
+        assert deflections_2d[1][3,3] == deflections_1d[3,1]
