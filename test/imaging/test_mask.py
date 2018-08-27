@@ -1,5 +1,5 @@
 import numpy as np
-from autolens.imaging import array_util
+from autolens.imaging import imaging_util
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 import pytest
@@ -25,8 +25,8 @@ class TestMask(object):
 
     def test__mask_circular__compare_to_array_util(self):
 
-        msk_util = array_util.mask_circular_from_shape_pixel_scale_and_radius(shape=(5, 4), pixel_scale=2.7,
-                                                                              radius_arcsec=3.5, centre=(1.0, 1.0))
+        msk_util = imaging_util.mask_circular_from_shape_pixel_scale_and_radius(shape=(5, 4), pixel_scale=2.7,
+                                                                                radius_arcsec=3.5, centre=(1.0, 1.0))
 
         msk = mask.Mask.circular(shape=(5, 4), pixel_scale=2.7, radius_mask_arcsec=3.5, centre=(1.0, 1.0))
 
@@ -34,10 +34,10 @@ class TestMask(object):
 
     def test__mask_annulus__compare_to_array_util(self):
 
-        msk_util = array_util.mask_annular_from_shape_pixel_scale_and_radii(shape=(5, 4), pixel_scale=2.7,
-                                                                            inner_radius_arcsec=0.8,
-                                                                            outer_radius_arcsec=3.5,
-                                                                            centre=(1.0, 1.0))
+        msk_util = imaging_util.mask_annular_from_shape_pixel_scale_and_radii(shape=(5, 4), pixel_scale=2.7,
+                                                                              inner_radius_arcsec=0.8,
+                                                                              outer_radius_arcsec=3.5,
+                                                                              centre=(1.0, 1.0))
 
         msk = mask.Mask.annular(shape=(5, 4), pixel_scale=2.7, inner_radius_arcsec=0.8, outer_radius_arcsec=3.5,
                                  centre=(1.0, 1.0))
@@ -63,7 +63,7 @@ class TestMask(object):
 
         msk = mask.Mask(msk, pixel_scale=7.0)
 
-        grid_to_pixel_util = array_util.grid_to_pixel_from_mask(msk)
+        grid_to_pixel_util = imaging_util.grid_to_pixel_from_mask(msk)
 
         assert msk.grid_to_pixel == pytest.approx(grid_to_pixel_util, 1e-4)
 
@@ -79,7 +79,7 @@ class TestMask(object):
                         [True, False, True],
                         [True, True, True]])
 
-        array_1d_util = array_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(msk, array_2d)
+        array_1d_util = imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(msk, array_2d)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -98,8 +98,8 @@ class TestMask(object):
 
         one_to_two = np.array([[0,1], [1,0], [1,1], [1,2], [2,1]])
 
-        array_2d_util = array_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d=array_1d,
-                                                                        shape=(4,3), one_to_two=one_to_two)
+        array_2d_util = imaging_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d=array_1d,
+                                                                                                        shape=(4,3), one_to_two=one_to_two)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -113,7 +113,7 @@ class TestMask(object):
                         [True, False, True, True],
                         [True, True, False, False]])
 
-        image_grid_util = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=msk, pixel_scale=2.0)
+        image_grid_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=msk, pixel_scale=2.0)
 
         msk = mask.Mask(msk, pixel_scale=2.0)
 
@@ -131,7 +131,7 @@ class TestMask(object):
                          [True, True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True, True]])
 
-        blurring_mask_util = array_util.mask_blurring_from_mask_and_psf_shape(mask=msk, psf_shape=(3,3))
+        blurring_mask_util = imaging_util.mask_blurring_from_mask_and_psf_shape(mask=msk, psf_shape=(3, 3))
 
         msk = mask.Mask(msk, pixel_scale=1.0)
         blurring_mask = msk.blurring_mask_for_psf_shape(psf_shape=(3, 3))
@@ -148,7 +148,7 @@ class TestMask(object):
                         [True, True, True, True, True, True, True],
                         [True, True, True, True, True, True, True]])
 
-        border_pixels_util = array_util.border_pixels_from_mask(msk)
+        border_pixels_util = imaging_util.border_pixels_from_mask(msk)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -166,9 +166,9 @@ class TestMask(object):
                         [True, True, True, True, False, False, True],
                         [True, True, True, True, True, False, True]])
 
-        border_sub_pixels_util = array_util.border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask=msk,
-                                                                                                 pixel_scale=3.0,
-                                                                                                 sub_grid_size=2)
+        border_sub_pixels_util = imaging_util.border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask=msk,
+                                                                                                        pixel_scale=3.0,
+                                                                                                        sub_grid_size=2)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -236,8 +236,8 @@ class TestImageGrid:
                         [True, True, True, True, True, True, True, True, True],
                         [True, True, True, True, True, True, True, True, True]])
 
-        blurring_mask_util = array_util.mask_blurring_from_mask_and_psf_shape(msk, psf_shape=(3,5))
-        blurring_grid_util = array_util.image_grid_masked_from_mask_and_pixel_scale(blurring_mask_util, pixel_scale=2.0)
+        blurring_mask_util = imaging_util.mask_blurring_from_mask_and_psf_shape(msk, psf_shape=(3, 5))
+        blurring_grid_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(blurring_mask_util, pixel_scale=2.0)
 
         msk = mask.Mask(msk, pixel_scale=2.0)
         blurring_grid = mask.ImageGrid.blurring_grid_from_mask_and_psf_shape(mask=msk, psf_shape=(3,5))
@@ -260,8 +260,8 @@ class TestSubGrid(object):
                         [True, False, False],
                         [True, True, False]])
 
-        sub_grid_util = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=msk, pixel_scale=3.0,
-                                                                                           sub_grid_size=2)
+        sub_grid_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=msk, pixel_scale=3.0,
+                                                                                             sub_grid_size=2)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -278,7 +278,7 @@ class TestSubGrid(object):
                         [False, False, False],
                         [True, False, False]])
 
-        sub_to_image_util = array_util.sub_to_image_from_mask(msk, sub_grid_size=2)
+        sub_to_image_util = imaging_util.sub_to_image_from_mask(msk, sub_grid_size=2)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -300,7 +300,7 @@ class TestGridsMappers:
         image_mapper = mask.ImageGridMapper(arr=grid_1d, original_shape=(2 , 2), padded_shape=(4 , 4))
 
         array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0])
-        array_2d_util = array_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape=(4, 4))
+        array_2d_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape=(4, 4))
         array_2d = image_mapper.map_unmasked_1d_array_to_2d_array(array_1d)
 
         assert (array_2d == array_2d_util).all()
@@ -317,10 +317,28 @@ class TestGridsMappers:
         grid = mask.SubGridMapper(arr=grid_1d, mask=msk, original_shape=(1 , 1), padded_shape=(2 , 2), sub_grid_size=2)
 
         array_1d = np.array([1.0, 2.0, 3.0, 4.0])
-        array_2d_util = array_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape=(2, 2))
+        array_2d_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape=(2, 2))
         array_2d = grid.map_unmasked_1d_array_to_2d_array(array_1d)
 
         assert (array_2d == array_2d_util).all()
+
+    def test__map_unmasked_deflections_array_to_2d_array__compare_to_array_utils(self):
+
+        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+
+        image_mapper = mask.ImageGridMapper(arr=grid_1d, original_shape=(2 , 2), padded_shape=(4 , 4))
+
+        deflections_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0], [6.0, 6.0], [7.0, 7.0],
+                                   [8.0, 8.0], [9.0, 9.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0],
+                                   [6.0, 6.0], [7.0, 7.0]])
+        deflections_2d_util = imaging_util.map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections_1d,
+                                                                                                    shape=(4,4))
+        deflections_2d = image_mapper.map_unmasked_deflections_to_2d_deflections(deflections_1d)
+
+        assert (deflections_2d == deflections_2d_util).all()
 
     def test__image_grid_mapper_from_scaled_array(self):
 
@@ -330,8 +348,8 @@ class TestGridsMappers:
         
         image_mapper = mask.ImageGridMapper.from_scaled_array_and_psf_shape(scaled_array=sca, psf_shape=(3,3))
 
-        image_mapper_util = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((5,5), False),
-                                                                                   pixel_scale=1.0)
+        image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((5, 5), False),
+                                                                                     pixel_scale=1.0)
 
         assert (image_mapper == image_mapper_util).all()
         assert image_mapper.original_shape == (3,3)
@@ -348,8 +366,8 @@ class TestGridsMappers:
         sub_mapper = mask.SubGridMapper.from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
                                                                               psf_shape=(3, 3))
 
-        sub_mapper_util = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((5, 5), False),
-                                                                         pixel_scale=1.0, sub_grid_size=2)
+        sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((5, 5), False),
+                                                                                               pixel_scale=1.0, sub_grid_size=2)
 
         assert (sub_mapper == sub_mapper_util).all()
         assert sub_mapper.original_shape == (3, 3)
@@ -384,11 +402,11 @@ class TestGridCollection(object):
         grid_mappers = mask.GridCollection.grid_mappers_from_mask_sub_grid_size_and_psf_shape(msk, sub_grid_size=2,
                                                                                               psf_shape=(3,3))
 
-        image_mapper_util = array_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((4,4), False),
-                                                                                   pixel_scale=1.0)
+        image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((4, 4), False),
+                                                                                     pixel_scale=1.0)
 
-        sub_mapper_util = array_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((4, 4), False),
-                                                                         pixel_scale=1.0, sub_grid_size=2)
+        sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((4, 4), False),
+                                                                                               pixel_scale=1.0, sub_grid_size=2)
 
         assert (grid_mappers.image == image_mapper_util).all()
         assert grid_mappers.image.original_shape == (2 ,2)

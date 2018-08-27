@@ -1,5 +1,5 @@
 from autolens.imaging.scaled_array import ScaledArray, Array
-from autolens.imaging import array_util
+from autolens.imaging import imaging_util
 import numpy as np
 from scipy.stats import norm
 import scipy.signal
@@ -375,7 +375,7 @@ class PSF(Array):
         hdu : int
             The HDU number in the fits file containing the masked_image data_vector.
         """
-        return cls(array_util.numpy_array_from_fits(file_path, hdu))
+        return cls(imaging_util.numpy_array_from_fits(file_path, hdu))
 
     def renormalize(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""

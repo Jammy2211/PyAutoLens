@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.imaging import image as im
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
-from autolens.imaging import array_util
+from autolens.imaging import imaging_util
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.analysis import ray_tracing
@@ -52,10 +52,10 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(sim_image, file_path=output_path + 'image')
-    array_util.numpy_array_to_fits(sim_image.estimated_noise, file_path=output_path + 'noise')
-    array_util.numpy_array_to_fits(psf, file_path=output_path + '/psf')
-    array_util.numpy_array_to_fits(sim_image.effective_exposure_time, file_path=output_path + 'exposure_time')
+    imaging_util.numpy_array_to_fits(sim_image, file_path=output_path + 'image')
+    imaging_util.numpy_array_to_fits(sim_image.estimated_noise, file_path=output_path + 'noise')
+    imaging_util.numpy_array_to_fits(psf, file_path=output_path + '/psf')
+    imaging_util.numpy_array_to_fits(sim_image.effective_exposure_time, file_path=output_path + 'exposure_time')
 
 def load_image(data_name, pixel_scale):
 
