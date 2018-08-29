@@ -54,7 +54,7 @@ class TestMaskedImage(object):
                                                                                      masked_image.image.pixel_scale)
 
         sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(np.full((6, 6), False),
-                                                                                               masked_image.image.pixel_scale, masked_image.grids.sub.sub_grid_size)
+                                                 masked_image.image.pixel_scale, masked_image.grids.sub.sub_grid_size)
 
         assert (masked_image.grid_mappers.image == image_mapper_util).all()
         assert masked_image.grid_mappers.image.original_shape == (4,4)
@@ -64,7 +64,7 @@ class TestMaskedImage(object):
         assert masked_image.grid_mappers.sub.original_shape == (4,4)
         assert masked_image.grid_mappers.sub.padded_shape == (6,6)
 
-        assert masked_image.grid_mappers.blurring == None
+        assert (masked_image.grid_mappers.blurring == np.array([[0.0, 0.0]])).all()
 
     def test_borders(self, masked_image):
 
@@ -80,12 +80,6 @@ class TestMaskedImage(object):
     def test_convolvers(self, masked_image):
         assert type(masked_image.convolver_image) == convolution.ConvolverImage
         assert type(masked_image.convolver_mapping_matrix) == convolution.ConvolverMappingMatrix
-
-    def test_map_to_2d(self, masked_image):
-        assert (masked_image.map_masked_1d_array_to_2d_array(np.array([1, 2, 3, 4])) == np.array([[0, 0, 0, 0],
-                                                                                                  [0, 1, 2, 0],
-                                                                                                  [0, 3, 4, 0],
-                                                                                                  [0, 0, 0, 0]])).all()
 
     def test_subtract(self, masked_image):
         subtracted_image = masked_image - np.array([1, 0, 1, 0])

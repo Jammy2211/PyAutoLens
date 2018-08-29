@@ -1,6 +1,7 @@
 from autolens import exc
-
+from autolens.imaging import mask
 from astropy import constants
+from functools import wraps
 import math
 import numpy as np
 
@@ -18,6 +19,10 @@ class AbstractTracer(object):
     @property
     def has_galaxy_with_pixelization(self):
         return any(list(map(lambda galaxy : galaxy.has_pixelization, self.galaxies)))
+
+    @property
+    def has_grid_mappers(self):
+        return isinstance(self.all_planes[0].grids.image, mask.GridMapper)
 
     @property
     def has_hyper_galaxy(self):
@@ -394,7 +399,7 @@ class Plane(object):
         galaxy_image: ndarray
             An array describing the intensity of light coming from the galaxy embedded in this plane
         """
-        return intensities_via_sub_grid(self.grids.sub, [galaxy])
+        return intensities_from_grid(self.grids.sub, [galaxy])
 
     @property
     def image_plane_blurring_image(self):
@@ -422,7 +427,7 @@ class Plane(object):
         galaxy_image: ndarray
             An array describing the intensity of light coming from the galaxy embedded in this plane
         """
-        return intensities_via_grid(self.grids.blurring, [galaxy])
+        return intensities_from_grid(self.grids.blurring, [galaxy])
 
     def plane_image(self, shape=(30, 30)):
         return sum(self.plane_images_of_galaxies(shape))
@@ -451,7 +456,7 @@ class Plane(object):
         galaxy_image: ndarray
             An array describing the intensity of light coming from the galaxy embedded in this plane
         """
-        return intensities_via_grid(plane_grid, [galaxy])
+        return intensities_from_grid(plane_grid, [galaxy])
 
     @property
     def xticks_from_image_grid(self):
@@ -475,57 +480,6 @@ class Plane(object):
             return pixelized_galaxies[0].pixelization.reconstructor_from_pixelization_and_grids(self.grids, borders)
         elif len(pixelized_galaxies) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
-
-
-def intensities_via_sub_grid(sub_grid, galaxies):
-    sub_intensities = sum(map(lambda g: g.intensity_from_grid(sub_grid), galaxies))
-    return sub_grid.sub_data_to_image(sub_intensities)
-
-
-def intensities_via_grid(image_grid, galaxies):
-    return sum(map(lambda g: g.intensity_from_grid(image_grid), galaxies))
-
-
-def deflections_for_image_grid(image_grid, galaxies):
-    return sum(map(lambda galaxy: galaxy.deflections_from_grid(image_grid), galaxies))
-
-
-def deflections_for_grids(grids, galaxies):
-    return grids.apply_function(lambda grid: deflections_for_image_grid(grid, galaxies))
-
-
-def traced_collection_for_deflections(grids, deflections):
-    def subtract_scaled_deflections(grid, scaled_deflection):
-        return np.subtract(grid, scaled_deflection)
-
-    result = grids.map_function(subtract_scaled_deflections, deflections)
-
-    return result
-
-# TODO : Make more elegent
-
-def uniform_grid_from_lensed_grid(grid, shape):
-
-    x_min = np.amin(grid[:, 0])
-    x_max = np.amax(grid[:, 0])
-    y_min = np.amin(grid[:, 1])
-    y_max = np.amax(grid[:, 1])
-
-    x_pixel_scale = ((x_max - x_min) / shape[0])
-    y_pixel_scale = ((y_max - y_min) / shape[1])
-
-    x_grid = np.linspace(x_min + (x_pixel_scale/2.0), x_max - (x_pixel_scale/2.0), shape[0])
-    y_grid = np.linspace(y_min + (y_pixel_scale/2.0), y_max - (y_pixel_scale/2.0), shape[1])
-
-    source_plane_grid = np.zeros((shape[0]*shape[1], 2))
-
-    i = 0
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            source_plane_grid[i] = np.array([x_grid[x], y_grid[y]])
-            i += 1
-
-    return source_plane_grid
 
 
 class TracerImageSourcePlanesPositions(AbstractTracer):
@@ -666,3 +620,100 @@ class PlanePositions(object):
         """
         return list(map(lambda positions, deflections : np.subtract(positions, deflections),
                         self.positions, self.deflections))
+
+
+def sub_to_image_grid(func):
+    """
+    Wrap the function in a function that may perform two operations on the quantities (intensities, surface_density,
+    potential, deflections) computed in the *galaxy* and *profile* modules.
+
+    1) If the grid is a sub-grid (mask.SubGrid), rebin values to the image-grid by taking the mean of each set of \
+    sub-gridded values.
+
+    2) If the grid is a GridMapper, returned the grid mapped to 2d.
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requires transformed coordinates
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(grid, galaxies, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : GeometryProfile
+            The profiles that owns the function
+        grid : ndarray
+            PlaneCoordinates in either cartesian or profiles coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+
+        result = func(grid, galaxies, *args, *kwargs)
+
+        if isinstance(grid, mask.SubGrid):
+            return grid.sub_data_to_image(result)
+        else:
+            return result
+
+    return wrapper
+
+@sub_to_image_grid
+def intensities_from_grid(grid, galaxies):
+    return sum(map(lambda g: g.intensities_from_grid(grid), galaxies))
+
+@sub_to_image_grid
+def surface_density_from_grid(grid, galaxies):
+    return sum(map(lambda g: g.surface_density_from_grid(grid), galaxies))
+
+@sub_to_image_grid
+def potential_from_grid(grid, galaxies):
+    return sum(map(lambda g: g.potential_from_grid(grid), galaxies))
+
+def deflections_from_grid(grid, galaxies):
+    return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
+
+def deflections_from_grid_collection(grid_collection, galaxies):
+    return grid_collection.apply_function(lambda grid: deflections_from_grid(grid, galaxies))
+
+def traced_collection_for_deflections(grids, deflections):
+    def subtract_scaled_deflections(grid, scaled_deflection):
+        return np.subtract(grid, scaled_deflection)
+
+    result = grids.map_function(subtract_scaled_deflections, deflections)
+
+    return result
+
+def uniform_grid_from_lensed_grid(grid, shape):
+
+    x_min = np.amin(grid[:, 0])
+    x_max = np.amax(grid[:, 0])
+    y_min = np.amin(grid[:, 1])
+    y_max = np.amax(grid[:, 1])
+
+    x_pixel_scale = ((x_max - x_min) / shape[0])
+    y_pixel_scale = ((y_max - y_min) / shape[1])
+
+    x_grid = np.linspace(x_min + (x_pixel_scale/2.0), x_max - (x_pixel_scale/2.0), shape[0])
+    y_grid = np.linspace(y_min + (y_pixel_scale/2.0), y_max - (y_pixel_scale/2.0), shape[1])
+
+    source_plane_grid = np.zeros((shape[0]*shape[1], 2))
+
+    i = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            source_plane_grid[i] = np.array([x_grid[x], y_grid[y]])
+            i += 1
+
+    return source_plane_grid

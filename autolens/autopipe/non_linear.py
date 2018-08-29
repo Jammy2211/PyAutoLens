@@ -310,8 +310,8 @@ class MultiNest(NonLinearOptimizer):
                 self.max_likelihood = -np.inf
 
             def __call__(self, cube, ndim, nparams, lnew):
-                instance = self.instance_from_physical_vector(cube)
 
+                instance = self.instance_from_physical_vector(cube)
                 instance += self.constant
 
                 try:

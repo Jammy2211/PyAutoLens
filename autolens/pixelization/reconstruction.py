@@ -38,7 +38,7 @@ class Reconstructor(object):
         return self.curvature_matrix_from_blurred_mapping_jitted(blurred_mapping, noise_vector, flist, iflist)
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def curvature_matrix_from_blurred_mapping_jitted(blurred_mapping, noise_vector, flist, iflist):
 
         mapping_shape = blurred_mapping.shape
@@ -72,7 +72,7 @@ class Reconstructor(object):
         return self.data_vector_from_blurred_mapping_matrix_and_data_jitted(blurred_mapping_matrix, image_vector, noise_vector)
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def data_vector_from_blurred_mapping_matrix_and_data_jitted(blurred_mapping_matrix, image_vector, noise_vector):
         """ Compute the curvature_matrix matrix directly - used to integration_old test that our curvature_matrix matrix generator approach
         truly works."""
@@ -118,7 +118,7 @@ class Reconstruction(object):
             solution_vector, blurred_mapping_matrix)
     
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def reconstructed_image_from_solution_vector_and_blurred_mapping_matrix_jit(solution_vector, blurred_mapping_matrix):
         """ Map the reconstructed_image pix s_vector back to the masked_image-plane to compute the pixelization's model-masked_image.
         """

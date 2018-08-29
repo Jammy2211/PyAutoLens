@@ -131,7 +131,7 @@ class Convolver(object):
     image_frame_psfs = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 6
 
-    Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of masked_image
+    Once we have set up all these quantities, the convolution routine simply uses them to convolve_image a 1D array of masked_image
     data / a mapping_matrix matrix masked_image.
 
     BLURRING FRAMES:
@@ -199,7 +199,7 @@ class Convolver(object):
 
     def __init__(self, mask, psf):
         """
-        Class to create masked_image frames and blurring frames used to convolve a psf with a 1D masked_image of non-masked \
+        Class to create masked_image frames and blurring frames used to convolve_image a psf with a 1D masked_image of non-masked \
         values.
 
         Parameters
@@ -244,7 +244,7 @@ class Convolver(object):
                     image_index += 1
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def frame_at_coords_jit(coords, mask, mask_index_array, psf):
         """
         Parameters
@@ -288,7 +288,7 @@ class ConvolverImage(Convolver):
 
     def __init__(self, mask, blurring_mask, psf):
         """
-        Class to create masked_image frames and blurring frames used to convolve a psf with a 1D masked_image of non-masked \
+        Class to create masked_image frames and blurring frames used to convolve_image a psf with a 1D masked_image of non-masked \
         values.
 
         Parameters
@@ -330,7 +330,7 @@ class ConvolverImage(Convolver):
                                        self.blurring_frame_psfs, self.blurring_frame_lengths)
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def convolve_image_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
                            blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
 
@@ -369,7 +369,7 @@ class ConvolverMappingMatrix(Convolver):
 
     def __init__(self, mask, psf):
         """
-        Class to create number array and frames used to convolve a psf with a 1D vector of non-masked values.
+        Class to create number array and frames used to convolve_image a psf with a 1D vector of non-masked values.
 
         Parameters
         ----------
@@ -413,7 +413,7 @@ class ConvolverMappingMatrix(Convolver):
                                         self.image_frame_psfs, self.image_frame_lengths)
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
 
         blurred_mapping = np.zeros(mapping_matrix.shape)

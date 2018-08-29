@@ -17,7 +17,7 @@ class TestSersic(object):
         sersic_lmp = lmp.EllipticalSersicLMP(axis_ratio=0.7, phi=1.0, intensity=1.0, effective_radius=0.6,
                                          sersic_index=2.0, mass_to_light_ratio=2.0)
 
-        assert (sersic_lp.intensity_from_grid(grid) == sersic_lmp.intensity_from_grid(grid)).all()
+        assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
         assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
     #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
@@ -29,7 +29,7 @@ class TestSersic(object):
         spherical = lmp.SphericalSersicLMP(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=2.0,
                                            mass_to_light_ratio=2.0)
 
-        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
+        assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert (elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)).all()
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
@@ -45,7 +45,7 @@ class TestExponential(object):
         sersic_lmp = lmp.EllipticalExponentialLMP(axis_ratio=0.7, phi=1.0, intensity=1.0, effective_radius=0.6,
                                                   mass_to_light_ratio=2.0)
 
-        assert (sersic_lp.intensity_from_grid(grid) == sersic_lmp.intensity_from_grid(grid)).all()
+        assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
         assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
@@ -56,7 +56,7 @@ class TestExponential(object):
                                                   effective_radius=1.0)
         spherical = lmp.SphericalExponentialLMP(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0)
 
-        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
+        assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
@@ -71,7 +71,7 @@ class TestDevVaucouleurs(object):
         sersic_lmp = lmp.EllipticalDevVaucouleursLMP(axis_ratio=0.7, phi=1.0, intensity=1.0, effective_radius=0.6,
                                                      mass_to_light_ratio=2.0)
 
-        assert (sersic_lp.intensity_from_grid(grid) == sersic_lmp.intensity_from_grid(grid)).all()
+        assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
         assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
@@ -82,7 +82,7 @@ class TestDevVaucouleurs(object):
                                                      effective_radius=1.0)
         spherical = lmp.SphericalDevVaucouleursLMP(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0)
 
-        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
+        assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
@@ -99,7 +99,7 @@ class TestSersicRadialGradient(object):
         sersic_lmp = lmp.EllipticalSersicRadialGradientLMP(axis_ratio=0.7, phi=1.0, intensity=1.0, effective_radius=0.6,
                                              sersic_index=2.0, mass_to_light_ratio=2.0, mass_to_light_gradient=0.5)
 
-        assert (sersic_lp.intensity_from_grid(grid) == sersic_lmp.intensity_from_grid(grid)).all()
+        assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
         assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
@@ -110,7 +110,7 @@ class TestSersicRadialGradient(object):
                                                            effective_radius=1.0)
         spherical = lmp.SphericalSersicRadialGradientLMP(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0)
 
-        assert (elliptical.intensity_from_grid(grid) == spherical.intensity_from_grid(grid)).all()
+        assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
