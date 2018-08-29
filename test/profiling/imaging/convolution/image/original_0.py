@@ -137,7 +137,7 @@ class FrameMakerOriginal(object):
 class ConvolverOriginal(object):
     def __init__(self, frame_array, blurring_frame_array):
         """
-        Class to convolve a psf with a 1D vector of non-masked values
+        Class to convolve_image a psf with a 1D vector of non-masked values
         Parameters
         ----------
         blurring_frame_array: [ndarray]
@@ -160,7 +160,7 @@ class ConvolverOriginal(object):
         Returns
         -------
         convolver_image: KernelConvolver
-            An object used to convolve images
+            An object used to convolve_image images
         """
         return KernelConvolverOriginal(kernel, self.frame_array, self.blurring_frame_array)
 
@@ -429,14 +429,14 @@ hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up.image_plane_imag
 #                                                  image_frame_indexes=ao.masked_image.convolver_image.image_frame_indexes,
 #                                                  blurring_frame_indexes=ao.masked_image.convolver_image.blurring_frame_indexes)
 
-lsst_image = sersic.intensity_from_grid(grid=lsst.grids.image_plane_image)
-lsst_blurring_image = sersic.intensity_from_grid(grid=lsst.grids.blurring)
-euclid_image = sersic.intensity_from_grid(grid=euclid.grids.image_plane_image)
-euclid_blurring_image = sersic.intensity_from_grid(grid=euclid.grids.blurring)
-hst_image = sersic.intensity_from_grid(grid=hst.grids.image_plane_image)
-hst_blurring_image = sersic.intensity_from_grid(grid=hst.grids.blurring)
-hst_up_image = sersic.intensity_from_grid(grid=hst_up.grids.image_plane_image)
-hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.grids.blurring)
+lsst_image = sersic.intensities_from_grid(grid=lsst.grids.image_plane_image)
+lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
+euclid_image = sersic.intensities_from_grid(grid=euclid.grids.image_plane_image)
+euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.grids.blurring)
+hst_image = sersic.intensities_from_grid(grid=hst.grids.image_plane_image)
+hst_blurring_image = sersic.intensities_from_grid(grid=hst.grids.blurring)
+hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids.image_plane_image)
+hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
 # ao_image = sersic.intensity_from_grid(grid=ao.grids.masked_image)
 # ao_blurring_image = sersic.intensity_from_grid(grid=ao.grids.blurring)
 
