@@ -53,7 +53,7 @@ class Memoizer(object):
         return wrapper
 
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def total_image_pixels_from_mask(mask):
 
     total_image_pixels = 0
@@ -65,11 +65,11 @@ def total_image_pixels_from_mask(mask):
 
     return total_image_pixels
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     return total_image_pixels_from_mask(mask) * sub_grid_size ** 2
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def total_border_pixels_from_mask(mask):
 
     border_pixel_total = 0
@@ -83,7 +83,7 @@ def total_border_pixels_from_mask(mask):
 
     return border_pixel_total
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def image_grid_2d_from_shape_and_pixel_scale(shape, pixel_scale):
     """
     Computes the arc second grids of every pixel on the data_vector-grid_coords.
@@ -105,7 +105,7 @@ def image_grid_2d_from_shape_and_pixel_scale(shape, pixel_scale):
 
     return grid_2d
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def image_grid_masked_from_mask_and_pixel_scale(mask, pixel_scale):
     """
     Compute the masked_image grid_coords grids from a mask, using the center of every unmasked pixel.
@@ -125,7 +125,7 @@ def image_grid_masked_from_mask_and_pixel_scale(mask, pixel_scale):
 
     return image_grid
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, sub_grid_size):
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
@@ -157,7 +157,7 @@ def sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, s
 
     return sub_grid
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def grid_to_pixel_from_mask(mask):
 
     total_image_pixels = total_image_pixels_from_mask(mask)
@@ -172,7 +172,7 @@ def grid_to_pixel_from_mask(mask):
 
     return grid_to_pixel
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def sub_to_image_from_mask(mask, sub_grid_size):
     """ Compute the pairing of every sub-pixel to its original masked_image pixel from a mask. """
 
@@ -194,7 +194,7 @@ def sub_to_image_from_mask(mask, sub_grid_size):
 
     return sub_to_image
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def border_pixels_from_mask(mask):
 
     border_pixel_total = total_border_pixels_from_mask(mask)
@@ -215,7 +215,7 @@ def border_pixels_from_mask(mask):
     
     return border_pixels
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, sub_grid_size):
     """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
     its edge, therefore neighboring a pixel with a *True* value.
@@ -261,7 +261,7 @@ def border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale,
     
     return border_sub_pixels
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
 
     mask = np.full(shape, True)
@@ -282,7 +282,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 
     return mask
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                   centre=(0.0, 0.0)):
 
@@ -304,7 +304,7 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
 
     return mask
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
     blurring_mask = np.full(mask.shape, True)
@@ -324,7 +324,7 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
     return blurring_mask
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
     total_image_pixels = total_image_pixels_from_mask(mask)
@@ -340,7 +340,7 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
     return array_1d
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, shape, one_to_two):
 
     array_2d = np.zeros(shape)
@@ -350,7 +350,7 @@ def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
 
     return array_2d
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections, shape, one_to_two):
 
     deflections_2d = np.zeros((shape[0], shape[1], 2))
@@ -361,7 +361,7 @@ def map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_t
 
     return deflections_2d
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     array_2d = np.zeros(shape)
@@ -374,7 +374,7 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     return array_2d
 
-@numba.jit(nopython=True)
+@numba.jit(nopython=True, cache=True)
 def map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections, shape):
 
     deflections_2d = np.zeros((shape[0], shape[1], 2))

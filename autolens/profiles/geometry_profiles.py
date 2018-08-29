@@ -1,7 +1,6 @@
 import numpy as np
 from functools import wraps
 import inspect
-from autolens.imaging import mask
 
 
 def transform_grid(func):
@@ -37,18 +36,9 @@ def transform_grid(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
         if not isinstance(grid, TransformedGrid):
-            result = func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
+            return func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
         else:
-            result = func(profile, grid, *args, **kwargs)
-
-        # TODO : result.shape distinguishes 1d arrays (intensities) and 2d arrays (deflections) - make more explicit
-
-        if isinstance(grid, mask.GridMapper) and len(result.shape) is 1:
-            return np.asarray(grid.map_unmasked_1d_array_to_2d_array(result))
-        elif isinstance(grid, mask.GridMapper) and len(result.shape) is 2:
-            return np.asarray(grid.map_unmasked_deflections_to_2d_deflections(result))
-        else:
-            return np.asarray(result)
+            return func(profile, grid, *args, **kwargs)
 
     return wrapper
 

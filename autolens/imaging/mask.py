@@ -317,7 +317,7 @@ class SubGrid(ImageGrid):
         self.mask = mask
 
     @classmethod
-    def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
+    def grid_from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
         sub_grid_masked = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask, mask.pixel_scale,
                                                                                                sub_grid_size)
         return SubGrid(sub_grid_masked, mask, sub_grid_size)
@@ -379,7 +379,7 @@ class SubGridMapper(SubGrid, GridMapper):
         self.padded_shape = padded_shape
 
     @classmethod
-    def from_mask_sub_grid_size_and_psf_shape(self, mask, sub_grid_size, psf_shape):
+    def mapper_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         padded_shape = (mask.shape[0] + psf_shape[0] - 1, mask.shape[1] + psf_shape[1] - 1)
         padded_sub_grid = mask.padded_sub_grid_for_psf_edges_from_sub_grid_size(psf_shape, sub_grid_size)
         return SubGridMapper(arr=padded_sub_grid, mask=mask, original_shape=mask.shape, padded_shape=padded_shape,
@@ -419,18 +419,23 @@ class GridCollection(object):
     @classmethod
     def from_mask_sub_grid_size_and_blurring_shape(cls, mask, sub_grid_size, blurring_shape):
         image_grid = mask.masked_image_grid
-        sub_grid = SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size)
+        sub_grid = SubGrid.grid_from_mask_and_sub_grid_size(mask, sub_grid_size)
         blurring_grid = ImageGrid.blurring_grid_from_mask_and_psf_shape(mask, blurring_shape)
         return GridCollection(image_grid, sub_grid, blurring_grid)
 
     @classmethod
     def grid_mappers_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         image_grid_mapper = ImageGridMapper.from_scaled_array_and_psf_shape(mask, psf_shape)
-        sub_grid_mapper = SubGridMapper.from_mask_sub_grid_size_and_psf_shape(mask, sub_grid_size, psf_shape)
-        return GridCollection(image_grid_mapper, sub_grid_mapper, None)
+        sub_grid_mapper = SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask, sub_grid_size, psf_shape)
+        # TODO : The blurring grid is not used when the grid mapper is called, the 0.0 0.0 stops errors inr ayT_racing
+        # TODO : implement a more explicit solution
+        return GridCollection(image_grid_mapper, sub_grid_mapper, np.array([[0.0, 0.0]]))
 
     def apply_function(self, func):
-        return GridCollection(func(self.image), func(self.sub), func(self.blurring))
+        if self.blurring is not None:
+            return GridCollection(func(self.image), func(self.sub), func(self.blurring))
+        else:
+            return GridCollection(func(self.image), func(self.sub), None)
 
     def map_function(self, func, *arg_lists):
         return GridCollection(*[func(*args) for args in zip(self, *arg_lists)])
