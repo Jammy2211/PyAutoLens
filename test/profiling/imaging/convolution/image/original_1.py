@@ -73,7 +73,7 @@ class Convolver(object):
     image_frame_psfs = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 6
 
-    Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of masked_image
+    Once we have set up all these quantities, the convolution routine simply uses them to convolve_image a 1D array of masked_image
     data / a mapping_matrix matrix masked_image.
 
     BLURRING FRAMES:
@@ -249,7 +249,7 @@ class ConvolverImage(Convolver):
 
     def __init__(self, mask, blurring_mask, kernel):
         """
-        Class to create masked_image frames and blurring frames used to convolve a psf with a 1D masked_image of non-masked \
+        Class to create masked_image frames and blurring frames used to convolve_image a psf with a 1D masked_image of non-masked \
         values.
 
         Parameters
@@ -357,16 +357,16 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
-lsst_image = sersic.intensity_from_grid(grid=lsst.grids.image_plane_image)
-lsst_blurring_image = sersic.intensity_from_grid(grid=lsst.grids.blurring)
-euclid_image = sersic.intensity_from_grid(grid=euclid.grids.image_plane_image)
-euclid_blurring_image = sersic.intensity_from_grid(grid=euclid.grids.blurring)
-hst_image = sersic.intensity_from_grid(grid=hst.grids.image_plane_image)
-hst_blurring_image = sersic.intensity_from_grid(grid=hst.grids.blurring)
-hst_up_image = sersic.intensity_from_grid(grid=hst_up.grids.image_plane_image)
-hst_up_blurring_image = sersic.intensity_from_grid(grid=hst_up.grids.blurring)
-ao_image = sersic.intensity_from_grid(grid=ao.grids.image_plane_image)
-ao_blurring_image = sersic.intensity_from_grid(grid=ao.grids.blurring)
+lsst_image = sersic.intensities_from_grid(grid=lsst.grids.image_plane_image)
+lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
+euclid_image = sersic.intensities_from_grid(grid=euclid.grids.image_plane_image)
+euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.grids.blurring)
+hst_image = sersic.intensities_from_grid(grid=hst.grids.image_plane_image)
+hst_blurring_image = sersic.intensities_from_grid(grid=hst.grids.blurring)
+hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids.image_plane_image)
+hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
+ao_image = sersic.intensities_from_grid(grid=ao.grids.image_plane_image)
+ao_blurring_image = sersic.intensities_from_grid(grid=ao.grids.blurring)
 
 @tools.tick_toc_x1
 def lsst_solution():

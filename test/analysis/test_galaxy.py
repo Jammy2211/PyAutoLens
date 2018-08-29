@@ -32,112 +32,30 @@ class TestLightProfiles(object):
 
         def test__one_profile_gal__intensity_is_same_individual_profile(self, sersic_0, gal_sersic_x1):
             
-            sersic_intensity = sersic_0.intensity_from_grid(grid=np.array([[1.05, -0.55]]))
+            sersic_intensity = sersic_0.intensities_from_grid(grid=np.array([[1.05, -0.55]]))
 
-            gal_sersic_intensity = gal_sersic_x1.intensity_from_grid(np.array([[1.05, -0.55]]))
+            gal_sersic_intensity = gal_sersic_x1.intensities_from_grid(np.array([[1.05, -0.55]]))
 
             assert sersic_intensity == gal_sersic_intensity
 
         def test__two_profile_gal__intensity_is_sum_of_individual_profiles(self, sersic_0, sersic_1, gal_sersic_x2):
 
-            intensity = sersic_0.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity += sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity = sersic_0.intensities_from_grid(np.array([[1.05, -0.55]]))
+            intensity += sersic_1.intensities_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_intensity = gal_sersic_x2.intensity_from_grid(np.array([[1.05, -0.55]]))
+            gal_intensity = gal_sersic_x2.intensities_from_grid(np.array([[1.05, -0.55]]))
 
             assert intensity == gal_intensity
 
         def test__three_profile_gal__individual_intensities_can_be_extracted(self, sersic_0, sersic_1, gal_sersic_x2):
 
-            intensity_1 = sersic_0.intensity_from_grid(np.array([[1.05, -0.55]]))
-            intensity_2 = sersic_1.intensity_from_grid(np.array([[1.05, -0.55]]))
+            intensity_1 = sersic_0.intensities_from_grid(np.array([[1.05, -0.55]]))
+            intensity_2 = sersic_1.intensities_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_intensity = gal_sersic_x2.intensity_from_grid_individual(np.array([[1.05, -0.55]]))
+            gal_intensity = gal_sersic_x2.intensities_from_grid_individual(np.array([[1.05, -0.55]]))
 
             assert intensity_1 == gal_intensity[0]
             assert intensity_2 == gal_intensity[1]
-
-        def test__grid_mapper_in__intensities_returned_on_2d_array(self, gal_sersic_x2):
-
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            intensity_1d = gal_sersic_x2.intensity_from_grid(grid)
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            intensity_2d = gal_sersic_x2.intensity_from_grid(image_grid_mapper)
-
-            assert intensity_2d[0, 0] == intensity_1d[0]
-            assert intensity_2d[0, 1] == intensity_1d[1]
-            assert intensity_2d[0, 2] == intensity_1d[2]
-            assert intensity_2d[0, 3] == intensity_1d[3]
-            assert intensity_2d[1, 0] == intensity_1d[0]
-            assert intensity_2d[1, 1] == intensity_1d[1]
-            assert intensity_2d[1, 2] == intensity_1d[2]
-            assert intensity_2d[1, 3] == intensity_1d[3]
-            assert intensity_2d[2, 0] == intensity_1d[0]
-            assert intensity_2d[2, 1] == intensity_1d[1]
-            assert intensity_2d[2, 2] == intensity_1d[2]
-            assert intensity_2d[2, 3] == intensity_1d[3]
-            assert intensity_2d[3, 0] == intensity_1d[0]
-            assert intensity_2d[3, 1] == intensity_1d[1]
-            assert intensity_2d[3, 2] == intensity_1d[2]
-            assert intensity_2d[3, 3] == intensity_1d[3]
-
-        def test__grid_mapper_in__indvidual_intensities_returned_as_list_of_2d_arrays(self, sersic_0, sersic_1,
-                                                                                      gal_sersic_x2):
-
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            intensity_1d_0 = sersic_0.intensity_from_grid(np.array(grid))
-            intensity_1d_1 = sersic_1.intensity_from_grid(np.array(grid))
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            intensity_2d = gal_sersic_x2.intensity_from_grid_individual(image_grid_mapper)
-
-            assert intensity_2d[0][0, 0] == intensity_1d_0[0]
-            assert intensity_2d[0][0, 1] == intensity_1d_0[1]
-            assert intensity_2d[0][0, 2] == intensity_1d_0[2]
-            assert intensity_2d[0][0, 3] == intensity_1d_0[3]
-            assert intensity_2d[0][1, 0] == intensity_1d_0[0]
-            assert intensity_2d[0][1, 1] == intensity_1d_0[1]
-            assert intensity_2d[0][1, 2] == intensity_1d_0[2]
-            assert intensity_2d[0][1, 3] == intensity_1d_0[3]
-            assert intensity_2d[0][2, 0] == intensity_1d_0[0]
-            assert intensity_2d[0][2, 1] == intensity_1d_0[1]
-            assert intensity_2d[0][2, 2] == intensity_1d_0[2]
-            assert intensity_2d[0][2, 3] == intensity_1d_0[3]
-            assert intensity_2d[0][3, 0] == intensity_1d_0[0]
-            assert intensity_2d[0][3, 1] == intensity_1d_0[1]
-            assert intensity_2d[0][3, 2] == intensity_1d_0[2]
-            assert intensity_2d[0][3, 3] == intensity_1d_0[3]
-            
-            assert intensity_2d[1][0, 1] == intensity_1d_1[1]
-            assert intensity_2d[1][0, 2] == intensity_1d_1[2]
-            assert intensity_2d[1][0, 3] == intensity_1d_1[3]
-            assert intensity_2d[1][1, 0] == intensity_1d_1[0]
-            assert intensity_2d[1][1, 1] == intensity_1d_1[1]
-            assert intensity_2d[1][1, 2] == intensity_1d_1[2]
-            assert intensity_2d[1][1, 3] == intensity_1d_1[3]
-            assert intensity_2d[1][2, 0] == intensity_1d_1[0]
-            assert intensity_2d[1][2, 1] == intensity_1d_1[1]
-            assert intensity_2d[1][2, 2] == intensity_1d_1[2]
-            assert intensity_2d[1][2, 3] == intensity_1d_1[3]
-            assert intensity_2d[1][3, 0] == intensity_1d_1[0]
-            assert intensity_2d[1][3, 1] == intensity_1d_1[1]
-            assert intensity_2d[1][3, 2] == intensity_1d_1[2]
-            assert intensity_2d[1][3, 3] == intensity_1d_1[3]
 
 
     class TestLuminosityWithinCircle:
@@ -443,10 +361,10 @@ class TestLightProfiles(object):
 
             gal_sersic = g.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2)
 
-            assert gal_sersic.intensity_from_grid(
-                np.array([[0.0, 0.0]])) == gal_sersic.intensity_from_grid(np.array([[100.0, 0.0]]))
-            assert gal_sersic.intensity_from_grid(
-                np.array([[49.0, 0.0]])) == gal_sersic.intensity_from_grid(np.array([[51.0, 0.0]]))
+            assert gal_sersic.intensities_from_grid(
+                np.array([[0.0, 0.0]])) == gal_sersic.intensities_from_grid(np.array([[100.0, 0.0]]))
+            assert gal_sersic.intensities_from_grid(
+                np.array([[49.0, 0.0]])) == gal_sersic.intensities_from_grid(np.array([[51.0, 0.0]]))
 
         def test_2d_symmetry(self):
             sersic_1 = lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -468,17 +386,17 @@ class TestLightProfiles(object):
             gal_sersic = g.Galaxy(redshift=0.5, light_profile_1=sersic_1, light_profile_2=sersic_2,
                                           light_profile_3=sersic_3, light_profile_4=sersic_4)
 
-            assert gal_sersic.intensity_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_sersic.intensity_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert gal_sersic.intensities_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_sersic.intensities_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert gal_sersic.intensity_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                gal_sersic.intensity_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_sersic.intensities_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_sersic.intensities_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert gal_sersic.intensity_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                gal_sersic.intensity_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_sersic.intensities_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_sersic.intensities_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert gal_sersic.intensity_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                gal_sersic.intensity_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_sersic.intensities_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_sersic.intensities_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
 
 @pytest.fixture(name="sie_0")
@@ -532,87 +450,6 @@ class TestMassProfiles(object):
             assert surface_density_0 == gal_surface_density[0]
             assert surface_density_1 == gal_surface_density[1]
 
-        def test__grid_mapper_in__surface_density_returned_on_2d_array(self, gal_sie_x2):
-
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            surface_density_0d = gal_sie_x2.surface_density_from_grid(grid)
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            surface_density_1d = gal_sie_x2.surface_density_from_grid(image_grid_mapper)
-
-            assert surface_density_1d[0, 0] == surface_density_0d[0]
-            assert surface_density_1d[0, 1] == surface_density_0d[1]
-            assert surface_density_1d[0, 2] == surface_density_0d[2]
-            assert surface_density_1d[0, 3] == surface_density_0d[3]
-            assert surface_density_1d[1, 0] == surface_density_0d[0]
-            assert surface_density_1d[1, 1] == surface_density_0d[1]
-            assert surface_density_1d[1, 2] == surface_density_0d[2]
-            assert surface_density_1d[1, 3] == surface_density_0d[3]
-            assert surface_density_1d[2, 0] == surface_density_0d[0]
-            assert surface_density_1d[2, 1] == surface_density_0d[1]
-            assert surface_density_1d[2, 2] == surface_density_0d[2]
-            assert surface_density_1d[2, 3] == surface_density_0d[3]
-            assert surface_density_1d[3, 0] == surface_density_0d[0]
-            assert surface_density_1d[3, 1] == surface_density_0d[1]
-            assert surface_density_1d[3, 2] == surface_density_0d[2]
-            assert surface_density_1d[3, 3] == surface_density_0d[3]
-
-        def test__grid_mapper_in__indvidual_surface_densities_returned_as_list_of_2d_arrays(self, sie_0, sie_1,
-                                                                                      gal_sie_x2):
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            surface_density_1d_0 = sie_0.surface_density_from_grid(np.array(grid))
-            surface_density_1d_1 = sie_1.surface_density_from_grid(np.array(grid))
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            surface_density_2d = gal_sie_x2.surface_density_from_grid_individual(image_grid_mapper)
-
-            assert surface_density_2d[0][0, 0] == surface_density_1d_0[0]
-            assert surface_density_2d[0][0, 1] == surface_density_1d_0[1]
-            assert surface_density_2d[0][0, 2] == surface_density_1d_0[2]
-            assert surface_density_2d[0][0, 3] == surface_density_1d_0[3]
-            assert surface_density_2d[0][1, 0] == surface_density_1d_0[0]
-            assert surface_density_2d[0][1, 1] == surface_density_1d_0[1]
-            assert surface_density_2d[0][1, 2] == surface_density_1d_0[2]
-            assert surface_density_2d[0][1, 3] == surface_density_1d_0[3]
-            assert surface_density_2d[0][2, 0] == surface_density_1d_0[0]
-            assert surface_density_2d[0][2, 1] == surface_density_1d_0[1]
-            assert surface_density_2d[0][2, 2] == surface_density_1d_0[2]
-            assert surface_density_2d[0][2, 3] == surface_density_1d_0[3]
-            assert surface_density_2d[0][3, 0] == surface_density_1d_0[0]
-            assert surface_density_2d[0][3, 1] == surface_density_1d_0[1]
-            assert surface_density_2d[0][3, 2] == surface_density_1d_0[2]
-            assert surface_density_2d[0][3, 3] == surface_density_1d_0[3]
-
-            assert surface_density_2d[1][0, 1] == surface_density_1d_1[1]
-            assert surface_density_2d[1][0, 2] == surface_density_1d_1[2]
-            assert surface_density_2d[1][0, 3] == surface_density_1d_1[3]
-            assert surface_density_2d[1][1, 0] == surface_density_1d_1[0]
-            assert surface_density_2d[1][1, 1] == surface_density_1d_1[1]
-            assert surface_density_2d[1][1, 2] == surface_density_1d_1[2]
-            assert surface_density_2d[1][1, 3] == surface_density_1d_1[3]
-            assert surface_density_2d[1][2, 0] == surface_density_1d_1[0]
-            assert surface_density_2d[1][2, 1] == surface_density_1d_1[1]
-            assert surface_density_2d[1][2, 2] == surface_density_1d_1[2]
-            assert surface_density_2d[1][2, 3] == surface_density_1d_1[3]
-            assert surface_density_2d[1][3, 0] == surface_density_1d_1[0]
-            assert surface_density_2d[1][3, 1] == surface_density_1d_1[1]
-            assert surface_density_2d[1][3, 2] == surface_density_1d_1[2]
-            assert surface_density_2d[1][3, 3] == surface_density_1d_1[3]
-
 
     class TestPotential:
 
@@ -641,87 +478,6 @@ class TestMassProfiles(object):
 
             assert potential_0 == gal_potential[0]
             assert potential_1 == gal_potential[1]
-
-        def test__grid_mapper_in__potential_returned_on_2d_array(self, gal_sie_x2):
-
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            potential_0d = gal_sie_x2.potential_from_grid(grid)
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            potential_1d = gal_sie_x2.potential_from_grid(image_grid_mapper)
-
-            assert potential_1d[0, 0] == potential_0d[0]
-            assert potential_1d[0, 1] == potential_0d[1]
-            assert potential_1d[0, 2] == potential_0d[2]
-            assert potential_1d[0, 3] == potential_0d[3]
-            assert potential_1d[1, 0] == potential_0d[0]
-            assert potential_1d[1, 1] == potential_0d[1]
-            assert potential_1d[1, 2] == potential_0d[2]
-            assert potential_1d[1, 3] == potential_0d[3]
-            assert potential_1d[2, 0] == potential_0d[0]
-            assert potential_1d[2, 1] == potential_0d[1]
-            assert potential_1d[2, 2] == potential_0d[2]
-            assert potential_1d[2, 3] == potential_0d[3]
-            assert potential_1d[3, 0] == potential_0d[0]
-            assert potential_1d[3, 1] == potential_0d[1]
-            assert potential_1d[3, 2] == potential_0d[2]
-            assert potential_1d[3, 3] == potential_0d[3]
-
-        def test__grid_mapper_in__indvidual_potentials_returned_as_list_of_2d_arrays(self, sie_0, sie_1,
-                                                                                      gal_sie_x2):
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            potential_1d_0 = sie_0.potential_from_grid(np.array(grid))
-            potential_1d_1 = sie_1.potential_from_grid(np.array(grid))
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            potential_2d = gal_sie_x2.potential_from_grid_individual(image_grid_mapper)
-
-            assert potential_2d[0][0, 0] == potential_1d_0[0]
-            assert potential_2d[0][0, 1] == potential_1d_0[1]
-            assert potential_2d[0][0, 2] == potential_1d_0[2]
-            assert potential_2d[0][0, 3] == potential_1d_0[3]
-            assert potential_2d[0][1, 0] == potential_1d_0[0]
-            assert potential_2d[0][1, 1] == potential_1d_0[1]
-            assert potential_2d[0][1, 2] == potential_1d_0[2]
-            assert potential_2d[0][1, 3] == potential_1d_0[3]
-            assert potential_2d[0][2, 0] == potential_1d_0[0]
-            assert potential_2d[0][2, 1] == potential_1d_0[1]
-            assert potential_2d[0][2, 2] == potential_1d_0[2]
-            assert potential_2d[0][2, 3] == potential_1d_0[3]
-            assert potential_2d[0][3, 0] == potential_1d_0[0]
-            assert potential_2d[0][3, 1] == potential_1d_0[1]
-            assert potential_2d[0][3, 2] == potential_1d_0[2]
-            assert potential_2d[0][3, 3] == potential_1d_0[3]
-
-            assert potential_2d[1][0, 1] == potential_1d_1[1]
-            assert potential_2d[1][0, 2] == potential_1d_1[2]
-            assert potential_2d[1][0, 3] == potential_1d_1[3]
-            assert potential_2d[1][1, 0] == potential_1d_1[0]
-            assert potential_2d[1][1, 1] == potential_1d_1[1]
-            assert potential_2d[1][1, 2] == potential_1d_1[2]
-            assert potential_2d[1][1, 3] == potential_1d_1[3]
-            assert potential_2d[1][2, 0] == potential_1d_1[0]
-            assert potential_2d[1][2, 1] == potential_1d_1[1]
-            assert potential_2d[1][2, 2] == potential_1d_1[2]
-            assert potential_2d[1][2, 3] == potential_1d_1[3]
-            assert potential_2d[1][3, 0] == potential_1d_1[0]
-            assert potential_2d[1][3, 1] == potential_1d_1[1]
-            assert potential_2d[1][3, 2] == potential_1d_1[2]
-            assert potential_2d[1][3, 3] == potential_1d_1[3]
 
 
     class TestDeflectionAngles:
@@ -756,105 +512,6 @@ class TestMassProfiles(object):
 
             assert (deflection_angles_0 == gal_deflection_angles[0]).all()
             assert (deflection_angles_1 == gal_deflection_angles[1]).all()
-
-        def test__grid_mapper_in__deflections_returned_on_2d_array(self, gal_sie_x2):
-
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            deflections_1d = gal_sie_x2.deflections_from_grid(grid)
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            deflections_2d = gal_sie_x2.deflections_from_grid(image_grid_mapper)
-
-            assert deflections_2d[0, 0, 0] == deflections_1d[0, 0]
-            assert deflections_2d[0, 1, 0] == deflections_1d[1, 0]
-            assert deflections_2d[0, 2, 0] == deflections_1d[2, 0]
-            assert deflections_2d[0, 3, 0] == deflections_1d[3, 0]
-            assert deflections_2d[1, 0, 0] == deflections_1d[0, 0]
-            assert deflections_2d[1, 1, 0] == deflections_1d[1, 0]
-            assert deflections_2d[1, 2, 0] == deflections_1d[2, 0]
-            assert deflections_2d[1, 3, 0] == deflections_1d[3, 0]
-            assert deflections_2d[2, 0, 0] == deflections_1d[0, 0]
-            assert deflections_2d[2, 1, 0] == deflections_1d[1, 0]
-            assert deflections_2d[2, 2, 0] == deflections_1d[2, 0]
-            assert deflections_2d[2, 3, 0] == deflections_1d[3, 0]
-            assert deflections_2d[3, 0, 0] == deflections_1d[0, 0]
-            assert deflections_2d[3, 1, 0] == deflections_1d[1, 0]
-            assert deflections_2d[3, 2, 0] == deflections_1d[2, 0]
-            assert deflections_2d[3, 3, 0] == deflections_1d[3, 0]
-
-            assert deflections_2d[0, 0, 1] == deflections_1d[0, 1]
-            assert deflections_2d[0, 1, 1] == deflections_1d[1, 1]
-            assert deflections_2d[0, 2, 1] == deflections_1d[2, 1]
-            assert deflections_2d[0, 3, 1] == deflections_1d[3, 1]
-            assert deflections_2d[1, 0, 1] == deflections_1d[0, 1]
-            assert deflections_2d[1, 1, 1] == deflections_1d[1, 1]
-            assert deflections_2d[1, 2, 1] == deflections_1d[2, 1]
-            assert deflections_2d[1, 3, 1] == deflections_1d[3, 1]
-            assert deflections_2d[2, 0, 1] == deflections_1d[0, 1]
-            assert deflections_2d[2, 1, 1] == deflections_1d[1, 1]
-            assert deflections_2d[2, 2, 1] == deflections_1d[2, 1]
-            assert deflections_2d[2, 3, 1] == deflections_1d[3, 1]
-            assert deflections_2d[3, 0, 1] == deflections_1d[0, 1]
-            assert deflections_2d[3, 1, 1] == deflections_1d[1, 1]
-            assert deflections_2d[3, 2, 1] == deflections_1d[2, 1]
-            assert deflections_2d[3, 3, 1] == deflections_1d[3, 1]
-
-        def test__grid_mapper_in__individual_deflections_returned_as_list_of_2d_arrays(self, sie_0, sie_1,
-                                                                                      gal_sie_x2):
-            grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            deflections_1d_0 = sie_0.deflections_from_grid(np.array(grid))
-            deflections_1d_1 = sie_1.deflections_from_grid(np.array(grid))
-
-            padded_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-                                    [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-            image_grid_mapper = mask.ImageGridMapper(arr=padded_grid, original_shape=(2, 2), padded_shape=(4, 4))
-
-            deflections_2d = gal_sie_x2.deflections_from_grid_individual(image_grid_mapper)
-
-            assert deflections_2d[0][0, 0, 0] == deflections_1d_0[0, 0]
-            assert deflections_2d[0][0, 1, 0] == deflections_1d_0[1, 0]
-            assert deflections_2d[0][0, 2, 0] == deflections_1d_0[2, 0]
-            assert deflections_2d[0][0, 3, 0] == deflections_1d_0[3, 0]
-            assert deflections_2d[0][1, 0, 0] == deflections_1d_0[0, 0]
-            assert deflections_2d[0][1, 1, 0] == deflections_1d_0[1, 0]
-            assert deflections_2d[0][1, 2, 0] == deflections_1d_0[2, 0]
-            assert deflections_2d[0][1, 3, 0] == deflections_1d_0[3, 0]
-            assert deflections_2d[0][2, 0, 0] == deflections_1d_0[0, 0]
-            assert deflections_2d[0][2, 1, 0] == deflections_1d_0[1, 0]
-            assert deflections_2d[0][2, 2, 0] == deflections_1d_0[2, 0]
-            assert deflections_2d[0][2, 3, 0] == deflections_1d_0[3, 0]
-            assert deflections_2d[0][3, 0, 0] == deflections_1d_0[0, 0]
-            assert deflections_2d[0][3, 1, 0] == deflections_1d_0[1, 0]
-            assert deflections_2d[0][3, 2, 0] == deflections_1d_0[2, 0]
-            assert deflections_2d[0][3, 3, 0] == deflections_1d_0[3, 0]
-
-            assert deflections_2d[1][0, 0, 1] == deflections_1d_1[0, 1]
-            assert deflections_2d[1][0, 1, 1] == deflections_1d_1[1, 1]
-            assert deflections_2d[1][0, 2, 1] == deflections_1d_1[2, 1]
-            assert deflections_2d[1][0, 3, 1] == deflections_1d_1[3, 1]
-            assert deflections_2d[1][1, 0, 1] == deflections_1d_1[0, 1]
-            assert deflections_2d[1][1, 1, 1] == deflections_1d_1[1, 1]
-            assert deflections_2d[1][1, 2, 1] == deflections_1d_1[2, 1]
-            assert deflections_2d[1][1, 3, 1] == deflections_1d_1[3, 1]
-            assert deflections_2d[1][2, 0, 1] == deflections_1d_1[0, 1]
-            assert deflections_2d[1][2, 1, 1] == deflections_1d_1[1, 1]
-            assert deflections_2d[1][2, 2, 1] == deflections_1d_1[2, 1]
-            assert deflections_2d[1][2, 3, 1] == deflections_1d_1[3, 1]
-            assert deflections_2d[1][3, 0, 1] == deflections_1d_1[0, 1]
-            assert deflections_2d[1][3, 1, 1] == deflections_1d_1[1, 1]
-            assert deflections_2d[1][3, 2, 1] == deflections_1d_1[2, 1]
-            assert deflections_2d[1][3, 3, 1] == deflections_1d_1[3, 1]
 
 
     class TestDimensionlessMassWithinCircle:

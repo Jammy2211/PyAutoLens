@@ -11,7 +11,7 @@ class Convolver(object):
 
     def __init__(self, mask, blurring_mask, kernel):
         """
-        Class to create number array and frames used to convolve a psf with a 1D vector of non-masked values.
+        Class to create number array and frames used to convolve_image a psf with a 1D vector of non-masked values.
 
         Parameters
         ----------
