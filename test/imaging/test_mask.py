@@ -193,7 +193,7 @@ def make_centre_mask():
 
 @pytest.fixture(name="sub_grid")
 def make_sub_grid(msk):
-    return mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=1)
+    return mask.SubGrid.grid_from_mask_and_sub_grid_size(msk, sub_grid_size=1)
 
 @pytest.fixture(name="grids")
 def make_grids(centre_mask):
@@ -265,7 +265,7 @@ class TestSubGrid(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        sub_grid = mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=2)
+        sub_grid = mask.SubGrid.grid_from_mask_and_sub_grid_size(msk, sub_grid_size=2)
 
         assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
 
@@ -282,7 +282,7 @@ class TestSubGrid(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        sub_grid = mask.SubGrid.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=2)
+        sub_grid = mask.SubGrid.grid_from_mask_and_sub_grid_size(mask=msk, sub_grid_size=2)
         assert sub_grid.sub_grid_size == 2
         assert sub_grid.sub_grid_fraction == (1.0 / 4.0)
         assert (sub_grid.sub_to_image == sub_to_image_util).all()
@@ -363,8 +363,8 @@ class TestGridsMappers:
 
         msk = mask.Mask(msk, pixel_scale=1.0)
 
-        sub_mapper = mask.SubGridMapper.from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
-                                                                              psf_shape=(3, 3))
+        sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
+                                                                                     psf_shape=(3, 3))
 
         sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((5, 5), False),
                                                                                                pixel_scale=1.0, sub_grid_size=2)
@@ -416,7 +416,7 @@ class TestGridCollection(object):
         assert grid_mappers.sub.original_shape == (2 ,2)
         assert grid_mappers.sub.padded_shape == (4 ,4)
 
-        assert grid_mappers.blurring == None
+        assert (grid_mappers.blurring == np.array([[0.0, 0.0]])).all()
 
     def test_apply_function(self, grids):
         def add_one(coords):
