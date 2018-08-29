@@ -7,7 +7,7 @@ from itertools import count
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
-    def intensity_from_grid_radii(self, grid_radii):
+    def intensities_from_grid_radii(self, grid_radii):
         """
         Abstract method for obtaining intensity at on a grid of radii.
 
@@ -19,7 +19,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def intensity_from_grid(self, grid):
+    def intensities_from_grid(self, grid):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (x,y) coordinates.
 
@@ -104,7 +104,7 @@ class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
 
         The axis ratio is set to 1.0 for computing the luminosity within a circle"""
         r = x * axis_ratio
-        return 2 * np.pi * r * self.intensity_from_grid_radii(x)
+        return 2 * np.pi * r * self.intensities_from_grid_radii(x)
 
 
 class EllipticalGaussianLP(EllipticalLP):
@@ -130,7 +130,7 @@ class EllipticalGaussianLP(EllipticalLP):
         self.intensity = intensity
         self.sigma = sigma
 
-    def intensity_from_grid_radii(self, grid_radii):
+    def intensities_from_grid_radii(self, grid_radii):
         """
         Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
 
@@ -143,7 +143,7 @@ class EllipticalGaussianLP(EllipticalLP):
                            np.exp(-0.5*np.square(np.divide(grid_radii, self.sigma))))
 
     @geometry_profiles.transform_grid
-    def intensity_from_grid(self, grid):
+    def intensities_from_grid(self, grid):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (x,y) coordinates.
 
@@ -158,7 +158,7 @@ class EllipticalGaussianLP(EllipticalLP):
         intensity : float
             The value of intensity at the given radius
         """
-        return self.intensity_from_grid_radii(self.grid_to_elliptical_radii(grid))
+        return self.intensities_from_grid_radii(self.grid_to_elliptical_radii(grid))
 
     @property
     def parameter_labels(self):
@@ -214,7 +214,7 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
     def parameter_labels(self):
         return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n']
 
-    def intensity_from_grid_radii(self, grid_radii):
+    def intensities_from_grid_radii(self, grid_radii):
         """
         Calculate the intensity of the Sersic light profile on a grid of radial coordinates.
 
@@ -228,7 +228,7 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
     @geometry_profiles.transform_grid
-    def intensity_from_grid(self, grid):
+    def intensities_from_grid(self, grid):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (x,y) coordinates.
 
@@ -243,7 +243,7 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
         intensity : float
             The value of intensity at the given radius
         """
-        return self.intensity_from_grid_radii(self.grid_to_eccentric_radii(grid))
+        return self.intensities_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
 class SphericalSersicLP(EllipticalSersicLP):
@@ -416,7 +416,7 @@ class EllipticalCoreSersicLP(EllipticalSersicLP):
             self.sersic_constant * (((2.0 ** (1.0 / self.alpha)) * self.radius_break) / self.effective_radius) ** (
                     1.0 / self.sersic_index))
 
-    def intensity_from_grid_radii(self, grid_radii):
+    def intensities_from_grid_radii(self, grid_radii):
         """
         Calculate the intensity of the cored-Sersic light profile on a grid of radial coordinates.
 

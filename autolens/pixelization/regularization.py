@@ -4,18 +4,18 @@ class AbstractRegularization(object):
     """ Regularization is applied to a pixelization to enforce a smooth-source solution and prevent over-fitting \
     noise in the image. This is achieved by computing a 'regularization term' - which is the sum of differences in  \
     reconstructed flux between every set of neighboring source-pixels. This regularization term is added to the \
-    solution's chi-squared as a penalty term, effecting a reconstruction in the following ways:
+    solution's chi-squared as a penalty term, effecting a _reconstruction in the following ways:
 
     1) The regularization matrix (see below) is added to the curvature matrix used by the reconstructor to linearly \
-    invert and fit the image data. Thus, it changes the source-reconstruction in a fully linearly way, ensuring that \
+    invert and fit the image data. Thus, it changes the source-_reconstruction in a fully linearly way, ensuring that \
     the minimum chi-squared solution is achieved accounting for the penalty term.
 
-    2) The likelihood of the reconstruction changes from L = -0.5 *(chi^2 + noise_term) to L = -0.5 (chi^2 + \
+    2) The likelihood of the _reconstruction changes from L = -0.5 *(chi^2 + noise_term) to L = -0.5 (chi^2 + \
     regularization_coefficient * regularization_term + noise_term). The regularization coefficient is a \
-    hyper-parameter which determines how strongly we smooth the reconstruction.
+    hyper-parameter which determines how strongly we smooth the _reconstruction.
 
     AutoLens sets the value of the regularization_coefficient(s) using the Bayesian framework of (Suyu 2006) and this \
-    is detailed further in the (*reconstruction.Reconstruction* class)
+    is detailed further in the (*_reconstruction.Reconstruction* class)
 
     The regularization matrix, H, is calculated by defining a set of B matrices which describe how the pixelization \
     pixels neighbor one another. For example, lets take a 3x3 square grid

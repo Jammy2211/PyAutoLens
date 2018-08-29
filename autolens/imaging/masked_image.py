@@ -62,12 +62,3 @@ class MaskedImage(im.Image):
             self.grids = obj.grids
             self.borders = obj.borders
             self.positions = obj.positions
-
-    def map_masked_1d_array_to_2d_array(self, data):
-        """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
-        Parameters
-        -----------
-        data : ndarray
-            The grid-data which is mapped to its 2D masked_image.
-        """
-        return self.mask.map_masked_1d_array_to_2d_array(data)

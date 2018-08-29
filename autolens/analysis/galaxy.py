@@ -103,13 +103,13 @@ class Galaxy(object):
             string += "\nMass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
         return string
 
-    def intensity_from_grid(self, grid):
+    def intensities_from_grid(self, grid):
         if self.light_profiles is not None and len(self.light_profiles) > 0:
-            return sum(map(lambda p: p.intensity_from_grid(grid), self.light_profiles))
+            return sum(map(lambda p: p.intensities_from_grid(grid), self.light_profiles))
         else:
             return np.zeros((grid.shape[0],))
 
-    def intensity_from_grid_individual(self, grid):
+    def intensities_from_grid_individual(self, grid):
         """
         Compute the individual intensities of the galaxy's light profiles at a given set of image_grid.
 
@@ -124,7 +124,7 @@ class Galaxy(object):
         intensity : [float]
             The summed values of intensity at the given image_grid
         """
-        return list(map(lambda p: p.intensity_from_grid(grid), self.light_profiles))
+        return list(map(lambda p: p.intensities_from_grid(grid), self.light_profiles))
 
     def luminosity_within_circle(self, radius):
         """
@@ -216,7 +216,10 @@ class Galaxy(object):
         ----------
         The summed values of surface density at the given image_grid.
         """
-        return sum(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
+        if self.mass_profiles is not None and len(self.mass_profiles) > 0:
+            return sum(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
+        else:
+            return np.zeros((grid.shape[0],))
 
     def surface_density_from_grid_individual(self, grid):
         """
@@ -251,7 +254,11 @@ class Galaxy(object):
         ----------
         The summed values of gravitational potential at the given image_grid.
         """
-        return sum(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
+        if self.mass_profiles is not None and len(self.mass_profiles) > 0:
+            return sum(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
+        else:
+            return np.zeros((grid.shape[0],))
+
 
     def potential_from_grid_individual(self, grid):
         """
@@ -418,8 +425,8 @@ class HyperGalaxy(object):
         minimum_value : float
             The minimum fractional flux a pixel must contain to not be rounded to 0.
         """
-        contributions = hyper_galaxy_image / (hyper_model_image + self.contribution_factor)
-        contributions = contributions / np.max(contributions)
+        contributions = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
+        contributions = np.divide(contributions, np.max(contributions))
         contributions[contributions < minimum_value] = 0.0
         return contributions
 

@@ -11,7 +11,7 @@ import inspect
 
 
 def jit_integrand(integrand_function):
-    jitted_function = numba.jit(integrand_function, nopython=True)
+    jitted_function = numba.jit(integrand_function, nopython=True, cache=True)
     no_args = len(inspect.getfullargspec(integrand_function).args)
 
     wrapped = None
