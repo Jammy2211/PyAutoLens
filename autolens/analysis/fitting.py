@@ -12,7 +12,11 @@ class AbstractFitter(object):
 
     def __init__(self, masked_image, tracer):
         self.tracer = tracer
-        self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
+
+        if not self.tracer.has_grid_mappers:
+            self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
+        elif self.tracer.has_grid_mappers:
+            self.map_to_2d = masked_image.grid_mappers.image.map_unmasked_1d_array_to_2d_array_and_trim
 
 
 class AbstractHyperFitter(object):
@@ -55,7 +59,11 @@ class AbstractProfileFitter(object):
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        self.convolve_image = masked_image.convolver_image.convolve_image
+        if not self.tracer.has_grid_mappers:
+            self.convolve_image = masked_image.convolver_image.convolve_image
+        elif self.tracer.has_grid_mappers:
+            self.convolve_image = masked_image.grid_mappers.image.convolve_unmasked_array_with_psf
+
         # TODO : We need to profile the code to check the memory allocations below don't slow things down. I have done
         # TODO : things as below for now as its the cleanest way to write the code. We could also implemnt a
         # TODO : 'fast likelihood' function which skips the below, to give fast results in an nlo.

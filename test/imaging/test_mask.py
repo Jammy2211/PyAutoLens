@@ -1,5 +1,6 @@
 import numpy as np
 from autolens.imaging import imaging_util
+from autolens.imaging import image
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 import pytest
@@ -290,88 +291,300 @@ class TestSubGrid(object):
 
 class TestGridsMappers:
 
-    def test__map_unmasked_1d_array_to_2d_array__compare_to_array_utils(self):
 
-        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+    class TestImageMapperFromShapes:
 
-        image_mapper = mask.ImageGridMapper(arr=grid_1d, original_shape=(2 , 2), padded_shape=(4 , 4))
+        def test__3x3_array__psf_size_is_1x1__no_padding(self):
 
-        array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0])
-        array_2d_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape=(4, 4))
-        array_2d = image_mapper.map_unmasked_1d_array_to_2d_array(array_1d)
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(3, 3), psf_shape=(1,1),
+                                                                                 pixel_scale=1.0)
 
-        assert (array_2d == array_2d_util).all()
+            assert len(image_mapper) == 9
+            assert image_mapper.original_shape == (3, 3)
+            assert image_mapper.padded_shape == (3, 3)
 
-    def test__same_as_above_for_sub_grid_mapper(self):
+        def test__3x3_image__5x5_psf_size__7x7_image_mapper_made(self):
 
-        msk = np.array([[False, False],
-                        [False, False]])
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(3, 3), psf_shape=(5,5),
+                                                                                 pixel_scale=1.0)
 
-        msk = mask.Mask(msk, pixel_scale=3.0)
+            assert len(image_mapper) == 49
+            assert image_mapper.original_shape == (3, 3)
+            assert image_mapper.padded_shape == (7, 7)
 
-        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+        def test__3x3_image__7x7_psf_size__9x9_image_mapper_made(self):
 
-        grid = mask.SubGridMapper(arr=grid_1d, mask=msk, original_shape=(1 , 1), padded_shape=(2 , 2), sub_grid_size=2)
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(3, 3), psf_shape=(7,7),
+                                                                                 pixel_scale=1.0)
+            assert len(image_mapper) == 81
+            assert image_mapper.original_shape == (3, 3)
+            assert image_mapper.padded_shape == (9, 9)
 
-        array_1d = np.array([1.0, 2.0, 3.0, 4.0])
-        array_2d_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape=(2, 2))
-        array_2d = grid.map_unmasked_1d_array_to_2d_array(array_1d)
+        def test__4x3_image__3x3_psf_size__6x5_image_mapper_made(self):
 
-        assert (array_2d == array_2d_util).all()
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(4, 3), psf_shape=(3,3),
+                                                                                 pixel_scale=1.0)
+            assert len(image_mapper) == 30
+            assert image_mapper.original_shape == (4, 3)
+            assert image_mapper.padded_shape == (6, 5)
 
-    def test__map_unmasked_deflections_array_to_2d_array__compare_to_array_utils(self):
+        def test__3x4_image__3x3_psf_size__5x6_image_mapper_made(self):
 
-        grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                            [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(3, 4), psf_shape=(3,3),
+                                                                                 pixel_scale=1.0)
 
-        image_mapper = mask.ImageGridMapper(arr=grid_1d, original_shape=(2 , 2), padded_shape=(4 , 4))
+            assert len(image_mapper) == 30
+            assert image_mapper.original_shape == (3, 4)
+            assert image_mapper.padded_shape == (5, 6)
 
-        deflections_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0], [6.0, 6.0], [7.0, 7.0],
-                                   [8.0, 8.0], [9.0, 9.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0],
-                                   [6.0, 6.0], [7.0, 7.0]])
-        deflections_2d_util = imaging_util.map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections_1d,
-                                                                                                    shape=(4,4))
-        deflections_2d = image_mapper.map_unmasked_deflections_to_2d_deflections(deflections_1d)
+        def test__4x4_image__3x3_psf_size__6x6_image_mapper_made(self):
 
-        assert (deflections_2d == deflections_2d_util).all()
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(4, 4), psf_shape=(3,3),
+                                                                                 pixel_scale=1.0)
 
-    def test__image_grid_mapper_from_scaled_array(self):
+            assert len(image_mapper) == 36
+            assert image_mapper.original_shape == (4, 4)
+            assert image_mapper.padded_shape == (6, 6)
 
-        sca = scaled_array.ScaledArray(np.array([[0.0, 0.0, 0.0],
-                                                 [0.0, 0.0, 0.0],
-                                                 [0.0, 0.0, 0.0]]), pixel_scale=1.0)
-        
-        image_mapper = mask.ImageGridMapper.from_scaled_array_and_psf_shape(scaled_array=sca, psf_shape=(3,3))
+        def test__image_mapper_coordinates__match_grid_2d_after_padding(self):
 
-        image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((5, 5), False),
-                                                                                     pixel_scale=1.0)
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(4, 4), psf_shape=(3,3),
+                                                                                 pixel_scale=3.0)
 
-        assert (image_mapper == image_mapper_util).all()
-        assert image_mapper.original_shape == (3,3)
-        assert image_mapper.padded_shape == (5,5)
+            image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6, 6), False),
+                                                                                  pixel_scale=3.0)
+            assert (image_mapper == image_mapper_util).all()
+            assert image_mapper.original_shape == (4, 4)
+            assert image_mapper.padded_shape == (6, 6)
 
-    def test__sub_grid_mapper_from_mask(self):
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(4, 5), psf_shape=(3,3),
+                                                                                 pixel_scale=2.0)
+            image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6, 7), False),
+                                                                                  pixel_scale=2.0)
+            assert (image_mapper == image_mapper_util).all()
+            assert image_mapper.original_shape == (4, 5)
+            assert image_mapper.padded_shape == (6, 7)
 
-        msk = np.array([[False, False, False],
-                        [False, False, False],
-                        [False, False, False]])
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(5, 4), psf_shape=(3,3),
+                                                                                 pixel_scale=1.0)
+            image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((7, 6), False),
+                                                                                  pixel_scale=1.0)
+            assert (image_mapper == image_mapper_util).all()
+            assert image_mapper.original_shape == (5, 4)
+            assert image_mapper.padded_shape == (7, 6)
 
-        msk = mask.Mask(msk, pixel_scale=1.0)
+            image_mapper = mask.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=(2, 5), psf_shape=(5,5),
+                                                                                 pixel_scale=8.0)
+            image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full((6, 9), False),
+                                                                                  pixel_scale=8.0)
+            assert (image_mapper == image_mapper_util).all()
+            assert image_mapper.original_shape == (2, 5)
+            assert image_mapper.padded_shape == (6, 9)
 
-        sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
-                                                                                     psf_shape=(3, 3))
 
-        sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full((5, 5), False),
-                                                                                               pixel_scale=1.0, sub_grid_size=2)
+    class TestSubMapperFromMask:
 
-        assert (sub_mapper == sub_mapper_util).all()
-        assert sub_mapper.original_shape == (3, 3)
-        assert sub_mapper.padded_shape == (5, 5)
+        def test__3x3_array__psf_size_is_1x1__no_padding(self):
+
+            msk = mask.Mask(array=np.full((3, 3), False), pixel_scale=1.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=3,
+                                                                                       psf_shape=(1, 1))
+
+            assert len(sub_mapper) == 9 * 3 ** 2
+            assert sub_mapper.original_shape == (3, 3)
+            assert sub_mapper.padded_shape == (3, 3)
+
+        def test__3x3_image__5x5_psf_size__7x7_image_grid_made(self):
+
+            msk = mask.Mask(array=np.full((3, 3), False), pixel_scale=1.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
+                                                                                       psf_shape=(5, 5))
+
+            assert len(sub_mapper) == 49 * 2 ** 2
+            assert sub_mapper.original_shape == (3, 3)
+            assert sub_mapper.padded_shape == (7, 7)
+
+        def test__4x3_image__3x3_psf_size__6x5_image_grid_made(self):
+
+            msk = mask.Mask(array=np.full((4, 3), False), pixel_scale=1.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
+                                                                                       psf_shape=(3, 3))
+
+            assert len(sub_mapper) == 30 * 2 ** 2
+            assert sub_mapper.original_shape == (4, 3)
+            assert sub_mapper.padded_shape == (6, 5)
+
+        def test__3x4_image__3x3_psf_size__5x6_image_grid_made(self):
+
+            msk = mask.Mask(array=np.full((3, 4), False), pixel_scale=1.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
+                                                                                       psf_shape=(3, 3))
+
+            assert len(sub_mapper) == 30 * 2 ** 2
+            assert sub_mapper.original_shape == (3, 4)
+            assert sub_mapper.padded_shape == (5, 6)
+
+        def test__4x4_image__3x3_psf_size__6x6_image_grid_made(self):
+
+            msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=4,
+                                                                                       psf_shape=(3, 3))
+
+            assert len(sub_mapper) == 36 * 4 ** 2
+            assert sub_mapper.original_shape == (4, 4)
+            assert sub_mapper.padded_shape == (6, 6)
+
+        def test__sub_mapper_coordinates__match_grid_2d_after_padding(self):
+
+            msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=3.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=3,
+                                                                                       psf_shape=(3, 3))
+
+            sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(
+                mask=np.full((6, 6), False), pixel_scale=3.0, sub_grid_size=3)
+
+            assert (sub_mapper == sub_mapper_util).all()
+
+            msk = mask.Mask(array=np.full((4, 5), False), pixel_scale=2.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+                                                                                       psf_shape=(3, 3))
+
+            sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(
+                mask=np.full((6, 7), False), pixel_scale=2.0, sub_grid_size=1)
+
+            assert (sub_mapper == sub_mapper_util).all()
+
+            msk = mask.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=2,
+                                                                                       psf_shape=(3, 3))
+
+            sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(
+                mask=np.full((7, 6), False), pixel_scale=2.0, sub_grid_size=2)
+
+            assert (sub_mapper == sub_mapper_util).all()
+
+            msk = mask.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
+
+            sub_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=4,
+                                                                                       psf_shape=(5, 5))
+
+            sub_mapper_util = imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(
+                mask=np.full((6, 9), False), pixel_scale=8.0, sub_grid_size=4)
+
+            assert (sub_mapper == sub_mapper_util).all()
+
+
+    class TestMapUnmaskedArrays:
+
+        def test__map_padded_4x4__unmasked_1d_array_to_2d_array_and_trim_to_original_2x2(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2 , 2), padded_shape=(4 , 4))
+
+            array_1d = np.array([ 1.0,  2.0,  3.0,  4.0,
+                                  5.0,  6.0,  7.0,  8.0,
+                                  9.0, 10.0, 11.0, 12.0,
+                                 13.0, 14.0, 15.0, 16.0])
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+
+            assert (array_2d == np.array([[ 6.0,  7.0],
+                                          [10.0, 11.0]])).all()
+
+        def test__map_padded_5x3__unmasked_1d_array_to_2d_array_and_trim_to_original_3x1(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
+
+            array_1d = np.array([1.0,  2.0,  3.0,
+                                 4.0,  5.0,  6.0,
+                                 7.0,  8.0,  9.0,
+                                 10.0, 11.0, 12.0,
+                                 13.0, 14.0, 15.0])
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+
+            assert (array_2d == np.array([[5.0],
+                                          [8.0],
+                                          [11.0]])).all()
+
+        def test__map_padded_3x5__unmasked_1d_array_to_2d_array_and_trim_to_original_1x3(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
+
+            array_1d = np.array([1.0,  2.0,  3.0, 4.0,  5.0,
+                                 6.0,  7.0,  8.0,  9.0, 10.0,
+                                 11.0, 12.0, 13.0, 14.0, 15.0])
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+
+            assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
+
+        def test__map_padded_7x3__unmasked_1d_array_to_2d_array_and_trim_to_original_5x1(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(5 , 1), padded_shape=(7 , 3))
+
+            array_1d = np.array([1.0,  2.0,  3.0,
+                                 4.0,  5.0,  6.0,
+                                 7.0,  8.0,  9.0,
+                                 10.0, 11.0, 12.0,
+                                 13.0, 14.0, 15.0,
+                                 16.0, 17.0, 18.0,
+                                 19.0, 20.0, 21.0])
+
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+
+            assert (array_2d == np.array([[5.0],
+                                          [8.0],
+                                          [11.0],
+                                          [14.0],
+                                          [17.0]])).all()
+
+        def test__map_padded_4x7__unmasked_1d_array_to_2d_array_and_trim_to_original_2x5(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2 , 5), padded_shape=(4, 7))
+
+            array_1d = np.array([ 1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0,
+                                  8.0,  9.0, 10.0, 11.0, 12.0, 13.0, 14.0,
+                                 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
+                                 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0])
+
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+
+            assert (array_2d == np.array([[9.0,  10.0, 11.0, 12.0, 13.0],
+                                          [16.0, 17.0, 18.0, 19.0, 20.0]])).all()
+
+    class TestConvolve:
+
+        def test__convolve_1d_mapper_array_with_psf(self):
+
+            grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                                [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                                [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
+                                [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+
+            image_mapper = mask.ImageGridMapper(arr=grid_1d, original_shape=(2 , 2), padded_shape=(4 , 4))
+
+            array_1d = np.array([0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 1.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0])
+
+            kernel = np.array([[0.0, 1.0, 0.0],
+                               [1.0, 2.0, 1.0],
+                               [0.0, 1.0, 0.0]])
+
+            psf = image.PSF(array=kernel)
+
+            blurred_array_1d = image_mapper.convolve_unmasked_array_with_psf(array_1d, psf)
+
+            assert (blurred_array_1d == np.array([0.0, 0.0, 0.0, 0.0,
+                                                  0.0, 1.0, 0.0, 0.0,
+                                                  1.0, 2.0, 1.0, 0.0,
+                                                  0.0, 1.0, 0.0, 0.0])).all()
 
 
 class TestGridCollection(object):
