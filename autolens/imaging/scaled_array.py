@@ -29,44 +29,8 @@ class Array(np.ndarray):
             setattr(self, key, value)
         super(Array, self).__setstate__(state[0:-1])
 
-    def trim(self, new_dimensions):
-        """
-        Trim the data_vector array to a new sub_grid_size around its central pixel.
-
-        NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
-        (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-        Parameters
-        ----------
-        new_dimensions : (int, int)
-            The (x,y) new pixel dimension of the trimmed data_vector-array.
-        """
-        if new_dimensions[0] > self.shape[0]:
-            raise ValueError(
-                'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
-        elif new_dimensions[1] > self.shape[1]:
-            raise ValueError(
-                'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
-
-        x_trim = int((self.shape[0] - new_dimensions[0]) / 2)
-        y_trim = int((self.shape[1] - new_dimensions[1]) / 2)
-
-        array = self[x_trim:self.shape[0] - x_trim, y_trim:self.shape[1] - y_trim]
-
-        if self.shape[0] != new_dimensions[0]:
-            logger.debug(
-                'masked_image.data_vector.trim_data - Your specified x_size was odd (even) when the masked_image x dimension is '
-                'even (odd)')
-            logger.debug(
-                'The method has automatically used x_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
-        elif self.shape[1] != new_dimensions[1]:
-            logger.debug(
-                'masked_image.data_vector.trim_data - Your specified y_size was odd (even) when the masked_image y dimension is '
-                'even (odd)')
-            logger.debug(
-                'The method has automatically used y_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
-
-        return self.new_with_array(array)
+    def trim(self, new_shape):
+        return self.new_with_array(imaging_util.trim_array_2d_to_new_shape(self, new_shape))
 
     def new_with_array(self, array):
         """
@@ -243,16 +207,6 @@ class ScaledArray(Array):
         value and positive y value in arc seconds.
         """
         return imaging_util.image_grid_2d_from_shape_and_pixel_scale(self.shape, self.pixel_scale)
-
-    def padded_image_grid_for_psf_edges(self, psf_shape):
-        padded_shape = (self.shape[0] + psf_shape[0] - 1, self.shape[1] + psf_shape[1] - 1)
-        return imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full(padded_shape, False),
-                                                                        pixel_scale=self.pixel_scale)
-
-    def padded_sub_grid_for_psf_edges_from_sub_grid_size(self, psf_shape, sub_grid_size):
-        padded_shape = (self.shape[0] + psf_shape[0] - 1, self.shape[1] + psf_shape[1] - 1)
-        return imaging_util.sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask=np.full(padded_shape, False),
-                                                                                    pixel_scale=self.pixel_scale, sub_grid_size=sub_grid_size)
 
     @classmethod
     def single_value(cls, value, shape, pixel_scale=1):
