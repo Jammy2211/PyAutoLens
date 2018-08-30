@@ -32,6 +32,10 @@ class TestMaskedImage(object):
         assert image.pixel_scale == masked_image.pixel_scale
         assert (image.psf == masked_image.psf).all()
 
+    def test__image_and_image_mapper(self, masked_image):
+        assert (masked_image.image == np.ones((4,4))).all()
+        assert (masked_image.image.noise == np.ones((4,4))).all()
+
     def test_masking(self, masked_image):
         assert masked_image.noise.shape == (4,)
 
@@ -48,7 +52,7 @@ class TestMaskedImage(object):
                                                          [-1.5, -4.5],  [-1.5, 4.5],  [1.5, -4.5], [1.5, 4.5],
                                                           [4.5, -4.5],  [4.5, -1.5],  [4.5, 1.5],  [4.5, 4.5]])).all()
 
-    def test_mapper_grids(self, masked_image):
+    def test_grid_mappers(self, masked_image):
 
         image_mapper_util = imaging_util.image_grid_masked_from_mask_and_pixel_scale(np.full((6, 6), False),
                                                                                      masked_image.image.pixel_scale)
