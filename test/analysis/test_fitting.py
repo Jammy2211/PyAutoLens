@@ -271,7 +271,6 @@ def make_mi_no_blur():
 
     return masked_image.MaskedImage(im, ma, sub_grid_size=2)
 
-
 @pytest.fixture(name='mi_blur')
 def make_mi_blur():
     im = np.array([[0.0, 0.0, 0.0, 0.0],
@@ -507,10 +506,10 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
 
-            assert (fitter.blurred_image_plane_images_of_planes[0] == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                                                [0.0, 9.0, 9.0, 0.0],
-                                                                                [0.0, 9.0, 9.0, 0.0],
-                                                                                [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fitter.model_images_of_planes[0] == np.array([[0.0, 0.0, 0.0, 0.0],
+                                                                  [0.0, 9.0, 9.0, 0.0],
+                                                                  [0.0, 9.0, 9.0, 0.0],
+                                                                  [0.0, 0.0, 0.0, 0.0]])).all()
 
         def test__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
 
@@ -542,8 +541,8 @@ class TestProfileFitter:
             blurred_lens_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_lens_image_plane_image)
             blurred_source_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_source_image_plane_image)
 
-            assert (fitter.blurred_image_plane_images_of_planes[0] == blurred_lens_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_planes[1] == blurred_source_image_plane_image).all()
+            assert (fitter.model_images_of_planes[0] == blurred_lens_image_plane_image).all()
+            assert (fitter.model_images_of_planes[1] == blurred_source_image_plane_image).all()
 
         def test__same_as_above_but_multi_tracer(self):
 
@@ -582,9 +581,9 @@ class TestProfileFitter:
             blurred_image_plane_image_1 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_1)
             blurred_image_plane_image_2 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_2)
 
-            assert (fitter.blurred_image_plane_images_of_planes[0] == blurred_image_plane_image_0).all()
-            assert (fitter.blurred_image_plane_images_of_planes[1] == blurred_image_plane_image_1).all()
-            assert (fitter.blurred_image_plane_images_of_planes[2] == blurred_image_plane_image_2).all()
+            assert (fitter.model_images_of_planes[0] == blurred_image_plane_image_0).all()
+            assert (fitter.model_images_of_planes[1] == blurred_image_plane_image_1).all()
+            assert (fitter.model_images_of_planes[2] == blurred_image_plane_image_2).all()
 
 
     class TestBlurredImagePlaneImageOfGalaxies:
@@ -596,10 +595,10 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(masked_image=mi_blur, tracer=tracer)
 
-            assert (fitter.blurred_image_plane_images_of_galaxies[0] == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                                                  [0.0, 9.0, 9.0, 0.0],
-                                                                                  [0.0, 9.0, 9.0, 0.0],
-                                                                                  [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fitter.model_images_of_galaxies[0] == np.array([[0.0, 0.0, 0.0, 0.0],
+                                                                    [0.0, 9.0, 9.0, 0.0],
+                                                                    [0.0, 9.0, 9.0, 0.0],
+                                                                    [0.0, 0.0, 0.0, 0.0]])).all()
 
         def test__real_tracer__1_galaxy_each_plane__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
 
@@ -631,8 +630,8 @@ class TestProfileFitter:
             blurred_lens_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_lens_image_plane_image)
             blurred_source_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_source_image_plane_image)
 
-            assert (fitter.blurred_image_plane_images_of_galaxies[0] == blurred_lens_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[1] == blurred_source_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[0] == blurred_lens_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[1] == blurred_source_image_plane_image).all()
 
         def test__same_as_above__real_tracer__multiple_galaxies_each_plane(self):
 
@@ -679,11 +678,11 @@ class TestProfileFitter:
             blurred_g3_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g3_image_plane_image)
             blurred_g4_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g4_image_plane_image)
 
-            assert (fitter.blurred_image_plane_images_of_galaxies[0] == blurred_g0_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[1] == blurred_g1_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[2] == blurred_g2_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[3] == blurred_g3_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[4] == blurred_g4_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[0] == blurred_g0_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[1] == blurred_g1_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[2] == blurred_g2_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[3] == blurred_g3_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[4] == blurred_g4_image_plane_image).all()
 
         def test__same_as_above__real_tracer__multiple_galaxies_each_plane_but_now_swap_order_in_tracer(self):
 
@@ -730,11 +729,11 @@ class TestProfileFitter:
             blurred_g3_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g3_image_plane_image)
             blurred_g4_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g4_image_plane_image)
 
-            assert (fitter.blurred_image_plane_images_of_galaxies[0] == blurred_g1_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[1] == blurred_g3_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[2] == blurred_g4_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[3] == blurred_g0_image_plane_image).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[4] == blurred_g2_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[0] == blurred_g1_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[1] == blurred_g3_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[2] == blurred_g4_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[3] == blurred_g0_image_plane_image).all()
+            assert (fitter.model_images_of_galaxies[4] == blurred_g2_image_plane_image).all()
 
         def test__same_as_above_but_multi_tracer(self):
 
@@ -773,9 +772,9 @@ class TestProfileFitter:
             blurred_image_plane_image_1 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_1)
             blurred_image_plane_image_2 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_2)
 
-            assert (fitter.blurred_image_plane_images_of_galaxies[0] == blurred_image_plane_image_0).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[1] == blurred_image_plane_image_1).all()
-            assert (fitter.blurred_image_plane_images_of_galaxies[2] == blurred_image_plane_image_2).all()
+            assert (fitter.model_images_of_galaxies[0] == blurred_image_plane_image_0).all()
+            assert (fitter.model_images_of_galaxies[1] == blurred_image_plane_image_1).all()
+            assert (fitter.model_images_of_galaxies[2] == blurred_image_plane_image_2).all()
 
 
     class TestPlaneImageOfPlane:
@@ -793,7 +792,7 @@ class TestProfileFitter:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=mi_no_blur.grids)
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
-            plane_image = fitter.plane_images_of_planes(shape=(5, 5))[1]
+            plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
             assert plane_image.shape == (5,5)
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0,0)
@@ -803,7 +802,7 @@ class TestProfileFitter:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=mi_no_blur.grids)
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
-            plane_image = fitter.plane_images_of_planes(shape=(5, 5))[1]
+            plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0,4)
 
@@ -812,7 +811,7 @@ class TestProfileFitter:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=mi_no_blur.grids)
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
-            plane_image = fitter.plane_images_of_planes(shape=(5, 5))[1]
+            plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4,0)
 
@@ -821,7 +820,7 @@ class TestProfileFitter:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=mi_no_blur.grids)
             fitter = fitting.ProfileFitter(masked_image=mi_no_blur, tracer=tracer)
-            plane_image = fitter.plane_images_of_planes(shape=(5, 5))[1]
+            plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4,4)
 
@@ -846,7 +845,7 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(masked_image=mi, tracer=tracer)
 
-            assert fitter.blurred_image_plane_image_likelihood == -0.5 * np.log(2 * np.pi * 1.0)
+            assert fitter.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
         def test___1x1_image__tracing_fits_data_with_chi_sq_5(self):
 
@@ -869,7 +868,7 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(masked_image=mi, tracer=tracer)
 
-            assert fitter.blurred_image_plane_image_likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
+            assert fitter.likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
 
     # class TestGridMappers:
@@ -963,13 +962,12 @@ class TestProfileFitter:
             noise_term = fitting.noise_term_from_noise(mi.noise)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(image_im) == pytest.approx(fitter.image_plane_image, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.blurred_image_plane_image, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.blurred_image_plane_image_residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(chi_squareds) == pytest.approx(fitter.blurred_image_plane_image_chi_squareds, 1e-4)
-            assert chi_squared_term == pytest.approx(fitter.blurred_image_plane_image_chi_squared_term, 1e-4)
-            assert noise_term == pytest.approx(fitter.noise_term, 1e-4)
-            assert likelihood == pytest.approx(fitter.blurred_image_plane_image_likelihood, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
+            assert noise_term == pytest.approx(fitter._noise_term, 1e-4)
+            assert likelihood == pytest.approx(fitter.likelihood, 1e-4)
 
 
 class TestHyperProfileFitter:
@@ -1003,7 +1001,7 @@ class TestHyperProfileFitter:
             chi_squared_term = 0.0
             scaled_noise_term = np.log(2 * np.pi * 4.0 ** 2.0)
     
-            assert fitter.blurred_image_plane_image_scaled_likelihood == -0.5 * (chi_squared_term + scaled_noise_term)
+            assert fitter.likelihood == -0.5 * (chi_squared_term + scaled_noise_term)
     
         def test__hyper_galaxy_adds_to_noise_term_for_scaled_noise__chi_squared_nonzero(self, no_galaxies, mi_no_blur_1x1):
     
@@ -1031,7 +1029,7 @@ class TestHyperProfileFitter:
             scaled_chi_squared_term = (1.0/(4.0))**2.0
             scaled_noise_term = np.log(2 * np.pi * 4.0 ** 2.0)
     
-            assert fitter.blurred_image_plane_image_scaled_likelihood == -0.5 * (scaled_chi_squared_term + scaled_noise_term)
+            assert fitter.likelihood == -0.5 * (scaled_chi_squared_term + scaled_noise_term)
 
 
     class TestPixelizationFitterFromProfileFitter:
@@ -1118,16 +1116,15 @@ class TestHyperProfileFitter:
             scaled_likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(scaled_chi_squared_term,
                                                                                     scaled_noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(image_im) == pytest.approx(fitter.image_plane_image, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.blurred_image_plane_image, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.blurred_image_plane_image_residuals, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
             assert ma.map_masked_1d_array_to_2d_array(contributions[0]) == pytest.approx(fitter.contributions[0], 1e-4)
             assert ma.map_masked_1d_array_to_2d_array(contributions[1]) == pytest.approx(fitter.contributions[1], 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_noise) == pytest.approx(fitter.scaled_noise, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_chi_squareds) == pytest.approx(fitter.blurred_image_plane_image_scaled_chi_squareds, 1e-4)
-            assert scaled_chi_squared_term == pytest.approx(fitter.blurred_image_plane_image_scaled_chi_squared_term, 1e-4)
-            assert scaled_noise_term == pytest.approx(fitter.scaled_noise_term, 1e-4)
-            assert scaled_likelihood == pytest.approx(fitter.blurred_image_plane_image_scaled_likelihood, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(scaled_noise) == pytest.approx(fitter.noise, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert scaled_chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
+            assert scaled_noise_term == pytest.approx(fitter.noise_term, 1e-4)
+            assert scaled_likelihood == pytest.approx(fitter.likelihood, 1e-4)
 
 
 class TestPixelizationFitter:
@@ -1190,7 +1187,7 @@ class TestPixelizationFitter:
             noise_term = 9.0 * np.log(2 * np.pi * 1.0 ** 2.0)
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitter.reconstructed_image_plane_image_evidence == pytest.approx(evidence_expected, 1e-4)
+            assert fitter.evidence == pytest.approx(evidence_expected, 1e-4)
 
 
     class TestCompareToManual:
@@ -1234,14 +1231,14 @@ class TestPixelizationFitter:
                                                                   covariance_regularization_term,
                                                                   regularization_matrix_term, noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.reconstructed_image_plane_image_residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(chi_squareds) == pytest.approx(fitter.reconstructed_image_plane_image_chi_squareds, 1e-4)
-            assert chi_squared_term == pytest.approx(fitter.reconstructed_image_plane_image_chi_squared_term, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert noise_term == pytest.approx(fitter.noise_term, 1e-4)
             assert regularization_term == pytest.approx(fitter._reconstruction.regularization_term, 1e-4)
             assert covariance_regularization_term == pytest.approx(fitter._reconstruction.log_det_curvature_reg_matrix_term, 1e-4)
             assert regularization_matrix_term == pytest.approx(fitter._reconstruction.log_det_regularization_matrix_term, 1e-4)
-            assert evidence == fitter.reconstructed_image_plane_image_evidence
+            assert evidence == fitter.evidence
 
 
 class TestHyperPixelizationFitter:
@@ -1311,7 +1308,7 @@ class TestHyperPixelizationFitter:
 
             evidence_expected = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
 
-            assert fitter.reconstructed_image_plane_image_scaled_evidence == pytest.approx(evidence_expected, 1e-4)
+            assert fitter.evidence == pytest.approx(evidence_expected, 1e-4)
 
 
     class TestCompareToManual:
@@ -1350,7 +1347,7 @@ class TestHyperPixelizationFitter:
             fitter = fitting.HyperPixelizationFitter(masked_image=mi, tracer=tracer, hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
-            scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, fitter._scaled_noise,
+            scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, fitter._noise,
                                                                                     mi.convolver_mapping_matrix)
 
             residuals = fitting.residuals_from_image_and_model(mi, fitter._reconstruction.reconstructed_image)
@@ -1372,15 +1369,15 @@ class TestHyperPixelizationFitter:
                                                                   regularization_matrix_term, scaled_noise_term)
 
             assert ma.map_masked_1d_array_to_2d_array(contributions[0]) == pytest.approx(fitter.contributions[0], 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.reconstructed_image_plane_image_residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_noise) == pytest.approx(fitter.scaled_noise, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_chi_squareds) == pytest.approx(fitter.reconstructed_image_plane_image_scaled_chi_squareds, 1e-4)
-            assert scaled_chi_squared_term == pytest.approx(fitter.reconstructed_image_plane_image_scaled_chi_squared_term, 1e-4)
-            assert scaled_noise_term == pytest.approx(fitter.scaled_noise_term, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(scaled_noise) == pytest.approx(fitter.noise, 1e-4)
+            assert ma.map_masked_1d_array_to_2d_array(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert scaled_chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
+            assert scaled_noise_term == pytest.approx(fitter.noise_term, 1e-4)
             assert regularization_term == pytest.approx(fitter._reconstruction.regularization_term, 1e-4)
             assert scaled_covariance_regularization_term == pytest.approx(fitter._reconstruction.log_det_curvature_reg_matrix_term, 1e-4)
             assert regularization_matrix_term == pytest.approx(fitter._reconstruction.log_det_regularization_matrix_term, 1e-4)
-            assert scaled_evidence == fitter.reconstructed_image_plane_image_scaled_evidence
+            assert scaled_evidence == fitter.evidence
 
 
 class MockTracerPositions:
