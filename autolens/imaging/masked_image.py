@@ -1,3 +1,4 @@
+from autolens.imaging import imaging_util
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.imaging import convolution
