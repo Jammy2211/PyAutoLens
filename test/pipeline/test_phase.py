@@ -8,7 +8,8 @@ from autolens.imaging import mask as msk
 from autolens.imaging import image as img
 from autolens.imaging import masked_image as mi
 from autolens.autopipe import model_mapper as mm
-from autolens.profiles import light_profiles, mass_profiles
+from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
 from autolens import conf
 from os import path
 import os
@@ -104,8 +105,8 @@ def make_masked_image():
 
 @pytest.fixture(name="results")
 def make_results():
-    return MockResults(np.ones((10, 10)),
-                       galaxy_images=[np.ones((10, 10)), np.ones((10, 10))])
+    return MockResults(np.ones(shape),
+                       galaxy_images=[np.ones(shape), np.ones(shape)])
 
 
 @pytest.fixture(name="results_collection")
@@ -208,11 +209,27 @@ class TestPhase(object):
         assert tracer.image_plane.galaxies[0] == lens_galaxy
         assert tracer.source_plane.galaxies[0] == source_galaxy
 
+    def test_unmasked_model_image_for_instance(self, image):
+        lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersicLP(intensity=1.0))
+        image_grid_mapper = msk.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=image.shape,
+                                                                                   psf_shape=image.psf.shape,
+                                                                                   pixel_scale=image.pixel_scale)
+        image_1d = lens_galaxy.intensities_from_grid(image_grid_mapper)
+        blurred_image_1d = image_grid_mapper.convolve_unmasked_array_with_psf_and_trim(image_1d, image.psf)
+        blurred_image = image_grid_mapper.map_unmasked_1d_array_to_2d_array(blurred_image_1d)
+
+        phase = ph.LensProfilePhase(lens_galaxies=[lens_galaxy])
+        analysis = phase.make_analysis(image)
+        instance = phase.constant
+        unmasked_model_image = analysis.unmasked_model_image_for_instance(instance)
+
+        assert (blurred_image == unmasked_model_image).all()
+
     def test__phase_can_receive_list_of_galaxy_priors(self):
-        phase = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP,
-                                                                  sis=mass_profiles.SphericalIsothermalMP,
+        phase = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
+                                                                  sis=mp.SphericalIsothermalMP,
                                                                   variable_redshift=True),
-                                                   gp.GalaxyPrior(sis=mass_profiles.SphericalIsothermalMP,
+                                                   gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
                                                                   variable_redshift=True)],
                                     optimizer_class=non_linear.MultiNest)
 
@@ -234,10 +251,10 @@ class TestPhase(object):
             def pass_priors(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
-        phase = LensProfilePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=light_profiles.EllipticalSersicLP,
-                                                                sis=mass_profiles.SphericalIsothermalMP,
+        phase = LensProfilePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
+                                                                sis=mp.SphericalIsothermalMP,
                                                                 variable_redshift=True),
-                                                 gp.GalaxyPrior(sis=mass_profiles.SphericalIsothermalMP,
+                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
                                                                 variable_redshift=True)],
                                   optimizer_class=non_linear.MultiNest)
 

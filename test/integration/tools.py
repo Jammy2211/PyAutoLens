@@ -40,7 +40,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
                                                      image_grids=image_plane_grids)
 
     image_plane_image = tracer.image_plane_image
-    image_plane_image_2d = ma.map_unmasked_1d_array_to_2d_array_and_trim(image_plane_image)
+    image_plane_image_2d = ma.map_unmasked_1d_array_to_2d_array(image_plane_image)
 
     ### Setup as a simulated image_coords and output as a fits for an analysis ###
 
