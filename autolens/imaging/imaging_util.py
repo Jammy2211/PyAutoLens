@@ -4,6 +4,9 @@ from astropy.io import fits
 import numba
 from functools import wraps
 import inspect
+import logging
+logger = logging.getLogger(__name__)
+logger.level = logging.DEBUG
 
 class Memoizer(object):
 
@@ -351,17 +354,6 @@ def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
     return array_2d
 
 @numba.jit(nopython=True, cache=True)
-def map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections, shape, one_to_two):
-
-    deflections_2d = np.zeros((shape[0], shape[1], 2))
-
-    for index in range(len(one_to_two)):
-        deflections_2d[one_to_two[index,0], one_to_two[index,1 ], 0] = deflections[index, 0]
-        deflections_2d[one_to_two[index,0], one_to_two[index, 1], 1] = deflections[index, 1]
-
-    return deflections_2d
-
-@numba.jit(nopython=True, cache=True)
 def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     array_2d = np.zeros(shape)
@@ -373,6 +365,17 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
             index += 1
 
     return array_2d
+
+@numba.jit(nopython=True, cache=True)
+def map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections, shape, one_to_two):
+
+    deflections_2d = np.zeros((shape[0], shape[1], 2))
+
+    for index in range(len(one_to_two)):
+        deflections_2d[one_to_two[index,0], one_to_two[index,1 ], 0] = deflections[index, 0]
+        deflections_2d[one_to_two[index,0], one_to_two[index, 1], 1] = deflections[index, 1]
+
+    return deflections_2d
 
 @numba.jit(nopython=True, cache=True)
 def map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections, shape):
@@ -387,6 +390,48 @@ def map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflec
             index += 1
 
     return deflections_2d
+
+def trim_array_2d_to_new_shape(array_2d, new_shape):
+    """
+    Trim the data_vector array to a new sub_grid_size around its central pixel.
+
+    NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
+    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+
+    Parameters
+    ----------
+    new_shape : (int, int)
+        The (x,y) new pixel dimension of the trimmed data_vector-array.
+    """
+
+    shape = array_2d.shape
+
+    if new_shape[0] > shape[0]:
+        raise ValueError(
+            'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
+    elif new_shape[1] > shape[1]:
+        raise ValueError(
+            'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
+
+    x_trim = int((shape[0] - new_shape[0]) / 2)
+    y_trim = int((shape[1] - new_shape[1]) / 2)
+
+    array = array_2d[x_trim:shape[0] - x_trim, y_trim:shape[1] - y_trim]
+
+    if array.shape[0] != new_shape[0]:
+        logger.debug(
+            'masked_image.data_vector.trim_data - Your specified x_size was odd (even) when the masked_image x dimension is '
+            'even (odd)')
+        logger.debug(
+            'The method has automatically used x_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
+    elif array.shape[1] != new_shape[1]:
+        logger.debug(
+            'masked_image.data_vector.trim_data - Your specified y_size was odd (even) when the masked_image y dimension is '
+            'even (odd)')
+        logger.debug(
+            'The method has automatically used y_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
+
+    return array
 
 def numpy_array_to_fits(array, file_path):
 

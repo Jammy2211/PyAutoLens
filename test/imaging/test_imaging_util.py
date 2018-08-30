@@ -1317,6 +1317,117 @@ class TestMapUnmaskedDeflections1dToDeflections2d(object):
                                             [[5.0, 5.0], [6.0, 6.0]]])).all()
 
 
+
+class TestTrim:
+
+    def test__from_7x7_to_3x3(self):
+        array = np.ones((7, 7))
+        array[3, 3] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(3,3))
+
+        assert (modified == np.array([[1.0, 1.0, 1.0],
+                                      [1.0, 2.0, 1.0],
+                                      [1.0, 1.0, 1.0]])).all()
+
+    def test__from_5x5_to_4x4__goes_to_5x5_to_keep_symmetry(self):
+
+        array = np.ones((5, 5))
+        array[2, 2] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(4,4))
+
+        assert (modified == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 2.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
+
+    def test__from_11x11_to_4x4__goes_to_5x5_to_keep_symmetry(self):
+
+        array = np.ones((11, 11))
+        array[5, 5] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(4,4))
+
+        assert (modified == np.array([[1.0, 1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 2.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0, 1.0]])).all()
+
+    def test__from_6x6_to_4x4(self):
+
+        array = np.ones((6, 6))
+        array[2:4, 2:4] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(4,4))
+
+        assert (modified == np.array([[1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 2.0, 2.0, 1.0],
+                                      [1.0, 2.0, 2.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0]])).all()
+
+    def test__from_6x6_to_3x3_goes_to_4x4_to_keep_symmetry(self):
+
+        array = np.ones((6, 6))
+        array[2:4, 2:4] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(3,3))
+
+        assert (modified == np.array([[1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 2.0, 2.0, 1.0],
+                                      [1.0, 2.0, 2.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0]])).all()
+
+    def test__from_5x4_to_3x2(self):
+        array = np.ones((5, 4))
+        array[2, 1:3] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(3,2))
+
+        assert (modified == np.array([[1.0, 1.0],
+                                      [2.0, 2.0],
+                                      [1.0, 1.0]])).all()
+
+    def test__from_4x5_to_2x3(self):
+        array = np.ones((4, 5))
+        array[1:3, 2] = 2.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(2,3))
+
+        assert (modified == np.array([[1.0, 2.0, 1.0],
+                                      [1.0, 2.0, 1.0]])).all()
+
+    def test__from_5x4_to_4x3__goes_to_5x4_to_keep_symmetry(self):
+
+        array = np.ones((5, 4))
+        array[2, 1:3] = 2.0
+        array[4, 3] = 9.0
+
+        modified = util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(4,3))
+
+        assert (modified == np.array([[1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 2.0, 2.0, 1.0],
+                                      [1.0, 1.0, 1.0, 1.0],
+                                      [1.0, 1.0, 1.0, 9.0]])).all()
+
+    def test__x_size_bigger_than_array__raises_error(self):
+        array = np.ones((5, 5))
+        array[2, 2] = 2.0
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(8, 3))
+
+    def test__y_size_bigger_than_array__raises_error(self):
+        array = np.ones((5, 5))
+        array[2, 2] = 2.0
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_to_new_shape(array_2d=array, new_shape=(3, 8))
+
+
 class TestFits:
 
     def test__numpy_array_from_fits__3x3_all_ones(self):
