@@ -308,9 +308,10 @@ def make_mi_no_blur_1x1():
 
 class MockTracer(object):
 
-    def __init__(self, image, blurring_image):
+    def __init__(self, image, blurring_image, has_grid_mappers=False):
         self.image = image
         self.blurring_image = blurring_image
+        self.has_grid_mappers = has_grid_mappers
 
     @property
     def image_plane_image(self):
@@ -869,6 +870,44 @@ class TestProfileFitter:
             fitter = fitting.ProfileFitter(masked_image=mi, tracer=tracer)
 
             assert fitter.blurred_image_plane_image_likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
+
+
+    # class TestGridMappers:
+    #
+    #     def test__grid_mappers_in_tracer__intensities_returned_on_2d_array(self, mi_no_blur, galaxy_light):
+    #
+    #
+    #         grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    #
+    #         intensity_1d = galaxy_light.intensities_from_grid(grid)
+    #
+    #         padded_image_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+    #                                       [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+    #                                       [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
+    #                                       [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    #
+    #         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_light],
+    #                                                      image_grids=mi_no_blur.grid_mappers)
+    #
+    #         intensity_2d = ray_tracing.intensities_from_grid(image_grid_mapper, galaxies=[galaxy_light])
+    #
+    #         assert intensity_2d[0, 0] == intensity_1d[0]
+    #         assert intensity_2d[0, 1] == intensity_1d[1]
+    #         assert intensity_2d[0, 2] == intensity_1d[2]
+    #         assert intensity_2d[0, 3] == intensity_1d[3]
+    #         assert intensity_2d[1, 0] == intensity_1d[0]
+    #         assert intensity_2d[1, 1] == intensity_1d[1]
+    #         assert intensity_2d[1, 2] == intensity_1d[2]
+    #         assert intensity_2d[1, 3] == intensity_1d[3]
+    #         assert intensity_2d[2, 0] == intensity_1d[0]
+    #         assert intensity_2d[2, 1] == intensity_1d[1]
+    #         assert intensity_2d[2, 2] == intensity_1d[2]
+    #         assert intensity_2d[2, 3] == intensity_1d[3]
+    #         assert intensity_2d[3, 0] == intensity_1d[0]
+    #         assert intensity_2d[3, 1] == intensity_1d[1]
+    #         assert intensity_2d[3, 2] == intensity_1d[2]
+    #         assert intensity_2d[3, 3] == intensity_1d[3]
+
 
 
     class TestPixelizationFitterFromProfileFitter:
@@ -1437,70 +1476,3 @@ class TestPositionFitter:
 
         assert fitter.maximum_separation_within_threshold(threshold=100.0) == True
         assert fitter.maximum_separation_within_threshold(threshold=0.1) == False
-
-
-
-
-
-# def test__grid_mapper_in__intensities_returned_on_2d_array(self, galaxy_light):
-#
-#     padded_mask = mask.Mask(np.array([[False, False, False],
-#                                       [False, False, False],
-#                                       [False, False, False]]), pixel_scale=1.0)
-#     sub_grid_mapper = mask.SubGridMapper.mapper_from_mask_sub_grid_size_and_psf_shape(mask=padded_mask,
-#                                                                                       sub_grid_size=2,
-#                                                                                       psf_shape=(3,3))
-#
-#     intensity_2d = ray_tracing.intensities_from_grid(sub_grid_mapper, galaxies=[galaxy_light])
-#
-#     intensity_1d = galaxy_light.intensities_from_grid(sub_grid_mapper[0:4])
-#     intensity_1d = (intensity_1d[0] + intensity_1d[1] + intensity_1d[2] + intensity_1d[3]) / 4.0
-#     assert intensity_2d[0, 0] == intensity_1d
-#
-#     intensity_1d = galaxy_light.intensities_from_grid(sub_grid_mapper[4:8])
-#     intensity_1d = (intensity_1d[0] + intensity_1d[1] + intensity_1d[2] + intensity_1d[3]) / 4.0
-#     assert intensity_2d[0, 1] == intensity_1d
-#
-#     intensity_1d = galaxy_light.intensities_from_grid(sub_grid_mapper[16:20])
-#     intensity_1d = (intensity_1d[0] + intensity_1d[1] + intensity_1d[2] + intensity_1d[3]) / 4.0
-#     assert intensity_2d[0, 4] == intensity_1d
-#
-#     intensity_1d = galaxy_light.intensities_from_grid(sub_grid_mapper[24:28])
-#     intensity_1d = (intensity_1d[0] + intensity_1d[1] + intensity_1d[2] + intensity_1d[3]) / 4.0
-#     assert intensity_2d[1, 1] == intensity_1d
-#
-#     intensity_1d = galaxy_light.intensities_from_grid(sub_grid_mapper[40:44])
-#     intensity_1d = (intensity_1d[0] + intensity_1d[1] + intensity_1d[2] + intensity_1d[3]) / 4.0
-#     assert intensity_2d[2, 0] == intensity_1d
-#
-#
-# def test__grid_mapper_in__intensities_returned_on_2d_array(self, galaxy_light):
-#     grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-#
-#     intensity_1d = galaxy_light.intensities_from_grid(grid)
-#
-#     padded_image_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-#                                   [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-#                                   [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-#                                   [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-#
-#     image_grid_mapper = mask.ImageGridMapper(arr=padded_image_grid, original_shape=(2, 2), padded_shape=(4, 4))
-#
-#     intensity_2d = ray_tracing.intensities_from_grid(image_grid_mapper, galaxies=[galaxy_light])
-#
-#     assert intensity_2d[0, 0] == intensity_1d[0]
-#     assert intensity_2d[0, 1] == intensity_1d[1]
-#     assert intensity_2d[0, 2] == intensity_1d[2]
-#     assert intensity_2d[0, 3] == intensity_1d[3]
-#     assert intensity_2d[1, 0] == intensity_1d[0]
-#     assert intensity_2d[1, 1] == intensity_1d[1]
-#     assert intensity_2d[1, 2] == intensity_1d[2]
-#     assert intensity_2d[1, 3] == intensity_1d[3]
-#     assert intensity_2d[2, 0] == intensity_1d[0]
-#     assert intensity_2d[2, 1] == intensity_1d[1]
-#     assert intensity_2d[2, 2] == intensity_1d[2]
-#     assert intensity_2d[2, 3] == intensity_1d[3]
-#     assert intensity_2d[3, 0] == intensity_1d[0]
-#     assert intensity_2d[3, 1] == intensity_1d[1]
-#     assert intensity_2d[3, 2] == intensity_1d[2]
-#     assert intensity_2d[3, 3] == intensity_1d[3]
