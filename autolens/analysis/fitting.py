@@ -11,12 +11,51 @@ minimum_value_profile = 0.1
 class AbstractFitter(object):
 
     def __init__(self, masked_image, tracer):
+
+        self._model_image = None
+        self._residuals = None
+        self._chi_squareds = None
+        self._noise = None
+        self._noise_term = None
+
         self.tracer = tracer
 
         if not self.tracer.has_grid_mappers:
             self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
         elif self.tracer.has_grid_mappers:
             self.map_to_2d = masked_image.grid_mappers.image.map_unmasked_1d_array_to_2d_array_and_trim
+
+    @property
+    def model_image(self):
+        return self.map_to_2d(self._model_image)
+
+    @property
+    def residuals(self):
+        return self.map_to_2d(self._residuals)
+
+    @property
+    def chi_squareds(self):
+        return self.map_to_2d(self._chi_squareds)
+
+    @property
+    def chi_squared_term(self):
+        return chi_squared_term_from_chi_squareds(self._chi_squareds)
+
+    @property
+    def noise_term(self):
+        return noise_term_from_noise(self._noise)
+
+    @property
+    def likelihood(self):
+        """
+        Fit the data_vector using the ray_tracing model, where only light_profiles are used to represent the galaxy
+        images.
+        """
+        return likelihood_from_chi_squared_and_noise_terms(self.chi_squared_term, self._noise_term)
+
+    @property
+    def noise(self):
+        return self.map_to_2d(self._noise)
 
 
 class AbstractHyperFitter(object):
@@ -29,21 +68,10 @@ class AbstractHyperFitter(object):
         self.hyper_minimum_values = hyper_minimum_values
         self._contributions = contributions_from_hyper_images_and_galaxies(hyper_model_image,
                               hyper_galaxy_images, self.tracer.hyper_galaxies, hyper_minimum_values)
-        self._scaled_noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions,
-                                                                                self.tracer.hyper_galaxies,
-                                                                                masked_image.noise)
 
     @property
     def contributions(self):
         return list(map(lambda contributions : self.map_to_2d(contributions), self._contributions))
-
-    @property
-    def scaled_noise(self):
-        return self.map_to_2d(self._scaled_noise)
-
-    @property
-    def scaled_noise_term(self):
-        return noise_term_from_noise(self._scaled_noise)
 
 
 class AbstractProfileFitter(object):
@@ -67,37 +95,24 @@ class AbstractProfileFitter(object):
         # TODO : We need to profile the code to check the memory allocations below don't slow things down. I have done
         # TODO : things as below for now as its the cleanest way to write the code. We could also implemnt a
         # TODO : 'fast likelihood' function which skips the below, to give fast results in an nlo.
-
         self._model_image = self.convolve_image(self.tracer.image_plane_image, self.tracer.image_plane_blurring_image)
         self._residuals = residuals_from_image_and_model(masked_image, self._model_image)
 
     @property
-    def image_plane_image(self):
-        return self.map_to_2d(self.tracer.image_plane_image)
-
-    @property
-    def blurred_image_plane_image(self):
-        return self.map_to_2d(self._model_image)
-
-    @property
-    def blurred_image_plane_image_residuals(self):
-        return self.map_to_2d(self._residuals)
-
-    @property
-    def blurred_image_plane_images_of_planes(self):
+    def model_images_of_planes(self):
         return list(map(lambda image_plane_image, image_plane_blurring_image :
                         self.map_to_2d(
                         self.convolve_image(image_plane_image, image_plane_blurring_image)),
                         self.tracer.image_plane_images_of_planes, self.tracer.image_plane_blurring_images_of_planes))
 
     @property
-    def blurred_image_plane_images_of_galaxies(self):
+    def model_images_of_galaxies(self):
         return list(map(lambda image_plane_image, image_plane_blurring_image :
                         self.map_to_2d(
                         self.convolve_image(image_plane_image, image_plane_blurring_image)),
                         self.tracer.image_plane_images_of_galaxies, self.tracer.image_plane_blurring_images_of_galaxies))
 
-    def plane_images_of_planes(self, shape=(30, 30)):
+    def images_of_planes(self, shape=(30, 30)):
 
         def map_to_2d(image, shape):
 
@@ -127,12 +142,12 @@ class AbstractPixelizationFitter(object):
         self._residuals = residuals_from_image_and_model(masked_image, self._model_image)
 
     @property
-    def reconstructed_image_plane_image(self):
-        return self.map_to_2d(self._model_image)
-
-    @property
-    def reconstructed_image_plane_image_residuals(self):
-        return self.map_to_2d(self._residuals)
+    def evidence(self):
+        return evidence_from_reconstruction_terms(self.chi_squared_term,
+                                                  self._reconstruction.regularization_term,
+                                                  self._reconstruction.log_det_curvature_reg_matrix_term,
+                                                  self._reconstruction.log_det_regularization_matrix_term,
+                                                  self.noise_term)
 
 
 class ProfileFitter(AbstractFitter, AbstractProfileFitter):
@@ -150,25 +165,9 @@ class ProfileFitter(AbstractFitter, AbstractProfileFitter):
         """
         AbstractFitter.__init__(self, masked_image, tracer)
         AbstractProfileFitter.__init__(self, masked_image)
-        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, masked_image.noise)
-        self.noise_term = noise_term_from_noise(masked_image.noise)
-
-    @property
-    def blurred_image_plane_image_chi_squareds(self):
-        return self.map_to_2d(self._chi_squareds)
-
-    @property
-    def blurred_image_plane_image_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self._chi_squareds)
-
-    @property
-    def blurred_image_plane_image_likelihood(self):
-        """
-        Fit the data_vector using the ray_tracing model, where only light_profiles are used to represent the galaxy
-        images.
-        """
-        return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_plane_image_chi_squared_term,
-                                                           self.noise_term)
+        self._noise = masked_image.noise
+        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
+        self._noise_term = noise_term_from_noise(self._noise)
 
     def pixelization_fitter_with_profile_subtracted_masked_image(self, masked_image):
         return PixelizationFitter(masked_image[:] - self._model_image, self.tracer)
@@ -190,24 +189,10 @@ class HyperProfileFitter(AbstractFitter, AbstractHyperFitter, AbstractProfileFit
         AbstractFitter.__init__(self, masked_image, tracer)
         AbstractHyperFitter.__init__(self, masked_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
         AbstractProfileFitter.__init__(self, masked_image)
-        self._scaled_chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._scaled_noise)
-
-    @property
-    def blurred_image_plane_image_scaled_chi_squareds(self):
-        return self.map_to_2d(self._scaled_chi_squareds)
-
-    @property
-    def blurred_image_plane_image_scaled_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self._scaled_chi_squareds)
-
-    @property
-    def blurred_image_plane_image_scaled_likelihood(self):
-        """
-        Fit the data_vector using the ray_tracing model, where only light_profiles are used to represent the galaxy
-        images.
-        """
-        return likelihood_from_chi_squared_and_noise_terms(self.blurred_image_plane_image_scaled_chi_squared_term,
-                                                           self.scaled_noise_term)
+        self._noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions, self.tracer.hyper_galaxies,
+                                                                         masked_image.noise)
+        self._noise_term = noise_term_from_noise(self._noise)
+        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
 
     def pixelization_fitter_with_profile_subtracted_masked_image(self, masked_image):
         return HyperPixelizationFitter(masked_image - self._model_image, self.tracer,
@@ -231,24 +216,9 @@ class PixelizationFitter(AbstractFitter, AbstractPixelizationFitter):
         AbstractFitter.__init__(self, masked_image, tracer)
         AbstractPixelizationFitter.__init__(self, masked_image, masked_image.noise)
 
+        self._noise = masked_image.noise
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, masked_image.noise)
-        self.noise_term = noise_term_from_noise(masked_image.noise)
-
-    @property
-    def reconstructed_image_plane_image_chi_squareds(self):
-        return self.map_to_2d(self._chi_squareds)
-
-    @property
-    def reconstructed_image_plane_image_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self._chi_squareds)
-
-    @property
-    def reconstructed_image_plane_image_evidence(self):
-        return evidence_from_reconstruction_terms(self.reconstructed_image_plane_image_chi_squared_term,
-                                                  self._reconstruction.regularization_term,
-                                                  self._reconstruction.log_det_curvature_reg_matrix_term,
-                                                  self._reconstruction.log_det_regularization_matrix_term,
-                                                  self.noise_term)
+        self._noise_term = noise_term_from_noise(self._noise)
 
 
 class HyperPixelizationFitter(AbstractFitter, AbstractHyperFitter, AbstractPixelizationFitter):
@@ -267,25 +237,11 @@ class HyperPixelizationFitter(AbstractFitter, AbstractHyperFitter, AbstractPixel
 
         AbstractFitter.__init__(self, masked_image, tracer)
         AbstractHyperFitter.__init__(self, masked_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
-        AbstractPixelizationFitter.__init__(self, masked_image, self._scaled_noise)
-        self._scaled_noise_term = noise_term_from_noise(self._scaled_noise)
-        self._scaled_chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._scaled_noise)
-
-    @property
-    def reconstructed_image_plane_image_scaled_chi_squareds(self):
-        return self.map_to_2d(self._scaled_chi_squareds)
-
-    @property
-    def reconstructed_image_plane_image_scaled_chi_squared_term(self):
-        return chi_squared_term_from_chi_squareds(self._scaled_chi_squareds)
-
-    @property
-    def reconstructed_image_plane_image_scaled_evidence(self):
-        return evidence_from_reconstruction_terms(self.reconstructed_image_plane_image_scaled_chi_squared_term,
-                                                  self._reconstruction.regularization_term,
-                                                  self._reconstruction.log_det_curvature_reg_matrix_term,
-                                                  self._reconstruction.log_det_regularization_matrix_term,
-                                                  self._scaled_noise_term)
+        self._noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions, self.tracer.hyper_galaxies,
+                                                                         masked_image.noise)
+        AbstractPixelizationFitter.__init__(self, masked_image, self._noise)
+        self._noise_term = noise_term_from_noise(self._noise)
+        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
 
 
 class PositionFitter:
