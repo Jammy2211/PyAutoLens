@@ -482,17 +482,17 @@ class TestGridsMappers:
             assert (sub_mapper == sub_mapper_util).all()
 
 
-    class TestMapUnmaskedArrays:
+    class TestTrimPaddedArrayToOriginal:
 
         def test__map_padded_4x4__unmasked_1d_array_to_2d_array_and_trim_to_original_2x2(self):
 
-            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2 , 2), padded_shape=(4 , 4))
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2, 2), padded_shape=(4 , 4))
 
-            array_1d = np.array([ 1.0,  2.0,  3.0,  4.0,
-                                  5.0,  6.0,  7.0,  8.0,
-                                  9.0, 10.0, 11.0, 12.0,
-                                 13.0, 14.0, 15.0, 16.0])
-            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+            padded_array_2d = np.array([[1.0,  2.0,  3.0,  4.0],
+                                        [5.0,  6.0,  7.0,  8.0],
+                                        [9.0, 10.0, 11.0, 12.0],
+                                        [13.0, 14.0, 15.0, 16.0]])
+            array_2d = image_mapper.trim_padded_array_to_original_shape(padded_array_2d)
 
             assert (array_2d == np.array([[ 6.0,  7.0],
                                           [10.0, 11.0]])).all()
@@ -501,12 +501,12 @@ class TestGridsMappers:
 
             image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
 
-            array_1d = np.array([1.0,  2.0,  3.0,
-                                 4.0,  5.0,  6.0,
-                                 7.0,  8.0,  9.0,
-                                 10.0, 11.0, 12.0,
-                                 13.0, 14.0, 15.0])
-            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+            padded_array_2d = np.array([[1.0,  2.0,  3.0],
+                                 [4.0,  5.0,  6.0],
+                                 [7.0,  8.0,  9.0],
+                                 [10.0, 11.0, 12.0],
+                                 [13.0, 14.0, 15.0]])
+            array_2d = image_mapper.trim_padded_array_to_original_shape(padded_array_2d)
 
             assert (array_2d == np.array([[5.0],
                                           [8.0],
@@ -516,10 +516,10 @@ class TestGridsMappers:
 
             image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
 
-            array_1d = np.array([1.0,  2.0,  3.0, 4.0,  5.0,
-                                 6.0,  7.0,  8.0,  9.0, 10.0,
-                                 11.0, 12.0, 13.0, 14.0, 15.0])
-            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+            padded_array_2d = np.array([[1.0,  2.0,  3.0, 4.0,  5.0],
+                                 [6.0,  7.0,  8.0,  9.0, 10.0],
+                                 [11.0, 12.0, 13.0, 14.0, 15.0]])
+            array_2d = image_mapper.trim_padded_array_to_original_shape(padded_array_2d)
 
             assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
 
@@ -527,15 +527,15 @@ class TestGridsMappers:
 
             image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(5 , 1), padded_shape=(7 , 3))
 
-            array_1d = np.array([1.0,  2.0,  3.0,
-                                 4.0,  5.0,  6.0,
-                                 7.0,  8.0,  9.0,
-                                 10.0, 11.0, 12.0,
-                                 13.0, 14.0, 15.0,
-                                 16.0, 17.0, 18.0,
-                                 19.0, 20.0, 21.0])
+            padded_array_2d = np.array([[1.0,  2.0,  3.0],
+                                 [4.0,  5.0,  6.0],
+                                 [7.0,  8.0,  9.0],
+                                 [10.0, 11.0, 12.0],
+                                 [13.0, 14.0, 15.0],
+                                 [16.0, 17.0, 18.0],
+                                 [19.0, 20.0, 21.0]])
 
-            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+            array_2d = image_mapper.trim_padded_array_to_original_shape(padded_array_2d)
 
             assert (array_2d == np.array([[5.0],
                                           [8.0],
@@ -547,26 +547,22 @@ class TestGridsMappers:
 
             image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2 , 5), padded_shape=(4, 7))
 
-            array_1d = np.array([ 1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0,
-                                  8.0,  9.0, 10.0, 11.0, 12.0, 13.0, 14.0,
-                                 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-                                 22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0])
+            padded_array_2d = np.array([[1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0],
+                                 [8.0,  9.0, 10.0, 11.0, 12.0, 13.0, 14.0],
+                                 [15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0],
+                                 [22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0]])
 
-            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array_and_trim(array_1d)
+            array_2d = image_mapper.trim_padded_array_to_original_shape(padded_array_2d)
 
             assert (array_2d == np.array([[9.0,  10.0, 11.0, 12.0, 13.0],
                                           [16.0, 17.0, 18.0, 19.0, 20.0]])).all()
 
-    class TestConvolve:
 
-        def test__convolve_1d_mapper_array_with_psf(self):
+    class TestConvolveAndTrim:
 
-            grid_1d = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                                [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                                [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0],
-                                [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
+        def test__convolve_1d_mapper_array_with_psf_and_trim_to_original_size(self):
 
-            image_mapper = mask.ImageGridMapper(arr=grid_1d, original_shape=(2 , 2), padded_shape=(4 , 4))
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2 , 2), padded_shape=(4 , 4))
 
             array_1d = np.array([0.0, 0.0, 0.0, 0.0,
                                  0.0, 0.0, 0.0, 0.0,
@@ -579,12 +575,70 @@ class TestGridsMappers:
 
             psf = image.PSF(array=kernel)
 
-            blurred_array_1d = image_mapper.convolve_unmasked_array_with_psf(array_1d, psf)
+            blurred_array_1d = image_mapper.convolve_unmasked_array_with_psf_and_trim(array_1d, psf)
 
-            assert (blurred_array_1d == np.array([0.0, 0.0, 0.0, 0.0,
-                                                  0.0, 1.0, 0.0, 0.0,
-                                                  1.0, 2.0, 1.0, 0.0,
-                                                  0.0, 1.0, 0.0, 0.0])).all()
+            assert (blurred_array_1d == np.array([1.0, 0.0,
+                                                  2.0, 1.0])).all()
+
+        def test__same_as_above_but_different_quantities(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(3 , 2), padded_shape=(5 , 4))
+
+            array_1d = np.array([0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 1.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0,
+                                 1.0, 0.0, 0.0, 0.0])
+
+            kernel = np.array([[1.0, 1.0, 4.0],
+                               [1.0, 3.0, 1.0],
+                               [1.0, 1.0, 1.0]])
+
+            psf = image.PSF(array=kernel)
+
+            blurred_array_1d = image_mapper.convolve_unmasked_array_with_psf_and_trim(array_1d, psf)
+
+            assert (blurred_array_1d == np.array([1.0, 4.0,
+                                                  3.0, 1.0,
+                                                  5.0, 1.0])).all()
+
+
+    class TestMapUnmaskedArrays:
+
+        def test__map_original_2x2_from_1d(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(2 , 2), padded_shape=(4 , 4))
+
+            array_1d = np.array([6.0,  7.0,
+                                 9.0, 10.0])
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array(array_1d)
+
+            assert (array_2d == np.array([[6.0,  7.0],
+                                          [9.0, 10.0]])).all()
+
+        def test__map_original_3x1_from_1d(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
+
+            array_1d = np.array([5.0,
+                                 8.0,
+                                11.0])
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array(array_1d)
+
+            assert (array_2d == np.array([[5.0],
+                                          [8.0],
+                                          [11.0]])).all()
+
+        def test__map_original_1x3__from_1d(self):
+
+            image_mapper = mask.ImageGridMapper(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
+
+            array_1d = np.array([7.0,  8.0,  9.0])
+            array_2d = image_mapper.map_unmasked_1d_array_to_2d_array(array_1d)
+
+            assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
+
+
 
 
 class TestGridCollection(object):

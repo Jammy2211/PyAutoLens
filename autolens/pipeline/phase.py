@@ -640,6 +640,13 @@ class LensProfilePhase(PhaseImaging):
         def fitter_for_tracer(self, tracer):
             return fitting.ProfileFitter(self.masked_image, tracer)
 
+        def unmasked_model_image_for_instance(self, instance):
+            grid_mappers = self.masked_image.grid_mappers
+            tracer = ray_tracing.TracerImagePlane(instance.lens_galaxies, grid_mappers)
+            model_image_1d = grid_mappers.image.convolve_unmasked_array_with_psf_and_trim(tracer.image_plane_image,
+                                                                                          self.masked_image.psf)
+            return grid_mappers.image.map_unmasked_1d_array_to_2d_array(model_image_1d)
+
         @classmethod
         def log(cls, instance):
             logger.debug(
