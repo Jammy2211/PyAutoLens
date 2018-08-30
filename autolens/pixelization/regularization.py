@@ -10,8 +10,8 @@ class AbstractRegularization(object):
     invert and fit the image data. Thus, it changes the source-_reconstruction in a fully linearly way, ensuring that \
     the minimum chi-squared solution is achieved accounting for the penalty term.
 
-    2) The likelihood of the _reconstruction changes from L = -0.5 *(chi^2 + noise_term) to L = -0.5 (chi^2 + \
-    regularization_coefficient * regularization_term + noise_term). The regularization coefficient is a \
+    2) The likelihood of the _reconstruction changes from L = -0.5 *(chi^2 + _noise_term) to L = -0.5 (chi^2 + \
+    regularization_coefficient * regularization_term + _noise_term). The regularization coefficient is a \
     hyper-parameter which determines how strongly we smooth the _reconstruction.
 
     AutoLens sets the value of the regularization_coefficient(s) using the Bayesian framework of (Suyu 2006) and this \
