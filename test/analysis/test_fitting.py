@@ -871,44 +871,6 @@ class TestProfileFitter:
             assert fitter.likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
 
-    # class TestGridMappers:
-    #
-    #     def test__grid_mappers_in_tracer__intensities_returned_on_2d_array(self, mi_no_blur, galaxy_light):
-    #
-    #
-    #         grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-    #
-    #         intensity_1d = galaxy_light.intensities_from_grid(grid)
-    #
-    #         padded_image_grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-    #                                       [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-    #                                       [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0],
-    #                                       [1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-    #
-    #         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_light],
-    #                                                      image_grids=mi_no_blur.grid_mappers)
-    #
-    #         intensity_2d = ray_tracing.intensities_from_grid(image_grid_mapper, galaxies=[galaxy_light])
-    #
-    #         assert intensity_2d[0, 0] == intensity_1d[0]
-    #         assert intensity_2d[0, 1] == intensity_1d[1]
-    #         assert intensity_2d[0, 2] == intensity_1d[2]
-    #         assert intensity_2d[0, 3] == intensity_1d[3]
-    #         assert intensity_2d[1, 0] == intensity_1d[0]
-    #         assert intensity_2d[1, 1] == intensity_1d[1]
-    #         assert intensity_2d[1, 2] == intensity_1d[2]
-    #         assert intensity_2d[1, 3] == intensity_1d[3]
-    #         assert intensity_2d[2, 0] == intensity_1d[0]
-    #         assert intensity_2d[2, 1] == intensity_1d[1]
-    #         assert intensity_2d[2, 2] == intensity_1d[2]
-    #         assert intensity_2d[2, 3] == intensity_1d[3]
-    #         assert intensity_2d[3, 0] == intensity_1d[0]
-    #         assert intensity_2d[3, 1] == intensity_1d[1]
-    #         assert intensity_2d[3, 2] == intensity_1d[2]
-    #         assert intensity_2d[3, 3] == intensity_1d[3]
-
-
-
     class TestPixelizationFitterFromProfileFitter:
 
         def test__profile_subtracted_image_is_passed_with_other_attributes(self, mi_blur):

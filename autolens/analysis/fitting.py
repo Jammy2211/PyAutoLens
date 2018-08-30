@@ -19,11 +19,9 @@ class AbstractFitter(object):
         self._noise_term = None
 
         self.tracer = tracer
-
-        if not self.tracer.has_grid_mappers:
-            self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
-        elif self.tracer.has_grid_mappers:
-            self.map_to_2d = masked_image.grid_mappers.image.map_unmasked_1d_array_to_2d_array_and_trim
+        self._image = masked_image[:]
+        self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
+        self.convolve_image = masked_image.convolver_image.convolve_image
 
     @property
     def model_image(self):
@@ -87,29 +85,20 @@ class AbstractProfileFitter(object):
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        if not self.tracer.has_grid_mappers:
-            self.convolve_image = masked_image.convolver_image.convolve_image
-        elif self.tracer.has_grid_mappers:
-            self.convolve_image = masked_image.grid_mappers.image.convolve_unmasked_array_with_psf
-
-        # TODO : We need to profile the code to check the memory allocations below don't slow things down. I have done
-        # TODO : things as below for now as its the cleanest way to write the code. We could also implemnt a
-        # TODO : 'fast likelihood' function which skips the below, to give fast results in an nlo.
-        self._model_image = self.convolve_image(self.tracer.image_plane_image, self.tracer.image_plane_blurring_image)
-        self._residuals = residuals_from_image_and_model(masked_image, self._model_image)
+        self._model_image = masked_image.convolver_image.convolve_image(self.tracer.image_plane_image,
+                                                                        self.tracer.image_plane_blurring_image)
+        self._residuals = residuals_from_image_and_model(masked_image[:], self._model_image)
 
     @property
     def model_images_of_planes(self):
         return list(map(lambda image_plane_image, image_plane_blurring_image :
-                        self.map_to_2d(
-                        self.convolve_image(image_plane_image, image_plane_blurring_image)),
+                        self.map_to_2d(self.convolve_image(image_plane_image, image_plane_blurring_image)),
                         self.tracer.image_plane_images_of_planes, self.tracer.image_plane_blurring_images_of_planes))
 
     @property
     def model_images_of_galaxies(self):
         return list(map(lambda image_plane_image, image_plane_blurring_image :
-                        self.map_to_2d(
-                        self.convolve_image(image_plane_image, image_plane_blurring_image)),
+                        self.map_to_2d(self.convolve_image(image_plane_image, image_plane_blurring_image)),
                         self.tracer.image_plane_images_of_galaxies, self.tracer.image_plane_blurring_images_of_galaxies))
 
     def images_of_planes(self, shape=(30, 30)):
@@ -133,13 +122,11 @@ class AbstractPixelizationFitter(object):
     def __init__(self, masked_image, noise):
 
         self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
-        # TODO : This is used to test pix fitter from profile fitter with lens subbed image - need to remove
-        self._image = masked_image[:]
         reconstructors = self.tracer.reconstructors_from_source_plane(masked_image.borders)
         self._reconstruction = reconstructors.reconstruction_from_reconstructor_and_data(masked_image, noise,
                                                                                 masked_image.convolver_mapping_matrix)
         self._model_image = self._reconstruction.reconstructed_image
-        self._residuals = residuals_from_image_and_model(masked_image, self._model_image)
+        self._residuals = residuals_from_image_and_model(masked_image[:], self._model_image)
 
     @property
     def evidence(self):

@@ -351,25 +351,27 @@ class ImageGridMapper(ImageGrid, GridMapper):
         arr.padded_shape = padded_shape
         return arr
 
-    def map_unmasked_1d_array_to_2d_array_and_trim(self, array_1d):
+    def trim_padded_array_to_original_shape(self, padded_array_2d):
+        x_trim = int((self.padded_shape[0] - self.original_shape[0]) / 2)
+        y_trim = int((self.padded_shape[1] - self.original_shape[1]) / 2)
+        return padded_array_2d[x_trim:self.padded_shape[0] - x_trim, y_trim:self.padded_shape[1] - y_trim]
+
+    def convolve_unmasked_array_with_psf_and_trim(self, array_1d, psf):
+        padded_array_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d,
+                                                                                                 self.padded_shape)
+        blurred_padded_array_2d = psf.convolve(padded_array_2d)
+        blurred_array_2d = self.trim_padded_array_to_original_shape(blurred_padded_array_2d)
+        return imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_array_2d,
+                                                                    mask=np.full(self.original_shape, False))
+
+    def map_unmasked_1d_array_to_2d_array(self, array_1d):
         """Use mapper to map an input data-set from a *GridData* to its original 2D masked_image.
         Parameters
         -----------
         array_1d : ndarray
             The grid-data which is mapped to its 2D masked_image.
         """
-        padded_array_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d,
-                                                                                                 self.padded_shape)
-
-        x_trim = int((self.padded_shape[0] - self.original_shape[0]) / 2)
-        y_trim = int((self.padded_shape[1] - self.original_shape[1]) / 2)
-        return padded_array_2d[x_trim:self.padded_shape[0] - x_trim, y_trim:self.padded_shape[1] - y_trim]
-
-    def convolve_unmasked_array_with_psf(self, array_1d, psf):
-        array_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, self.padded_shape)
-        blurred_array_2d = psf.convolve(array_2d)
-        return imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_array_2d,
-                                                                                   mask=np.full(array_2d.shape, False))
+        return imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, self.original_shape)
 
     @classmethod
     def mapper_from_shapes_and_pixel_scale(self, shape, psf_shape, pixel_scale):
