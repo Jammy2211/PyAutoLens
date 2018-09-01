@@ -1,9 +1,9 @@
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear as nl
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy_prior as gp
+from autolens.autofit import non_linear as nl
+from autolens.lensing import galaxy
 from autolens import conf
 from test.integration import tools
 
@@ -56,8 +56,8 @@ def make_lens_x1_gal_pipeline(pipeline_name):
     #    Image : Observed Image
     #    Mask : Circle - 3.0"
 
-    phase1 = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                                 optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8

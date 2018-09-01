@@ -1,11 +1,11 @@
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
-from autolens.analysis import galaxy
-from autolens.analysis import galaxy_prior as gp
+from autolens.lensing import galaxy
+from autolens.lensing import galaxy_prior as gp
 from autolens.imaging import mask as msk
-from autolens.autopipe import non_linear as nl
-from autolens.autopipe import model_mapper as mm
+from autolens.autofit import non_linear as nl
+from autolens.autofit import model_mapper as mm
 from autolens import conf
 from test.integration import tools
 
@@ -58,41 +58,41 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
     def modify_mask_function(img):
         return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
-    class LensProfileGalaxy0Phase(ph.LensProfilePhase):
+    class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, 0.0)
             self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, 0.0)
 
-    phase1 = LensProfileGalaxy0Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                                     mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
-                                     phase_name="{}/phase1".format(pipeline_name))
+    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+                                   mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
+                                   phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
-    class LensProfileGalaxy1Phase(ph.LensProfilePhase):
+    class LensPlaneGalaxy1Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0] = previous_results[-1].constant.lens_galaxies[0]
             self.lens_galaxies[1].elliptical_sersic.centre_0 = mm.UniformPrior(0.0, 2.0)
             self.lens_galaxies[1].elliptical_sersic.centre_1 = mm.UniformPrior(0.0, 2.0)
 
-    phase2 = LensProfileGalaxy1Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
-                                                    gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                                     mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
-                                     phase_name="{}/phase2".format(pipeline_name))
+    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
+                                                  gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+                                   mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
+                                   phase_name="{}/phase2".format(pipeline_name))
 
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 
-    class LensProfileBothGalaxyPhase(ph.LensProfilePhase):
+    class LensPlaneBothGalaxyPhase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0] = previous_results[0].variable.lens_galaxies[0]
             self.lens_galaxies[1] = previous_results[1].variable.lens_galaxies[1]
 
-    phase3 = LensProfileBothGalaxyPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
-                                                       gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                                        mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
-                                        phase_name="{}/phase3".format(pipeline_name))
+    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
+                                                     gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+                                      mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
+                                      phase_name="{}/phase3".format(pipeline_name))
 
     phase3.optimizer.n_live_points = 60
     phase3.optimizer.sampling_efficiency = 0.8
