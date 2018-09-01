@@ -1,6 +1,6 @@
 from autolens.imaging import interpolation
 from autolens.imaging import mask
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy
 from autolens.profiles import mass_profiles
 
 import numpy as np

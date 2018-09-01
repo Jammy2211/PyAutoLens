@@ -1,6 +1,6 @@
 import inspect
 
-from autolens.autopipe import model_mapper as mm
+from autolens.autofit import model_mapper as mm
 
 
 def is_prior(value):

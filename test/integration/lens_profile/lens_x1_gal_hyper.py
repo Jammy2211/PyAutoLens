@@ -1,9 +1,9 @@
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear as nl
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy_prior as gp
+from autolens.autofit import non_linear as nl
+from autolens.lensing import galaxy
 from autolens import conf
 from test.integration import tools
 
@@ -52,15 +52,15 @@ def test_lens_x1_gal_hyper_pipeline():
 
 def make_lens_x1_gal_hyper_pipeline(pipeline_name):
 
-    phase1 = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
-                                 optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
     phase1h = ph.LensLightHyperOnlyPhase(optimizer_class=nl.MultiNest, phase_name="{}/phase1h".format(pipeline_name))
 
-    class LensHyperPhase(ph.LensProfileHyperPhase):
+    class LensHyperPhase(ph.LensPlaneHyperPhase):
         def pass_priors(self, previous_results):
             phase1_results = previous_results[-1]
             phase1h_results = previous_results[-1].hyper

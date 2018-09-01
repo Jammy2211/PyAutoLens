@@ -1,16 +1,12 @@
 import numpy as np
-from autolens.imaging import masked_image as mi
-from autolens.imaging import mask
-from autolens.analysis import ray_tracing
-from functools import wraps
-from autolens import exc
+from autolens.lensing import ray_tracing, lensing_image as mi
 
 minimum_value_profile = 0.1
 
 
 class AbstractFitter(object):
 
-    def __init__(self, masked_image, tracer):
+    def __init__(self, lensing_image, tracer):
 
         self._model_image = None
         self._residuals = None
@@ -19,9 +15,9 @@ class AbstractFitter(object):
         self._noise_term = None
 
         self.tracer = tracer
-        self._image = masked_image[:]
-        self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
-        self.convolve_image = masked_image.convolver_image.convolve_image
+        self._image = lensing_image[:]
+        self.map_to_2d = lensing_image.mask.map_masked_1d_array_to_2d_array
+        self.convolve_image = lensing_image.convolver_image.convolve_image
 
     @property
     def model_image(self):
@@ -58,9 +54,9 @@ class AbstractFitter(object):
 
 class AbstractHyperFitter(object):
 
-    def __init__(self, masked_image, hyper_model_image=None, hyper_galaxy_images=None,
+    def __init__(self, lensing_image, hyper_model_image=None, hyper_galaxy_images=None,
                  hyper_minimum_values=None):
-        self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
+        self.map_to_2d = lensing_image.mask.map_masked_1d_array_to_2d_array
         self.hyper_model_image = hyper_model_image
         self.hyper_galaxy_images = hyper_galaxy_images
         self.hyper_minimum_values = hyper_minimum_values
@@ -74,20 +70,20 @@ class AbstractHyperFitter(object):
 
 class AbstractProfileFitter(object):
 
-    def __init__(self, masked_image):
+    def __init__(self, lensing_image):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual masked_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
-            An masked_image that has been masked for efficiency
+        lensing_image: mi.LensingImage
+            An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        self._model_image = masked_image.convolver_image.convolve_image(self.tracer.image_plane_image,
+        self._model_image = lensing_image.convolver_image.convolve_image(self.tracer.image_plane_image,
                                                                         self.tracer.image_plane_blurring_image)
-        self._residuals = residuals_from_image_and_model(masked_image[:], self._model_image)
+        self._residuals = residuals_from_image_and_model(lensing_image[:], self._model_image)
 
     @property
     def model_images_of_planes(self):
@@ -119,14 +115,14 @@ class AbstractProfileFitter(object):
 
 class AbstractPixelizationFitter(object):
 
-    def __init__(self, masked_image, noise):
+    def __init__(self, lensing_image, noise):
 
-        self.map_to_2d = masked_image.mask.map_masked_1d_array_to_2d_array
-        reconstructors = self.tracer.reconstructors_from_source_plane(masked_image.borders)
-        self._reconstruction = reconstructors.reconstruction_from_reconstructor_and_data(masked_image, noise,
-                                                                                masked_image.convolver_mapping_matrix)
+        self.map_to_2d = lensing_image.mask.map_masked_1d_array_to_2d_array
+        reconstructors = self.tracer.reconstructors_from_source_plane(lensing_image.borders)
+        self._reconstruction = reconstructors.reconstruction_from_reconstructor_and_data(lensing_image, noise,
+                                                                                lensing_image.convolver_mapping_matrix)
         self._model_image = self._reconstruction.reconstructed_image
-        self._residuals = residuals_from_image_and_model(masked_image[:], self._model_image)
+        self._residuals = residuals_from_image_and_model(lensing_image[:], self._model_image)
 
     @property
     def evidence(self):
@@ -139,94 +135,94 @@ class AbstractPixelizationFitter(object):
 
 class ProfileFitter(AbstractFitter, AbstractProfileFitter):
 
-    def __init__(self, masked_image, tracer):
+    def __init__(self, lensing_image, tracer):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual masked_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
-            An masked_image that has been masked for efficiency
+        lensing_image: mi.LensingImage
+            An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        AbstractFitter.__init__(self, masked_image, tracer)
-        AbstractProfileFitter.__init__(self, masked_image)
-        self._noise = masked_image.noise
+        AbstractFitter.__init__(self, lensing_image, tracer)
+        AbstractProfileFitter.__init__(self, lensing_image)
+        self._noise = lensing_image.noise
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
         self._noise_term = noise_term_from_noise(self._noise)
 
-    def pixelization_fitter_with_profile_subtracted_masked_image(self, masked_image):
-        return PixelizationFitter(masked_image[:] - self._model_image, self.tracer)
+    def pixelization_fitter_with_profile_subtracted_lensing_image(self, lensing_image):
+        return PixelizationFitter(lensing_image[:] - self._model_image, self.tracer)
 
 
 class HyperProfileFitter(AbstractFitter, AbstractHyperFitter, AbstractProfileFitter):
 
-    def __init__(self, masked_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
+    def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual masked_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
-            An masked_image that has been masked for efficiency
+        lensing_image: mi.LensingImage
+            An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        AbstractFitter.__init__(self, masked_image, tracer)
-        AbstractHyperFitter.__init__(self, masked_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
-        AbstractProfileFitter.__init__(self, masked_image)
+        AbstractFitter.__init__(self, lensing_image, tracer)
+        AbstractHyperFitter.__init__(self, lensing_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
+        AbstractProfileFitter.__init__(self, lensing_image)
         self._noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions, self.tracer.hyper_galaxies,
-                                                                         masked_image.noise)
+                                                                         lensing_image.noise)
         self._noise_term = noise_term_from_noise(self._noise)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
 
-    def pixelization_fitter_with_profile_subtracted_masked_image(self, masked_image):
-        return HyperPixelizationFitter(masked_image - self._model_image, self.tracer,
+    def pixelization_fitter_with_profile_subtracted_lensing_image(self, lensing_image):
+        return HyperPixelizationFitter(lensing_image - self._model_image, self.tracer,
                                        self.hyper_model_image, self.hyper_galaxy_images, self.hyper_minimum_values)
 
 
 class PixelizationFitter(AbstractFitter, AbstractPixelizationFitter):
 
-    def __init__(self, masked_image, tracer):
+    def __init__(self, lensing_image, tracer):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual masked_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
-            An masked_image that has been masked for efficiency
+        lensing_image: mi.LensingImage
+            An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
 
-        AbstractFitter.__init__(self, masked_image, tracer)
-        AbstractPixelizationFitter.__init__(self, masked_image, masked_image.noise)
+        AbstractFitter.__init__(self, lensing_image, tracer)
+        AbstractPixelizationFitter.__init__(self, lensing_image, lensing_image.noise)
 
-        self._noise = masked_image.noise
-        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, masked_image.noise)
+        self._noise = lensing_image.noise
+        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, lensing_image.noise)
         self._noise_term = noise_term_from_noise(self._noise)
 
 
 class HyperPixelizationFitter(AbstractFitter, AbstractHyperFitter, AbstractPixelizationFitter):
 
-    def __init__(self, masked_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
+    def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual masked_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
-        masked_image: mi.MaskedImage
-            An masked_image that has been masked for efficiency
+        lensing_image: mi.LensingImage
+            An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
 
-        AbstractFitter.__init__(self, masked_image, tracer)
-        AbstractHyperFitter.__init__(self, masked_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
+        AbstractFitter.__init__(self, lensing_image, tracer)
+        AbstractHyperFitter.__init__(self, lensing_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
         self._noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions, self.tracer.hyper_galaxies,
-                                                                         masked_image.noise)
-        AbstractPixelizationFitter.__init__(self, masked_image, self._noise)
+                                                                         lensing_image.noise)
+        AbstractPixelizationFitter.__init__(self, lensing_image, self._noise)
         self._noise_term = noise_term_from_noise(self._noise)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
 
@@ -266,13 +262,13 @@ class PositionFitter:
 
 
 def blur_image_including_blurring_region(image, blurring_image, convolver):
-    """For a given masked_image and blurring region, convert them to 2D and blur with the PSF, then return as
+    """For a given lensing_image and blurring region, convert them to 2D and blur with the PSF, then return as
     the 1D DataGrid.
 
     Parameters
     ----------
     image : ndarray
-        The masked_image data_vector using the GridData 1D representation.
+        The lensing_image data_vector using the GridData 1D representation.
     blurring_image : ndarray
         The blurring region data_vector, using the GridData 1D representation.
     convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
@@ -281,22 +277,22 @@ def blur_image_including_blurring_region(image, blurring_image, convolver):
     return convolver.convolve_image(image, blurring_image)
 
 def residuals_from_image_and_model(image, model):
-    """Compute the residuals between an observed charge injection masked_image and post-cti model masked_image.
+    """Compute the residuals between an observed charge injection lensing_image and post-cti model lensing_image.
 
     Residuals = (Data - Model).
 
     Parameters
     -----------
     image : ChInj.CIImage
-        The observed charge injection masked_image data.
+        The observed charge injection lensing_image data.
     model : np.ndarray
-        The model masked_image.
+        The model lensing_image.
     """
     return np.subtract(image, model)
 
 def chi_squareds_from_residuals_and_noise(residuals, noise):
-    """Computes a chi-squared masked_image, by calculating the squared residuals between an observed charge injection \
-    images and post-cti hyper_model_image masked_image and dividing by the variance (noises**2.0) in each pixel.
+    """Computes a chi-squared lensing_image, by calculating the squared residuals between an observed charge injection \
+    images and post-cti hyper_model_image lensing_image and dividing by the variance (noises**2.0) in each pixel.
 
     Chi_Sq = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
@@ -306,13 +302,13 @@ def chi_squareds_from_residuals_and_noise(residuals, noise):
     -----------
     residuals
     noise : np.ndarray
-        The noises in the masked_image.
+        The noises in the lensing_image.
     """
     return np.square((np.divide(residuals, noise)))
 
 def chi_squared_term_from_chi_squareds(chi_squareds):
-    """Compute the chi-squared of a model masked_image's fit to the data_vector, by taking the difference between the
-    observed masked_image and model ray-tracing masked_image, dividing by the noise in each pixel and squaring:
+    """Compute the chi-squared of a model lensing_image's fit to the data_vector, by taking the difference between the
+    observed lensing_image and model ray-tracing lensing_image, dividing by the noise in each pixel and squaring:
 
     [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
 
@@ -323,7 +319,7 @@ def chi_squared_term_from_chi_squareds(chi_squareds):
     return np.sum(chi_squareds)
 
 def noise_term_from_noise(noise):
-    """Compute the noise normalization term of an masked_image, which is computed by summing the noise in every pixel:
+    """Compute the noise normalization term of an lensing_image, which is computed by summing the noise in every pixel:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
@@ -335,8 +331,8 @@ def noise_term_from_noise(noise):
     return np.sum(np.log(2 * np.pi * noise ** 2.0))
 
 def likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term):
-    """Compute the likelihood of a model masked_image's fit to the data_vector, by taking the difference between the
-    observed masked_image and model ray-tracing masked_image. The likelihood consists of two terms:
+    """Compute the likelihood of a model lensing_image's fit to the data_vector, by taking the difference between the
+    observed lensing_image and model ray-tracing lensing_image. The likelihood consists of two terms:
 
     Chi-squared term - The residuals (model - data_vector) of every pixel divided by the noise in each pixel, all
     squared.
@@ -356,16 +352,16 @@ def likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term):
 
 def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images, hyper_galaxies,
                                                  minimum_values):
-    """Use the model masked_image and galaxy masked_image (computed in the previous phase of the pipeline) to determine the
+    """Use the model lensing_image and galaxy lensing_image (computed in the previous phase of the pipeline) to determine the
     contributions of each hyper galaxy.
 
     Parameters
     -----------
     minimum_values
     hyper_model_image : ndarray
-        The best-fit model masked_image to the data_vector, from a previous phase of the pipeline
+        The best-fit model lensing_image to the data_vector, from a previous phase of the pipeline
     hyper_galaxy_images : [ndarray]
-        The best-fit model masked_image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+        The best-fit model lensing_image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
     hyper_galaxies : [galaxy.HyperGalaxy]
         Each hyper-galaxy which is used to determine its contributions.
     """

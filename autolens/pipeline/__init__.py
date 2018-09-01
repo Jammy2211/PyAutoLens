@@ -1,4 +1,4 @@
-from pipelines import profile_pipeline, source_only_pipeline, source_pix_pipeline
+from pipelines.lens_and_source import initializer
 
 
 class PipelineTuple(object):
@@ -22,11 +22,9 @@ def add(module):
     """
     Parameters
     ----------
-    module: {phase_name, make}
+    module: {analysis_path, make}
     """
-    pipeline_dict[module.name] = PipelineTuple(module)
+    pipeline_dict[module.pipeline_name] = PipelineTuple(module)
 
 
-add(profile_pipeline)
-add(source_only_pipeline)
-add(source_pix_pipeline)
+add(initializer)
