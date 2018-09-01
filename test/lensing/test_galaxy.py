@@ -1,5 +1,4 @@
-from autolens.imaging import mask
-from autolens.analysis import galaxy as g
+from autolens.lensing import galaxy as g
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.profiles import light_and_mass_profiles as lmp

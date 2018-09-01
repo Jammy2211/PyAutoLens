@@ -1,20 +1,20 @@
-from autolens.analysis import galaxy_prior as gp
-from autolens.analysis import galaxy as g
-from autolens.analysis import ray_tracing
+from autolens.lensing import galaxy_prior as gp, lensing_image as mi
+from autolens.lensing import galaxy as g
+from autolens.lensing import ray_tracing
 from autolens.imaging import mask as msk
-from autolens.imaging import masked_image as mi
 from autolens.imaging import image as img
-from autolens.analysis import fitting
-from autolens.autopipe import non_linear
+from autolens.lensing import fitting
+from autolens.autofit import non_linear
 from autolens import exc
 from autolens import conf
+from astropy import cosmology as cosmo
 import numpy as np
 import logging
 from astropy.io import fits
 import matplotlib.pyplot as plt
 import os
 
-from autolens.pipeline.phase_property import PhaseProperty, PhasePropertyList
+from autolens.pipeline.phase_property import PhasePropertyList
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -61,7 +61,7 @@ class Phase(object):
 
     def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None):
         """
-        A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class Phase(object):
         Returns
         -------
         ModelInstance
-            A model instance comprising all the constant objects in this analysis
+            A model instance comprising all the constant objects in this lensing
         """
         return self.optimizer.constant
 
@@ -93,7 +93,7 @@ class Phase(object):
         Returns
         -------
         ModelMapper
-            A model mapper comprising all the variable (prior) objects in this analysis
+            A model mapper comprising all the variable (prior) objects in this lensing
         """
         return self.optimizer.variable
 
@@ -118,14 +118,14 @@ class Phase(object):
 
         def __init__(self, phase_name, previous_results=None):
             """
-            An analysis object
+            An lensing object
 
             Parameters
             ----------
             previous_results: ResultsCollection
                 The results of all previous phases
-            masked_image: mi.MaskedImage
-                An masked_image that has been masked
+            lensing_image: mi.LensingImage
+                An lensing_image that has been masked
             """
 
             self.previous_results = previous_results
@@ -293,7 +293,7 @@ class PhasePositions(Phase):
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
 
         Returns
         -------
@@ -306,20 +306,20 @@ class PhasePositions(Phase):
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
-        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         image: im.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
 
         Returns
         -------
-        analysis: Analysis
-            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        lensing: Analysis
+            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, phase_name=self.phase_name,
@@ -337,7 +337,7 @@ class PhasePositions(Phase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -347,7 +347,7 @@ class PhasePositions(Phase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
             fitter = self.fitter_for_tracer(tracer)
@@ -363,7 +363,7 @@ class PhasePositions(Phase):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens analysis for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+                "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
     class Result(Phase.Result):
 
@@ -379,7 +379,7 @@ class PhaseImaging(Phase):
     def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  pixelization_psf_shape=None, positions=None, mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an analysis pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and images passed to it.
 
         Parameters
         ----------
@@ -402,19 +402,19 @@ class PhaseImaging(Phase):
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, previous_results):
         """
-        Customize an masked_image. e.g. removing lens light.
+        Customize an lensing_image. e.g. removing lens light.
 
         Parameters
         ----------
         image: img.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
         previous_results: ResultsCollection
-            The result of the previous analysis
+            The result of the previous lensing
 
         Returns
         -------
-        masked_image: img.Image
-            The modified masked_image (not changed by default)
+        lensing_image: img.Image
+            The modified lensing_image (not changed by default)
         """
         return image
 
@@ -427,7 +427,7 @@ class PhaseImaging(Phase):
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
 
         Returns
         -------
@@ -442,49 +442,49 @@ class PhaseImaging(Phase):
 
     def make_analysis(self, image, previous_results=None):
         """
-        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         image: im.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
 
         Returns
         -------
-        analysis: Analysis
-            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        lensing: Analysis
+            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size,
-                                      image_psf_shape=self.image_psf_shape, positions=self.positions)
+        lensing_image = mi.LensingImage(image, mask, sub_grid_size=self.sub_grid_size,
+                                       image_psf_shape=self.image_psf_shape, positions=self.positions)
         self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
+        analysis = self.__class__.Analysis(lensing_image=lensing_image, phase_name=self.phase_name,
                                            previous_results=previous_results)
         return analysis
 
     class Analysis(Phase.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
+        def __init__(self, lensing_image, phase_name, previous_results=None):
 
             super().__init__(phase_name, previous_results)
 
-            self.masked_image = masked_image
+            self.lensing_image = lensing_image
 
-            self.output_array_as_png(self.masked_image.image, 'observed_image', 'Observed Image',
-                                     self.masked_image.grids.image.xticks, self.masked_image.grids.image.yticks, True)
+            self.output_array_as_png(self.lensing_image.image, 'observed_image', 'Observed Image',
+                                     self.lensing_image.grids.image.xticks, self.lensing_image.grids.image.yticks, True)
 
         def check_positions_trace_within_threshold(self, instance):
 
-            if self.masked_image.positions is not None:
+            if self.lensing_image.positions is not None:
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                      positions=self.masked_image.positions)
+                                                                      positions=self.lensing_image.positions)
                 fitter = fitting.PositionFitter(positions=tracer.source_plane.positions,
-                                                noise=self.masked_image.image.pixel_scale)
+                                                noise=self.lensing_image.image.pixel_scale)
 
                 if not fitter.maximum_separation_within_threshold(self.position_threshold):
                     raise exc.RayTracingException
@@ -493,8 +493,8 @@ class PhaseImaging(Phase):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            xticks = self.masked_image.grids.image.xticks
-            yticks = self.masked_image.grids.image.yticks
+            xticks = self.lensing_image.grids.image.xticks
+            yticks = self.lensing_image.grids.image.yticks
 
             self.output_array_as_png(fitter.residuals, 'residuals', 'Image Residuals',
                                      xticks, yticks, during_analysis)
@@ -510,7 +510,7 @@ class PhaseImaging(Phase):
 
         def map_to_1d(self, data):
             """Convinience method"""
-            return self.masked_image.mask.map_2d_array_to_masked_1d_array(data)
+            return self.lensing_image.mask.map_2d_array_to_masked_1d_array(data)
 
 
     class Result(Phase.Result):
@@ -537,13 +537,13 @@ class PositionsImagingPhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
+        def __init__(self, lensing_image, phase_name, previous_results=None):
 
-            super().__init__(masked_image, phase_name, previous_results)
+            super().__init__(lensing_image, phase_name, previous_results)
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -553,7 +553,7 @@ class PositionsImagingPhase(PhaseImaging):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
             fitter = self.fitter_for_tracer(tracer)
@@ -564,16 +564,16 @@ class PositionsImagingPhase(PhaseImaging):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                positions=self.masked_image.positions)
+                                                                positions=self.lensing_image.positions)
 
         def fitter_for_tracer(self, tracer):
             return fitting.PositionFitter(positions=tracer.source_plane.positions,
-                                          noise=self.masked_image.image.pixel_scale)
+                                          noise=self.lensing_image.image.pixel_scale)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens analysis for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+                "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
 
     class Result(Phase.Result):
@@ -585,7 +585,7 @@ class PositionsImagingPhase(PhaseImaging):
             super(PositionsImagingPhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
 
-class LensProfilePhase(PhaseImaging):
+class LensPlanePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
     """
@@ -600,12 +600,12 @@ class LensProfilePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
-            super().__init__(masked_image, phase_name, previous_results)
+        def __init__(self, lensing_image, phase_name, previous_results=None):
+            super().__init__(lensing_image, phase_name, previous_results)
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -615,7 +615,7 @@ class LensProfilePhase(PhaseImaging):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             self.try_visualize(instance)
             tracer = self.tracer_for_instance(instance)
@@ -635,22 +635,22 @@ class LensProfilePhase(PhaseImaging):
             return tracer, fitter, xticks, yticks
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImagePlane(instance.lens_galaxies, self.masked_image.grids)
+            return ray_tracing.TracerImagePlane(instance.lens_galaxies, self.lensing_image.grids)
         
         def fitter_for_tracer(self, tracer):
-            return fitting.ProfileFitter(self.masked_image, tracer)
+            return fitting.ProfileFitter(self.lensing_image, tracer)
 
         def unmasked_model_image_for_instance(self, instance):
-            grid_mappers = self.masked_image.grid_mappers
+            grid_mappers = self.lensing_image.grid_mappers
             tracer = ray_tracing.TracerImagePlane(instance.lens_galaxies, grid_mappers)
             model_image_1d = grid_mappers.image.convolve_unmasked_array_with_psf_and_trim(tracer.image_plane_image,
-                                                                                          self.masked_image.psf)
+                                                                                          self.lensing_image.psf)
             return grid_mappers.image.map_unmasked_1d_array_to_2d_array(model_image_1d)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens analysis for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+                "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
 
     class Result(PhaseImaging.Result):
@@ -660,12 +660,12 @@ class LensProfilePhase(PhaseImaging):
             The result of a phase
             """
             super().__init__(constant, likelihood, variable, analysis)
-            fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
+            fitter = fitting.ProfileFitter(analysis.lensing_image, self.tracer)
             self.blurred_image_plane_image = fitter.model_image
-            self.lens_subtracted_image = analysis.masked_image.image - fitter.model_images_of_planes[0]
+            self.lens_subtracted_image = analysis.lensing_image.image - fitter.model_images_of_planes[0]
 
 
-class LensProfileHyperPhase(LensProfilePhase):
+class LensPlaneHyperPhase(LensPlanePhase):
     """
     Fit only the lens galaxy light.
     """
@@ -677,11 +677,11 @@ class LensProfileHyperPhase(LensProfilePhase):
         super().__init__(lens_galaxies=lens_galaxies, optimizer_class=optimizer_class, image_psf_shape=image_psf_shape,
                          sub_grid_size=sub_grid_size, mask_function=mask_function, phase_name=phase_name)
 
-    class Analysis(LensProfilePhase.Analysis):
+    class Analysis(LensPlanePhase.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
+        def __init__(self, lensing_image, phase_name, previous_results=None):
 
-            super().__init__(masked_image, phase_name, previous_results)
+            super().__init__(lensing_image, phase_name, previous_results)
             self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image : self.map_to_1d(galaxy_image),
                                                 previous_results.last.lens_galaxies_blurred_image_plane_images))
@@ -689,7 +689,7 @@ class LensProfileHyperPhase(LensProfilePhase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -699,7 +699,7 @@ class LensProfileHyperPhase(LensProfilePhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             self.try_visualize(instance)
             tracer = self.tracer_for_instance(instance)
@@ -720,13 +720,13 @@ class LensProfileHyperPhase(LensProfilePhase):
                                       during_analysis)
 
         def fitter_for_tracer(self, tracer):
-            return fitting.HyperProfileFitter(self.masked_image, tracer, self.hyper_model_image,
+            return fitting.HyperProfileFitter(self.lensing_image, tracer, self.hyper_model_image,
                                               self.hyper_galaxy_images, self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens analysis for... \n\nHyper Lens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+                "\nRunning lens lensing for... \n\nHyper Lens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
 
     class Result(PhaseImaging.Result):
@@ -738,7 +738,7 @@ class LensProfileHyperPhase(LensProfilePhase):
             super().__init__(constant, likelihood, variable, analysis)
 
 
-class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
+class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
     """
     Fit only the lens galaxy light.
     """
@@ -785,33 +785,33 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
 
     def make_analysis(self, image, previous_results=None):
         """
-        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         image: im.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
 
         Returns
         -------
-        analysis: Analysis
-            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        lensing: Analysis
+            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
+        lensing_image = mi.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
+        analysis = self.__class__.Analysis(lensing_image=lensing_image, phase_name=self.phase_name,
                                            previous_results=previous_results, hyper_index=self.hyper_index)
         return analysis
 
-    class Analysis(LensProfileHyperPhase.Analysis):
+    class Analysis(LensPlaneHyperPhase.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None, hyper_index=None):
-            super().__init__(masked_image, phase_name, previous_results)
+        def __init__(self, lensing_image, phase_name, previous_results=None, hyper_index=None):
+            super().__init__(lensing_image, phase_name, previous_results)
 
             self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image : self.map_to_1d(galaxy_image),
@@ -820,7 +820,7 @@ class LensLightHyperOnlyPhase(LensProfileHyperPhase, HyperOnly):
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
 
-class LensMassAndSourceProfilePhase(PhaseImaging):
+class LensSourcePlanePhase(PhaseImaging):
     """
     Fit a simple source and lens system.
     """
@@ -846,22 +846,22 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
             The side length of the subgrid
         """
 
-        super(LensMassAndSourceProfilePhase, self).__init__(optimizer_class=optimizer_class,
-                                                            sub_grid_size=sub_grid_size,
-                                                            image_psf_shape=image_psf_shape,
-                                                            mask_function=mask_function,
-                                                            positions=positions, phase_name=phase_name)
+        super(LensSourcePlanePhase, self).__init__(optimizer_class=optimizer_class,
+                                                   sub_grid_size=sub_grid_size,
+                                                   image_psf_shape=image_psf_shape,
+                                                   mask_function=mask_function,
+                                                   positions=positions, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
-            super().__init__(masked_image, phase_name, previous_results)
+        def __init__(self, lensing_image, phase_name, previous_results=None):
+            super().__init__(lensing_image, phase_name, previous_results)
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -871,7 +871,7 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             self.try_visualize(instance)
             self.check_positions_trace_within_threshold(instance)
@@ -901,15 +901,15 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(instance.lens_galaxies, instance.source_galaxies,
-                                                       self.masked_image.grids)
+                                                       self.lensing_image.grids)
 
         def fitter_for_tracer(self, tracer):
-            return  fitting.ProfileFitter(self.masked_image, tracer)
+            return  fitting.ProfileFitter(self.lensing_image, tracer)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
 
 
@@ -922,12 +922,12 @@ class LensMassAndSourceProfilePhase(PhaseImaging):
 
             super().__init__(constant, likelihood, variable, analysis)
 
-            fitter = fitting.ProfileFitter(analysis.masked_image, self.tracer)
+            fitter = fitting.ProfileFitter(analysis.lensing_image, self.tracer)
             self.blurred_image_plane_image = fitter.model_image
             self.source_galaxies_blurred_image_plane_images = fitter.model_images_of_galaxies
 
 
-class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
+class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
     """
     Fit a simple source and lens system.
     """
@@ -959,11 +959,11 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
         self.lens_galaxies = lens_galaxies
         self.source_galaxies = source_galaxies
 
-    class Analysis(LensMassAndSourceProfilePhase.Analysis):
+    class Analysis(LensSourcePlanePhase.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
+        def __init__(self, lensing_image, phase_name, previous_results=None):
 
-            super().__init__(masked_image, phase_name, previous_results)
+            super().__init__(lensing_image, phase_name, previous_results)
 
             self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image : self.map_to_1d(galaxy_image),
@@ -972,7 +972,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -982,7 +982,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
             fitter = self.fitter_for_tracer(tracer)
@@ -1002,13 +1002,13 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
                                       during_analysis)
 
         def fitter_for_tracer(self, tracer):
-            return fitting.HyperProfileFitter(self.masked_image, tracer, self.hyper_model_image,
+            return fitting.HyperProfileFitter(self.lensing_image, tracer, self.hyper_model_image,
                                                 self.hyper_galaxy_images, self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
 
 
@@ -1021,7 +1021,7 @@ class LensMassAndSourceProfileHyperPhase(LensMassAndSourceProfilePhase):
             super().__init__(constant, likelihood, variable, analysis)
 
 
-class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase, HyperOnly):
+class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnly):
     """
     Fit only the lens galaxy light.
     """
@@ -1065,33 +1065,33 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensMassAndSourceProfileHyperPhase,
 
     def make_analysis(self, image, previous_results=None):
         """
-        Create an analysis object. Also calls the prior passing and masked_image modifying functions to allow child
+        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         image: im.Image
-            An masked_image that has been masked
+            An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
 
         Returns
         -------
-        analysis: Analysis
-            An analysis object that the non-linear optimizer calls to determine the fit of a set of values
+        lensing: Analysis
+            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        masked_image = mi.MaskedImage(image, mask, sub_grid_size=self.sub_grid_size)
+        lensing_image = mi.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(masked_image=masked_image, phase_name=self.phase_name,
+        analysis = self.__class__.Analysis(lensing_image=lensing_image, phase_name=self.phase_name,
                                            previous_results=previous_results, hyper_index=self.hyper_index)
         return analysis
 
-    class Analysis(LensMassAndSourceProfileHyperPhase.Analysis):
+    class Analysis(LensSourcePlaneHyperPhase.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None, hyper_index=None):
-            super().__init__(masked_image, phase_name, previous_results)
+        def __init__(self, lensing_image, phase_name, previous_results=None, hyper_index=None):
+            super().__init__(lensing_image, phase_name, previous_results)
 
             self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image : self.map_to_1d(galaxy_image),
@@ -1138,13 +1138,13 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, masked_image, phase_name, previous_results=None):
+        def __init__(self, lensing_image, phase_name, previous_results=None):
 
-            super().__init__(masked_image, phase_name, previous_results)
+            super().__init__(lensing_image, phase_name, previous_results)
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the masked_image in this analysis.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -1154,7 +1154,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model masked_image itself
+                A fractional value indicating how well this model fit and the model lensing_image itself
             """
             self.check_positions_trace_within_threshold(instance)
             self.try_visualize(instance)
@@ -1168,15 +1168,15 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(instance.lens_galaxies, instance.source_galaxies,
-                                                       self.masked_image.grids)
+                                                       self.lensing_image.grids)
 
         def fitter_for_tracer(self, tracer):
-            return fitting.PixelizationFitter(masked_image=self.masked_image, tracer=tracer)
+            return fitting.PixelizationFitter(lensing_image=self.lensing_image, tracer=tracer)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source analysis for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
 
 
@@ -1187,13 +1187,24 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
             The result of a phase
             """
             super().__init__(constant, likelihood, variable, analysis)
-            # tracer = analysis.tracer_for_instance(constant)
-            # self.image_plane_source_galaxy_images = self.galaxy_images_from_plane(analysis, tracer.source_plane.galaxy_images,
+            # tracer = lensing.tracer_for_instance(constant)
+            # self.image_plane_source_galaxy_images = self.galaxy_images_from_plane(lensing, tracer.source_plane.galaxy_images,
             #                                                               tracer.source_plane.image_plane_galaxy_blurring_images)
 
         # @property
         # def source_plane_blurred_image_plane_image(self):
         #     return sum(self.image_plane_source_galaxy_images)
+
+
+class MultiPlanePhase(PhaseImaging):
+
+    def __init__(self, galaxies=None, optimizer_class=non_linear.DownhillSimplex,
+                 sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function,
+                 positions=None, phase_name="source_lens_phase", cosmology=cosmo.LambdaCDM):
+
+        super(MultiPlanePhase, self).__init__()
+
+        pass
 
 
 def make_path_if_does_not_exist(path):
