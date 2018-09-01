@@ -2,10 +2,10 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.imaging import mask as msk
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear as nl
-from autolens.autopipe import model_mapper as mm
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy_prior as gp
+from autolens.autofit import non_linear as nl
+from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy
 from autolens import conf
 from test.integration import tools
 from pathlib import Path
@@ -56,7 +56,7 @@ def test_lens_x2_gal_pipeline():
 
 
 def make_lens_x2_gal_pipeline(pipeline_name):
-    class LensPlanex2GalPhase(ph.LensProfilePhase):
+    class LensPlanex2GalPhase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, -0.0)
             self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, -0.0)

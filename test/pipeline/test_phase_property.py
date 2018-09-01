@@ -1,9 +1,9 @@
 from autolens.pipeline import phase as ph
 from autolens.pipeline import phase_property
-from autolens.analysis import galaxy as g
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear
-from autolens.autopipe import model_mapper as mm
+from autolens.lensing import galaxy as g
+from autolens.lensing import galaxy_prior as gp
+from autolens.autofit import non_linear
+from autolens.autofit import model_mapper as mm
 import pytest
 
 

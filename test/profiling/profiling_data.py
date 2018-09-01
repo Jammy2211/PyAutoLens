@@ -4,7 +4,7 @@ import pickle
 from autolens.imaging import scaled_array
 from autolens.imaging import image
 from autolens.imaging import mask
-from autolens.imaging import masked_image
+from autolens.lensing import lensing_image
 
 path =  "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -50,7 +50,7 @@ class Data(object):
         ma = mask.Mask.circular(shape=im.shape_arc_seconds, pixel_scale=im.pixel_scale,
                                 radius_mask_arcsec=radius_mask)
 
-        self.masked_image = masked_image.MaskedImage(image=im, mask=ma)
+        self.masked_image = lensing_image.LensingImage(image=im, mask=ma)
 
         self.grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma,
                                                                                    sub_grid_size=sub_grid_size,

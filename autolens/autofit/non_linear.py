@@ -9,7 +9,7 @@ import scipy.optimize
 import numpy as np
 from autolens.imaging import hyper_image
 from autolens import conf
-from autolens.autopipe import model_mapper as mm
+from autolens.autofit import model_mapper as mm
 import logging
 
 logging.basicConfig()
@@ -58,7 +58,7 @@ class Result(object):
         likelihood: float
             A value indicating the likelihood given by the optimal fit
         variable: mm.ModelMapper
-            An object comprising priors determined by this stage of the analysis
+            An object comprising priors determined by this stage of the lensing
         """
         self.constant = constant
         self.likelihood = likelihood
@@ -80,9 +80,9 @@ class NonLinearOptimizer(object):
         Parameters
         ------------
         path : str
-            The path where the non-linear analysis nlo are stored.
+            The path where the non-linear lensing nlo are stored.
         obj_name : str
-            Unique identifier of the data_vector being analysed (e.g. the phase_name of the data_vector set)
+            Unique identifier of the data_vector being analysed (e.g. the analysis_path of the data_vector set)
         """
         self.named_config = conf.instance.non_linear
 
@@ -108,7 +108,7 @@ class NonLinearOptimizer(object):
         Parameters
         ----------
         attribute_name: str
-            The phase_name of the field
+            The analysis_path of the field
         attribute_type: type
             The type of the value
 
@@ -134,7 +134,7 @@ class NonLinearOptimizer(object):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
     def create_paramnames_names(self):
-        """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
+        """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
@@ -148,7 +148,7 @@ class NonLinearOptimizer(object):
                 self.paramnames_names.append(prior_name + '_' + param[0])
 
     def create_paramnames_labels(self):
-        """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
+        """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
@@ -166,7 +166,7 @@ class NonLinearOptimizer(object):
                 self.paramnames_labels.append(param_labels[param_no])
 
     def create_paramnames_labels_temp(self):
-        """The param_names vector is a list each parameter's phase_name, and is used for *GetDist* visualization.
+        """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
@@ -177,7 +177,7 @@ class NonLinearOptimizer(object):
             self.paramnames_labels.append('p' + str(i))
 
     def create_paramnames_file(self):
-        """The param_names file lists every parameter's phase_name and Latex tag, and is used for *GetDist*
+        """The param_names file lists every parameter's analysis_path and Latex tag, and is used for *GetDist*
         visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
@@ -246,7 +246,7 @@ class MultiNest(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
                  sigma_limit=3, run=pymultinest.run, name=None):
-        """Class to setup and run a MultiNest analysis and output the MultiNest nlo.
+        """Class to setup and run a MultiNest lensing and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
         are passed to each iteration of MultiNest.
@@ -392,7 +392,7 @@ class MultiNest(NonLinearOptimizer):
     def most_probable_from_summary(self):
         """
         Read the most probable or most likely model values from the 'obj_summary.txt' file which nlo from a \
-        multinest analysis.
+        multinest lensing.
 
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
@@ -403,7 +403,7 @@ class MultiNest(NonLinearOptimizer):
     def most_likely_from_summary(self):
         """
         Read the most probable or most likely model values from the 'obj_summary.txt' file which nlo from a \
-        multinest analysis.
+        multinest lensing.
 
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
@@ -505,10 +505,13 @@ class MultiNest(NonLinearOptimizer):
         return list(self.pdf.samples[index]), self.pdf.weights[index], -0.5 * self.pdf.loglikes[index]
 
     def output_pdf_plots(self):
+
         pdf_plot = getdist.plots.GetDistPlotter()
+
         for i in range(self.variable.total_parameters):
             pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
             pdf_plot.export(fname=self.path + '/pdfs/' + self.paramnames_names[i] + '_1D.png')
+
         try:
             pdf_plot.triangle_plot(roots=self.pdf)
             pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')

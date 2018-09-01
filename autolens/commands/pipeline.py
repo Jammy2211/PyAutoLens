@@ -19,7 +19,7 @@ def red(text):
 class Pipeline(Base):
 
     def run(self):
-        name = self.options['<name>']
+        name = self.options['<pipeline_name>']
         conf.instance = conf.Config(self.config_path, self.output_path)
         if self.options['--info']:
             tup = pipeline.pipeline_dict[name]

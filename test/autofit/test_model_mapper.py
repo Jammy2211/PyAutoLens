@@ -1,10 +1,10 @@
 from autolens import conf
-from autolens.autopipe import model_mapper
+from autolens.autofit import model_mapper
 import pytest
 from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
 import os
-from autolens.analysis import galaxy_prior
-from autolens.analysis import galaxy as g
+from autolens.lensing import galaxy_prior
+from autolens.lensing import galaxy as g
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -883,7 +883,7 @@ class TestFlatPriorModel(object):
         assert len(mapper.flat_prior_models) == 1
 
     def test_flatten_galaxy_prior_list(self, width_config):
-        from autolens.analysis import galaxy
+        from autolens.lensing import galaxy
 
         mapper = model_mapper.ModelMapper(width_config=width_config)
         mapper.list = [galaxy_prior.GalaxyPrior(variable_redshift=True)]

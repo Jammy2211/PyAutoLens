@@ -3,10 +3,10 @@ from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.pixelization import pixelization as pix
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear as nl
-from autolens.autopipe import model_mapper as mm
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy_prior as gp
+from autolens.autofit import non_linear as nl
+from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy
 from autolens import conf
 from test.integration import tools
 
