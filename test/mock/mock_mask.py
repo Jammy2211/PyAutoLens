@@ -1,6 +1,6 @@
 import numpy as np
 
-from autolens.imaging import mask
+from autolens.lensing import grids
 
 
 class MockSubGridCoords(np.ndarray):
@@ -21,9 +21,9 @@ class MockSubGridCoords(np.ndarray):
 class MockGridCollection(object):
 
     def __init__(self, image, sub, blurring=None):
-        self.image = mask.ImageGrid(image)
+        self.image = grids.ImageGrid(image)
         self.sub = sub
-        self.blurring = mask.ImageGrid(blurring) if blurring is not None else None
+        self.blurring = grids.ImageGrid(blurring) if blurring is not None else None
 
 
 class MockBorderCollection(object):

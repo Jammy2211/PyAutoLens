@@ -1,5 +1,5 @@
-from autolens.autopipe import model_mapper as mm
-from autolens.analysis import galaxy_prior as gp
+from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy_prior as gp
 from autolens.profiles import light_profiles, mass_profiles
 from autolens import conf
 import os

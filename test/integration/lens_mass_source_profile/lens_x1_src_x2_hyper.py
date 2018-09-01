@@ -2,10 +2,10 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear as nl
-from autolens.autopipe import model_mapper as mm
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy_prior as gp
+from autolens.autofit import non_linear as nl
+from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy
 from autolens import conf
 from test.integration import tools
 
@@ -56,9 +56,9 @@ def test_lens_x1_src_x1_profile_hyper_pipeline():
 
 def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
 
-    phase1 = ph.LensMassAndSourceProfilePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
-                                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
-                                              optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
+                                     source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+                                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.7
@@ -66,7 +66,7 @@ def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
     phase1h = ph.LensMassAndSourceProfileHyperOnlyPhase(optimizer_class=nl.MultiNest,
                                                         phase_name="{}/phase1h".format(pipeline_name))
 
-    class AddSourceGalaxyPhase(ph.LensMassAndSourceProfileHyperPhase):
+    class AddSourceGalaxyPhase(ph.LensSourcePlaneHyperPhase):
         def pass_priors(self, previous_results):
             phase1_results = previous_results[-1]
             phase1h_results = previous_results[-1].hyper
@@ -86,7 +86,7 @@ def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
     phase2h = ph.LensMassAndSourceProfileHyperOnlyPhase(optimizer_class=nl.MultiNest,
                                                         phase_name="{}/phase1h".format(pipeline_name))
 
-    class BothSourceGalaxiesPhase(ph.LensMassAndSourceProfileHyperPhase):
+    class BothSourceGalaxiesPhase(ph.LensSourcePlaneHyperPhase):
         def pass_priors(self, previous_results):
             phase2_results = previous_results[1]
             phase2h_results = previous_results[1].hyper

@@ -1,9 +1,9 @@
 from autolens import conf
-from autolens.analysis import galaxy_prior as gp
-from autolens.analysis import galaxy as g
+from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy as g
 from autolens.pixelization import pixelization
 from autolens.profiles import mass_profiles, light_profiles, light_and_mass_profiles
-from autolens.autopipe import model_mapper as mm
+from autolens.autofit import model_mapper as mm
 import pytest
 import os
 

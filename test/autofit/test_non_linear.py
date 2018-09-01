@@ -5,8 +5,8 @@ from functools import wraps
 import pytest
 from autolens import conf
 from autolens import exc
-from autolens.autopipe import model_mapper
-from autolens.autopipe import non_linear
+from autolens.autofit import model_mapper
+from autolens.autofit import non_linear
 from autolens.profiles import light_profiles, mass_profiles
 
 
@@ -922,8 +922,8 @@ class TestConfig(object):
         assert multinest.importance_nested_sampling is True
 
         assert multinest.multimodal is True
-        assert multinest.const_efficiency_mode is False
-        assert multinest.n_live_points == 400
+        assert multinest.const_efficiency_mode is True
+        assert multinest.n_live_points == 50
 
         assert multinest.evidence_tolerance == 0.5
         assert multinest.sampling_efficiency == 0.8

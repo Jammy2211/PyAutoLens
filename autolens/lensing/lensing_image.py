@@ -1,11 +1,10 @@
-from autolens.imaging import imaging_util
 from autolens.imaging import image as im
-from autolens.imaging import mask as msk
 from autolens.imaging import convolution
+from autolens.lensing import grids
 import numpy as np
 
 
-class MaskedImage(im.Image):
+class LensingImage(im.Image):
 
     def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None, positions=None):
         return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
@@ -42,18 +41,18 @@ class MaskedImage(im.Image):
                                                           self.blurring_mask, self.image.psf.trim(image_psf_shape))
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
                                                                            self.image.psf.trim(pixelization_psf_shape))
-        self.grids = msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=mask, sub_grid_size=sub_grid_size,
+        self.grids = grids.LensingGrids.from_mask_sub_grid_size_and_blurring_shape(mask=mask, sub_grid_size=sub_grid_size,
                                                                                    blurring_shape=image_psf_shape)
 
-        self.grid_mappers = msk.GridCollection.grid_mappers_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                            sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.grid_mappers = grids.LensingGrids.grid_mappers_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                                  sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.borders = msk.BorderCollection.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
+        self.borders = grids.BorderCollection.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         self.positions = positions
 
     def __array_finalize__(self, obj):
-        super(MaskedImage, self).__array_finalize__(obj)
-        if isinstance(obj, MaskedImage):
+        super(LensingImage, self).__array_finalize__(obj)
+        if isinstance(obj, LensingImage):
             self.image = obj.image
             self.image_shape = obj.image_shape
             self.mask = obj.mask

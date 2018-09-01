@@ -1,17 +1,18 @@
 from autolens.pipeline import phase as ph
-import pytest
-from autolens.analysis import galaxy as g
-from autolens.analysis import galaxy_prior as gp
-from autolens.autopipe import non_linear
-import numpy as np
+from autolens.autofit import model_mapper as mm
+from autolens.autofit import non_linear
 from autolens.imaging import mask as msk
 from autolens.imaging import image as img
-from autolens.imaging import masked_image as mi
-from autolens.autopipe import model_mapper as mm
+from autolens.lensing import lensing_image as li
+from autolens.lensing import grids
+from autolens.lensing import galaxy as g
+from autolens.lensing import galaxy_prior as gp
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens import conf
 from os import path
+import pytest
+import numpy as np
 import os
 
 directory = path.dirname(path.realpath(__file__))
@@ -28,7 +29,7 @@ class MockAnalysis(object):
         self.value = value
 
     # def tracer_for_instance(self, instance):
-    #     from autolens.analysis import ray_tracing
+    #     from autolens.lensing import ray_tracing
     #     return ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=)
 
     # noinspection PyUnusedLocal
@@ -70,14 +71,14 @@ class NLO(non_linear.NonLinearOptimizer):
 
 
 @pytest.fixture(name="grids")
-def make_grids(masked_image):
-    return msk.GridCollection.from_mask_sub_grid_size_and_blurring_shape(
-        masked_image.mask, 1, masked_image.psf.shape)
+def make_grids(lensing_image):
+    return grids.LensingGrids.from_mask_sub_grid_size_and_blurring_shape(
+        lensing_image.mask, 1, lensing_image.psf.shape)
 
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.LensMassAndSourceProfilePhase(optimizer_class=NLO)
+    return ph.LensSourcePlanePhase(optimizer_class=NLO)
 
 
 @pytest.fixture(name="galaxy")
@@ -96,11 +97,11 @@ def make_image():
     return image
 
 
-@pytest.fixture(name="masked_image")
-def make_masked_image():
+@pytest.fixture(name="lensing_image")
+def make_lensing_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
-    return mi.MaskedImage(image, mask)
+    return li.LensingImage(image, mask)
 
 
 @pytest.fixture(name="results")
@@ -136,23 +137,23 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxies == [galaxy_prior]
         assert phase.optimizer.constant.lens_galaxies == []
 
-    def test_mask_analysis(self, phase, image, masked_image):
+    def test_make_analysis(self, phase, image, lensing_image):
         analysis = phase.make_analysis(image=image)
         assert analysis.last_results is None
-        assert analysis.masked_image == masked_image
+        assert analysis.lensing_image == lensing_image
 
     def test_fit(self, image):
 
         clean_images()
 
-        phase = ph.LensMassAndSourceProfilePhase(optimizer_class=NLO,
-                                                 lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()])
+        phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
+                                        lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()])
         result = phase.run(image=image)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
     def test_customize(self, results, image):
-        class MyPlanePhaseAnd(ph.LensMassAndSourceProfilePhase):
+        class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxies = previous_results.last.constant.lens_galaxies
                 self.source_galaxies = previous_results.last.variable.source_galaxies
@@ -170,7 +171,7 @@ class TestPhase(object):
         assert phase.source_galaxies == [galaxy_prior]
 
     def test_default_mask_function(self, phase, image):
-        assert len(mi.MaskedImage(image, phase.mask_function(image))) == 32
+        assert len(li.LensingImage(image, phase.mask_function(image))) == 32
 
     # TODO: removed because galaxy_images seems to have been removed?
     # def test_galaxy_images(self, image, phase):
@@ -181,9 +182,9 @@ class TestPhase(object):
     #     assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=[gp.GalaxyPrior()], source_galaxies=[gp.GalaxyPrior()])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior()], source_galaxies=[gp.GalaxyPrior()])
 
-        ph.LensMassAndSourceProfilePhase()
+        ph.LensSourcePlanePhase()
 
         assert phase.lens_galaxies is not None
         assert phase.source_galaxies is not None
@@ -196,12 +197,12 @@ class TestPhase(object):
 
         phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(image)
-        assert analysis.masked_image != image
+        assert analysis.lensing_image != image
 
     def test_tracer_for_instance(self, image):
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
-        phase = ph.LensMassAndSourceProfilePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
         analysis = phase.make_analysis(image)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
@@ -211,14 +212,14 @@ class TestPhase(object):
 
     def test_unmasked_model_image_for_instance(self, image):
         lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersicLP(intensity=1.0))
-        image_grid_mapper = msk.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=image.shape,
+        image_grid_mapper = grids.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=image.shape,
                                                                                    psf_shape=image.psf.shape,
                                                                                    pixel_scale=image.pixel_scale)
         image_1d = lens_galaxy.intensities_from_grid(image_grid_mapper)
         blurred_image_1d = image_grid_mapper.convolve_unmasked_array_with_psf_and_trim(image_1d, image.psf)
         blurred_image = image_grid_mapper.map_unmasked_1d_array_to_2d_array(blurred_image_1d)
 
-        phase = ph.LensProfilePhase(lens_galaxies=[lens_galaxy])
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
         analysis = phase.make_analysis(image)
         instance = phase.constant
         unmasked_model_image = analysis.unmasked_model_image_for_instance(instance)
@@ -226,12 +227,12 @@ class TestPhase(object):
         assert (blurred_image == unmasked_model_image).all()
 
     def test__phase_can_receive_list_of_galaxy_priors(self):
-        phase = ph.LensProfilePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
-                                                                  sis=mp.SphericalIsothermalMP,
-                                                                  variable_redshift=True),
-                                                   gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
+        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
+                                                                sis=mp.SphericalIsothermalMP,
+                                                                variable_redshift=True),
+                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
                                                                   variable_redshift=True)],
-                                    optimizer_class=non_linear.MultiNest)
+                                  optimizer_class=non_linear.MultiNest)
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3,
@@ -247,16 +248,16 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
-        class LensProfilePhase2(ph.LensProfilePhase):
+        class LensPlanePhase2(ph.LensPlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
-        phase = LensProfilePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
-                                                                sis=mp.SphericalIsothermalMP,
-                                                                variable_redshift=True),
-                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
+        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
+                                                              sis=mp.SphericalIsothermalMP,
+                                                              variable_redshift=True),
+                                               gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
                                                                 variable_redshift=True)],
-                                  optimizer_class=non_linear.MultiNest)
+                                optimizer_class=non_linear.MultiNest)
 
         # noinspection PyTypeChecker
         phase.pass_priors(None)
@@ -286,19 +287,19 @@ class TestPhase(object):
 
 
 # class TestAnalysis(object):
-#     def test_model_image(self, results_collection, masked_image):
-#         analysis = ph.LensProfilePhase.Analysis(results_collection, masked_image, "phase_name")
-#         assert (results_collection[0].model_image == analysis.last_results.model_image).all()
+#     def test_model_image(self, results_collection, lensing_image):
+#         lensing = ph.LensPlanePhase.Analysis(results_collection, lensing_image, "analysis_path")
+#         assert (results_collection[0].model_image == lensing.last_results.model_image).all()
 
 
 class TestResult(object):
 
     # def test_hyper_galaxy_and_model_images(self):
     #
-    #     analysis = MockAnalysis(number_galaxies=2, value=1.0)
+    #     lensing = MockAnalysis(number_galaxies=2, value=1.0)
     #
-    # result = ph.LensMassAndSourceProfilePhase.Result(constant=mm.ModelInstance(), likelihood=1,
-    # variable=mm.ModelMapper(), analysis=analysis) assert (result.image_plane_source_images[0] == np.array([
+    # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
+    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
     # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
     # result.image == np.array([2.0])).all()
 
