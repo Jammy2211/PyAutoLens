@@ -8,8 +8,8 @@ from autolens.imaging import image
 from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.analysis import ray_tracing
-from autolens.analysis import galaxy
+from autolens.lensing import ray_tracing
+from autolens.lensing import galaxy
 from imaging import array_util
 
 path =  "{}/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -57,7 +57,7 @@ galaxy_image_2d = ma.map_unmasked_1d_array_to_2d_array(galaxy_image_1d)
 plt.imshow(galaxy_image_2d)
 plt.show()
 
-### Setup as a simulated image_coords and output as a fits for an analysis ###
+### Setup as a simulated image_coords and output as a fits for an lensing ###
 
 shape = galaxy_image_2d.shape
 sim_image = image.Image.simulate(array=galaxy_image_2d, effective_exposure_time=np.ones(shape), pixel_scale=pixel_scale,

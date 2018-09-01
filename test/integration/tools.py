@@ -5,9 +5,9 @@ from autolens.imaging import mask
 from autolens.imaging import imaging_util
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.analysis import ray_tracing
-from autolens.analysis import galaxy
-from autolens.autopipe import non_linear as nl
+from autolens.lensing import ray_tracing
+from autolens.lensing import galaxy
+from autolens.autofit import non_linear as nl
 from autolens import conf
 
 import numpy as np
@@ -42,7 +42,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     image_plane_image = tracer.image_plane_image
     image_plane_image_2d = ma.map_unmasked_1d_array_to_2d_array(image_plane_image)
 
-    ### Setup as a simulated image_coords and output as a fits for an analysis ###
+    ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
     shape = image_plane_image_2d.shape
     sim_image = im.PrepatoryImage.simulate_to_target_signal_to_noise(array=image_plane_image_2d, pixel_scale=pixel_scale,

@@ -1,6 +1,6 @@
 from autolens.pipeline import pipeline as pl
-from autolens.autopipe import model_mapper
-from autolens.autopipe import non_linear
+from autolens.autofit import model_mapper
+from autolens.autofit import non_linear
 import numpy as np
 import pytest
 
