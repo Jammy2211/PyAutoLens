@@ -1,7 +1,7 @@
-from autolens.analysis import galaxy
+from autolens.lensing import galaxy
 import inspect
 from autolens.profiles import light_profiles, mass_profiles
-from autolens.autopipe import model_mapper
+from autolens.autofit import model_mapper
 
 
 def is_light_profile_class(cls):
@@ -195,7 +195,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         Parameters
         ----------
         arguments: {Prior: value}
-            Dictionary mapping_matrix priors to attribute phase_name and value pairs
+            Dictionary mapping_matrix priors to attribute analysis_path and value pairs
 
         Returns
         -------
