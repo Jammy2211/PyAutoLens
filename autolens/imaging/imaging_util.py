@@ -433,14 +433,14 @@ def trim_array_2d_to_new_shape(array_2d, new_shape):
 
     return array
 
-def numpy_array_to_fits(array, file_path):
+def numpy_array_to_fits(array, path):
 
     new_hdr = fits.Header()
     hdu = fits.PrimaryHDU(array, new_hdr)
-    hdu.writeto(file_path + '.fits')
+    hdu.writeto(path + '.fits')
 
-def numpy_array_from_fits(file_path, hdu):
-    hdu_list = fits.open(file_path + '.fits')
+def numpy_array_from_fits(path, hdu):
+    hdu_list = fits.open(path + '.fits')
     return np.array(hdu_list[hdu].data)
 
 def compute_variances_from_noise(noise):

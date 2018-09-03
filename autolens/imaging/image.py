@@ -37,8 +37,25 @@ class PrepatoryImage(ScaledArray):
         self.effective_exposure_time = effective_exposure_time
 
     @classmethod
-    def simulate(cls, array, pixel_scale, effective_exposure_time, psf=None, background_sky_map=None,
+    def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
                  include_poisson_noise=False, seed=-1):
+
+        effective_expousre_time = ScaledArray.single_value(value=exposure_time, shape=array.shape,
+                                                           pixel_scale=pixel_scale)
+        if background_sky_level is not None:
+            background_sky_map = ScaledArray.single_value(value=background_sky_level, shape=array.shape,
+                                                          pixel_scale=pixel_scale)
+        else:
+            background_sky_map = None
+
+        return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
+                                            effective_exposure_time=effective_expousre_time, psf=psf,
+                                            background_sky_map=background_sky_map,
+                                            include_poisson_noise=include_poisson_noise, seed=seed)
+
+    @classmethod
+    def simulate_variable_arrays(cls, array, pixel_scale, effective_exposure_time, psf=None, background_sky_map=None,
+                                 include_poisson_noise=False, seed=-1):
         """
         Create a realistic simulated masked_image by applying effects to a plain simulated masked_image.
 
@@ -170,9 +187,9 @@ class PrepatoryImage(ScaledArray):
 
         scaled_effective_exposure_time = np.multiply(scale_factor, effective_exposure_time)
 
-        return cls.simulate(array=array, pixel_scale=pixel_scale, effective_exposure_time=scaled_effective_exposure_time,
-                            psf=psf, background_sky_map=background_sky_map, include_poisson_noise=include_poisson_noise,
-                            seed=seed)
+        return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale, effective_exposure_time=scaled_effective_exposure_time,
+                                            psf=psf, background_sky_map=background_sky_map, include_poisson_noise=include_poisson_noise,
+                                            seed=seed)
 
     def __array_finalize__(self, obj):
         super(PrepatoryImage, self).__array_finalize__(obj)
@@ -334,13 +351,16 @@ class PSF(Array):
         if renormalize:
             self.renormalize()
 
-    # @classmethod
-    # def simulate_via_gaussian(cls, shape, pixel_scale, axis_ratio, phi, sigma):
-    #     from autolens.imaging import mask
-    #     from autolens.profiles.light_profiles import EllipticalGaussianLP
-    #     gaussian = EllipticalGaussianLP(centre=(0.0, 0.0), axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
-    #     msk = mask.Mask.unmasked()
-    #     return PSF(gaussian)
+    @classmethod
+    def simulate_as_gaussian(cls, shape, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+        from autolens.profiles.light_profiles import EllipticalGaussianLP
+        gaussian = EllipticalGaussianLP(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
+        grid_1d = imaging_util.image_grid_masked_from_mask_and_pixel_scale(mask=np.full(shape, False),
+                                                                        pixel_scale=1.0)
+        gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
+        gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
+                                                                                             shape=shape)
+        return PSF(array=gaussian_2d, renormalize=True)
 
     @classmethod
     def from_fits_renormalized(cls, file_path, hdu):
@@ -444,10 +464,10 @@ def generate_poisson_noise(image, exposure_time, seed=-1):
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time)
 
 
-def load(image_path, pixel_scale):
-    data = ScaledArray.from_fits_with_scale(file_path='{}/image'.format(image_path), hdu=0,
+def load(path, pixel_scale):
+    data = ScaledArray.from_fits_with_scale(file_path='{}/image'.format(path), hdu=0,
                                             pixel_scale=pixel_scale)
-    noise = Array.from_fits(file_path='{}/noise'.format(image_path), hdu=0)
-    psf = PSF.from_fits(file_path='{}/psf'.format(image_path), hdu=0)
+    noise = Array.from_fits(file_path='{}/noise'.format(path), hdu=0)
+    psf = PSF.from_fits(file_path='{}/psf'.format(path), hdu=0)
 
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise=noise)
