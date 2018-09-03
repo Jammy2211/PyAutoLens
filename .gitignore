@@ -11,6 +11,7 @@ lib/
 .idea
 .env
 .pytest_cache
+data/*
 output/*
 test_files/*
 test/integration/data/*
