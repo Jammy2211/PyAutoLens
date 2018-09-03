@@ -1,4 +1,5 @@
 from autolens.pipeline import phase as ph
+from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy_prior as gp
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
@@ -13,7 +14,7 @@ path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Load an image from the 'phase_basic_data' folder. It is assumed that this folder contains image.fits, noise.fits and
 # psf.fits - we've included some example data there already.
-image = im.load(path + '/phase_basic_data', pixel_scale=0.1)
+image = im.load(path=path + '/../data/basic/', pixel_scale=0.07)
 
 # The GalaxyPrior class represents a galaxy object, where the parameters of its associated profiles are variable and
 # fitted for by the lensing.
@@ -21,7 +22,7 @@ image = im.load(path + '/phase_basic_data', pixel_scale=0.1)
 # Here, we make a lens galaxy with both a light profile (an elliptical Sersic) and mass profile
 # (a singular isothermal sphere). These profiles are loaded from the 'light_profile (lp)' and 'mass_profile (mp)'
 # modules, check them out in the source code to see all the profiles you can choose from!
-lens_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersicLP, mass=mp.SphericalIsothermalMP)
+lens_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersicLP, mass=mp.EllipticalIsothermalMP)
 
 # We make the source galaxy just like the lens galaxy - lets use another Sersic light profile.
 source_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersicLP)
@@ -30,7 +31,7 @@ source_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersicLP)
 # from 3 phases, which represent the number of planes in the lens system (LensPlanePhase, LensSourcePlanePhase,
 # MultiPlanePhase). For this examplle, we need a LensSourcePlanePhase.
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                phase_name='example_basic')
+                                optimizer_class=nl.MultiNest, phase_name='ph_basic')
 
 # We run the phase on the image and print the results.
 results = phase.run(image)

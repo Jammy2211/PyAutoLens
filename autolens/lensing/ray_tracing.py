@@ -189,7 +189,7 @@ class AbstractTracerMulti(AbstractTracer):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_grids : mask.LensingGrids
+        lensing_grids : mask.LensingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -503,7 +503,7 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
             The list of lens galaxies in the masked_image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_grids : mask.LensingGrids
+        lensing_grids : mask.LensingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
@@ -536,7 +536,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_grids : mask.LensingGrids
+        lensing_grids : mask.LensingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
