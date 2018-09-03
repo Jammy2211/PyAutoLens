@@ -54,7 +54,7 @@ image_plane_image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array
 # PSF blurring, the background sky and Poisson noise. The simulation requires an effective exposure time map and
 # background sky image - we'll just use arrays of a single value to keep it simple for now.
 image_simulated = image.PrepatoryImage.simulate(array=image_plane_image_2d, pixel_scale=0.07, exposure_time=300.0,
-                                                psf=psf, background_sky_level=5.0, include_poisson_noise=True)
+                                                psf=psf, background_sky_level=0.1, include_poisson_noise=True)
 plt.imshow(image_simulated)
 plt.show()
 
