@@ -52,10 +52,10 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(sim_image, file_path=output_path + 'image')
-    imaging_util.numpy_array_to_fits(sim_image.estimated_noise, file_path=output_path + 'noise')
-    imaging_util.numpy_array_to_fits(psf, file_path=output_path + '/psf')
-    imaging_util.numpy_array_to_fits(sim_image.effective_exposure_time, file_path=output_path + 'exposure_time')
+    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image')
+    imaging_util.numpy_array_to_fits(sim_image.estimated_noise, path=output_path + 'noise')
+    imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf')
+    imaging_util.numpy_array_to_fits(sim_image.effective_exposure_time, path=output_path + 'exposure_time')
 
 def load_image(data_name, pixel_scale):
 
