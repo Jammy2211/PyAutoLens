@@ -62,7 +62,10 @@ def make():
                                                    sie=phase_2_results.variable.lens_galaxies[0].sie)
             self.source_galaxies = phase_2_results.variable.source_galaxies
 
-    phase3 = LensSourcePhase(optimizer_class=nl.MultiNest, phase_name='ph3')
+    phase3 = LensSourcePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
+                                                           sie=mp.EllipticalIsothermalMP)],
+                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+                              optimizer_class=nl.MultiNest, phase_name='ph3')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
