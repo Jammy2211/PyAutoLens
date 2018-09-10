@@ -401,8 +401,8 @@ def is_in_sub_shape(kernel_index_1d, limits, shape):
 sub_grid_size=2
 psf_shape = (21, 21)
 #psf_shape = (41, 41)
-sersic = light_profiles.EllipticalSersicLP(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
-                                           effective_radius=0.8, sersic_index=4.0)
+sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
+                                         effective_radius=0.8, sersic_index=4.0)
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 lsst_kernel_convolver = KernelConvolverOriginal(kernel=lsst.image_plane_image.psf.trim(psf_shape),

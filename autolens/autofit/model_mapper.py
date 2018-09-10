@@ -49,8 +49,8 @@ class ModelMapper(AbstractModel):
         
         mapper = ModelMapper()
 
-        mapper.sersic = light_profiles.EllipticalSersicLP
-        mapper.gaussian = light_profiles.EllipticalGaussianLP)
+        mapper.sersic = light_profiles.EllipticalSersic
+        mapper.gaussian = light_profiles.EllipticalGaussian)
         mapper.any_class = SomeClass
 
         # A PriorModel instance is created each time we add a class to the mapper. We can access those models using \
@@ -82,9 +82,9 @@ class ModelMapper(AbstractModel):
 
         # A ModelMapper can be concisely constructed using keyword arguments:
 
-        mapper = prior.ModelMapper(config, source_light_profile=light_profile.EllipticalSersicMP,
-                                    lens_mass_profile=mass_profile.EllipticalCoredIsothermalMP,
-                                    lens_light_profile=light_profile.EllipticalCoreSersicLP)
+        mapper = prior.ModelMapper(config, source_light_profile=light_profile.EllipticalSersic,
+                                    lens_mass_profile=mass_profile.EllipticalCoredIsothermal,
+                                    lens_light_profile=light_profile.EllipticalCoreSersic)
         """
         super(ModelMapper, self).__init__()
 
