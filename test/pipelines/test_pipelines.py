@@ -85,8 +85,8 @@
 # def make_results_1():
 #     const = model_mapper.ModelInstance()
 #     var = model_mapper.ModelMapper()
-#     const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
-#     var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
+#     const.lens_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
+#     var.lens_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
 #     return ph.LensPlanePhase.Result(constant=const, likelihood=1, variable=var, lensing=MockAnalysis())
 #
 #
@@ -95,9 +95,9 @@
 #     const = model_mapper.ModelInstance()
 #     var = model_mapper.ModelMapper()
 #     var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermalMP)
-#     var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
+#     var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
 #     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermalMP())
-#     const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
+#     const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
 #     return ph.LensSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
 #                                                    lensing=MockAnalysis())
 #
@@ -107,11 +107,11 @@
 #     const = model_mapper.ModelInstance()
 #     var = model_mapper.ModelMapper()
 #     var.lens_galaxy = gp.GalaxyPrior(sie=mass_profiles.SphericalIsothermalMP,
-#                                      elliptical_sersic=light_profiles.EllipticalSersicLP)
-#     var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersicLP)
+#                                      elliptical_sersic=light_profiles.EllipticalSersic)
+#     var.source_galaxy = gp.GalaxyPrior(elliptical_sersic=light_profiles.EllipticalSersic)
 #     const.lens_galaxy = g.Galaxy(sie=mass_profiles.SphericalIsothermalMP(),
-#                                  elliptical_sersic=light_profiles.EllipticalSersicLP())
-#     const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersicLP())
+#                                  elliptical_sersic=light_profiles.EllipticalSersic())
+#     const.source_galaxy = g.Galaxy(elliptical_sersic=light_profiles.EllipticalSersic())
 #     return ph.LensSourcePlanePhase.Result(constant=const, likelihood=1, variable=var,
 #                                                    lensing=MockAnalysis(number_galaxies=2, shape=shape, value=0.5))
 #
