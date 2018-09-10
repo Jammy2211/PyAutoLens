@@ -36,8 +36,8 @@ psf = image.PSF.from_fits(file_path=path+'../profiling/data/psf', hdu=3, pixel_s
 psf = psf.trim(psf_size)
 ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, pad_size=psf_size)
 
-image_plane_grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=4,
-                                                                                   blurring_shape=psf_size)
+image_plane_grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=4,
+                                                                                         psf_shape=psf_size)
 
 ### Setup the ray tracing model, and use to generate the 2D galaxy image_coords ###
 
@@ -52,7 +52,7 @@ ray_trace = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxy], source_gal
                                          image_grids=image_plane_grids)
 
 galaxy_image_1d = ray_trace.galaxy_light_profiles_image_from_planes()
-galaxy_image_2d = ma.map_unmasked_1d_array_to_2d_array(galaxy_image_1d)
+galaxy_image_2d = ma.map_padded_1d_array_to_original_2d_array(galaxy_image_1d)
 
 plt.imshow(galaxy_image_2d)
 plt.show()
@@ -67,6 +67,6 @@ if os.path.exists(output_path + lens_name) == False:
     os.makedirs(output_path + lens_name)
 
 array_util.numpy_array_to_fits(sim_image, file_path=output_path + lens_name + 'masked_image')
-array_util.numpy_array_to_fits(np.ones(sim_image.shape), file_path=output_path + lens_name + 'noise')
+array_util.numpy_array_to_fits(np.ones(sim_image.shape), file_path=output_path + lens_name + 'noise_map')
 array_util.numpy_array_to_fits(np.ones(sim_image.shape), file_path=output_path + lens_name + 'exposure_time')
 array_util.numpy_array_to_fits(psf, file_path=output_path + lens_name + '/psf')

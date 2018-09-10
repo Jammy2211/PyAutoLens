@@ -41,8 +41,8 @@ def make():
 
     # We setup phase 2 just like any other phase, now using the LensSubtracted phase we created above so that our new
     # image and masks are used.
-    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
                                  source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
                                  phase_name='ph2')
 
