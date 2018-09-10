@@ -1,5 +1,6 @@
 import numpy as np
-from autolens.lensing import ray_tracing, lensing_image as mi
+from autolens.lensing import lensing_image as li
+from autolens.lensing import ray_tracing
 
 minimum_value_profile = 0.1
 
@@ -76,7 +77,7 @@ class AbstractProfileFitter(object):
 
         Parameters
         ----------
-        lensing_image: mi.LensingImage
+        lensing_image: li.LensingImage
             An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
@@ -141,14 +142,14 @@ class ProfileFitter(AbstractFitter, AbstractProfileFitter):
 
         Parameters
         ----------
-        lensing_image: mi.LensingImage
+        lensing_image: li.LensingImage
             An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
         AbstractFitter.__init__(self, lensing_image, tracer)
         AbstractProfileFitter.__init__(self, lensing_image)
-        self._noise = lensing_image.noise
+        self._noise = lensing_image.noise_map
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
         self._noise_term = noise_term_from_noise(self._noise)
 
@@ -164,7 +165,7 @@ class HyperProfileFitter(AbstractFitter, AbstractHyperFitter, AbstractProfileFit
 
         Parameters
         ----------
-        lensing_image: mi.LensingImage
+        lensing_image: li.LensingImage
             An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
@@ -173,7 +174,7 @@ class HyperProfileFitter(AbstractFitter, AbstractHyperFitter, AbstractProfileFit
         AbstractHyperFitter.__init__(self, lensing_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
         AbstractProfileFitter.__init__(self, lensing_image)
         self._noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions, self.tracer.hyper_galaxies,
-                                                                         lensing_image.noise)
+                                                                         lensing_image.noise_map)
         self._noise_term = noise_term_from_noise(self._noise)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
 
@@ -190,17 +191,17 @@ class PixelizationFitter(AbstractFitter, AbstractPixelizationFitter):
 
         Parameters
         ----------
-        lensing_image: mi.LensingImage
+        lensing_image: li.LensingImage
             An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
 
         AbstractFitter.__init__(self, lensing_image, tracer)
-        AbstractPixelizationFitter.__init__(self, lensing_image, lensing_image.noise)
+        AbstractPixelizationFitter.__init__(self, lensing_image, lensing_image.noise_map)
 
-        self._noise = lensing_image.noise
-        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, lensing_image.noise)
+        self._noise = lensing_image.noise_map
+        self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, lensing_image.noise_map)
         self._noise_term = noise_term_from_noise(self._noise)
 
 
@@ -212,7 +213,7 @@ class HyperPixelizationFitter(AbstractFitter, AbstractHyperFitter, AbstractPixel
 
         Parameters
         ----------
-        lensing_image: mi.LensingImage
+        lensing_image: li.LensingImage
             An lensing_image that has been masked for efficiency
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
@@ -221,7 +222,7 @@ class HyperPixelizationFitter(AbstractFitter, AbstractHyperFitter, AbstractPixel
         AbstractFitter.__init__(self, lensing_image, tracer)
         AbstractHyperFitter.__init__(self, lensing_image, hyper_model_image, hyper_galaxy_images, hyper_minimum_values)
         self._noise = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions, self.tracer.hyper_galaxies,
-                                                                         lensing_image.noise)
+                                                                         lensing_image.noise_map)
         AbstractPixelizationFitter.__init__(self, lensing_image, self._noise)
         self._noise_term = noise_term_from_noise(self._noise)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise)
@@ -308,7 +309,7 @@ def chi_squareds_from_residuals_and_noise(residuals, noise):
 
 def chi_squared_term_from_chi_squareds(chi_squareds):
     """Compute the chi-squared of a model lensing_image's fit to the data_vector, by taking the difference between the
-    observed lensing_image and model ray-tracing lensing_image, dividing by the noise in each pixel and squaring:
+    observed lensing_image and model ray-tracing lensing_image, dividing by the noise_map in each pixel and squaring:
 
     [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
 
@@ -319,14 +320,14 @@ def chi_squared_term_from_chi_squareds(chi_squareds):
     return np.sum(chi_squareds)
 
 def noise_term_from_noise(noise):
-    """Compute the noise normalization term of an lensing_image, which is computed by summing the noise in every pixel:
+    """Compute the noise_map normalization term of an lensing_image, which is computed by summing the noise_map in every pixel:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
     Parameters
     ----------
     noise : grids.GridData
-        The noise in each pixel.
+        The noise_map in each pixel.
     """
     return np.sum(np.log(2 * np.pi * noise ** 2.0))
 
@@ -334,11 +335,11 @@ def likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term):
     """Compute the likelihood of a model lensing_image's fit to the data_vector, by taking the difference between the
     observed lensing_image and model ray-tracing lensing_image. The likelihood consists of two terms:
 
-    Chi-squared term - The residuals (model - data_vector) of every pixel divided by the noise in each pixel, all
+    Chi-squared term - The residuals (model - data_vector) of every pixel divided by the noise_map in each pixel, all
     squared.
     [Chi_Squared_Term] = sum(([Residuals] / [Noise]) ** 2.0)
 
-    The overall normalization of the noise is also included, by summing the log noise value in each pixel:
+    The overall normalization of the noise_map is also included, by summing the log noise_map value in each pixel:
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
     These are summed and multiplied by -0.5 to give the likelihood:
@@ -371,7 +372,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
                     hyper_galaxies, hyper_galaxy_images, minimum_values))
 
 def scaled_noise_from_hyper_galaxies_and_contributions(contributions, hyper_galaxies, noise):
-    """Use the contributions of each hyper galaxy to compute the scaled noise.
+    """Use the contributions of each hyper galaxy to compute the scaled noise_map.
     Parameters
     -----------
     noise

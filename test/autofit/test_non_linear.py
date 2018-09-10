@@ -923,10 +923,10 @@ class TestConfig(object):
 
         assert multinest.multimodal is True
         assert multinest.const_efficiency_mode is True
-        assert multinest.n_live_points == 50
+        assert multinest.n_live_points == 80
 
         assert multinest.evidence_tolerance == 0.5
-        assert multinest.sampling_efficiency == 0.8
+        assert multinest.sampling_efficiency == 0.5
 
         assert multinest.n_iter_before_update == 100
         assert multinest.null_log_evidence == -1e90

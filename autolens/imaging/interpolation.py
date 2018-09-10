@@ -1,3 +1,5 @@
+from autolens.imaging import mask as msk
+
 import numpy as np
 
 # TODO : Think carefully about demagnified centra pixels.
@@ -180,12 +182,12 @@ class InterpolationScheme(object):
         shape : (int, int)
             The shape of the interpolation schemes interpolation-grid.
         """
-        coordinate_grid = mask.masked_image_grid
+        image_grid = msk.ImageGrid.from_mask(mask)
 
-        x_max = np.max(coordinate_grid[:,0]) + mask.pixel_scale
-        x_min = np.min(coordinate_grid[:,0]) - mask.pixel_scale
-        y_max = np.max(coordinate_grid[:,1]) + mask.pixel_scale
-        y_min = np.min(coordinate_grid[:,1]) - mask.pixel_scale
+        x_max = np.max(image_grid[:,0]) + mask.pixel_scale
+        x_min = np.min(image_grid[:,0]) - mask.pixel_scale
+        y_max = np.max(image_grid[:,1]) + mask.pixel_scale
+        y_min = np.min(image_grid[:,1]) - mask.pixel_scale
 
         image_coords = np.zeros((shape[0] * shape[1], 2))
 

@@ -1,5 +1,5 @@
 from autolens import exc
-from autolens.lensing import grids
+from autolens.imaging import mask as msk
 from astropy import constants
 from functools import wraps
 import math
@@ -21,8 +21,8 @@ class AbstractTracer(object):
         return any(list(map(lambda galaxy : galaxy.has_pixelization, self.galaxies)))
 
     @property
-    def has_grid_mappers(self):
-        return isinstance(self.all_planes[0].grids.image, grids.GridMapper)
+    def has_padded_grids(self):
+        return isinstance(self.all_planes[0].grids.image, msk.ImagePaddedGrid)
 
     @property
     def has_hyper_galaxy(self):
@@ -115,7 +115,7 @@ class TracerImagePlane(AbstractTracer):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the masked_image-plane.
-        image_grids : mask.LensingGrids
+        image_grids : mask.ImagingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         """
@@ -146,7 +146,7 @@ class TracerImageSourcePlanes(TracerImagePlane):
             The list of lens galaxies in the masked_image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        image_grids : mask.LensingGrids
+        image_grids : mask.ImagingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
@@ -189,7 +189,7 @@ class AbstractTracerMulti(AbstractTracer):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        lensing_grids : mask.LensingGrids
+        lensing_grids : mask.ImagingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -233,7 +233,7 @@ class TracerMulti(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_grids : mask.LensingGrids
+        image_grids : mask.ImagingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -353,7 +353,7 @@ class Plane(object):
 
 
         Parameters ---------- galaxies : [Galaxy] The galaxies in the plane. grids :
-        mask.LensingGrids The grids of (x,y) coordinates in the plane, including the masked_image grid_coords,
+        mask.ImagingGrids The grids of (x,y) coordinates in the plane, including the masked_image grid_coords,
         sub-grid_coords, blurring, grid_coords, etc.
         """
         self.galaxies = galaxies
@@ -503,7 +503,7 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
             The list of lens galaxies in the masked_image-plane.
         source_galaxies : [Galaxy]
             The list of source galaxies in the source-plane.
-        lensing_grids : mask.LensingGrids
+        lensing_grids : mask.ImagingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
@@ -536,7 +536,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        lensing_grids : mask.LensingGrids
+        lensing_grids : mask.ImagingGrids
             The masked_image-plane coordinate grids where ray-tracing calculation are performed, (this includes the
             masked_image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -600,7 +600,7 @@ class PlanePositions(object):
 
 
         Parameters ---------- galaxies : [Galaxy] The galaxies in the plane. grids :
-        mask.LensingGrids The grids of (x,y) coordinates in the plane, including the masked_image grid_coords,
+        mask.ImagingGrids The grids of (x,y) coordinates in the plane, including the masked_image grid_coords,
         sub-grid_coords, blurring, grid_coords, etc.
         """
         self.galaxies = galaxies
@@ -630,7 +630,7 @@ def sub_to_image_grid(func):
     1) If the grid is a sub-grid (grids.SubGrid), rebin values to the image-grid by taking the mean of each set of \
     sub-gridded values.
 
-    2) If the grid is a GridMapper, returned the grid mapped to 2d.
+    2) If the grid is a PaddedGrid, returned the grid mapped to 2d.
 
     Parameters
     ----------
@@ -662,7 +662,7 @@ def sub_to_image_grid(func):
 
         result = func(grid, galaxies, *args, *kwargs)
 
-        if isinstance(grid, grids.SubGrid):
+        if isinstance(grid, msk.SubGrid):
             return grid.sub_data_to_image(result)
         else:
             return result

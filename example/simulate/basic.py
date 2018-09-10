@@ -19,7 +19,7 @@ psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
 # We need to set up the grids of Cartesian coordinates we will use to perform ray-tracing. The function below
 # sets these grids up using the shape and pixel-scale of the image we will ultimately simulate. The PSF shape is
 # required to ensure that edge-effects do not impact PSF blurring later in the simulation.
-lensing_grids = grids.LensingGrids.for_simulation(shape=(100, 100), pixel_scale=0.07, psf_shape=psf.shape)
+lensing_grids = grids.LensingGrids.padded_grids_for_simulation(shape=(100, 100), pixel_scale=0.07, psf_shape=psf.shape)
 
 # Use the 'galaxy' module (imported as 'g'), 'light_profiles' module (imported as 'lp') and 'mass profiles' module
 # (imported as 'mp') to setup the lens galaxy. The lens below has an elliptical Sersic light profile and singular
@@ -51,7 +51,7 @@ image_plane_image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array
 
 
 # Next, we simulate the image, using the simulate function in the imaging module. We add various effects, including
-# PSF blurring, the background sky and Poisson noise. The simulation requires an effective exposure time map and
+# PSF blurring, the background sky and Poisson noise_map. The simulation requires an effective exposure time map and
 # background sky image - we'll just use arrays of a single value to keep it simple for now.
 image_simulated = image.PrepatoryImage.simulate(array=image_plane_image_2d, pixel_scale=0.07, exposure_time=300.0,
                                                 psf=psf, background_sky_level=5.0, include_poisson_noise=True)
@@ -61,5 +61,5 @@ plt.show()
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
 imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/../data/basic/image')
-imaging_util.numpy_array_to_fits(array=image_simulated.estimated_noise, path=path+'/../data/basic/noise')
+imaging_util.numpy_array_to_fits(array=image_simulated.estimated_noise, path=path+'/../data/basic/noise_map')
 imaging_util.numpy_array_to_fits(array=psf, path=path+'/../data/basic/psf')
