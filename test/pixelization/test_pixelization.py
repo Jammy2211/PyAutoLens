@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from test.mock.mock_mask import MockSubGridCoords, MockGridCollection, MockBorderCollection
-from autolens.lensing import grids
+from autolens.imaging import mask as msk
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
@@ -549,10 +549,10 @@ class TestRectangularPixelization:
 
             # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
             pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             pixelization_sub_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
 
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
@@ -595,7 +595,7 @@ class TestRectangularPixelization:
                                  [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                  [0.9, 0.9], [1.0, 1.0], [1.1, 1.1]])
 
-            pixelization_border = grids.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
 
             # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
             # ensures this has no sub-gridding)
@@ -605,7 +605,7 @@ class TestRectangularPixelization:
                                      [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                      [0.9, 0.9], [1.0, 1.0], [1.1, 1.1]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([2, 5, 11, 14]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([2, 5, 11, 14]))
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
@@ -650,7 +650,7 @@ class TestRectangularPixelization:
 
             # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
             pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
             # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
             # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
             # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the 
@@ -662,7 +662,7 @@ class TestRectangularPixelization:
                                      [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]])
 
             sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 1, 2, 4, 5, 6, 12, 13, 14, 16, 17, 18]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 2, 4, 5, 6, 12, 13, 14, 16, 17, 18]))
 
             lensing_grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_sub_grid, sub_to_image,
@@ -695,7 +695,7 @@ class TestRectangularPixelization:
 
             # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
             pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [1.0, 1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
             # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
             # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
             # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
@@ -707,7 +707,7 @@ class TestRectangularPixelization:
                                      [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]])
 
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 4, 12, 16]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 4, 12, 16]))
 
             sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
@@ -1044,10 +1044,10 @@ class TestClusterRegConst:
         def test__5_simple_grid__no_sub_grid__sets_up_correct_reconstructor(self):
 
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             pixelization_sub_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
 
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
@@ -1088,7 +1088,7 @@ class TestClusterRegConst:
                                  [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                  [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
 
-            pixelization_border = grids.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
 
             pixelization_sub_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                      [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -1096,7 +1096,7 @@ class TestClusterRegConst:
                                      [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                      [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([2, 5, 11, 14]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([2, 5, 11, 14]))
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
             lensing_grids = MockGridCollection(image=pixelization_grid,
@@ -1135,7 +1135,7 @@ class TestClusterRegConst:
         def test__5_simple_grid__include_sub_grid__sets_up_correct_reconstructor(self):
 
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
@@ -1147,7 +1147,7 @@ class TestClusterRegConst:
                                      [1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
                                      [-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 1, 2, 4, 5, 6, 12, 13, 14, 16, 17, 18]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 2, 4, 5, 6, 12, 13, 14, 16, 17, 18]))
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
@@ -1176,7 +1176,7 @@ class TestClusterRegConst:
         def test__same_as_above_but_grid_requires_border_relocation(self):
 
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
@@ -1188,7 +1188,7 @@ class TestClusterRegConst:
                                      [1.0, -1.0], [2.0, -2.0], [2.0, -2.0], [0.0, 0.0],
                                      [-1.0, -1.0], [-2.0, -2.0], [-2.0, -2.0], [0.0, 0.0]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 4, 12, 16]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 4, 12, 16]))
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
@@ -1283,10 +1283,10 @@ class TestAmorphousPixelization:
         def test__5_simple_grid__no_sub_grid__sets_up_correct_reconstructor(self):
 
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             pixelization_sub_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
 
             sub_to_image = np.array([0, 1, 2, 3, 4])
 
@@ -1330,7 +1330,7 @@ class TestAmorphousPixelization:
                                  [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                  [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
 
-            pixelization_border = grids.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
 
             pixelization_sub_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                      [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
@@ -1338,7 +1338,7 @@ class TestAmorphousPixelization:
                                      [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                      [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([2, 5, 11, 14]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([2, 5, 11, 14]))
 
             sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
             lensing_grids = MockGridCollection(image=pixelization_grid,
@@ -1382,7 +1382,7 @@ class TestAmorphousPixelization:
         def test__5_simple_grid__include_sub_grid__sets_up_correct_reconstructor(self):
 
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
@@ -1394,7 +1394,7 @@ class TestAmorphousPixelization:
                                      [1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
                                      [-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 1, 2, 4, 5, 6, 12, 13, 14, 16, 17, 18]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 2, 4, 5, 6, 12, 13, 14, 16, 17, 18]))
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
@@ -1427,7 +1427,7 @@ class TestAmorphousPixelization:
 
 
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-            pixelization_border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
             cluster_to_image = np.array([0, 1, 2, 3, 4])
             image_to_cluster = np.array([0, 1, 2, 3, 4])
@@ -1439,7 +1439,7 @@ class TestAmorphousPixelization:
                                      [1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
                                      [-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0]])
 
-            pixelization_sub_border = grids.SubGridBorder(arr=np.array([0, 4, 12, 16]))
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 4, 12, 16]))
 
             sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
