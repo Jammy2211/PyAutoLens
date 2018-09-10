@@ -28,11 +28,11 @@ def test_lens_x2_gal_pipeline():
     except FileNotFoundError:
         pass
 
-    sersic_0 = lp.EllipticalSersicLP(centre=(-1.0, -1.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
-                                     effective_radius=1.3, sersic_index=3.0)
+    sersic_0 = lp.EllipticalSersic(centre=(-1.0, -1.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                   effective_radius=1.3, sersic_index=3.0)
 
-    sersic_1 = lp.EllipticalSersicLP(centre=(1.0, 1.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
-                                     effective_radius=1.3, sersic_index=3.0)
+    sersic_1 = lp.EllipticalSersic(centre=(1.0, 1.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                   effective_radius=1.3, sersic_index=3.0)
 
     lens_galaxy_0 = galaxy.Galaxy(light_profile=sersic_0)
     lens_galaxy_1 = galaxy.Galaxy(light_profile=sersic_1)
@@ -66,8 +66,8 @@ def make_lens_x2_gal_pipeline(pipeline_name):
     def modify_mask_function(img):
         return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
-    phase1 = LensPlanex2GalPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
-                                                gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+    phase1 = LensPlanex2GalPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic),
+                                                gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
                                  mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                  phase_name="{}/phase1".format(pipeline_name))
 

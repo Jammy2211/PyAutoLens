@@ -34,7 +34,7 @@ def test_positions_pipeline():
 
 def make_positions_pipeline(pipeline_name):
 
-    phase1 = ph.PhasePositions(lens_galaxies=[gp.GalaxyPrior(sis=mp.SphericalIsothermalMP)],
+    phase1 = ph.PhasePositions(lens_galaxies=[gp.GalaxyPrior(sis=mp.SphericalIsothermal)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20

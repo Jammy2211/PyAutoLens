@@ -26,9 +26,9 @@ def test_lens_x1_gal_pipeline():
     except FileNotFoundError:
         pass
 
-    sersic = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
-                                   effective_radius=1.3, sersic_index=3.0)
-    sis = mp.SphericalIsothermalMP(einstein_radius=1.0)
+    sersic = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
+                                 effective_radius=1.3, sersic_index=3.0)
+    sis = mp.SphericalIsothermal(einstein_radius=1.0)
 
     lens_galaxy = galaxy.Galaxy(mass_profile=sis)
     source_galaxy = galaxy.Galaxy(light_profile=sersic)
@@ -53,7 +53,7 @@ def test_lens_x1_gal_pipeline():
 def make_imaging_positions_pipeline(pipeline_name):
 
     phase1 = ph.PositionsImagingPhase(positions=[[[1.0, 1.0], [1.0, -1.0], [-1.0, 1.0], [-1.0, -1.0]]],
-                                      lens_galaxies=[gp.GalaxyPrior(sis=mp.SphericalIsothermalMP)],
+                                      lens_galaxies=[gp.GalaxyPrior(sis=mp.SphericalIsothermal)],
                                       optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40

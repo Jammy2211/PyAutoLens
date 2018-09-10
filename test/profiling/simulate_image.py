@@ -41,9 +41,9 @@ image_plane_grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_blurri
 
 ### Setup the ray tracing model, and use to generate the 2D galaxy image_coords ###
 
-sersic = lp.EllipticalSersicLP(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.5, effective_radius=1.3,
-                               sersic_index=3.0)
-isothermal = mp.EllipticalIsothermalMP(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.4)
+sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.5, effective_radius=1.3,
+                             sersic_index=3.0)
+isothermal = mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.4)
 
 lens_galaxy = galaxy.Galaxy(light_profile=sersic, mass_profile=isothermal)
 source_galaxy = galaxy.Galaxy(light_profile=sersic)
