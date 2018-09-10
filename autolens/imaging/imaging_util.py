@@ -55,9 +55,9 @@ class Memoizer(object):
 
         return wrapper
 
-
 @numba.jit(nopython=True, cache=True)
 def total_image_pixels_from_mask(mask):
+    """Compute the total number of unmasked image pixels in a mask."""
 
     total_image_pixels = 0
 
@@ -70,10 +70,12 @@ def total_image_pixels_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
+    """Compute the total number of sub-pixels in unmasked image pixels in a mask."""
     return total_image_pixels_from_mask(mask) * sub_grid_size ** 2
 
 @numba.jit(nopython=True, cache=True)
 def total_border_pixels_from_mask(mask):
+    """Compute the total number of border-pixels in a mask."""
 
     border_pixel_total = 0
 
@@ -89,10 +91,10 @@ def total_border_pixels_from_mask(mask):
 @numba.jit(nopython=True, cache=True)
 def image_grid_2d_from_shape_and_pixel_scale(shape, pixel_scale):
     """
-    Computes the arc second grids of every pixel on the data_vector-grid_coords.
+    Computes the (x,y) arc second coordinates of every pixel in an image of shape (rows, columns).
 
-    This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
-    value and positive y value in arc seconds.
+    Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
+    and y values in arc seconds.
     """
 
     grid_2d = np.zeros((shape[0], shape[1], 2))
@@ -109,10 +111,8 @@ def image_grid_2d_from_shape_and_pixel_scale(shape, pixel_scale):
     return grid_2d
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_masked_from_mask_and_pixel_scale(mask, pixel_scale):
-    """
-    Compute the masked_image grid_coords grids from a mask, using the center of every unmasked pixel.
-    """
+def image_grid_1d_masked_from_mask_and_pixel_scale(mask, pixel_scale):
+    """Compute a 1D grid of (x,y) coordinates, using the center of every unmasked pixel."""
 
     grid_2d = image_grid_2d_from_shape_and_pixel_scale(mask.shape, pixel_scale)
 
@@ -129,7 +129,8 @@ def image_grid_masked_from_mask_and_pixel_scale(mask, pixel_scale):
     return image_grid
 
 @numba.jit(nopython=True, cache=True)
-def sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, sub_grid_size):
+def sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, sub_grid_size):
+    """Compute a 1D grid of (x,y) sub-pixel coordinates, using the sub-pixel centers of every unmasked pixel."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
@@ -162,6 +163,9 @@ def sub_grid_masked_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, s
 
 @numba.jit(nopython=True, cache=True)
 def grid_to_pixel_from_mask(mask):
+    """Compute a 1D array that maps every unmasked pixel to its corresponding 2d pixel using its (x,y) pixel indexes.
+
+    For example if pixel [2,5] corresponds to the second pixel on the 1D array, grid_to_pixel[1] = [2,5]"""
 
     total_image_pixels = total_image_pixels_from_mask(mask)
     grid_to_pixel = np.zeros(shape=(total_image_pixels, 2))
@@ -177,7 +181,9 @@ def grid_to_pixel_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def sub_to_image_from_mask(mask, sub_grid_size):
-    """ Compute the pairing of every sub-pixel to its original masked_image pixel from a mask. """
+    """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d image-pixel.
+
+    For example, if sub-pixel 8 is in image-pixel 1, sub_to_image[7] = 1."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
@@ -199,6 +205,8 @@ def sub_to_image_from_mask(mask, sub_grid_size):
 
 @numba.jit(nopython=True, cache=True)
 def border_pixels_from_mask(mask):
+    """Compute a 1D array listing all border pixel indexes in the mask. A border pixel is a pixel which is not fully \
+    surrounding by False mask values i.e. it is on an edge."""
 
     border_pixel_total = total_border_pixels_from_mask(mask)
 
@@ -220,9 +228,8 @@ def border_pixels_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, sub_grid_size):
-    """Compute the border masked_image data_to_pixels from a mask, where a border pixel is a pixel inside the mask but on
-    its edge, therefore neighboring a pixel with a *True* value.
-    """
+    """Compute a 1D array listing all sub-pixel border pixel indexes in the mask. A border sub-pixel is a sub-pixel \
+    whose image pixel is not fully surrounded by False mask values and it is closest to the edge."""
     border_pixel_total = total_border_pixels_from_mask(mask)
     border_sub_pixels = np.zeros(border_pixel_total)
 
@@ -266,6 +273,7 @@ def border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale,
 
 @numba.jit(nopython=True, cache=True)
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
+    """Compute a circular mask from an input mask radius and image shape."""
 
     mask = np.full(shape, True)
 
@@ -288,6 +296,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 @numba.jit(nopython=True, cache=True)
 def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                   centre=(0.0, 0.0)):
+    """Compute an annular mask from an input inner and outer mask radius and image shape."""
 
     mask = np.full(shape, True)
 
@@ -309,6 +318,10 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
 
 @numba.jit(nopython=True, cache=True)
 def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
+    """Compute a blurring mask from an input mask and psf shape.
+
+    The blurring mask corresponds to all pixels which are outside of the mask but will have a fraction of their \
+    light blur into the masked region due to PSF convolution."""
 
     blurring_mask = np.full(mask.shape, True)
 
@@ -329,6 +342,7 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
 @numba.jit(nopython=True, cache=True)
 def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
+    """For a given 2D array and mask, map all unmasked pixels to a 1D array."""
 
     total_image_pixels = total_image_pixels_from_mask(mask)
 
@@ -345,6 +359,7 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
 @numba.jit(nopython=True, cache=True)
 def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, shape, one_to_two):
+    """For a masked 1D array, map it to a 2D array using the mappings from 1D to 2D (one_to_two)."""
 
     array_2d = np.zeros(shape)
 
@@ -355,6 +370,7 @@ def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
 
 @numba.jit(nopython=True, cache=True)
 def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
+    """Map a 1D array where every value in its original 2D array was unmasked, to this original 2D array."""
 
     array_2d = np.zeros(shape)
 
@@ -365,31 +381,6 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
             index += 1
 
     return array_2d
-
-@numba.jit(nopython=True, cache=True)
-def map_masked_deflections_to_2d_deflections_from_deflections_shape_and_one_to_two(deflections, shape, one_to_two):
-
-    deflections_2d = np.zeros((shape[0], shape[1], 2))
-
-    for index in range(len(one_to_two)):
-        deflections_2d[one_to_two[index,0], one_to_two[index,1 ], 0] = deflections[index, 0]
-        deflections_2d[one_to_two[index,0], one_to_two[index, 1], 1] = deflections[index, 1]
-
-    return deflections_2d
-
-@numba.jit(nopython=True, cache=True)
-def map_unmasked_deflections_to_2d_deflections_from_deflections_and_shape(deflections, shape):
-
-    deflections_2d = np.zeros((shape[0], shape[1], 2))
-
-    index = 0
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            deflections_2d[x, y, 0] = deflections[index, 0]
-            deflections_2d[x, y, 1] = deflections[index, 1]
-            index += 1
-
-    return deflections_2d
 
 def trim_array_2d_to_new_shape(array_2d, new_shape):
     """

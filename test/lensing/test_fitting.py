@@ -259,7 +259,7 @@ def make_li_no_blur():
     psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
                                      [0.0, 0.0, 0.0]])))
-    im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+    im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -278,7 +278,7 @@ def make_li_blur():
     psf = image.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0]])))
-    im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+    im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -294,7 +294,7 @@ def make_li_no_blur_1x1():
                                      [0.0, 1.0, 0.0],
                                      [0.0, 0.0, 0.0]])))
 
-    im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise=np.ones((3, 3)))
+    im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
     ma = mask.Mask(array=np.array([[True, True, True],
                                    [True, False, True],
@@ -467,7 +467,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -514,7 +514,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -547,7 +547,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -603,7 +603,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -636,7 +636,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -687,7 +687,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -738,7 +738,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])))
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise=np.ones((4, 4)))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -831,7 +831,7 @@ class TestProfileFitter:
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])))
 
-            im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise=np.ones((3, 3)))
+            im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
             ma = mask.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
@@ -851,7 +851,7 @@ class TestProfileFitter:
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])))
 
-            im = image.Image(5.0*np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise=np.ones((3, 3)))
+            im = image.Image(5.0 * np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
             ma = mask.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
@@ -899,7 +899,7 @@ class TestProfileFitter:
             psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                              [2.0, 5.0, 1.0],
                                              [3.0, 4.0, 0.0]])))
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             ma = mask.Mask(array=np.array([[True, True,  True,  True,  True],
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
@@ -917,9 +917,9 @@ class TestProfileFitter:
             blurring_im = tracer.image_plane_blurring_image
             blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise(mi.noise)
+            noise_term = fitting.noise_term_from_noise(mi.noise_map)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
             assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
@@ -1033,7 +1033,7 @@ class TestHyperProfileFitter:
             psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                              [2.0, 5.0, 1.0],
                                              [3.0, 4.0, 0.0]])))
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             ma = mask.Mask(array=np.array([[True, True,  True,  True,  True],
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
@@ -1059,9 +1059,9 @@ class TestHyperProfileFitter:
             blurring_im = tracer.image_plane_blurring_image
             blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise(mi.noise)
+            noise_term = fitting.noise_term_from_noise(mi.noise_map)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
             contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images,
@@ -1069,7 +1069,7 @@ class TestHyperProfileFitter:
 
             scaled_noise = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
                                                                                       [hyper_galaxy, hyper_galaxy],
-                                                                                      mi.noise)
+                                                                                      mi.noise_map)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise)
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
             scaled_noise_term = fitting.noise_term_from_noise(scaled_noise)
@@ -1110,7 +1110,7 @@ class TestPixelizationFitter:
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]))
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
@@ -1162,7 +1162,7 @@ class TestPixelizationFitter:
             psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                              [2.0, 5.0, 1.0],
                                              [3.0, 4.0, 0.0]])))
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             ma = mask.Mask(array=np.array([[True, True, True, True, True],
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
@@ -1172,7 +1172,7 @@ class TestPixelizationFitter:
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
             reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
-            recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, mi.noise, mi.convolver_mapping_matrix)
+            recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, mi.noise_map, mi.convolver_mapping_matrix)
 
             g0 = galaxy.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[g0],
@@ -1181,9 +1181,9 @@ class TestPixelizationFitter:
             fitter = fitting.PixelizationFitter(lensing_image=mi, tracer=tracer)
 
             residuals = fitting.residuals_from_image_and_model(mi, fitter._reconstruction.reconstructed_image)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise(mi.noise)
+            noise_term = fitting.noise_term_from_noise(mi.noise_map)
             regularization_term = recon.regularization_term
             covariance_regularization_term = recon.log_det_curvature_reg_matrix_term
             regularization_matrix_term = recon.log_det_regularization_matrix_term
@@ -1221,7 +1221,7 @@ class TestHyperPixelizationFitter:
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]))
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
@@ -1283,7 +1283,7 @@ class TestHyperPixelizationFitter:
             psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                              [2.0, 5.0, 1.0],
                                              [3.0, 4.0, 0.0]])))
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise=np.ones((5, 5)))
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             ma = mask.Mask(array=np.array([[True, True, True, True, True],
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
@@ -1319,7 +1319,7 @@ class TestHyperPixelizationFitter:
                                                             [hyper_model, hyper_model], minimum_values=[0.2, 0.8])
             scaled_noise = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
                                                                                       [hyper_model, hyper_model],
-                                                                                      mi.noise)
+                                                                                      mi.noise_map)
 
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise)
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
