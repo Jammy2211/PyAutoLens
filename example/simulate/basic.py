@@ -24,13 +24,13 @@ lensing_grids = grids.LensingGrids.padded_grids_for_simulation(shape=(100, 100),
 # Use the 'galaxy' module (imported as 'g'), 'light_profiles' module (imported as 'lp') and 'mass profiles' module
 # (imported as 'mp') to setup the lens galaxy. The lens below has an elliptical Sersic light profile and singular
 # isothermal ellipsoid (SIE) mass profile.
-lens_galaxy = g.Galaxy(light=lp.EllipticalSersicLP(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1,
-                                                   effective_radius=0.8, sersic_index=3.0),
-                       mass=mp.EllipticalIsothermalMP(centre=(0.0, 0.0), axis_ratio=0.8, phi=40.0, einstein_radius=1.8))
+lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1,
+                                                 effective_radius=0.8, sersic_index=3.0),
+                       mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=40.0, einstein_radius=1.8))
 
 # Use the above modules to setup the source galaxy, which in this example has an elliptical Exponential profile.
-source_galaxy = g.Galaxy(light=lp.EllipticalExponentialLP(centre=(0.0, 0.0), axis_ratio=0.9, phi=90.0, intensity=0.5,
-                                                             effective_radius=0.3))
+source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.0, 0.0), axis_ratio=0.9, phi=90.0, intensity=0.5,
+                                                        effective_radius=0.3))
 
 # Pass these galaxies into the 'ray_tracing' module, in this particular case a tracer which has both an image and source
 # plane. Using the lens galaxy's mass profile(s), deflection-angle and ray-tracing calculations are performed to

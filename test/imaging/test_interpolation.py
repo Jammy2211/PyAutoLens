@@ -21,7 +21,7 @@ def make_galaxy_no_profiles():
 
 @pytest.fixture(name="galaxy_mass_sis")
 def make_galaxy_mass_sis():
-    sis = mass_profiles.SphericalIsothermalMP(einstein_radius=1.0)
+    sis = mass_profiles.SphericalIsothermal(einstein_radius=1.0)
     return galaxy.Galaxy(mass_profile=sis)
 
 

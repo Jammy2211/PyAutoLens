@@ -25,10 +25,10 @@ def test_lens_x1_gal_hyper_pipeline():
     except FileNotFoundError:
         pass
 
-    bulge_0 = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
+    bulge_0 = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                   effective_radius=1.0, sersic_index=4.0)
 
-    bulge_1 = lp.EllipticalSersicLP(centre=(0.41, 0.41), axis_ratio=0.9, phi=90.0, intensity=1.0,
+    bulge_1 = lp.EllipticalSersic(centre=(0.41, 0.41), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                   effective_radius=1.0, sersic_index=4.0)
 
     lens_galaxy = galaxy.Galaxy(bulge_0=bulge_0, bulge_1=bulge_1)
@@ -52,7 +52,7 @@ def test_lens_x1_gal_hyper_pipeline():
 
 def make_lens_x1_gal_hyper_pipeline(pipeline_name):
 
-    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
