@@ -27,8 +27,8 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     psf = psf.renormalize()
     ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, pad_size=psf_size)
 
-    image_plane_grids = mask.GridCollection.from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=1,
-                                                                                       blurring_shape=psf_size)
+    image_plane_grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=1,
+                                                                                             psf_shape=psf_size)
 
     if not source_galaxies:
 
@@ -40,20 +40,20 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
                                                      image_grids=image_plane_grids)
 
     image_plane_image = tracer.image_plane_image
-    image_plane_image_2d = ma.map_unmasked_1d_array_to_2d_array(image_plane_image)
+    image_plane_image_2d = ma.map_padded_1d_array_to_original_2d_array(image_plane_image)
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
     shape = image_plane_image_2d.shape
     sim_image = im.PrepatoryImage.simulate_to_target_signal_to_noise(array=image_plane_image_2d, pixel_scale=pixel_scale,
-                target_signal_to_noise=target_signal_to_noise, effective_exposure_time=10.0 * np.ones(shape),
-                background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
+                                                                     target_signal_to_noise=target_signal_to_noise, effective_exposure_map=10.0 * np.ones(shape),
+                                                                     background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
     imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image')
-    imaging_util.numpy_array_to_fits(sim_image.estimated_noise, path=output_path + 'noise')
+    imaging_util.numpy_array_to_fits(sim_image.estimated_noise, path=output_path + 'noise_map')
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf')
     imaging_util.numpy_array_to_fits(sim_image.effective_exposure_time, path=output_path + 'exposure_time')
 
@@ -62,7 +62,7 @@ def load_image(data_name, pixel_scale):
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
     data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/image', hdu=0, pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise', hdu=0)
+    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise_map', hdu=0)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0)
 
-    return im.Image(array=data, pixel_scale=pixel_scale, psf=psf, noise=noise)
+    return im.Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
