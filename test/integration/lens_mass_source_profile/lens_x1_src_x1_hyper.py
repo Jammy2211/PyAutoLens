@@ -27,13 +27,13 @@ def test_lens_x1_src_x1_profile_hyper_pipeline():
     except FileNotFoundError:
         pass
 
-    lens_mass = mp.EllipticalIsothermalMP(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
+    lens_mass = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
     
-    source_bulge_0 = lp.EllipticalSersicLP(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
-                                  effective_radius=1.0, sersic_index=4.0)
+    source_bulge_0 = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                         effective_radius=1.0, sersic_index=4.0)
 
-    source_bulge_1 = lp.EllipticalSersicLP(centre=(0.1, 0.1), axis_ratio=0.9, phi=90.0, intensity=1.0,
-                                  effective_radius=1.0, sersic_index=4.0)
+    source_bulge_1 = lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                         effective_radius=1.0, sersic_index=4.0)
 
     lens_galaxy = galaxy.Galaxy(sie=lens_mass)
     source_galaxy = galaxy.Galaxy(bulge_0=source_bulge_0, bulge_1=source_bulge_1)
@@ -57,8 +57,8 @@ def test_lens_x1_src_x1_profile_hyper_pipeline():
 
 def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
-                                     source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
+                                     source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 60
@@ -75,8 +75,8 @@ def make_lens_x1_src_x1_profile_hyper_pipeline(pipeline_name):
             self.source_galaxies = phase1_results.variable.source_galaxies
             self.source_galaxies[0].hyper_galaxy = phase1h_results.constant.source_galaxies[0].hyper_galaxy
 
-    phase2 = SourceHyperPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
-                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase2 = SourceHyperPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
+                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                               optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
 
     phase2.optimizer.n_live_points = 40

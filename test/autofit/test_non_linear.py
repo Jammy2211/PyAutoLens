@@ -964,17 +964,17 @@ class TestRealClasses(object):
     def test__directory_setup__input_path_sets_up(self, mm_config, nlo_setup_path):
         conf.instance.output_path = nlo_setup_path + '1_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersicLP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic)
         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         assert os.path.exists(nlo_setup_path + '1_profile') == True
 
     def test__number_of_params__multiple_light_and_mass_profiles(self, mm_config, nlo_setup_path):
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersicLP,
-                                          light_profile_2=light_profiles.EllipticalSersicLP,
-                                          light_profile_3=light_profiles.EllipticalSersicLP,
-                                          mass_profile=mass_profiles.SphericalNFWMP,
-                                          mass_profile_2=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic,
+                                          light_profile_2=light_profiles.EllipticalSersic,
+                                          light_profile_3=light_profiles.EllipticalSersic,
+                                          mass_profile=mass_profiles.SphericalNFW,
+                                          mass_profile_2=mass_profiles.SphericalNFW)
         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         assert nlo.variable.total_parameters == 29
@@ -982,17 +982,17 @@ class TestRealClasses(object):
     # def test__create_param_names_2_light_models__2_mass_models(self, mm_config, nlo_paramnames_path):
     #
     #     light_profiles.EllipticalLP._ids = count()
-    #     mass_profiles.EllipticalMP._ids = count()
+    #     mass_profiles.EllipticalMassProfile._ids = count()
     #
     #     nlo = non_linear.NonLinearOptimizer(
     #         model_mapper=model_mapper.ModelMapper(config=config.DefaultPriorConfig(mm_config)),
     #         path=nlo_paramnames_path)
     #
     #     nlo.variable.add_classes(
-    #         light_profile_0=light_profiles.EllipticalSersicLP,
-    #         light_profile_1=light_profiles.EllipticalExponentialLP,
-    #         mass_profile_0=mass_profiles.SphericalIsothermalMP,
-    #         mass_profile_1=mass_profiles.SphericalNFWMP)
+    #         light_profile_0=light_profiles.EllipticalSersic,
+    #         light_profile_1=light_profiles.EllipticalExponential,
+    #         mass_profile_0=mass_profiles.SphericalIsothermal,
+    #         mass_profile_1=mass_profiles.SphericalNFW)
     #
     #     nlo.save_model_info()
     #
@@ -1026,10 +1026,10 @@ class TestRealClasses(object):
     # def test__output_model_info__2_models(self, mm_config, nlo_model_info_path):
     #     conf.instance.output_path = nlo_model_info_path
     #
-    #     mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.EllipticalSersicLP,
-    #                                       light_profile_1=light_profiles.EllipticalExponentialLP,
-    #                                       mass_profile_0=mass_profiles.SphericalIsothermalMP,
-    #                                       mass_profile_1=mass_profiles.SphericalNFWMP)
+    #     mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.EllipticalSersic,
+    #                                       light_profile_1=light_profiles.EllipticalExponential,
+    #                                       mass_profile_0=mass_profiles.SphericalIsothermal,
+    #                                       mass_profile_1=mass_profiles.SphericalNFW)
     #     nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
     #
     #     nlo.save_model_info()
@@ -1039,7 +1039,7 @@ class TestRealClasses(object):
     #     model_info_str = model_info_test.readlines()
     #
     #     assert model_info_str[0] == r'VARIABLE:' + '\n'
-    #     assert model_info_str[1] == r'EllipticalSersicLP' + '\n'
+    #     assert model_info_str[1] == r'EllipticalSersic' + '\n'
     #     assert model_info_str[2] == r'' + '\n'
     #     assert model_info_str[3] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[4] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
@@ -1049,7 +1049,7 @@ class TestRealClasses(object):
     #     assert model_info_str[8] == r'effective_radius: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[9] == r'sersic_index: UniformPrior, lower_limit = 1.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[10] == r'' + '\n'
-    #     assert model_info_str[11] == r'EllipticalExponentialLP' + '\n'
+    #     assert model_info_str[11] == r'EllipticalExponential' + '\n'
     #     assert model_info_str[12] == r'' + '\n'
     #     assert model_info_str[13] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[14] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
@@ -1058,13 +1058,13 @@ class TestRealClasses(object):
     #     assert model_info_str[17] == r'intensity: GaussianPrior, mean = 0.0, sigma = 0.5' + '\n'
     #     assert model_info_str[18] == r'effective_radius: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
     #     assert model_info_str[19] == r'' + '\n'
-    #     assert model_info_str[20] == r'SphericalIsothermalMP' + '\n'
+    #     assert model_info_str[20] == r'SphericalIsothermal' + '\n'
     #     assert model_info_str[21] == r'' + '\n'
     #     assert model_info_str[22] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[23] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
     #     assert model_info_str[24] == r'einstein_radius: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
     #     assert model_info_str[25] == r'' + '\n'
-    #     assert model_info_str[26] == r'SphericalNFWMP' + '\n'
+    #     assert model_info_str[26] == r'SphericalNFW' + '\n'
     #     assert model_info_str[27] == r'' + '\n'
     #     assert model_info_str[28] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[29] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
@@ -1076,8 +1076,8 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_summary_path + 'multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponentialLP,
-                                          mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                          mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         most_probable = mn.most_probable_from_summary()
@@ -1089,8 +1089,8 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_summary_path + 'multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponentialLP,
-                                          mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                          mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         most_likely = mn.most_likely_from_summary()
@@ -1102,8 +1102,8 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_summary_path + 'multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponentialLP,
-                                          mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                          mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         max_likelihood = mn.max_likelihood_from_summary()
@@ -1117,8 +1117,8 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_summary_path + 'multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponentialLP,
-                                          mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                          mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         most_probable = mn.most_probable_instance_from_summary()
@@ -1150,7 +1150,7 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_priors_path
 
-        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         gaussian_priors = mn.gaussian_priors_at_sigma_limit(sigma_limit=3.0)
@@ -1171,8 +1171,8 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_samples_path
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponentialLP,
-                                          mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+                                          mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
@@ -1197,7 +1197,7 @@ class TestRealClasses(object):
 
         conf.instance.output_path = mn_samples_path
 
-        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFWMP)
+        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
         assert mn.model_at_upper_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12, 2.12, 3.12, 4.12],

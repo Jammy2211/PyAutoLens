@@ -344,8 +344,8 @@ class PSF(Array):
     @classmethod
     def simulate_as_gaussian(cls, shape, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """Simulate the PSF as an elliptical Gaussian profile."""
-        from autolens.profiles.light_profiles import EllipticalGaussianLP
-        gaussian = EllipticalGaussianLP(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
+        from autolens.profiles.light_profiles import EllipticalGaussian
+        gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
         grid_1d = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=np.full(shape, False),
                                                                               pixel_scale=1.0)
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)

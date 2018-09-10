@@ -243,7 +243,7 @@ def make_no_galaxies():
 
 @pytest.fixture(name="sersic")
 def make_sersic():
-    return lp.EllipticalSersicLP(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0)
+    return lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0)
 
 @pytest.fixture(name="galaxy_light", scope='function')
 def make_galaxy_light(sersic):
@@ -522,8 +522,8 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0))
-            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=2.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_grids=mi.grids)
@@ -555,9 +555,9 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0), redshift=0.1)
-            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=2.0), redshift=0.2)
-            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=3.0), redshift=0.3)
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), redshift=0.1)
+            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
+            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0), redshift=0.3)
 
             from astropy import cosmology as cosmo
 
@@ -611,8 +611,8 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0))
-            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=2.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_grids=mi.grids)
@@ -644,11 +644,11 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0))
-            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=2.0))
-            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=3.0))
-            g3 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=4.0))
-            g4 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=5.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
+            g3 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=4.0))
+            g4 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=5.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1, g2], source_galaxies=[g3, g4],
                                                          image_grids=mi.grids)
@@ -695,11 +695,11 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0))
-            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=2.0))
-            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=3.0))
-            g3 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=4.0))
-            g4 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=5.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
+            g3 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=4.0))
+            g4 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=5.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g1, g3, g4], source_galaxies=[g0, g2],
                                                          image_grids=mi.grids)
@@ -746,9 +746,9 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0), redshift=0.1)
-            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=2.0), redshift=0.2)
-            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=3.0), redshift=0.3)
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), redshift=0.1)
+            g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
+            g2 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0), redshift=0.3)
 
             from astropy import cosmology as cosmo
 
@@ -786,7 +786,7 @@ class TestProfileFitter:
             li_no_blur.grids.image = np.array([[-2.0, -2.0], [2.0, 2.0]])
 
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(centre=(-1.6, -1.6), intensity=1.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
@@ -796,7 +796,7 @@ class TestProfileFitter:
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0,0)
 
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(centre=(1.6, -1.6), intensity=1.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
@@ -805,7 +805,7 @@ class TestProfileFitter:
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0,4)
 
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(centre=(-1.6, 1.6), intensity=1.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
@@ -814,7 +814,7 @@ class TestProfileFitter:
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4,0)
 
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(centre=(1.6, 1.6), intensity=1.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
@@ -907,7 +907,7 @@ class TestProfileFitter:
                                            [True, True,  True,  True,  True]]), pixel_scale=1.0)
             mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0))
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=mi.grids)
 
@@ -1046,8 +1046,8 @@ class TestHyperProfileFitter:
                                    np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])]
     
             hyper_galaxy = galaxy.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
-            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0),
-                                        hyper_galaxy=hyper_galaxy)
+            g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
+                               hyper_galaxy=hyper_galaxy)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_grids=mi.grids)
@@ -1230,7 +1230,7 @@ class TestHyperPixelizationFitter:
             hyper_galaxy_images = [np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])]
 
             hyper_galaxy = galaxy.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
-            galaxy_pix = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0),
+            galaxy_pix = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                                        hyper_galaxy=hyper_galaxy, pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_grids=mi.grids)
@@ -1298,7 +1298,7 @@ class TestHyperPixelizationFitter:
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
                                    np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])]
             hyper_model = galaxy.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
-            hyper_galaxy = galaxy.Galaxy(light_profile=lp.EllipticalSersicLP(intensity=1.0),
+            hyper_galaxy = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                                          hyper_galaxy=hyper_model)
             hyper_pix_galaxy = galaxy.Galaxy(pixelization=pix, hyper_galaxy=hyper_model)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],

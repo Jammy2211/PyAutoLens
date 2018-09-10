@@ -22,10 +22,10 @@ image = im.load(path=path + '/../data/basic/', pixel_scale=0.07)
 # Here, we make a lens galaxy with both a light profile (an elliptical Sersic) and mass profile
 # (a singular isothermal sphere). These profiles are loaded from the 'light_profile (lp)' and 'mass_profile (mp)'
 # modules, check them out in the source code to see all the profiles you can choose from!
-lens_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersicLP, mass=mp.EllipticalIsothermalMP)
+lens_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
 
 # We make the source galaxy just like the lens galaxy - lets use another Sersic light profile.
-source_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersicLP)
+source_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersic)
 
 # Finally, we need to set up the 'phase' in which the lensing is performed. Depending on the lensing you can choose
 # from 3 phases, which represent the number of planes in the lens system (LensPlanePhase, LensSourcePlanePhase,
