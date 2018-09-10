@@ -27,14 +27,14 @@ def test_lens_x2_gal_hyper_pipeline():
     except FileNotFoundError:
         pass
 
-    bulge_0 = lp.EllipticalSersicLP(centre=(-1.0, -1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
-                                    effective_radius=1.0, sersic_index=4.0)
-    disk_0 = lp.EllipticalSersicLP(centre=(-1.0, -1.0), axis_ratio=0.6, phi=90.0, intensity=20.0,
-                                   effective_radius=2.5, sersic_index=1.0)
-    bulge_1 = lp.EllipticalSersicLP(centre=(1.0, 1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
-                                    effective_radius=1.0, sersic_index=4.0)
-    disk_1 = lp.EllipticalSersicLP(centre=(1.0, 1.0), axis_ratio=0.6, phi=90.0, intensity=20.0,
-                                   effective_radius=2.5, sersic_index=1.0)
+    bulge_0 = lp.EllipticalSersic(centre=(-1.0, -1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                  effective_radius=1.0, sersic_index=4.0)
+    disk_0 = lp.EllipticalSersic(centre=(-1.0, -1.0), axis_ratio=0.6, phi=90.0, intensity=20.0,
+                                 effective_radius=2.5, sersic_index=1.0)
+    bulge_1 = lp.EllipticalSersic(centre=(1.0, 1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
+                                  effective_radius=1.0, sersic_index=4.0)
+    disk_1 = lp.EllipticalSersic(centre=(1.0, 1.0), axis_ratio=0.6, phi=90.0, intensity=20.0,
+                                 effective_radius=2.5, sersic_index=1.0)
 
     lens_galaxy_0 = galaxy.Galaxy(bulge=bulge_0, disk=disk_0)
     lens_galaxy_1 = galaxy.Galaxy(bulge=bulge_1, disk=disk_1)
@@ -66,7 +66,7 @@ def make_lens_x2_gal_hyper_pipeline(pipeline_name):
             self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, 0.0)
             self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, 0.0)
 
-    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                    phase_name="{}/phase1".format(pipeline_name))
 
@@ -79,8 +79,8 @@ def make_lens_x2_gal_hyper_pipeline(pipeline_name):
             self.lens_galaxies[1].elliptical_sersic.centre_0 = mm.UniformPrior(0.0, 2.0)
             self.lens_galaxies[1].elliptical_sersic.centre_1 = mm.UniformPrior(0.0, 2.0)
 
-    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
-                                                  gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic),
+                                                  gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                    phase_name="{}/phase2".format(pipeline_name))
 
@@ -97,8 +97,8 @@ def make_lens_x2_gal_hyper_pipeline(pipeline_name):
             self.lens_galaxies[0].hyper_galaxy = previous_results[-1].hyper.constant.lens_galaxies[0].hyper_galaxy
             self.lens_galaxies[1].hyper_galaxy = previous_results[-1].hyper.constant.lens_galaxies[1].hyper_galaxy
 
-    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP),
-                                                     gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersicLP)],
+    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic),
+                                                     gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
                                       mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                       phase_name="{}/phase3".format(pipeline_name))
 

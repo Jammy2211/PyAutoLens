@@ -23,7 +23,7 @@ def make():
 
     pipeline.setup_pipeline_path(pipeline_name)
 
-    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1_subtract_lens')
 
     phase1.optimizer.n_live_points = 50
@@ -42,8 +42,8 @@ def make():
         return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.4,
                                 outer_radius_arcsec=3.)
 
-    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.SphericalIsothermalMP)],
-                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.SphericalIsothermal)],
+                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                  optimizer_class=nl.MultiNest, mask_function=annular_mask_function,
                                  phase_name='ph2_fit_source')
 

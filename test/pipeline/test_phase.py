@@ -210,7 +210,7 @@ class TestPhase(object):
         assert tracer.source_plane.galaxies[0] == source_galaxy
 
     def test_unmasked_model_image_for_instance(self, image):
-        lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersicLP(intensity=1.0))
+        lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
         image_padded_grid = msk.ImagePaddedGrid.from_shapes_and_pixel_scale(shape=image.shape,
                                                                               psf_shape=image.psf.shape,
                                                                               pixel_scale=image.pixel_scale)
@@ -226,11 +226,11 @@ class TestPhase(object):
         assert (blurred_image == unmasked_model_image).all()
 
     def test__phase_can_receive_list_of_galaxy_priors(self):
-        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
-                                                                sis=mp.SphericalIsothermalMP,
+        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic,
+                                                                sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
-                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
-                                                                  variable_redshift=True)],
+                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermal,
+                                                                variable_redshift=True)],
                                   optimizer_class=non_linear.MultiNest)
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
@@ -251,11 +251,11 @@ class TestPhase(object):
             def pass_priors(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
-        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
-                                                              sis=mp.SphericalIsothermalMP,
+        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic,
+                                                              sis=mp.SphericalIsothermal,
                                                               variable_redshift=True),
-                                               gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
-                                                                variable_redshift=True)],
+                                               gp.GalaxyPrior(sis=mp.SphericalIsothermal,
+                                                              variable_redshift=True)],
                                 optimizer_class=non_linear.MultiNest)
 
         # noinspection PyTypeChecker
