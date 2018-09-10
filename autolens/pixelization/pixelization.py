@@ -460,7 +460,7 @@ class Voronoi(Pixelization):
         Parameters
         ----------
 
-        grids: mask.LensingGrids
+        grids: mask.ImagingGrids
             A collection of coordinates for the masked masked_image, subgrid and blurring grid
         cluster_mask: mask.SparseMask
             A mask describing the masked_image pixels that should be used in pixel clustering
@@ -481,7 +481,7 @@ class Voronoi(Pixelization):
 
          """
 
-        sub_to_pixelization = np.zeros((grids.sub.no_pixels,), dtype=int)
+        sub_to_pixelization = np.zeros((grids.sub.total_pixels,), dtype=int)
 
         for sub_index, sub_coordinate in enumerate(grids.sub):
             nearest_cluster = cluster_mask.image_to_sparse[grids.sub.sub_to_image[sub_index]]
@@ -612,7 +612,7 @@ class Cluster(Voronoi):
 
         Parameters
         ----------
-        grids: mask.LensingGrids
+        grids: mask.ImagingGrids
             A collection of coordinates for the masked masked_image, subgrid and blurring grid
         cluster_mask: mask.SparseMask
             A mask describing the masked_image pixels that should be used in pixel clustering
@@ -733,7 +733,7 @@ class Amorphous(Voronoi):
 
         Parameters
         ----------
-        grids: mask.LensingGrids
+        grids: mask.ImagingGrids
             A collection of coordinates for the masked masked_image, subgrid and blurring grid
         cluster_mask: mask.SparseMask
             A mask describing the masked_image pixels that should be used in pixel clustering

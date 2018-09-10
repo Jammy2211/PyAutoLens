@@ -2,7 +2,7 @@ import numpy as np
 
 class AbstractRegularization(object):
     """ Regularization is applied to a pixelization to enforce a smooth-source solution and prevent over-fitting \
-    noise in the image. This is achieved by computing a 'regularization term' - which is the sum of differences in  \
+    noise_map in the image. This is achieved by computing a 'regularization term' - which is the sum of differences in  \
     reconstructed flux between every set of neighboring source-pixels. This regularization term is added to the \
     solution's chi-squared as a penalty term, effecting a _reconstruction in the following ways:
 
