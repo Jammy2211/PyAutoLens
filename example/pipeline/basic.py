@@ -20,7 +20,7 @@ def make():
 
     # This line follows the same syntax as our phase did in phase/basic.py. However, as we're breaking the analysis
     # down to only fit the lens's light, that means we use the 'LensPlanePhase' and just specify the lens galaxy.
-    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1')
 
     # In phase 2, we fit the source galaxy's light. Thus, we want to make 2 changes from the previous phase:
@@ -41,8 +41,8 @@ def make():
 
     # We setup phase 2 just like any other phase, now using the LensSubtracted phase we created above so that our new
     # image and masks are used.
-                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
-    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermalMP)],
+                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
                                  phase_name='ph2')
 
