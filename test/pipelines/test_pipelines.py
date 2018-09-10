@@ -78,7 +78,7 @@
 #
 # @pytest.fixture(pipeline_name="image")
 # def make_image():
-#     return im.Image(np.ones(shape), pixel_scale=pixel_scale, noise=np.ones(shape), psf=im.PSF(np.ones((3, 3))))
+#     return im.Image(np.ones(shape), pixel_scale=pixel_scale, noise_map=np.ones(shape), psf=im.PSF(np.ones((3, 3))))
 #
 #
 # @pytest.fixture(pipeline_name="results_1")

@@ -4,7 +4,6 @@ from autolens.autofit import non_linear
 from autolens.imaging import mask as msk
 from autolens.imaging import image as img
 from autolens.lensing import lensing_image as li
-from autolens.lensing import grids
 from autolens.lensing import galaxy as g
 from autolens.lensing import galaxy_prior as gp
 from autolens.profiles import light_profiles as lp
@@ -72,7 +71,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="grids")
 def make_grids(lensing_image):
-    return grids.LensingGrids.from_mask_sub_grid_size_and_blurring_shape(
+    return msk.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 
@@ -93,13 +92,13 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise_map=np.ones(shape))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise_map=np.ones(shape))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return li.LensingImage(image, mask)
 
@@ -212,12 +211,12 @@ class TestPhase(object):
 
     def test_unmasked_model_image_for_instance(self, image):
         lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersicLP(intensity=1.0))
-        image_grid_mapper = grids.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=image.shape,
-                                                                                   psf_shape=image.psf.shape,
-                                                                                   pixel_scale=image.pixel_scale)
-        image_1d = lens_galaxy.intensities_from_grid(image_grid_mapper)
-        blurred_image_1d = image_grid_mapper.convolve_unmasked_array_with_psf_and_trim(image_1d, image.psf)
-        blurred_image = image_grid_mapper.map_unmasked_1d_array_to_2d_array(blurred_image_1d)
+        image_padded_grid = msk.ImagePaddedGrid.from_shapes_and_pixel_scale(shape=image.shape,
+                                                                              psf_shape=image.psf.shape,
+                                                                              pixel_scale=image.pixel_scale)
+        image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
+        blurred_image_1d = image_padded_grid.convolve_padded_array_1d_with_psf_and_trim(image_1d, image.psf)
+        blurred_image = image_padded_grid.map_padded_1d_array_to_original_2d_array(blurred_image_1d)
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
         analysis = phase.make_analysis(image)

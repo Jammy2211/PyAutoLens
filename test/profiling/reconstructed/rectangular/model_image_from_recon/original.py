@@ -48,7 +48,7 @@ hst_reconstructed = hst_recon.reconstruction_from_reconstructor_and_data(hst.mas
                                                                          hst.masked_image.convolver_mapping_matrix)
 hst_up_reconstructed = hst_up_recon.reconstruction_from_reconstructor_and_data(hst_up.masked_image, hst_up.masked_image.background_noise,
                                                                                hst_up.masked_image.convolver_mapping_matrix)
-# ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise,
+# ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise_map,
 #                                                   ao.masked_image.convolver_mapping_matrix)
 
 lsst_reconstructed.reconstructed_image()
