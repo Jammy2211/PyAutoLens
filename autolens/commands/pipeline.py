@@ -54,6 +54,8 @@ class Pipeline(Base):
             return
         if name is not None:
             if name not in pipeline.pipeline_dict:
+                if name == "test":
+                    self.run_pipeline(pipeline.TestPipeline())
                 print("No pipeline called '{}' found".format(name))
                 return
             self.run_pipeline(pipeline.pipeline_dict[name].make())
