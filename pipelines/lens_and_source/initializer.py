@@ -11,8 +11,8 @@ Sersic (source).
 
 pipeline_name = 'initializer'
 
-def make():
 
+def make():
     from autolens.pipeline import phase
     from autolens.pipeline import pipeline
     from autolens.autofit import non_linear as nl
@@ -40,7 +40,7 @@ def make():
 
     def annular_mask_function(img):
         return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.4,
-                                outer_radius_arcsec=3.)
+                                 outer_radius_arcsec=3.)
 
     phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.SphericalIsothermal)],
                                  source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
@@ -59,7 +59,7 @@ def make():
             self.source_galaxies = previous_results.last.variable.source_galaxies
 
     phase3 = LensSourcePhase(optimizer_class=nl.MultiNest, phase_name='ph3_fit_all')
-    
+
     phase3.optimizer.n_live_points = 60
     phase3.optimizer.sampling_efficiency = 0.8
 
