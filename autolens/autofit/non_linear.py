@@ -84,8 +84,7 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the data_vector being analysed (e.g. the analysis_path of the data_vector set)
         """
-        self.paramnames_names = []
-        self.paramnames_labels = []
+
         self.named_config = conf.instance.non_linear
 
         if name is None:
@@ -125,8 +124,6 @@ class NonLinearOptimizer(object):
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
-        self.create_paramnames_names()
-        self.create_paramnames_labels_temp()
         self.create_paramnames_file()
         self.variable.output_model_info(self.file_model_info)
 
@@ -135,27 +132,31 @@ class NonLinearOptimizer(object):
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
-    def create_paramnames_names(self):
+    @property
+    def paramnames_names(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
 
-        self.paramnames_names = []
+        paramnames_names = []
 
         for prior_name, prior_model in self.variable.prior_models:
             class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name],
                                                key=lambda prior: prior[1].id)
             for param_no, param in enumerate(class_priors_dict_ordered):
-                self.paramnames_names.append(prior_name + '_' + param[0])
+                paramnames_names.append(prior_name + '_' + param[0])
 
-    def create_paramnames_labels(self):
+        return paramnames_names
+
+    @property
+    def paramnames_labels(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
 
-        self.paramnames_labels = []
+        paramnames_labels = []
 
         for prior_name, prior_model in self.variable.prior_models:
             param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
@@ -165,18 +166,23 @@ class NonLinearOptimizer(object):
             class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name],
                                                key=lambda prior: prior[1].id)
             for param_no, param in enumerate(class_priors_dict_ordered):
-                self.paramnames_labels.append(param_labels[param_no])
+                paramnames_labels.append(param_labels[param_no])
 
-    def create_paramnames_labels_temp(self):
+        return paramnames_labels
+
+    @property
+    def paramnames_labels_temp(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
 
-        self.paramnames_labels = []
+        paramnames_labels = []
 
         for i in range(self.variable.total_parameters):
-            self.paramnames_labels.append('p' + str(i))
+            paramnames_labels.append('p' + str(i))
+
+        return paramnames_labels
 
     def create_paramnames_file(self):
         """The param_names file lists every parameter's analysis_path and Latex tag, and is used for *GetDist*
@@ -187,7 +193,7 @@ class NonLinearOptimizer(object):
         with open(self.file_param_names, 'w') as paramnames:
             for i in range(self.variable.total_parameters):
                 line = self.paramnames_names[i]
-                line += ' ' * (50 - len(line)) + self.paramnames_labels[i]
+                line += ' ' * (50 - len(line)) + self.paramnames_labels_temp[i]
                 paramnames.write(line + '\n')
 
 
