@@ -517,83 +517,7 @@ class TestPaddedGrids:
             assert (sub_padded_grid == sub_padded_grid_util).all()
 
 
-    class TestTrimPaddedArrayToOriginal:
-
-        def test__map_padded_4x4__unmasked_1d_array_to_2d_array_and_trim_to_original_2x2(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(2, 2), padded_shape=(4 , 4))
-
-            padded_array_2d = np.array([[1.0,  2.0,  3.0,  4.0],
-                                        [5.0,  6.0,  7.0,  8.0],
-                                        [9.0, 10.0, 11.0, 12.0],
-                                        [13.0, 14.0, 15.0, 16.0]])
-            array_2d = image_padded_grid.trim_padded_array_2d_to_original_shape(padded_array_2d)
-
-            assert (array_2d == np.array([[ 6.0,  7.0],
-                                          [10.0, 11.0]])).all()
-
-        def test__map_padded_5x3__unmasked_1d_array_to_2d_array_and_trim_to_original_3x1(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
-
-            padded_array_2d = np.array([[1.0,  2.0,  3.0],
-                                 [4.0,  5.0,  6.0],
-                                 [7.0,  8.0,  9.0],
-                                 [10.0, 11.0, 12.0],
-                                 [13.0, 14.0, 15.0]])
-            array_2d = image_padded_grid.trim_padded_array_2d_to_original_shape(padded_array_2d)
-
-            assert (array_2d == np.array([[5.0],
-                                          [8.0],
-                                          [11.0]])).all()
-
-        def test__map_padded_3x5__unmasked_1d_array_to_2d_array_and_trim_to_original_1x3(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
-
-            padded_array_2d = np.array([[1.0,  2.0,  3.0, 4.0,  5.0],
-                                 [6.0,  7.0,  8.0,  9.0, 10.0],
-                                 [11.0, 12.0, 13.0, 14.0, 15.0]])
-            array_2d = image_padded_grid.trim_padded_array_2d_to_original_shape(padded_array_2d)
-
-            assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
-
-        def test__map_padded_7x3__unmasked_1d_array_to_2d_array_and_trim_to_original_5x1(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(5 , 1), padded_shape=(7 , 3))
-
-            padded_array_2d = np.array([[1.0,  2.0,  3.0],
-                                 [4.0,  5.0,  6.0],
-                                 [7.0,  8.0,  9.0],
-                                 [10.0, 11.0, 12.0],
-                                 [13.0, 14.0, 15.0],
-                                 [16.0, 17.0, 18.0],
-                                 [19.0, 20.0, 21.0]])
-
-            array_2d = image_padded_grid.trim_padded_array_2d_to_original_shape(padded_array_2d)
-
-            assert (array_2d == np.array([[5.0],
-                                          [8.0],
-                                          [11.0],
-                                          [14.0],
-                                          [17.0]])).all()
-
-        def test__map_padded_4x7__unmasked_1d_array_to_2d_array_and_trim_to_original_2x5(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(2 , 5), padded_shape=(4, 7))
-
-            padded_array_2d = np.array([[1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0],
-                                 [8.0,  9.0, 10.0, 11.0, 12.0, 13.0, 14.0],
-                                 [15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0],
-                                 [22.0, 23.0, 24.0, 25.0, 26.0, 27.0, 28.0]])
-
-            array_2d = image_padded_grid.trim_padded_array_2d_to_original_shape(padded_array_2d)
-
-            assert (array_2d == np.array([[9.0,  10.0, 11.0, 12.0, 13.0],
-                                          [16.0, 17.0, 18.0, 19.0, 20.0]])).all()
-
-
-    class TestConvolveAndTrim:
+    class TestConvolve:
 
         def test__convolve_1d_mapper_array_with_psf_and_trim_to_original_size(self):
 
@@ -610,10 +534,12 @@ class TestPaddedGrids:
 
             psf = image.PSF(array=kernel)
 
-            blurred_array_1d = image_padded_grid.convolve_padded_array_1d_with_psf_and_trim(array_1d, psf)
+            blurred_array_1d = image_padded_grid.convolve_padded_array_1d_with_psf(array_1d, psf)
 
-            assert (blurred_array_1d == np.array([1.0, 0.0,
-                                                  2.0, 1.0])).all()
+            assert (blurred_array_1d == np.array([0.0, 0.0, 0.0, 0.0,
+                                                  0.0, 1.0, 0.0, 0.0,
+                                                  1.0, 2.0, 1.0, 0.0,
+                                                  0.0, 1.0, 0.0, 0.0])).all()
 
         def test__same_as_above_but_different_quantities(self):
 
@@ -631,57 +557,20 @@ class TestPaddedGrids:
 
             psf = image.PSF(array=kernel)
 
-            blurred_array_1d = image_padded_grid.convolve_padded_array_1d_with_psf_and_trim(array_1d, psf)
+            blurred_array_1d = image_padded_grid.convolve_padded_array_1d_with_psf(array_1d, psf)
 
-            assert (blurred_array_1d == np.array([1.0, 4.0,
-                                                  3.0, 1.0,
-                                                  5.0, 1.0])).all()
+            assert (blurred_array_1d == np.array([0.0, 0.0, 0.0, 0.0,
+                                                  1.0, 1.0, 4.0, 0.0,
+                                                  1.0, 3.0, 1.0, 0.0,
+                                                  2.0, 5.0, 1.0, 0.0,
+                                                  3.0, 1.0, 0.0, 0.0])).all()
 
 
     class TestMapUnmaskedArrays:
 
-        def test__map_original_2x2_from_1d(self):
+        def test__map_to_2d__2x2_from_1d(self):
 
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(2 , 2), padded_shape=(4 , 4))
-
-            array_1d = np.array([6.0,  7.0,
-                                 9.0, 10.0])
-            array_2d = image_padded_grid.map_to_2d(array_1d)
-
-            assert (array_2d == np.array([[6.0,  7.0],
-                                          [9.0, 10.0]])).all()
-
-        def test__map_original_3x1_from_1d(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
-
-            array_1d = np.array([5.0,
-                                 8.0,
-                                11.0])
-            array_2d = image_padded_grid.map_to_2d(array_1d)
-
-            assert (array_2d == np.array([[5.0],
-                                          [8.0],
-                                          [11.0]])).all()
-
-        def test__map_original_1x3__from_1d(self):
-
-            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
-
-            array_1d = np.array([7.0,  8.0,  9.0])
-            array_2d = image_padded_grid.map_to_2d(array_1d)
-
-            assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
-
-
-class TestSimulationGrids:
-    
-    
-    class TestMapUnmaskedArrays:
-
-        def test__map_original_2x2_from_1d(self):
-
-            image_padded_grid = mask.ImageSimulationGrid(arr=np.empty((0)), original_shape=(2 , 2),
+            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(2 , 2),
                                                          padded_shape=(4 , 4))
 
             array_1d = np.array([6.0, 7.0, 9.0, 10.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0])
@@ -692,9 +581,9 @@ class TestSimulationGrids:
                                           [5.0, 6.0, 7.0,  8.0],
                                           [1.0, 2.0, 3.0,  4.0]])).all()
 
-        def test__map_original_3x1_from_1d(self):
+        def test__map_to_2d__3x1_from_1d(self):
 
-            image_padded_grid = mask.ImageSimulationGrid(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
+            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
 
             array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
             array_2d = image_padded_grid.map_to_2d(array_1d)
@@ -705,9 +594,9 @@ class TestSimulationGrids:
                                           [1.0, 2.0, 3.0],
                                           [4.0, 5.0, 6.0]])).all()
 
-        def test__map_original_1x3__from_1d(self):
+        def test__map_to_2d_1x3__from_1d(self):
 
-            image_padded_grid = mask.ImageSimulationGrid(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
+            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
 
             array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
             array_2d = image_padded_grid.map_to_2d(array_1d)
@@ -715,6 +604,39 @@ class TestSimulationGrids:
             assert (array_2d == np.array([[1.0, 2.0, 3.0, 4.0, 5.0],
                                           [6.0, 7.0, 8.0, 9.0, 1.0],
                                           [2.0, 3.0, 4.0, 5.0, 6.0]])).all()
+
+        def test__map_to_2d_and_trim__2x2_from_1d(self):
+
+            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(2 , 2), padded_shape=(4 , 4))
+
+            array_1d = np.array([6.0,  7.0,
+                                 9.0, 10.0])
+            array_2d = image_padded_grid.map_to_2d_and_trim(array_1d)
+
+            assert (array_2d == np.array([[6.0,  7.0],
+                                          [9.0, 10.0]])).all()
+
+        def test__map_map_to_2d_and_trim__3x1_from_1d(self):
+
+            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(3 , 1), padded_shape=(5 , 3))
+
+            array_1d = np.array([5.0,
+                                 8.0,
+                                11.0])
+            array_2d = image_padded_grid.map_to_2d_and_trim(array_1d)
+
+            assert (array_2d == np.array([[5.0],
+                                          [8.0],
+                                          [11.0]])).all()
+
+        def test__map_to_2d_and_trim_1x3__from_1d(self):
+
+            image_padded_grid = mask.ImagePaddedGrid(arr=np.empty((0)), original_shape=(1, 3), padded_shape=(3 , 5))
+
+            array_1d = np.array([7.0,  8.0,  9.0])
+            array_2d = image_padded_grid.map_to_2d_and_trim(array_1d)
+
+            assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
 
 
 class TestImagingGrids(object):
