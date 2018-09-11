@@ -1,4 +1,3 @@
-
 class HyperImage(object):
 
     def __init__(self, background_sky_scale=0.0, background_noise_scale=0.0):
@@ -13,14 +12,6 @@ class HyperImage(object):
         """
         self.background_sky_scale = background_sky_scale
         self.background_noise_scale = background_noise_scale
-
-    @property
-    def subscript(self):
-        return 'hi'
-
-    @property
-    def parameter_labels(self):
-        return [r'\sigma', r'\sigma']
 
     def sky_scaled_image_from_image(self, image):
         """Compute a new image with the background sky level scaled. This can simply multiple by a constant factor \
