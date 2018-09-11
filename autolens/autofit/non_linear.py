@@ -152,7 +152,7 @@ class NonLinearOptimizer(object):
     def create_paramnames_labels(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
 
         self.paramnames_labels = []
@@ -170,7 +170,7 @@ class NonLinearOptimizer(object):
     def create_paramnames_labels_temp(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
 
         self.paramnames_labels = []
