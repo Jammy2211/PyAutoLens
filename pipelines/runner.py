@@ -28,7 +28,7 @@ def load_image(data_name, pixel_scale, image_hdu, noise_hdu, psf_hdu, psf_trimme
                                   effective_exposure_map=effective_exposure_time)
 
 
-im = load_image(data_name='slacs05_bg/slacs_4_post', pixel_scale=0.05, image_hdu=1, noise_hdu=2, psf_hdu=3,
+im = load_image(data_name='slacs05_bg/slacs_4_post.fits', pixel_scale=0.05, image_hdu=1, noise_hdu=2, psf_hdu=3,
                 psf_trimmed_shape=(41, 41), effective_exposure_time=288.0)
 
 im.background_noise_map = 1.0 / im.background_noise_map
