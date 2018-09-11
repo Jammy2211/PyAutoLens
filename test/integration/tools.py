@@ -41,9 +41,9 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
     shape = image_plane_image_2d.shape
-    sim_image = im.PrepatoryImage.simulate_to_target_signal_to_noise(array=image_plane_image_2d, pixel_scale=pixel_scale,
-                                                                     target_signal_to_noise=target_signal_to_noise, effective_exposure_map=10.0 * np.ones(shape),
-                                                                     background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
+    sim_image = im.PreparatoryImage.simulate_to_target_signal_to_noise(array=image_plane_image_2d, pixel_scale=pixel_scale,
+                                                                       target_signal_to_noise=target_signal_to_noise, effective_exposure_map=10.0 * np.ones(shape),
+                                                                       background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
