@@ -24,8 +24,8 @@ def load_image(data_name, pixel_scale, image_hdu, noise_hdu, psf_hdu, psf_trimme
         effective_exposure_time = scaled_array.ScaledArray.single_value(value=effective_exposure_time, shape=data.shape,
                                                                         pixel_scale=pixel_scale)
 
-    return image.PrepatoryImage(array=data, pixel_scale=pixel_scale, psf=psf, background_noise_map=background_noise,
-                                effective_exposure_map=effective_exposure_time)
+    return image.PreparatoryImage(array=data, pixel_scale=pixel_scale, psf=psf, background_noise_map=background_noise,
+                                  effective_exposure_map=effective_exposure_time)
 
 
 im = load_image(data_name='slacs05_bg/slacs_4_post', pixel_scale=0.05, image_hdu=1, noise_hdu=2, psf_hdu=3,
