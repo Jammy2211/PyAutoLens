@@ -769,12 +769,12 @@ class TestPSF(object):
             assert psf.shape == (4, 3)
 
         def test__from_fits__input_psf_3x3__all_attributes_correct_including_data_inheritance(self):
-            psf = image.PSF.from_fits(file_path=test_data_dir + '3x3_ones', hdu=0)
+            psf = image.PSF.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0)
 
             assert (psf == np.ones((3, 3))).all()
 
         def test__from_fits__input_psf_4x3__all_attributes_correct_including_data_inheritance(self):
-            psf = image.PSF.from_fits(file_path=test_data_dir + '4x3_ones', hdu=0)
+            psf = image.PSF.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0)
 
             assert (psf == np.ones((4, 3))).all()
 
