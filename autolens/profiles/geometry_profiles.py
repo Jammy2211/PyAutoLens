@@ -117,10 +117,6 @@ class SphericalProfile(GeometryProfile):
         """
         super(SphericalProfile, self).__init__(centre)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y']
-
     @transform_grid
     def grid_to_radius(self, grid):
         """
@@ -208,10 +204,6 @@ class EllipticalProfile(SphericalProfile):
     @property
     def phi_radians(self):
         return np.radians(self.phi)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi']
 
     @property
     def cos_phi(self):

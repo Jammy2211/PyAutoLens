@@ -71,7 +71,7 @@ class Result(object):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, **classes):
+    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, label_config=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -92,8 +92,10 @@ class NonLinearOptimizer(object):
         self.path = "{}/{}".format(conf.instance.output_path, name)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-        self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
+        self.variable = model_mapper or mm.ModelMapper()
         self.constant = mm.ModelInstance()
+
+        self.label_config = label_config or conf.instance.label
 
         self.file_param_names = "{}/{}".format(self.path, 'mn.paramnames')
         self.file_model_info = "{}/{}".format(self.path, 'model.info')
@@ -158,12 +160,12 @@ class NonLinearOptimizer(object):
 
         paramnames_labels = []
 
-        for prior_name, prior_model in self.variable.prior_models:
-            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
+        for prior_model_name, prior_model in self.variable.prior_models:
+            param_labels = [self.label_config.get("label", prior_name) for prior_name, _ in prior_model.priors]
             component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+            subscript = self.label_config.get("subscript", prior_model.cls.__name__) + str(component_number + 1)
             param_labels = generate_parameter_latex(param_labels, subscript)
-            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name],
+            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_model_name],
                                                key=lambda prior: prior[1].id)
             for param_no, param in enumerate(class_priors_dict_ordered):
                 paramnames_labels.append(param_labels[param_no])
