@@ -14,4 +14,4 @@ class TestCLI(object):
             "--pixel-scale=0.05".format(directory),
             shell=True)
 
-        print(result)
+        assert result is not None
