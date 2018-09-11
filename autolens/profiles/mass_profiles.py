@@ -60,7 +60,8 @@ class MassProfile(object):
         raise NotImplementedError("surface_density_at_radius should be overridden")
 
     def surface_density_from_grid(self, grid):
-        raise NotImplementedError("surface_density_from_grid should be overridden")
+        pass
+        # raise NotImplementedError("surface_density_from_grid should be overridden")
 
     def potential_from_grid(self, grid):
         pass
@@ -861,7 +862,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        def calculate_deflection_component(grid, npow, index):
+        def calculate_deflection_component(npow, index):
             deflection_grid = np.zeros(grid.shape[0])
 
             for i in range(grid.shape[0]):
@@ -872,8 +873,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
             return deflection_grid
 
-        deflection_x = calculate_deflection_component(grid, 0.0, 0)
-        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
@@ -984,6 +985,7 @@ class SphericalNFW(EllipticalNFW):
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
 
+# noinspection PyAbstractClass
 class AbstractEllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
@@ -1040,9 +1042,9 @@ class EllipticalSersic(AbstractEllipticalSersic):
                         sersic_constant):
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
-        return mass_to_light_ratio * intensity * \
-               np.exp(-sersic_constant * (((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) \
-               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return mass_to_light_ratio * intensity * np.exp(
+            -sersic_constant * (((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) / (
+                           (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
@@ -1055,7 +1057,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        def calculate_deflection_component(grid, npow, index):
+        def calculate_deflection_component(npow, index):
             deflection_grid = np.zeros(grid.shape[0])
 
             sersic_constant = self.sersic_constant
@@ -1071,8 +1073,8 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
             return deflection_grid
 
-        deflection_x = calculate_deflection_component(grid, 0.0, 0)
-        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
@@ -1082,7 +1084,7 @@ class SphericalSersic(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
                  mass_to_light_ratio=1.0):
         """
-        The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+        The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         galaxy's light.
 
         Parameters
@@ -1146,7 +1148,7 @@ class SphericalExponential(EllipticalExponential):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
-        The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
+        The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         galaxy's light.
 
         Parameters
@@ -1207,8 +1209,8 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
-        The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
-        galaxy's light.
+        The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the
+        lens galaxy's light.
 
         Parameters
         ----------
@@ -1218,8 +1220,6 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The radius containing half the light of this model_mapper
-        DevVaucouleurs_index : Int
-            The concentration of the light profiles
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
@@ -1287,7 +1287,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        def calculate_deflection_component(grid, npow, index):
+        def calculate_deflection_component(npow, index):
             deflection_grid = np.zeros(grid.shape[0])
 
             sersic_constant = self.sersic_constant
@@ -1304,15 +1304,16 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
             return deflection_grid
 
-        deflection_x = calculate_deflection_component(grid, 0.0, 0)
-        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
     def surface_density_func(self, radius):
-        return self.mass_to_light_ratio * (
-                ((self.axis_ratio * radius) / self.effective_radius) ** -self.mass_to_light_gradient) \
-               * self.intensity_at_radius(radius)
+        return (self.mass_to_light_ratio * (
+                ((self.axis_ratio *
+                  radius) /
+                 self.effective_radius) ** -self.mass_to_light_gradient) * self.intensity_at_radius(radius))
 
     @staticmethod
     @jit_integrand
@@ -1320,9 +1321,10 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
                         mass_to_light_gradient, sersic_constant):
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
-        return mass_to_light_ratio * (((axis_ratio * eta_u) / effective_radius) ** -mass_to_light_gradient) * \
-               intensity * np.exp(-sersic_constant * (((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) \
-               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return mass_to_light_ratio * (
+                ((axis_ratio * eta_u) / effective_radius) ** -mass_to_light_gradient) * intensity * np.exp(
+            -sersic_constant * (((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) / (
+                       (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
 
 class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
@@ -1355,6 +1357,7 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         return ['x', 'y', 'I', 'R', 'n', r'\Psi', r'\Tau']
 
 
+# noinspection PyAbstractClass
 class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def __init__(self, magnitude=0.2, phi=0.0):
         """
