@@ -296,10 +296,6 @@ class MockClassNLOx4(object):
         self.three = three
         self.four = four
 
-    @property
-    def subscript(self):
-        return 'a'
-
 
 class MockClassNLOx5(object):
     component_number = 0
@@ -311,14 +307,6 @@ class MockClassNLOx5(object):
         self.four = four
         self.five = five
 
-    @property
-    def subscript(self):
-        return 'a'
-
-    @property
-    def parameter_labels(self):
-        return [r'x4p0', r'x4p1', r'x4p2', r'x4p3']
-
 
 class MockClassNLOx6(object):
     component_number = 1
@@ -328,14 +316,6 @@ class MockClassNLOx6(object):
         self.two = two
         self.three = three
         self.four = four
-
-    @property
-    def subscript(self):
-        return 'b'
-
-    @property
-    def parameter_labels(self):
-        return [r'x6p0', r'x6p1', r'x6p2', r'x6p3', r'x6p4', r'x6p5']
 
 
 class TestGenerateLatex(object):
@@ -1267,8 +1247,6 @@ class TestFitting(object):
         def test_constant(self, downhill_simplex):
             downhill_simplex.constant.mock_class = MockClassNLOx4()
             result = downhill_simplex.fit(MockAnalysis())
-
-            print(result)
 
             assert result.constant.mock_class.one == 1
             assert result.constant.mock_class.two == 2
