@@ -71,7 +71,7 @@ class Result(object):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, **classes):
+    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, label_config=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -92,8 +92,10 @@ class NonLinearOptimizer(object):
         self.path = "{}/{}".format(conf.instance.output_path, name)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-        self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
+        self.variable = model_mapper or mm.ModelMapper()
         self.constant = mm.ModelInstance()
+
+        self.label_config = label_config or conf.instance.label
 
         self.file_param_names = "{}/{}".format(self.path, 'mn.paramnames')
         self.file_model_info = "{}/{}".format(self.path, 'model.info')
