@@ -515,7 +515,8 @@ class SphericalIsothermal(EllipticalIsothermal):
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
-class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile):
+# noinspection PyAbstractClass
+class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile):
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -538,7 +539,7 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
             The radius containing half the light of this model_mapper
         """
 
-        super(EllipticalGeneralizedNFW, self).__init__(centre, axis_ratio, phi)
+        super(AbstractEllipticalGeneralizedNFW, self).__init__(centre, axis_ratio, phi)
         super(MassProfile, self).__init__()
         self.kappa_s = kappa_s
         self.scale_radius = scale_radius
@@ -587,6 +588,9 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
 
         return surface_density_grid
 
+
+class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
+
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid, tabulate_bins=1000):
         """
@@ -594,6 +598,7 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
 
         Parameters
         ----------
+        tabulate_bins
         grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
@@ -606,7 +611,7 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
 
         potential_grid = np.zeros(grid.shape[0])
 
-        deflection_integral = np.zeros((tabulate_bins))
+        deflection_integral = np.zeros((tabulate_bins,))
 
         for i in range(tabulate_bins):
             eta = 10. ** (minimum_log_eta + (i - 1) * bin_size)
@@ -646,21 +651,27 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
         def surface_density_integrand(x, kappa_radius, scale_radius, inner_slope):
             return (3 - inner_slope) * (x + kappa_radius / scale_radius) ** (inner_slope - 4) * (1 - np.sqrt(1 - x * x))
 
-        def calculate_deflection_component(grid, npow, index):
+        def calculate_deflection_component(npow, index):
 
             deflection_grid = np.zeros(grid.shape[0])
 
-            for i in range(grid.shape[0]):
-                deflection_grid[i] = 2.0 * self.kappa_s * self.axis_ratio * grid[i, index] * quad(self.deflection_func,
-                                                                                                  a=0.0, b=1.0, args=(
-                        grid[i, 0], grid[i, 1], npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
-                        tabulate_bins, surface_density_integral), epsrel=EllipticalGeneralizedNFW.epsrel)[0]
+            for j in range(grid.shape[0]):
+                coeff = 2.0 * self.kappa_s * self.axis_ratio * grid[j, index]
+                deflection_grid[j] = coeff * quad(self.deflection_func, a=0.0, b=1.0, args=(
+                    grid[j, 0],
+                    grid[j, 1],
+                    npow,
+                    self.axis_ratio,
+                    minimum_log_eta,
+                    maximum_log_eta,
+                    tabulate_bins,
+                    surface_density_integral), epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
             return deflection_grid
 
         eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size = self.tabulate_integral(grid, tabulate_bins)
 
-        surface_density_integral = np.zeros((tabulate_bins))
+        surface_density_integral = np.zeros((tabulate_bins,))
 
         for i in range(tabulate_bins):
             eta = 10. ** (minimum_log_eta + (i - 1) * bin_size)
@@ -672,8 +683,8 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
             surface_density_integral[i] = ((eta / self.scale_radius) ** (1 - self.inner_slope)) * \
                                           (((1 + eta / self.scale_radius) ** (self.inner_slope - 3)) + integral)
 
-        deflection_x = calculate_deflection_component(grid, 0.0, 0)
-        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
@@ -697,9 +708,8 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
         i = 1 + int((np.log10(eta_u) - minimum_log_eta) / bin_size)
         r1 = 10. ** (minimum_log_eta + (i - 1) * bin_size)
         r2 = r1 * 10. ** bin_size
-        phi = potential_integral[i] + (potential_integral[i + 1] - potential_integral[i]) \
-              * (eta_u - r1) / (r2 - r1)
-        return eta_u * (phi / u) / (1.0 - (1.0 - axis_ratio ** 2) * u) ** (0.5)
+        phi = potential_integral[i] + (potential_integral[i + 1] - potential_integral[i]) * (eta_u - r1) / (r2 - r1)
+        return eta_u * (phi / u) / (1.0 - (1.0 - axis_ratio ** 2) * u) ** 0.5
 
     @staticmethod
     # TODO : Decorator needs to know that surface_density_integral is 1D array
@@ -712,8 +722,8 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
         i = 1 + int((np.log10(eta_u) - minimum_log_eta) / bin_size)
         r1 = 10. ** (minimum_log_eta + (i - 1) * bin_size)
         r2 = r1 * 10. ** bin_size
-        kap = surface_density_integral[i] + (surface_density_integral[i + 1] - surface_density_integral[i]) \
-              * (eta_u - r1) / (r2 - r1)
+        kap = surface_density_integral[i] + (surface_density_integral[i + 1] - surface_density_integral[i]) * (
+                eta_u - r1) / (r2 - r1)
         return kap / (1.0 - (1.0 - axis_ratio ** 2) * u) ** (npow + 0.5)
 
 
@@ -772,7 +782,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
                                                                4 - self.inner_slope, -eta) + integral_y_2)
 
 
-class EllipticalNFW(EllipticalGeneralizedNFW):
+class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
         """
@@ -920,7 +930,7 @@ class SphericalNFW(EllipticalNFW):
     # TODO : The 'func' routines require a different input to the elliptical cases, meaning they cannot be overridden.
     # TODO : Should be able to refactor code to deal with this nicely, but will wait until we're clear on numba.
 
-    # TODO : Make this use numpy arthimitic
+    # TODO : Make this use numpy arithmetic
 
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
