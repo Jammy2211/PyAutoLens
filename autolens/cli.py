@@ -36,7 +36,7 @@ from . import __version__
 
 
 def main():
-    """Main CLI entrypoint."""
+    """Main CLI entry point."""
     import autolens.commands
 
     options = docopt(__doc__, version=__version__)
