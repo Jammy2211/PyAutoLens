@@ -300,10 +300,6 @@ class MockClassNLOx4(object):
     def subscript(self):
         return 'a'
 
-    @property
-    def parameter_labels(self):
-        return [r'x4p0', r'x4p1', r'x4p2', r'x4p3']
-
 
 class MockClassNLOx5(object):
     component_number = 0
@@ -386,6 +382,7 @@ class TestNonLinearOptimizer(object):
             assert nlo.variable.total_parameters == 10
 
     # TODO : Reimplement tests once integration tests are up and running
+
 
 # class TestCreateParamNamesNames:
 #
@@ -474,65 +471,65 @@ class TestNonLinearOptimizer(object):
 #         assert paramnames[8] == r'mock_class_2_three                      x6p4' + '\n'
 #         assert paramnames[9] == r'mock_class_2_four                       x6p5' + '\n'
 
-    # class TestMakeModelInfo:
-    #
-    #     def test__single_class__outputs_all_info(self, mm_config, nlo_model_info_path):
-    #         conf.instance.output_path = nlo_model_info_path
-    #
-    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
-    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
-    #         nlo.save_model_info()
-    #
-    #         model_info_file = open(nlo_model_info_path + 'model.info')
-    #
-    #         model_info = model_info_file.readlines()
-    #
-    #         assert model_info[0] == r'MockClassNLOx4' + '\n'
-    #         assert model_info[1] == r'' + '\n'
-    #         assert model_info[2] == r'one: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[3] == r'two: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[4] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[5] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #
-    #     def test__two_models_and_parameter_sets__output_all_info(self, mm_config, nlo_model_info_path):
-    #         conf.instance.output_path = nlo_model_info_path
-    #
-    #         mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4,
-    #                                           mock_class_2=MockClassNLOx6)
-    #         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
-    #         nlo.save_model_info()
-    #
-    #         model_info_file = open(nlo_model_info_path + 'model.info')
-    #
-    #         model_info = model_info_file.readlines()
-    #
-    #         assert model_info[0] == r'MockClassNLOx4' + '\n'
-    #         assert model_info[1] == r'' + '\n'
-    #         assert model_info[2] == r'one: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[3] == r'two: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[4] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[5] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[6] == r'' + '\n'
-    #         assert model_info[7] == r'MockClassNLOx6' + '\n'
-    #         assert model_info[8] == r'' + '\n'
-    #         assert model_info[9] == r'one_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[10] == r'one_1: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[11] == r'two_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[12] == r'two_1: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[13] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #         assert model_info[14] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
-    #
-    # class TestWrongModelInfo:
-    #
-    #     def test__single_model__prior_changed_from_input_model__raises_error(self, mm_config, nlo_wrong_info_path):
-    #         conf.instance.output_path = nlo_wrong_info_path
-    #
-    #         with open(nlo_wrong_info_path + 'model.info', 'w') as file: file.write('The model info is missing :(')
-    #
-    #         with pytest.raises(exc.PriorException):
-    #             mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
-    #             nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
-    #             nlo.save_model_info()
+# class TestMakeModelInfo:
+#
+#     def test__single_class__outputs_all_info(self, mm_config, nlo_model_info_path):
+#         conf.instance.output_path = nlo_model_info_path
+#
+#         mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+#         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+#         nlo.save_model_info()
+#
+#         model_info_file = open(nlo_model_info_path + 'model.info')
+#
+#         model_info = model_info_file.readlines()
+#
+#         assert model_info[0] == r'MockClassNLOx4' + '\n'
+#         assert model_info[1] == r'' + '\n'
+#         assert model_info[2] == r'one: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[3] == r'two: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[4] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[5] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#
+#     def test__two_models_and_parameter_sets__output_all_info(self, mm_config, nlo_model_info_path):
+#         conf.instance.output_path = nlo_model_info_path
+#
+#         mapper = model_mapper.ModelMapper(config=mm_config, mock_class_1=MockClassNLOx4,
+#                                           mock_class_2=MockClassNLOx6)
+#         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+#         nlo.save_model_info()
+#
+#         model_info_file = open(nlo_model_info_path + 'model.info')
+#
+#         model_info = model_info_file.readlines()
+#
+#         assert model_info[0] == r'MockClassNLOx4' + '\n'
+#         assert model_info[1] == r'' + '\n'
+#         assert model_info[2] == r'one: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[3] == r'two: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[4] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[5] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[6] == r'' + '\n'
+#         assert model_info[7] == r'MockClassNLOx6' + '\n'
+#         assert model_info[8] == r'' + '\n'
+#         assert model_info[9] == r'one_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[10] == r'one_1: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[11] == r'two_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[12] == r'two_1: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[13] == r'three: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#         assert model_info[14] == r'four: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
+#
+# class TestWrongModelInfo:
+#
+#     def test__single_model__prior_changed_from_input_model__raises_error(self, mm_config, nlo_wrong_info_path):
+#         conf.instance.output_path = nlo_wrong_info_path
+#
+#         with open(nlo_wrong_info_path + 'model.info', 'w') as file: file.write('The model info is missing :(')
+#
+#         with pytest.raises(exc.PriorException):
+#             mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+#             nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
+#             nlo.save_model_info()
 
 
 class TestMultiNest(object):
@@ -1330,14 +1327,22 @@ def make_label_optimizer(mm_config, label_config):
 
 
 class TestLabels(object):
-    def test_create_param_name_labels(self, label_optimizer):
+    def test_properties(self, label_optimizer):
         label_optimizer.variable.prior_model = MockClassNLOx4
 
         assert len(label_optimizer.paramnames_labels) == 4
         assert len(label_optimizer.paramnames_names) == 4
 
     def test_label_config(self, label_optimizer):
-        assert label_optimizer.label_config.get("label", "one") == "uno"
-        assert label_optimizer.label_config.get("label", "two") == "dos"
-        assert label_optimizer.label_config.get("label", "three") == "tres"
-        assert label_optimizer.label_config.get("label", "four") == "quatro"
+        assert label_optimizer.label_config.get("label", "one") == "x4p0"
+        assert label_optimizer.label_config.get("label", "two") == "x4p1"
+        assert label_optimizer.label_config.get("label", "three") == "x4p2"
+        assert label_optimizer.label_config.get("label", "four") == "x4p3"
+
+    def test_labels(self, label_optimizer):
+        label_optimizer.variable.prior_model = MockClassNLOx4
+
+        print(label_optimizer.paramnames_labels)
+
+        assert label_optimizer.paramnames_labels == ['$x4p0_{\\mathrm{a1}}$', '$x4p1_{\\mathrm{a1}}$',
+                                                     '$x4p2_{\\mathrm{a1}}$', '$x4p3_{\\mathrm{a1}}$']
