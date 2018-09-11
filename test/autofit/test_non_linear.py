@@ -10,6 +10,12 @@ from autolens.autofit import non_linear
 from autolens.profiles import light_profiles, mass_profiles
 
 
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
+    "`arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result "
+    "either in an error or a different result.")
+
+
 @pytest.fixture(name='nlo_setup_path')
 def test_nlo_setup():
     nlo_setup_path = "{}/../test_files/non_linear/nlo/setup/".format(os.path.dirname(os.path.realpath(__file__)))
