@@ -14,7 +14,7 @@ path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Load an image from the 'phase_basic_data' folder. It is assumed that this folder contains image.fits, noise_map.fits and
 # psf.fits - we've included some example data there already.
-image = im.load(path=path + '/../data/basic/', pixel_scale=0.07)
+image = im.load_from_path(path=path + '/../data/basic/', pixel_scale=0.07)
 
 # The GalaxyPrior class represents a galaxy object, where the parameters of its associated profiles are variable and
 # fitted for by the lensing.
