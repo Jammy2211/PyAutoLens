@@ -1142,7 +1142,7 @@ class TestTracerImageAndSource(object):
                                                          image_grids=imaging_grids)
 
             assert (tracer.image_plane_image_2d == imaging_grids.image.map_to_2d(image_plane.image_plane_image) +
-                                                   imaging_grids.image.map_to_2d(source_plane.image_plane_image)).all()
+                    imaging_grids.image.map_to_2d(source_plane.image_plane_image)).all()
             assert (tracer.image_plane_images_of_planes_2d[0] ==
                     imaging_grids.image.map_to_2d(image_plane.image_plane_image)).all()
             assert (tracer.image_plane_images_of_planes_2d[1] ==
@@ -1835,11 +1835,11 @@ class TestMultiTracer(object):
             assert (tracer.image_plane_images_of_galaxies_2d[0] ==
                     imaging_grids.image.map_to_2d(plane_0.image_plane_images_of_galaxies[0])).all()
             assert (tracer.image_plane_images_of_galaxies_2d[1] ==
-            imaging_grids.image.map_to_2d(plane_0.image_plane_images_of_galaxies[1])).all()
+                    imaging_grids.image.map_to_2d(plane_0.image_plane_images_of_galaxies[1])).all()
             assert (tracer.image_plane_images_of_galaxies_2d[2] ==
                     imaging_grids.image.map_to_2d(plane_1.image_plane_images_of_galaxies[0])).all()
             assert (tracer.image_plane_images_of_galaxies_2d[3] ==
-            imaging_grids.image.map_to_2d(plane_1.image_plane_images_of_galaxies[1])).all()
+                    imaging_grids.image.map_to_2d(plane_1.image_plane_images_of_galaxies[1])).all()
             assert (tracer.image_plane_images_of_galaxies_2d[4] ==
                     imaging_grids.image.map_to_2d(plane_2.image_plane_images_of_galaxies[0])).all()
 
