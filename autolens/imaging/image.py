@@ -6,7 +6,7 @@ import scipy.signal
 from autolens import exc
 
 
-class PrepatoryImage(ScaledArray):
+class PreparatoryImage(ScaledArray):
 
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
                  exposure_time=None, effective_exposure_map=None):
@@ -34,7 +34,7 @@ class PrepatoryImage(ScaledArray):
         effective_exposure_map : ndarray
             An array representing the effective exposure time of each pixel.
         """
-        super(PrepatoryImage, self).__init__(array, pixel_scale)
+        super(PreparatoryImage, self).__init__(array, pixel_scale)
         self.psf = psf
         self.noise_map = noise_map
         self.background_noise_map = background_noise_map
@@ -137,9 +137,9 @@ class PrepatoryImage(ScaledArray):
             if (np.isnan(noise)).any():
                 raise exc.MaskException('Nan found in noise_map - increase exposure time.')
 
-        return PrepatoryImage(array, pixel_scale=pixel_scale, noise_map=noise, psf=psf,
-                              background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                              effective_exposure_map=effective_exposure_map)
+        return PreparatoryImage(array, pixel_scale=pixel_scale, noise_map=noise, psf=psf,
+                                background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                                effective_exposure_map=effective_exposure_map)
 
     @classmethod
     def simulate_to_target_signal_to_noise(cls, array, pixel_scale, target_signal_to_noise, effective_exposure_map,
@@ -176,12 +176,12 @@ class PrepatoryImage(ScaledArray):
             max_background_sky_map_counts = None
 
         if background_sky_map is not None and include_poisson_noise is False:
-            scale_factor = max_background_sky_map_counts * target_signal_to_noise ** 2.0 / max_array_counts**2.0
+            scale_factor = max_background_sky_map_counts * target_signal_to_noise ** 2.0 / max_array_counts ** 2.0
         elif background_sky_map is None and include_poisson_noise is True:
             scale_factor = target_signal_to_noise ** 2.0 / max_array_counts
         elif background_sky_map is not None and include_poisson_noise is True:
-            scale_factor = (max_array_counts + max_background_sky_map_counts) * target_signal_to_noise **2.0 \
-            / max_array_counts**2.0
+            scale_factor = (max_array_counts + max_background_sky_map_counts) * target_signal_to_noise ** 2.0 \
+                           / max_array_counts ** 2.0
         else:
             scale_factor = None
 
@@ -193,8 +193,8 @@ class PrepatoryImage(ScaledArray):
                                             include_poisson_noise=include_poisson_noise, seed=seed)
 
     def __array_finalize__(self, obj):
-        super(PrepatoryImage, self).__array_finalize__(obj)
-        if isinstance(obj, PrepatoryImage):
+        super(PreparatoryImage, self).__array_finalize__(obj)
+        if isinstance(obj, PreparatoryImage):
             self.psf = obj.psf
             self.noise_map = obj.noise_map
             self.background_noise_map = obj.background_noise_map
@@ -455,8 +455,20 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     return image - np.divide(np.random.poisson(image_counts, image.shape), effective_exposure_map)
 
 
-def load(path, pixel_scale):
-    data = ScaledArray.from_fits_with_scale(file_path='{}/image'.format(path), hdu=0, pixel_scale=pixel_scale)
-    noise = Array.from_fits(file_path='{}/noise_map'.format(path), hdu=0)
-    psf = PSF.from_fits(file_path='{}/psf'.format(path), hdu=0)
+def load_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_shape=None):
+    data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
+    noise = Array.from_fits(file_path=noise_path, hdu=0)
+    psf = PSF.from_fits(file_path=psf_path.format(path), hdu=0)
+    if psf_trimmed_shape is not None:
+        psf = psf.trim(psf_trimmed_shape)
+    return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
+
+
+def load_from_file(path, image_hdu, noise_hdu, psf_hdu, pixel_scale, psf_trimmed_shape=None):
+    data = ScaledArray.from_fits_with_scale(file_path=path, hdu=image_hdu, pixel_scale=pixel_scale)
+    noise = Array.from_fits(file_path=path, hdu=noise_hdu)
+    psf = PSF.from_fits(file_path=path, hdu=psf_hdu)
+    if psf_trimmed_shape is not None:
+        psf = psf.trim(psf_trimmed_shape)
+
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
