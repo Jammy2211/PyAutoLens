@@ -249,7 +249,6 @@ def make_sersic():
 def make_galaxy_light(sersic):
     return galaxy.Galaxy(light_profile=sersic)
 
-
 @pytest.fixture(name='li_no_blur')
 def make_li_no_blur():
     im = np.array([[0.0, 0.0, 0.0, 0.0],
@@ -473,11 +472,11 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=mi.grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
             # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
@@ -520,24 +519,24 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_lens_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
+            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
                                                                                tracer.image_plane_blurring_images_of_galaxies[0])
 
-            blurred_source_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
+            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
                                                                                  tracer.image_plane_blurring_images_of_galaxies[1])
 
-            blurred_lens_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_lens_image_plane_image)
-            blurred_source_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_source_image_plane_image)
+            blurred_lens_image_plane_image = li.grids.image.map_to_2d(blurred_lens_image_plane_image)
+            blurred_source_image_plane_image = li.grids.image.map_to_2d(blurred_source_image_plane_image)
 
             assert (fitter.model_images_of_planes[0] == blurred_lens_image_plane_image).all()
             assert (fitter.model_images_of_planes[1] == blurred_source_image_plane_image).all()
@@ -553,7 +552,7 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), redshift=0.1)
             g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
@@ -561,23 +560,23 @@ class TestProfileFitter:
 
             from astropy import cosmology as cosmo
 
-            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_grids=mi.grids,
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_grids=li.grids,
                                              cosmology=cosmo.Planck15)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_image_plane_image_0 = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
+            blurred_image_plane_image_0 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
                                                                             tracer.image_plane_blurring_images_of_galaxies[0])
 
-            blurred_image_plane_image_1 = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
+            blurred_image_plane_image_1 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
                                                                             tracer.image_plane_blurring_images_of_galaxies[1])
 
-            blurred_image_plane_image_2 = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
+            blurred_image_plane_image_2 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
                                                                             tracer.image_plane_blurring_images_of_galaxies[2])
 
-            blurred_image_plane_image_0 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_0)
-            blurred_image_plane_image_1 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_1)
-            blurred_image_plane_image_2 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_2)
+            blurred_image_plane_image_0 = li.grids.image.map_to_2d(blurred_image_plane_image_0)
+            blurred_image_plane_image_1 = li.grids.image.map_to_2d(blurred_image_plane_image_1)
+            blurred_image_plane_image_2 = li.grids.image.map_to_2d(blurred_image_plane_image_2)
 
             assert (fitter.model_images_of_planes[0] == blurred_image_plane_image_0).all()
             assert (fitter.model_images_of_planes[1] == blurred_image_plane_image_1).all()
@@ -609,24 +608,24 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_lens_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
+            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
                                                                                tracer.image_plane_blurring_images_of_galaxies[0])
 
-            blurred_source_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
+            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
                                                                                  tracer.image_plane_blurring_images_of_galaxies[1])
 
-            blurred_lens_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_lens_image_plane_image)
-            blurred_source_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_source_image_plane_image)
+            blurred_lens_image_plane_image = li.grids.image.map_to_2d(blurred_lens_image_plane_image)
+            blurred_source_image_plane_image = li.grids.image.map_to_2d(blurred_source_image_plane_image)
 
             assert (fitter.model_images_of_galaxies[0] == blurred_lens_image_plane_image).all()
             assert (fitter.model_images_of_galaxies[1] == blurred_source_image_plane_image).all()
@@ -642,7 +641,7 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -651,30 +650,30 @@ class TestProfileFitter:
             g4 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=5.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1, g2], source_galaxies=[g3, g4],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_g0_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
+            blurred_g0_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
                                                        tracer.image_plane_blurring_images_of_galaxies[0])
 
-            blurred_g1_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
+            blurred_g1_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
                                                        tracer.image_plane_blurring_images_of_galaxies[1])
 
-            blurred_g2_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
+            blurred_g2_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
                                                        tracer.image_plane_blurring_images_of_galaxies[2])
 
-            blurred_g3_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[3],
+            blurred_g3_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[3],
                                                        tracer.image_plane_blurring_images_of_galaxies[3])
 
-            blurred_g4_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[4],
+            blurred_g4_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[4],
                                                        tracer.image_plane_blurring_images_of_galaxies[4])
 
-            blurred_g0_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g0_image_plane_image)
-            blurred_g1_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g1_image_plane_image)
-            blurred_g2_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g2_image_plane_image)
-            blurred_g3_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g3_image_plane_image)
-            blurred_g4_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g4_image_plane_image)
+            blurred_g0_image_plane_image = li.grids.image.map_to_2d(blurred_g0_image_plane_image)
+            blurred_g1_image_plane_image = li.grids.image.map_to_2d(blurred_g1_image_plane_image)
+            blurred_g2_image_plane_image = li.grids.image.map_to_2d(blurred_g2_image_plane_image)
+            blurred_g3_image_plane_image = li.grids.image.map_to_2d(blurred_g3_image_plane_image)
+            blurred_g4_image_plane_image = li.grids.image.map_to_2d(blurred_g4_image_plane_image)
 
             assert (fitter.model_images_of_galaxies[0] == blurred_g0_image_plane_image).all()
             assert (fitter.model_images_of_galaxies[1] == blurred_g1_image_plane_image).all()
@@ -693,7 +692,7 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -702,30 +701,30 @@ class TestProfileFitter:
             g4 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=5.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g1, g3, g4], source_galaxies=[g0, g2],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_g1_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
+            blurred_g1_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
                                                        tracer.image_plane_blurring_images_of_galaxies[0])
 
-            blurred_g3_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
+            blurred_g3_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
                                                        tracer.image_plane_blurring_images_of_galaxies[1])
 
-            blurred_g4_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
+            blurred_g4_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
                                                        tracer.image_plane_blurring_images_of_galaxies[2])
 
-            blurred_g0_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[3],
+            blurred_g0_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[3],
                                                        tracer.image_plane_blurring_images_of_galaxies[3])
 
-            blurred_g2_image_plane_image = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[4],
+            blurred_g2_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[4],
                                                        tracer.image_plane_blurring_images_of_galaxies[4])
 
-            blurred_g0_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g0_image_plane_image)
-            blurred_g1_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g1_image_plane_image)
-            blurred_g2_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g2_image_plane_image)
-            blurred_g3_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g3_image_plane_image)
-            blurred_g4_image_plane_image = ma.map_masked_1d_array_to_2d_array(blurred_g4_image_plane_image)
+            blurred_g0_image_plane_image = li.grids.image.map_to_2d(blurred_g0_image_plane_image)
+            blurred_g1_image_plane_image = li.grids.image.map_to_2d(blurred_g1_image_plane_image)
+            blurred_g2_image_plane_image = li.grids.image.map_to_2d(blurred_g2_image_plane_image)
+            blurred_g3_image_plane_image = li.grids.image.map_to_2d(blurred_g3_image_plane_image)
+            blurred_g4_image_plane_image = li.grids.image.map_to_2d(blurred_g4_image_plane_image)
 
             assert (fitter.model_images_of_galaxies[0] == blurred_g1_image_plane_image).all()
             assert (fitter.model_images_of_galaxies[1] == blurred_g3_image_plane_image).all()
@@ -744,7 +743,7 @@ class TestProfileFitter:
                                            [True, False, False, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), redshift=0.1)
             g1 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
@@ -752,23 +751,23 @@ class TestProfileFitter:
 
             from astropy import cosmology as cosmo
 
-            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_grids=mi.grids,
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_grids=li.grids,
                                              cosmology=cosmo.Planck15)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_image_plane_image_0 = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
+            blurred_image_plane_image_0 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
                                                                             tracer.image_plane_blurring_images_of_galaxies[0])
 
-            blurred_image_plane_image_1 = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
+            blurred_image_plane_image_1 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
                                                                             tracer.image_plane_blurring_images_of_galaxies[1])
 
-            blurred_image_plane_image_2 = mi.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
+            blurred_image_plane_image_2 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
                                                                             tracer.image_plane_blurring_images_of_galaxies[2])
 
-            blurred_image_plane_image_0 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_0)
-            blurred_image_plane_image_1 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_1)
-            blurred_image_plane_image_2 = ma.map_masked_1d_array_to_2d_array(blurred_image_plane_image_2)
+            blurred_image_plane_image_0 = li.grids.image.map_to_2d(blurred_image_plane_image_0)
+            blurred_image_plane_image_1 = li.grids.image.map_to_2d(blurred_image_plane_image_1)
+            blurred_image_plane_image_2 = li.grids.image.map_to_2d(blurred_image_plane_image_2)
 
             assert (fitter.model_images_of_galaxies[0] == blurred_image_plane_image_0).all()
             assert (fitter.model_images_of_galaxies[1] == blurred_image_plane_image_1).all()
@@ -783,8 +782,7 @@ class TestProfileFitter:
             # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane image.
 
-            li_no_blur.grids.image = np.array([[-2.0, -2.0], [2.0, 2.0]])
-
+            li_no_blur.grids.image[:,:] = np.array([[-2.0, -2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]])
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
@@ -836,12 +834,12 @@ class TestProfileFitter:
             ma = mask.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_grids=mi.grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
             assert fitter.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
@@ -857,14 +855,14 @@ class TestProfileFitter:
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
 
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = galaxy.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_grids=mi.grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
             assert fitter.likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
@@ -905,26 +903,26 @@ class TestProfileFitter:
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
                                            [True, True,  True,  True,  True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.ProfileFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
             image_im = tracer.image_plane_image
             blurring_im = tracer.image_plane_blurring_image
-            blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
-            residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise_map)
+            blurred_im = li.convolver_image.convolve_image(image_im, blurring_im)
+            residuals = fitting.residuals_from_image_and_model(li, blurred_im)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise(mi.noise_map)
+            noise_term = fitting.noise_term_from_noise(li.noise_map)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert li.grids.image.map_to_2d(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
+            assert li.grids.image.map_to_2d(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert li.grids.image.map_to_2d(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
             assert chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert noise_term == pytest.approx(fitter._noise_term, 1e-4)
             assert likelihood == pytest.approx(fitter.likelihood, 1e-4)
@@ -1039,7 +1037,7 @@ class TestHyperProfileFitter:
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
                                            [True, True,  True,  True,  True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
@@ -1050,18 +1048,18 @@ class TestHyperProfileFitter:
                                hyper_galaxy=hyper_galaxy)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.HyperProfileFitter(lensing_image=mi, tracer=tracer, hyper_model_image=hyper_model_image, 
+            fitter = fitting.HyperProfileFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image, 
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
             image_im = tracer.image_plane_image
             blurring_im = tracer.image_plane_blurring_image
-            blurred_im = mi.convolver_image.convolve_image(image_im, blurring_im)
-            residuals = fitting.residuals_from_image_and_model(mi, blurred_im)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise_map)
+            blurred_im = li.convolver_image.convolve_image(image_im, blurring_im)
+            residuals = fitting.residuals_from_image_and_model(li, blurred_im)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise(mi.noise_map)
+            noise_term = fitting.noise_term_from_noise(li.noise_map)
             likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
 
             contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images,
@@ -1069,19 +1067,19 @@ class TestHyperProfileFitter:
 
             scaled_noise = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
                                                                                       [hyper_galaxy, hyper_galaxy],
-                                                                                      mi.noise_map)
+                                                                                      li.noise_map)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise)
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
             scaled_noise_term = fitting.noise_term_from_noise(scaled_noise)
             scaled_likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(scaled_chi_squared_term,
                                                                                     scaled_noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(contributions[0]) == pytest.approx(fitter.contributions[0], 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(contributions[1]) == pytest.approx(fitter.contributions[1], 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_noise) == pytest.approx(fitter.noise, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert li.grids.image.map_to_2d(blurred_im) == pytest.approx(fitter.model_image, 1e-4)
+            assert li.grids.image.map_to_2d(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert li.grids.image.map_to_2d(contributions[0]) == pytest.approx(fitter.contributions[0], 1e-4)
+            assert li.grids.image.map_to_2d(contributions[1]) == pytest.approx(fitter.contributions[1], 1e-4)
+            assert li.grids.image.map_to_2d(scaled_noise) == pytest.approx(fitter.noise, 1e-4)
+            assert li.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
             assert scaled_chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert scaled_noise_term == pytest.approx(fitter.noise_term, 1e-4)
             assert scaled_likelihood == pytest.approx(fitter.likelihood, 1e-4)
@@ -1111,13 +1109,13 @@ class TestPixelizationFitter:
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]))
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=2)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
             galaxy_pix = galaxy.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_grids=mi.grids)
-            fitter = fitting.PixelizationFitter(lensing_image=mi, tracer=tracer)
+                                                         image_grids=li.grids)
+            fitter = fitting.PixelizationFitter(lensing_image=li, tracer=tracer)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1168,22 +1166,22 @@ class TestPixelizationFitter:
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
                                            [True, True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
-            recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, mi.noise_map, mi.convolver_mapping_matrix)
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(li.grids, li.borders)
+            recon = reconstructor.reconstruction_from_reconstructor_and_data(li, li.noise_map, li.convolver_mapping_matrix)
 
             g0 = galaxy.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[g0],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.PixelizationFitter(lensing_image=mi, tracer=tracer)
+            fitter = fitting.PixelizationFitter(lensing_image=li, tracer=tracer)
 
-            residuals = fitting.residuals_from_image_and_model(mi, fitter._reconstruction.reconstructed_image)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, mi.noise_map)
+            residuals = fitting.residuals_from_image_and_model(li, fitter._reconstruction.reconstructed_image)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise(mi.noise_map)
+            noise_term = fitting.noise_term_from_noise(li.noise_map)
             regularization_term = recon.regularization_term
             covariance_regularization_term = recon.log_det_curvature_reg_matrix_term
             regularization_matrix_term = recon.log_det_regularization_matrix_term
@@ -1191,8 +1189,8 @@ class TestPixelizationFitter:
                                                                   covariance_regularization_term,
                                                                   regularization_matrix_term, noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert li.grids.image.map_to_2d(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert li.grids.image.map_to_2d(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
             assert chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert noise_term == pytest.approx(fitter.noise_term, 1e-4)
             assert regularization_term == pytest.approx(fitter._reconstruction.regularization_term, 1e-4)
@@ -1222,7 +1220,7 @@ class TestHyperPixelizationFitter:
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]))
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=2)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
 
@@ -1233,8 +1231,8 @@ class TestHyperPixelizationFitter:
             galaxy_pix = galaxy.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                                        hyper_galaxy=hyper_galaxy, pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_grids=mi.grids)
-            fitter = fitting.HyperPixelizationFitter(lensing_image=mi, tracer=tracer, hyper_model_image=hyper_model_image,
+                                                         image_grids=li.grids)
+            fitter = fitting.HyperPixelizationFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image,
                                                      hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0])
 
             cov_matrix = np.array([[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1289,10 +1287,10 @@ class TestHyperPixelizationFitter:
                                            [True, False, False, False, True],
                                            [True, False, False, False, True],
                                            [True, True, True, True, True]]), pixel_scale=1.0)
-            mi = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(mi.grids, mi.borders)
+            reconstructor = pix.reconstructor_from_pixelization_and_grids(li.grids, li.borders)
 
             hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
@@ -1302,15 +1300,15 @@ class TestHyperPixelizationFitter:
                                          hyper_galaxy=hyper_model)
             hyper_pix_galaxy = galaxy.Galaxy(pixelization=pix, hyper_galaxy=hyper_model)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
-                                                         image_grids=mi.grids)
+                                                         image_grids=li.grids)
 
-            fitter = fitting.HyperPixelizationFitter(lensing_image=mi, tracer=tracer, hyper_model_image=hyper_model_image,
+            fitter = fitting.HyperPixelizationFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
-            scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(mi, fitter._noise,
-                                                                                    mi.convolver_mapping_matrix)
+            scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(li, fitter._noise,
+                                                                                    li.convolver_mapping_matrix)
 
-            residuals = fitting.residuals_from_image_and_model(mi, fitter._reconstruction.reconstructed_image)
+            residuals = fitting.residuals_from_image_and_model(li, fitter._reconstruction.reconstructed_image)
             regularization_term = scaled_recon.regularization_term
             scaled_covariance_regularization_term = scaled_recon.log_det_curvature_reg_matrix_term
             regularization_matrix_term = scaled_recon.log_det_regularization_matrix_term
@@ -1319,7 +1317,7 @@ class TestHyperPixelizationFitter:
                                                             [hyper_model, hyper_model], minimum_values=[0.2, 0.8])
             scaled_noise = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
                                                                                       [hyper_model, hyper_model],
-                                                                                      mi.noise_map)
+                                                                                      li.noise_map)
 
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise)
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
@@ -1328,10 +1326,10 @@ class TestHyperPixelizationFitter:
                                                                   scaled_covariance_regularization_term,
                                                                   regularization_matrix_term, scaled_noise_term)
 
-            assert ma.map_masked_1d_array_to_2d_array(contributions[0]) == pytest.approx(fitter.contributions[0], 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(residuals) == pytest.approx(fitter.residuals, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_noise) == pytest.approx(fitter.noise, 1e-4)
-            assert ma.map_masked_1d_array_to_2d_array(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
+            assert li.grids.image.map_to_2d(contributions[0]) == pytest.approx(fitter.contributions[0], 1e-4)
+            assert li.grids.image.map_to_2d(residuals) == pytest.approx(fitter.residuals, 1e-4)
+            assert li.grids.image.map_to_2d(scaled_noise) == pytest.approx(fitter.noise, 1e-4)
+            assert li.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
             assert scaled_chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert scaled_noise_term == pytest.approx(fitter.noise_term, 1e-4)
             assert regularization_term == pytest.approx(fitter._reconstruction.regularization_term, 1e-4)
