@@ -23,12 +23,12 @@ class Pipeline(object):
 
         Parameters
         ----------
-        other: PipelineImaging
+        other: Pipeline
             Another pipeline
 
         Returns
         -------
-        composed_pipeline: PipelineImaging
+        composed_pipeline: Pipeline
             A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
         """
         return self.__class__("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
