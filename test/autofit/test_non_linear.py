@@ -1320,3 +1320,5 @@ class TestLabels(object):
         optimizer = non_linear.NonLinearOptimizer()
         optimizer.variable.config = mm_config
         optimizer.variable.prior_model = MockClassNLOx4
+
+        assert len(optimizer.paramnames_labels) == 4
