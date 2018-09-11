@@ -163,7 +163,7 @@ class NonLinearOptimizer(object):
         for prior_model_name, prior_model in self.variable.prior_models:
             param_labels = [self.label_config.get("label", prior_name) for prior_name, _ in prior_model.priors]
             component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
+            subscript = self.label_config.get("subscript", prior_model.cls.__name__) + str(component_number + 1)
             param_labels = generate_parameter_latex(param_labels, subscript)
             class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_model_name],
                                                key=lambda prior: prior[1].id)
