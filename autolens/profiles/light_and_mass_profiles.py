@@ -8,18 +8,14 @@ objects as being both mass and light profiles.
 
 
 class EllipticalSersic(light_profiles.EllipticalSersic, mass_profiles.EllipticalSersic):
-    
+
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
-        
         light_profiles.EllipticalSersic.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
                                                  sersic_index)
         mass_profiles.EllipticalSersic.__init__(self, centre, axis_ratio, phi, intensity, effective_radius,
                                                 sersic_index, mass_to_light_ratio)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi']
 
 class SphericalSersic(EllipticalSersic):
 
@@ -43,9 +39,6 @@ class SphericalSersic(EllipticalSersic):
         EllipticalSersic.__init__(self, centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
                                   mass_to_light_ratio)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R', 'n', r'\Psi']
 
 class EllipticalExponential(EllipticalSersic):
 
@@ -73,9 +66,6 @@ class EllipticalExponential(EllipticalSersic):
         EllipticalSersic.__init__(self, centre, axis_ratio, phi, intensity, effective_radius, 1.0,
                                   mass_to_light_ratio)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R', r'\Psi']
 
 class SphericalExponential(EllipticalExponential):
 
@@ -97,9 +87,6 @@ class SphericalExponential(EllipticalExponential):
         """
         EllipticalExponential.__init__(self, centre, 1.0, 0.0, intensity, effective_radius, mass_to_light_ratio)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R', r'\Psi']
 
 class EllipticalDevVaucouleurs(EllipticalSersic):
 
@@ -128,9 +115,6 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
                                                        effective_radius, 4.0,
                                                        mass_to_light_ratio)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R', r'\Psi']
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
@@ -152,9 +136,6 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         """
         EllipticalDevVaucouleurs.__init__(self, centre, 1.0, 0.0, intensity, effective_radius, mass_to_light_ratio)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R', r'\Psi']
 
 class EllipticalSersicRadialGradient(light_profiles.EllipticalSersic,
                                      mass_profiles.EllipticalSersicRadialGradient):
@@ -190,9 +171,6 @@ class EllipticalSersicRadialGradient(light_profiles.EllipticalSersic,
                                                               sersic_index, mass_to_light_ratio,
                                                               mass_to_light_gradient)
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', r'\Psi', r'\Gamma']
 
 class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
 
@@ -218,7 +196,3 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         """
         EllipticalSersicRadialGradient.__init__(self, centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
                                                 mass_to_light_ratio, mass_to_light_gradient)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R', 'n', r'\Psi', r'\Gamma']
