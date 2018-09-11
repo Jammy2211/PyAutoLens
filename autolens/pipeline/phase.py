@@ -639,9 +639,9 @@ class LensPlanePhase(PhaseImaging):
         def unmasked_model_image_for_instance(self, instance):
             padded_grids = self.lensing_image.padded_grids
             tracer = ray_tracing.TracerImagePlane(instance.lens_galaxies, padded_grids)
-            model_image_1d = padded_grids.image.convolve_padded_array_1d_with_psf_and_trim(tracer.image_plane_image,
-                                                                                           self.lensing_image.psf)
-            return padded_grids.image.map_to_2d(model_image_1d)
+            model_image_1d = padded_grids.image.convolve_padded_array_1d_with_psf(tracer.image_plane_image,
+                                                                                  self.lensing_image.psf)
+            return padded_grids.image.map_to_2d_and_trim(model_image_1d)
 
         @classmethod
         def log(cls, instance):
