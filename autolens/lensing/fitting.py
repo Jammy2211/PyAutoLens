@@ -15,6 +15,7 @@ class AbstractFitter(object):
         self._noise = None
         self._noise_term = None
 
+        self.lensing_image = lensing_image
         self.tracer = tracer
         self._image = lensing_image[:]
         self.map_to_2d = lensing_image.grids.image.map_to_2d
