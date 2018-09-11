@@ -2,7 +2,6 @@ from autolens.pipeline import pipeline as pl
 from autolens.autofit import model_mapper
 from autolens.autofit import non_linear
 import numpy as np
-import pytest
 
 
 class MockAnalysis(object):
@@ -12,8 +11,9 @@ class MockAnalysis(object):
         self.shape = shape
         self.value = value
 
+    # noinspection PyUnusedLocal
     def galaxy_images_for_model(self, model):
-        return self.number_galaxies*[np.full(self.shape, self.value)]
+        return self.number_galaxies * [np.full(self.shape, self.value)]
 
 
 class DummyPhaseImaging(object):
@@ -55,6 +55,7 @@ class DummyPhasePositions(object):
     def __init__(self):
         self.positions = None
         self.previous_results = None
+        self.pixel_scale = None
         self.phase_name = "dummy_phase"
 
     def run(self, positions, pixel_scale, previous_results):
