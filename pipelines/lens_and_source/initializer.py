@@ -6,7 +6,7 @@ This pipeline is composed of 3 phases:
 1) Fit and subtract the lens light using an elliptical Sersic.
 2) Fit the source using the lens subtracted image from phase 1, with an SIE mass model (lens) and elliptical
 Sersic (source).
-3) Fit the lens and source simulataneously, using priors based on the results of phases 1 and 2.
+3) Fit the lens and source simultaneously, using priors based on the results of phases 1 and 2.
 """
 
 pipeline_name = 'initializer'
