@@ -215,7 +215,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        def calculate_deflection_component(grid, npow, index):
+        def calculate_deflection_component(npow, index):
             deflection_grid = np.zeros(grid.shape[0])
 
             einstein_radius_rescaled = self.einstein_radius_rescaled
@@ -229,8 +229,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
             return deflection_grid
 
-        deflection_x = calculate_deflection_component(grid, 0.0, 0)
-        deflection_y = calculate_deflection_component(grid, 1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
+        deflection_y = calculate_deflection_component(1.0, 1)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
@@ -249,8 +249,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     @jit_integrand
     def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-        return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) \
-               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
+        return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) / (
+                (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
@@ -361,8 +361,8 @@ class SphericalPowerLaw(EllipticalPowerLaw):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         eta = self.grid_to_radius(grid)
-        deflection_r = 2.0 * self.einstein_radius_rescaled * \
-                       np.divide(np.power(eta, (3.0 - self.slope)), np.multiply((3.0 - self.slope), eta))
+        deflection_r = 2.0 * self.einstein_radius_rescaled * np.divide(np.power(eta, (3.0 - self.slope)),
+                                                                       np.multiply((3.0 - self.slope), eta))
         return self.grid_radius_to_cartesian(grid, deflection_r)
 
 
@@ -516,7 +516,6 @@ class SphericalIsothermal(EllipticalIsothermal):
 
 
 class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile):
-
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -638,6 +637,7 @@ class EllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile)
 
         Parameters
         ----------
+        tabulate_bins
         grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
