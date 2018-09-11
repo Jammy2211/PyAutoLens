@@ -6,11 +6,12 @@ import os
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
+
 @pytest.fixture(name="array_grid")
 def make_array_grid():
     return scaled_array.ScaledArray(np.zeros((5, 5)), pixel_scale=0.5)
 
-    
+
 class TestConstructors(object):
 
     def test__constructor(self, array_grid):
@@ -50,7 +51,7 @@ class TestConstructors(object):
         assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
     def test__from_fits__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
-        data_grid = scaled_array.ScaledArray.from_fits_with_scale(file_path=test_data_dir + '3x3_ones', hdu=0,
+        data_grid = scaled_array.ScaledArray.from_fits_with_scale(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
                                                                   pixel_scale=1.0)
 
         assert (data_grid == np.ones((3, 3))).all()
@@ -60,7 +61,7 @@ class TestConstructors(object):
         assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
 
     def test__from_fits__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
-        data_grid = scaled_array.ScaledArray.from_fits_with_scale(file_path=test_data_dir + '4x3_ones', hdu=0,
+        data_grid = scaled_array.ScaledArray.from_fits_with_scale(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
                                                                   pixel_scale=0.1)
 
         assert (data_grid == np.ones((4, 3))).all()
@@ -108,7 +109,6 @@ class TestConversion:
 class TestTrim:
 
     def test__compare_to_imaging_util(self):
-
         array = np.ones((5, 5))
         array[2, 2] = 2.0
 
@@ -127,7 +127,6 @@ class TestTrim:
 class TestGrids:
 
     def test__grid_2d__compare_to_array_util(self):
-
         grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scale(shape=(4, 7), pixel_scale=0.56)
 
         sca = scaled_array.ScaledArray(array=np.zeros((4, 7)), pixel_scale=0.56)
@@ -135,9 +134,8 @@ class TestGrids:
         assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
     def test__array_3x3__sets_up_arcsecond_grid(self):
-
         sca = scaled_array.ScaledArray(array=np.zeros((3, 3)), pixel_scale=1.0)
 
         assert (sca.grid_2d == np.array([[[-1., -1.], [-1., 0.], [-1., 1.]],
-                                          [[0., -1.],  [0., 0.],  [0., 1.]],
-                                          [[1., -1.],  [1., 0.],  [1., 1.]]])).all()
+                                         [[0., -1.], [0., 0.], [0., 1.]],
+                                         [[1., -1.], [1., 0.], [1., 1.]]])).all()
