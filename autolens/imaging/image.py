@@ -11,7 +11,7 @@ class PreparatoryImage(ScaledArray):
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
                  exposure_time=None, effective_exposure_map=None):
         """
-        A 2d array representing an image, including prepatory compoenents which are not needed for the actual lens \
+        A 2d array representing an image, including preparatory components which are not needed for the actual lens
         analysis but help set up the noise_map, background sky, etc.
 
         Parameters
@@ -25,10 +25,11 @@ class PreparatoryImage(ScaledArray):
         noise_map : ndarray
             An array describing the total noise_map in each image pixel.
         background_noise_map : ndarray
-            An array describing the background noise_map in each image pixel (used for hyper_image background noise_map \
+            An array describing the background noise_map in each image pixel (used for hyper_image background noise_map
             scaling).
-        poisson_noise_map# : ndarray
-            An array describing the poisson noise_map in each image pixel (used for checking the image units are sensible).
+        poisson_noise_map : ndarray
+            An array describing the poisson noise_map in each image pixel (used for checking the image units are
+            sensible).
         exposure_time : float
             The overall exposure time of the image.
         effective_exposure_map : ndarray
@@ -78,7 +79,7 @@ class PreparatoryImage(ScaledArray):
         background_sky_map : ndarray
             The value of background sky in every image pixel (electrons per second).
         include_poisson_noise: Bool
-            If True poisson noise_map is simulated and added to the image, based on the total counts in each image pixel.
+            If True poisson noise_map is simulated and added to the image, based on the total counts in each image pixel
         seed: int
             A seed for random noise_map generation
         """
@@ -149,6 +150,7 @@ class PreparatoryImage(ScaledArray):
 
         Parameters
         ----------
+        target_signal_to_noise
         array: ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and CCD read-out).
         pixel_scale: float
@@ -160,7 +162,7 @@ class PreparatoryImage(ScaledArray):
         background_sky_map : ndarray
             The value of background sky in every image pixel (electrons per second).
         include_poisson_noise: Bool
-            If True poisson noise_map is simulated and added to the image, based on the total counts in each image pixel.
+            If True poisson noise_map is simulated and added to the image, based on the total counts in each image pixel
         seed: int
             A seed for random noise_map generation
         """
@@ -306,7 +308,7 @@ class Image(ScaledArray):
         noise_map : ndarray
             An array describing the total noise_map in each image pixel.
         background_noise_map : ndarray
-            An array describing the background noise_map in each image pixel (used for hyper_image background noise_map \
+            An array describing the background noise_map in each image pixel (used for hyper_image background noise_map
             scaling).
         """
         super(Image, self).__init__(array, pixel_scale)
@@ -458,7 +460,7 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
 def load_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_shape=None):
     data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
     noise = Array.from_fits(file_path=noise_path, hdu=0)
-    psf = PSF.from_fits(file_path=psf_path.format(path), hdu=0)
+    psf = PSF.from_fits(file_path=psf_path, hdu=0)
     if psf_trimmed_shape is not None:
         psf = psf.trim(psf_trimmed_shape)
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
