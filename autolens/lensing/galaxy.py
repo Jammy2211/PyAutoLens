@@ -260,7 +260,6 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-
     def potential_from_grid_individual(self, grid):
         """
         Compute the individual gravitational potentials of the galaxy's mass profiles at a given set of image_grid.
@@ -400,14 +399,6 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    @property
-    def subscript(self):
-        return 'hg'
-
-    @property
-    def parameter_labels(self):
-        return [r'\Omega', r'\omega1', r'\omega2']
-
     def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, minimum_value):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
         galaxy can be attributed to contain.
@@ -418,11 +409,11 @@ class HyperGalaxy(object):
         Parameters
         -----------
         hyper_model_image : ndarray
-            The model masked_image of the observed data_vector (from a previous lensing phase). This tells us the total light \
-            attributed to each masked_image pixel by the model.
+            The model masked_image of the observed data_vector (from a previous lensing phase). This tells us the total
+            light attributed to each masked_image pixel by the model.
         hyper_galaxy_image : ndarray
-            A model masked_image of the galaxy (e.g the lens light profile or source reconstructed_image) computed from a
-            previous lensing.
+            A model masked_image of the galaxy (e.g the lens light profile or source reconstructed_image) computed from
+            a previous lensing.
         minimum_value : float
             The minimum fractional flux a pixel must contain to not be rounded to 0.
         """
@@ -462,11 +453,3 @@ class Redshift(object):
 
     def __str__(self):
         return str(self.redshift)
-
-    @property
-    def parameter_labels(self):
-        return 'z'
-
-    @property
-    def subscript(self):
-        return 'g'
