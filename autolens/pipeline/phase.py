@@ -196,9 +196,9 @@ class Phase(object):
 
         def output_array_as_png(self, array, filename, title, xticks, yticks, during_analysis):
 
-            if during_analysis is True:
+            if during_analysis:
                 file = self.output_image_path + str(self.plot_count) + '_' + filename + '.png'
-            elif during_analysis is False:
+            else:
                 file = self.output_image_path + filename + '.png'
 
             if os.path.isfile(file):
@@ -475,8 +475,8 @@ class PhaseImaging(Phase):
 
             self.lensing_image = lensing_image
 
-            self.output_array_as_png(self.lensing_image.image, 'observed_image', 'Observed Image',
-                                     self.lensing_image.grids.image.xticks, self.lensing_image.grids.image.yticks, True)
+            # self.output_array_as_png(self.lensing_image.image, 'observed_image', 'Observed Image',
+            #                          self.lensing_image.grids.image.xticks, self.lensing_image.grids.image.yticks, True)
 
         def check_positions_trace_within_threshold(self, instance):
 
