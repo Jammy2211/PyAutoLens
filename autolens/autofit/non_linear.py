@@ -84,6 +84,8 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the data_vector being analysed (e.g. the analysis_path of the data_vector set)
         """
+        self.paramnames_names = []
+        self.paramnames_labels = []
         self.named_config = conf.instance.non_linear
 
         if name is None:
@@ -297,16 +299,16 @@ class MultiNest(NonLinearOptimizer):
         if len(self.path) > 77:
             raise exc.MultiNestException('The path to the MultiNest results is longer than 77 characters (='
                                          + str(len(self.path)) + ')' +
-                                         ' Unfortunately, PyMultiNest cannot use a path longer than this. ' \
+                                         ' Unfortunately, PyMultiNest cannot use a path longer than this. '
                                          'Set your results path to something with fewer characters to fix.')
 
         self.save_model_info()
 
         class Fitness(object):
-            def __init__(self, instance_from_physical_vector, constant):
+            def __init__(self, instance_from_physical_vector, _constant):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
+                self.constant = _constant
                 self.max_likelihood = -np.inf
 
             def __call__(self, cube, ndim, nparams, lnew):
@@ -315,17 +317,17 @@ class MultiNest(NonLinearOptimizer):
                 instance += self.constant
 
                 try:
-                    likelihood = analysis.fit(instance)
+                    _likelihood = analysis.fit(instance)
                 except exc.ReconstructionException or exc.RayTracingException:
-                    likelihood = -np.inf
+                    _likelihood = -np.inf
 
                 # TODO: Use multinest to provide best model
 
-                if likelihood > self.max_likelihood:
-                    self.max_likelihood = likelihood
-                    self.result = Result(instance, likelihood)
+                if _likelihood > self.max_likelihood:
+                    self.max_likelihood = _likelihood
+                    self.result = Result(instance, _likelihood)
 
-                return likelihood
+                return _likelihood
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
