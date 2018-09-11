@@ -5,7 +5,8 @@ Usage:
   autolens reset_config
   autolens pipeline
   autolens pipeline <name> --info
-  autolens pipeline <name> (--image=<image>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
+  autolens pipeline <name> (--image=<image>) (--noise=<noise>) (--psf=<psf>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
+  autolens pipeline <name> (--data=<data>) (--image-hdu=<image_hdu>) (--noise-hdu=<noise_hdu>) (--psf-hdu=<psf_hdu>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
   autolens -h | --help
   autolens --version
 
