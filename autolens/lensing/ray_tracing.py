@@ -58,9 +58,6 @@ class TracerGeometry(object):
 
 class AbstractTracer(object):
 
-    def __init__(self, image_grids):
-        self.map_to_2d = image_grids.image.map_to_2d
-
     @property
     def all_planes(self):
         raise NotImplementedError()
@@ -177,7 +174,7 @@ class TracerImagePlane(AbstractTracer):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        super(TracerImagePlane, self).__init__(image_grids)
+        self.map_to_2d = image_grids.image.map_to_2d
 
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift], cosmology=cosmology)
@@ -213,7 +210,7 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        super(TracerImageSourcePlanes, self).__init__(image_grids)
+        self.map_to_2d = image_grids.image.map_to_2d
 
         self.image_plane = Plane(lens_galaxies, image_grids, compute_deflections=True)
 
@@ -241,7 +238,7 @@ class AbstractTracerMulti(AbstractTracer):
     def all_planes(self):
         return self.planes
 
-    def __init__(self, galaxies, image_grids, cosmology):
+    def __init__(self, galaxies, cosmology):
         """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
@@ -260,8 +257,6 @@ class AbstractTracerMulti(AbstractTracer):
 
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
-
-        super(AbstractTracerMulti, self).__init__(image_grids)
 
         self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
 
@@ -306,7 +301,9 @@ class TracerMulti(AbstractTracerMulti):
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
 
-        super(TracerMulti, self).__init__(galaxies, image_grids, cosmology)
+        self.map_to_2d = image_grids.image.map_to_2d
+
+        super(TracerMulti, self).__init__(galaxies, cosmology)
 
         self.planes = []
 
