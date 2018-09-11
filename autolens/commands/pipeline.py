@@ -80,7 +80,7 @@ class Pipeline(Base):
             True iff --data option is set. --data is the path to a file with multiple data layers accessible by setting
             hdus.
         """
-        return "--data" in self.options
+        return self.options["--data"] is not None
 
     @property
     def image_hdu(self):
