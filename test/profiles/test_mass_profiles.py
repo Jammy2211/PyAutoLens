@@ -1,7 +1,6 @@
 import numpy as np
 import math
 import pytest
-from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 
@@ -37,7 +36,6 @@ class TestCoredPowerLawMP(object):
         assert power_law.einstein_radius_rescaled == pytest.approx(0.4, 1e-3)
 
     def test__surface_density_correct_values(self):
-
         cored_power_law = mp.SphericalCoredPowerLaw(centre=(1, 1), einstein_radius=1.0, slope=2.2, core_radius=0.1)
         assert cored_power_law.surface_density_func(radius=1.0) == pytest.approx(0.39762, 1e-4)
 
@@ -50,7 +48,6 @@ class TestCoredPowerLawMP(object):
         assert cored_power_law.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(1.3887, 1e-3)
 
     def test__potential_correct_values(self):
-
         power_law = mp.SphericalCoredPowerLaw(centre=(0.5, -0.7), einstein_radius=1.0, slope=1.8, core_radius=0.2)
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.54913, 1e-3)
 
@@ -59,16 +56,13 @@ class TestCoredPowerLawMP(object):
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
                                                      einstein_radius=0.5, slope=2.4, core_radius=0.5)
-        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == \
-               pytest.approx(0.02319, 1e-3)
+        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.02319, 1e-3)
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
                                                      einstein_radius=1.3, slope=1.8, core_radius=0.2)
-        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == \
-               pytest.approx(0.71185, 1e-3)
+        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.71185, 1e-3)
 
     def test__deflections__correct_values(self):
-
         power_law = mp.SphericalCoredPowerLaw(centre=(0.5, -0.7), einstein_radius=1.0,
                                               slope=1.8, core_radius=0.2)
         deflections = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
@@ -95,41 +89,38 @@ class TestCoredPowerLawMP(object):
         assert defls[0, 1] == pytest.approx(0.01111, 1e-3)
 
     def test__surfce_density__change_geometry(self):
-
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0), )
-        assert cored_power_law_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == \
-               cored_power_law_1.surface_density_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert cored_power_law_0.surface_density_from_grid(
+            grid=np.array([[1.0, 1.0]])) == cored_power_law_1.surface_density_from_grid(grid=np.array([[0.0, 0.0]]))
 
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
-        assert cored_power_law_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               cored_power_law_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert cored_power_law_0.surface_density_from_grid(
+            grid=np.array([[1.0, 0.0]])) == cored_power_law_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
 
         cored_power_law_0 = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         cored_power_law_1 = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        assert cored_power_law_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               cored_power_law_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert cored_power_law_0.surface_density_from_grid(
+            grid=np.array([[1.0, 0.0]])) == cored_power_law_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
 
     def test__potential__change_geometry(self):
-
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0))
-        assert cored_power_law_0.potential_from_grid(grid=np.array([[1.0, 1.0]])) == \
-               cored_power_law_1.potential_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert cored_power_law_0.potential_from_grid(
+            grid=np.array([[1.0, 1.0]])) == cored_power_law_1.potential_from_grid(grid=np.array([[0.0, 0.0]]))
 
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
-        assert cored_power_law_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) \
-               == cored_power_law_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert cored_power_law_0.potential_from_grid(
+            grid=np.array([[1.0, 0.0]])) == cored_power_law_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
 
         cored_power_law_0 = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         cored_power_law_1 = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        assert cored_power_law_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               cored_power_law_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert cored_power_law_0.potential_from_grid(
+            grid=np.array([[1.0, 0.0]])) == cored_power_law_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
 
     def test__deflections__change_geometry(self):
-
         cored_power_law_0 = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0))
         cored_power_law_1 = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0))
         defls_0 = cored_power_law_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
@@ -152,21 +143,20 @@ class TestCoredPowerLawMP(object):
         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
     def test__multiple_coordinates_in__multiple_quantities_out(self):
-
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0,
                                                      slope=2.3, core_radius=0.2)
-        assert cored_power_law.surface_density_from_grid(grid=np.array([[1.0, 0.0], [1.0, 0.0]]))[0] == \
-               pytest.approx(0.45492, 1e-3)
-        assert cored_power_law.surface_density_from_grid(grid=np.array([[1.0, 0.0], [1.0, 0.0]]))[1] == \
-               pytest.approx(0.45492, 1e-3)
+        assert cored_power_law.surface_density_from_grid(grid=np.array([[1.0, 0.0], [1.0, 0.0]]))[0] == pytest.approx(
+            0.45492, 1e-3)
+        assert cored_power_law.surface_density_from_grid(grid=np.array([[1.0, 0.0], [1.0, 0.0]]))[1] == pytest.approx(
+            0.45492, 1e-3)
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.2, 0.2), axis_ratio=0.6, phi=120.0,
                                                      einstein_radius=0.5,
                                                      slope=2.4, core_radius=0.5)
-        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))[0] == \
-               pytest.approx(0.02319, 1e-3)
-        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))[1] == \
-               pytest.approx(0.02319, 1e-3)
+        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))[
+                   0] == pytest.approx(0.02319, 1e-3)
+        assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625], [0.1625, 0.1625]]))[
+                   1] == pytest.approx(0.02319, 1e-3)
 
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
                                                      einstein_radius=1.3, slope=1.8, core_radius=0.2)
@@ -177,7 +167,6 @@ class TestCoredPowerLawMP(object):
         assert defls[1, 1] == pytest.approx(0.9869, 1e-3)
 
     def test__spherical_and_elliptical_match(self):
-
         elliptical = mp.EllipticalCoredPowerLaw(centre=(1.1, 1.1), axis_ratio=1.0, phi=0.0, einstein_radius=3.0,
                                                 slope=2.2, core_radius=0.1)
         spherical = mp.SphericalCoredPowerLaw(centre=(1.1, 1.1), einstein_radius=3.0, slope=2.2, core_radius=0.1)
@@ -191,7 +180,6 @@ class TestCoredPowerLawMP(object):
 class TestPowerLawMP(object):
 
     def test__constructor(self):
-
         power_law = mp.EllipticalPowerLaw(centre=(1, 1), axis_ratio=1.0, phi=45.0, einstein_radius=1.0, slope=2.0)
 
         assert power_law.x_cen == 1.0
@@ -213,7 +201,6 @@ class TestPowerLawMP(object):
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
     def test__surface_density_correct_values(self):
-
         isothermal = mp.SphericalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
         assert isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.5, 1e-3)
 
@@ -232,13 +219,12 @@ class TestPowerLawMP(object):
         assert power_law.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(1.4079, 1e-3)
 
     def test__potential_correct_values(self):
-
         power_law = mp.SphericalPowerLaw(centre=(0.5, -0.7), einstein_radius=1.3, slope=2.3)
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(1.90421, 1e-3)
 
         power_law = mp.SphericalPowerLaw(centre=(0.5, -0.7), einstein_radius=1.3, slope=1.8)
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.93758, 1e-3)
-        
+
         power_law = mp.EllipticalPowerLaw(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0, einstein_radius=1.3,
                                           slope=2.2)
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(1.53341, 1e-3)
@@ -248,7 +234,6 @@ class TestPowerLawMP(object):
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.96723, 1e-3)
 
     def test__deflections__correct_values(self):
-
         power_law = mp.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0, slope=2.0)
         defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
         assert defls[0, 0] == pytest.approx(-0.94868, 1e-3)
@@ -263,7 +248,7 @@ class TestPowerLawMP(object):
         defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
         assert defls[0, 0] == pytest.approx(-0.18861, 1e-3)
         assert defls[0, 1] == pytest.approx(-0.06287, 1e-3)
-    
+
         power_law = mp.EllipticalPowerLaw(centre=(0, 0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0, slope=2.5)
         defls = power_law.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert defls[0, 0] == pytest.approx(0.99629, 1e-3)
@@ -287,7 +272,6 @@ class TestPowerLawMP(object):
         assert defls[0, 1] == pytest.approx(1.25995, 1e-3)
 
     def test__compare_to_cored_power_law(self):
-
         power_law = mp.EllipticalPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0, einstein_radius=1.0, slope=2.3)
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0,
                                                      einstein_radius=1.0, slope=2.3, core_radius=0.0)
@@ -298,7 +282,6 @@ class TestPowerLawMP(object):
         assert power_law.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid), 1e-3)
 
     def test__spherical_and_elliptical_match(self):
-
         elliptical = mp.EllipticalPowerLaw(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0,
                                            slope=2.4)
         spherical = mp.SphericalPowerLaw(centre=(1.1, 1.1), einstein_radius=3.0, slope=2.4)
@@ -312,7 +295,6 @@ class TestPowerLawMP(object):
 class TestCoredIsothermalMP(object):
 
     def test__constructor(self):
-        
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                         einstein_radius=1.0, core_radius=0.2)
 
@@ -340,7 +322,6 @@ class TestCoredIsothermalMP(object):
         assert cored_isothermal.einstein_radius_rescaled == 0.5
 
     def test__surface_density_correct_values(self):
-        
         cored_isothermal = mp.SphericalCoredIsothermal(centre=(1, 1), einstein_radius=1., core_radius=0.1)
         assert cored_isothermal.surface_density_func(radius=1.0) == pytest.approx(0.49752, 1e-4)
 
@@ -351,22 +332,22 @@ class TestCoredIsothermalMP(object):
         assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.49029, 1e-3)
 
         cored_isothermal = mp.SphericalCoredIsothermal(centre=(0.0, 0.0), einstein_radius=2.0, core_radius=0.2)
-        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 0.49029, 1e-3)
+        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 0.49029,
+                                                                                                        1e-3)
 
         cored_isothermal = mp.SphericalCoredIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.2)
-        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               pytest.approx(0.49029, 1e-3)
+        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.49029, 1e-3)
 
         # axis ratio changes only einstein_rescaled, so wwe can use the above value and times by 1.0/1.5.
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0,
                                                         einstein_radius=1.0, core_radius=0.2)
-        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               pytest.approx(0.49029 * 1.33333, 1e-3)
+        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(
+            0.49029 * 1.33333, 1e-3)
 
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                                         einstein_radius=2.0, core_radius=0.2)
-        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               pytest.approx(2.0 * 0.49029, 1e-3)
+        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 0.49029,
+                                                                                                        1e-3)
 
         # for axis_ratio = 1.0, the factor is 1/2
         # for axis_ratio = 0.5, the factor is 1/(1.5)
@@ -374,11 +355,10 @@ class TestCoredIsothermalMP(object):
         # axis ratio changes only einstein_rescaled, so wwe can use the above value and times by 1.0/1.5.
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, einstein_radius=1.0,
                                                         core_radius=0.2)
-        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               pytest.approx((1.0 / 0.75) * 0.49029, 1e-3)
+        assert cored_isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(
+            (1.0 / 0.75) * 0.49029, 1e-3)
 
     def test__potential__correct_values(self):
-
         isothermal_core = mp.SphericalCoredIsothermal(centre=(0.5, -0.7), einstein_radius=1.3, core_radius=0.2)
         assert isothermal_core.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.72231, 1e-3)
 
@@ -394,7 +374,6 @@ class TestCoredIsothermalMP(object):
         assert cored_isothermal.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.04024, 1e-3)
 
     def test__deflections__correct_values(self):
-
         isothermal_core = mp.SphericalCoredIsothermal(centre=(0.5, -0.7), einstein_radius=1.3, core_radius=0.2)
         deflections = isothermal_core.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
         assert deflections[0, 0] == pytest.approx(-0.37489, 1e-3)
@@ -404,7 +383,7 @@ class TestCoredIsothermalMP(object):
         deflections = isothermal_core.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
         assert deflections[0, 0] == pytest.approx(0.16216, 1e-3)
         assert deflections[0, 1] == pytest.approx(-0.00559, 1e-3)
-        
+
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.5, -0.7), axis_ratio=0.7, phi=60.0,
                                                         einstein_radius=1.3, core_radius=0.2)
         defls = cored_isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
@@ -418,7 +397,6 @@ class TestCoredIsothermalMP(object):
         assert defls[0, 1] == pytest.approx(0.02097, 1e-3)
 
     def test__compare_to_cored_power_law(self):
-
         power_law = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0, einstein_radius=1.0,
                                                  core_radius=0.1)
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0,
@@ -430,7 +408,6 @@ class TestCoredIsothermalMP(object):
         assert power_law.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid), 1e-3)
 
     def test__spherical_and_elliptical_match(self):
-
         elliptical = mp.EllipticalCoredIsothermal(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0,
                                                   core_radius=1.0)
         spherical = mp.SphericalCoredIsothermal(centre=(1.1, 1.1), einstein_radius=3.0, core_radius=1.0)
@@ -466,7 +443,6 @@ class TestIsothermalMP(object):
         assert isothermal.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
     def test__surface_density__correct_values(self):
-        
         # eta = 1.0
         # kappa = 0.5 * 1.0 ** 1.0
         isothermal = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
@@ -482,7 +458,6 @@ class TestIsothermalMP(object):
         assert isothermal.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.66666, 1e-3)
 
     def test__potential__correct_values(self):
-
         isothermal = mp.SphericalIsothermal(centre=(0.5, -0.7), einstein_radius=1.3)
         assert isothermal.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(1.23435, 1e-3)
 
@@ -490,7 +465,6 @@ class TestIsothermalMP(object):
         assert isothermal.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(1.19268, 1e-3)
 
     def test__deflections__correct_values(self):
-
         isothermal = mp.SphericalIsothermal(centre=(0.5, -0.7), einstein_radius=1.3)
         deflections = isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
         assert deflections[0, 0] == pytest.approx(-0.46208, 1e-4)
@@ -519,8 +493,10 @@ class TestIsothermalMP(object):
 
         assert isothermal.potential_from_grid(grid) == pytest.approx(cored_power_law.potential_from_grid(grid), 1e-3)
         assert isothermal.potential_from_grid(grid) == pytest.approx(cored_power_law.potential_from_grid(grid), 1e-3)
-        assert isothermal.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid), 1e-3)
-        assert isothermal.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid), 1e-3)
+        assert isothermal.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid),
+                                                                       1e-3)
+        assert isothermal.deflections_from_grid(grid) == pytest.approx(cored_power_law.deflections_from_grid(grid),
+                                                                       1e-3)
 
     def test__spherical_and_elliptical_match(self):
         elliptical = mp.EllipticalIsothermal(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0)
@@ -556,7 +532,6 @@ class TestGeneralizedNFWMP(object):
         assert gnfw.scale_radius == 10.0
 
     def test__coord_func_x_above_1(self):
-
         assert mp.EllipticalNFW.coord_func(2.0) == pytest.approx(0.60459, 1e-3)
 
         assert mp.EllipticalNFW.coord_func(0.5) == pytest.approx(1.5206919, 1e-3)
@@ -564,7 +539,6 @@ class TestGeneralizedNFWMP(object):
         assert mp.EllipticalNFW.coord_func(1.0) == 1.0
 
     def test__surface_density_correct_values(self):
-
         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
         assert gnfw.surface_density_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(0.30840, 1e-3)
 
@@ -580,19 +554,17 @@ class TestGeneralizedNFWMP(object):
         assert gnfw.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.30840 * 2, 1e-3)
 
     def test__potential_correct_values(self):
-
         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
         assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.00920, 1e-3)
 
         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=8.0)
-        assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]]))== pytest.approx(0.17448, 1e-3)
+        assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.17448, 1e-3)
 
         gnfw = mp.EllipticalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
                                            phi=100.0, inner_slope=1.0, scale_radius=10.0)
         assert gnfw.potential_from_grid(grid=np.array([[2.0, 2.0]])) == pytest.approx(2.4718, 1e-4)
 
     def test__deflections_correct_values(self):
-
         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
         defls = gnfw.deflections_from_grid(grid=np.array([[0.1625, 0.1875]]))
         assert defls[0, 0] == pytest.approx(0.37701, 1e-3)
@@ -616,41 +588,38 @@ class TestGeneralizedNFWMP(object):
         assert defls[0, 1] == pytest.approx(-5.99032, 1e-3)
 
     def test__surfce_density__change_geometry(self):
-
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0))
-        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == \
-               gnfw_1.surface_density_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == gnfw_1.surface_density_from_grid(
+            grid=np.array([[0.0, 0.0]]))
 
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               gnfw_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.surface_density_from_grid(
+            grid=np.array([[0.0, 1.0]]))
 
         gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               gnfw_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.surface_density_from_grid(
+            grid=np.array([[0.0, 1.0]]))
 
     def test__potential__change_geometry(self):
-
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0))
-        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 1.0]])) == \
-               gnfw_1.potential_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 1.0]])) == gnfw_1.potential_from_grid(
+            grid=np.array([[0.0, 0.0]]))
 
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               gnfw_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.potential_from_grid(
+            grid=np.array([[0.0, 1.0]]))
 
         gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               gnfw_1.potential_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.potential_from_grid(
+            grid=np.array([[0.0, 1.0]]))
 
     def test__deflections__change_geometry(self):
-
         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
         defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
@@ -675,7 +644,6 @@ class TestGeneralizedNFWMP(object):
         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
     def test__compare_to_nfw(self):
-
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0, scale_radius=5.0)
         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
                                            inner_slope=1.0, scale_radius=5.0)
@@ -686,7 +654,6 @@ class TestGeneralizedNFWMP(object):
         assert nfw.deflections_from_grid(grid) == pytest.approx(gnfw.deflections_from_grid(grid), 1e-3)
 
     def test__spherical_and_elliptical_match(self):
-
         elliptical = mp.EllipticalGeneralizedNFW(centre=(0.1, 0.2), axis_ratio=1.0, phi=0.0, kappa_s=2.0,
                                                  inner_slope=1.5, scale_radius=3.0)
         spherical = mp.SphericalGeneralizedNFW(centre=(0.1, 0.2), kappa_s=2.0, inner_slope=1.5, scale_radius=3.0)
@@ -700,7 +667,6 @@ class TestGeneralizedNFWMP(object):
 class TestNFWMP(object):
 
     def test__constructor(self):
-
         nfw = mp.EllipticalNFW(centre=(0.7, 1.0), axis_ratio=0.7, phi=60.0, kappa_s=2.0,
                                scale_radius=10.0)
 
@@ -719,7 +685,6 @@ class TestNFWMP(object):
         assert nfw.scale_radius == 10.0
 
     def test__surface_density_correct_values(self):
-
         # r = 2.0 (> 1.0)
         # F(r) = (1/(sqrt(3))*atan(sqrt(3)) = 0.60459978807
         # kappa(r) = 2 * kappa_s * (1 - 0.60459978807) / (4-1) = 0.263600141
@@ -739,7 +704,6 @@ class TestNFWMP(object):
         assert nfw.surface_density_from_grid(grid=np.array([[0.0, 0.25]])) == pytest.approx(1.388511, 1e-3)
 
     def test__potential_correct_values(self):
-
         nfw = mp.SphericalNFW(centre=(0.2, 0.3), kappa_s=2.5, scale_radius=4.0)
         assert nfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.03702, 1e-3)
 
@@ -747,7 +711,6 @@ class TestNFWMP(object):
         assert nfw.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.05380, 1e-3)
 
     def test__deflections_correct_values(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
         defls = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert defls[0, 0] == pytest.approx(0.56194, 1e-3)
@@ -772,7 +735,6 @@ class TestNFWMP(object):
 class TestSersicMP(object):
 
     def test__constructor(self):
-        
         sersic = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                      effective_radius=0.6, sersic_index=2.0, mass_to_light_ratio=1.0)
 
@@ -802,7 +764,6 @@ class TestSersicMP(object):
         assert sersic.mass_to_light_ratio == 1.0
 
     def test__surface_density_correct_values(self):
-
         sersic = mp.SphericalSersic(centre=(0.0, 0.0), intensity=3.0, effective_radius=2.0, sersic_index=2.0,
                                     mass_to_light_ratio=1.0)
         assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx(4.90657319276, 1e-3)
@@ -818,9 +779,8 @@ class TestSersicMP(object):
         sersic = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                      sersic_index=2.0, mass_to_light_ratio=1.0)
         assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(5.38066670129, 1e-3)
-            
-    def test__deflections_correct_values(self):
 
+    def test__deflections_correct_values(self):
         sersic = mp.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                      effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
         defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
@@ -836,24 +796,22 @@ class TestSersicMP(object):
         assert defls[1, 1] == pytest.approx(1.1446, 1e-3)
 
     def test__surfce_density__change_geometry(self):
-
         sersic_0 = mp.SphericalSersic(centre=(0.0, 0.0))
         sersic_1 = mp.SphericalSersic(centre=(1.0, 1.0))
-        assert sersic_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == \
-               sersic_1.surface_density_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert sersic_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == sersic_1.surface_density_from_grid(
+            grid=np.array([[0.0, 0.0]]))
 
         sersic_0 = mp.SphericalSersic(centre=(0.0, 0.0))
         sersic_1 = mp.SphericalSersic(centre=(0.0, 0.0))
-        assert sersic_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               sersic_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert sersic_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == sersic_1.surface_density_from_grid(
+            grid=np.array([[0.0, 1.0]]))
 
         sersic_0 = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
         sersic_1 = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-        assert sersic_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == \
-               sersic_1.surface_density_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert sersic_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == sersic_1.surface_density_from_grid(
+            grid=np.array([[0.0, 1.0]]))
 
     def test__deflections__change_geometry(self):
-
         sersic_0 = mp.SphericalSersic(centre=(0.0, 0.0))
         sersic_1 = mp.SphericalSersic(centre=(1.0, 1.0))
         defls_0 = sersic_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
@@ -876,7 +834,6 @@ class TestSersicMP(object):
         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
     def test__spherical_and_elliptical_identical(self):
-
         elliptical = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                          effective_radius=1.0, sersic_index=4.0,
                                          mass_to_light_ratio=1.0)
@@ -889,7 +846,6 @@ class TestSersicMP(object):
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
 
     def test__from_light_profile(self):
-
         light_exponential = lp.EllipticalExponential(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0,
                                                      intensity=5.0, effective_radius=0.2)
         mass_exponential = mp.EllipticalExponential.from_exponential_light_profile(light_exponential,
@@ -909,7 +865,6 @@ class TestSersicMP(object):
 class TestExponentialMP(object):
 
     def test__constructor(self):
-
         exponential = mp.EllipticalExponential(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                effective_radius=0.6, mass_to_light_ratio=1.0)
 
@@ -960,7 +915,6 @@ class TestExponentialMP(object):
         assert exponential.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(4.8566, 1e-3)
 
     def test__deflections_correct_values(self):
-
         exponential = mp.EllipticalExponential(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                effective_radius=0.2, mass_to_light_ratio=1.0)
         defls = exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
@@ -988,7 +942,6 @@ class TestExponentialMP(object):
 class TestDevVaucouleursMP(object):
 
     def test__constructor(self):
-
         dev = mp.EllipticalDevVaucouleurs(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0,
                                           intensity=1.0,
                                           effective_radius=0.6, mass_to_light_ratio=1.0)
@@ -1019,7 +972,6 @@ class TestDevVaucouleursMP(object):
         assert dev.mass_to_light_ratio == 1.0
 
     def test__surface_density_correct_values(self):
-
         dev = mp.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                           mass_to_light_ratio=1.0)
         assert dev.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(5.6697, 1e-3)
@@ -1041,7 +993,6 @@ class TestDevVaucouleursMP(object):
         assert sersic.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.351797, 1e-3)
 
     def test__deflections_correct_values(self):
-
         dev = mp.EllipticalDevVaucouleurs(centre=(0.2, 0.4), axis_ratio=0.9, phi=10.0, intensity=2.0,
                                           effective_radius=0.8, mass_to_light_ratio=3.0)
         defls = dev.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
@@ -1050,7 +1001,6 @@ class TestDevVaucouleursMP(object):
         assert defls[0, 1] == pytest.approx(-24.528, 1e-3)
 
     def test__spherical_and_elliptical_identical(self):
-
         elliptical = mp.EllipticalDevVaucouleurs(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                  effective_radius=1.0, mass_to_light_ratio=1.0)
 
@@ -1065,7 +1015,6 @@ class TestDevVaucouleursMP(object):
 class TestSersicMassRadialGradientMP(object):
 
     def test__constructor(self):
-
         sersic = mp.EllipticalSersicRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                    effective_radius=0.6, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=2.0)
@@ -1098,37 +1047,39 @@ class TestSersicMassRadialGradientMP(object):
         assert sersic.mass_to_light_gradient == 2.0
 
     def test__surface_density_correct_values(self):
-
         # ((axis_ratio*radius/effective_radius)**-mass_to_light_gradient) = (1/0.6)**-1.0 = 0.6
         sersic = mp.EllipticalSersicRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                    effective_radius=0.6, sersic_index=4.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=1.0)
-        assert sersic.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx((0.6) * 0.351797, 1e-3)
+        assert sersic.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.6 * 0.351797, 1e-3)
 
         # ((axis_ratio*radius/effective_radius)**-mass_to_light_gradient) = (1.5/2.0)**1.0 = 0.75
         sersic = mp.EllipticalSersicRadialGradient(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                    sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=-1.0)
-        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx((0.75) * 4.90657319276, 1e-3)
+        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx(0.75 * 4.90657319276,
+                                                                                              1e-3)
 
         sersic = mp.EllipticalSersicRadialGradient(axis_ratio=1.0, phi=0.0, intensity=6.0, effective_radius=2.0,
                                                    sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=-1.0)
-        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx(2.0 * (0.75) * 4.90657319276, 1e-3)
+        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx(
+            2.0 * 0.75 * 4.90657319276, 1e-3)
 
         sersic = mp.EllipticalSersicRadialGradient(axis_ratio=1.0, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                    sersic_index=2.0, mass_to_light_ratio=2.0,
                                                    mass_to_light_gradient=-1.0)
-        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx(2.0 * (0.75) * 4.90657319276, 1e-3)
+        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.5]])) == pytest.approx(
+            2.0 * 0.75 * 4.90657319276, 1e-3)
 
         # ((axis_ratio*radius/effective_radius)**-mass_to_light_gradient) = ((0.5*1.41)/2.0)**-1.0 = 2.836
         sersic = mp.EllipticalSersicRadialGradient(axis_ratio=0.5, phi=0.0, intensity=3.0, effective_radius=2.0,
                                                    sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=1.0)
-        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx((2.836879) * 5.38066670129, 1e-2)
+        assert sersic.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(
+            2.836879 * 5.38066670129, 1e-2)
 
     def test__deflections_correct_values(self):
-
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                    effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=1.0)
@@ -1144,7 +1095,6 @@ class TestSersicMassRadialGradientMP(object):
         assert defls[0, 1] == pytest.approx(0.97806399756448, 1e-3)
 
     def test__compare_to_sersic(self):
-
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                    effective_radius=0.2, sersic_index=1.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=0.0)
@@ -1179,11 +1129,10 @@ class TestSersicMassRadialGradientMP(object):
                                      effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
         sersic_defls = sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
 
-        assert sersic_grad_defls[0,0] == sersic_defls[0, 0] == pytest.approx(0.79374, 1e-3)
-        assert sersic_grad_defls[0,1] == sersic_defls[0,1] == pytest.approx(1.1446, 1e-3)
+        assert sersic_grad_defls[0, 0] == sersic_defls[0, 0] == pytest.approx(0.79374, 1e-3)
+        assert sersic_grad_defls[0, 1] == sersic_defls[0, 1] == pytest.approx(1.1446, 1e-3)
 
     def test__from_light_profile__deflection_angles_unchanged(self):
-
         light_sersic = lp.EllipticalSersic(centre=(-0.2, -0.4), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                            effective_radius=0.2, sersic_index=2.0)
         mass_sersic = mp.EllipticalSersicRadialGradient.from_profile(light_sersic, mass_to_light_ratio=1.0,
@@ -1193,7 +1142,6 @@ class TestSersicMassRadialGradientMP(object):
         assert defls[0, 1] == pytest.approx(1.1446, 1e-3)
 
     def test__spherical_and_elliptical_identical(self):
-
         elliptical = mp.EllipticalSersicRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                        effective_radius=1.0, sersic_index=4.0,
                                                        mass_to_light_ratio=1.0, mass_to_light_gradient=1.0)
@@ -1208,7 +1156,6 @@ class TestSersicMassRadialGradientMP(object):
 class TestExternalShear(object):
 
     def test__deflections_correct_values(self):
-
         shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
         defls = shear.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert defls[0, 0] == pytest.approx(0.01625, 1e-3)
@@ -1221,7 +1168,6 @@ class TestExternalShear(object):
 
 
 class TestMassIntegral(object):
-
 
     def test__within_circle__singular_isothermal_sphere__compare_to_analytic1(self):
 
