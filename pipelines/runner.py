@@ -5,7 +5,7 @@ from autolens import conf
 import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-conf.instance.output_path = '~/'
+conf.instance.output_path = os.path.expanduser("~/")
 
 
 def load_image(data_name, pixel_scale, image_hdu, noise_hdu, psf_hdu, psf_trimmed_shape=None,
