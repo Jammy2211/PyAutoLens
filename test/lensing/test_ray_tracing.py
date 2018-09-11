@@ -13,9 +13,9 @@ import numpy as np
 
 @pytest.fixture(name="centre_mask")
 def make_centre_mask():
-    return mask.Mask(np.array([[True, True, True],
-                               [True, False, True],
-                               [True, True, True]]))
+    return mask.Mask(np.array([[True, True, True, True],
+                               [True, False, False, True],
+                               [True, True, True, True]]))
 
 @pytest.fixture(name="imaging_grids")
 def make_imaging_grids(centre_mask):
@@ -1077,7 +1077,8 @@ class TestTracerImageAndSource(object):
             source_plane_imaging_grids = image_plane.trace_to_next_plane()
             source_plane = ray_tracing.Plane(galaxies=[g0], grids=source_plane_imaging_grids, compute_deflections=False)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0], image_grids=imaging_grids)
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_grids=imaging_grids)
 
             assert (tracer.image_plane_image == image_plane.image_plane_image + source_plane.image_plane_image).all()
             assert (tracer.image_plane_images_of_planes[0] == image_plane.image_plane_image).all()
@@ -1098,6 +1099,48 @@ class TestTracerImageAndSource(object):
             assert (tracer.image_plane_images_of_galaxies[0] == image_plane.image_plane_images_of_galaxies[0]).all()
             assert (tracer.image_plane_images_of_galaxies[1] == image_plane.image_plane_images_of_galaxies[1]).all()
             assert (tracer.image_plane_images_of_galaxies[2] == image_plane.image_plane_images_of_galaxies[2]).all()
+
+
+    class TestImagePlaneImages2d:
+
+        def test__1_plane__single_plane_tracer(self, imaging_grids):
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
+
+            image_plane = ray_tracing.Plane(galaxies=[g0, g1, g2], grids=imaging_grids, compute_deflections=True)
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_grids=imaging_grids)
+
+            assert (tracer.image_plane_image_2d == imaging_grids.image.map_to_2d(image_plane.image_plane_image)).all()
+            assert (sum(tracer.image_plane_images_of_galaxies_2d) ==
+                    imaging_grids.image.map_to_2d(image_plane.image_plane_image)).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[0] ==
+                    imaging_grids.image.map_to_2d(image_plane.image_plane_images_of_galaxies[0])).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[1] ==
+                    imaging_grids.image.map_to_2d(image_plane.image_plane_images_of_galaxies[1])).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[2] ==
+                    imaging_grids.image.map_to_2d(image_plane.image_plane_images_of_galaxies[2])).all()
+
+        def test__2_planes__returns_image_plane_image_of_each_plane__return_images_in_2d(self, imaging_grids):
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
+                          mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+
+            image_plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids, compute_deflections=True)
+            source_plane_imaging_grids = image_plane.trace_to_next_plane()
+            source_plane = ray_tracing.Plane(galaxies=[g0], grids=source_plane_imaging_grids, compute_deflections=False)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_grids=imaging_grids)
+
+            assert (tracer.image_plane_image_2d == imaging_grids.image.map_to_2d(image_plane.image_plane_image) +
+                                                   imaging_grids.image.map_to_2d(source_plane.image_plane_image)).all()
+            assert (tracer.image_plane_images_of_planes_2d[0] ==
+                    imaging_grids.image.map_to_2d(image_plane.image_plane_image)).all()
+            assert (tracer.image_plane_images_of_planes_2d[1] ==
+                    imaging_grids.image.map_to_2d(source_plane.image_plane_image)).all()
 
 
     class TestImagePlaneBlurringImages:
@@ -1702,7 +1745,8 @@ class TestMultiTracer(object):
             assert (tracer.image_plane_images_of_galaxies[1] == plane_1.image_plane_images_of_galaxies[0]).all()
             assert (tracer.image_plane_images_of_galaxies[2] == plane_2.image_plane_images_of_galaxies[0]).all()
 
-        def test__diffrent_galaxies_light_no_mass_in_each_plane__image_of_each_galaxy_is_galaxy_image(self, imaging_grids):
+        def test__diffrent_galaxies_light_no_mass_in_each_plane__image_of_each_galaxy_is_galaxy_image(self,
+                                                                                                      imaging_grids):
 
             sersic = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
                                          sersic_index=4.0)
@@ -1735,6 +1779,49 @@ class TestMultiTracer(object):
             assert (tracer.image_plane_images_of_galaxies[3] == plane_1.image_plane_images_of_galaxies[1]).all()
             assert (tracer.image_plane_images_of_galaxies[4] == plane_2.image_plane_images_of_galaxies[0]).all()
 
+
+    class TestImagePlaneImages2d:
+
+        def test__diffrent_galaxies_light_no_mass_in_each_plane__image_of_each_galaxy_is_galaxy_image(self,
+                                                                                                      imaging_grids):
+
+            sersic = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=1.0, effective_radius=0.6,
+                                         sersic_index=4.0)
+
+            g0 = g.Galaxy(redshift=0.1, light_profile=sersic)
+            g1 = g.Galaxy(redshift=1.0, light_profile=sersic)
+            g2 = g.Galaxy(redshift=2.0, light_profile=sersic)
+            g3 = g.Galaxy(redshift=0.1, light_profile=sersic)
+            g4 = g.Galaxy(redshift=1.0, light_profile=sersic)
+
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2, g3, g4], image_grids=imaging_grids,
+                                             cosmology=cosmo.Planck15)
+
+            plane_0 = ray_tracing.Plane(galaxies=[g0, g3], grids=imaging_grids, compute_deflections=True)
+            plane_1 = ray_tracing.Plane(galaxies=[g1, g4], grids=imaging_grids, compute_deflections=True)
+            plane_2 = ray_tracing.Plane(galaxies=[g2], grids=imaging_grids, compute_deflections=False)
+
+            image_plane_image = plane_0.image_plane_image + plane_1.image_plane_image + plane_2.image_plane_image
+
+            assert (tracer.image_plane_image_2d == imaging_grids.image.map_to_2d(image_plane_image)).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[0] + tracer.image_plane_images_of_galaxies_2d[3]
+                    == imaging_grids.image.map_to_2d(plane_0.image_plane_image)).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[1] + tracer.image_plane_images_of_galaxies_2d[4]
+                    == imaging_grids.image.map_to_2d(plane_1.image_plane_image)).all()
+
+            assert (tracer.image_plane_images_of_galaxies_2d[2] ==
+                    imaging_grids.image.map_to_2d(plane_2.image_plane_image)).all()
+
+            assert (tracer.image_plane_images_of_galaxies_2d[0] ==
+                    imaging_grids.image.map_to_2d(plane_0.image_plane_images_of_galaxies[0])).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[1] ==
+            imaging_grids.image.map_to_2d(plane_0.image_plane_images_of_galaxies[1])).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[2] ==
+                    imaging_grids.image.map_to_2d(plane_1.image_plane_images_of_galaxies[0])).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[3] ==
+            imaging_grids.image.map_to_2d(plane_1.image_plane_images_of_galaxies[1])).all()
+            assert (tracer.image_plane_images_of_galaxies_2d[4] ==
+                    imaging_grids.image.map_to_2d(plane_2.image_plane_images_of_galaxies[0])).all()
 
     class TestImagePlaneBlurringImages:
 
