@@ -20,13 +20,14 @@ def make_centre_mask():
 @pytest.fixture(name="imaging_grids")
 def make_imaging_grids(centre_mask):
     imaging_grids = mask.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(centre_mask, 2, (3, 3))
-    imaging_grids.image = mask.ImageGrid(np.array([[1.0, 1.0], [1.0, 0.0]]))
+    imaging_grids.image = mask.ImageGrid(arr=np.array([[1.0, 1.0], [1.0, 0.0]]), shape_2d=centre_mask.shape,
+                                         grid_to_pixel=centre_mask.grid_to_pixel)
     imaging_grids.sub = mask.SubGrid(np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
                                                [1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0]]),
-        mask=np.array([[True, True, True],
-                       [True, False, True],
-                       [True, True, True]]), sub_grid_size=2)
-    imaging_grids.blurring = mask.ImageGrid(np.array([[1.0, 0.0], [1.0, 0.0]]))
+                                      shape_2d=centre_mask.shape, grid_to_pixel=centre_mask.grid_to_pixel,
+                                      mask=centre_mask, sub_grid_size=2)
+    imaging_grids.blurring = mask.ImageGrid(arr=np.array([[1.0, 0.0], [1.0, 0.0]]), shape_2d=centre_mask.shape,
+                                            grid_to_pixel=centre_mask.grid_to_pixel)
     return imaging_grids
 
 @pytest.fixture(name='galaxy_non', scope='function')
