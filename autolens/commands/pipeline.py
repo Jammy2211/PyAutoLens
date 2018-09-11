@@ -5,14 +5,35 @@ import colorama
 
 
 def color(text, fore):
+    """
+    Apply a color to some text.
+
+    Parameters
+    ----------
+    text: str
+        The original text
+    fore: colorama.ansi.AnsiFore
+        The color to be applied to the text
+
+    Returns
+    -------
+    text: str
+        Colored text
+    """
     return "{}{}{}".format(fore, text, colorama.Fore.RESET)
 
 
 def blue(text):
+    """
+    Make text blue
+    """
     return color(text, colorama.Fore.BLUE)
 
 
 def red(text):
+    """
+    Make text red
+    """
     return color(text, colorama.Fore.RED)
 
 
@@ -45,6 +66,15 @@ class Pipeline(Base):
 
     @property
     def image_path(self):
+        """
+        Get the relative or absolute path to the input image. If the path does not begin with '/' then the current
+        working directory will be prepended.
+
+        Returns
+        -------
+        str: path
+            The path to the image folder or image.
+        """
         image_path = self.options['--image']
         if image_path is None:
             print("Please specify the path to the masked_image folder")
@@ -55,10 +85,22 @@ class Pipeline(Base):
 
     @property
     def pixel_scale(self):
+        """
+        Returns
+        -------
+        pixel_scale: float
+            The size of a single pixel, in arc seconds, as input by the user
+        """
         return float(self.options['--pixel-scale'])
 
     @property
     def config_path(self):
+        """
+        Returns
+        -------
+        config_path: str
+            The path to the configuration folder. Defaults to 'config' in the current working directory.
+        """
         if '--config' in self.options:
             config_path = self.options['--config']
         else:
@@ -67,6 +109,12 @@ class Pipeline(Base):
 
     @property
     def output_path(self):
+        """
+        Returns
+        -------
+        output_path: str
+            The path to the configuration folder. Defaults to 'output' in the current working directory.
+        """
         output_path = self.options['--output']
         if not output_path.startswith("/"):
             output_path = "{}/{}".format(current_directory, output_path)
@@ -74,6 +122,9 @@ class Pipeline(Base):
 
 
 def print_pipelines():
+    """
+    Prints a list of available pipelines taken from the pipeline dictionary.
+    """
     print("Available Pipelines:\n")
     print(
         "\n".join(
