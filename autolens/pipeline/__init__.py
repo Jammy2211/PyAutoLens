@@ -29,3 +29,9 @@ def add(module):
 
 #  Add pipeline modules here.
 add(initializer)
+
+
+class TestPipeline(object):
+    # noinspection PyMethodMayBeStatic
+    def run(self, image):
+        print(image)
