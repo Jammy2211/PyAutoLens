@@ -119,6 +119,12 @@ def test_mm_config():
     return conf.DefaultPriorConfig(path)
 
 
+@pytest.fixture(name='label_config')
+def test_labels_config():
+    path = "{}/../config/label.ini".format(os.path.dirname(os.path.realpath(__file__)))
+    return conf.NamedConfig(path)
+
+
 def create_path(func):
     @wraps(func)
     def wrapper(path):
@@ -1315,10 +1321,23 @@ class TestFitting(object):
             assert result.variable.mock_class.two.mean == -2
 
 
-class TestLabels(object):
-    def test_create_param_name_labels(self, mm_config):
-        optimizer = non_linear.NonLinearOptimizer()
-        optimizer.variable.config = mm_config
-        optimizer.variable.prior_model = MockClassNLOx4
+@pytest.fixture(name='label_optimizer')
+def make_label_optimizer(mm_config, label_config):
+    optimizer = non_linear.NonLinearOptimizer()
+    optimizer.variable.config = mm_config
+    optimizer.label_config = label_config
+    return optimizer
 
-        assert len(optimizer.paramnames_labels) == 4
+
+class TestLabels(object):
+    def test_create_param_name_labels(self, label_optimizer):
+        label_optimizer.variable.prior_model = MockClassNLOx4
+
+        assert len(label_optimizer.paramnames_labels) == 4
+        assert len(label_optimizer.paramnames_names) == 4
+
+    def test_label_config(self, label_optimizer):
+        assert label_optimizer.label_config.get("label", "one") == "uno"
+        assert label_optimizer.label_config.get("label", "two") == "dos"
+        assert label_optimizer.label_config.get("label", "three") == "tres"
+        assert label_optimizer.label_config.get("label", "four") == "quatro"
