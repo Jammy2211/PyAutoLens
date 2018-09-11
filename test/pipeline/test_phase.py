@@ -217,15 +217,15 @@ class TestPhase(object):
                                                                             psf_shape=image.psf.shape,
                                                                             pixel_scale=image.pixel_scale)
         image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
-        blurred_image_1d = image_padded_grid.convolve_padded_array_1d_with_psf_and_trim(image_1d, image.psf)
-        blurred_image = image_padded_grid.map_to_2d(blurred_image_1d)
+        blurred_image_1d = image_padded_grid.convolve_padded_array_1d_with_psf(image_1d, image.psf)
+        blurred_image = image_padded_grid.map_to_2d_and_trim(blurred_image_1d)
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
         analysis = phase.make_analysis(image)
         instance = phase.constant
         unmasked_model_image = analysis.unmasked_model_image_for_instance(instance)
 
-        assert (blurred_image == unmasked_model_image).all()
+        assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
 
     def test__phase_can_receive_list_of_galaxy_priors(self):
         phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic,
