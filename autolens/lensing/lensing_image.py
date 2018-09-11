@@ -3,6 +3,7 @@ from autolens.imaging import mask as msk
 from autolens.imaging import convolution
 import numpy as np
 
+
 class LensingImage(im.Image):
 
     def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
