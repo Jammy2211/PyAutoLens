@@ -27,4 +27,5 @@ PyAutoLens.egg-info
 autolens.egg-info/
 config.zip
 autolens-0.2.5
-autolens-0.2.5.tar.gz
+autolens-0.2.5.tar.gz__pycache__
+__pycache__/
