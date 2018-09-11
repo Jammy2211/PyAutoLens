@@ -17,27 +17,35 @@ def jit_integrand(integrand_function):
     wrapped = None
 
     if no_args == 4:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3])
     elif no_args == 5:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4])
     elif no_args == 6:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5])
     elif no_args == 7:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6])
     elif no_args == 8:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7])
     elif no_args == 9:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8])
     elif no_args == 10:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9])
     elif no_args == 11:
+        # noinspection PyUnusedLocal
         def wrapped(n, xx):
             return jitted_function(xx[0], xx[1], xx[2], xx[3], xx[4], xx[5], xx[6], xx[7], xx[8], xx[9], xx[10])
 
@@ -55,7 +63,8 @@ class MassProfile(object):
         raise NotImplementedError("surface_density_from_grid should be overridden")
 
     def potential_from_grid(self, grid):
-        raise NotImplementedError("potential_from_grid should be overridden")
+        pass
+        # raise NotImplementedError("potential_from_grid should be overridden")
 
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
@@ -975,7 +984,7 @@ class SphericalNFW(EllipticalNFW):
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
 
-class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile):
+class AbstractEllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
@@ -1000,7 +1009,8 @@ class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
+        super(AbstractEllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
+                                                       sersic_index)
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.mass_to_light_ratio = mass_to_light_ratio
 
@@ -1018,6 +1028,21 @@ class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile
             The grid of coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
+
+    def surface_density_func(self, radius):
+        return self.mass_to_light_ratio * self.intensity_at_radius(radius)
+
+
+class EllipticalSersic(AbstractEllipticalSersic):
+    @staticmethod
+    @jit_integrand
+    def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
+                        sersic_constant):
+        eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
+
+        return mass_to_light_ratio * intensity * \
+               np.exp(-sersic_constant * (((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) \
+               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
@@ -1050,19 +1075,6 @@ class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile
         deflection_y = calculate_deflection_component(grid, 1.0, 1)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
-
-    def surface_density_func(self, radius):
-        return self.mass_to_light_ratio * self.intensity_at_radius(radius)
-
-    @staticmethod
-    @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
-                        sersic_constant):
-        eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
-
-        return mass_to_light_ratio * intensity * \
-               np.exp(-sersic_constant * (((eta_u / effective_radius) ** (1. / sersic_index)) - 1)) \
-               / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
 
 class SphericalSersic(EllipticalSersic):
@@ -1145,8 +1157,6 @@ class SphericalExponential(EllipticalExponential):
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
             The radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
@@ -1221,7 +1231,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         return ['x', 'y', 'I', 'R', r'\Psi']
 
 
-class EllipticalSersicRadialGradient(EllipticalSersic):
+class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0, mass_to_light_gradient=0.0):
