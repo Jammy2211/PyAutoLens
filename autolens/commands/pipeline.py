@@ -89,7 +89,7 @@ class Pipeline(Base):
         str: image_hdu
             The hdu of the image data in the data file
         """
-        return self.options["--image-hdu"]
+        return int(self.options["--image-hdu"])
 
     @property
     def noise_hdu(self):
@@ -99,7 +99,7 @@ class Pipeline(Base):
         str: noise_hdu
             The hdu of the noise data in the data file
         """
-        return self.options["--noise-hdu"]
+        return int(self.options["--noise-hdu"])
 
     @property
     def psf_hdu(self):
@@ -109,7 +109,7 @@ class Pipeline(Base):
         str: psf_hdu
             The hdu of the psf data in the data file
         """
-        return self.options["--psf-hdu"]
+        return int(self.options["--psf-hdu"])
 
     @property
     @prepend_working_directory
