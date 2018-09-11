@@ -218,7 +218,7 @@ class TestPhase(object):
                                                                             pixel_scale=image.pixel_scale)
         image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
         blurred_image_1d = image_padded_grid.convolve_padded_array_1d_with_psf_and_trim(image_1d, image.psf)
-        blurred_image = image_padded_grid.map_padded_1d_array_to_original_2d_array(blurred_image_1d)
+        blurred_image = image_padded_grid.map_to_2d(blurred_image_1d)
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
         analysis = phase.make_analysis(image)

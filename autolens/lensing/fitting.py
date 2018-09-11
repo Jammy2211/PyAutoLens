@@ -17,7 +17,7 @@ class AbstractFitter(object):
 
         self.tracer = tracer
         self._image = lensing_image[:]
-        self.map_to_2d = lensing_image.mask.map_masked_1d_array_to_2d_array
+        self.map_to_2d = lensing_image.grids.image.map_to_2d
         self.convolve_image = lensing_image.convolver_image.convolve_image
 
     @property
@@ -57,7 +57,7 @@ class AbstractHyperFitter(object):
 
     def __init__(self, lensing_image, hyper_model_image=None, hyper_galaxy_images=None,
                  hyper_minimum_values=None):
-        self.map_to_2d = lensing_image.mask.map_masked_1d_array_to_2d_array
+        self.map_to_2d = lensing_image.grids.image.map_to_2d
         self.hyper_model_image = hyper_model_image
         self.hyper_galaxy_images = hyper_galaxy_images
         self.hyper_minimum_values = hyper_minimum_values
@@ -118,7 +118,7 @@ class AbstractPixelizationFitter(object):
 
     def __init__(self, lensing_image, noise):
 
-        self.map_to_2d = lensing_image.mask.map_masked_1d_array_to_2d_array
+        self.map_to_2d = lensing_image.grids.image.map_to_2d
         reconstructors = self.tracer.reconstructors_from_source_plane(lensing_image.borders)
         self._reconstruction = reconstructors.reconstruction_from_reconstructor_and_data(lensing_image, noise,
                                                                                 lensing_image.convolver_mapping_matrix)
