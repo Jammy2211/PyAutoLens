@@ -21,7 +21,8 @@ Options:
 Examples:
   autolens reset_config
   autolens pipeline
-  autolens pipeline profile --image=hst_0/ --pixel-scale=0.05
+  autolens pipeline profile --image=hst_0.fits --noise=hst_0_noise.fits --psf=hst_0_psf.fits --pixel-scale=0.05
+  autolens pipeline profile --data=hst_0.fits --image-hdu=1 --noise-hdu=2 --psf-hdu=3 --pixel-scale=0.05
   autolens pipeline profile --image=hst_0 --pixel-scale=0.05 --output=output_folder --config=config_folder
 
 Help:
