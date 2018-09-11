@@ -12,13 +12,13 @@ from autolens.imaging import mask
 
 class PixelizationGrid(object):
 
-    def __init__(self, shape=(3,3)):
+    def __init__(self, shape=(3, 3)):
         self.shape = shape
 
     def coordinate_grid_within_annulus(self, inner_radius, outer_radius, centre=(0., 0.)):
 
-        x_pixel_scale = 2.0*outer_radius / self.shape[0]
-        y_pixel_scale = 2.0*outer_radius / self.shape[1]
+        x_pixel_scale = 2.0 * outer_radius / self.shape[0]
+        y_pixel_scale = 2.0 * outer_radius / self.shape[1]
 
         central_pixel = float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
 
@@ -32,7 +32,6 @@ class PixelizationGrid(object):
                 radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
                 if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-
                     pixel_count += 1
 
         coordinates_array = np.zeros((pixel_count, 2))
@@ -47,7 +46,6 @@ class PixelizationGrid(object):
                 radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
                 if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-
                     coordinates_array[pixel_count, 0] = x_arcsec
                     coordinates_array[pixel_count, 1] = y_arcsec
 
@@ -81,10 +79,6 @@ class Pixelization(object):
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
 
-    @property
-    def subscript(self):
-        return 'pix'
-
     def mapping_matrix_from_sub_to_pixelization(self, sub_to_pixelization, grids):
         return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, self.pixels, grids.image,
                                                        grids.sub.sub_to_image, grids.sub.sub_grid_fraction)
@@ -92,7 +86,6 @@ class Pixelization(object):
     @staticmethod
     @numba.jit(nopython=True)
     def mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pixels, grid_image, sub_to_image, sub_grid_fraction):
-
         mapping_matrix = np.zeros((grid_image.shape[0], pixels))
 
         for sub_index in range(sub_to_image.shape[0]):
@@ -103,7 +96,7 @@ class Pixelization(object):
 
 class Rectangular(Pixelization):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -178,7 +171,7 @@ class Rectangular(Pixelization):
             pixel_neighbors[0] = [1, self.shape[1]]
             pixel_neighbors[self.shape[1] - 1] = [self.shape[1] - 2, self.shape[1] + self.shape[1] - 1]
             pixel_neighbors[self.pixels - self.shape[1]] = [self.pixels - self.shape[1] * 2,
-                                                                   self.pixels - self.shape[1] + 1]
+                                                            self.pixels - self.shape[1] + 1]
             pixel_neighbors[self.pixels - 1] = [self.pixels - self.shape[1] - 1, self.pixels - 2]
 
             return pixel_neighbors
@@ -195,8 +188,8 @@ class Rectangular(Pixelization):
 
             for pix in range(1, self.shape[0] - 1):
                 pixel_index = pix * self.shape[1]
-                pixel_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index + 1, 
-                                                       pixel_index + self.shape[1]]
+                pixel_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index + 1,
+                                                pixel_index + self.shape[1]]
 
             return pixel_neighbors
 
@@ -204,8 +197,8 @@ class Rectangular(Pixelization):
 
             for pix in range(1, self.shape[0] - 1):
                 pixel_index = pix * self.shape[1] + self.shape[1] - 1
-                pixel_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index - 1, 
-                                                       pixel_index + self.shape[1]]
+                pixel_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index - 1,
+                                                pixel_index + self.shape[1]]
 
             return pixel_neighbors
 
@@ -223,7 +216,7 @@ class Rectangular(Pixelization):
                 for y in range(1, self.shape[1] - 1):
                     pixel_index = x * self.shape[1] + y
                     pixel_neighbors[pixel_index] = [pixel_index - self.shape[1], pixel_index - 1, pixel_index + 1,
-                                                           pixel_index + self.shape[1]]
+                                                    pixel_index + self.shape[1]]
 
             return pixel_neighbors
 
@@ -259,9 +252,8 @@ class Rectangular(Pixelization):
         grid_to_pixelization = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-
-            x_pixel = np.floor((grid[i,0] - x_min) / x_pixel_scale)
-            y_pixel = np.floor((grid[i,1] - y_min) / y_pixel_scale)
+            x_pixel = np.floor((grid[i, 0] - x_min) / x_pixel_scale)
+            y_pixel = np.floor((grid[i, 1] - y_min) / y_pixel_scale)
 
             grid_to_pixelization[i] = x_pixel * y_shape + y_pixel
 
@@ -293,7 +285,7 @@ class Rectangular(Pixelization):
 
 
 class RectangularRegConst(Rectangular, regularization.RegularizationConstant):
-    
+
     def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
@@ -308,10 +300,6 @@ class RectangularRegConst(Rectangular, regularization.RegularizationConstant):
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
         super(RectangularRegConst, self).__init__(shape, regularization_coefficients)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', r'\lambda']
 
 
 class RectangularRegWeighted(Rectangular, regularization.RegularizationWeighted):
@@ -331,10 +319,6 @@ class RectangularRegWeighted(Rectangular, regularization.RegularizationWeighted)
         """
         super(RectangularRegWeighted, self).__init__(shape, regularization_coefficients)
         self.signal_scale = signal_scale
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', r'\lambda1', r'\lambda2', 'V']
 
 
 class Voronoi(Pixelization):
@@ -487,11 +471,12 @@ class Voronoi(Pixelization):
             nearest_cluster = cluster_mask.image_to_sparse[grids.sub.sub_to_image[sub_index]]
 
             sub_to_pixelization[sub_index] = self.pair_image_and_pixel(sub_coordinate, nearest_cluster, pixel_centers,
-                                                              pixel_neighbors, cluster_to_pixelization)
+                                                                       pixel_neighbors, cluster_to_pixelization)
 
         return sub_to_pixelization
 
-    def pair_image_and_pixel(self, coordinate, nearest_cluster, pixel_centers, pixel_neighbors, cluster_to_pixelization):
+    def pair_image_and_pixel(self, coordinate, nearest_cluster, pixel_centers, pixel_neighbors,
+                             cluster_to_pixelization):
         """ Compute the mappings between a set of sub-masked_image pixels and pixels, using the masked_image's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
@@ -629,7 +614,8 @@ class Cluster(Voronoi):
         voronoi = self.voronoi_from_cluster_grid(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
-        sub_to_pixelization = self.sub_to_pixelization_from_pixelization(relocated_grids, pixel_centers, pixel_neighbors,
+        sub_to_pixelization = self.sub_to_pixelization_from_pixelization(relocated_grids, pixel_centers,
+                                                                         pixel_neighbors,
                                                                          cluster_to_pixelization, cluster_mask)
 
         mapping_matrix = self.mapping_matrix_from_sub_to_pixelization(sub_to_pixelization, relocated_grids)
@@ -657,10 +643,6 @@ class ClusterRegConst(Cluster, regularization.RegularizationConstant):
         """
         super(ClusterRegConst, self).__init__(pixels, regularization_coefficients)
 
-    @property
-    def parameter_labels(self):
-        return ['N', r'\lambda1']
-
 
 class ClusterRegWeighted(Cluster, regularization.RegularizationWeighted):
 
@@ -681,10 +663,6 @@ class ClusterRegWeighted(Cluster, regularization.RegularizationWeighted):
         """
         super(ClusterRegWeighted, self).__init__(pixels, regularization_coefficients)
         self.signal_scale = signal_scale
-
-    @property
-    def parameter_labels(self):
-        return ['N', r'\lambda1', r'\lambda2', 'V']
 
 
 class Amorphous(Voronoi):
@@ -746,7 +724,8 @@ class Amorphous(Voronoi):
         voronoi = self.voronoi_from_cluster_grid(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
-        sub_to_pixelization = self.sub_to_pixelization_from_pixelization(relocated_grids, pixel_centers, pixel_neighbors,
+        sub_to_pixelization = self.sub_to_pixelization_from_pixelization(relocated_grids, pixel_centers,
+                                                                         pixel_neighbors,
                                                                          cluster_to_pixelization, cluster_mask)
 
         mapping_matrix = self.mapping_matrix_from_sub_to_pixelization(sub_to_pixelization, relocated_grids)
@@ -774,10 +753,6 @@ class AmorphousRegConst(Amorphous, regularization.RegularizationConstant):
         """
         super(AmorphousRegConst, self).__init__(pixels, regularization_coefficients)
 
-    @property
-    def parameter_labels(self):
-        return ['N', r'\lambda1']
-
 
 class AmorphousRegWeighted(Amorphous, regularization.RegularizationWeighted):
 
@@ -798,7 +773,3 @@ class AmorphousRegWeighted(Amorphous, regularization.RegularizationWeighted):
         """
         super(AmorphousRegWeighted, self).__init__(pixels, regularization_coefficients)
         self.signal_scale = signal_scale
-
-    @property
-    def parameter_labels(self):
-        return ['N', r'\lambda1', r'\lambda2', 'V']
