@@ -16,10 +16,11 @@ import os
 
 directory = path.dirname(path.realpath(__file__))
 
-general_conf = directory+'/../test_files/config/'
+general_conf = directory + '/../test_files/config/'
 conf.instance.general = conf.NamedConfig("{}/general.ini".format(general_conf))
 
 shape = (10, 10)
+
 
 class MockAnalysis(object):
 
@@ -92,13 +93,15 @@ def make_galaxy_prior():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
+                      noise_map=np.ones(shape))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
+                      noise_map=np.ones(shape))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return li.LensingImage(image, mask)
 
@@ -142,7 +145,6 @@ class TestPhase(object):
         assert analysis.lensing_image == lensing_image
 
     def test_fit(self, image):
-
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
@@ -212,8 +214,8 @@ class TestPhase(object):
     def test_unmasked_model_image_for_instance(self, image):
         lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
         image_padded_grid = msk.ImagePaddedGrid.from_shapes_and_pixel_scale(shape=image.shape,
-                                                                              psf_shape=image.psf.shape,
-                                                                              pixel_scale=image.pixel_scale)
+                                                                            psf_shape=image.psf.shape,
+                                                                            pixel_scale=image.pixel_scale)
         image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
         blurred_image_1d = image_padded_grid.convolve_padded_array_1d_with_psf_and_trim(image_1d, image.psf)
         blurred_image = image_padded_grid.map_padded_1d_array_to_original_2d_array(blurred_image_1d)
