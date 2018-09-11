@@ -17,7 +17,6 @@ def make():
 
     pipeline.setup_pipeline_path(pipeline_name) # Setup the path using the pipeline name.
 
-
     # This line follows the same syntax as our phase did in phase/basic.py. However, as we're breaking the analysis
     # down to only fit the lens's light, that means we use the 'LensPlanePhase' and just specify the lens galaxy.
     phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
@@ -41,8 +40,9 @@ def make():
 
     # We setup phase 2 just like any other phase, now using the LensSubtracted phase we created above so that our new
     # image and masks are used.
-                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+
     phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
+                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
                                  phase_name='ph2')
 
