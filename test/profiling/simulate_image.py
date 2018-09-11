@@ -52,7 +52,7 @@ ray_trace = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxy], source_gal
                                          image_grids=image_plane_grids)
 
 galaxy_image_1d = ray_trace.galaxy_light_profiles_image_from_planes()
-galaxy_image_2d = ma.map_padded_1d_array_to_original_2d_array(galaxy_image_1d)
+galaxy_image_2d = ma.map_to_2d(galaxy_image_1d)
 
 plt.imshow(galaxy_image_2d)
 plt.show()
