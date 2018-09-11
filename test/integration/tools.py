@@ -25,22 +25,18 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     psf = im.PSF.from_fits(file_path=path + '/data/psf', hdu=0).trim(psf_size)
     psf = psf.renormalize()
-    ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale, pad_size=psf_size)
 
-    image_plane_grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=1,
-                                                                                             psf_shape=psf_size)
+    image_grids = mask.ImagingGrids.padded_grids_for_simulation(shape=(150, 150), pixel_scale=pixel_scale,
+                                                                sub_grid_size=1, psf_shape=psf_size)
 
     if not source_galaxies:
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_grids=image_plane_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_grids=image_grids)
 
     elif source_galaxies:
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
-                                                     image_grids=image_plane_grids)
-
-    image_plane_image = tracer.image_plane_image
-    image_plane_image_2d = ma.map_padded_1d_array_to_original_2d_array(image_plane_image)
+                                                     image_grids=image_grids)
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
