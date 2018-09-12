@@ -895,48 +895,48 @@ class TestMultiNest(object):
             assert mn.model_at_lower_sigma_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
 
 
-class TestConfig(object):
-    def test_multinest_default(self):
-        multinest = non_linear.MultiNest()
-
-        assert multinest.importance_nested_sampling is True
-
-        assert multinest.multimodal is True
-        assert multinest.const_efficiency_mode is True
-        assert multinest.n_live_points == 80
-
-        assert multinest.evidence_tolerance == 0.5
-        assert multinest.sampling_efficiency == 0.5
-
-        assert multinest.n_iter_before_update == 100
-        assert multinest.null_log_evidence == -1e90
-
-        assert multinest.max_modes == 100
-        assert multinest.mode_tolerance == -1e90
-
-        assert multinest.outputfiles_basename == "chains/1-"
-        assert multinest.seed == -1
-        assert multinest.verbose is False
-
-        assert multinest.resume is True
-        assert multinest.context == 0
-        assert multinest.write_output is True
-        assert multinest.log_zero == -1e100
-
-        assert multinest.max_iter == 0
-        assert multinest.init_MPI is False
-
-    def test_downhill_simplex_default(self):
-        downhill_simplex = non_linear.DownhillSimplex()
-
-        assert downhill_simplex.xtol == 1e-4
-        assert downhill_simplex.ftol == 1e-4
-        assert downhill_simplex.maxiter is None
-        assert downhill_simplex.maxfun is None
-
-        assert downhill_simplex.full_output == 0
-        assert downhill_simplex.disp == 1
-        assert downhill_simplex.retall == 0
+# class TestConfig(object):
+#     def test_multinest_default(self):
+#         multinest = non_linear.MultiNest()
+#
+#         assert multinest.importance_nested_sampling is True
+#
+#         assert multinest.multimodal is True
+#         assert multinest.const_efficiency_mode is True
+#         assert multinest.n_live_points == 80
+#
+#         assert multinest.evidence_tolerance == 0.5
+#         assert multinest.sampling_efficiency == 0.5
+#
+#         assert multinest.n_iter_before_update == 100
+#         assert multinest.null_log_evidence == -1e90
+#
+#         assert multinest.max_modes == 100
+#         assert multinest.mode_tolerance == -1e90
+#
+#         assert multinest.outputfiles_basename == "chains/1-"
+#         assert multinest.seed == -1
+#         assert multinest.verbose is False
+#
+#         assert multinest.resume is True
+#         assert multinest.context == 0
+#         assert multinest.write_output is True
+#         assert multinest.log_zero == -1e100
+#
+#         assert multinest.max_iter == 0
+#         assert multinest.init_MPI is False
+#
+#     def test_downhill_simplex_default(self):
+#         downhill_simplex = non_linear.DownhillSimplex()
+#
+#         assert downhill_simplex.xtol == 1e-4
+#         assert downhill_simplex.ftol == 1e-4
+#         assert downhill_simplex.maxiter is None
+#         assert downhill_simplex.maxfun is None
+#
+#         assert downhill_simplex.full_output == 0
+#         assert downhill_simplex.disp == 1
+#         assert downhill_simplex.retall == 0
 
 
 class TestRealClasses(object):
