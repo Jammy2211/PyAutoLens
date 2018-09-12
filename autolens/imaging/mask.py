@@ -202,14 +202,14 @@ class ImagingGrids(object):
         psf_shape : (int, int)
             the shape of the PSF used in the analysis, which therefore defines the mask's blurring-region.
         """
-        image_grid_mapper = ImagePaddedGrid.from_shapes_and_pixel_scale(shape=mask.shape, psf_shape=psf_shape,
+        image_padded_grid = ImagePaddedGrid.from_shapes_and_pixel_scale(shape=mask.shape, psf_shape=psf_shape,
                                                                         pixel_scale=mask.pixel_scale)
-        sub_grid_mapper = SubPaddedGrid.from_mask_sub_grid_size_and_psf_shape(mask=mask,
+        sub_padded_grid = SubPaddedGrid.from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                               sub_grid_size=sub_grid_size,
                                                                               psf_shape=psf_shape)
         # TODO : The blurring grid is not used when the grid mapper is called, the 0.0 0.0 stops errors inr ayT_racing
         # TODO : implement a more explicit solution
-        return ImagingGrids(image_grid_mapper, sub_grid_mapper, np.array([[0.0, 0.0]]))
+        return ImagingGrids(image=image_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
     def padded_grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
