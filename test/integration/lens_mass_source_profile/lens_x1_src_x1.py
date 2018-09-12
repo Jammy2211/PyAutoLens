@@ -22,10 +22,7 @@ def test_lens_x1_src_x1_profile_pipeline():
     pipeline_name = "l1_s1"
     data_name = '/l1_s1'
 
-    try:
-        shutil.rmtree(dirpath+'/data'+data_name)
-    except FileNotFoundError:
-        pass
+    tools.reset_paths(data_name, pipeline_name, output_path)
 
     lens_mass = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
     source_light = lp.EllipticalSersic(centre=(-0.01, -0.01), axis_ratio=0.6, phi=90.0, intensity=1.0,
@@ -36,13 +33,6 @@ def test_lens_x1_src_x1_profile_pipeline():
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
-
-    conf.instance.output_path = output_path
-
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
 
     pipeline = make_lens_x1_src_x1_profile_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)

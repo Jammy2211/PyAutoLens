@@ -32,6 +32,6 @@ im = load_image(data_name='slacs05_bg/slacs_4_post.fits', pixel_scale=0.05, imag
                 psf_trimmed_shape=(41, 41), effective_exposure_time=288.0)
 
 im.background_noise_map = 1.0 / im.background_noise_map
-im.noise_map = im.estimated_noise
+im.noise_map = im.estimated_noise_map
 pipeline = initializer.make()
 pipeline.run(im)
