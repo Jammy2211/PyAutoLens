@@ -1,15 +1,11 @@
-from autolens.pipeline import pipeline as pl
 from autolens.imaging import image as im
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 from autolens.imaging import imaging_util
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
 from autolens.lensing import ray_tracing
-from autolens.lensing import galaxy
-from autolens.autofit import non_linear as nl
 from autolens import conf
 
+import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 import os
@@ -17,17 +13,33 @@ import os
 dirpath = os.path.dirname(os.path.realpath(__file__))
 output_path = '/gpfs/data/pdtw24/Lens/integration/'
 
+def reset_paths(data_name, pipeline_name, output_path):
+
+    conf.instance.output_path = output_path
+
+    try:
+        shutil.rmtree(dirpath + '/data' + data_name)
+    except FileNotFoundError:
+        pass
+
+    try:
+        shutil.rmtree(output_path + pipeline_name)
+    except FileNotFoundError:
+        pass
+
+
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
 
-    path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
     output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
-    psf_size = (11, 11)
+    psf_shape = (11, 11)
+    image_shape = (150, 150)
 
-    psf = im.PSF.from_fits(file_path=path + '/data/psf', hdu=0).trim(psf_size)
-    psf = psf.renormalize()
+    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, sigma=0.3)
 
-    image_grids = mask.ImagingGrids.padded_grids_for_simulation(shape=(150, 150), pixel_scale=pixel_scale,
-                                                                sub_grid_size=1, psf_shape=psf_size)
+    image_grids = mask.ImagingGrids.padded_grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
+                                                                sub_grid_size=1, psf_shape=psf_shape)
+
+    image_shape = image_grids.image.padded_shape
 
     if not source_galaxies:
 
@@ -40,25 +52,29 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    shape = image_plane_image_2d.shape
-    sim_image = im.PreparatoryImage.simulate_to_target_signal_to_noise(array=image_plane_image_2d, pixel_scale=pixel_scale,
-                                                                       target_signal_to_noise=target_signal_to_noise, effective_exposure_map=10.0 * np.ones(shape),
-                                                                       background_sky_map=20.0*np.ones(shape), psf=psf, include_poisson_noise=True, seed=1)
+    sim_image = im.PreparatoryImage.simulate_to_target_signal_to_noise(array=tracer.image_plane_image_2d,
+                                                                       pixel_scale=pixel_scale,
+                                                                       target_signal_to_noise=target_signal_to_noise,
+                                                                       effective_exposure_map=np.ones(image_shape),
+                                                                       background_sky_map=0.01*np.ones(image_shape),
+                                                                       psf=psf, seed=1)
+
+    sim_image.noise_map = np.ones(sim_image.shape)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image')
-    imaging_util.numpy_array_to_fits(sim_image.estimated_noise, path=output_path + 'noise_map')
-    imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf')
-    imaging_util.numpy_array_to_fits(sim_image.effective_exposure_time, path=output_path + 'exposure_time')
+    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
+    imaging_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map.fits')
+    imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
+    imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
 
 def load_image(data_name, pixel_scale):
 
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/image', hdu=0, pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise_map', hdu=0)
-    psf = im.PSF.from_fits(file_path=data_dir + '/psf', hdu=0)
+    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/image.fits', hdu=0, pixel_scale=pixel_scale)
+    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise_map.fits', hdu=0)
+    psf = im.PSF.from_fits(file_path=data_dir + '/psf.fits', hdu=0)
 
     return im.Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)

@@ -248,7 +248,7 @@ class AbstractTracerMulti(AbstractTracer):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        lensing_grids : mask.ImagingGrids
+        imaging_grids : mask.ImagingGrids
             The image-plane grids where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
