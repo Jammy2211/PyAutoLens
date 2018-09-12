@@ -45,9 +45,9 @@ class PreparatoryImage(ScaledArray):
 
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
-                 include_poisson_noise=False, seed=-1):
+                 add_noise=False, seed=-1):
 
-        effective_expousre_time = ScaledArray.single_value(value=exposure_time, shape=array.shape,
+        effective_exposure_map = ScaledArray.single_value(value=exposure_time, shape=array.shape,
                                                            pixel_scale=pixel_scale)
         if background_sky_level is not None:
             background_sky_map = ScaledArray.single_value(value=background_sky_level, shape=array.shape,
@@ -56,13 +56,13 @@ class PreparatoryImage(ScaledArray):
             background_sky_map = None
 
         return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
-                                            effective_exposure_map=effective_expousre_time, psf=psf,
+                                            effective_exposure_map=effective_exposure_map, psf=psf,
                                             background_sky_map=background_sky_map,
-                                            include_poisson_noise=include_poisson_noise, seed=seed)
+                                            add_noise=add_noise, seed=seed)
 
     @classmethod
     def simulate_variable_arrays(cls, array, pixel_scale, effective_exposure_map, psf=None, background_sky_map=None,
-                                 include_poisson_noise=False, seed=-1):
+                                 add_noise=True, seed=-1):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -78,73 +78,54 @@ class PreparatoryImage(ScaledArray):
             An array describing the PSF the simulated image is blurred with.
         background_sky_map : ndarray
             The value of background sky in every image pixel (electrons per second).
-        include_poisson_noise: Bool
+        add_noise: Bool
             If True poisson noise_map is simulated and added to the image, based on the total counts in each image pixel
         seed: int
             A seed for random noise_map generation
         """
 
-        array_counts = None
-
         if background_sky_map is not None:
             array += background_sky_map
-            background_noise_map_counts = np.sqrt(np.multiply(background_sky_map, effective_exposure_map))
-            background_noise_map = np.divide(background_noise_map_counts, effective_exposure_map)
-        else:
-            background_noise_map_counts = None
-            background_noise_map = None
 
         if psf is not None:
             array = psf.convolve(array)
             array = cls.trim_psf_edges(array, psf)
             effective_exposure_map = cls.trim_psf_edges(effective_exposure_map, psf)
             if background_sky_map is not None:
-                background_sky_map = cls.trim_psf_edges(background_sky_map, psf)
-            if background_noise_map_counts is not None:
-                background_noise_map_counts = cls.trim_psf_edges(background_noise_map_counts, psf)
-                background_noise_map = cls.trim_psf_edges(background_noise_map, psf)
+               background_sky_map = cls.trim_psf_edges(background_sky_map, psf)
 
-        if include_poisson_noise is True:
-
+        if add_noise is True:
             array += generate_poisson_noise(array, effective_exposure_map, seed)
 
-            # The poisson noise_map map does not include the background sky, so this estimate below removes it
-            if background_sky_map is not None:
-                array_counts = np.multiply(np.subtract(array, background_sky_map), effective_exposure_map)
-            elif background_sky_map is None:
-                array_counts = np.multiply(array, effective_exposure_map)
-
-            poisson_noise_map = np.divide(np.sqrt(array_counts), effective_exposure_map)
-
+        if add_noise is True:
+            array_counts = np.multiply(array, effective_exposure_map)
+            noise_map = np.divide(np.sqrt(array_counts), effective_exposure_map)
         else:
+            noise_map = None
 
-            poisson_noise_map = None
-
-        # The final image is background subtracted.
         if background_sky_map is not None:
             array -= background_sky_map
 
-        if background_sky_map is not None and include_poisson_noise is False:
-            noise = np.divide(background_noise_map_counts, effective_exposure_map)
-        elif background_sky_map is None and include_poisson_noise is True:
-            noise = np.divide(np.sqrt(np.abs(array_counts)), effective_exposure_map)
-        elif background_sky_map is not None and include_poisson_noise is True:
-            noise = np.divide(np.sqrt(np.abs(array_counts) + np.square(background_noise_map_counts)),
-                              effective_exposure_map)
+        # ESTIMATE THE BACKGROUND NOISE MAP FROM THE IMAGE
+
+        if background_sky_map is not None:
+            background_noise_map_counts = np.sqrt(np.multiply(background_sky_map, effective_exposure_map))
+            background_noise_map = np.divide(background_noise_map_counts, effective_exposure_map)
         else:
-            noise = None
+            background_noise_map = None
 
-        if noise is not None:
-            if (np.isnan(noise)).any():
-                raise exc.MaskException('Nan found in noise_map - increase exposure time.')
+        # ESTIMATE HTE POISSON NOISE MAP FROM THE IMAGE
 
-        return PreparatoryImage(array, pixel_scale=pixel_scale, noise_map=noise, psf=psf,
+        array_counts = np.multiply(array, effective_exposure_map)
+        poisson_noise_map = np.divide(np.sqrt(array_counts), effective_exposure_map)
+
+        return PreparatoryImage(array, pixel_scale=pixel_scale, noise_map=noise_map, psf=psf,
                                 background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                                 effective_exposure_map=effective_exposure_map)
 
     @classmethod
     def simulate_to_target_signal_to_noise(cls, array, pixel_scale, target_signal_to_noise, effective_exposure_map,
-                                           psf=None, background_sky_map=None, include_poisson_noise=False, seed=-1):
+                                           psf=None, background_sky_map=None, seed=-1):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -161,7 +142,7 @@ class PreparatoryImage(ScaledArray):
             An array describing the PSF the simulated image is blurred with.
         background_sky_map : ndarray
             The value of background sky in every image pixel (electrons per second).
-        include_poisson_noise: Bool
+        add_noise: Bool
             If True poisson noise_map is simulated and added to the image, based on the total counts in each image pixel
         seed: int
             A seed for random noise_map generation
@@ -177,22 +158,18 @@ class PreparatoryImage(ScaledArray):
         else:
             max_background_sky_map_counts = None
 
-        if background_sky_map is not None and include_poisson_noise is False:
-            scale_factor = max_background_sky_map_counts * target_signal_to_noise ** 2.0 / max_array_counts ** 2.0
-        elif background_sky_map is None and include_poisson_noise is True:
+        if background_sky_map is None:
             scale_factor = target_signal_to_noise ** 2.0 / max_array_counts
-        elif background_sky_map is not None and include_poisson_noise is True:
+        elif background_sky_map is not None:
             scale_factor = (max_array_counts + max_background_sky_map_counts) * target_signal_to_noise ** 2.0 \
                            / max_array_counts ** 2.0
-        else:
-            scale_factor = None
 
         scaled_effective_exposure_time = np.multiply(scale_factor, effective_exposure_map)
 
         return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
                                             effective_exposure_map=scaled_effective_exposure_time,
                                             psf=psf, background_sky_map=background_sky_map,
-                                            include_poisson_noise=include_poisson_noise, seed=seed)
+                                            add_noise=True, seed=seed)
 
     def __array_finalize__(self, obj):
         super(PreparatoryImage, self).__array_finalize__(obj)
@@ -205,11 +182,14 @@ class PreparatoryImage(ScaledArray):
 
     @staticmethod
     def trim_psf_edges(array, psf):
-        psf_cut_x = np.int(np.ceil(psf.shape[0] / 2)) - 1
-        psf_cut_y = np.int(np.ceil(psf.shape[1] / 2)) - 1
-        array_x = np.int(array.shape[0])
-        array_y = np.int(array.shape[1])
-        return array[psf_cut_x:array_x - psf_cut_x, psf_cut_y:array_y - psf_cut_y]
+        if psf is not None:
+            psf_cut_x = np.int(np.ceil(psf.shape[0] / 2)) - 1
+            psf_cut_y = np.int(np.ceil(psf.shape[1] / 2)) - 1
+            array_x = np.int(array.shape[0])
+            array_y = np.int(array.shape[1])
+            return array[psf_cut_x:array_x - psf_cut_x, psf_cut_y:array_y - psf_cut_y]
+        else:
+            return array
 
     def electrons_per_second_to_counts(self, array):
         """
@@ -247,10 +227,10 @@ class PreparatoryImage(ScaledArray):
     def estimated_noise_map_counts(self):
         """ The estimated noise_map map of the image (using its background noise_map map and image values in counts) in counts.
         """
-        return np.sqrt(np.abs(self.image_counts + np.square(self.background_noise_map_counts)))
+        return np.sqrt((np.abs(self.image_counts) + np.square(self.background_noise_map_counts)))
 
     @property
-    def estimated_noise(self):
+    def estimated_noise_map(self):
         """ The estimated noise_map map of the image (using its background noise_map map and image values in counts) in \
         electrons per second.
         """
