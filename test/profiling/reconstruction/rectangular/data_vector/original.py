@@ -91,26 +91,26 @@ hst_up_blurred_mapping = hst_up.masked_image.convolver_mapping_matrix.convolve_m
 @tools.tick_toc_x1
 def lsst_solution():
     lsst_recon.data_vector_from_blurred_mapping_and_data(lsst_blurred_mapping, lsst.masked_image,
-                                                         lsst.masked_image.estimated_noise)
+                                                         lsst.masked_image.estimated_noise_map)
 
 @tools.tick_toc_x1
 def euclid_solution():
     euclid_recon.data_vector_from_blurred_mapping_and_data(euclid_blurred_mapping, euclid.masked_image,
-                                                           euclid.masked_image.estimated_noise)
+                                                           euclid.masked_image.estimated_noise_map)
 
 @tools.tick_toc_x1
 def hst_solution():
     hst_recon.data_vector_from_blurred_mapping_and_data(hst_blurred_mapping, hst.masked_image,
-                                                        hst.masked_image.estimated_noise)
+                                                        hst.masked_image.estimated_noise_map)
 
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up_recon.data_vector_from_blurred_mapping_and_data(hst_up_blurred_mapping, hst_up.masked_image,
-                                                           hst_up.masked_image.estimated_noise)
+                                                           hst_up.masked_image.estimated_noise_map)
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao_recon.data_vector_from_blurred_mapping_matrix_and_data_jit(ao_blurred_mapping, ao.masked_image.estimated_noise)
+    ao_recon.data_vector_from_blurred_mapping_matrix_and_data_jit(ao_blurred_mapping, ao.masked_image.estimated_noise_map)
 
 if __name__ == "__main__":
     lsst_solution()
