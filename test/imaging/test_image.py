@@ -40,6 +40,7 @@ class TestPrepatoryImage:
     class TestSimulateImage(object):
 
         def test__setup_with_all_features_off(self):
+
             img = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
@@ -47,16 +48,16 @@ class TestPrepatoryImage:
             exposure_map = image.ScaledArray.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, effective_exposure_map=exposure_map,
-                                                                      pixel_scale=0.1)
+                                                                      pixel_scale=0.1, add_noise=False)
 
             assert (sim_img.effective_exposure_map == np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
-
             assert (sim_img == np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])).all()
 
-        def test__setup_with_background_sky_on__poisson_noise_off_so_no_noise_in_image(self):
+        def test__setup_with_background_sky_on__noise_off__no_noise_in_image(self):
+
             img = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
@@ -65,8 +66,10 @@ class TestPrepatoryImage:
 
             background_sky = image.ScaledArray.single_value(value=16.0, pixel_scale=0.1, shape=img.shape)
 
-            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, effective_exposure_map=exposure_map,
-                                                                      background_sky_map=background_sky, pixel_scale=0.1, seed=1)
+            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1,
+                                                                      effective_exposure_map=exposure_map,
+                                                                      background_sky_map=background_sky, add_noise=False,
+                                                                      seed=1)
 
             assert (sim_img.effective_exposure_map == 1.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
@@ -77,7 +80,8 @@ class TestPrepatoryImage:
 
             assert (sim_img.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
-        def test__setup_with_background_sky_on__poisson_noise_on_so_background_adds_noise_to_image(self):
+        def test__setup_with_background_sky_on__noise_on_so_background_adds_noise_to_image(self):
+
             img = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
                             [0.0, 0.0, 0.0]])
@@ -86,8 +90,10 @@ class TestPrepatoryImage:
 
             background_sky = image.ScaledArray.single_value(value=16.0, pixel_scale=0.1, shape=img.shape)
 
-            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1, background_sky_map=background_sky,
-                                                                      include_poisson_noise=True, effective_exposure_map=exposure_map,
+            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1,
+                                                                      background_sky_map=background_sky,
+                                                                      effective_exposure_map=exposure_map,
+                                                                      add_noise=True,
                                                                       seed=1)
 
             assert (sim_img.effective_exposure_map == 1.0 * np.ones((3, 3))).all()
@@ -104,6 +110,7 @@ class TestPrepatoryImage:
             assert (sim_img.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
         def test__setup_with_psf_blurring_on__blurs_image_and_trims_psf_edge_off(self):
+
             img = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 1.0, 0.0, 0.0],
@@ -116,17 +123,18 @@ class TestPrepatoryImage:
 
             exposure_map = image.ScaledArray.single_value(value=1.0, pixel_scale=0.1, shape=img.shape)
 
-            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, effective_exposure_map=exposure_map, pixel_scale=0.1,
-                                                                      psf=psf)
-
-            assert (sim_img.effective_exposure_map == np.ones((3, 3))).all()
-            assert sim_img.pixel_scale == 0.1
+            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1,
+                                                                      effective_exposure_map=exposure_map, psf=psf,
+                                                                      add_noise=False)
 
             assert (sim_img == np.array([[0.0, 1.0, 0.0],
                                          [1.0, 2.0, 1.0],
                                          [0.0, 1.0, 0.0]])).all()
+            assert (sim_img.effective_exposure_map == np.ones((3, 3))).all()
+            assert sim_img.pixel_scale == 0.1
 
-        def test__setup_with_background_sky_on_and_psf_on_but_psf_does_not_blurring__image_and_sky_both_trimmed(self):
+        def test__setup_with_background_sky_and_psf_on__psf_does_no_blurring__image_and_sky_both_trimmed(self):
+
             img = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 1.0, 0.0, 0.0],
@@ -141,8 +149,10 @@ class TestPrepatoryImage:
 
             background_sky = image.ScaledArray.single_value(value=16.0, pixel_scale=0.1, shape=img.shape)
 
-            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, effective_exposure_map=exposure_map, psf=psf,
-                                                                      background_sky_map=background_sky, pixel_scale=0.1, seed=1)
+            sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1,
+                                                                      effective_exposure_map=exposure_map,
+                                                                      psf=psf, background_sky_map=background_sky,
+                                                                      add_noise=False, seed=1)
 
             assert (sim_img.effective_exposure_map == 1.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
@@ -153,7 +163,7 @@ class TestPrepatoryImage:
 
             assert (sim_img.background_noise_map == 4.0 * np.ones((3, 3))).all()
 
-        def test__setup_with__poisson_noise_on(self):
+        def test__setup_with_noise(self):
 
             img = np.array([[0.0, 0.0, 0.0],
                             [0.0, 1.0, 0.0],
@@ -162,7 +172,7 @@ class TestPrepatoryImage:
             exposure_map = image.ScaledArray.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
 
             sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1, effective_exposure_map=exposure_map,
-                                                                      include_poisson_noise=True, seed=1)
+                                                                      add_noise=True, seed=1)
 
             assert (sim_img.effective_exposure_map == 20.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
@@ -197,7 +207,7 @@ class TestPrepatoryImage:
 
             sim_img = image.PreparatoryImage.simulate_variable_arrays(array=img, pixel_scale=0.1, effective_exposure_map=exposure_map,
                                                                       psf=psf,
-                                                                      include_poisson_noise=True, seed=1)
+                                                                      add_noise=True, seed=1)
 
             assert (sim_img.effective_exposure_map == 20.0 * np.ones((3, 3))).all()
             assert sim_img.pixel_scale == 0.1
@@ -232,7 +242,7 @@ class TestPrepatoryImage:
                                                                                effective_exposure_map=exposure_map,
                                                                                psf=psf,
                                                                                background_sky_map=background_sky,
-                                                                               pixel_scale=0.1, seed=1)
+                                                                               pixel_scale=0.1, add_noise=False, seed=1)
 
             img = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                             [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -248,10 +258,7 @@ class TestPrepatoryImage:
             assert sim_img_variable == pytest.approx(sim_img, 1e-4)
             assert (sim_img_variable.background_noise_map == sim_img.background_noise_map).all()
 
-
-    class TestSimulateImageToTargetSignalToNoise(object):
-
-        def test__target_signal_to_noise__poisson_noise_only(self):
+        def test__target_signal_to_noise__no_background_sky(self):
 
             img = np.array([[0.01, 0.02, 0.01],
                             [0.01,  5.0, 0.01],
@@ -262,25 +269,9 @@ class TestPrepatoryImage:
             sim_img = image.PreparatoryImage.simulate_to_target_signal_to_noise(array=img, pixel_scale=0.1,
                                                                                 target_signal_to_noise=30.0,
                                                                                 effective_exposure_map=exposure_time,
-                                                                                include_poisson_noise=True, seed=1)
+                                                                                seed=1)
 
             assert 29.3 < sim_img.signal_to_noise_max < 30.7
-
-        def test__target_signal_to_noise__background_sky_noise_only(self):
-
-            img = np.array([[0.01, 0.02, 0.01],
-                            [0.01,  5.0, 0.01],
-                            [0.01, 0.01, 0.01]])
-
-            exposure_time = image.ScaledArray.single_value(value=2.0, pixel_scale=0.1, shape=img.shape)
-            background_sky = image.ScaledArray.single_value(value=20.0, pixel_scale=0.1, shape=img.shape)
-
-            sim_img = image.PreparatoryImage.simulate_to_target_signal_to_noise(array=img, pixel_scale=0.1,
-                                                                                target_signal_to_noise=30.0,
-                                                                                effective_exposure_map=exposure_time,
-                                                                                background_sky_map=background_sky, seed=1)
-
-            assert 29.9 < sim_img.signal_to_noise_max < 30.1
 
         def test__target_signal_to_noise__background_sky_and_poisson(self):
 
@@ -295,7 +286,7 @@ class TestPrepatoryImage:
                                                                                 target_signal_to_noise=30.0,
                                                                                 effective_exposure_map=exposure_time,
                                                                                 background_sky_map=background_sky,
-                                                                                include_poisson_noise=True, seed=1)
+                                                                                seed=1)
 
             assert 29.2 < sim_img.signal_to_noise_max < 30.8
 
@@ -427,7 +418,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert (noise_estimate == np.ones((3, 3))).all()
 
@@ -449,7 +440,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert (noise_estimate == 2.0 * np.ones((4, 2))).all()
 
@@ -472,7 +463,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert (noise_estimate == 0.5 * np.ones((1, 5))).all()
 
@@ -488,7 +479,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert (noise_estimate == np.array([[np.sqrt(5.0), np.sqrt(6.0) / 2.0],
                                                 [np.sqrt(30.0) / 3.0, np.sqrt(80.0) / 4.0]])).all()
@@ -512,7 +503,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert noise_estimate == pytest.approx(2.0 * np.ones((3, 3)), 1e-2)
 
@@ -535,7 +526,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert noise_estimate == pytest.approx(
                 np.array([[np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0), np.sqrt(1.0 + 25.0)],
@@ -559,7 +550,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert noise_estimate == pytest.approx(
                 np.array([[np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0, np.sqrt(2.0 + 100.0) / 2.0],
@@ -579,7 +570,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert noise_estimate == pytest.approx(np.array([[np.sqrt(1.0 + 144.0), np.sqrt(2.0 + 144.0)],
                                                              [np.sqrt(3.0 + 144.0), np.sqrt(4.0 + 144.0)],
@@ -599,7 +590,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert noise_estimate == pytest.approx(np.array([[np.sqrt(5.0 + 81.0), np.sqrt(6.0 + 18.0 ** 2.0) / 2.0],
                                                              [np.sqrt(30.0 + 27.0 ** 2.0) / 3.0,
@@ -621,7 +612,7 @@ class TestPrepatoryImage:
             img = image.PreparatoryImage(array=array, pixel_scale=1.0, psf=image.PSF(array=np.ones((3, 3))),
                                          effective_exposure_map=exposure_time, background_noise_map=background_noise)
 
-            noise_estimate = img.estimated_noise
+            noise_estimate = img.estimated_noise_map
 
             assert noise_estimate == pytest.approx(
                 np.array([[np.sqrt(5.0 + 5.0 ** 2.0), np.sqrt(6.0 + 12.0 ** 2.0) / 2.0],

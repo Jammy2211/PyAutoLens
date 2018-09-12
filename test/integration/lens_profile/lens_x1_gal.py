@@ -20,28 +20,18 @@ def test_lens_x1_gal_pipeline():
     pipeline_name = "l1g"
     data_name = '/l1g'
 
-    try:
-        shutil.rmtree(dirpath+'/data'+data_name)
-    except FileNotFoundError:
-        pass
+    tools.reset_paths(data_name, pipeline_name, output_path)
 
-    sersic = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=0.0, intensity=1.0,
-                                 effective_radius=1.3, sersic_index=3.0)
+    sersic = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
+                                 sersic_index=3.0)
 
     lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
-    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
+    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[], target_signal_to_noise=30.0)
-
-    conf.instance.output_path = output_path
-
-    try:
-        shutil.rmtree(output_path + pipeline_name)
-    except FileNotFoundError:
-        pass
+    image = tools.load_image(data_name=data_name, pixel_scale=0.1)
 
     pipeline = make_lens_x1_gal_pipeline(pipeline_name=pipeline_name)
-    image = tools.load_image(data_name=data_name, pixel_scale=0.2)
 
     results = pipeline.run(image=image)
     for result in results:

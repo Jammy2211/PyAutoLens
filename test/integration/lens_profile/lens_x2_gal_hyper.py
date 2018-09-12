@@ -22,10 +22,7 @@ def test_lens_x2_gal_hyper_pipeline():
     pipeline_name = "l2g_hyp"
     data_name = '/l2g_hyp'
 
-    try:
-        shutil.rmtree(dirpath+'/data'+data_name)
-    except FileNotFoundError:
-        pass
+    tools.reset_paths(data_name, pipeline_name, output_path)
 
     bulge_0 = lp.EllipticalSersic(centre=(-1.0, -1.0), axis_ratio=0.9, phi=90.0, intensity=1.0,
                                   effective_radius=1.0, sersic_index=4.0)
@@ -41,13 +38,6 @@ def test_lens_x2_gal_hyper_pipeline():
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                      source_galaxies=[], target_signal_to_noise=50.0)
-
-    conf.instance.output_path = output_path
-
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
 
     pipeline = make_lens_x2_gal_hyper_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)

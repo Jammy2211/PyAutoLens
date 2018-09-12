@@ -17,7 +17,7 @@ def make():
 
     pipeline.setup_pipeline_path(pipeline_name) # Setup the path using the pipeline name.
 
-    # This line follows the same syntax as our phase did in phase/basic.py. However, as we're breaking the analysis
+    # This line follows the same syntax as our phase did in phase/1_basic.py. However, as we're breaking the analysis
     # down to only fit the lens's light, that means we use the 'LensPlanePhase' and just specify the lens galaxy.
     phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1')
