@@ -34,7 +34,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.0, 0.0), axis_
 # Pass into the ray-tracing module and simulate the image.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_grids=imaging_grids)
-image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_2d, pixel_scale=0.07,
+image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.07,
                                                   exposure_time=300.0, psf=psf, background_sky_level=5.0,
                                                   add_noise=False)
 

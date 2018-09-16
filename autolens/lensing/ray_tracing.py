@@ -58,6 +58,8 @@ class TracerGeometry(object):
 
 class AbstractTracer(object):
 
+    image_grids = None
+
     @property
     def all_planes(self):
         raise NotImplementedError()
@@ -79,43 +81,41 @@ class AbstractTracer(object):
         return any(list(map(lambda galaxy : galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
+    def _image_plane_image(self):
+        return sum(self._image_plane_images_of_planes)
+
+    @property
+    def _image_plane_images_of_planes(self):
+        return [plane._image_plane_image for plane in self.all_planes]
+
+    @property
+    def _image_plane_images_of_galaxies(self):
+        return [galaxy_image for plane in self.all_planes for galaxy_image in plane._image_plane_images_of_galaxies]
+
+    @property
+    def _image_plane_blurring_image(self):
+        return sum(self._image_plane_blurring_images_of_planes)
+
+    @property
+    def _image_plane_blurring_images_of_planes(self):
+        return [plane._image_plane_blurring_image for plane in self.all_planes]
+
+    @property
+    def _image_plane_blurring_images_of_galaxies(self):
+        return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
+                in plane._image_plane_blurring_images_of_galaxies]
+
+    @property
     def image_plane_image(self):
-        return sum(self.image_plane_images_of_planes)
+        return self.image_grids.image.map_to_2d(self._image_plane_image)
 
     @property
     def image_plane_images_of_planes(self):
-        return [plane.image_plane_image for plane in self.all_planes]
+        return list(map(lambda image : self.image_grids.image.map_to_2d(image), self._image_plane_images_of_planes))
 
     @property
     def image_plane_images_of_galaxies(self):
-        return [galaxy_image for plane in self.all_planes for galaxy_image in plane.image_plane_images_of_galaxies]
-
-    @property
-    def image_plane_image_2d(self):
-        return sum(self.image_plane_images_of_planes_2d)
-
-    @property
-    def image_plane_images_of_planes_2d(self):
-        return [self.map_to_2d(galaxy_image) for plane in self.all_planes for galaxy_image
-                    in plane.image_plane_images_of_galaxies]
-
-    @property
-    def image_plane_images_of_galaxies_2d(self):
-        return [self.map_to_2d(galaxy_image) for plane in self.all_planes for galaxy_image
-                in plane.image_plane_images_of_galaxies]
-
-    @property
-    def image_plane_blurring_image(self):
-        return sum(self.image_plane_blurring_images_of_planes)
-
-    @property
-    def image_plane_blurring_images_of_planes(self):
-        return [plane.image_plane_blurring_image for plane in self.all_planes]
-
-    @property
-    def image_plane_blurring_images_of_galaxies(self):
-        return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
-                in plane.image_plane_blurring_images_of_galaxies]
+        return list(map(lambda image : self.image_grids.image.map_to_2d(image), self._image_plane_images_of_galaxies))
 
     def plane_images_of_planes(self, shape=(30, 30)):
         return [plane.plane_image(shape) for plane in self.all_planes]
@@ -152,7 +152,7 @@ class TracerImagePlane(AbstractTracer):
     def all_planes(self):
         return [self.image_plane]
 
-    def __init__(self, lens_galaxies, image_grids, cosmology=None):
+    def __init__(self, lens_galaxies, cosmology=None, image_grids=None):
         """Ray-tracer for a lensing system with just one plane, the image-plane. Because there is 1 plane, there are \
         no ray-tracing calculations and the class is used purely for fitting image-plane galaxies with light \
         profiles.
@@ -174,7 +174,7 @@ class TracerImagePlane(AbstractTracer):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        self.map_to_2d = image_grids.image.map_to_2d
+        self.image_grids = image_grids
 
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift], cosmology=cosmology)
@@ -190,7 +190,7 @@ class TracerImageSourcePlanes(AbstractTracer):
     def all_planes(self):
         return [self.image_plane, self.source_plane]
 
-    def __init__(self, lens_galaxies, source_galaxies, image_grids, cosmology=None):
+    def __init__(self, lens_galaxies, source_galaxies, cosmology=None, image_grids=None):
         """Ray-tracer for a lensing system with two planes, an image-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
@@ -210,7 +210,7 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        self.map_to_2d = image_grids.image.map_to_2d
+        self.image_grids = image_grids
 
         self.image_plane = Plane(lens_galaxies, image_grids, compute_deflections=True)
 
@@ -281,7 +281,7 @@ class AbstractTracerMulti(AbstractTracer):
 
 class TracerMulti(AbstractTracerMulti):
 
-    def __init__(self, galaxies, image_grids, cosmology):
+    def __init__(self, galaxies, cosmology, image_grids=None):
         """Ray-tracer for a lensing system with any number of planes.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
@@ -301,7 +301,7 @@ class TracerMulti(AbstractTracerMulti):
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
 
-        self.map_to_2d = image_grids.image.map_to_2d
+        self.image_grids = image_grids
 
         super(TracerMulti, self).__init__(galaxies, cosmology)
 
@@ -326,13 +326,18 @@ class TracerMulti(AbstractTracerMulti):
                     def scale(grid):
                         return np.multiply(scaling_factor, grid)
 
-                    scaled_deflections = self.planes[previous_plane_index].deflections. \
-                        apply_function(scale)
+                    if self.planes[previous_plane_index].deflections is not None:
+                        scaled_deflections = self.planes[previous_plane_index].deflections.apply_function(scale)
+                    else:
+                        scaled_deflections = None
 
                     def subtract_scaled_deflections(grid, scaled_deflection):
                         return np.subtract(grid, scaled_deflection)
 
-                    new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
+                    if scaled_deflections is not None:
+                        new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
+                    else:
+                        new_grid = None
 
             self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
                                      compute_deflections=compute_deflections))
@@ -366,29 +371,35 @@ class Plane(object):
             def calculate_deflections(grid):
                 return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
-            self.deflections = self.grids.apply_function(calculate_deflections)
+            if self.grids is not None:
+                self.deflections = self.grids.apply_function(calculate_deflections)
+            else:
+                self.deflections = None
 
     def trace_to_next_plane(self):
         """Trace this plane's grids to the next plane, using its deflection angles."""
-        return self.grids.map_function(np.subtract, self.deflections)
+        if self.grids is not None:
+            return self.grids.map_function(np.subtract, self.deflections)
+        else:
+            return None
 
     @property
-    def image_plane_image(self):
-        return sum(self.image_plane_images_of_galaxies)
+    def _image_plane_image(self):
+        return sum(self._image_plane_images_of_galaxies)
 
     @property
-    def image_plane_images_of_galaxies(self):
-        return [self.image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
+    def _image_plane_images_of_galaxies(self):
+        return [self._image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
-    def image_plane_image_from_galaxy(self, galaxy):
+    def _image_plane_image_from_galaxy(self, galaxy):
         return intensities_from_grid(self.grids.sub, [galaxy])
 
     @property
-    def image_plane_blurring_image(self):
-        return sum(self.image_plane_blurring_images_of_galaxies)
+    def _image_plane_blurring_image(self):
+        return sum(self._image_plane_blurring_images_of_galaxies)
 
     @property
-    def image_plane_blurring_images_of_galaxies(self):
+    def _image_plane_blurring_images_of_galaxies(self):
         return [self.image_plane_blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
     def image_plane_blurring_image_from_galaxy(self, galaxy):

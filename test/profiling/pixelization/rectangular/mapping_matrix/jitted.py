@@ -61,7 +61,7 @@ class Pixelization(object):
 
         """
 
-        mapping_matrix = np.zeros((grids.image_plane_image.shape[0], self.pixels))
+        mapping_matrix = np.zeros((grids._image_plane_image.shape[0], self.pixels))
 
         for sub_index in range(grids.sub.total_pixels):
             mapping_matrix[grids.sub.sub_to_image[sub_index], sub_to_pix[sub_index]] += grids.sub.sub_grid_fraction
@@ -70,7 +70,7 @@ class Pixelization(object):
 
     def mapping_matrix_from_sub_to_pix_jitted(self, sub_to_pix, grids):
 
-        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, self.pixels, grids.image_plane_image, grids.sub.sub_to_image,
+        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, self.pixels, grids._image_plane_image, grids.sub.sub_to_image,
                                                        grids.sub.sub_grid_fraction)
 
     @staticmethod
