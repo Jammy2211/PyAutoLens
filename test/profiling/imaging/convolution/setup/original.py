@@ -119,25 +119,25 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 @tools.tick_toc_x1
 def lsst_solution():
     lsst_convolver = Convolver(mask=lsst.mask, blurring_mask=lsst.masked_image.blurring_mask,
-                               kernel=lsst.image_plane_image.psf.trim(psf_shape))
+                               kernel=lsst._image_plane_image.psf.trim(psf_shape))
 
 @tools.tick_toc_x1
 def euclid_solution():
     euclid_convolver = Convolver(mask=euclid.mask, blurring_mask=euclid.masked_image.blurring_mask,
-                                 kernel=euclid.image_plane_image.psf.trim(psf_shape))
+                                 kernel=euclid._image_plane_image.psf.trim(psf_shape))
 
 @tools.tick_toc_x1
 def hst_solution():
     hst_convolver = Convolver(mask=hst.mask, blurring_mask=hst.masked_image.blurring_mask,
-                              kernel=hst.image_plane_image.psf.trim(psf_shape))
+                              kernel=hst._image_plane_image.psf.trim(psf_shape))
 
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up_convolver = Convolver(mask=hst_up.mask, blurring_mask=hst_up.masked_image.blurring_mask,
-                                 kernel=hst_up.image_plane_image.psf.trim(psf_shape))
+                                 kernel=hst_up._image_plane_image.psf.trim(psf_shape))
 @tools.tick_toc_x1
 def ao_solution():
-    ao_convolver = Convolver(mask=ao.mask, blurring_mask=ao.blurring_mask, kernel=ao.image_plane_image.psf.trim(psf_shape))
+    ao_convolver = Convolver(mask=ao.mask, blurring_mask=ao.blurring_mask, kernel=ao._image_plane_image.psf.trim(psf_shape))
 
 if __name__ == "__main__":
     lsst_solution()
