@@ -14,7 +14,7 @@ def get_normalization_min_max(array, norm_min, norm_max):
 
     return norm_min, norm_max
 
-def get_normalization(norm, norm_min, norm_max, linthresh, linscale):
+def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
 
     if norm is 'linear':
         return colors.Normalize(vmin=norm_min, vmax=norm_max)
@@ -41,9 +41,9 @@ def get_xylabels(units):
 
     return xlabel, ylabel
 
-def plot_image(array, figsize, aspect, cmap, norm):
+def plot_image(array, figsize, aspect, cmap, norm_scale):
     plt.figure(figsize=figsize)
-    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm)
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
 
 def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsize):
 
@@ -57,10 +57,9 @@ def set_ticks(array, xticks, yticks, xyticksize):
     plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
     plt.tick_params(labelsize=xyticksize)
 
-def set_colorbar(norm_min, norm_max, cb_ticksize):
+def set_colorbar(cb_ticksize):
 
-    cb = plt.colorbar(ticks=[norm_min, 0.0, norm_max], format=LogFormatter(labelOnlyBase=False))
-    cb.ax.set_yticklabels([np.round(norm_min, 2), 0.0, np.round(norm_max, 2)])
+    cb = plt.colorbar()
     cb.ax.tick_params(labelsize=cb_ticksize)
 
 def output_array(array, output_path, output_filename, output_format):
