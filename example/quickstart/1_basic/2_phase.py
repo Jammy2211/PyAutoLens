@@ -7,15 +7,15 @@ from autolens.profiles import mass_profiles as mp
 import os
 
 # In this example, we'll generate a phase which fits a lens + source plane system.
-# The example data we fit is generated using the example in 'example/simulate/1_basic.py'.
+# The example data we fit is generated using the example in 'example/simulate/2_phase.py'.
 
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Load an image from the 'data/basic' folder.
-image = im.load_from_path(image_path=path + '/../data/basic/image.fits',
-                          noise_path=path+'/../data/basic/noise_map.fits',
-                          psf_path=path + '/../data/basic/psf.fits', pixel_scale=0.1)
+# Load an image from the 'data/1_basic' folder.
+image = im.load_from_path(image_path=path + '/../data/1_basic/image.fits',
+                          noise_path=path+'/../data/1_basic/noise_map.fits',
+                          psf_path=path + '/../data/1_basic/psf.fits', pixel_scale=0.1)
 
 # A quick visual inspection of the image shows we didn't simulate the lens galaxy's light, thus the model in this phase
 # need only fit the lens's mass and source's light.
