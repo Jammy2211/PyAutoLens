@@ -429,8 +429,8 @@ class PhaseImaging(Phase):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            object_plotters.plot_observed_image_from_image(image=self.lensing_image.image, units='arcsec',
-                                                           output_path=self.output_image_path, output_format='png')
+            object_plotters.plot_image_data_from_image(image=self.lensing_image.image, units='arcsec',
+                                                       output_path=self.output_image_path, output_format='png')
 
             object_plotters.plot_residuals_from_fitter(fitter=fitter, units='arcsec',
                                                        output_path=self.output_image_path, output_format='png')

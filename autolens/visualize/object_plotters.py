@@ -1,10 +1,13 @@
 from autolens.visualize import array_plotters
 
-def plot_observed_image_from_image(image, units, xyticksize=40,
-                                   norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                                   title='Obsserved Image', titlesize=46, xlabelsize=36, ylabelsize=36,
-                                   output_path=None, output_filename='observed_image', output_format='show'):
+def plot_image_data_from_image(image, units, xyticksize=40,
+                               norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                               figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                               image_title='Obsserved Image', noise_map_title='Noise Map', psf_title='PSF',
+                               titlesize=46, xlabelsize=36, ylabelsize=36,
+                               output_path=None,
+                               output_image_filename='observed_image', output_noise_map_filename='noise_map',
+                               output_psf_filename='psf', output_format='show'):
     """Plot the observed image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -34,8 +37,12 @@ def plot_observed_image_from_image(image, units, xyticksize=40,
         The aspect ratio of the image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
     cmap : str
         The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
+    image_title : str
         The title of the image.
+    noise_map_title : str
+        The title of the noise-map image.
+    psf_title : str
+        The title of the psf image.
     titlesize : int
         The font size of the figure title.
     xlabelsize : int
@@ -44,8 +51,12 @@ def plot_observed_image_from_image(image, units, xyticksize=40,
         The font size of the figure ylabel.
     output_path : str
         The path where the image is output if the output_type is a file format (e.g. png, fits)
-    output_filename : str
-        The name of the file that is output, if the output_type is a file format (e.g. png, fits)
+    output_image_filename : str
+        The name of the file that the image is output, if the output_type is a file format (e.g. png, fits)
+    output_noise_map_filename : str
+        The name of the file that the image is output, if the output_type is a file format (e.g. png, fits)
+    output_psf_filename : str
+        The name of the file that the image is output, if the output_type is a file format (e.g. png, fits)
     output_format : str
         How the image is output. File formats (e.g. png, fits) output the image to harddisk. 'show' displays the image \
         in the python interpreter window.
@@ -55,8 +66,22 @@ def plot_observed_image_from_image(image, units, xyticksize=40,
         array=image, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
-        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-        output_path=output_path, output_filename=output_filename, output_format=output_format)
+        title=image_title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+        output_path=output_path, output_filename=output_image_filename, output_format=output_format)
+
+    array_plotters.plot_noise_map_array(
+        array=image.noise_map, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
+        norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+        title=noise_map_title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+        output_path=output_path, output_filename=output_noise_map_filename, output_format=output_format)
+
+    array_plotters.plot_psf_array(
+        array=image.psf, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
+        norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+        title=psf_title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+        output_path=output_path, output_filename=output_psf_filename, output_format=output_format)
 
 def plot_model_image_from_fitter(fitter, units, xyticksize=40,
                                  norm='symmetric_log', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
