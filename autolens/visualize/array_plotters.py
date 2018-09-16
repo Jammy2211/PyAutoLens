@@ -54,7 +54,7 @@ def plot_model_image_array(array, units, xticks, yticks, xyticksize=40,
 def plot_residuals_array(array, units, xticks, yticks, xyticksize=40,
                          norm='symmetric_log', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                          figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                         title='Image Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
+                         title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
                          output_path=None, output_filename='residuals', output_format='show'):
 
     plot_array(array=array, xticks=xticks, yticks=yticks, units=units, xyticksize=xyticksize,
@@ -64,10 +64,34 @@ def plot_residuals_array(array, units, xticks, yticks, xyticksize=40,
                output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_chi_squareds_array(array, units, xticks, yticks, xyticksize=40,
-                            norm='log', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
+                            norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                            title='Image Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                            title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
                             output_path=None, output_filename='chi_squareds', output_type='show'):
+
+    plot_array(array=array, xticks=xticks, yticks=yticks, units=units, xyticksize=xyticksize,
+               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+               figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+               title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+               output_path=output_path, output_filename=output_filename, output_format=output_type)
+
+def plot_scaled_noise_map_array(array, units, xticks, yticks, xyticksize=40,
+                                norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                                figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                                title='Scaled Noise Map (electrons per second)', titlesize=46, xlabelsize=36, ylabelsize=36,
+                                output_path=None, output_filename='scaled_noise_map', output_format='show'):
+
+    plot_array(array=array, xticks=xticks, yticks=yticks, units=units, xyticksize=xyticksize,
+               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+               figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+               title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+               output_path=output_path, output_filename=output_filename, output_format=output_format)
+
+def plot_scaled_chi_squareds_array(array, units, xticks, yticks, xyticksize=40,
+                                   norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
+                                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                                   title='Scaled Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                                   output_path=None, output_filename='scaled_chi_squareds', output_type='show'):
 
     plot_array(array=array, xticks=xticks, yticks=yticks, units=units, xyticksize=xyticksize,
                norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
