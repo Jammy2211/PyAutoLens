@@ -83,21 +83,21 @@ class AbstractProfileFitter(object):
         tracer: ray_tracing.TracerImageSourcePlanes
             An object describing the model
         """
-        self._model_image = lensing_image.convolver_image.convolve_image(self.tracer.image_plane_image,
-                                                                        self.tracer.image_plane_blurring_image)
+        self._model_image = lensing_image.convolver_image.convolve_image(self.tracer._image_plane_image,
+                                                                         self.tracer._image_plane_blurring_image)
         self._residuals = residuals_from_image_and_model(lensing_image[:], self._model_image)
 
     @property
     def model_images_of_planes(self):
         return list(map(lambda image_plane_image, image_plane_blurring_image :
                         self.map_to_2d(self.convolve_image(image_plane_image, image_plane_blurring_image)),
-                        self.tracer.image_plane_images_of_planes, self.tracer.image_plane_blurring_images_of_planes))
+                        self.tracer._image_plane_images_of_planes, self.tracer._image_plane_blurring_images_of_planes))
 
     @property
     def model_images_of_galaxies(self):
         return list(map(lambda image_plane_image, image_plane_blurring_image :
                         self.map_to_2d(self.convolve_image(image_plane_image, image_plane_blurring_image)),
-                        self.tracer.image_plane_images_of_galaxies, self.tracer.image_plane_blurring_images_of_galaxies))
+                        self.tracer._image_plane_images_of_galaxies, self.tracer._image_plane_blurring_images_of_galaxies))
 
     def images_of_planes(self, shape=(30, 30)):
 
