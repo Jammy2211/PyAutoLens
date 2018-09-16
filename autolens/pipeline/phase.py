@@ -194,31 +194,6 @@ class Phase(object):
 
             return tracer, fitter
 
-        def output_plane_image_as_png(self, array, filename, title, grid, xticks, yticks, during_analysis):
-
-            if during_analysis is True:
-                file = self.output_image_path + str(self.plot_count) + '_' + filename + '.png'
-            elif during_analysis is False:
-                file = self.output_image_path + filename + '.png'
-
-            if os.path.isfile(file):
-                os.remove(file)
-
-            fig = plt.figure(figsize=(28, 20))
-            plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
-            plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
-            plt.tick_params(labelsize=30)
-            plt.imshow(array, aspect='auto', extent=(np.min(grid[:, 0]), np.max(grid[:, 0]),
-                                                     np.min(grid[:, 1]), np.max(grid[:, 1])))
-            plt.title(title, fontsize=32)
-            plt.xlabel('x (arcsec)', fontsize=36)
-            plt.ylabel('y (arcsec)', fontsize=36)
-            cb = plt.colorbar()
-            cb.ax.tick_params(labelsize=28)
-            plt.scatter(x=grid[:, 0], y=grid[:, 1])
-            plt.savefig(file, bbox_inches='tight')
-            plt.close()
-
         @classmethod
         def log(cls, instance):
             raise NotImplementedError()
@@ -454,15 +429,14 @@ class PhaseImaging(Phase):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            object_plotters.plot_observed_image_from_image(image=self.lensing_image.image,
-                                                           output_path=self.output_image_path,
-                                                           output_filename='observed_image.png', output_type='png')
+            object_plotters.plot_observed_image_from_image(image=self.lensing_image.image, units='arcsec',
+                                                           output_path=self.output_image_path, output_format='png')
 
-            object_plotters.plot_residuals_from_fitter(fitter=fitter, output_path=self.output_image_path,
-                                                       output_filename='residuals.png', output_type='png')
+            object_plotters.plot_residuals_from_fitter(fitter=fitter, units='arcsec',
+                                                       output_path=self.output_image_path, output_format='png')
 
-            object_plotters.plot_chi_squareds_from_fitter(fitter=fitter, output_path=self.output_image_path,
-                                                          output_filename='chi_squareds.png', output_type='png')
+            object_plotters.plot_chi_squareds_from_fitter(fitter=fitter, units='arcsec',
+                                                          output_path=self.output_image_path, output_format='png')
 
             return tracer, fitter
 
@@ -580,6 +554,9 @@ class LensPlanePhase(PhaseImaging):
         def visualize(self, instance, suffix, during_analysis):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
+
+            object_plotters.plot_model_image_from_fitter(fitter=fitter, units='arcsec',
+                                                         output_path=self.output_image_path, output_format='png')
 
             return tracer, fitter
 
