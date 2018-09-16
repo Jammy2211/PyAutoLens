@@ -37,3 +37,7 @@ class RayTracingException(Exception):
 
 class PhaseException(Exception):
     pass
+
+
+class VisualizeException(Exception):
+    pass
