@@ -17,7 +17,7 @@ def make():
 
     pipeline.setup_pipeline_path(pipeline_name) # Setup the path using the pipeline name.
 
-    # This line follows the same syntax as our phase did in phase/1_basic.py. However, as we're breaking the analysis
+    # This line follows the same syntax as our phase did in phase/2_phase.py. However, as we're breaking the analysis
     # down to only fit the lens's light, that means we use the 'LensPlanePhase' and just specify the lens galaxy.
     phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1')
@@ -68,6 +68,6 @@ def make():
 
 # Load the image data, make the pipeline above and run it.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
-image = im.load(path=path + '/../data/basic/', pixel_scale=0.07)
+image = im.load(path=path + '/../data/1_basic/', pixel_scale=0.07)
 pipeline_basic = make()
 pipeline_basic.run(image=image)
