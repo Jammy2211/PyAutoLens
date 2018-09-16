@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import os
 
 # In this example, we'll simulate a lensed source galaxy and output the images (as .fits). This image is used to
-# demonstrate lens modeling in example/phase/1_basic.py.
+# demonstrate lens modeling in example/phase/1_simulate.py.
 
 # First, lets setup the PSF we are going to blur our simulated image with, using a Gaussian profile on an 11x11 grid.
 psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
@@ -55,6 +55,6 @@ plt.show()
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
-imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/../data/basic/image.fits')
-imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/../data/basic/noise_map.fits')
-imaging_util.numpy_array_to_fits(array=psf, path=path+'/../data/basic/psf.fits')
+imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/../data/1_basic/image.fits')
+imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/../data/1_basic/noise_map.fits')
+imaging_util.numpy_array_to_fits(array=psf, path=path+'/../data/1_basic/psf.fits')
