@@ -27,7 +27,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_grids=imaging_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_2d, pixel_scale=0.2,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
                                                    add_noise=False)
     image_simulated.noise_map = np.ones(image_simulated.shape)
@@ -73,7 +73,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_grids=imaging_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_2d, pixel_scale=0.2,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
                                                    add_noise=False)
     image_simulated.noise_map = np.ones(image_simulated.shape)
