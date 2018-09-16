@@ -47,7 +47,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # To simulate the image, we pass this image to the imaging module's simulate function. We add various effects, including
 # PSF blurring, the background sky and noise.
-image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_2d, pixel_scale=0.1,
+image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.1,
                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1,
                                                   add_noise=True)
 plt.imshow(image_simulated.noise_map)
