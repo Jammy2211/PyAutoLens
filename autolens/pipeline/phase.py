@@ -5,12 +5,12 @@ from autolens.imaging import mask as msk
 from autolens.imaging import image as img
 from autolens.lensing import fitting
 from autolens.autofit import non_linear
+from autolens.visualize import object_plotters
 from autolens import exc
 from autolens import conf
 from astropy import cosmology as cosmo
 import numpy as np
 import logging
-from astropy.io import fits
 import matplotlib.pyplot as plt
 import os
 
@@ -193,46 +193,6 @@ class Phase(object):
             fitter = self.fitter_for_tracer(tracer)
 
             return tracer, fitter
-
-        def output_array_as_png(self, array, filename, title, xticks, yticks, during_analysis):
-
-            if during_analysis:
-                file = self.output_image_path + str(self.plot_count) + '_' + filename + '.png'
-            else:
-                file = self.output_image_path + filename + '.png'
-
-            if os.path.isfile(file):
-                os.remove(file)
-
-            plt.figure(figsize=(28, 20))
-            plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
-            plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
-            plt.tick_params(labelsize=30)
-            plt.imshow(array, aspect='auto')
-            plt.title(title, fontsize=32)
-            plt.xlabel('x (arcsec)', fontsize=36)
-            plt.ylabel('y (arcsec)', fontsize=36)
-            cb = plt.colorbar()
-            cb.ax.tick_params(labelsize=28)
-            plt.savefig(file, bbox_inches='tight')
-            plt.close()
-
-        def output_array_as_fits(self, array, filename, suffix, during_analysis):
-
-            if (during_analysis is True and self.as_fits_during_analysis is True) or during_analysis is False:
-
-                file = self.output_image_path + filename + '.fits'
-
-                if os.path.isfile(file):
-                    os.remove(file)
-
-                try:
-                    if array is not None:
-                        hdu = fits.PrimaryHDU()
-                        hdu.data = array
-                        hdu.writeto(file)
-                except OSError as e:
-                    logger.exception(e)
 
         def output_plane_image_as_png(self, array, filename, title, grid, xticks, yticks, during_analysis):
 
@@ -494,20 +454,17 @@ class PhaseImaging(Phase):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            xticks = self.lensing_image.grids.image.xticks
-            yticks = self.lensing_image.grids.image.yticks
+            object_plotters.plot_observed_image_from_image(image=self.lensing_image.image,
+                                                           output_path=self.output_image_path,
+                                                           output_filename='observed_image.png', output_type='png')
 
-            self.output_array_as_png(fitter.residuals, 'residuals', 'Image Residuals',
-                                     xticks, yticks, during_analysis)
-            self.output_array_as_png(fitter.chi_squareds, 'chi_squareds', 'Chi Squareds',
-                                     xticks, yticks, during_analysis)
+            object_plotters.plot_residuals_from_fitter(fitter=fitter, output_path=self.output_image_path,
+                                                       output_filename='residuals.png', output_type='png')
 
-            self.output_array_as_fits(fitter.residuals, "residuals", suffix,
-                                      during_analysis)
-            self.output_array_as_fits(fitter.chi_squareds, "chi_squareds", suffix,
-                                      during_analysis)
+            object_plotters.plot_chi_squareds_from_fitter(fitter=fitter, output_path=self.output_image_path,
+                                                          output_filename='chi_squareds.png', output_type='png')
 
-            return tracer, fitter, xticks, yticks
+            return tracer, fitter
 
         def map_to_1d(self, data):
             """Convinience method"""
@@ -595,6 +552,7 @@ class LensPlanePhase(PhaseImaging):
                                              mask_function=mask_function, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
 
+
     class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -620,15 +578,10 @@ class LensPlanePhase(PhaseImaging):
             return fitter.likelihood
 
         def visualize(self, instance, suffix, during_analysis):
-            tracer, fitter, xticks, yticks = super().visualize(instance, suffix, during_analysis)
 
-            self.output_array_as_png(fitter.model_image, 'lens_blurred_image_plane_image',
-                                     'Lens Plane Image', xticks, yticks, during_analysis)
+            tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            self.output_array_as_fits(fitter.model_image, "lens_blurred_image_plane_image",
-                                      suffix, during_analysis)
-
-            return tracer, fitter, xticks, yticks
+            return tracer, fitter
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(instance.lens_galaxies, self.lensing_image.grids)
@@ -647,6 +600,7 @@ class LensPlanePhase(PhaseImaging):
         def log(cls, instance):
             logger.debug(
                 "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+
 
     class Result(PhaseImaging.Result):
 
@@ -703,16 +657,8 @@ class LensPlaneHyperPhase(LensPlanePhase):
             return fitter.likelihood
 
         def visualize(self, instance, suffix, during_analysis):
-            tracer, fitter, xticks, yticks = super().visualize(instance, suffix, during_analysis)
 
-            self.output_array_as_png(fitter.noise, 'scaled_noise', 'Scaled Noise', xticks, yticks,
-                                     during_analysis)
-            self.output_array_as_png(fitter.chi_squareds, 'scaled_chi_squareds',
-                                     'Scaled Chi Squareds', xticks, yticks, during_analysis)
-
-            self.output_array_as_fits(fitter.noise, "scaled_noise", suffix, during_analysis)
-            self.output_array_as_fits(fitter.chi_squareds, "scaled_noise", suffix,
-                                      during_analysis)
+            tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
         def fitter_for_tracer(self, tracer):
             return fitting.HyperProfileFitter(self.lensing_image, tracer, self.hyper_model_image,
@@ -872,22 +818,10 @@ class LensSourcePlanePhase(PhaseImaging):
             return fitter.likelihood
 
         def visualize(self, instance, suffix, during_analysis):
-            tracer, fitter, xticks, yticks = super().visualize(instance, suffix, during_analysis)
 
-            self.output_array_as_png(fitter.model_image, 'source_blurred_image_plane_image',
-                                     'Source Image-Plane Image', xticks, yticks, during_analysis)
+            tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            self.output_plane_image_as_png(fitter.images_of_planes()[1], 'source_plane_image',
-                                           'Source Plane', tracer.image_grids_of_planes[1],
-                                           tracer.xticks_of_planes[1], tracer.yticks_of_planes[1], during_analysis)
-
-            self.output_array_as_fits(fitter.model_image, "source_blurred_image_plane_image", suffix,
-                                      during_analysis)
-
-            self.output_array_as_fits(fitter.images_of_planes()[1], "source_plane_image", suffix,
-                                      during_analysis)
-
-            return tracer, fitter, xticks, yticks
+            return tracer, fitter,
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(instance.lens_galaxies, instance.source_galaxies,
@@ -979,16 +913,8 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
             return fitter.likelihood
 
         def visualize(self, instance, suffix, during_analysis):
-            tracer, fitter, xticks, yticks = super().visualize(instance, suffix, during_analysis)
 
-            self.output_array_as_png(fitter.noise, 'scaled_noise', 'Scaled Noise', xticks, yticks,
-                                     during_analysis)
-            self.output_array_as_png(fitter.chi_squareds, 'scaled_chi_squareds',
-                                     'Scaled Chi Squareds', xticks, yticks, during_analysis)
-
-            self.output_array_as_fits(fitter.noise, "scaled_noise", suffix, during_analysis)
-            self.output_array_as_fits(fitter.chi_squareds, "scaled_noise", suffix,
-                                      during_analysis)
+            tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
         def fitter_for_tracer(self, tracer):
             return fitting.HyperProfileFitter(self.lensing_image, tracer, self.hyper_model_image,
@@ -1152,7 +1078,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
             return fitter.evidence
 
         def visualize(self, instance, suffix, during_analysis):
-            tracer, fitter, xticks, yticks = super().visualize(instance, suffix, during_analysis)
+            tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(instance.lens_galaxies, instance.source_galaxies,
