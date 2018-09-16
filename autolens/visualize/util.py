@@ -19,6 +19,8 @@ def get_normalization(norm, norm_min, norm_max, linthresh, linscale):
     if norm is 'linear':
         return colors.Normalize(vmin=norm_min, vmax=norm_max)
     elif norm is 'log':
+        if norm_min == 0.0:
+            norm_min = 1.e-4
         return colors.LogNorm(vmin=norm_min, vmax=norm_max)
     elif norm is 'symmetric_log':
         return colors.SymLogNorm(linthresh=linthresh, linscale=linscale, vmin=norm_min, vmax=norm_max)
@@ -26,31 +28,48 @@ def get_normalization(norm, norm_min, norm_max, linthresh, linscale):
         raise exc.VisualizeException('The normalization (norm) supplied to the plotter is not a valid string (must be '
                                      'linear | log | symmetric_log')
 
-def set_title_and_labels(title, xlabel, ylabel, title_size=56, xlabel_size=56, ylabel_size=56):
+def get_xylabels(units):
 
-    plt.title(title, fontsize=title_size)
-    plt.xlabel(xlabel, fontsize=xlabel_size)
-    plt.ylabel(ylabel, fontsize=ylabel_size)
+    if units is 'arcsec':
+        xlabel = 'x (arcsec)'
+        ylabel = 'y (arcsec)'
+    elif units is 'kpc':
+        xlabel = 'x (kpc)'
+        ylabel = 'y (kpc)'
+    else:
+        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be arcsec | kpc)')
 
-def set_ticks(array, xticks, yticks):
+    return xlabel, ylabel
+
+def plot_image(array, figsize, aspect, cmap, norm):
+    plt.figure(figsize=figsize)
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm)
+
+def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsize):
+
+    plt.title(title, fontsize=titlesize)
+    plt.xlabel(xlabel, fontsize=xlabelsize)
+    plt.ylabel(ylabel, fontsize=ylabelsize)
+
+def set_ticks(array, xticks, yticks, xyticksize):
 
     plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
     plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
-    plt.tick_params(labelsize=50)
+    plt.tick_params(labelsize=xyticksize)
 
-def set_colorbar(norm_min, norm_max):
+def set_colorbar(norm_min, norm_max, cb_ticksize):
 
     cb = plt.colorbar(ticks=[norm_min, 0.0, norm_max], format=LogFormatter(labelOnlyBase=False))
     cb.ax.set_yticklabels([np.round(norm_min, 2), 0.0, np.round(norm_max, 2)])
-    cb.ax.tick_params(labelsize=32)
+    cb.ax.tick_params(labelsize=cb_ticksize)
 
-def output_array(array, output_path, output_filename, output_type):
+def output_array(array, output_path, output_filename, output_format):
 
-    if output_type is 'show':
+    if output_format is 'show':
         plt.show()
-    elif output_type is 'png':
-        plt.savefig(output_path + output_filename, bbox_inches='tight')
-    elif output_type is 'fits':
+    elif output_format is 'png':
+        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
+    elif output_format is 'fits':
         hdu = fits.PrimaryHDU()
         hdu.data = array
-        hdu.writeto(output_path + output_filename)
+        hdu.writeto(output_path + output_filename + '.fits')
