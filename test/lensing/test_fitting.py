@@ -310,27 +310,27 @@ class MockTracer(object):
         self.has_grid_mappers = has_grid_mappers
 
     @property
-    def image_plane_image(self):
+    def _image_plane_image(self):
         return self.image
 
     @property
-    def image_plane_images_of_planes(self):
+    def _image_plane_images_of_planes(self):
         return [self.image]
 
     @property
-    def image_plane_images_of_galaxies(self):
+    def _image_plane_images_of_galaxies(self):
         return [self.image]
 
     @property
-    def image_plane_blurring_image(self):
+    def _image_plane_blurring_image(self):
         return self.blurring_image
 
     @property
-    def image_plane_blurring_images_of_planes(self):
+    def _image_plane_blurring_images_of_planes(self):
         return [self.blurring_image]
 
     @property
-    def image_plane_blurring_images_of_galaxies(self):
+    def _image_plane_blurring_images_of_galaxies(self):
         return [self.blurring_image]
 
     def reconstructors_from_source_plane(self, borders):
@@ -457,7 +457,7 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
 
-            tracer_non_blurred_image = tracer.image_plane_image
+            tracer_non_blurred_image = tracer._image_plane_image
 
             assert (tracer_non_blurred_image == fitter._model_image).all()
 
@@ -480,8 +480,8 @@ class TestProfileFitter:
 
             # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
-            central_values = tracer.image_plane_image
-            blurring_values = tracer.image_plane_blurring_image
+            central_values = tracer._image_plane_image
+            blurring_values = tracer._image_plane_blurring_image
 
             tracer_blurred_image_manual_0 = 2.0 * central_values[0] + 3.0 * central_values[2] + blurring_values[4]
             tracer_blurred_image_manual_1 = 2.0 * central_values[1] + 3.0 * central_values[3] + central_values[0]
@@ -529,11 +529,11 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
-                                                                               tracer.image_plane_blurring_images_of_galaxies[0])
+            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                                               tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
-                                                                                 tracer.image_plane_blurring_images_of_galaxies[1])
+            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                                                 tracer._image_plane_blurring_images_of_galaxies[1])
 
             blurred_lens_image_plane_image = li.grids.image.map_to_2d(blurred_lens_image_plane_image)
             blurred_source_image_plane_image = li.grids.image.map_to_2d(blurred_source_image_plane_image)
@@ -565,14 +565,14 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_image_plane_image_0 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
-                                                                            tracer.image_plane_blurring_images_of_galaxies[0])
+            blurred_image_plane_image_0 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                                            tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_image_plane_image_1 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
-                                                                            tracer.image_plane_blurring_images_of_galaxies[1])
+            blurred_image_plane_image_1 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                                            tracer._image_plane_blurring_images_of_galaxies[1])
 
-            blurred_image_plane_image_2 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
-                                                                            tracer.image_plane_blurring_images_of_galaxies[2])
+            blurred_image_plane_image_2 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[2],
+                                                                            tracer._image_plane_blurring_images_of_galaxies[2])
 
             blurred_image_plane_image_0 = li.grids.image.map_to_2d(blurred_image_plane_image_0)
             blurred_image_plane_image_1 = li.grids.image.map_to_2d(blurred_image_plane_image_1)
@@ -618,11 +618,11 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
-                                                                               tracer.image_plane_blurring_images_of_galaxies[0])
+            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                                               tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
-                                                                                 tracer.image_plane_blurring_images_of_galaxies[1])
+            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                                                 tracer._image_plane_blurring_images_of_galaxies[1])
 
             blurred_lens_image_plane_image = li.grids.image.map_to_2d(blurred_lens_image_plane_image)
             blurred_source_image_plane_image = li.grids.image.map_to_2d(blurred_source_image_plane_image)
@@ -654,20 +654,20 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_g0_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
-                                                       tracer.image_plane_blurring_images_of_galaxies[0])
+            blurred_g0_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_g1_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
-                                                       tracer.image_plane_blurring_images_of_galaxies[1])
+            blurred_g1_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[1])
 
-            blurred_g2_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
-                                                       tracer.image_plane_blurring_images_of_galaxies[2])
+            blurred_g2_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[2],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[2])
 
-            blurred_g3_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[3],
-                                                       tracer.image_plane_blurring_images_of_galaxies[3])
+            blurred_g3_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[3],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[3])
 
-            blurred_g4_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[4],
-                                                       tracer.image_plane_blurring_images_of_galaxies[4])
+            blurred_g4_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[4],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[4])
 
             blurred_g0_image_plane_image = li.grids.image.map_to_2d(blurred_g0_image_plane_image)
             blurred_g1_image_plane_image = li.grids.image.map_to_2d(blurred_g1_image_plane_image)
@@ -705,20 +705,20 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_g1_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
-                                                       tracer.image_plane_blurring_images_of_galaxies[0])
+            blurred_g1_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_g3_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
-                                                       tracer.image_plane_blurring_images_of_galaxies[1])
+            blurred_g3_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[1])
 
-            blurred_g4_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
-                                                       tracer.image_plane_blurring_images_of_galaxies[2])
+            blurred_g4_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[2],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[2])
 
-            blurred_g0_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[3],
-                                                       tracer.image_plane_blurring_images_of_galaxies[3])
+            blurred_g0_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[3],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[3])
 
-            blurred_g2_image_plane_image = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[4],
-                                                       tracer.image_plane_blurring_images_of_galaxies[4])
+            blurred_g2_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[4],
+                                                                             tracer._image_plane_blurring_images_of_galaxies[4])
 
             blurred_g0_image_plane_image = li.grids.image.map_to_2d(blurred_g0_image_plane_image)
             blurred_g1_image_plane_image = li.grids.image.map_to_2d(blurred_g1_image_plane_image)
@@ -756,14 +756,14 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_image_plane_image_0 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[0],
-                                                                            tracer.image_plane_blurring_images_of_galaxies[0])
+            blurred_image_plane_image_0 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                                            tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_image_plane_image_1 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[1],
-                                                                            tracer.image_plane_blurring_images_of_galaxies[1])
+            blurred_image_plane_image_1 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                                            tracer._image_plane_blurring_images_of_galaxies[1])
 
-            blurred_image_plane_image_2 = li.convolver_image.convolve_image(tracer.image_plane_images_of_galaxies[2],
-                                                                            tracer.image_plane_blurring_images_of_galaxies[2])
+            blurred_image_plane_image_2 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[2],
+                                                                            tracer._image_plane_blurring_images_of_galaxies[2])
 
             blurred_image_plane_image_0 = li.grids.image.map_to_2d(blurred_image_plane_image_0)
             blurred_image_plane_image_1 = li.grids.image.map_to_2d(blurred_image_plane_image_1)
@@ -911,8 +911,8 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            image_im = tracer.image_plane_image
-            blurring_im = tracer.image_plane_blurring_image
+            image_im = tracer._image_plane_image
+            blurring_im = tracer._image_plane_blurring_image
             blurred_im = li.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(li, blurred_im)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li.noise_map)
@@ -1053,8 +1053,8 @@ class TestHyperProfileFitter:
             fitter = fitting.HyperProfileFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image, 
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
-            image_im = tracer.image_plane_image
-            blurring_im = tracer.image_plane_blurring_image
+            image_im = tracer._image_plane_image
+            blurring_im = tracer._image_plane_blurring_image
             blurred_im = li.convolver_image.convolve_image(image_im, blurring_im)
             residuals = fitting.residuals_from_image_and_model(li, blurred_im)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li.noise_map)
