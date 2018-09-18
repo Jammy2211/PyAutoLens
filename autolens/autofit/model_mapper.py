@@ -160,6 +160,10 @@ class ModelMapper(AbstractModel):
                 prior_model[1].prior_class_dict.items()}
 
     @property
+    def prior_prior_model_dict(self):
+        return {prior: prior_model[1] for prior_model in self.prior_models for _, prior in prior_model[1].priors}
+
+    @property
     def priors_ordered_by_id(self):
         """
         Returns
