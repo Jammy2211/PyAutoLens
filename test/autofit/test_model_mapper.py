@@ -156,7 +156,9 @@ class TestModelingCollection(object):
 
         collection.mock_class = MockClassMM
 
+        # noinspection PyUnresolvedReferences
         assert collection.mock_class.one.lower_limit == 1.
+        # noinspection PyUnresolvedReferences
         assert collection.mock_class.one.upper_limit == 2.
 
     def test_config_prior_type(self):
@@ -164,9 +166,12 @@ class TestModelingCollection(object):
 
         collection.mock_class = MockClassMM
 
+        # noinspection PyUnresolvedReferences
         assert isinstance(collection.mock_class.one, model_mapper.GaussianPrior)
 
+        # noinspection PyUnresolvedReferences
         assert collection.mock_class.one.mean == 1.
+        # noinspection PyUnresolvedReferences
         assert collection.mock_class.one.sigma == 2.
 
     def test_attribution(self):
@@ -250,6 +255,7 @@ class TestModelInstance(object):
         collection.mock_class_1 = MockClassMM
         collection.mock_class_2 = MockClassMM
 
+        # noinspection PyUnresolvedReferences
         collection.mock_class_2.one = collection.mock_class_1.one
 
         model_map = collection.instance_from_unit_vector([1., 0., 0.])
@@ -289,6 +295,7 @@ class TestModelInstance(object):
 
         collection.mock_profile = MockProfile
 
+        # noinspection PyUnresolvedReferences
         collection.mock_profile.centre.centre_0 = model_mapper.UniformPrior(1., 10.)
 
         model_map = collection.instance_from_unit_vector([1., 1., 1.])
@@ -300,6 +307,7 @@ class TestModelInstance(object):
 
         collection.mock_profile = MockProfile
 
+        # noinspection PyUnresolvedReferences
         collection.mock_profile.centre.centre_1 = collection.mock_profile.centre.centre_0
 
         model_map = collection.instance_from_unit_vector([1., 0.])
