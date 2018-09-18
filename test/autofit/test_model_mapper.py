@@ -137,6 +137,20 @@ MockClassMM
 mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
 mock_class_two                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0"""
 
+    def test_with_constant(self, test_config):
+        mm = model_mapper.ModelMapper(test_config)
+        mm.mock_class = MockClassMM
+
+        mm.mock_class.two = model_mapper.Constant(1)
+
+        model_info = mm.model_info
+
+        assert model_info == """VARIABLE:
+
+MockClassMM
+
+mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0"""
+
 
 class TestRegression(object):
     def test_set_tuple_constant(self):
