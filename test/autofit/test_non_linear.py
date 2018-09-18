@@ -19,8 +19,6 @@ pytestmark = pytest.mark.filterwarnings(
 def test_nlo_setup():
     nlo_setup_path = "{}/../test_files/non_linear/nlo/setup/".format(os.path.dirname(os.path.realpath(__file__)))
 
-    print(nlo_setup_path)
-
     if os.path.exists(nlo_setup_path):
         shutil.rmtree(nlo_setup_path)
 
@@ -122,7 +120,7 @@ def test_mm_config():
 @pytest.fixture(name='label_config')
 def test_labels_config():
     path = "{}/../config/label.ini".format(os.path.dirname(os.path.realpath(__file__)))
-    return conf.NamedConfig(path)
+    return conf.LabelConfig(path)
 
 
 def create_path(func):
@@ -327,12 +325,12 @@ class TestGenerateLatex(object):
         assert non_linear.generate_parameter_latex(['x', 'y', 'z']) == ['$x$', '$y$', '$z$']
 
     def test__one_parameter__subscript__no_number(self):
-        assert non_linear.generate_parameter_latex(['x'], subscript='d') == [r'$x_{\mathrm{d}}$']
+        assert non_linear.generate_parameter_latex(['x'], subscript='d') == [r'x_{\mathrm{d}}']
 
     def test__three_parameters__subscript__no_number(self):
-        assert non_linear.generate_parameter_latex(['x', 'y', 'z'], subscript='d') == [r'$x_{\mathrm{d}}$',
-                                                                                       r'$y_{\mathrm{d}}$',
-                                                                                       r'$z_{\mathrm{d}}$']
+        assert non_linear.generate_parameter_latex(['x', 'y', 'z'], subscript='d') == [r'x_{\mathrm{d}}',
+                                                                                       r'y_{\mathrm{d}}',
+                                                                                       r'z_{\mathrm{d}}']
 
 
 class TestNonLinearOptimizer(object):
@@ -1221,7 +1219,7 @@ def make_downhill_simplex(test_config, width_config):
 
 
 @pytest.fixture(name="multi_nest")
-def make_multi_nest(test_config, width_config):
+def make_multi_nest(test_config, width_config, label_config):
     mn_fit_path = "{}/test_fit/".format(os.path.dirname(os.path.realpath(__file__)))
 
     conf.instance.output_path = mn_fit_path
@@ -1239,7 +1237,8 @@ def make_multi_nest(test_config, width_config):
 
     create_summary_4_parameters(mn_fit_path)
     return non_linear.MultiNest(run=run,
-                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config))
+                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config),
+                                label_config=label_config)
 
 
 class TestFitting(object):
@@ -1312,15 +1311,13 @@ class TestLabels(object):
         assert len(label_optimizer.paramnames_names) == 4
 
     def test_label_config(self, label_optimizer):
-        assert label_optimizer.label_config.get("label", "one") == "x4p0"
-        assert label_optimizer.label_config.get("label", "two") == "x4p1"
-        assert label_optimizer.label_config.get("label", "three") == "x4p2"
-        assert label_optimizer.label_config.get("label", "four") == "x4p3"
+        assert label_optimizer.label_config.label("one") == "x4p0"
+        assert label_optimizer.label_config.label("two") == "x4p1"
+        assert label_optimizer.label_config.label("three") == "x4p2"
+        assert label_optimizer.label_config.label("four") == "x4p3"
 
     def test_labels(self, label_optimizer):
         label_optimizer.variable.prior_model = MockClassNLOx4
 
-        print(label_optimizer.paramnames_labels)
-
-        assert label_optimizer.paramnames_labels == ['$x4p0_{\\mathrm{a1}}$', '$x4p1_{\\mathrm{a1}}$',
-                                                     '$x4p2_{\\mathrm{a1}}$', '$x4p3_{\\mathrm{a1}}$']
+        assert label_optimizer.paramnames_labels == ['x4p0_{\\mathrm{a1}}', 'x4p1_{\\mathrm{a1}}',
+                                                     'x4p2_{\\mathrm{a1}}', 'x4p3_{\\mathrm{a1}}']
