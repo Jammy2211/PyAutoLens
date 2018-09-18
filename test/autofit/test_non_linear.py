@@ -1336,3 +1336,17 @@ class TestLabels(object):
         assert labels[5] == r"R_{\mathrm{s1}}"
         assert labels[6] == r"n_{\mathrm{s1}}"
         assert labels[7] == r"Psi_{\mathrm{s1}}"
+
+        priors = label_optimizer.variable.priors_ordered_by_id
+        names = [key for key, value in priors]
+
+        assert names == [
+            'centre_0',
+            'centre_1',
+            'axis_ratio',
+            'phi',
+            'intensity',
+            'effective_radius',
+            'sersic_index',
+            'mass_to_light_ratio'
+        ]
