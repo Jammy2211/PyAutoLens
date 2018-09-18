@@ -160,7 +160,7 @@ class TracerImagePlane(AbstractTracer):
     def all_planes(self):
         return [self.image_plane]
 
-    def __init__(self, lens_galaxies, image_grids, cosmology=None):
+    def __init__(self, lens_galaxies, image_plane_grids, cosmology=None):
         """Ray-tracer for a lensing system with just one plane, the image-plane. Because there is 1 plane, there are \
         no ray-tracing calculations and the class is used purely for fitting image-plane galaxies with light \
         profiles.
@@ -173,7 +173,7 @@ class TracerImagePlane(AbstractTracer):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the image-plane.
-        image_grids : mask.ImagingGrids
+        image_plane_grids : mask.ImagingGrids
             The image-plane grids where tracer calculation are performed, (this includes the image-grid, sub-grid, \
             blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
@@ -182,14 +182,14 @@ class TracerImagePlane(AbstractTracer):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        self.image_grids = image_grids
+        self.image_grids = image_plane_grids
 
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift], cosmology=cosmology)
         else:
             self.geometry = None
 
-        self.image_plane = Plane(lens_galaxies, image_grids, compute_deflections=True)
+        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
 
 
 class TracerImageSourcePlanes(AbstractTracer):
@@ -198,7 +198,7 @@ class TracerImageSourcePlanes(AbstractTracer):
     def all_planes(self):
         return [self.image_plane, self.source_plane]
 
-    def __init__(self, lens_galaxies, source_galaxies, image_grids, cosmology=None):
+    def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, cosmology=None):
         """Ray-tracer for a lensing system with two planes, an image-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
@@ -211,16 +211,16 @@ class TracerImageSourcePlanes(AbstractTracer):
             The list of galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_grids : mask.ImagingGrids
+        image_plane_grids : mask.ImagingGrids
             The image-plane grids where ray-tracing calculation are performed, (this includes the image-grid, \
             sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
 
-        self.image_grids = image_grids
+        self.image_grids = image_plane_grids
 
-        self.image_plane = Plane(lens_galaxies, image_grids, compute_deflections=True)
+        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
 
         if not source_galaxies:
             raise exc.RayTracingException('No source galaxies have been input into the Tracer (TracerImageSourcePlanes)')
@@ -289,7 +289,7 @@ class AbstractTracerMulti(AbstractTracer):
 
 class TracerMulti(AbstractTracerMulti):
 
-    def __init__(self, galaxies, image_grids, cosmology):
+    def __init__(self, galaxies, image_plane_grids, cosmology):
         """Ray-tracer for a lensing system with any number of planes.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
@@ -299,7 +299,7 @@ class TracerMulti(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_grids : mask.ImagingGrids
+        image_plane_grids : mask.ImagingGrids
             The image-plane grids where ray-tracing calculation are performed, (this includes the
             image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
@@ -309,7 +309,7 @@ class TracerMulti(AbstractTracerMulti):
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
 
-        self.image_grids = image_grids
+        self.image_grids = image_plane_grids
 
         super(TracerMulti, self).__init__(galaxies, cosmology)
 
@@ -324,7 +324,7 @@ class TracerMulti(AbstractTracerMulti):
             else:
                 raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
 
-            new_grid = image_grids
+            new_grid = image_plane_grids
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
