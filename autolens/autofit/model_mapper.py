@@ -178,6 +178,31 @@ class ModelMapper(AbstractModel):
         return {prior: prior_model[1] for prior_model in self.prior_models for _, prior in prior_model[1].priors}
 
     @property
+    def prior_prior_model_name_dict(self):
+        """
+        Returns
+        -------
+        prior_prior_model_name_dict: {Prior: str}
+            A dictionary mapping priors to the names of associated prior models. Each prior will only have one prior
+            model name; if a prior is shared by two prior models then one of those prior model's names will be in this
+            dictionary.
+        """
+        return {prior: prior_model[0] for prior_model in self.prior_models for _, prior in prior_model[1].priors}
+
+    @property
+    def constant_prior_model_name_dict(self):
+        """
+        Returns
+        -------
+        prior_prior_model_name_dict: {Prior: str}
+            A dictionary mapping priors to the names of associated prior models. Each prior will only have one prior
+            model name; if a prior is shared by two prior models then one of those prior model's names will be in this
+            dictionary.
+        """
+        return {constant: prior_model[0] for prior_model in self.prior_models for _, constant in
+                prior_model[1].constants}
+
+    @property
     def priors_ordered_by_id(self):
         """
         Returns
