@@ -149,10 +149,12 @@ class NonLinearOptimizer(object):
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
+        paramnames_names = self.paramnames_names
+        paramnames_labels = self.paramnames_labels
         with open(self.file_param_names, 'w') as paramnames:
             for i in range(self.variable.total_parameters):
-                line = self.paramnames_names[i]
-                line += ' ' * (50 - len(line)) + self.paramnames_labels[i]
+                line = paramnames_names[i]
+                line += ' ' * (50 - len(line)) + paramnames_labels[i]
                 paramnames.write(line + '\n')
 
 
