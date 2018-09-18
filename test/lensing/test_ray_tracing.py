@@ -902,46 +902,46 @@ class TestPlane(object):
             assert plane.yticks_from_image_grid ==pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
 
 
-    class TestReconstructorFromGalaxies:
+    class TestPixeizationAndReconstructors:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
+
             galaxy_no_pix = g.Galaxy()
 
-            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=imaging_grids)
+            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix], grids=imaging_grids, borders=MockBorders())
 
-            reconstructors = plane.reconstructor_from_plane(MockBorders())
-
-            assert reconstructors is None
+            assert plane.pixelization is None
+            assert plane.reconstructor is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__extracts_reconstructor(self, imaging_grids):
+
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1))
 
-            plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=imaging_grids)
+            plane = ray_tracing.Plane(galaxies=[galaxy_pix], grids=imaging_grids, borders=MockBorders())
 
-            reconstructors = plane.reconstructor_from_plane(MockBorders())
-
-            assert reconstructors == 1
+            assert plane.pixelization == galaxy_pix.pixelization
+            assert plane.reconstructor == 1
 
         def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, imaging_grids):
+
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = g.Galaxy()
 
-            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix, galaxy_pix],
-                                      grids=imaging_grids)
+            plane = ray_tracing.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=imaging_grids, borders=MockBorders())
 
-            reconstructors = plane.reconstructor_from_plane(MockBorders())
+            assert plane.pixelization == galaxy_pix.pixelization
+            assert plane.reconstructor == 1
 
-            assert reconstructors == 1
 
         def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, imaging_grids):
+
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2))
 
-            plane = ray_tracing.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1],
-                                      grids=imaging_grids)
+            plane = ray_tracing.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=imaging_grids, borders=MockBorders())
 
             with pytest.raises(exc.PixelizationException):
-                plane.reconstructor_from_plane(MockBorders())
+                plane.reconstructor(MockBorders())
 
 
 class TestTracerImageAndSource(object):
@@ -1492,30 +1492,42 @@ class TestTracerImageAndSource(object):
             assert (tracer.yticks_of_planes[1] == tracer.source_plane.yticks_from_image_grid).all()
 
 
-    class TestReconstructorFromGalaxy:
+    class TestPixeizationAndReconstructors:
 
-        def test__image_galaxy_has_pixelization__still_returns_none(self, imaging_grids):
+        def test__no_galaxy_has_pixelization__returns_empty_list(self, imaging_grids):
 
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = g.Galaxy()
 
-            tracing = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_pix], source_galaxies=[galaxy_no_pix],
-                                                          image_plane_grids=imaging_grids)
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_no_pix],
+                                                          image_plane_grids=imaging_grids, borders=MockBorders())
 
-            reconstructors = tracing.reconstructors_from_source_plane(MockBorders())
-
-            assert reconstructors is None
+            assert tracer.pixelizations == []
+            assert tracer.reconstructors == []
 
         def test__source_galaxy_has_pixelization__returns_reconstructor(self, imaging_grids):
+
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1))
             galaxy_no_pix = g.Galaxy()
 
-            tracing = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
-                                                          image_plane_grids=imaging_grids)
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
+                                                          image_plane_grids=imaging_grids, borders=MockBorders())
 
-            reconstructors = tracing.reconstructors_from_source_plane(MockBorders())
+            assert tracer.pixelizations[0] == galaxy_pix.pixelization
+            assert tracer.reconstructors[0] == 1
 
-            assert reconstructors == 1
+        def test__both_galaxies_have_pixelization__returns_reconstructors(self, imaging_grids):
+
+            galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1))
+            galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2))
+            galaxy_no_pix = g.Galaxy()
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_pix_0], source_galaxies=[galaxy_pix_1],
+                                                          image_plane_grids=imaging_grids, borders=MockBorders())
+
+            assert tracer.pixelizations[0] == galaxy_pix_0.pixelization
+            assert tracer.pixelizations[1] == galaxy_pix_1.pixelization
+            assert tracer.reconstructors[0] == 1
+            assert tracer.reconstructors[1] == 2
 
 
 class TestMultiTracer(object):
@@ -2250,46 +2262,46 @@ class TestMultiTracer(object):
     class TestReconstructorFromGalaxy:
 
         def test__3_galaxies__non_have_pixelization__returns_none_x3(self, imaging_grids):
+
             sis = mp.SphericalIsothermal(einstein_radius=1.0)
 
             g0 = g.Galaxy(redshift=0.1, mass_profile=sis)
             g1 = g.Galaxy(redshift=1.0, mass_profile=sis)
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
-            tracing = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
-                                              cosmology=cosmo.Planck15)
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
+                                              borders=MockBorders(), cosmology=cosmo.Planck15)
 
-            reconstructors = tracing.reconstructors_from_planes(MockBorders())
-
-            assert reconstructors == [None, None, None]
+            assert tracer.pixelizations == []
+            assert tracer.reconstructors == []
 
         def test__3_galaxies__1_has_pixelization__returns_none_x2_and_pixelization(self, imaging_grids):
+
             sis = mp.SphericalIsothermal(einstein_radius=1.0)
 
             g0 = g.Galaxy(redshift=0.1, mass_profile=sis)
             g1 = g.Galaxy(redshift=1.0, pixelization=MockPixelization(value=1), mass_profile=sis)
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
-            tracing = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
-                                              cosmology=cosmo.Planck15)
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
+                                              borders=MockBorders(), cosmology=cosmo.Planck15)
 
-            reconstructors = tracing.reconstructors_from_planes(MockBorders())
-
-            assert reconstructors == [None, 1, None]
+            assert tracer.pixelizations[0] == g1.pixelization
+            assert tracer.reconstructors[0] == 1
 
         def test__3_galaxies__all_have_pixelization__returns_pixelizations(self, imaging_grids):
+
             sis = mp.SphericalIsothermal(einstein_radius=1.0)
 
             g0 = g.Galaxy(redshift=0.1, pixelization=MockPixelization(value=0.5), mass_profile=sis)
             g1 = g.Galaxy(redshift=1.0, pixelization=MockPixelization(value=1), mass_profile=sis)
             g2 = g.Galaxy(redshift=2.0, pixelization=MockPixelization(value=2), mass_profile=sis)
 
-            tracing = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
-                                              cosmology=cosmo.Planck15)
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
+                                              borders=MockBorders(), cosmology=cosmo.Planck15)
 
-            reconstructors = tracing.reconstructors_from_planes(MockBorders())
-
-            assert reconstructors == [0.5, 1, 2]
+            assert tracer.pixelizations == [g0.pixelization, g1.pixelization, g2.pixelization]
+            assert tracer.reconstructors == [0.5, 1, 2]
 
 
 class TestBooleanProperties(object):
