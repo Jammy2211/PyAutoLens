@@ -424,7 +424,7 @@ class ModelMapper(AbstractModel):
                 class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda p: p[1].id)
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_name + '_' + param_name
-                model_info.append(line + ' ' * (40 - len(line)) + (prior[1].model_info))
+                model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
 
         return '\n'.join(model_info)
 
