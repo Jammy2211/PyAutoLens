@@ -114,11 +114,10 @@ class NonLinearOptimizer(object):
 
         paramnames_names = []
 
-        for prior_name, prior_model in self.variable.prior_models:
-            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name],
-                                               key=lambda prior: prior[1].id)
-            for param in class_priors_dict_ordered:
-                paramnames_names.append(prior_name + '_' + param[0])
+        prior_prior_model_name_dict = self.variable.prior_prior_model_name_dict
+
+        for prior_name, prior in self.variable.priors_ordered_by_id:
+            paramnames_names.append(prior_prior_model_name_dict[prior] + '_' + prior_name)
 
         return paramnames_names
 
@@ -126,10 +125,10 @@ class NonLinearOptimizer(object):
     def constant_names(self):
         constant_names = []
 
-        for prior_name, prior_model in self.variable.prior_models:
-            class_priors_dict_ordered = self.variable.class_constants_dict[prior_name]
-            for param in class_priors_dict_ordered:
-                constant_names.append(prior_name + '_' + param[0])
+        constant_prior_model_name_dict = self.variable.constant_prior_model_name_dict
+
+        for constant_name, constant in self.variable.constants:
+            constant_names.append(constant_prior_model_name_dict[constant] + '_' + constant_name)
 
         return constant_names
 
