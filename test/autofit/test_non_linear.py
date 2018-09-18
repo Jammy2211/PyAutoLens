@@ -122,7 +122,7 @@ def test_mm_config():
 @pytest.fixture(name='label_config')
 def test_labels_config():
     path = "{}/../config/label.ini".format(os.path.dirname(os.path.realpath(__file__)))
-    return conf.NamedConfig(path)
+    return conf.LabelConfig(path)
 
 
 def create_path(func):
@@ -1312,10 +1312,10 @@ class TestLabels(object):
         assert len(label_optimizer.paramnames_names) == 4
 
     def test_label_config(self, label_optimizer):
-        assert label_optimizer.label_config.get("label", "one") == "x4p0"
-        assert label_optimizer.label_config.get("label", "two") == "x4p1"
-        assert label_optimizer.label_config.get("label", "three") == "x4p2"
-        assert label_optimizer.label_config.get("label", "four") == "x4p3"
+        assert label_optimizer.label_config.label("one") == "x4p0"
+        assert label_optimizer.label_config.label("two") == "x4p1"
+        assert label_optimizer.label_config.label("three") == "x4p2"
+        assert label_optimizer.label_config.label("four") == "x4p3"
 
     def test_labels(self, label_optimizer):
         label_optimizer.variable.prior_model = MockClassNLOx4
