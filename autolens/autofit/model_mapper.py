@@ -421,7 +421,7 @@ class ModelMapper(AbstractModel):
             model_info.append('\n')
 
             for i, prior in enumerate(prior_model.priors):
-                class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda prior: prior[1].id)
+                class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda p: p[1].id)
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + (prior[1].model_info + '\n'))
@@ -664,7 +664,7 @@ class PriorModel(AbstractPriorModel):
     def flat_prior_models(self):
         return [("", self)]
 
-    def __init__(self, cls, config=None, width_config=None):
+    def __init__(self, cls, config=None):
         """
         Parameters
         ----------
