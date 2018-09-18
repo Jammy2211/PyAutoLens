@@ -37,7 +37,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.01, 0.01), axi
 # Using the lens galaxy's mass profile(s), this tracer automatically computes the deflection angles of light on the
 # imaging grids and traces their coordinates to the source-plane
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_grids=imaging_grids)
+                                             image_plane_grids=imaging_grids)
 
 # In example/howtolens/ray_tracing, we'll discuss the in-built properties a tracer has describing the lens system.
 
