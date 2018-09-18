@@ -128,9 +128,14 @@ class TestGenerateModelInfo(object):
         mm = model_mapper.ModelMapper(test_config)
         mm.mock_class = MockClassMM
 
-        print(mm.model_info)
+        model_info = mm.model_info
 
-        assert False
+        assert model_info == """VARIABLE:
+
+MockClassMM
+
+mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mock_class_two                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0"""
 
 
 class TestRegression(object):
