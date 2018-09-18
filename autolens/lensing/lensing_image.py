@@ -50,17 +50,17 @@ class LensingImage(im.Image):
         if mapping_matrix_psf_shape is None:
             mapping_matrix_psf_shape = self.image.psf.shape
 
+        print(image_psf_shape)
         self.blurring_mask = mask.blurring_mask_for_psf_shape(image_psf_shape)
         self.convolver_image = convolution.ConvolverImage(self.mask,
                                                           self.blurring_mask, self.image.psf.trim(image_psf_shape))
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
                                                                     self.image.psf.trim(mapping_matrix_psf_shape))
         self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(mask=mask,
-                                                                                       sub_grid_size=sub_grid_size,
-                                                                                       psf_shape=image_psf_shape)
+                                                sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.padded_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                     sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.unmasked_grids = msk.ImagingGrids.unmasked_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                       sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.borders = msk.ImagingGridBorders.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         self.positions = positions
