@@ -19,8 +19,6 @@ pytestmark = pytest.mark.filterwarnings(
 def test_nlo_setup():
     nlo_setup_path = "{}/../test_files/non_linear/nlo/setup/".format(os.path.dirname(os.path.realpath(__file__)))
 
-    print(nlo_setup_path)
-
     if os.path.exists(nlo_setup_path):
         shutil.rmtree(nlo_setup_path)
 
@@ -327,12 +325,12 @@ class TestGenerateLatex(object):
         assert non_linear.generate_parameter_latex(['x', 'y', 'z']) == ['$x$', '$y$', '$z$']
 
     def test__one_parameter__subscript__no_number(self):
-        assert non_linear.generate_parameter_latex(['x'], subscript='d') == [r'$x_{\mathrm{d}}$']
+        assert non_linear.generate_parameter_latex(['x'], subscript='d') == [r'x_{\mathrm{d}}']
 
     def test__three_parameters__subscript__no_number(self):
-        assert non_linear.generate_parameter_latex(['x', 'y', 'z'], subscript='d') == [r'$x_{\mathrm{d}}$',
-                                                                                       r'$y_{\mathrm{d}}$',
-                                                                                       r'$z_{\mathrm{d}}$']
+        assert non_linear.generate_parameter_latex(['x', 'y', 'z'], subscript='d') == [r'x_{\mathrm{d}}',
+                                                                                       r'y_{\mathrm{d}}',
+                                                                                       r'z_{\mathrm{d}}']
 
 
 class TestNonLinearOptimizer(object):
@@ -1321,5 +1319,5 @@ class TestLabels(object):
     def test_labels(self, label_optimizer):
         label_optimizer.variable.prior_model = MockClassNLOx4
 
-        assert label_optimizer.paramnames_labels == ['$x4p0_{\\mathrm{a1}}$', '$x4p1_{\\mathrm{a1}}$',
-                                                     '$x4p2_{\\mathrm{a1}}$', '$x4p3_{\\mathrm{a1}}$']
+        assert label_optimizer.paramnames_labels == ['x4p0_{\\mathrm{a1}}', 'x4p1_{\\mathrm{a1}}',
+                                                     'x4p2_{\\mathrm{a1}}', 'x4p3_{\\mathrm{a1}}']

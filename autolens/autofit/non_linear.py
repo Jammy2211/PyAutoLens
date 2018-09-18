@@ -40,7 +40,7 @@ def generate_parameter_latex(parameters, subscript=''):
             latex.append('$' + param + '$')
     else:
         for param in parameters:
-            latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
+            latex.append(param + r'_{\mathrm{' + subscript + '}}')
 
     return latex
 
@@ -504,8 +504,6 @@ class MultiNest(NonLinearOptimizer):
     def output_pdf_plots(self):
 
         pdf_plot = getdist.plots.GetDistPlotter()
-
-        print("param_names = {}".format(self.paramnames_names))
 
         for param_name in self.paramnames_names:
             pdf_plot.plot_1d(roots=self.pdf, param=param_name)
