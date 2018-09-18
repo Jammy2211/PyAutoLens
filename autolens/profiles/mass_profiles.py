@@ -1,7 +1,6 @@
 from autolens.profiles import geometry_profiles
 from scipy.integrate import quad
 from scipy import special
-from itertools import count
 import numpy as np
 import numba
 from numba import cfunc
@@ -73,7 +72,6 @@ class MassProfile(object):
 
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
-    _ids = count()
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """
@@ -91,7 +89,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
-        self.component_number = next(self._ids)
 
     def dimensionless_mass_within_circle(self, radius):
         """ Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is \ 
