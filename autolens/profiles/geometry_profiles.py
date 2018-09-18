@@ -53,10 +53,6 @@ class GeometryProfile(object):
         """Abstract GeometryProfile, describing an object with x, y cartesian coordinates"""
         self.centre = centre
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y']
-
     def transform_grid_to_reference_frame(self, grid):
         raise NotImplemented()
 
