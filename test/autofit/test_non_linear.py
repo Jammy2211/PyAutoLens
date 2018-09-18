@@ -1330,14 +1330,14 @@ class TestLabels(object):
 
         assert len(labels) == 8
 
-        assert labels[0] == r"x_{\mathrm{s1}}"
-        assert labels[1] == r"y_{\mathrm{s1}}"
-        assert labels[2] == r"q_{\mathrm{s1}}"
-        assert labels[3] == r"phi_{\mathrm{s1}}"
-        assert labels[4] == r"I_{\mathrm{s1}}"
-        assert labels[5] == r"R_{\mathrm{s1}}"
-        assert labels[6] == r"n_{\mathrm{s1}}"
-        assert labels[7] == r"Psi_{\mathrm{s1}}"
+        assert labels == [r"x_{\mathrm{s1}}",
+                          r"y_{\mathrm{s1}}",
+                          r"q_{\mathrm{s1}}",
+                          r"phi_{\mathrm{s1}}",
+                          r"I_{\mathrm{s1}}",
+                          r"R_{\mathrm{s1}}",
+                          r"n_{\mathrm{s1}}",
+                          r"Psi_{\mathrm{s1}}"]
 
         priors = label_optimizer.variable.priors_ordered_by_id
         names = [key for key, value in priors]
