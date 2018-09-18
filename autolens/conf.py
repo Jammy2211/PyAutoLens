@@ -76,6 +76,9 @@ class LabelConfig(NamedConfig):
     def label(self, name):
         return self.get("label", name)
 
+    def subscript(self, cls):
+        return self.get("subscript", cls.__name__)
+
 
 class AncestorConfig(object):
     """Parses prior config"""
