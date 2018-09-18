@@ -13,7 +13,7 @@ import os
 
 # We called these functions in example/simulate/1_simulate.py - check back there if you need a reminder!
 psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
-imaging_grids = mask.ImagingGrids.padded_grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
+imaging_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 
 # We again use the galaxy, light_profiles and mass_profiles modules to set up our lens and source. However, we've made
 # things a bit more complex than before:
