@@ -1,7 +1,6 @@
 from autolens.profiles import geometry_profiles
 from scipy.integrate import quad
 import numpy as np
-from itertools import count
 
 
 class LightProfile(object):
@@ -39,8 +38,6 @@ class LightProfile(object):
 class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
-    _ids = count()
-
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """  Abstract class for an elliptical light-profile.
 
@@ -54,8 +51,6 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalLP, self).__init__(centre, axis_ratio, phi)
-
-        self.component_number = next(self._ids)
 
     def luminosity_within_circle(self, radius):
         """
