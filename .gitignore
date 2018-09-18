@@ -1,3 +1,4 @@
+test/integration/simulate_and_fit/data/
 *.ipynb
 .projprofile
 *.pyc
