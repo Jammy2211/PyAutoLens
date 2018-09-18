@@ -177,7 +177,7 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis):
-        initial_vector = self.variable.physical_vector_from_prior_medians
+        initial_vector = self.variable.physical_values_from_prior_medians
 
         class Fitness(object):
             def __init__(self, instance_from_physical_vector, constant):
