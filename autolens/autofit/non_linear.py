@@ -129,8 +129,6 @@ class NonLinearOptimizer(object):
         self.create_paramnames_file()
         self.variable.output_model_info(self.file_model_info)
 
-    #  self.variable.check_model_info(self.file_model_info)
-
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
