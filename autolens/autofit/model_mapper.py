@@ -197,6 +197,16 @@ class ModelMapper(AbstractModel):
         """
         return {name: list(prior_model.priors) for name, prior_model in self.prior_models}
 
+    @property
+    def class_constants_dict(self):
+        """
+        Returns
+        -------
+        class_constants_dict: {String: [Constant]}
+            A dictionary mapping_matrix the names of reconstructable class instances to lists of associated constants
+        """
+        return {name: list(prior_model.constants) for name, prior_model in self.prior_models}
+
     def physical_vector_from_hypercube_vector(self, hypercube_vector):
         """
         Parameters
@@ -413,17 +423,18 @@ class ModelMapper(AbstractModel):
 
         This information is extracted from each priors *model_info* property.
         """
+        model_info = []
 
-        model_info = ['VARIABLE:\n']
-
-        for prior_name, prior_model in self.flat_prior_models:
+        for prior_model_name, prior_model in self.flat_prior_models:
 
             model_info.append(prior_model.cls.__name__ + '\n')
 
-            for i, prior in enumerate(prior_model.priors):
-                class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda p: p[1].id)
+            for i, prior in enumerate(prior_model.priors + prior_model.constants):
+                class_priors_dict_ordered = sorted(
+                    self.class_priors_dict[prior_model_name] + self.class_constants_dict[prior_model_name],
+                    key=lambda p: p[1].id if hasattr(p, 'id') else 0)
                 param_name = str(class_priors_dict_ordered[i][0])
-                line = prior_name + '_' + param_name
+                line = prior_model_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
 
         return '\n'.join(model_info)
@@ -493,6 +504,10 @@ class Constant(object):
 
     def __str__(self):
         return "Constant {}".format(self.value)
+
+    @property
+    def model_info(self):
+        return 'Constant, value = {}'.format(self.value)
 
 
 prior_number = 0
