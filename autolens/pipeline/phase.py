@@ -562,20 +562,20 @@ class LensPlanePhase(PhaseImaging):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
-                                                image_grids=self.lensing_image.grids)
+                                                image_plane_grids=self.lensing_image.grids)
 
         def fitter_for_tracer(self, tracer):
             return fitting.ProfileFitter(lensing_image=self.lensing_image, tracer=tracer)
 
         def unmasked_model_image_for_instance(self, instance):
             unmasked_grids = self.lensing_image.unmasked_grids
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_grids=unmasked_grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_plane_grids=unmasked_grids)
             return fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer=tracer,
                                                                               lensing_image=self.lensing_image)
 
         def unmasked_model_images_of_galaxies_for_instance(self, instance):
             unmasked_grids = self.lensing_image.unmasked_grids
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_grids=unmasked_grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_plane_grids=unmasked_grids)
             return fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer=tracer,
                                                                         lensing_image=self.lensing_image)
 
@@ -594,8 +594,8 @@ class LensPlanePhase(PhaseImaging):
             super(PhaseImaging.Result, self).__init__(constant, likelihood, variable, analysis)
             fitter = fitting.ProfileFitter(analysis.lensing_image, self.tracer)
             self.model_image = analysis.unmasked_model_image_for_instance(constant)
-            self.lens_galaxy_model_images = analysis.unmasked_model_image_of_galaxies_for_instance(constant)
-            self.lens_subtracted_image = analysis.lensing_image.image - fitter.model_images_of_planes[0]
+            self.lens_galaxy_model_images = analysis.unmasked_model_images_of_galaxies_for_instance(constant)
+            self.lens_subtracted_image = analysis.lensing_image.image - fitter.model_image
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
@@ -744,7 +744,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
 
             self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
-                                                previous_results.last.lens_galaxies_blurred_image_plane_images))
+                                                previous_results.last.lens_galaxy_model_images))
             self.hyper_galaxy_images = [self.hyper_galaxy_images[hyper_index]]
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
@@ -818,7 +818,7 @@ class LensSourcePlanePhase(PhaseImaging):
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_grids=self.lensing_image.grids)
+                                                       image_plane_grids=self.lensing_image.grids)
 
         def fitter_for_tracer(self, tracer):
             return fitting.ProfileFitter(lensing_image=self.lensing_image, tracer=tracer)
@@ -1076,7 +1076,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_grids=self.lensing_image.grids)
+                                                       image_plane_grids=self.lensing_image.grids)
 
         def fitter_for_tracer(self, tracer):
             return fitting.PixelizationFitter(lensing_image=self.lensing_image, tracer=tracer)
