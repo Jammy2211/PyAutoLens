@@ -1364,3 +1364,32 @@ class TestLabels(object):
             'mass_to_light_ratio',
             'axis_ratio'
         ]
+
+    def test_shared_prior(self, label_optimizer):
+        model_mapper.AbstractPriorModel._ids = itertools.count()
+        label_optimizer.variable.mass_profile_1 = mass_profiles.EllipticalSersic
+        label_optimizer.variable.mass_profile_2 = mass_profiles.EllipticalSersic
+
+        # noinspection PyUnresolvedReferences
+        label_optimizer.variable.mass_profile_1.axis_ratio = label_optimizer.variable.mass_profile_2.axis_ratio
+
+        assert len(label_optimizer.variable.priors_ordered_by_id) == 15
+        assert len(label_optimizer.paramnames_labels) == 15
+
+        labels = label_optimizer.paramnames_labels
+
+        assert labels == [r"x_{\mathrm{s1}}",
+                          r"y_{\mathrm{s1}}",
+                          r"phi_{\mathrm{s1}}",
+                          r"I_{\mathrm{s1}}",
+                          r"R_{\mathrm{s1}}",
+                          r"n_{\mathrm{s1}}",
+                          r"Psi_{\mathrm{s1}}",
+                          r"x_{\mathrm{s2}}",
+                          r"y_{\mathrm{s2}}",
+                          r"q_{\mathrm{s2}}",
+                          r"phi_{\mathrm{s2}}",
+                          r"I_{\mathrm{s2}}",
+                          r"R_{\mathrm{s2}}",
+                          r"n_{\mathrm{s2}}",
+                          r"Psi_{\mathrm{s2}}"]
