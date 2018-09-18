@@ -1321,3 +1321,10 @@ class TestLabels(object):
 
         assert label_optimizer.paramnames_labels == ['x4p0_{\\mathrm{a1}}', 'x4p1_{\\mathrm{a1}}',
                                                      'x4p2_{\\mathrm{a1}}', 'x4p3_{\\mathrm{a1}}']
+
+    def test_real_class(self, label_optimizer):
+        label_optimizer.variable.mass_profile = mass_profiles.EllipticalSersic
+
+        # centre = (0.0, 0.0), axis_ratio = 1.0, phi = 0.0, intensity = 0.1, effective_radius = 0.6,
+        # sersic_index = 4.0, mass_to_light_ratio = 1.0
+        assert len(label_optimizer.paramnames_labels) == 8
