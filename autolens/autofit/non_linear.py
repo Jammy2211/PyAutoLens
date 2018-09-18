@@ -161,28 +161,14 @@ class NonLinearOptimizer(object):
         paramnames_labels = []
 
         for prior_model_name, prior_model in self.variable.prior_models:
-            param_labels = [self.label_config.get("label", prior_name) for prior_name, _ in prior_model.priors]
+            param_labels = [self.label_config.label(prior_name) for prior_name, _ in prior_model.priors]
             component_number = prior_model.cls().component_number
-            subscript = self.label_config.get("subscript", prior_model.cls.__name__) + str(component_number + 1)
+            subscript = self.label_config.subscript(prior_model.cls) + str(component_number + 1)
             param_labels = generate_parameter_latex(param_labels, subscript)
             class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_model_name],
                                                key=lambda prior: prior[1].id)
             for param_no, param in enumerate(class_priors_dict_ordered):
                 paramnames_labels.append(param_labels[param_no])
-
-        return paramnames_labels
-
-    @property
-    def paramnames_labels_temp(self):
-        """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
-
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are
-        properties of each model class."""
-
-        paramnames_labels = []
-
-        for i in range(self.variable.total_parameters):
-            paramnames_labels.append('p' + str(i))
 
         return paramnames_labels
 
@@ -195,16 +181,16 @@ class NonLinearOptimizer(object):
         with open(self.file_param_names, 'w') as paramnames:
             for i in range(self.variable.total_parameters):
                 line = self.paramnames_names[i]
-                line += ' ' * (50 - len(line)) + self.paramnames_labels_temp[i]
+                line += ' ' * (50 - len(line)) + self.paramnames_labels[i]
                 paramnames.write(line + '\n')
 
 
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
-                 fmin=scipy.optimize.fmin, name=None):
+                 fmin=scipy.optimize.fmin, name=None, label_config=None):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              model_mapper=model_mapper, name=name)
+                                              model_mapper=model_mapper, name=name, label_config=label_config)
 
         self.xtol = self.config("xtol", float)
         self.ftol = self.config("ftol", float)
@@ -255,7 +241,7 @@ class DownhillSimplex(NonLinearOptimizer):
 class MultiNest(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
-                 sigma_limit=3, run=pymultinest.run, name=None):
+                 sigma_limit=3, run=pymultinest.run, name=None, label_config=None):
         """Class to setup and run a MultiNest lensing and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -267,7 +253,8 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear nlo are stored.
         """
 
-        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name)
+        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name,
+                                        label_config=label_config)
 
         self.file_summary = "{}/{}".format(self.path, 'mnsummary.txt')
         self.file_weighted_samples = "{}/{}".format(self.path, 'mn.txt')

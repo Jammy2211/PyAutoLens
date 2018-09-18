@@ -1221,7 +1221,7 @@ def make_downhill_simplex(test_config, width_config):
 
 
 @pytest.fixture(name="multi_nest")
-def make_multi_nest(test_config, width_config):
+def make_multi_nest(test_config, width_config, label_config):
     mn_fit_path = "{}/test_fit/".format(os.path.dirname(os.path.realpath(__file__)))
 
     conf.instance.output_path = mn_fit_path
@@ -1239,7 +1239,8 @@ def make_multi_nest(test_config, width_config):
 
     create_summary_4_parameters(mn_fit_path)
     return non_linear.MultiNest(run=run,
-                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config))
+                                model_mapper=model_mapper.ModelMapper(config=test_config, width_config=width_config),
+                                label_config=label_config)
 
 
 class TestFitting(object):
