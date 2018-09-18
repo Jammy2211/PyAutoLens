@@ -130,9 +130,7 @@ class TestGenerateModelInfo(object):
 
         model_info = mm.model_info
 
-        assert model_info == """VARIABLE:
-
-MockClassMM
+        assert model_info == """MockClassMM
 
 mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
 mock_class_two                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0"""
@@ -145,11 +143,10 @@ mock_class_two                          UniformPrior, lower_limit = 0.0, upper_l
 
         model_info = mm.model_info
 
-        assert model_info == """VARIABLE:
+        assert model_info == """MockClassMM
 
-MockClassMM
-
-mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0"""
+mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mock_class_two                          Constant, value = 1"""
 
 
 class TestRegression(object):
