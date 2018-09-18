@@ -605,7 +605,7 @@ class TestModelInstancesRealClasses(object):
         mapper = model_mapper.ModelMapper()
         mapper.mock_class = model_mapper.PriorModel(MockClassMM, test_config)
 
-        assert mapper.physical_vector_from_prior_medians == [0.5, 0.5]
+        assert mapper.physical_values_from_prior_medians == [0.5, 0.5]
 
 
 class TestUtility(object):
