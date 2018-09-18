@@ -1,6 +1,7 @@
 import os
 import shutil
 from functools import wraps
+import itertools
 
 import pytest
 from autolens import conf
@@ -1323,6 +1324,7 @@ class TestLabels(object):
                                                      r'x4p2_{\mathrm{a1}}', r'x4p3_{\mathrm{a1}}']
 
     def test_real_class(self, label_optimizer):
+        mass_profiles.EllipticalMassProfile._ids = itertools.count()
         label_optimizer.variable.mass_profile = mass_profiles.EllipticalSersic
         labels = label_optimizer.paramnames_labels
 
