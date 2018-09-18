@@ -156,11 +156,25 @@ class ModelMapper(AbstractModel):
 
     @property
     def prior_class_dict(self):
+        """
+        Returns
+        -------
+        prior_class_dict: {Prior: class}
+            A dictionary mapping Priors to associated classes. Each prior will only have one class; if a prior is shared
+            by two classes then only one of those classes will be in this dictionary.
+        """
         return {prior: cls for prior_model in self.prior_models for prior, cls in
                 prior_model[1].prior_class_dict.items()}
 
     @property
     def prior_prior_model_dict(self):
+        """
+        Returns
+        -------
+        prior_prior_model_dict: {Prior: PriorModel}
+            A dictionary mapping priors to associated prior models. Each prior will only have one prior model; if a
+            prior is shared by two prior models then one of those prior models will be in this dictionary.
+        """
         return {prior: prior_model[1] for prior_model in self.prior_models for _, prior in prior_model[1].priors}
 
     @property
@@ -198,6 +212,18 @@ class ModelMapper(AbstractModel):
         return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
 
     def physical_values_ordered_by_class(self, hypercube_vector):
+        """
+        Parameters
+        ----------
+        hypercube_vector: [float]
+            A unit vector
+
+        Returns
+        -------
+        physical_values: [float]
+            A list of physical values constructed by passing the values in the hypercube vector through associated
+            priors.
+        """
         model_instance = self.instance_from_unit_vector(hypercube_vector)
         result = []
         for instance_key in sorted(model_instance.__dict__.keys()):
@@ -213,7 +239,13 @@ class ModelMapper(AbstractModel):
         return result
 
     @property
-    def physical_vector_from_prior_medians(self):
+    def physical_values_from_prior_medians(self):
+        """
+        Returns
+        -------
+        physical_values: [float]
+            A list of physical values constructed by taking the mean possible value from each prior.
+        """
         return self.physical_vector_from_hypercube_vector([0.5] * len(self.prior_set))
 
     def instance_from_prior_medians(self):
@@ -389,7 +421,7 @@ class ModelMapper(AbstractModel):
             model_info.append('\n')
 
             for i, prior in enumerate(prior_model.priors):
-                class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda prior: prior[1].id)
+                class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda p: p[1].id)
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + (prior[1].model_info + '\n'))
@@ -473,10 +505,10 @@ prior_number = 0
 class Prior(object):
     """An object used to map a unit value to an attribute value for a specific class attribute"""
 
+    _ids = itertools.count()
+
     def __init__(self):
-        global prior_number
-        self.id = prior_number
-        prior_number += 1
+        self.id = next(self._ids)
 
     def __eq__(self, other):
         return self.id == other.id
@@ -632,7 +664,7 @@ class PriorModel(AbstractPriorModel):
     def flat_prior_models(self):
         return [("", self)]
 
-    def __init__(self, cls, config=None, width_config=None):
+    def __init__(self, cls, config=None):
         """
         Parameters
         ----------
