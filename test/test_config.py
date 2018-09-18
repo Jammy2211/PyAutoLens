@@ -12,14 +12,14 @@ class TestCase(object):
 
 @pytest.fixture(name="label_config")
 def make_label_config():
-    return conf.NamedConfig("{}/config/label.ini".format(directory))
+    return conf.LabelConfig("{}/config/label.ini".format(directory))
 
 
 class TestLabel(object):
     def test_basic(self, label_config):
-        assert label_config.get("label", "centre_0") == "x"
-        assert label_config.get("label", "redshift") == "z"
+        assert label_config.label("centre_0") == "x"
+        assert label_config.label("redshift") == "z"
 
     def test_escaped(self, label_config):
-        assert label_config.get("label", "gamma") == r"\gamma"
-        assert label_config.get("label", "contribution_factor") == r"\omega0"
+        assert label_config.label("gamma") == r"\gamma"
+        assert label_config.label("contribution_factor") == r"\omega0"
