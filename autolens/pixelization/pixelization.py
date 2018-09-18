@@ -10,50 +10,6 @@ import numba
 from autolens.imaging import mask
 
 
-class PixelizationGrid(object):
-
-    def __init__(self, shape=(3, 3)):
-        self.shape = shape
-
-    def coordinate_grid_within_annulus(self, inner_radius, outer_radius, centre=(0., 0.)):
-
-        x_pixel_scale = 2.0 * outer_radius / self.shape[0]
-        y_pixel_scale = 2.0 * outer_radius / self.shape[1]
-
-        central_pixel = float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
-
-        pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-
-                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[0]
-                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[1]
-                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-                    pixel_count += 1
-
-        coordinates_array = np.zeros((pixel_count, 2))
-
-        pixel_count = 0
-
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
-
-                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[0]
-                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[1]
-                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-                    coordinates_array[pixel_count, 0] = x_arcsec
-                    coordinates_array[pixel_count, 1] = y_arcsec
-
-                    pixel_count += 1
-
-        return coordinates_array
-
-
 class Pixelization(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
@@ -615,8 +571,8 @@ class Cluster(Voronoi):
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
         sub_to_pixelization = self.sub_to_pixelization_from_pixelization(relocated_grids, pixel_centers,
-                                                                         pixel_neighbors,
-                                                                         cluster_to_pixelization, cluster_mask)
+                                                                         pixel_neighbors, cluster_to_pixelization,
+                                                                         cluster_mask)
 
         mapping_matrix = self.mapping_matrix_from_sub_to_pixelization(sub_to_pixelization, relocated_grids)
         regularization_matrix = self.regularization_matrix_from_pixel_neighbors(pixel_neighbors)
@@ -773,3 +729,47 @@ class AmorphousRegWeighted(Amorphous, regularization.RegularizationWeighted):
         """
         super(AmorphousRegWeighted, self).__init__(pixels, regularization_coefficients)
         self.signal_scale = signal_scale
+
+
+class PixelizationGrid(object):
+
+    def __init__(self, shape=(3, 3)):
+        self.shape = shape
+
+    def coordinate_grid_within_annulus(self, inner_radius, outer_radius, centre=(0., 0.)):
+
+        x_pixel_scale = 2.0 * outer_radius / self.shape[0]
+        y_pixel_scale = 2.0 * outer_radius / self.shape[1]
+
+        central_pixel = float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
+
+        pixel_count = 0
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+
+                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[0]
+                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[1]
+                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
+                    pixel_count += 1
+
+        coordinates_array = np.zeros((pixel_count, 2))
+
+        pixel_count = 0
+
+        for x in range(self.shape[0]):
+            for y in range(self.shape[1]):
+
+                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[0]
+                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[1]
+                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
+                    coordinates_array[pixel_count, 0] = x_arcsec
+                    coordinates_array[pixel_count, 1] = y_arcsec
+
+                    pixel_count += 1
+
+        return coordinates_array

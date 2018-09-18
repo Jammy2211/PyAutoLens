@@ -17,7 +17,6 @@ class Reconstructor(object):
             data_vector.
         """
         self.mapping_matrix = mapping_matrix
-        self.mapping_shape = mapping_matrix.shape
         self.regularization_matrix = regularization_matrix
 
     def reconstruction_from_reconstructor_and_data(self, image, noise, convolver):

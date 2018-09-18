@@ -25,7 +25,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
     source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_grids=imaging_grids)
+                                                 image_plane_grids=imaging_grids)
 
     image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
@@ -55,7 +55,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_grids=lensing_image.grids)
+                                                 image_plane_grids=lensing_image.grids)
 
     fitter = fitting.ProfileFitter(lensing_image=lensing_image, tracer=tracer)
 
@@ -71,7 +71,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
     source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.1, 0.1), intensity=0.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_grids=imaging_grids)
+                                                 image_plane_grids=imaging_grids)
 
     image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
@@ -101,7 +101,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_grids=lensing_image.grids)
+                                                 image_plane_grids=lensing_image.grids)
 
     fitter = fitting.ProfileFitter(lensing_image=lensing_image, tracer=tracer)
 
