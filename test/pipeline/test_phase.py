@@ -213,12 +213,12 @@ class TestPhase(object):
 
     def test_unmasked_model_image_for_instance(self, image):
         lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
-        image_padded_grid = msk.ImagePaddedGrid.from_shapes_and_pixel_scale(shape=image.shape,
-                                                                            psf_shape=image.psf.shape,
-                                                                            pixel_scale=image.pixel_scale)
+        image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=image.shape,
+                                                                                            psf_shape=image.psf.shape,
+                                                                                            pixel_scale=image.pixel_scale)
         image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
-        blurred_image_1d = image_padded_grid.convolve_padded_array_1d_with_psf(image_1d, image.psf)
-        blurred_image = image_padded_grid.map_to_2d_and_trim(blurred_image_1d)
+        blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, image.psf)
+        blurred_image = image_padded_grid.map_to_2d(blurred_image_1d)
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
         analysis = phase.make_analysis(image)
