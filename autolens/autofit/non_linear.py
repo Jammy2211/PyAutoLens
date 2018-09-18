@@ -292,10 +292,10 @@ class MultiNest(NonLinearOptimizer):
     def fit(self, analysis):
 
         if len(self.path) > 77:
-            raise exc.MultiNestException('The path to the MultiNest results is longer than 77 characters (='
-                                         + str(len(self.path)) + ')' +
-                                         ' Unfortunately, PyMultiNest cannot use a path longer than this. '
-                                         'Set your results path to something with fewer characters to fix.')
+            raise exc.MultiNestException(
+                'The path to the MultiNest results is longer than 77 characters (={}). Unfortunately, PyMultiNest '
+                'cannot use a path longer than this. Set your results path to something with fewer characters to '
+                'fix.'.format(len(self.path)))
 
         self.save_model_info()
 
@@ -505,9 +505,11 @@ class MultiNest(NonLinearOptimizer):
 
         pdf_plot = getdist.plots.GetDistPlotter()
 
-        for i in range(self.variable.total_parameters):
-            pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
-            pdf_plot.export(fname=self.path + '/pdfs/' + self.paramnames_names[i] + '_1D.png')
+        print("param_names = {}".format(self.paramnames_names))
+
+        for param_name in self.paramnames_names:
+            pdf_plot.plot_1d(roots=self.pdf, param=param_name)
+            pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
 
         try:
             pdf_plot.triangle_plot(roots=self.pdf)
