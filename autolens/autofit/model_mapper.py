@@ -406,45 +406,41 @@ class ModelMapper(AbstractModel):
 
         return model_instance
 
-    def generate_model_info(self):
+    @property
+    def model_info(self):
         """
         Use the priors that make up the model_mapper to generate information on each parameter of the overall model.
 
         This information is extracted from each priors *model_info* property.
         """
 
-        model_info = ['VARIABLE:' + '\n', '']
+        model_info = ['VARIABLE:\n']
 
         for prior_name, prior_model in self.flat_prior_models:
 
             model_info.append(prior_model.cls.__name__ + '\n')
-            model_info.append('\n')
 
             for i, prior in enumerate(prior_model.priors):
                 class_priors_dict_ordered = sorted(self.class_priors_dict[prior_name], key=lambda p: p[1].id)
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_name + '_' + param_name
-                model_info.append(line + ' ' * (40 - len(line)) + (prior[1].model_info + '\n'))
+                model_info.append(line + ' ' * (40 - len(line)) + (prior[1].model_info))
 
-            model_info.append('\n')
-
-        return model_info
+        return '\n'.join(model_info)
 
     def output_model_info(self, filename):
         """Output a model information file, which lists the information of the model mapper (e.g. parameters, priors, \
          etc.) """
-        model_info = self.generate_model_info()
         if not os.path.isfile(filename):
             with open(filename, 'w') as file:
-                for line in model_info:
-                    file.write(line)
+                file.write(self.model_info)
             file.close()
 
     def check_model_info(self, filename):
         """Check whether the priors in this instance of the model_mapper are identical to those output into a model \
         info file on the hard-disk (e.g. from a previous non-linear search)."""
 
-        model_info = self.generate_model_info()
+        model_info = self.model_info
 
         model_info_check = open(filename, 'r')
 

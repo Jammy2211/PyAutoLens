@@ -123,6 +123,16 @@ class MockProfile(object):
         self.intensity = intensity
 
 
+class TestGenerateModelInfo(object):
+    def test_basic(self, test_config):
+        mm = model_mapper.ModelMapper(test_config)
+        mm.mock_class = MockClassMM
+
+        print(mm.model_info)
+
+        assert False
+
+
 class TestRegression(object):
     def test_set_tuple_constant(self):
         mm = model_mapper.ModelMapper()
