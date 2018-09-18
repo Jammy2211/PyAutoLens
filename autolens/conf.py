@@ -12,6 +12,13 @@ CONFIG_PATH = '{}/config'.format(CONFIG_DIR)
 CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'
 
 
+def family(current_class):
+    yield current_class
+    for next_class in current_class.__bases__:
+        for val in family(next_class):
+            yield val
+
+
 class NamedConfig(object):
     """Parses generic config"""
 
@@ -65,6 +72,23 @@ class NamedConfig(object):
         return self.parser.has_option(section_name, attribute_name)
 
 
+class LabelConfig(NamedConfig):
+    def label(self, name):
+        return self.get("label", name)
+
+    def subscript(self, cls):
+        for family_cls in family(cls):
+            if self.has("subscript", family_cls.__name__):
+                return self.get("subscript", family_cls.__name__)
+
+        ini_filename = cls.__module__.split(".")[-1]
+        raise exc.PriorException(
+            "The prior config at {}/{} does not a subscript for {} or any of its parents".format(self.path,
+                                                                                                 ini_filename,
+                                                                                                 cls.__name__
+                                                                                                 ))
+
+
 class AncestorConfig(object):
     """Parses prior config"""
 
@@ -104,13 +128,6 @@ class AncestorConfig(object):
         prior_array: []
             An array describing this prior
         """
-
-        def family(current_class):
-            yield current_class
-            for next_class in current_class.__bases__:
-                for val in family(next_class):
-                    yield val
-
         for family_cls in family(cls):
             if self.has(family_cls.__module__, family_cls.__name__, attribute_name):
                 return self.get(family_cls.__module__, family_cls.__name__, attribute_name)
@@ -233,7 +250,7 @@ class Config(object):
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
-        self.label = NamedConfig("{}/label.ini".format(config_path))
+        self.label = LabelConfig("{}/label.ini".format(config_path))
         self.general = NamedConfig("{}/general.ini".format(config_path))
         self.output_path = output_path
 
