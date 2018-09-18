@@ -1,4 +1,5 @@
 from autolens import conf
+from autolens.profiles import light_profiles
 from os import path
 import pytest
 
@@ -23,3 +24,9 @@ class TestLabel(object):
     def test_escaped(self, label_config):
         assert label_config.label("gamma") == r"\gamma"
         assert label_config.label("contribution_factor") == r"\omega0"
+
+    def test_subscript(self, label_config):
+        assert label_config.subscript(light_profiles.EllipticalLP) == "l"
+
+    def test_inheritance(self, label_config):
+        assert label_config.subscript(light_profiles.EllipticalGaussian) == "l"
