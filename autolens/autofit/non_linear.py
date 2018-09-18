@@ -490,46 +490,44 @@ class MultiNest(NonLinearOptimizer):
 
     def output_results(self):
 
-        results = open(self.file_results, 'w')
+        with open(self.file_results, 'w') as results:
 
-        max_likelihood = self.max_likelihood_from_summary()
+            max_likelihood = self.max_likelihood_from_summary()
 
-        results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
-        results.write('\n')
+            results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
+            results.write('\n')
 
-        most_likely = self.most_likely_from_summary()
+            most_likely = self.most_likely_from_summary()
 
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (50 - len(line)) + str(most_likely[i])
-            results.write(line + '\n')
+            for i in range(self.variable.total_parameters):
+                line = self.paramnames_names[i]
+                line += ' ' * (50 - len(line)) + str(most_likely[i])
+                results.write(line + '\n')
 
-        most_probable = self.most_probable_from_summary()
+            most_probable = self.most_probable_from_summary()
 
-        lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
-        upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
+            lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
+            upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
 
-        results.write('\n')
-        results.write('Most probable model (3 sigma limits)' + '\n')
-        results.write('\n')
+            results.write('\n')
+            results.write('Most probable model (3 sigma limits)' + '\n')
+            results.write('\n')
 
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
-                upper_limit[i]) + ')'
-            results.write(line + '\n')
+            for i in range(self.variable.total_parameters):
+                line = self.paramnames_names[i]
+                line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
+                    upper_limit[i]) + ')'
+                results.write(line + '\n')
 
-        lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
-        upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
+            lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
+            upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
 
-        results.write('\n')
-        results.write('Most probable model (1 sigma limits)' + '\n')
-        results.write('\n')
+            results.write('\n')
+            results.write('Most probable model (1 sigma limits)' + '\n')
+            results.write('\n')
 
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
-                upper_limit[i]) + ')'
-            results.write(line + '\n')
-
-        results.close()
+            for i in range(self.variable.total_parameters):
+                line = self.paramnames_names[i]
+                line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
+                    upper_limit[i]) + ')'
+                results.write(line + '\n')
