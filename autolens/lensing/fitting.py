@@ -121,7 +121,7 @@ class AbstractPixelizationFitter(object):
     def __init__(self, lensing_image, noise):
 
         self.map_to_2d = lensing_image.grids.image.map_to_2d
-        reconstructors = self.tracer.reconstructors_from_source_plane(lensing_image.borders)
+        reconstructors = self.tracer.reconstructors(lensing_image.borders)
         self._reconstruction = reconstructors.reconstruction_from_reconstructor_and_data(lensing_image, noise,
                                                                                 lensing_image.convolver_mapping_matrix)
         self._model_image = self._reconstruction.reconstructed_image
