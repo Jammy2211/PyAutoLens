@@ -314,23 +314,6 @@ class MockClassNLOx6(object):
         self.four = four
 
 
-class TestGenerateLatex(object):
-
-    def test__one_parameter__no_subscript(self):
-        assert non_linear.generate_parameter_latex('x') == ['$x$']
-
-    def test__three_parameters__no_subscript(self):
-        assert non_linear.generate_parameter_latex(['x', 'y', 'z']) == ['$x$', '$y$', '$z$']
-
-    def test__one_parameter__subscript__no_number(self):
-        assert non_linear.generate_parameter_latex(['x'], subscript='d') == [r'x_{\mathrm{d}}']
-
-    def test__three_parameters__subscript__no_number(self):
-        assert non_linear.generate_parameter_latex(['x', 'y', 'z'], subscript='d') == [r'x_{\mathrm{d}}',
-                                                                                       r'y_{\mathrm{d}}',
-                                                                                       r'z_{\mathrm{d}}']
-
-
 class TestNonLinearOptimizer(object):
     class TestDirectorySetup:
 

@@ -18,33 +18,6 @@ logger = logging.getLogger(__name__)
 SIMPLEX_TUPLE_WIDTH = 0.1
 
 
-def generate_parameter_latex(parameters, subscript=''):
-    """Generate a latex label for a non-linear search parameter.
-
-    This is used for the param names file and outputting the nlo of a run to a latex table.
-
-    Parameters
-    ----------
-    parameters : [str]
-        The parameter names to be converted to latex.
-    subscript : str
-        The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
-        number of the component of the model_mapper.
-
-    """
-
-    latex = []
-
-    if subscript == '':
-        for param in parameters:
-            latex.append('$' + param + '$')
-    else:
-        for param in parameters:
-            latex.append(param + r'_{\mathrm{' + subscript + '}}')
-
-    return latex
-
-
 class Result(object):
 
     def __init__(self, constant, likelihood, variable=None):
@@ -157,16 +130,16 @@ class NonLinearOptimizer(object):
         properties of each model class."""
 
         paramnames_labels = []
+        prior_class_dict = self.variable.prior_class_dict
+        prior_prior_model_dict = self.variable.prior_prior_model_dict
 
-        for prior_model_name, prior_model in self.variable.prior_models:
-            param_labels = [self.label_config.label(prior_name) for prior_name, _ in prior_model.priors]
-            component_number = prior_model.component_number
-            subscript = self.label_config.subscript(prior_model.cls) + str(component_number + 1)
-            param_labels = generate_parameter_latex(param_labels, subscript)
-            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_model_name],
-                                               key=lambda prior: prior[1].id)
-            for param_no, param in enumerate(class_priors_dict_ordered):
-                paramnames_labels.append(param_labels[param_no])
+        for prior_name, prior in self.variable.priors_ordered_by_id:
+            param_string = self.label_config.label(prior_name)
+            prior_model = prior_prior_model_dict[prior]
+            cls = prior_class_dict[prior]
+            cls_string = "{}{}".format(self.label_config.subscript(cls), prior_model.component_number + 1)
+            param_label = "{}_{{\\mathrm{{{}}}}}".format(param_string, cls_string)
+            paramnames_labels.append(param_label)
 
         return paramnames_labels
 
