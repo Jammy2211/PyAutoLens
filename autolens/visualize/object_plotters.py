@@ -200,7 +200,7 @@ def plot_residuals_from_fitter(fitter, units, xyticksize=40,
         output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_chi_squareds_from_fitter(fitter, units, xyticksize=40,
-                                  norm='log', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
+                                  norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                   title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
                                   output_path=None, output_filename='chi_squareds', output_format='show'):
@@ -308,12 +308,12 @@ def plot_scaled_noise_map_from_fitter(fitter, units, xyticksize=40,
         in the python interpreter window.
     """
     array_plotters.plot_scaled_noise_map_array(
-        array=fitter.scaled_noise, units=units,
+        array=fitter.noise, units=units,
         xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-        output_path=output_path, output_filename=output_filename, output_type=output_format)
+        output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_scaled_chi_squareds_from_fitter(fitter, units, xyticksize=40,
                                   norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -366,9 +366,9 @@ def plot_scaled_chi_squareds_from_fitter(fitter, units, xyticksize=40,
         in the python interpreter window.
     """
     array_plotters.plot_scaled_chi_squareds_array(
-        array=fitter.scaled_chi_squareds, units=units,
+        array=fitter.chi_squareds, units=units,
         xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-        output_path=output_path, output_filename=output_filename, output_type=output_format)
+        output_path=output_path, output_filename=output_filename, output_format=output_format)
