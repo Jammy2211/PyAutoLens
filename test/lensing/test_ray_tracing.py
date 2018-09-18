@@ -43,7 +43,8 @@ def make_galaxy_non():
 
 @pytest.fixture(name="sersic")
 def make_sersic():
-    return lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6, sersic_index=4.0)
+    return lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=1.0, phi=0.0, intensity=1.0, effective_radius=0.6,
+                               sersic_index=4.0)
 
 @pytest.fixture(name="sis")
 def make_sis():
@@ -1200,6 +1201,7 @@ class TestTracerImageAndSource(object):
             assert image_plane_image_2d.shape == (3,4)
             assert (image_plane_image_2d == tracer.image_plane_image_for_simulation).all()
 
+
     class TestImagePlaneBlurringImages:
 
         def test__galaxy_non__image_plane_blurring_image__sum_of_image_and_source_plane_images(self, imaging_grids,
@@ -1743,8 +1745,6 @@ class TestMultiTracer(object):
 
         def test__galaxy_light_mass_sis__source_plane_image_includes_deflections(self, imaging_grids):
 
-            sis = mp.SphericalIsothermal(einstein_radius=1.0)
-
             g0 = g.Galaxy(redshift=0.1, light_profile=lp.EllipticalSersic(intensity=0.1))
             g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.2))
             g2 = g.Galaxy(redshift=2.0, light_profile=lp.EllipticalSersic(intensity=0.3))
@@ -2013,7 +2013,6 @@ class TestMultiTracer(object):
                     plane_1._image_plane_blurring_images_of_galaxies[1]).all()
             assert (tracer._image_plane_blurring_images_of_galaxies[4] ==
                     plane_2._image_plane_blurring_images_of_galaxies[0]).all()
-
 
 
     class TestPlaneImages:
