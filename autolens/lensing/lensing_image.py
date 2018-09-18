@@ -50,7 +50,6 @@ class LensingImage(im.Image):
         if mapping_matrix_psf_shape is None:
             mapping_matrix_psf_shape = self.image.psf.shape
 
-        print(image_psf_shape)
         self.blurring_mask = mask.blurring_mask_for_psf_shape(image_psf_shape)
         self.convolver_image = convolution.ConvolverImage(self.mask,
                                                           self.blurring_mask, self.image.psf.trim(image_psf_shape))

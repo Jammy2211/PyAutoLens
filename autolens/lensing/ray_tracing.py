@@ -4,6 +4,7 @@ from astropy import constants
 from functools import wraps
 import math
 import numpy as np
+from astropy import cosmology as cosmo
 
 
 class TracerGeometry(object):
@@ -121,6 +122,14 @@ class AbstractTracer(object):
         return [plane.grids.image for plane in self.all_planes]
 
     @property
+    def pixelizations(self):
+        return list(filter(None, [plane.pixelization for plane in self.all_planes]))
+
+    @property
+    def reconstructors(self):
+        return list(filter(None, [plane.reconstructor for plane in self.all_planes]))
+
+    @property
     def xticks_of_planes(self):
         return [plane.xticks_from_image_grid for plane in self.all_planes]
 
@@ -160,7 +169,7 @@ class TracerImagePlane(AbstractTracer):
     def all_planes(self):
         return [self.image_plane]
 
-    def __init__(self, lens_galaxies, image_plane_grids, cosmology=None):
+    def __init__(self, lens_galaxies, image_plane_grids, borders=None, cosmology=None):
         """Ray-tracer for a lensing system with just one plane, the image-plane. Because there is 1 plane, there are \
         no ray-tracing calculations and the class is used purely for fitting image-plane galaxies with light \
         profiles.
@@ -189,7 +198,7 @@ class TracerImagePlane(AbstractTracer):
         else:
             self.geometry = None
 
-        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
+        self.image_plane = Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True)
 
 
 class TracerImageSourcePlanes(AbstractTracer):
@@ -198,7 +207,7 @@ class TracerImageSourcePlanes(AbstractTracer):
     def all_planes(self):
         return [self.image_plane, self.source_plane]
 
-    def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, cosmology=None):
+    def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, borders=None, cosmology=None):
         """Ray-tracer for a lensing system with two planes, an image-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
@@ -220,7 +229,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 
         self.image_grids = image_plane_grids
 
-        self.image_plane = Plane(lens_galaxies, image_plane_grids, compute_deflections=True)
+        self.image_plane = Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True)
 
         if not source_galaxies:
             raise exc.RayTracingException('No source galaxies have been input into the Tracer (TracerImageSourcePlanes)')
@@ -233,11 +242,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = Plane(source_galaxies, source_plane_grids, compute_deflections=False)
-
-    def reconstructors_from_source_plane(self, borders):
-        """Retrieve the pixelization-reconstructors from this tracer's source-plane."""
-        return self.source_plane.reconstructor_from_plane(borders)
+        self.source_plane = Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False)
 
 
 class AbstractTracerMulti(AbstractTracer):
@@ -289,7 +294,7 @@ class AbstractTracerMulti(AbstractTracer):
 
 class TracerMulti(AbstractTracerMulti):
 
-    def __init__(self, galaxies, image_plane_grids, cosmology):
+    def __init__(self, galaxies, image_plane_grids, borders=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lensing system with any number of planes.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
@@ -347,16 +352,13 @@ class TracerMulti(AbstractTracerMulti):
                     else:
                         new_grid = None
 
-            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid,
+            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
                                      compute_deflections=compute_deflections))
-
-    def reconstructors_from_planes(self, borders):
-        return list(map(lambda plane: plane.reconstructor_from_plane(borders), self.planes))
 
 
 class Plane(object):
 
-    def __init__(self, galaxies, grids, compute_deflections=True):
+    def __init__(self, galaxies, grids, borders=None, compute_deflections=True):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer and a the grid of image-plane \
         or lensed coordinates.
 
@@ -374,6 +376,7 @@ class Plane(object):
         """
         self.galaxies = galaxies
         self.grids = grids
+        self.borders = borders
 
         if compute_deflections:
 
@@ -401,27 +404,36 @@ class Plane(object):
         return intensities_from_grid(plane_grid, [galaxy])
 
     @property
+    def hyper_galaxies(self):
+        return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
+
+    @property
+    def pixelization(self):
+
+        pixelization_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
+
+        if len(pixelization_galaxies) == 0:
+            return None
+        if len(pixelization_galaxies) == 1:
+            return pixelization_galaxies[0].pixelization
+        elif len(pixelization_galaxies) > 1:
+            raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
+
+    @property
+    def reconstructor(self):
+
+        if self.pixelization is not None:
+            return self.pixelization.reconstructor_from_pixelization_and_grids(self.grids, self.borders)
+        else:
+            return None
+
+    @property
     def xticks_from_image_grid(self):
         return np.around(np.linspace(np.amin(self.grids.image[:,0]), np.amax(self.grids.image[:,0]), 4), 2)
 
     @property
     def yticks_from_image_grid(self):
         return np.around(np.linspace(np.amin(self.grids.image[:,1]), np.amax(self.grids.image[:,1]), 4), 2)
-
-    @property
-    def hyper_galaxies(self):
-        return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
-
-    def reconstructor_from_plane(self, borders):
-
-        pixelized_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
-
-        if len(pixelized_galaxies) == 0:
-            return None
-        if len(pixelized_galaxies) == 1:
-            return pixelized_galaxies[0].pixelization.reconstructor_from_pixelization_and_grids(self.grids, borders)
-        elif len(pixelized_galaxies) > 1:
-            raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 
     @property
     def _image_plane_image(self):

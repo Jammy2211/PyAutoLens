@@ -34,10 +34,10 @@ hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=
                                    image_plane_grids=hst_up.grids)
 # ao_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxies], source_galaxies=[source_pix], image_plane_grids=ao.grids)
 
-lsst_recon = lsst_tracer.reconstructors_from_source_plane(lsst.borders, cluster_mask=None)
-euclid_recon = euclid_tracer.reconstructors_from_source_plane(euclid.borders, cluster_mask=None)
-hst_recon = hst_tracer.reconstructors_from_source_plane(hst.borders, cluster_mask=None)
-hst_up_recon = hst_up_tracer.reconstructors_from_source_plane(hst_up.borders, cluster_mask=None)
+lsst_recon = lsst_tracer.reconstructors(lsst.borders, cluster_mask=None)
+euclid_recon = euclid_tracer.reconstructors(euclid.borders, cluster_mask=None)
+hst_recon = hst_tracer.reconstructors(hst.borders, cluster_mask=None)
+hst_up_recon = hst_up_tracer.reconstructors(hst_up.borders, cluster_mask=None)
 # ao_recon = ao_tracer.reconstructors_from_source_plane(ao.borders, cluster_mask=None)
 
 lsst_reconstructed = lsst_recon.reconstruction_from_reconstructor_and_data(lsst.masked_image, lsst.masked_image.background_noise,

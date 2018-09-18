@@ -594,8 +594,8 @@ class LensPlanePhase(PhaseImaging):
             super(PhaseImaging.Result, self).__init__(constant, likelihood, variable, analysis)
             fitter = fitting.ProfileFitter(analysis.lensing_image, self.tracer)
             self.model_image = analysis.unmasked_model_image_for_instance(constant)
-            self.lens_galaxy_model_images = analysis.unmasked_model_image_of_galaxies_for_instance(constant)
-            self.lens_subtracted_image = analysis.lensing_image.image - fitter.model_images_of_planes[0]
+            self.lens_galaxy_model_images = analysis.unmasked_model_images_of_galaxies_for_instance(constant)
+            self.lens_subtracted_image = analysis.lensing_image.image - fitter.model_image
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
@@ -744,7 +744,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
 
             self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
-                                                previous_results.last.lens_galaxies_blurred_image_plane_images))
+                                                previous_results.last.lens_galaxy_model_images))
             self.hyper_galaxy_images = [self.hyper_galaxy_images[hyper_index]]
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
