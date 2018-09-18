@@ -189,7 +189,7 @@ class ImagingGrids(object):
         return ImagingGrids(image_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def padded_grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
+    def unmasked_grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup the collection of padded imaging-grids from a mask, using also an input sub-grid size to setup the \
         sub-grid and psf-shape to setup the blurring grid.
 
@@ -202,17 +202,17 @@ class ImagingGrids(object):
         psf_shape : (int, int)
             the shape of the PSF used in the analysis, which therefore defines the mask's blurring-region.
         """
-        image_padded_grid = ImagePaddedGrid.from_shapes_and_pixel_scale(shape=mask.shape, psf_shape=psf_shape,
-                                                                        pixel_scale=mask.pixel_scale)
-        sub_padded_grid = SubPaddedGrid.from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                              sub_grid_size=sub_grid_size,
-                                                                              psf_shape=psf_shape)
+        image_padded_grid = ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=mask.shape, psf_shape=psf_shape,
+                                                                                        pixel_scale=mask.pixel_scale)
+        sub_padded_grid = SubUnmaskedGrid.unmasked_grid_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                              sub_grid_size=sub_grid_size,
+                                                                                              psf_shape=psf_shape)
         # TODO : The blurring grid is not used when the grid mapper is called, the 0.0 0.0 stops errors inr ayT_racing
-        # TODO : implement a more explicit solution
+        # TODO : implement a more explicit solutio
         return ImagingGrids(image=image_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
-    def padded_grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
+    def unmasked_grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
         """Setup a collection of imaging-grids for simulating an image of a strong lens. 
         
         This routine uses padded-grids which ensure that the PSF blurring in the simulation routine \ 
@@ -227,9 +227,9 @@ class ImagingGrids(object):
         psf_shape : (int, int)
             the shape of the PSF used in the analysis, which therefore defines the mask's blurring-region.
         """
-        return cls.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=Mask(array=np.full(shape, False),
-                                                                                pixel_scale=pixel_scale),
-                                                                      sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+        return cls.unmasked_grids_from_mask_sub_grid_size_and_psf_shape(mask=Mask(array=np.full(shape, False),
+                                                                                  pixel_scale=pixel_scale),
+                                                                        sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
     def apply_function(self, func):
         if self.blurring is not None:
@@ -497,11 +497,11 @@ class SubGrid(ImageGrid):
         return imaging_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
 
 
-class ImagePaddedGrid(ImageGrid):
+class ImageUnmaskedGrid(ImageGrid):
 
-    def __new__(cls, arr, original_shape, padded_shape, *args, **kwargs):
-        """An *ImagePaddedGrid* stores the (x,y) arc-second coordinates of a mask's pixels in 1D, in an analogous \
-        fashion to an *ImageGrid*. An *ImagePaddedGrid* deviate from a normal grid in that:
+    def __new__(cls, arr, mask_shape, padded_shape, *args, **kwargs):
+        """An *ImageUnmaskedGrid* stores the (x,y) arc-second coordinates of a mask's pixels in 1D, in an analogous \
+        fashion to an *ImageGrid*. An *ImageUnmaskedGrid* deviate from a normal grid in that:
 
         - All pixels are used (as opposed to just unmasked pixels)
         - The mask is padded when computing the grid, such that additional pixels beyond its edge are included.
@@ -510,13 +510,13 @@ class ImagePaddedGrid(ImageGrid):
         opposed to just within the masked region.
         """
         arr = arr.view(cls)
-        arr.original_shape = original_shape
+        arr.mask_shape = mask_shape
         arr.padded_shape = padded_shape
         return arr
 
     @classmethod
-    def from_shapes_and_pixel_scale(self, shape, psf_shape, pixel_scale):
-        """Setup an *ImagePaddedGrid* of the regular image-grid for an input image-shape, psf-shape and pixel-scale.
+    def unmasked_grid_from_shapes_and_pixel_scale(self, shape, psf_shape, pixel_scale):
+        """Setup an *ImageUnmaskedGrid* of the regular image-grid for an input image-shape, psf-shape and pixel-scale.
 
         The center of every pixel is used to setup the grid's (x,y) arc-second coordinates, including padded-pixels \
         which are beyond the input shape but will have light blurred into them given the psf-shape.
@@ -533,16 +533,16 @@ class ImagePaddedGrid(ImageGrid):
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
         padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=np.full(padded_shape, False),
                                                                                         pixel_scale=pixel_scale)
-        return ImagePaddedGrid(arr=padded_image_grid, original_shape=shape, padded_shape=padded_shape)
+        return ImageUnmaskedGrid(arr=padded_image_grid, mask_shape=shape, padded_shape=padded_shape)
 
-    def convolve_padded_array_1d_with_psf(self, padded_array_1d, psf):
+    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 2d padded array of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
         the convolved array to its original 2D shape.
 
         Parameters
         -----------
         padded_array_2d : ndarray
-            A 2D array of values which were computed using the *ImagePaddedGrid*.
+            A 2D array of values which were computed using the *ImageUnmaskedGrid*.
         """
         padded_array_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
                                                                                                  self.padded_shape)
@@ -550,34 +550,34 @@ class ImagePaddedGrid(ImageGrid):
         return imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
                                                                     mask=np.full(self.padded_shape, False))
 
-    def map_to_2d_and_trim(self, padded_array_1d):
+    def map_to_2d(self, padded_array_1d):
         """ Map a padded 1D array of values to its origianl 2D array.
 
         Parameters
         -----------
         padded_array_1d : ndarray
-            A 1D array of values which were computed using the *ImagePaddedGrid*.
+            A 1D array of values which were computed using the *ImageUnmaskedGrid*.
         """
         return imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
-                                                                                      self.original_shape)
+                                                                                      self.mask_shape)
 
-    def map_to_2d(self, padded_array_1d):
+    def map_to_2d_keep_padded(self, padded_array_1d):
         """ Map a padded 1D array of values to its padded 2D array.
 
         Parameters
         -----------
         padded_array_1d : ndarray
-            A 1D array of values which were computed using the *ImagePaddedGrid*.
+            A 1D array of values which were computed using the *ImageUnmaskedGrid*.
         """
         return imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
                                                                                       self.padded_shape)
 
 
-class SubPaddedGrid(SubGrid, ImagePaddedGrid):
+class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
 
-    def __init__(self, arr, mask, original_shape, padded_shape, sub_grid_size=1):
-        """A *SubPaddedGrid* stores the (x,y) arc-second coordinates of a mask's sub-pixels in 1D, in an analogous \
-        fashion to a *SubGrid*. A *SubPaddedGrid* deviate from a normal grid in that:
+    def __init__(self, arr, mask, mask_shape, padded_shape, sub_grid_size=1):
+        """A *SubUnmaskedGrid* stores the (x,y) arc-second coordinates of a mask's sub-pixels in 1D, in an analogous \
+        fashion to a *SubGrid*. A *SubUnmaskedGrid* deviate from a normal grid in that:
 
         - All pixels are used (as opposed to just unmasked pixels)
         - The mask is padded when computing the grid, such that additional pixels beyond its edge are included.
@@ -585,13 +585,13 @@ class SubPaddedGrid(SubGrid, ImagePaddedGrid):
         Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire image, as \
         opposed to just within the masked region.
         """
-        super(SubPaddedGrid, self).__init__(arr, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
-        self.original_shape = original_shape
+        super(SubUnmaskedGrid, self).__init__(arr, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
+        self.mask_shape = mask_shape
         self.padded_shape = padded_shape
 
     @classmethod
-    def from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
-        """Setup an *SubPaddedGrid* for an input mask, sub-grid size and psf-shape.
+    def unmasked_grid_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
+        """Setup an *SubUnmaskedGrid* for an input mask, sub-grid size and psf-shape.
 
         The center of every sub-pixel is used to setup the grid's (x,y) arc-second coordinates, including \
         padded-pixels which are beyond the input shape but will have light blurred into them given the psf-shape.
@@ -611,16 +611,16 @@ class SubPaddedGrid(SubGrid, ImagePaddedGrid):
         padded_sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(
             mask=np.full(padded_shape, False), pixel_scale=mask.pixel_scale, sub_grid_size=sub_grid_size)
 
-        return SubPaddedGrid(arr=padded_sub_grid, mask=mask, original_shape=mask.shape, padded_shape=padded_shape,
-                             sub_grid_size=sub_grid_size)
+        return SubUnmaskedGrid(arr=padded_sub_grid, mask=mask, mask_shape=mask.shape, padded_shape=padded_shape,
+                               sub_grid_size=sub_grid_size)
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, SubPaddedGrid):
+        if isinstance(obj, SubUnmaskedGrid):
             self.sub_grid_size = obj.sub_grid_size
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
             self.mask = obj.mask
-            self.original_shape = obj.original_shape
+            self.mask_shape = obj.mask_shape
             self.padded_shape = obj.padded_shape
 
 

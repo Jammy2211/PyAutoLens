@@ -568,11 +568,11 @@ class LensPlanePhase(PhaseImaging):
             return fitting.ProfileFitter(lensing_image=self.lensing_image, tracer=tracer)
 
         def unmasked_model_image_for_instance(self, instance):
-            padded_grids = self.lensing_image.padded_grids
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_grids=padded_grids)
-            model_image_1d = padded_grids.image.convolve_padded_array_1d_with_psf(tracer._image_plane_image,
-                                                                                  self.lensing_image.psf)
-            return padded_grids.image.map_to_2d_and_trim(model_image_1d)
+            unmasked_grids = self.lensing_image.unmasked_grids
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_grids=unmasked_grids)
+            model_image_1d = unmasked_grids.image.convolve_array_1d_with_psf(tracer._image_plane_image,
+                                                                           self.lensing_image.psf)
+            return unmasked_grids.image.map_to_2d(model_image_1d)
 
         @classmethod
         def log(cls, instance):
