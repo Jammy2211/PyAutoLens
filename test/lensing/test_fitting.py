@@ -529,11 +529,13 @@ class TestProfileFitter:
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
-            blurred_lens_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
-                                                                               tracer._image_plane_blurring_images_of_galaxies[0])
+            blurred_lens_image_plane_image = \
+                li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
+                                                  tracer._image_plane_blurring_images_of_galaxies[0])
 
-            blurred_source_image_plane_image = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
-                                                                                 tracer._image_plane_blurring_images_of_galaxies[1])
+            blurred_source_image_plane_image = \
+                li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
+                                                  tracer._image_plane_blurring_images_of_galaxies[1])
 
             blurred_lens_image_plane_image = li.grids.image.map_to_2d(blurred_lens_image_plane_image)
             blurred_source_image_plane_image = li.grids.image.map_to_2d(blurred_source_image_plane_image)

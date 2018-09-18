@@ -19,7 +19,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                  [0.0, 1.0, 0.0],
                                  [0.0, 0.0, 0.0]]))
 
-    imaging_grids = msk.ImagingGrids.padded_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
+    imaging_grids = msk.ImagingGrids.unmasked_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
@@ -27,7 +27,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_grids=imaging_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.2,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
                                                    add_noise=False)
     image_simulated.noise_map = np.ones(image_simulated.shape)
@@ -65,7 +65,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     psf = im.PSF.simulate_as_gaussian(shape=(3, 3), sigma=0.75)
 
-    imaging_grids = msk.ImagingGrids.padded_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
+    imaging_grids = msk.ImagingGrids.unmasked_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
@@ -73,7 +73,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_grids=imaging_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.2,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
                                                    add_noise=False)
     image_simulated.noise_map = np.ones(image_simulated.shape)
