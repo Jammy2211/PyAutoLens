@@ -5,17 +5,48 @@ from autolens.autofit import model_mapper
 
 
 def is_light_profile_class(cls):
+    """
+    Parameters
+    ----------
+    cls
+        Some object
+
+    Returns
+    -------
+    bool: is_light_profile_class
+        True iff cls is a class that inherits from light profile
+    """
     return inspect.isclass(cls) and issubclass(cls, light_profiles.LightProfile)
 
 
 def is_mass_profile_class(cls):
+    """
+    Parameters
+    ----------
+    cls
+        Some object
+
+    Returns
+    -------
+    bool: is_mass_profile_class
+        True iff cls is a class that inherits from mass profile
+    """
     return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
 
 
 def is_profile_class(cls):
-    return inspect.isclass(cls) \
-           and issubclass(cls, mass_profiles.MassProfile) \
-           or issubclass(cls, light_profiles.LightProfile)
+    """
+    Parameters
+    ----------
+    cls
+        Some object
+
+    Returns
+    -------
+    bool: is_mass_profile_class
+        True iff cls is a class that inherits from mass profile or light profile
+    """
+    return is_light_profile_class(cls) or is_mass_profile_class(cls)
 
 
 class GalaxyPrior(model_mapper.AbstractPriorModel):
