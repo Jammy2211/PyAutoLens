@@ -19,7 +19,7 @@ psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
 # We need to set up the grids of Cartesian coordinates we will use to perform ray-tracing. The function below
 # sets these grids up using the shape and pixel-scale of the image we will ultimately simulate. The PSF shape is
 # required to ensure that edge-effects do not impact PSF blurring later in the simulation.
-imaging_grids = mask.ImagingGrids.padded_grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
+imaging_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 
 # Use the 'galaxy' module (imported as 'g'), 'light_profiles' module (imported as 'lp') and 'mass profiles' module
 # (imported as 'mp') to setup the lens and source galaxies.
