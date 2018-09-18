@@ -18,33 +18,6 @@ logger = logging.getLogger(__name__)
 SIMPLEX_TUPLE_WIDTH = 0.1
 
 
-def generate_parameter_latex(parameters, subscript=''):
-    """Generate a latex label for a non-linear search parameter.
-
-    This is used for the param names file and outputting the nlo of a run to a latex table.
-
-    Parameters
-    ----------
-    parameters : [str]
-        The parameter names to be converted to latex.
-    subscript : str
-        The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
-        number of the component of the model_mapper.
-
-    """
-
-    latex = []
-
-    if subscript == '':
-        for param in parameters:
-            latex.append('$' + param + '$')
-    else:
-        for param in parameters:
-            latex.append(param + r'_{\mathrm{' + subscript + '}}')
-
-    return latex
-
-
 class Result(object):
 
     def __init__(self, constant, likelihood, variable=None):
