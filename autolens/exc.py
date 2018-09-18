@@ -22,6 +22,10 @@ class ReconstructionException(Exception):
     pass
 
 
+class FittingException(Exception):
+    pass
+
+
 class RayTracingException(Exception):
     pass
 
