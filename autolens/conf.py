@@ -77,7 +77,16 @@ class LabelConfig(NamedConfig):
         return self.get("label", name)
 
     def subscript(self, cls):
-        return self.get("subscript", cls.__name__)
+        for family_cls in family(cls):
+            if self.has("subscript", family_cls.__name__):
+                return self.get("subscript", family_cls.__name__)
+
+        ini_filename = cls.__module__.split(".")[-1]
+        raise exc.PriorException(
+            "The prior config at {}/{} does not a subscript for {} or any of its parents".format(self.path,
+                                                                                                 ini_filename,
+                                                                                                 cls.__name__
+                                                                                                 ))
 
 
 class AncestorConfig(object):
