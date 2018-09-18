@@ -2,6 +2,7 @@ import math
 from scipy.special import erfinv
 import inspect
 import os
+import itertools
 from autolens import exc
 from autolens import conf
 
@@ -299,8 +300,7 @@ class ModelMapper(AbstractModel):
 
         Parameters
         ----------
-        means: [float]
-            A list containing the means of the gaussian priors.
+        tuples
 
         Returns
         -------
@@ -606,6 +606,7 @@ class AbstractPriorModel:
     Abstract model that maps a set of priors to a particular class. Must be overridden by any prior model so that the \
     model mapper recognises its prior model attributes.
     """
+    _ids = itertools.count()
 
     @property
     def flat_prior_models(self):
@@ -638,6 +639,8 @@ class PriorModel(AbstractPriorModel):
         self.cls = cls
         self.config = (config if config is not None else conf.instance.prior_default)
         self.width_config = (config if config is not None else conf.instance.prior_width)
+
+        self.component_number = next(self._ids)
 
         arg_spec = inspect.getfullargspec(cls.__init__)
 
@@ -799,6 +802,7 @@ class ListPriorModel(list, AbstractPriorModel):
         prior_models: [PriorModel]
             A list of prior models
         """
+        self.component_number = next(self._ids)
         super().__init__(prior_models)
 
     def instance_for_arguments(self, arguments):
