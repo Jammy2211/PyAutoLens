@@ -22,10 +22,7 @@ def test_lens_x2_gal_separate_pipeline():
     pipeline_name = "l2g_sep"
     data_name = '/l2g_sep'
 
-    try:
-        shutil.rmtree(dirpath+'/data'+data_name)
-    except FileNotFoundError:
-        pass
+    tools.reset_paths(data_name, pipeline_name, output_path)
 
     sersic_0 = lp.EllipticalSersic(centre=(-1.0, -1.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
                                    effective_radius=1.3, sersic_index=3.0)
@@ -39,13 +36,6 @@ def test_lens_x2_gal_separate_pipeline():
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                      source_galaxies=[], target_signal_to_noise=50.0)
 
-    conf.instance.output_path = output_path
-
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
-
     pipeline = make_lens_x2_gal_separate_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
 
@@ -56,7 +46,7 @@ def test_lens_x2_gal_separate_pipeline():
 def make_lens_x2_gal_separate_pipeline(pipeline_name):
 
     def modify_mask_function(img):
-        return msk.Mask.circular(img.shape_arc_seconds, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
+        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
