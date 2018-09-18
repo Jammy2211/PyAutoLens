@@ -252,7 +252,7 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=li.unmasked_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
         unmasked_model_image = fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer, li)
 
         manual_model_image = psf.convolve(tracer.image_plane_image_for_simulation)
@@ -272,7 +272,7 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=li.unmasked_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
         unmasked_model_image = fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer, li)
 
         manual_model_image = psf.convolve(tracer.image_plane_image_for_simulation)
@@ -291,7 +291,7 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=li.unmasked_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer, li)
 
         manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
@@ -312,7 +312,7 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=li.unmasked_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer, li)
 
         manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
@@ -336,7 +336,7 @@ class TestUnmaskedModelImages:
         g0 = g.Galaxy(redshift=0.1, light_profile=lp.EllipticalSersic(intensity=0.1))
         g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.2))
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_grids=li.unmasked_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer, li)
 
         manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
@@ -368,7 +368,7 @@ class TestUnmaskedModelImages:
 
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
-                                                     image_grids=li.unmasked_grids)
+                                                     image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer, li)
 
         manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
@@ -480,8 +480,9 @@ class MockTracer(object):
     def _image_plane_blurring_images_of_galaxies(self):
         return [self.blurring_image]
 
-    def reconstructors_from_source_plane(self, borders):
-        return MockReconstructor()
+    @property
+    def reconstructors(self):
+        return [MockReconstructor()]
 
     def plane_images_of_planes(self, shape=(30, 30)):
         image = np.zeros(shape)
@@ -600,7 +601,7 @@ class TestProfileFitter:
         def test__real_tracer__2x2_image__no_psf_blurring(self, li_no_blur, galaxy_light):
 
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light],
-                                                  image_grids=li_no_blur.grids)
+                                                  image_plane_grids=li_no_blur.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
 
@@ -621,7 +622,7 @@ class TestProfileFitter:
                                            [True, True, True, True]]), pixel_scale=1.0)
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_grids=li.grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -672,7 +673,7 @@ class TestProfileFitter:
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -709,7 +710,7 @@ class TestProfileFitter:
 
             from astropy import cosmology as cosmo
 
-            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_grids=li.grids,
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=li.grids,
                                              cosmology=cosmo.Planck15)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
@@ -763,7 +764,7 @@ class TestProfileFitter:
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -799,7 +800,7 @@ class TestProfileFitter:
             g4 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=5.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1, g2], source_galaxies=[g3, g4],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -850,7 +851,7 @@ class TestProfileFitter:
             g4 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=5.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g1, g3, g4], source_galaxies=[g0, g2],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -900,7 +901,7 @@ class TestProfileFitter:
 
             from astropy import cosmology as cosmo
 
-            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_grids=li.grids,
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=li.grids,
                                              cosmology=cosmo.Planck15)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
@@ -935,7 +936,7 @@ class TestProfileFitter:
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=li_no_blur.grids)
+                                                         image_plane_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
             plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
@@ -945,7 +946,7 @@ class TestProfileFitter:
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=li_no_blur.grids)
+                                                         image_plane_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
             plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
@@ -954,7 +955,7 @@ class TestProfileFitter:
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=li_no_blur.grids)
+                                                         image_plane_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
             plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
@@ -963,7 +964,7 @@ class TestProfileFitter:
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=li_no_blur.grids)
+                                                         image_plane_grids=li_no_blur.grids)
             fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
             plane_image = fitter.images_of_planes(shape=(5, 5))[1]
 
@@ -986,7 +987,7 @@ class TestProfileFitter:
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_grids=li.grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -1009,7 +1010,7 @@ class TestProfileFitter:
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_grids=li.grids)
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -1056,7 +1057,7 @@ class TestProfileFitter:
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids)
 
             fitter = fitting.ProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -1090,7 +1091,7 @@ class TestHyperProfileFitter:
             g1 = g.Galaxy(light_profile=MockLightProfile(value=0.0))
     
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1],
-                                                  image_grids=li_no_blur_1x1.grids)
+                                                  image_plane_grids=li_no_blur_1x1.grids)
     
             hyper_model_image = np.array([1.0])
             hyper_galaxy_images = [np.array([1.0]), np.array([1.0])]
@@ -1118,7 +1119,7 @@ class TestHyperProfileFitter:
             g1 = g.Galaxy(light_profile=MockLightProfile(value=0.0))
     
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=no_galaxies,
-                                                         image_grids=li_no_blur_1x1.grids)
+                                                         image_plane_grids=li_no_blur_1x1.grids)
     
             hyper_model_image = np.array([1.0])
             hyper_galaxy_images = [np.array([1.0]), np.array([1.0])]
@@ -1197,7 +1198,7 @@ class TestHyperProfileFitter:
                                hyper_galaxy=hyper_galaxy)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids)
 
             fitter = fitting.HyperProfileFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image, 
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
@@ -1263,7 +1264,7 @@ class TestPixelizationFitter:
             pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
             galaxy_pix = g.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids, borders=li.borders)
             fitter = fitting.PixelizationFitter(lensing_image=li, tracer=tracer)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1323,7 +1324,7 @@ class TestPixelizationFitter:
 
             g0 = g.Galaxy(pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids, borders=li.borders)
 
             fitter = fitting.PixelizationFitter(lensing_image=li, tracer=tracer)
 
@@ -1380,7 +1381,7 @@ class TestHyperPixelizationFitter:
             galaxy_pix = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                                        hyper_galaxy=hyper_galaxy, pixelization=pix)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids, borders=li.borders)
             fitter = fitting.HyperPixelizationFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image,
                                                      hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0])
 
@@ -1449,7 +1450,7 @@ class TestHyperPixelizationFitter:
                                          hyper_galaxy=hyper_model)
             hyper_pix_galaxy = g.Galaxy(pixelization=pix, hyper_galaxy=hyper_model)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
-                                                         image_grids=li.grids)
+                                                         image_plane_grids=li.grids, borders=li.borders)
 
             fitter = fitting.HyperPixelizationFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
