@@ -106,7 +106,7 @@ class NonLinearOptimizer(object):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
     @property
-    def paramnames_names(self):
+    def param_names(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
@@ -134,7 +134,7 @@ class NonLinearOptimizer(object):
         return constant_names
 
     @property
-    def paramnames_labels(self):
+    def param_labels(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
@@ -160,8 +160,8 @@ class NonLinearOptimizer(object):
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
-        paramnames_names = self.paramnames_names
-        paramnames_labels = self.paramnames_labels
+        paramnames_names = self.param_names
+        paramnames_labels = self.param_labels
         with open(self.file_param_names, 'w') as paramnames:
             for i in range(self.variable.total_parameters):
                 line = paramnames_names[i]
@@ -489,7 +489,7 @@ class MultiNest(NonLinearOptimizer):
 
         pdf_plot = getdist.plots.GetDistPlotter()
 
-        for param_name in self.paramnames_names:
+        for param_name in self.param_names:
             pdf_plot.plot_1d(roots=self.pdf, param=param_name)
             pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
 
@@ -511,7 +511,7 @@ class MultiNest(NonLinearOptimizer):
             most_likely = self.most_likely_from_summary()
 
             for i in range(self.variable.total_parameters):
-                line = self.paramnames_names[i]
+                line = self.param_names[i]
                 line += ' ' * (50 - len(line)) + str(most_likely[i])
                 results.write(line + '\n')
 
@@ -525,7 +525,7 @@ class MultiNest(NonLinearOptimizer):
             results.write('\n')
 
             for i in range(self.variable.total_parameters):
-                line = self.paramnames_names[i]
+                line = self.param_names[i]
                 line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
                     upper_limit[i]) + ')'
                 results.write(line + '\n')
@@ -538,7 +538,7 @@ class MultiNest(NonLinearOptimizer):
             results.write('\n')
 
             for i in range(self.variable.total_parameters):
-                line = self.paramnames_names[i]
+                line = self.param_names[i]
                 line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
                     upper_limit[i]) + ')'
                 results.write(line + '\n')
