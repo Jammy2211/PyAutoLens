@@ -49,7 +49,7 @@ lens_galaxy = galaxy.Galaxy(light_profile=sersic, mass_profile=isothermal)
 source_galaxy = galaxy.Galaxy(light_profile=sersic)
 
 ray_trace = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                         image_grids=image_plane_grids)
+                                         image_plane_grids=image_plane_grids)
 
 galaxy_image_1d = ray_trace.galaxy_light_profiles_image_from_planes()
 galaxy_image_2d = ma.map_to_2d_keep_padded(galaxy_image_1d)
