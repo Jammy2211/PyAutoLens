@@ -1320,7 +1320,5 @@ class TestLabels(object):
     def test_labels(self, label_optimizer):
         label_optimizer.variable.prior_model = MockClassNLOx4
 
-        print(label_optimizer.paramnames_labels)
-
         assert label_optimizer.paramnames_labels == ['$x4p0_{\\mathrm{a1}}$', '$x4p1_{\\mathrm{a1}}$',
                                                      '$x4p2_{\\mathrm{a1}}$', '$x4p3_{\\mathrm{a1}}$']
