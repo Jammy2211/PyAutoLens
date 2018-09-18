@@ -287,7 +287,6 @@ def create_weighted_samples_10_parameters(path):
 
 
 class MockClassNLOx4(object):
-    component_number = 0
 
     def __init__(self, one=1, two=2, three=3, four=4):
         self.one = one
@@ -297,7 +296,6 @@ class MockClassNLOx4(object):
 
 
 class MockClassNLOx5(object):
-    component_number = 0
 
     def __init__(self, one=1, two=2, three=3, four=4, five=5):
         self.one = one
@@ -308,7 +306,6 @@ class MockClassNLOx5(object):
 
 
 class MockClassNLOx6(object):
-    component_number = 1
 
     def __init__(self, one=(1, 2), two=(3, 4), three=3, four=4):
         self.one = one
@@ -1312,23 +1309,24 @@ class TestLabels(object):
         assert len(label_optimizer.paramnames_names) == 4
 
     def test_label_config(self, label_optimizer):
+        model_mapper.AbstractPriorModel._ids = itertools.count()
         assert label_optimizer.label_config.label("one") == "x4p0"
         assert label_optimizer.label_config.label("two") == "x4p1"
         assert label_optimizer.label_config.label("three") == "x4p2"
         assert label_optimizer.label_config.label("four") == "x4p3"
 
     def test_labels(self, label_optimizer):
+        model_mapper.AbstractPriorModel._ids = itertools.count()
         label_optimizer.variable.prior_model = MockClassNLOx4
 
         assert label_optimizer.paramnames_labels == [r'x4p0_{\mathrm{a1}}', r'x4p1_{\mathrm{a1}}',
                                                      r'x4p2_{\mathrm{a1}}', r'x4p3_{\mathrm{a1}}']
 
     def test_real_class(self, label_optimizer):
+        model_mapper.AbstractPriorModel._ids = itertools.count()
         mass_profiles.EllipticalMassProfile._ids = itertools.count()
         label_optimizer.variable.mass_profile = mass_profiles.EllipticalSersic
         labels = label_optimizer.paramnames_labels
-
-        assert len(labels) == 8
 
         assert labels == [r"x_{\mathrm{s1}}",
                           r"y_{\mathrm{s1}}",
@@ -1351,4 +1349,35 @@ class TestLabels(object):
             'effective_radius',
             'sersic_index',
             'mass_to_light_ratio'
+        ]
+
+    def test_override_prior(self, label_optimizer):
+        model_mapper.AbstractPriorModel._ids = itertools.count()
+        label_optimizer.variable.mass_profile = mass_profiles.EllipticalSersic
+
+        label_optimizer.variable.mass_profile.axis_ratio = model_mapper.UniformPrior()
+
+        labels = label_optimizer.paramnames_labels
+
+        assert labels == [r"x_{\mathrm{s1}}",
+                          r"y_{\mathrm{s1}}",
+                          r"phi_{\mathrm{s1}}",
+                          r"I_{\mathrm{s1}}",
+                          r"R_{\mathrm{s1}}",
+                          r"n_{\mathrm{s1}}",
+                          r"Psi_{\mathrm{s1}}",
+                          r"q_{\mathrm{s1}}"]
+
+        priors = label_optimizer.variable.priors_ordered_by_id
+        names = [key for key, value in priors]
+
+        assert names == [
+            'centre_0',
+            'centre_1',
+            'phi',
+            'intensity',
+            'effective_radius',
+            'sersic_index',
+            'mass_to_light_ratio',
+            'axis_ratio'
         ]
