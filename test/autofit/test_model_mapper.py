@@ -841,6 +841,13 @@ class TestConstant(object):
 
         assert len(new_mapper.mock_class.constants) == 1
 
+    def test_set_float(self):
+        prior_model = model_mapper.PriorModel(MockClassMM, MockConfig())
+        prior_model.one = 3
+        prior_model.two = 4.
+        assert prior_model.one == model_mapper.Constant(3)
+        assert prior_model.two == model_mapper.Constant(4.)
+
 
 @pytest.fixture(name="mapper_with_one")
 def make_mapper_with_one(test_config, width_config):
