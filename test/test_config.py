@@ -1,6 +1,6 @@
 from autolens import conf
 from os import path
-
+import pytest
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -10,7 +10,16 @@ class TestCase(object):
         assert conf.is_config()
 
 
+@pytest.fixture(name="label_config")
+def make_label_config():
+    return conf.NamedConfig("{}/config/label.ini".format(directory))
+
+
 class TestLabel(object):
-    def test_basic(self):
-        label_config = conf.NamedConfig("{}/config/label.ini".format(directory))
+    def test_basic(self, label_config):
         assert label_config.get("label", "centre_0") == "x"
+        assert label_config.get("label", "redshift") == "z"
+
+    def test_escaped(self, label_config):
+        assert label_config.get("label", "gamma") == r"\gamma"
+        assert label_config.get("label", "contribution_factor") == r"\omega0"
