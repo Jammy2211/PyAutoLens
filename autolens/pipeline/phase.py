@@ -570,9 +570,14 @@ class LensPlanePhase(PhaseImaging):
         def unmasked_model_image_for_instance(self, instance):
             unmasked_grids = self.lensing_image.unmasked_grids
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_grids=unmasked_grids)
-            model_image_1d = unmasked_grids.image.convolve_array_1d_with_psf(tracer._image_plane_image,
-                                                                           self.lensing_image.psf)
-            return unmasked_grids.image.map_to_2d(model_image_1d)
+            return fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer=tracer,
+                                                                              lensing_image=self.lensing_image)
+
+        def unmasked_model_images_of_galaxies_for_instance(self, instance):
+            unmasked_grids = self.lensing_image.unmasked_grids
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_grids=unmasked_grids)
+            return fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer=tracer,
+                                                                        lensing_image=self.lensing_image)
 
         @classmethod
         def log(cls, instance):
@@ -588,8 +593,8 @@ class LensPlanePhase(PhaseImaging):
             """
             super(PhaseImaging.Result, self).__init__(constant, likelihood, variable, analysis)
             fitter = fitting.ProfileFitter(analysis.lensing_image, self.tracer)
-            self.model_image = fitter.model_image
-            self.lens_galaxy_model_images = fitter.model_images_of_galaxies
+            self.model_image = analysis.unmasked_model_image_for_instance(constant)
+            self.lens_galaxy_model_images = analysis.unmasked_model_image_of_galaxies_for_instance(constant)
             self.lens_subtracted_image = analysis.lensing_image.image - fitter.model_images_of_planes[0]
 
 

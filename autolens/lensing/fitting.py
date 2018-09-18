@@ -1,6 +1,7 @@
 import numpy as np
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
+from autolens import exc
 
 minimum_value_profile = 0.1
 
@@ -385,9 +386,29 @@ def scaled_noise_from_hyper_galaxies_and_contributions(contributions, hyper_gala
                              hyper_galaxies, contributions))
     return noise + sum(scaled_noises)
 
-def evidence_from_reconstruction_terms(chi_squared_term, regularization_term,
-                                       log_covariance_regularization_term,
-                                       log_regularization_term,
-                                       noise_term):
+def evidence_from_reconstruction_terms(chi_squared_term, regularization_term, log_covariance_regularization_term,
+                                       log_regularization_term, noise_term):
     return -0.5 * (chi_squared_term + regularization_term + log_covariance_regularization_term -
                    log_regularization_term + noise_term)
+
+def unmasked_model_image_from_tracer_and_lensing_image(tracer, lensing_image):
+
+    if not tracer.has_unmasked_grids:
+        raise exc.FittingException('An unmasked model image cannot be generated from fitting.py if the input '
+                                   'tracer does not use unmasked grids')
+    model_image_1d = lensing_image.unmasked_grids.image.convolve_array_1d_with_psf(tracer._image_plane_image,
+                                                                                   lensing_image.psf)
+
+    return lensing_image.unmasked_grids.image.map_to_2d(model_image_1d)
+
+
+def unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer, lensing_image):
+
+    if not tracer.has_unmasked_grids:
+        raise exc.FittingException('An unmasked model image cannot be generated from fitting.py if the input '
+                                   'tracer does not use unmasked grids')
+    model_galaxy_images_1d = list(map(lambda image :
+                             lensing_image.unmasked_grids.image.convolve_array_1d_with_psf(image, lensing_image.psf),
+                             tracer._image_plane_images_of_galaxies))
+
+    return list(map(lambda image : lensing_image.unmasked_grids.image.map_to_2d(image), model_galaxy_images_1d))
