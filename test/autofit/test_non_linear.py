@@ -1319,12 +1319,20 @@ class TestLabels(object):
     def test_labels(self, label_optimizer):
         label_optimizer.variable.prior_model = MockClassNLOx4
 
-        assert label_optimizer.paramnames_labels == ['x4p0_{\\mathrm{a1}}', 'x4p1_{\\mathrm{a1}}',
-                                                     'x4p2_{\\mathrm{a1}}', 'x4p3_{\\mathrm{a1}}']
+        assert label_optimizer.paramnames_labels == [r'x4p0_{\mathrm{a1}}', r'x4p1_{\mathrm{a1}}',
+                                                     r'x4p2_{\mathrm{a1}}', r'x4p3_{\mathrm{a1}}']
 
     def test_real_class(self, label_optimizer):
         label_optimizer.variable.mass_profile = mass_profiles.EllipticalSersic
+        labels = label_optimizer.paramnames_labels
 
-        # centre = (0.0, 0.0), axis_ratio = 1.0, phi = 0.0, intensity = 0.1, effective_radius = 0.6,
-        # sersic_index = 4.0, mass_to_light_ratio = 1.0
-        assert len(label_optimizer.paramnames_labels) == 8
+        assert len(labels) == 8
+
+        assert labels[0] == r"x_{\mathrm{s1}}"
+        assert labels[1] == r"y_{\mathrm{s1}}"
+        assert labels[2] == r"q_{\mathrm{s1}}"
+        assert labels[3] == r"phi_{\mathrm{s1}}"
+        assert labels[4] == r"I_{\mathrm{s1}}"
+        assert labels[5] == r"R_{\mathrm{s1}}"
+        assert labels[6] == r"n_{\mathrm{s1}}"
+        assert labels[7] == r"Psi_{\mathrm{s1}}"
