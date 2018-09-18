@@ -1,4 +1,5 @@
 from autolens import conf
+from autolens import exc
 from autolens.profiles import light_profiles
 from os import path
 import pytest
@@ -9,6 +10,10 @@ directory = path.dirname(path.realpath(__file__))
 class TestCase(object):
     def test_is_config(self):
         assert conf.is_config()
+
+
+class MockClass(object):
+    pass
 
 
 @pytest.fixture(name="label_config")
@@ -30,3 +35,7 @@ class TestLabel(object):
 
     def test_inheritance(self, label_config):
         assert label_config.subscript(light_profiles.EllipticalGaussian) == "l"
+
+    def test_exception(self, label_config):
+        with pytest.raises(exc.PriorException):
+            label_config.subscript(MockClass)
