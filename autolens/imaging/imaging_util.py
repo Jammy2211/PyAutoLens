@@ -355,7 +355,7 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
 @numba.jit(nopython=True, cache=True)
 def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
-    """For a given 2D array and mask, map all unmasked pixels to a 1D array."""
+    """For a given 2D array and mask, mappers all unmasked pixels to a 1D array."""
 
     total_image_pixels = total_image_pixels_from_mask(mask)
 
@@ -373,7 +373,7 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
 @numba.jit(nopython=True, cache=True)
 def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, shape, one_to_two):
-    """For a masked 1D array, map it to a 2D array using the mappings from 1D to 2D (one_to_two)."""
+    """For a masked 1D array, mappers it to a 2D array using the mappings from 1D to 2D (one_to_two)."""
 
     array_2d = np.zeros(shape)
 
