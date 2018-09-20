@@ -284,7 +284,7 @@ class MultiNest(NonLinearOptimizer):
 
                 try:
                     _likelihood = analysis.fit(instance)
-                except exc.ReconstructionException or exc.RayTracingException:
+                except exc.InversionException or exc.RayTracingException:
                     _likelihood = -np.inf
 
                 # TODO: Use multinest to provide best model
