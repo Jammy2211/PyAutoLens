@@ -1,4 +1,5 @@
 import numpy as np
+from autolens import exc
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from itertools import count
@@ -17,7 +18,7 @@ class Galaxy(object):
     @DynamicAttrs
     """
 
-    def __init__(self, redshift=None, pixelization=None, hyper_galaxy=None, **kwargs):
+    def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
         """
         Represents a real galaxy. This could be a lens galaxy or source galaxy. Note that a lens galaxy must have mass
         profiles
@@ -37,6 +38,13 @@ class Galaxy(object):
             setattr(self, name, val)
 
         self.pixelization = pixelization
+        self.regularization = regularization
+
+        if self.has_pixelization and not self.has_regularization:
+            raise exc.GalaxyException('If the galaxy has a pixelization, it must also have a regularization.')
+        if not self.has_pixelization and self.has_regularization:
+            raise exc.GalaxyException('If the galaxy has a regularization, it must also have a pixelization.')
+
         self.hyper_galaxy = hyper_galaxy
 
     @property
@@ -52,9 +60,18 @@ class Galaxy(object):
         """
         Returns
         -------
-        True iff this galaxy has an associated pixelization
+        True iff this galaxy has an associated inversion
         """
         return self.pixelization is not None
+
+    @property
+    def has_regularization(self):
+        """
+        Returns
+        -------
+        True iff this galaxy has an associated inversion
+        """
+        return self.regularization is not None
 
     @property
     def has_hyper_galaxy(self):
@@ -387,11 +404,11 @@ class HyperGalaxy(object):
         Parameters
         -----------
         contribution_factor : float
-            Factor that adjusts how much of the galaxy's light is attributed to the contribution map.
+            Factor that adjusts how much of the galaxy's light is attributed to the contribution mappers.
         noise_factor : float
-            Factor by which the noise_map is increased in the regions of the galaxy's contribution map.
+            Factor by which the noise_map is increased in the regions of the galaxy's contribution mappers.
         noise_power : float
-            The power to which the contribution map is raised when scaling the noise_map.
+            The power to which the contribution mappers is raised when scaling the noise_map.
         """
         self.contribution_factor = contribution_factor
         self.noise_factor = noise_factor
@@ -400,11 +417,11 @@ class HyperGalaxy(object):
         self.component_number = next(self._ids)
 
     def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, minimum_value):
-        """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that \
+        """Compute the contribution mappers of a galaxy, which represents the fraction of flux in each pixel that \
         galaxy can be attributed to contain.
 
         This is computed by dividing that galaxy's flux by the total flux in that pixel, and then scaling by the \
-        maximum flux such that the contribution map ranges between 0 and 1.
+        maximum flux such that the contribution mappers ranges between 0 and 1.
 
         Parameters
         -----------
@@ -423,16 +440,16 @@ class HyperGalaxy(object):
         return contributions
 
     def scaled_noise_from_contributions(self, noise, contributions):
-        """Compute a scaled galaxy noise_map map from a baseline nosie map.
+        """Compute a scaled galaxy noise_map mappers from a baseline nosie mappers.
 
-        This uses the galaxy contribution map with their noise_map scaling hyper-parameters.
+        This uses the galaxy contribution mappers with their noise_map scaling hyper-parameters.
 
         Parameters
         -----------
         noise : ndarray
             The noise_map before scaling (this may already have the background scaled in HyperImage)
         contributions : ndarray
-            The galaxy contribution map.
+            The galaxy contribution mappers.
         """
         return self.noise_factor * (noise * contributions) ** self.noise_power
 
