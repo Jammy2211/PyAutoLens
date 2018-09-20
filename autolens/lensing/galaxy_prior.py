@@ -1,3 +1,4 @@
+from autolens import exc
 from autolens.lensing import galaxy
 import inspect
 from autolens.profiles import light_profiles, mass_profiles
@@ -60,7 +61,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                 prior_model.flat_prior_models]
 
     def __init__(self, align_centres=False, align_orientations=False, redshift=None, variable_redshift=False,
-                 pixelization=None, hyper_galaxy=None, config=None, **kwargs):
+                 pixelization=None, regularization=None, hyper_galaxy=None, config=None, **kwargs):
         """
         Class to produce Galaxy instances from sets of profile classes using the model mapper
 
@@ -109,8 +110,16 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
             self.redshift = model_mapper.PriorModel(galaxy.Redshift,
                                                     config) if variable_redshift else model_mapper.Constant(1)
 
+        if pixelization is not None and regularization is None:
+            raise exc.PriorException('If the galaxy prior has a pixelization, it must also have a regularization.')
+        if pixelization is None and regularization is not None:
+            raise exc.PriorException('If the galaxy prior has a regularization, it must also have a pixelization.')
+
         self.pixelization = model_mapper.PriorModel(pixelization, config) if inspect.isclass(
             pixelization) else pixelization
+        self.regularization = model_mapper.PriorModel(regularization, config) if inspect.isclass(
+            regularization) else regularization
+
         self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if inspect.isclass(
             hyper_galaxy) else hyper_galaxy
         self.config = config
@@ -243,12 +252,15 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         pixelization = self.pixelization.instance_for_arguments(arguments) \
             if isinstance(self.pixelization, model_mapper.PriorModel) \
             else self.pixelization
+        regularization = self.regularization.instance_for_arguments(arguments) \
+            if isinstance(self.regularization, model_mapper.PriorModel) \
+            else self.regularization
         hyper_galaxy = self.hyper_galaxy.instance_for_arguments(arguments) \
             if isinstance(self.hyper_galaxy, model_mapper.PriorModel) \
             else self.hyper_galaxy
 
-        return galaxy.Galaxy(redshift=redshift.redshift, pixelization=pixelization, hyper_galaxy=hyper_galaxy,
-                             **profiles)
+        return galaxy.Galaxy(redshift=redshift.redshift, pixelization=pixelization, regularization=regularization,
+                             hyper_galaxy=hyper_galaxy, **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
         """

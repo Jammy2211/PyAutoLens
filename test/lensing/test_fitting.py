@@ -6,8 +6,9 @@ from autolens.lensing import galaxy as g
 from autolens.imaging import mask as mask
 from autolens.imaging import image
 from autolens.profiles import light_profiles as lp
-from autolens.pixelization import pixelization
-
+from autolens.inversion import pixelizations
+from autolens.inversion import regularization
+from autolens.inversion import inversions
 
 class TestResiduals:
 
@@ -502,13 +503,11 @@ class MockTracer(object):
 class MockReconstructor(object):
 
     def __init__(self):
-        pass
-
-    def reconstruction_from_reconstructor_and_data(self, lensing_image, noise, convolver_mapping_matrix):
-        return MockReconstruction()
+        self.mapping_matrix = np.ones((1,1))
+        self.regularization_matrix = np.ones((1,1))
 
 
-class MockReconstruction(object):
+class MockInversion(object):
 
     def __init__(self):
 
@@ -1019,19 +1018,24 @@ class TestProfileFitter:
 
     class TestPixelizationFitterFromProfileFitter:
 
-        def test__profile_subtracted_image_is_passed_with_other_attributes(self, li_blur):
+        def test__profile_subtracted_image_is_passed_with_other_attributes(self, li_no_blur):
 
-            tracer = MockTracer(image=li_blur.mask.map_2d_array_to_masked_1d_array(li_blur.image),
-                                blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+            light_profile = lp.EllipticalSersic(intensity=1.0)
+            light_profile_galaxy = g.Galaxy(light_profile=light_profile)
+            light_profile_intensity = ray_tracing.intensities_from_grid(grid=li_no_blur.grids.sub,
+                                                                        galaxies=[light_profile_galaxy])
 
-            profile_fitter = fitting.ProfileFitter(lensing_image=li_blur, tracer=tracer)
+            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(regularization_coefficients=(1.0,)))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[light_profile_galaxy], source_galaxies=[galaxy_pix],
+                                                         image_plane_grids=li_no_blur.grids, borders=li_no_blur.borders)
 
-            # _model_image == np.array([4.0, 4.0, 4.0, 4.0])
+            profile_fitter = fitting.ProfileFitter(lensing_image=li_no_blur, tracer=tracer)
 
-            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_lensing_image(li_blur)
+            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_lensing_image(li_no_blur)
 
             assert type(pix_fitter) == fitting.PixelizationFitter
-            assert (pix_fitter._image == np.array([-3.0, -3.0, -3.0, -3.0])).all()
+            assert (pix_fitter._image == li_no_blur - light_profile_intensity).all()
             assert pix_fitter.tracer == pix_fitter.tracer
 
 
@@ -1142,25 +1146,32 @@ class TestHyperProfileFitter:
 
     class TestPixelizationFitterFromProfileFitter:
 
-        def test__profile_subtracted_image_is_passed_with_other_attributes(self, li_blur):
+        def test__profile_subtracted_image_is_passed_with_other_attributes(self, li_no_blur):
 
-            tracer = MockTracer(image=li_blur.mask.map_2d_array_to_masked_1d_array(li_blur.image),
-                                blurring_image=np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))
+            light_profile = lp.EllipticalSersic(intensity=1.0)
+            light_profile_galaxy = g.Galaxy(light_profile=light_profile)
+            light_profile_intensity = ray_tracing.intensities_from_grid(grid=li_no_blur.grids.sub,
+                                                                        galaxies=[light_profile_galaxy])
+
+            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(regularization_coefficients=(1.0,)))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[light_profile_galaxy], source_galaxies=[galaxy_pix],
+                                                         image_plane_grids=li_no_blur.grids, borders=li_no_blur.borders)
 
             hyper_model_image = np.array([1.0])
             hyper_galaxy_images = [np.array([1.0]), np.array([1.0])]
 
-            profile_fitter = fitting.HyperProfileFitter(lensing_image=li_blur, tracer=tracer,
+            profile_fitter = fitting.HyperProfileFitter(lensing_image=li_no_blur, tracer=tracer,
                                                 hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images,
                                                 hyper_minimum_values=[0.2, 0.7])
 
             # _model_image == np.array([4.0, 4.0, 4.0, 4.0])
 
-            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_lensing_image(li_blur)
+            pix_fitter = profile_fitter.pixelization_fitter_with_profile_subtracted_lensing_image(li_no_blur)
 
             assert type(pix_fitter) == fitting.HyperPixelizationFitter
-            assert (pix_fitter._image[:] == np.array([-3.0, -3.0, -3.0, -3.0])).all()
+            assert (pix_fitter._image == li_no_blur - light_profile_intensity).all()
             assert pix_fitter.tracer == pix_fitter.tracer
             assert (pix_fitter.hyper_model_image == profile_fitter.hyper_model_image).all()
             assert (pix_fitter.hyper_galaxy_images[0] == profile_fitter.hyper_galaxy_images[0]).all()
@@ -1261,8 +1272,8 @@ class TestPixelizationFitter:
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
-            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            galaxy_pix = g.Galaxy(pixelization=pix)
+            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(regularization_coefficients=(1.0,)))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li.grids, borders=li.borders)
             fitter = fitting.PixelizationFitter(lensing_image=li, tracer=tracer)
@@ -1318,23 +1329,27 @@ class TestPixelizationFitter:
                                            [True, True, True, True, True]]), pixel_scale=1.0)
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(li.grids, li.borders)
-            recon = reconstructor.reconstruction_from_reconstructor_and_data(li, li.noise_map, li.convolver_mapping_matrix)
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            mapper = pix.mapper_from_grids_and_borders(li.grids, li.borders)
+            reg = regularization.Constant(regularization_coefficients=(1.0,))
 
-            g0 = g.Galaxy(pixelization=pix)
+            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
+                                                                                 image=li, noise_map=li.noise_map,
+                                                                                 convolver=li.convolver_mapping_matrix)
+
+            g0 = g.Galaxy(pixelization=pix, regularization=reg)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
                                                          image_plane_grids=li.grids, borders=li.borders)
 
             fitter = fitting.PixelizationFitter(lensing_image=li, tracer=tracer)
 
-            residuals = fitting.residuals_from_image_and_model(li, fitter._reconstruction.reconstructed_image)
+            residuals = fitting.residuals_from_image_and_model(li, fitter._inversion.reconstructed_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li.noise_map)
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise(li.noise_map)
-            regularization_term = recon.regularization_term
-            covariance_regularization_term = recon.log_det_curvature_reg_matrix_term
-            regularization_matrix_term = recon.log_det_regularization_matrix_term
+            regularization_term = inversion.regularization_term
+            covariance_regularization_term = inversion.log_det_curvature_reg_matrix_term
+            regularization_matrix_term = inversion.log_det_regularization_matrix_term
             evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, regularization_term,
                                                                   covariance_regularization_term,
                                                                   regularization_matrix_term, noise_term)
@@ -1343,13 +1358,14 @@ class TestPixelizationFitter:
             assert li.grids.image.map_to_2d(chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
             assert chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert noise_term == pytest.approx(fitter.noise_term, 1e-4)
-            assert regularization_term == pytest.approx(fitter._reconstruction.regularization_term, 1e-4)
-            assert covariance_regularization_term == pytest.approx(fitter._reconstruction.log_det_curvature_reg_matrix_term, 1e-4)
-            assert regularization_matrix_term == pytest.approx(fitter._reconstruction.log_det_regularization_matrix_term, 1e-4)
+            assert regularization_term == pytest.approx(fitter._inversion.regularization_term, 1e-4)
+            assert covariance_regularization_term == pytest.approx(fitter._inversion.log_det_curvature_reg_matrix_term, 1e-4)
+            assert regularization_matrix_term == pytest.approx(fitter._inversion.log_det_regularization_matrix_term, 1e-4)
             assert evidence == fitter.evidence
 
 
 class TestHyperPixelizationFitter:
+
 
     class TestRectangularPixelization:
 
@@ -1372,16 +1388,18 @@ class TestHyperPixelizationFitter:
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
-            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-
             hyper_model_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
             hyper_galaxy_images = [np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])]
-
             hyper_galaxy = g.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
+
             galaxy_pix = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
-                                       hyper_galaxy=hyper_galaxy, pixelization=pix)
+                                  pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(regularization_coefficients=(1.0,)),
+                                  hyper_galaxy=hyper_galaxy)
+
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li.grids, borders=li.borders)
+
             fitter = fitting.HyperPixelizationFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image,
                                                      hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.0])
 
@@ -1394,7 +1412,6 @@ class TestHyperPixelizationFitter:
                                    [0.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0],
                                    [0.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0],
                                    [0.0,  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25]])
-
             reg_matrix = np.array([[2.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                    [-1.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
                                    [0.0, -1.0, 2.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
@@ -1405,7 +1422,6 @@ class TestHyperPixelizationFitter:
                                    [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.0, -1.0],
                                    [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.0]])
             reg_matrix = reg_matrix + 1e-8 * np.identity(9)
-
             cov_reg_matrix = cov_matrix + reg_matrix
 
             chi_sq_term = 0.0
@@ -1439,8 +1455,9 @@ class TestHyperPixelizationFitter:
                                            [True, True, True, True, True]]), pixel_scale=1.0)
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-            pix = pixelization.RectangularRegConst(shape=(3, 3), regularization_coefficients=(1.0,))
-            reconstructor = pix.reconstructor_from_pixelization_and_grids(li.grids, li.borders)
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            mapper = pix.mapper_from_grids_and_borders(li.grids, li.borders)
+            reg = regularization.Constant(regularization_coefficients=(1.0,))
 
             hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
             hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
@@ -1448,20 +1465,21 @@ class TestHyperPixelizationFitter:
             hyper_model = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
             hyper_galaxy = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                                          hyper_galaxy=hyper_model)
-            hyper_pix_galaxy = g.Galaxy(pixelization=pix, hyper_galaxy=hyper_model)
+            hyper_pix_galaxy = g.Galaxy(pixelization=pix, regularization=reg, hyper_galaxy=hyper_model)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyper_galaxy], source_galaxies=[hyper_pix_galaxy],
                                                          image_plane_grids=li.grids, borders=li.borders)
 
             fitter = fitting.HyperPixelizationFitter(lensing_image=li, tracer=tracer, hyper_model_image=hyper_model_image,
                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=[0.2, 0.8])
 
-            scaled_recon = reconstructor.reconstruction_from_reconstructor_and_data(li, fitter._noise,
-                                                                                    li.convolver_mapping_matrix)
+            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
+                                                                                 image=li, noise_map=fitter._noise,
+                                                                                 convolver=li.convolver_mapping_matrix)
 
-            residuals = fitting.residuals_from_image_and_model(li, fitter._reconstruction.reconstructed_image)
-            regularization_term = scaled_recon.regularization_term
-            scaled_covariance_regularization_term = scaled_recon.log_det_curvature_reg_matrix_term
-            regularization_matrix_term = scaled_recon.log_det_regularization_matrix_term
+            residuals = fitting.residuals_from_image_and_model(li, fitter._inversion.reconstructed_image)
+            regularization_term = inversion.regularization_term
+            scaled_covariance_regularization_term = inversion.log_det_curvature_reg_matrix_term
+            regularization_matrix_term = inversion.log_det_regularization_matrix_term
 
             contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images,
                                                             [hyper_model, hyper_model], minimum_values=[0.2, 0.8])
@@ -1482,9 +1500,9 @@ class TestHyperPixelizationFitter:
             assert li.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fitter.chi_squareds, 1e-4)
             assert scaled_chi_squared_term == pytest.approx(fitter.chi_squared_term, 1e-4)
             assert scaled_noise_term == pytest.approx(fitter.noise_term, 1e-4)
-            assert regularization_term == pytest.approx(fitter._reconstruction.regularization_term, 1e-4)
-            assert scaled_covariance_regularization_term == pytest.approx(fitter._reconstruction.log_det_curvature_reg_matrix_term, 1e-4)
-            assert regularization_matrix_term == pytest.approx(fitter._reconstruction.log_det_regularization_matrix_term, 1e-4)
+            assert regularization_term == pytest.approx(fitter._inversion.regularization_term, 1e-4)
+            assert scaled_covariance_regularization_term == pytest.approx(fitter._inversion.log_det_curvature_reg_matrix_term, 1e-4)
+            assert regularization_matrix_term == pytest.approx(fitter._inversion.log_det_regularization_matrix_term, 1e-4)
             assert scaled_evidence == fitter.evidence
 
 
