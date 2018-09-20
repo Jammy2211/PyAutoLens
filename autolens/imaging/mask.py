@@ -100,7 +100,7 @@ class Mask(scaled_array.ScaledArray):
         return imaging_util.grid_to_pixel_from_mask(self).astype('int')
 
     def map_2d_array_to_masked_1d_array(self, array_2d):
-        """For a 2D data-array (e.g. the image, noise-map, etc.) map it to a masked 1D array of values usin this mask.
+        """For a 2D data-array (e.g. the image, noise-mappers, etc.) mappers it to a masked 1D array of values usin this mask.
 
         Parameters
         ----------
@@ -473,7 +473,7 @@ class SubGrid(ImageGrid):
             self.mask = obj.mask
 
     def sub_data_to_image(self, sub_array):
-        """For an input sub-gridded array, map it from the sub-grid to a 1D image-grid by summing each set of \
+        """For an input sub-gridded array, mappers it from the sub-grid to a 1D image-grid by summing each set of \
         each set of sub-pixels values and dividing by the total number of sub-pixels.
 
         Parameters
@@ -637,7 +637,7 @@ class ImagingGridBorders(object):
         The sub-grid - The sub-pixel-indexes of all unmasked pixels in a *SubGrid* that are border-pixels.
 
         A polynomial is fitted to the (x,y) coordinates of each border's pixels. This allows us to relocate \
-        demagnified pixel's in a grid to its border, so that they do not disrupt an adaptive pixelization.
+        demagnified pixel's in a grid to its border, so that they do not disrupt an adaptive inversion.
 
         Parameters
         -----------
@@ -674,7 +674,7 @@ class ImagingGridBorders(object):
         border.
 
         The blurring-grid does not have its coordinates relocated, as it is only used for computing analytic \
-        light-profiles and not pixelization-grids.
+        light-profiles and not inversion-grids.
 
         Parameters
         -----------
@@ -693,7 +693,7 @@ class ImageGridBorder(np.ndarray):
         mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels).
 
         A polynomial is fitted to the (x,y) coordinates of the border's pixels. This allows us to relocate \
-        demagnified pixel's in a grid to its border, so that they do not disrupt an adaptive pixelization.
+        demagnified pixel's in a grid to its border, so that they do not disrupt an adaptive inversion.
 
         Parameters
         -----------

@@ -74,6 +74,10 @@ class AbstractTracer(object):
         return any(list(map(lambda galaxy : galaxy.has_pixelization, self.galaxies)))
 
     @property
+    def has_galaxy_with_regularization(self):
+        return any(list(map(lambda galaxy : galaxy.has_regularization, self.galaxies)))
+
+    @property
     def has_unmasked_grids(self):
         return isinstance(self.all_planes[0].grids.image, msk.ImageUnmaskedGrid)
 
@@ -122,12 +126,12 @@ class AbstractTracer(object):
         return [plane.grids.image for plane in self.all_planes]
 
     @property
-    def pixelizations(self):
-        return list(filter(None, [plane.pixelization for plane in self.all_planes]))
+    def mappers_of_planes(self):
+        return list(filter(None, [plane.mapper for plane in self.all_planes]))
 
     @property
-    def reconstructors(self):
-        return list(filter(None, [plane.reconstructor for plane in self.all_planes]))
+    def regularization_of_planes(self):
+        return list(filter(None, [plane.regularization for plane in self.all_planes]))
 
     @property
     def xticks_of_planes(self):
@@ -408,24 +412,29 @@ class Plane(object):
         return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
 
     @property
-    def pixelization(self):
+    def mapper(self):
 
-        pixelization_galaxies = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
+        galaxies_with_pixelization = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
 
-        if len(pixelization_galaxies) == 0:
+        if len(galaxies_with_pixelization) == 0:
             return None
-        if len(pixelization_galaxies) == 1:
-            return pixelization_galaxies[0].pixelization
-        elif len(pixelization_galaxies) > 1:
+        if len(galaxies_with_pixelization) == 1:
+            pixelization = galaxies_with_pixelization[0].pixelization
+            return pixelization.mapper_from_grids_and_borders(self.grids, self.borders)
+        elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 
     @property
-    def reconstructor(self):
+    def regularization(self):
 
-        if self.pixelization is not None:
-            return self.pixelization.reconstructor_from_pixelization_and_grids(self.grids, self.borders)
-        else:
+        galaxies_with_regularization = list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
+
+        if len(galaxies_with_regularization) == 0:
             return None
+        if len(galaxies_with_regularization) == 1:
+            return galaxies_with_regularization[0].regularization
+        elif len(galaxies_with_regularization) > 1:
+            raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     @property
     def xticks_from_image_grid(self):
@@ -478,7 +487,7 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the image-plane.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) map to the same location(s) \
+            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
             in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -510,7 +519,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) map to the same location(s) \
+            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
             in the final source-plane.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
@@ -553,14 +562,14 @@ class PlanePositions(object):
 
     def __init__(self, galaxies, positions, compute_deflections=True):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer and the positions of image-plane \
-        coordinates which map close to one another in the source-plane.
+        coordinates which mappers close to one another in the source-plane.
 
         Parameters
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) map to the same location(s) \
+            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
             in the final source-plane.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
