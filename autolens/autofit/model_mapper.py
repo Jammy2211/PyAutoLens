@@ -503,7 +503,7 @@ prior_number = 0
 
 
 class Prior(object):
-    """An object used to map a unit value to an attribute value for a specific class attribute"""
+    """An object used to mappers a unit value to an attribute value for a specific class attribute"""
 
     _ids = itertools.count()
 

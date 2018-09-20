@@ -8,7 +8,7 @@ class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
-        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
+        Abstract base class for a inversion, which discretizes a set of masked_image and sub grid grid into \
         pixels. These pixels then fit a  data_vector-set using a linear inversion, where their regularization_matrix matrix
         enforces smoothness between pixel values.
 
@@ -16,13 +16,13 @@ class Pixelization(object):
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
         example:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd inversion-pixel maps to the 6th masked_image-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd inversion-pixel.
 
         Parameters
         ----------
         pixels : int
-            The number of pixels in the pixelization.
+            The number of pixels in the inversion.
         regularization_coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         pix_signal_scale : float
@@ -35,7 +35,7 @@ class Pixelization(object):
 class Rectangular(Pixelization):
 
     def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
-        """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
+        """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
         Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
@@ -49,7 +49,7 @@ class Rectangular(Pixelization):
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
+            raise exc.PixelizationException('The rectangular inversion must be at least dimensions 3x3')
 
         super(Rectangular, self).__init__(shape[0] * shape[1], regularization_coefficients)
 
@@ -100,7 +100,7 @@ class Rectangular(Pixelization):
 
     def grid_to_pix_from_grid(self, grid, geometry):
         """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
-        traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
+        traced pix-plane grid (or sub-grid) and the uniform rectangular inversion's geometry.
 
         Parameters
         ----------
