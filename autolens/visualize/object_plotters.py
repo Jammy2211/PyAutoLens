@@ -15,7 +15,7 @@ def plot_image_data_from_image(image, units, xyticksize=40,
     Parameters
     -----------
     image : autolens.imaging.image.Image
-        Class containing the image, noise-map and PSF that are to be plotted.
+        Class containing the image, noise-mappers and PSF that are to be plotted.
     units : str
         The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
     norm : str
@@ -40,7 +40,7 @@ def plot_image_data_from_image(image, units, xyticksize=40,
     image_title : str
         The title of the image.
     noise_map_title : str
-        The title of the noise-map image.
+        The title of the noise-mappers image.
     psf_title : str
         The title of the psf image.
     titlesize : int
