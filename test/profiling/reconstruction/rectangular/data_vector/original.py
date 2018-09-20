@@ -22,9 +22,9 @@ class Reconstructor(object):
             The matrix defining how the reconstructed_image's pixels are regularized with one another when fitting the
             data_vector.
         image_to_pix : ndarray
-            The mapping_matrix between each masked_image-grid pixel and pixelization-grid pixel.
+            The mapping_matrix between each masked_image-grid pixel and inversion-grid pixel.
         sub_to_pix : ndarray
-            The mapping_matrix between each sub-grid pixel and pixelization-grid sub-pixel.
+            The mapping_matrix between each sub-grid pixel and inversion-grid sub-pixel.
         """
         self.mapping = mapping
         self.mapping_shape = mapping.shape
@@ -110,7 +110,7 @@ def hst_up_solution():
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao_recon.data_vector_from_blurred_mapping_matrix_and_data_jit(ao_blurred_mapping, ao.masked_image.estimated_noise_map)
+    ao_recon.data_vector_from_blurred_mapping_matrix_and_data(ao_blurred_mapping, ao.masked_image.estimated_noise_map)
 
 if __name__ == "__main__":
     lsst_solution()

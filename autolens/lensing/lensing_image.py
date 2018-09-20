@@ -31,10 +31,10 @@ class LensingImage(im.Image):
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
-            The shape of the PSF used for convolving the pixelization mapping matrix. A smaller \
+            The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that map close to one another in the source-plane(s), used \
+            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale,

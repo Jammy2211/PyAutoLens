@@ -1,3 +1,4 @@
+from autolens import exc
 from autolens.lensing import galaxy as g
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
@@ -777,9 +778,14 @@ class TestHyperGalaxy(object):
 
 
 class TestBooleanProperties(object):
+    
     def test_has_pixelization(self):
         assert g.Galaxy().has_pixelization is False
-        assert g.Galaxy(pixelization=object()).has_pixelization is True
+        assert g.Galaxy(pixelization=object(), regularization=object()).has_pixelization is True
+
+    def test_has_regularization(self):
+        assert g.Galaxy().has_regularization is False
+        assert g.Galaxy(pixelization=object(), regularization=object()).has_regularization is True
 
     def test_has_hyper_galaxy(self):
         assert g.Galaxy().has_pixelization is False
@@ -799,3 +805,13 @@ class TestBooleanProperties(object):
         assert g.Galaxy().has_profile is False
         assert g.Galaxy(light_profile=lp.LightProfile()).has_profile is True
         assert g.Galaxy(mass_profile=mp.MassProfile()).has_profile is True
+
+    def test__only_pixelization_raises_error(self):
+
+        with pytest.raises(exc.GalaxyException):
+            g.Galaxy(pixelization=object())
+
+    def test__only_regularization_raises_error(self):
+
+        with pytest.raises(exc.GalaxyException):
+            g.Galaxy(regularization=object())

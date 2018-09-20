@@ -193,7 +193,7 @@ class PreparatoryImage(ScaledArray):
 
     def electrons_per_second_to_counts(self, array):
         """
-        For an array (in electrons per second) and an exposure time map, return an array in units counts.
+        For an array (in electrons per second) and an exposure time mappers, return an array in units counts.
 
         Parameters
         ----------
@@ -204,7 +204,7 @@ class PreparatoryImage(ScaledArray):
 
     def counts_to_electrons_per_second(self, array):
         """
-        For an array (in counts) and an exposure time map, convert the array to units electrons per second
+        For an array (in counts) and an exposure time mappers, convert the array to units electrons per second
 
         Parameters
         ----------
@@ -220,30 +220,30 @@ class PreparatoryImage(ScaledArray):
 
     @property
     def background_noise_map_counts(self):
-        """ The background noise_map map in units of counts."""
+        """ The background noise_map mappers in units of counts."""
         return self.electrons_per_second_to_counts(self.background_noise_map)
 
     @property
     def estimated_noise_map_counts(self):
-        """ The estimated noise_map map of the image (using its background noise_map map and image values in counts) in counts.
+        """ The estimated noise_map mappers of the image (using its background noise_map mappers and image values in counts) in counts.
         """
         return np.sqrt((np.abs(self.image_counts) + np.square(self.background_noise_map_counts)))
 
     @property
     def estimated_noise_map(self):
-        """ The estimated noise_map map of the image (using its background noise_map map and image values in counts) in \
+        """ The estimated noise_map mappers of the image (using its background noise_map mappers and image values in counts) in \
         electrons per second.
         """
         return self.counts_to_electrons_per_second(self.estimated_noise_map_counts)
 
     @property
     def signal_to_noise_map(self):
-        """The estimated signal-to-noise_map map of the image."""
+        """The estimated signal-to-noise_map mappers of the image."""
         return np.divide(self, self.noise_map)
 
     @property
     def signal_to_noise_max(self):
-        """The maximum value of signal-to-noise_map in an image pixel in the image's signal-to-noise_map map"""
+        """The maximum value of signal-to-noise_map in an image pixel in the image's signal-to-noise_map mappers"""
         return np.max(self.signal_to_noise_map)
 
     def background_noise_from_edges(self, no_edges):
@@ -414,7 +414,7 @@ def setup_random_seed(seed):
 
 def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     """
-    Generate a two-dimensional poisson noise_map-map from an image.
+    Generate a two-dimensional poisson noise_map-mappers from an image.
 
     Values are computed from a Poisson distribution using the image's input values in units of counts.
 
