@@ -16,7 +16,7 @@ class RegularizationConstant(object):
 
     def regularization_matrix_from_pix_neighbors(self, pix_neighbors):
         """
-        Setup a pixelization's constant regularization_matrix matrix (see test_pixelization.py)
+        Setup a inversion's constant regularization_matrix matrix (see test_pixelizations.py)
 
         Parameters
         ----------
@@ -41,7 +41,7 @@ class Pixelization(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
-        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
+        Abstract base class for a inversion, which discretizes a set of masked_image and sub grid grid into \
         pixels. These pixels fit an masked_image using a linear inversion, where a regularization_matrix matrix
         enforces smoothness between pixel values.
 
@@ -49,13 +49,13 @@ class Pixelization(object):
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
         example:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd inversion-pixel maps to the 6th masked_image-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd inversion-pixel.
 
         Parameters
         ----------
         pixels : int
-            The number of pixels in the pixelization.
+            The number of pixels in the inversion.
         regularization_coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
@@ -66,7 +66,7 @@ class Pixelization(object):
 class RectangularRegConst(Pixelization, RegularizationConstant):
 
     def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
-        """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
+        """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
         Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
@@ -80,7 +80,7 @@ class RectangularRegConst(Pixelization, RegularizationConstant):
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
+            raise exc.PixelizationException('The rectangular inversion must be at least dimensions 3x3')
 
         super(RectangularRegConst, self).__init__(shape[0] * shape[1], regularization_coefficients)
 

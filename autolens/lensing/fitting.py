@@ -1,6 +1,7 @@
 import numpy as np
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
+from autolens.inversion import inversions
 from autolens import exc
 
 minimum_value_profile = 0.1
@@ -121,18 +122,26 @@ class AbstractPixelizationFitter(object):
     def __init__(self, lensing_image, noise):
 
         self.map_to_2d = lensing_image.grids.image.map_to_2d
-        reconstructors = self.tracer.reconstructors
-        self._reconstruction = reconstructors[0].reconstruction_from_reconstructor_and_data(lensing_image, noise,
-                                                                                lensing_image.convolver_mapping_matrix)
-        self._model_image = self._reconstruction.reconstructed_image
+        self._inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=self.mapper,
+                          regularization=self.regularization, image=lensing_image, noise_map=noise,
+                          convolver=lensing_image.convolver_mapping_matrix)
+        self._model_image = self._inversion.reconstructed_image
         self._residuals = residuals_from_image_and_model(lensing_image[:], self._model_image)
+
+    @property
+    def mapper(self):
+        return self.tracer.mappers_of_planes[0]
+
+    @property
+    def regularization(self):
+        return self.tracer.regularization_of_planes[0]
 
     @property
     def evidence(self):
         return evidence_from_reconstruction_terms(self.chi_squared_term,
-                                                  self._reconstruction.regularization_term,
-                                                  self._reconstruction.log_det_curvature_reg_matrix_term,
-                                                  self._reconstruction.log_det_regularization_matrix_term,
+                                                  self._inversion.regularization_term,
+                                                  self._inversion.log_det_curvature_reg_matrix_term,
+                                                  self._inversion.log_det_regularization_matrix_term,
                                                   self.noise_term)
 
 
@@ -274,7 +283,7 @@ def blur_image_including_blurring_region(image, blurring_image, convolver):
         The lensing_image data_vector using the GridData 1D representation.
     blurring_image : ndarray
         The blurring region data_vector, using the GridData 1D representation.
-    convolver : auto_lens.pixelization.frame_convolution.KernelConvolver
+    convolver : auto_lens.inversion.frame_convolution.KernelConvolver
         The 2D Point Spread Function (PSF).
     """
     return convolver.convolve_image(image, blurring_image)
@@ -400,7 +409,6 @@ def unmasked_model_image_from_tracer_and_lensing_image(tracer, lensing_image):
                                                                                    lensing_image.psf)
 
     return lensing_image.unmasked_grids.image.map_to_2d(model_image_1d)
-
 
 def unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer, lensing_image):
 
