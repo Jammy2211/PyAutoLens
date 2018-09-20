@@ -5,7 +5,8 @@ from autolens.lensing import ray_tracing
 from autolens.lensing import galaxy as g
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-import matplotlib.pyplot as plt
+from autolens.visualize import object_plotters
+from autolens.visualize import array_plotters
 import os
 
 # In this example, we'll simulate a lensed source galaxy and output the images (as .fits). This image is used to
@@ -13,8 +14,7 @@ import os
 
 # First, lets setup the PSF we are going to blur our simulated image with, using a Gaussian profile on an 11x11 grid.
 psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
-# plt.imshow(psf)
-# plt.show()
+array_plotters.plot_psf(psf=psf)
 
 # We need to set up the grids of Cartesian coordinates we will use to perform ray-tracing. The function below
 # sets these grids up using the shape and pixel-scale of the image we will ultimately simulate. The PSF shape is
@@ -23,7 +23,7 @@ imaging_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=(100, 100)
 
 # Use the 'galaxy' module (imported as 'g'), 'light_profiles' module (imported as 'lp') and 'mass profiles' module
 # (imported as 'mp') to setup the lens and source galaxies.
-#
+
 # For the lens galaxy, we'll use a singular isothermal ellipsoid (SIE) mass profile.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=40.0, einstein_radius=1.8))
 
@@ -39,19 +39,21 @@ source_galaxy = g.Galaxy(light=lp.EllipticalExponential(centre=(0.01, 0.01), axi
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=imaging_grids)
 
-# In example/howtolens/ray_tracing, we'll discuss the in-built properties a tracer has describing the lens system.
+# For this example, we'll extract the image-plane image of this ray-tracing geometry. We actually need a special image
+# specifically for simulations, which ensures that edge-effects do not degrade the PSF convolution.
+array_plotters.plot_image(image=tracer.image_plane_image_for_simulation)
 
-# For this example, we'll just extract its 2d image-plane image - lets have a look!
-#plt.imshow(tracer.image_plane_image_2d)
-#plt.show()
-
-# To simulate the image, we pass this image to the imaging module's simulate function. We add various effects, including
-# PSF blurring, the background sky and noise.
-image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image, pixel_scale=0.1,
+# To simulate the image, we pass this image to the imaging module's simulate function. We add various effects,
+# including PSF blurring, the background sky and noise.
+image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1,
                                                   add_noise=True)
-plt.imshow(image_simulated.noise_map)
-plt.show()
+
+# Now we can visualize the image, noise-map and psf. Note we're using an object plotter (rather than the array
+# plotters that we used above), which automatically plots all of the simulated image data.
+# You should also note that now we're using an image with a defined pixel scale, the x and y axis of these figures
+# are in arc-seconds
+object_plotters.plot_image_data_from_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
