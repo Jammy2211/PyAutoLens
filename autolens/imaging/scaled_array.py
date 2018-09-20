@@ -85,7 +85,7 @@ class ScaledArray(Array):
         Parameters
         ----------
         array: ndarray
-            An array representing data (e.g. an image, noise-map, etc.)
+            An array representing data (e.g. an image, noise-mappers, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
