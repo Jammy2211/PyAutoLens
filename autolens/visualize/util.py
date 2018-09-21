@@ -30,14 +30,18 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
 
 def get_xylabels(units):
 
-    if units is 'arcsec':
+    if units is 'pixels':
+        xlabel = 'x (pixels)'
+        ylabel = 'y (pixels)'
+    elif units is 'arcsec':
         xlabel = 'x (arcsec)'
         ylabel = 'y (arcsec)'
     elif units is 'kpc':
         xlabel = 'x (kpc)'
         ylabel = 'y (kpc)'
     else:
-        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be arcsec | kpc)')
+        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be pixels | '
+                                     'arcsec | kpc)')
 
     return xlabel, ylabel
 
@@ -51,10 +55,18 @@ def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsiz
     plt.xlabel(xlabel, fontsize=xlabelsize)
     plt.ylabel(ylabel, fontsize=ylabelsize)
 
-def set_ticks(array, xticks, yticks, xyticksize):
+def set_ticks(array, units, xticks, yticks, xyticksize):
 
-    plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
-    plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
+    if units is 'pixels':
+
+        plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99])),0))
+        plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99])),0))
+
+    elif units is 'arcsec' or units is 'kpc':
+
+        plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
+        plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
+
     plt.tick_params(labelsize=xyticksize)
 
 def set_colorbar(cb_ticksize):

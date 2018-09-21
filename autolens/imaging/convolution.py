@@ -144,7 +144,7 @@ class Convolver(object):
     image_frame_lengths = 9
 
     Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
-    masked image or the masked image of a mapping_matrix in the pixelization module.
+    masked image or the masked image of a mapping_matrix in the inversion module.
 
     BLURRING FRAMES:
     --------------
@@ -152,7 +152,7 @@ class Convolver(object):
     Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that \
     pixels outside of the mask will also blur light into it. This effect is accounted for using blurring frames.
 
-    It is omitted for mapping_matrix matrix blurring, as a pixelization does not fit data outside of the mask.
+    It is omitted for mapping_matrix matrix blurring, as a inversion does not fit data outside of the mask.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
     to blur light into it for a given psf size. Following the example above, the following blurring mask is \
@@ -348,7 +348,7 @@ class ConvolverImage(Convolver):
             1D array of the blurring image values which blur into the image-array after PSF convolution.
         """
         return self.convolve_jit(image_array, self.image_frame_indexes, self.image_frame_psfs, self.image_frame_lengths,
-                                  blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs, 
+                                  blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs,
                                  self.blurring_frame_lengths)
 
     @staticmethod
@@ -404,12 +404,12 @@ class ConvolverMappingMatrix(Convolver):
         super(ConvolverMappingMatrix, self).__init__(mask, psf)
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        """For a given pixelization mapping matrix, convolver every pixel's mapped image using this convolver.
+        """For a given inversion mapping matrix, convolver every pixel's mapped image using this convolver.
 
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D mapping matix describing how every pixelization pixel maps to an image pixel.
+            The 2D mapping matix describing how every inversion pixel maps to an image pixel.
         """
         return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
                                         self.image_frame_psfs, self.image_frame_lengths)
