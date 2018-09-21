@@ -555,4 +555,4 @@ class MultiNest(NonLinearOptimizer):
 
             for i in range(self.variable.total_constants):
                 line = constant_names[i]
-                line += ' '  * (50 - len(line)) + str(constants[i][1].value)
+                line += ' ' * (50 - len(line)) + str(constants[i][1].value)
