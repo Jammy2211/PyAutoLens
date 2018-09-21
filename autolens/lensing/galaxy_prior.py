@@ -218,6 +218,16 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return [prior for prior_model in self.prior_models for prior in prior_model.priors]
 
     @property
+    def constants(self):
+        """
+        Returns
+        -------
+        constant: [Constant]
+            A list of constants associated with prior models in this galaxy prior.
+        """
+        return [constant for prior_model in self.prior_models for constant in prior_model.constants]
+
+    @property
     def prior_class_dict(self):
         """
         Returns
