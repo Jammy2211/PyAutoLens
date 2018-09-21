@@ -89,8 +89,8 @@ class ModelMapper(AbstractModel):
         """
         super(ModelMapper, self).__init__()
 
-        self.config = (config if config is not None else conf.instance.prior_default)
-        self.width_config = (width_config if width_config is not None else conf.instance.prior_width)
+        self.config = (config or conf.instance.prior_default)
+        self.width_config = (width_config or conf.instance.prior_width)
 
         for name, cls in classes.items():
             self.__setattr__(name, cls)
@@ -98,6 +98,10 @@ class ModelMapper(AbstractModel):
     @property
     def total_parameters(self):
         return len(self.priors_ordered_by_id)
+
+    @property
+    def total_constants(self):
+        return len(self.constants)
 
     def __setattr__(self, key, value):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
@@ -153,6 +157,27 @@ class ModelMapper(AbstractModel):
         """
         return {prior[1]: prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
+
+    @property
+    def constant_set(self):
+        """
+        Returns
+        -------
+        prior_set: set()
+            The set of all priors associated with this mapper
+        """
+        return {constant[1]: constant for name, prior_model in self.prior_models for constant in
+                prior_model.constants}.values()
+
+    @property
+    def constants(self):
+        """
+        Returns
+        -------
+        constants: [(str, Constant)]
+            A list of tuples mapping strings to constants constants ordered by id
+        """
+        return sorted(list(self.constant_set), key=lambda constant: constant[1].id)
 
     @property
     def prior_class_dict(self):
@@ -519,6 +544,8 @@ class ModelInstance(AbstractModel):
 
 
 class Constant(object):
+    _ids = itertools.count()
+
     def __init__(self, value):
         """
         Represents a constant value. No prior is added to the model mapper for constants reducing the dimensionality
@@ -530,6 +557,7 @@ class Constant(object):
             The value this constant should take.
         """
         self.value = value
+        self.id = next(self._ids)
 
     def __eq__(self, other):
         return self.value == other
@@ -545,6 +573,9 @@ class Constant(object):
 
     def __str__(self):
         return "Constant {}".format(self.value)
+
+    def __hash__(self):
+        return self.id
 
     @property
     def model_info(self):
@@ -725,8 +756,8 @@ class PriorModel(AbstractPriorModel):
         """
 
         self.cls = cls
-        self.config = (config if config is not None else conf.instance.prior_default)
-        self.width_config = (config if config is not None else conf.instance.prior_width)
+        self.config = (config or conf.instance.prior_default)
+        self.width_config = (config or conf.instance.prior_width)
 
         self.component_number = next(self._ids)
 
@@ -770,6 +801,9 @@ class PriorModel(AbstractPriorModel):
         try:
             if "_" in key:
                 setattr([v for k, v in self.tuple_priors if key.split("_")[0] == k][0], key, value)
+                return
+            if isinstance(value, float) or isinstance(value, int):
+                super().__setattr__(key, Constant(value))
                 return
         except IndexError:
             pass
@@ -930,6 +964,15 @@ class ListPriorModel(list, AbstractPriorModel):
         priors: [(String, Union(Prior, TuplePrior))]
         """
         return set([prior for prior_model in self for prior in prior_model.priors])
+
+    @property
+    def constants(self):
+        """
+        Returns
+        -------
+        priors: [(String, Union(Prior, TuplePrior))]
+        """
+        return set([constant for prior_model in self for constant in prior_model.constants])
 
     @property
     def prior_class_dict(self):
