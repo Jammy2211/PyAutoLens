@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 SIMPLEX_TUPLE_WIDTH = 0.1
 
+
 class Result(object):
 
     def __init__(self, constant, likelihood, variable=None):
@@ -560,3 +561,14 @@ class MultiNest(NonLinearOptimizer):
                         line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
                             upper_limit[i]) + ')'
                         results.write(line + '\n')
+
+            results.write('\n')
+            results.write('Constants' + '\n')
+            results.write('\n')
+
+            constant_names = self.constant_names
+            constants = self.variable.constants
+
+            for i in range(self.variable.total_constants):
+                line = constant_names[i]
+                line += ' ' * (50 - len(line)) + str(constants[i][1].value)
