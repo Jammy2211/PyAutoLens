@@ -121,7 +121,7 @@ class TestGalaxyPrior:
         assert len(mapper.prior_model_tuples) == 2
 
     def test_align_centres(self, galaxy_prior, test_config):
-        prior_models = galaxy_prior.prior_model_tuples
+        prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre != prior_models[1].centre
 
@@ -129,18 +129,18 @@ class TestGalaxyPrior:
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
                                       align_centres=True, config=test_config)
 
-        prior_models = galaxy_prior.prior_model_tuples
+        prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre == prior_models[1].centre
 
     def test_align_phis(self, galaxy_prior, test_config):
-        prior_models = galaxy_prior.prior_model_tuples
+        prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].phi != prior_models[1].phi
 
         prior_models = gp.GalaxyPrior(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_orientations=True, config=test_config).prior_model_tuples
+                                      align_orientations=True, config=test_config).prior_models
         assert prior_models[0].phi == prior_models[1].phi
 
 
