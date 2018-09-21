@@ -522,6 +522,8 @@ class ModelInstance(AbstractModel):
 
 
 class Constant(object):
+    _ids = itertools.count()
+
     def __init__(self, value):
         """
         Represents a constant value. No prior is added to the model mapper for constants reducing the dimensionality
@@ -533,6 +535,7 @@ class Constant(object):
             The value this constant should take.
         """
         self.value = value
+        self.id = next(self._ids)
 
     def __eq__(self, other):
         return self.value == other
@@ -548,6 +551,9 @@ class Constant(object):
 
     def __str__(self):
         return "Constant {}".format(self.value)
+
+    def __hash__(self):
+        return self.id
 
     @property
     def model_info(self):
@@ -773,6 +779,9 @@ class PriorModel(AbstractPriorModel):
         try:
             if "_" in key:
                 setattr([v for k, v in self.tuple_priors if key.split("_")[0] == k][0], key, value)
+                return
+            if isinstance(value, float) or isinstance(value, int):
+                super().__setattr__(key, Constant(value))
                 return
         except IndexError:
             pass

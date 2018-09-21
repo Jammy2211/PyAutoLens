@@ -842,6 +842,7 @@ class TestConstant(object):
         prior_model = model_mapper.PriorModel(MockClassMM, MockConfig())
         prior_model.one = 3
         prior_model.two = 4.
+        assert isinstance(prior_model.one, model_mapper.Constant)
         assert prior_model.one == model_mapper.Constant(3)
         assert prior_model.two == model_mapper.Constant(4.)
 
@@ -849,7 +850,11 @@ class TestConstant(object):
         prior_model = model_mapper.PriorModel(MockClassMM, MockConfig())
         prior_model.one = 3
         prior_model.two = 4.
+        assert isinstance(prior_model.one, model_mapper.Constant)
         mapper.mock_list = [prior_model]
+        assert isinstance(mapper.mock_list, model_mapper.ListPriorModel)
+        assert isinstance(prior_model.one, model_mapper.Constant)
+        assert isinstance(mapper.mock_list[0].one, model_mapper.Constant)
         assert len(mapper.constants) == 2
 
 
