@@ -123,7 +123,7 @@ class NonLinearOptimizer(object):
 
         prior_prior_model_name_dict = self.variable.prior_prior_model_name_dict
 
-        for prior_name, prior in self.variable.priors_ordered_by_id:
+        for prior_name, prior in self.variable.prior_tuples_ordered_by_id:
             paramnames_names.append(prior_prior_model_name_dict[prior] + '_' + prior_name)
 
         return paramnames_names
@@ -134,7 +134,7 @@ class NonLinearOptimizer(object):
 
         constant_prior_model_name_dict = self.variable.constant_prior_model_name_dict
 
-        for constant_name, constant in self.variable.constants_ordered_by_id:
+        for constant_name, constant in self.variable.constant_tuples_ordered_by_id:
             constant_names.append(constant_prior_model_name_dict[constant] + '_' + constant_name)
 
         return constant_names
@@ -150,7 +150,7 @@ class NonLinearOptimizer(object):
         prior_class_dict = self.variable.prior_class_dict
         prior_prior_model_dict = self.variable.prior_prior_model_dict
 
-        for prior_name, prior in self.variable.priors_ordered_by_id:
+        for prior_name, prior in self.variable.prior_tuples_ordered_by_id:
             param_string = self.label_config.label(prior_name)
             prior_model = prior_prior_model_dict[prior]
             cls = prior_class_dict[prior]
@@ -570,7 +570,7 @@ class MultiNest(NonLinearOptimizer):
             results.write('\n')
 
             constant_names = self.constant_names
-            constants = self.variable.constants_ordered_by_id
+            constants = self.variable.constant_tuples_ordered_by_id
 
             for i in range(self.variable.total_constants):
                 line = constant_names[i]
