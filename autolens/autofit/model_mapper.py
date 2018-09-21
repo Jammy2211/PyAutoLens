@@ -473,10 +473,24 @@ class ModelMapper(AbstractModel):
 
             model_info.append(prior_model.cls.__name__ + '\n')
 
-            for i, prior in enumerate(prior_model.priors + prior_model.constants):
-                class_priors_dict_ordered = sorted(
-                    self.class_priors_dict[prior_model_name] + self.class_constants_dict[prior_model_name],
-                    key=lambda p: p[1].id if hasattr(p, 'id') else 0)
+            # TODO : HACK FIX - MAKE CLEANER
+
+            if not prior_model.constants:
+                prior_model_iterator = prior_model.priors
+            else:
+                prior_model_iterator = prior_model.priors + prior_model.constants
+
+            for i, prior in enumerate(prior_model_iterator):
+
+                if not prior_model.constants:
+                    class_priors_dict_ordered = sorted(
+                        self.class_priors_dict[prior_model_name],
+                        key=lambda p: p[1].id if hasattr(p, 'id') else 0)
+                else:
+                    class_priors_dict_ordered = sorted(
+                        self.class_priors_dict[prior_model_name] + self.class_constants_dict[prior_model_name],
+                        key=lambda p: p[1].id if hasattr(p, 'id') else 0)
+
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_model_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
@@ -564,7 +578,7 @@ prior_number = 0
 
 
 class Prior(object):
-    """An object used to map a unit value to an attribute value for a specific class attribute"""
+    """An object used to mappers a unit value to an attribute value for a specific class attribute"""
 
     _ids = itertools.count()
 
