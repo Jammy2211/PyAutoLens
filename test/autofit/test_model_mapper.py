@@ -855,7 +855,7 @@ class TestConstant(object):
         assert isinstance(mapper.mock_list, model_mapper.ListPriorModel)
         assert isinstance(prior_model.one, model_mapper.Constant)
         assert isinstance(mapper.mock_list[0].one, model_mapper.Constant)
-        assert len(mapper.constants) == 2
+        assert len(mapper.constants_ordered_by_id) == 2
 
 
 @pytest.fixture(name="mapper")
