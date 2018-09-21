@@ -99,6 +99,10 @@ class ModelMapper(AbstractModel):
     def total_parameters(self):
         return len(self.priors_ordered_by_id)
 
+    @property
+    def total_constants(self):
+        return len(self.constants)
+
     def __setattr__(self, key, value):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
             value = ListPriorModel(value)
@@ -153,6 +157,21 @@ class ModelMapper(AbstractModel):
         """
         return {prior[1]: prior for name, prior_model in self.prior_models for prior in
                 prior_model.priors}.values()
+
+    @property
+    def constant_set(self):
+        """
+        Returns
+        -------
+        prior_set: set()
+            The set of all priors associated with this mapper
+        """
+        return {constant[1]: constant for name, prior_model in self.prior_models for constant in
+                prior_model.constants}.values()
+
+    @property
+    def constants(self):
+        return list(self.constant_set)
 
     @property
     def prior_class_dict(self):
@@ -914,6 +933,15 @@ class ListPriorModel(list, AbstractPriorModel):
         priors: [(String, Union(Prior, TuplePrior))]
         """
         return set([prior for prior_model in self for prior in prior_model.priors])
+
+    @property
+    def constants(self):
+        """
+        Returns
+        -------
+        priors: [(String, Union(Prior, TuplePrior))]
+        """
+        return set([constant for prior_model in self for constant in prior_model.constants])
 
     @property
     def prior_class_dict(self):

@@ -845,6 +845,18 @@ class TestConstant(object):
         assert prior_model.one == model_mapper.Constant(3)
         assert prior_model.two == model_mapper.Constant(4.)
 
+    def test_list_prior_model_constants(self, mapper):
+        prior_model = model_mapper.PriorModel(MockClassMM, MockConfig())
+        prior_model.one = 3
+        prior_model.two = 4.
+        mapper.mock_list = [prior_model]
+        assert len(mapper.constants) == 2
+
+
+@pytest.fixture(name="mapper")
+def make_mapper(test_config, width_config):
+    return model_mapper.ModelMapper(config=test_config, width_config=width_config)
+
 
 @pytest.fixture(name="mapper_with_one")
 def make_mapper_with_one(test_config, width_config):
