@@ -6,19 +6,15 @@ from autolens.lensing import galaxy_prior as gp
 from autolens.imaging import mask as msk
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
-from autolens import conf
 from test.integration import tools
-
-import numpy as np
-import shutil
 import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
 
-def test_lens_x2_gal_separate_pipeline():
 
+def test_lens_x2_gal_separate_pipeline():
     pipeline_name = "l2g_sep"
     data_name = '/l2g_sep'
 
@@ -43,8 +39,8 @@ def test_lens_x2_gal_separate_pipeline():
     for result in results:
         print(result)
 
-def make_lens_x2_gal_separate_pipeline(pipeline_name):
 
+def make_lens_x2_gal_separate_pipeline(pipeline_name):
     def modify_mask_function(img):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
@@ -88,6 +84,7 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
     phase3.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1, phase2, phase3)
+
 
 if __name__ == "__main__":
     test_lens_x2_gal_separate_pipeline()
