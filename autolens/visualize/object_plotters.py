@@ -1,6 +1,6 @@
 from autolens.visualize import array_plotters
 
-def plot_image_data_from_image(image, units, xyticksize=40,
+def plot_image_data_from_image(image, units='arcsec', xyticksize=40,
                                norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                                figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                image_title='Obsserved Image', noise_map_title='Noise Map', psf_title='PSF',
@@ -15,7 +15,7 @@ def plot_image_data_from_image(image, units, xyticksize=40,
     Parameters
     -----------
     image : autolens.imaging.image.Image
-        Class containing the image, noise-map and PSF that are to be plotted.
+        Class containing the image, noise-mappers and PSF that are to be plotted.
     units : str
         The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
     norm : str
@@ -40,7 +40,7 @@ def plot_image_data_from_image(image, units, xyticksize=40,
     image_title : str
         The title of the image.
     noise_map_title : str
-        The title of the noise-map image.
+        The title of the noise-mappers image.
     psf_title : str
         The title of the psf image.
     titlesize : int
@@ -62,28 +62,28 @@ def plot_image_data_from_image(image, units, xyticksize=40,
         in the python interpreter window.
     """
 
-    array_plotters.plot_observed_image_array(
-        array=image, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_image(
+        image=image, xticks=image.xticks, yticks=image.yticks, units=units, xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=image_title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_image_filename, output_format=output_format)
 
-    array_plotters.plot_noise_map_array(
-        array=image.noise_map, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_noise_map(
+        noise_map=image.noise_map, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=noise_map_title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_noise_map_filename, output_format=output_format)
 
-    array_plotters.plot_psf_array(
-        array=image.psf, units=units, xticks=image.xticks, yticks=image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_psf(
+        psf=image.psf, xticks=image.xticks, yticks=image.yticks, units=units, xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=psf_title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_psf_filename, output_format=output_format)
 
-def plot_model_image_from_fitter(fitter, units, xyticksize=40,
+def plot_model_image_from_fitter(fitter, units='arcsec', xyticksize=40,
                                  norm='symmetric_log', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                                  figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                  title='Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -133,15 +133,17 @@ def plot_model_image_from_fitter(fitter, units, xyticksize=40,
         How the image is output. File formats (e.g. png, fits) output the image to harddisk. 'show' displays the image \
         in the python interpreter window.
     """
-    array_plotters.plot_model_image_array(
-        array=fitter.model_image, units=units,
-        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_model_image(
+        model_image=fitter.model_image,
+        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks,  units=units,
+        xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_filename, output_format=output_format)
 
-def plot_residuals_from_fitter(fitter, units, xyticksize=40,
+
+def plot_residuals_from_fitter(fitter, units='arcsec', xyticksize=40,
                                norm='symmetric_log', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                                figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -191,15 +193,17 @@ def plot_residuals_from_fitter(fitter, units, xyticksize=40,
         How the image is output. File formats (e.g. png, fits) output the image to harddisk. 'show' displays the image \
         in the python interpreter window.
     """
-    array_plotters.plot_residuals_array(
-        array=fitter.residuals, units=units,
-        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_residuals(
+        residuals=fitter.residuals,
+        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks,  units=units,
+        xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_filename, output_format=output_format)
 
-def plot_chi_squareds_from_fitter(fitter, units, xyticksize=40,
+
+def plot_chi_squareds_from_fitter(fitter, units='arcsec', xyticksize=40,
                                   norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                   title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -249,15 +253,17 @@ def plot_chi_squareds_from_fitter(fitter, units, xyticksize=40,
         How the image is output. File formats (e.g. png, fits) output the image to harddisk. 'show' displays the image \
         in the python interpreter window.
     """
-    array_plotters.plot_chi_squareds_array(
-        array=fitter.chi_squareds, units=units,
-        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_chi_squareds(
+        chi_squareds=fitter.chi_squareds,
+        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks,  units=units,
+        xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_filename, output_type=output_format)
 
-def plot_scaled_noise_map_from_fitter(fitter, units, xyticksize=40,
+
+def plot_scaled_noise_map_from_fitter(fitter, units='arcsec', xyticksize=40,
                                   norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                   title='Scaled Noise-Map', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -307,15 +313,17 @@ def plot_scaled_noise_map_from_fitter(fitter, units, xyticksize=40,
         How the image is output. File formats (e.g. png, fits) output the image to harddisk. 'show' displays the image \
         in the python interpreter window.
     """
-    array_plotters.plot_scaled_noise_map_array(
-        array=fitter.noise, units=units,
-        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_scaled_noise_map(
+        scaled_noise_map=fitter.noise,
+        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, units=units,
+        xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_filename=output_filename, output_format=output_format)
 
-def plot_scaled_chi_squareds_from_fitter(fitter, units, xyticksize=40,
+
+def plot_scaled_chi_squareds_from_fitter(fitter, units='arcsec', xyticksize=40,
                                   norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                                   title='Scaled Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -365,9 +373,10 @@ def plot_scaled_chi_squareds_from_fitter(fitter, units, xyticksize=40,
         How the image is output. File formats (e.g. png, fits) output the image to harddisk. 'show' displays the image \
         in the python interpreter window.
     """
-    array_plotters.plot_scaled_chi_squareds_array(
-        array=fitter.chi_squareds, units=units,
-        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, xyticksize=xyticksize,
+    array_plotters.plot_scaled_chi_squareds(
+        scaled_chi_squareds=fitter.chi_squareds,
+        xticks=fitter.lensing_image.image.xticks, yticks=fitter.lensing_image.image.yticks, units=units,
+        xyticksize=xyticksize,
         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
