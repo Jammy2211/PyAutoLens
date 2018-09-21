@@ -104,14 +104,14 @@ class ModelMapper(AbstractModel):
 
     @property
     def total_parameters(self):
-        return len(self.priors_ordered_by_id)
+        return len(self.prior_tuples_ordered_by_id)
 
     @property
     def total_constants(self):
-        return len(self.constants_ordered_by_id)
+        return len(self.constant_tuples_ordered_by_id)
 
     @property
-    def prior_models(self):
+    def prior_model_tuples(self):
         """
         Returns
         -------
@@ -120,7 +120,7 @@ class ModelMapper(AbstractModel):
         return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
-    def list_prior_models(self):
+    def list_prior_model_tuples(self):
         """
         Returns
         -------
@@ -129,7 +129,7 @@ class ModelMapper(AbstractModel):
         return list(filter(lambda t: isinstance(t[1], ListPriorModel), self.__dict__.items()))
 
     @property
-    def flat_prior_models(self):
+    def flat_prior_model_tuples(self):
         """
         Returns
         -------
@@ -139,51 +139,51 @@ class ModelMapper(AbstractModel):
         """
         return [("{}".format(prior_model_name), flat_prior_model) for
                 prior_model_name, prior_model in
-                self.prior_models for
+                self.prior_model_tuples for
                 flat_prior_model_name, flat_prior_model in
-                prior_model.flat_prior_models]
+                prior_model.flat_prior_model_tuples]
 
     @property
-    def prior_set(self):
+    def prior_tuple_dict(self):
         """
         Returns
         -------
         prior_set: set()
             The set of all priors associated with this mapper
         """
-        return {prior[1]: prior for name, prior_model in self.prior_models for prior in
-                prior_model.priors}.values()
+        return {prior[1]: prior for name, prior_model in self.prior_model_tuples for prior in
+                prior_model.prior_tuples}.values()
 
     @property
-    def constant_set(self):
+    def constant_tuple_dict(self):
         """
         Returns
         -------
         prior_set: set()
             The set of all priors associated with this mapper
         """
-        return {constant[1]: constant for name, prior_model in self.prior_models for constant in
-                prior_model.constants}.values()
+        return {constant[1]: constant for name, prior_model in self.prior_model_tuples for constant in
+                prior_model.constant_tuples}.values()
 
     @property
-    def priors_ordered_by_id(self):
+    def prior_tuples_ordered_by_id(self):
         """
         Returns
         -------
         priors: [Prior]
             An ordered list of unique priors associated with this mapper
         """
-        return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
+        return sorted(list(self.prior_tuple_dict), key=lambda prior: prior[1].id)
 
     @property
-    def constants_ordered_by_id(self):
+    def constant_tuples_ordered_by_id(self):
         """
         Returns
         -------
         constants: [(str, Constant)]
             A list of tuples mapping strings to constants constants ordered by id
         """
-        return sorted(list(self.constant_set), key=lambda constant: constant[1].id)
+        return sorted(list(self.constant_tuple_dict), key=lambda constant: constant[1].id)
 
     @property
     def prior_class_dict(self):
@@ -191,10 +191,10 @@ class ModelMapper(AbstractModel):
         Returns
         -------
         prior_class_dict: {Prior: class}
-            A dictionary mapping Priors to associated classes. Each prior will only have one class; if a prior is shared
-            by two classes then only one of those classes will be in this dictionary.
+            A dictionary mapping Priors to associated classes. Each prior will only have one class; if a prior is
+            shared by two classes then only one of those classes will be in this dictionary.
         """
-        return {prior: cls for prior_model in self.prior_models for prior, cls in
+        return {prior: cls for prior_model in self.prior_model_tuples for prior, cls in
                 prior_model[1].prior_class_dict.items()}
 
     @property
@@ -206,7 +206,8 @@ class ModelMapper(AbstractModel):
             A dictionary mapping priors to associated prior models. Each prior will only have one prior model; if a
             prior is shared by two prior models then one of those prior models will be in this dictionary.
         """
-        return {prior: prior_model[1] for prior_model in self.prior_models for _, prior in prior_model[1].priors}
+        return {prior: prior_model[1] for prior_model in self.prior_model_tuples for _, prior in
+                prior_model[1].prior_tuples}
 
     @property
     def prior_prior_model_name_dict(self):
@@ -218,7 +219,8 @@ class ModelMapper(AbstractModel):
             model name; if a prior is shared by two prior models then one of those prior model's names will be in this
             dictionary.
         """
-        return {prior: prior_model[0] for prior_model in self.prior_models for _, prior in prior_model[1].priors}
+        return {prior: prior_model[0] for prior_model in self.prior_model_tuples for _, prior in
+                prior_model[1].prior_tuples}
 
     @property
     def constant_prior_model_name_dict(self):
@@ -230,28 +232,28 @@ class ModelMapper(AbstractModel):
             model name; if a prior is shared by two prior models then one of those prior model's names will be in this
             dictionary.
         """
-        return {constant: prior_model[0] for prior_model in self.prior_models for _, constant in
-                prior_model[1].constants}
+        return {constant: prior_model[0] for prior_model in self.prior_model_tuples for _, constant in
+                prior_model[1].constant_tuples}
 
     @property
-    def class_priors_dict(self):
+    def class_prior_tuples_dict(self):
         """
         Returns
         -------
         class_priors_dict: {String: [Prior]}
             A dictionary mapping_matrix the names of reconstructable class instances to lists of associated priors
         """
-        return {name: list(prior_model.priors) for name, prior_model in self.prior_models}
+        return {name: list(prior_model.prior_tuples) for name, prior_model in self.prior_model_tuples}
 
     @property
-    def class_constants_dict(self):
+    def class_constant_tuples_dict(self):
         """
         Returns
         -------
         class_constants_dict: {String: [Constant]}
             A dictionary mapping_matrix the names of reconstructable class instances to lists of associated constants
         """
-        return {name: list(prior_model.constants) for name, prior_model in self.prior_models}
+        return {name: list(prior_model.constant_tuples) for name, prior_model in self.prior_model_tuples}
 
     def physical_vector_from_hypercube_vector(self, hypercube_vector):
         """
@@ -265,7 +267,8 @@ class ModelMapper(AbstractModel):
         values: [float]
             A vector with values output by priors
         """
-        return list(map(lambda prior, unit: prior[1].value_for(unit), self.priors_ordered_by_id, hypercube_vector))
+        return list(
+            map(lambda prior, unit: prior[1].value_for(unit), self.prior_tuples_ordered_by_id, hypercube_vector))
 
     def physical_values_ordered_by_class(self, hypercube_vector):
         """
@@ -302,7 +305,7 @@ class ModelMapper(AbstractModel):
         physical_values: [float]
             A list of physical values constructed by taking the mean possible value from each prior.
         """
-        return self.physical_vector_from_hypercube_vector([0.5] * len(self.prior_set))
+        return self.physical_vector_from_hypercube_vector([0.5] * len(self.prior_tuple_dict))
 
     def instance_from_prior_medians(self):
         """
@@ -314,7 +317,7 @@ class ModelMapper(AbstractModel):
             A list of physical values
 
         """
-        return self.instance_from_unit_vector(unit_vector=[0.5] * len(self.prior_set))
+        return self.instance_from_unit_vector(unit_vector=[0.5] * len(self.prior_tuple_dict))
 
     def instance_from_unit_vector(self, unit_vector):
         """
@@ -336,7 +339,7 @@ class ModelMapper(AbstractModel):
 
         """
         arguments = dict(
-            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, unit_vector))
+            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.prior_tuples_ordered_by_id, unit_vector))
 
         return self.instance_for_arguments(arguments)
 
@@ -359,7 +362,8 @@ class ModelMapper(AbstractModel):
 
         """
         arguments = dict(
-            map(lambda prior, physical_unit: (prior[1], physical_unit), self.priors_ordered_by_id, physical_vector))
+            map(lambda prior, physical_unit: (prior[1], physical_unit), self.prior_tuples_ordered_by_id,
+                physical_vector))
 
         return self.instance_for_arguments(arguments)
 
@@ -383,7 +387,7 @@ class ModelMapper(AbstractModel):
 
         model_instance = ModelInstance()
 
-        for prior_model in self.prior_models:
+        for prior_model in self.prior_model_tuples:
             setattr(model_instance, prior_model[0], prior_model[1].instance_for_arguments(arguments))
 
         return model_instance
@@ -404,7 +408,7 @@ class ModelMapper(AbstractModel):
         """
         mapper = ModelMapper(config=self.config, width_config=self.width_config)
 
-        for prior_model in self.prior_models:
+        for prior_model in self.prior_model_tuples:
             setattr(mapper, prior_model[0], prior_model[1].gaussian_prior_model_for_arguments(arguments))
 
         return mapper
@@ -424,7 +428,7 @@ class ModelMapper(AbstractModel):
         mapper: ModelMapper
             A new model mapper with all priors replaced by gaussian priors.
         """
-        priors = self.priors_ordered_by_id
+        priors = self.prior_tuples_ordered_by_id
         prior_class_dict = self.prior_class_dict
         arguments = {}
 
@@ -451,7 +455,7 @@ class ModelMapper(AbstractModel):
         mapper: ModelMapper
             A new model mapper with all priors replaced by gaussian priors.
         """
-        priors = self.priors_ordered_by_id
+        priors = self.prior_tuples_ordered_by_id
         prior_class_dict = self.prior_class_dict
         arguments = {}
 
@@ -471,15 +475,15 @@ class ModelMapper(AbstractModel):
         """
         model_info = []
 
-        for prior_model_name, prior_model in self.flat_prior_models:
+        for prior_model_name, prior_model in self.flat_prior_model_tuples:
 
             model_info.append(prior_model.cls.__name__ + '\n')
 
-            prior_model_iterator = prior_model.priors + prior_model.constants
+            prior_model_iterator = prior_model.prior_tuples + prior_model.constant_tuples
 
             for i, prior in enumerate(prior_model_iterator):
                 class_priors_dict_ordered = sorted(
-                    self.class_priors_dict[prior_model_name] + self.class_constants_dict[prior_model_name],
+                    self.class_prior_tuples_dict[prior_model_name] + self.class_constant_tuples_dict[prior_model_name],
                     key=lambda p: p[1].id if hasattr(p, 'id') else 0)
 
                 param_name = str(class_priors_dict_ordered[i][0])
@@ -549,6 +553,9 @@ class Prior(object):
     """An object used to mappers a unit value to an attribute value for a specific class attribute"""
 
     _ids = itertools.count()
+
+    def value_for(self, unit):
+        raise NotImplementedError()
 
     def __init__(self):
         self.id = next(self._ids)
@@ -637,6 +644,7 @@ class TuplePrior(object):
     """
     A prior comprising one or more priors in a tuple
     """
+
     def __setattr__(self, key, value):
         try:
             if isinstance(value, float) or isinstance(value, int):
@@ -647,7 +655,7 @@ class TuplePrior(object):
         super(TuplePrior, self).__setattr__(key, value)
 
     @property
-    def priors(self):
+    def prior_tuples(self):
         """
         Returns
         -------
@@ -657,7 +665,7 @@ class TuplePrior(object):
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     @property
-    def constants(self):
+    def constant_tuples(self):
         """
         Returns
         -------
@@ -679,7 +687,8 @@ class TuplePrior(object):
             A tuple of float values
         """
         return tuple(
-            [arguments[prior[1]] for prior in self.priors] + [constant[1].value for constant in self.constants])
+            [arguments[prior[1]] for prior in self.prior_tuples] + [constant[1].value for constant in
+                                                                    self.constant_tuples])
 
     def gaussian_tuple_prior_for_arguments(self, arguments):
         """
@@ -694,7 +703,7 @@ class TuplePrior(object):
             A new tuple prior with gaussian priors
         """
         tuple_prior = TuplePrior()
-        for prior in self.priors:
+        for prior in self.prior_tuples:
             setattr(tuple_prior, prior[0], arguments[prior[1]])
         return tuple_prior
 
@@ -707,7 +716,7 @@ class AbstractPriorModel:
     _ids = itertools.count()
 
     @property
-    def flat_prior_models(self):
+    def flat_prior_model_tuples(self):
         """
         Returns
         -------
@@ -716,6 +725,21 @@ class AbstractPriorModel:
         """
         raise NotImplementedError("PriorModels must implement the flat_prior_models property")
 
+    @property
+    def prior_tuples(self):
+        raise NotImplementedError()
+
+    @property
+    def constant_tuples(self):
+        raise NotImplementedError()
+
+    @property
+    def prior_class_dict(self):
+        raise NotImplementedError()
+
+    def instance_for_arguments(self, arguments):
+        raise NotImplementedError()
+
 
 class PriorModel(AbstractPriorModel):
     """Object comprising class and associated priors
@@ -723,7 +747,7 @@ class PriorModel(AbstractPriorModel):
     """
 
     @property
-    def flat_prior_models(self):
+    def flat_prior_model_tuples(self):
         return [("", self)]
 
     def __init__(self, cls, config=None):
@@ -780,7 +804,7 @@ class PriorModel(AbstractPriorModel):
         try:
             if "_" in key:
                 tuple_name = key.split("_")[0]
-                tuple_prior = [v for k, v in self.tuple_priors if tuple_name == k][0]
+                tuple_prior = [v for k, v in self.tuple_prior_tuples if tuple_name == k][0]
                 setattr(tuple_prior, key, value)
                 return
             if isinstance(value, float) or isinstance(value, int):
@@ -793,14 +817,14 @@ class PriorModel(AbstractPriorModel):
     def __getattr__(self, item):
         try:
             if "_" in item:
-                return getattr([v for k, v in self.tuple_priors if item.split("_")[0] == k][0], item)
+                return getattr([v for k, v in self.tuple_prior_tuples if item.split("_")[0] == k][0], item)
 
         except IndexError:
             pass
         self.__getattribute__(item)
 
     @property
-    def tuple_priors(self):
+    def tuple_prior_tuples(self):
         """
         Returns
         -------
@@ -809,7 +833,7 @@ class PriorModel(AbstractPriorModel):
         return list(filter(lambda t: type(t[1]) is TuplePrior, self.__dict__.items()))
 
     @property
-    def direct_priors(self):
+    def direct_prior_tuples(self):
         """
         Returns
         -------
@@ -818,17 +842,17 @@ class PriorModel(AbstractPriorModel):
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     @property
-    def priors(self):
+    def prior_tuples(self):
         """
         Returns
         -------
         priors: [(String, Union(Prior, TuplePrior))]
         """
-        return [prior for tuple_prior in self.tuple_priors for prior in
-                tuple_prior[1].priors] + self.direct_priors
+        return [prior for tuple_prior in self.tuple_prior_tuples for prior in
+                tuple_prior[1].prior_tuples] + self.direct_prior_tuples
 
     @property
-    def constants(self):
+    def constant_tuples(self):
         """
         Returns
         -------
@@ -839,7 +863,7 @@ class PriorModel(AbstractPriorModel):
 
     @property
     def prior_class_dict(self):
-        return {prior[1]: self.cls for prior in self.priors}
+        return {prior[1]: self.cls for prior in self.prior_tuples}
 
     def instance_for_arguments(self, arguments: {Prior: float}):
         """
@@ -854,11 +878,11 @@ class PriorModel(AbstractPriorModel):
         -------
             An instance of the class
         """
-        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
-        for tuple_prior in self.tuple_priors:
+        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_prior_tuples}
+        for tuple_prior in self.tuple_prior_tuples:
             model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
 
-        constant_arguments = {t[0]: t[1].value for t in self.constants}
+        constant_arguments = {t[0]: t[1].value for t in self.constant_tuples}
 
         return self.cls(**{**model_arguments, **constant_arguments})
 
@@ -879,13 +903,13 @@ class PriorModel(AbstractPriorModel):
         """
         new_model = PriorModel(self.cls, self.config)
 
-        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_priors}
+        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_prior_tuples}
 
-        for tuple_prior in self.tuple_priors:
+        for tuple_prior in self.tuple_prior_tuples:
             setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(arguments))
-        for prior in self.direct_priors:
+        for prior in self.direct_prior_tuples:
             setattr(new_model, prior[0], model_arguments[prior[0]])
-        for constant in self.constants:
+        for constant in self.constant_tuples:
             setattr(new_model, constant[0], constant[1])
 
         return new_model
@@ -893,8 +917,8 @@ class PriorModel(AbstractPriorModel):
 
 class ListPriorModel(list, AbstractPriorModel):
     @property
-    def flat_prior_models(self):
-        return [flat_prior_model for prior_model in self for flat_prior_model in prior_model.flat_prior_models]
+    def flat_prior_model_tuples(self):
+        return [flat_prior_model for prior_model in self for flat_prior_model in prior_model.flat_prior_model_tuples]
 
     def __init__(self, prior_models):
         """
@@ -938,22 +962,22 @@ class ListPriorModel(list, AbstractPriorModel):
             [prior_model.gaussian_prior_model_for_arguments(arguments) for prior_model in self])
 
     @property
-    def priors(self):
+    def prior_tuples(self):
         """
         Returns
         -------
         priors: [(String, Union(Prior, TuplePrior))]
         """
-        return set([prior for prior_model in self for prior in prior_model.priors])
+        return set([prior for prior_model in self for prior in prior_model.prior_tuples])
 
     @property
-    def constants(self):
+    def constant_tuples(self):
         """
         Returns
         -------
         priors: [(String, Union(Prior, TuplePrior))]
         """
-        return set([constant for prior_model in self for constant in prior_model.constants])
+        return set([constant for prior_model in self for constant in prior_model.constant_tuples])
 
     @property
     def prior_class_dict(self):

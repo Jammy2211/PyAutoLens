@@ -56,9 +56,9 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
     """
 
     @property
-    def flat_prior_models(self):
-        return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
-                prior_model.flat_prior_models]
+    def flat_prior_model_tuples(self):
+        return [flat_prior_model for prior_model in self.prior_model_tuples for flat_prior_model in
+                prior_model.flat_prior_model_tuples]
 
     def __init__(self, align_centres=False, align_orientations=False, redshift=None, variable_redshift=False,
                  pixelization=None, regularization=None, hyper_galaxy=None, config=None, **kwargs):
@@ -154,7 +154,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return [value for value in self.__dict__.values() if galaxy.is_mass_profile(value)]
 
     @property
-    def prior_models(self):
+    def prior_model_tuples(self):
         """
         Returns
         -------
@@ -208,24 +208,24 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
     @property
-    def priors(self):
+    def prior_tuples(self):
         """
         Returns
         -------
-        priors: [Prior]
+        priors: [(str, Prior)]
             A list of priors associated with prior models in this galaxy prior.
         """
-        return [prior for prior_model in self.prior_models for prior in prior_model.priors]
+        return [prior for prior_model in self.prior_model_tuples for prior in prior_model.prior_tuples]
 
     @property
-    def constants(self):
+    def constant_tuples(self):
         """
         Returns
         -------
         constant: [Constant]
             A list of constants associated with prior models in this galaxy prior.
         """
-        return [constant for prior_model in self.prior_models for constant in prior_model.constants]
+        return [constant for prior_model in self.prior_model_tuples for constant in prior_model.constant_tuples]
 
     @property
     def prior_class_dict(self):
@@ -235,7 +235,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         prior_class_dict: {Prior: class}
             A dictionary mapping_matrix priors to the class associated with their prior model.
         """
-        return {prior: cls for prior_model in self.prior_models for prior, cls in
+        return {prior: cls for prior_model in self.prior_model_tuples for prior, cls in
                 prior_model.prior_class_dict.items()}
 
     def instance_for_arguments(self, arguments):
