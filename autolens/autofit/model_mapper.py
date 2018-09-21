@@ -101,7 +101,7 @@ class ModelMapper(AbstractModel):
 
     @property
     def total_constants(self):
-        return len(self.constants)
+        return len(self.constants_ordered_by_id)
 
     def __setattr__(self, key, value):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
@@ -170,7 +170,7 @@ class ModelMapper(AbstractModel):
                 prior_model.constants}.values()
 
     @property
-    def constants(self):
+    def constants_ordered_by_id(self):
         """
         Returns
         -------
@@ -479,52 +479,18 @@ class ModelMapper(AbstractModel):
 
             model_info.append(prior_model.cls.__name__ + '\n')
 
-            # TODO : HACK FIX - MAKE CLEANER
-
-            if not prior_model.constants:
-                prior_model_iterator = prior_model.priors
-            else:
-                prior_model_iterator = prior_model.priors + prior_model.constants
+            prior_model_iterator = prior_model.priors + prior_model.constants
 
             for i, prior in enumerate(prior_model_iterator):
-
-                if not prior_model.constants:
-                    class_priors_dict_ordered = sorted(
-                        self.class_priors_dict[prior_model_name],
-                        key=lambda p: p[1].id if hasattr(p, 'id') else 0)
-                else:
-                    class_priors_dict_ordered = sorted(
-                        self.class_priors_dict[prior_model_name] + self.class_constants_dict[prior_model_name],
-                        key=lambda p: p[1].id if hasattr(p, 'id') else 0)
+                class_priors_dict_ordered = sorted(
+                    self.class_priors_dict[prior_model_name] + self.class_constants_dict[prior_model_name],
+                    key=lambda p: p[1].id if hasattr(p, 'id') else 0)
 
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_model_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
 
         return '\n'.join(model_info)
-
-    def output_model_info(self, filename):
-        """Output a model information file, which lists the information of the model mapper (e.g. parameters, priors, \
-         etc.) """
-        if not os.path.isfile(filename):
-            with open(filename, 'w') as file:
-                file.write(self.model_info)
-            file.close()
-
-    def check_model_info(self, filename):
-        """Check whether the priors in this instance of the model_mapper are identical to those output into a model \
-        info file on the hard-disk (e.g. from a previous non-linear search)."""
-
-        model_info = self.model_info
-
-        model_info_check = open(filename, 'r')
-
-        if str(model_info_check.read()) != model_info:
-            raise exc.PriorException(
-                'The model_mapper input to MultiNest has a different prior for a parameter than the model_mapper '
-                'existing in the nlo. filename = {}'.format(filename))
-
-        model_info_check.close()
 
 
 class ModelInstance(AbstractModel):
