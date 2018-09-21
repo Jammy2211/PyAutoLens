@@ -5,6 +5,24 @@ import os
 import itertools
 from autolens import exc
 from autolens import conf
+from collections import namedtuple
+from functools import wraps
+
+PriorTuple = namedtuple("PriorTuple", ["name", "prior"])
+ConstantTuple = namedtuple("ConstantTuple", ["name", "constant"])
+PriorModelTuple = namedtuple("PriorModelTuple", ["name", "prior_model"])
+
+
+def cast_collection(named_tuple):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return list(map(lambda tup: named_tuple(*tup), func(*args, **kwargs)))
+
+        return wrapper
+
+    return decorator
+
 
 path = os.path.dirname(os.path.realpath(__file__))
 
@@ -111,6 +129,7 @@ class ModelMapper(AbstractModel):
         return len(self.constant_tuples_ordered_by_id)
 
     @property
+    @cast_collection(PriorModelTuple)
     def prior_model_tuples(self):
         """
         Returns
@@ -120,6 +139,7 @@ class ModelMapper(AbstractModel):
         return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
+    @cast_collection(PriorModelTuple)
     def list_prior_model_tuples(self):
         """
         Returns
@@ -129,6 +149,7 @@ class ModelMapper(AbstractModel):
         return list(filter(lambda t: isinstance(t[1], ListPriorModel), self.__dict__.items()))
 
     @property
+    @cast_collection(PriorModelTuple)
     def flat_prior_model_tuples(self):
         """
         Returns
@@ -144,6 +165,7 @@ class ModelMapper(AbstractModel):
                 prior_model.flat_prior_model_tuples]
 
     @property
+    @cast_collection(PriorTuple)
     def prior_tuple_dict(self):
         """
         Returns
@@ -155,6 +177,7 @@ class ModelMapper(AbstractModel):
                 prior_model.prior_tuples}.values()
 
     @property
+    @cast_collection(ConstantTuple)
     def constant_tuple_dict(self):
         """
         Returns
@@ -166,6 +189,7 @@ class ModelMapper(AbstractModel):
                 prior_model.constant_tuples}.values()
 
     @property
+    @cast_collection(PriorTuple)
     def prior_tuples_ordered_by_id(self):
         """
         Returns
@@ -176,6 +200,7 @@ class ModelMapper(AbstractModel):
         return sorted(list(self.prior_tuple_dict), key=lambda prior: prior[1].id)
 
     @property
+    @cast_collection(ConstantTuple)
     def constant_tuples_ordered_by_id(self):
         """
         Returns
