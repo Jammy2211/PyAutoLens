@@ -248,8 +248,9 @@ class ModelMapper(AbstractModel):
             model name; if a prior is shared by two prior models then one of those prior model's names will be in this
             dictionary.
         """
-        return {prior: prior_model[0] for prior_model in self.prior_model_tuples for _, prior in
-                prior_model[1].prior_tuples}
+        return {prior_tuple.prior: prior_model_tuple.name
+                for prior_model_tuple in self.prior_model_tuples
+                for prior_tuple in prior_model_tuple.prior_model.prior_tuples}
 
     @property
     def constant_prior_model_name_dict(self):
@@ -261,9 +262,9 @@ class ModelMapper(AbstractModel):
             model name; if a prior is shared by two prior models then one of those prior model's names will be in this
             dictionary.
         """
-        return {constant: prior_model_tuple.name
+        return {constant_tuple.constant: prior_model_tuple.name
                 for prior_model_tuple in self.prior_model_tuples
-                for _, constant in prior_model_tuple.prior_model.constant_tuples}
+                for constant_tuple in prior_model_tuple.prior_model.constant_tuples}
 
     @property
     def class_prior_tuples_dict(self):
@@ -298,7 +299,8 @@ class ModelMapper(AbstractModel):
             A vector with values output by priors
         """
         return list(
-            map(lambda prior, unit: prior[1].value_for(unit), self.prior_tuples_ordered_by_id, hypercube_vector))
+            map(lambda prior_tuple, unit: prior_tuple.prior.value_for(unit), self.prior_tuples_ordered_by_id,
+                hypercube_vector))
 
     def physical_values_ordered_by_class(self, hypercube_vector):
         """
@@ -369,7 +371,8 @@ class ModelMapper(AbstractModel):
 
         """
         arguments = dict(
-            map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.prior_tuples_ordered_by_id, unit_vector))
+            map(lambda prior_tuple, unit: (prior_tuple.prior, prior_tuple.prior.value_for(unit)),
+                self.prior_tuples_ordered_by_id, unit_vector))
 
         return self.instance_for_arguments(arguments)
 
@@ -392,20 +395,20 @@ class ModelMapper(AbstractModel):
 
         """
         arguments = dict(
-            map(lambda prior, physical_unit: (prior[1], physical_unit), self.prior_tuples_ordered_by_id,
+            map(lambda prior_tuple, physical_unit: (prior_tuple.prior, physical_unit), self.prior_tuples_ordered_by_id,
                 physical_vector))
 
         return self.instance_for_arguments(arguments)
 
     def instance_for_arguments(self, arguments):
         """
-        Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel \
+        Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel
         attributed to this instance.
 
         Parameters
         ----------
         arguments : dict
-            The dictionary representation of prior and parameter values. This is created in the model_instance_from_* \
+            The dictionary representation of prior and parameter values. This is created in the model_instance_from_*
             routines.
 
         Returns
@@ -417,8 +420,9 @@ class ModelMapper(AbstractModel):
 
         model_instance = ModelInstance()
 
-        for prior_model in self.prior_model_tuples:
-            setattr(model_instance, prior_model[0], prior_model[1].instance_for_arguments(arguments))
+        for prior_model_tuple in self.prior_model_tuples:
+            setattr(model_instance, prior_model_tuple.name,
+                    prior_model_tuple.prior_model.instance_for_arguments(arguments))
 
         return model_instance
 
@@ -459,14 +463,15 @@ class ModelMapper(AbstractModel):
         mapper: ModelMapper
             A new model mapper with all priors replaced by gaussian priors.
         """
-        priors = self.prior_tuples_ordered_by_id
+        tuples = [PriorTuple(*tuple) for tuple in tuples]
+        prior_tuples = self.prior_tuples_ordered_by_id
         prior_class_dict = self.prior_class_dict
         arguments = {}
 
-        for i, prior in enumerate(priors):
-            cls = prior_class_dict[prior[1]]
-            width = self.width_config.get_for_nearest_ancestor(cls, prior[0])
-            arguments[prior[1]] = GaussianPrior(tuples[i][0], max(tuples[i][1], width))
+        for i, prior_tuple in enumerate(prior_tuples):
+            cls = prior_class_dict[prior_tuple.prior]
+            width = self.width_config.get_for_nearest_ancestor(cls, prior_tuple.name)
+            arguments[prior_tuple.prior] = GaussianPrior(tuples[i].name, max(tuples[i].prior, width))
 
         return self.mapper_from_prior_arguments(arguments)
 
