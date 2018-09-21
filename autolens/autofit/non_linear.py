@@ -104,7 +104,10 @@ class NonLinearOptimizer(object):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
         self.create_paramnames_file()
-        self.variable.output_model_info(self.file_model_info)
+        if not os.path.isfile(self.file_model_info):
+            with open(self.file_model_info, 'w') as file:
+                file.write(self.variable.model_info)
+            file.close()
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
@@ -131,7 +134,7 @@ class NonLinearOptimizer(object):
 
         constant_prior_model_name_dict = self.variable.constant_prior_model_name_dict
 
-        for constant_name, constant in self.variable.constants:
+        for constant_name, constant in self.variable.constants_ordered_by_id:
             constant_names.append(constant_prior_model_name_dict[constant] + '_' + constant_name)
 
         return constant_names
@@ -567,7 +570,7 @@ class MultiNest(NonLinearOptimizer):
             results.write('\n')
 
             constant_names = self.constant_names
-            constants = self.variable.constants
+            constants = self.variable.constants_ordered_by_id
 
             for i in range(self.variable.total_constants):
                 line = constant_names[i]
