@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.imaging import mask as msk
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.lensing import galaxy
@@ -59,8 +59,8 @@ def make_lens_x2_gal_pipeline(pipeline_name):
     def modify_mask_function(img):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
-    phase1 = LensPlanex2GalPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic),
-                                                gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
+    phase1 = LensPlanex2GalPhase(lens_galaxies=[gp.GalaxyModel(elliptical_sersic=lp.EllipticalSersic),
+                                                gp.GalaxyModel(elliptical_sersic=lp.EllipticalSersic)],
                                  mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                  phase_name="{}/phase1".format(pipeline_name))
 

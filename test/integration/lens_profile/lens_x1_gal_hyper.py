@@ -1,7 +1,7 @@
 from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
 from autolens import conf
@@ -42,7 +42,7 @@ def test_lens_x1_gal_hyper_pipeline():
 
 def make_lens_x1_gal_hyper_pipeline(pipeline_name):
 
-    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(elliptical_sersic=lp.EllipticalSersic)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40

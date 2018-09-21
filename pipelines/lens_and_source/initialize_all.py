@@ -16,15 +16,15 @@ def make():
     from autolens.pipeline import phase
     from autolens.pipeline import pipeline
     from autolens.autofit import non_linear as nl
-    from autolens.lensing import galaxy_prior as gp
+    from autolens.lensing import galaxy_model as gp
     from autolens.profiles import light_profiles as lp
     from autolens.profiles import mass_profiles as mp
 
     pipeline.setup_pipeline_path(pipeline_name)
 
-    phase1 = phase.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior(light=lp.EllipticalSersic,
+    phase1 = phase.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel(light=lp.EllipticalSersic,
                                                                       mass=mp.EllipticalIsothermal)],
-                                        source_galaxies=[gp.GalaxyPrior(light=lp.EllipticalSersic)],
+                                        source_galaxies=[gp.GalaxyModel(light=lp.EllipticalSersic)],
                                         optimizer_class=nl.MultiNest, phase_name='ph1_fit_all')
 
     phase1.optimizer.n_live_points = 80
