@@ -463,7 +463,7 @@ class ModelMapper(AbstractModel):
         mapper: ModelMapper
             A new model mapper with all priors replaced by gaussian priors.
         """
-        tuples = [PriorTuple(*tuple) for tuple in tuples]
+        tuples = [PriorTuple(*tup) for tup in tuples]
         prior_tuples = self.prior_tuples_ordered_by_id
         prior_class_dict = self.prior_class_dict
         arguments = {}
@@ -519,8 +519,9 @@ class ModelMapper(AbstractModel):
 
             for i, prior in enumerate(prior_model_iterator):
                 class_priors_dict_ordered = sorted(
-                    self.class_prior_tuples_dict[prior_model_name] + self.class_constant_tuples_dict[prior_model_name],
-                    key=lambda p: p[1].id if hasattr(p, 'id') else 0)
+                    self.class_prior_tuples_dict[prior_model_name], key=lambda p: p[1].id) + sorted(
+                    self.class_constant_tuples_dict[prior_model_name],
+                    key=lambda p: p[1].id)
 
                 param_name = str(class_priors_dict_ordered[i][0])
                 line = prior_model_name + '_' + param_name
@@ -741,8 +742,8 @@ class TuplePrior(object):
             A new tuple prior with gaussian priors
         """
         tuple_prior = TuplePrior()
-        for prior in self.prior_tuples:
-            setattr(tuple_prior, prior[0], arguments[prior[1]])
+        for prior_tuple in self.prior_tuples:
+            setattr(tuple_prior, prior_tuple.name, arguments[prior_tuple.prior])
         return tuple_prior
 
 
@@ -920,11 +921,11 @@ class PriorModel(AbstractPriorModel):
         -------
             An instance of the class
         """
-        model_arguments = {t[0]: arguments[t[1]] for t in self.direct_prior_tuples}
+        model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
         for tuple_prior in self.tuple_prior_tuples:
-            model_arguments[tuple_prior[0]] = tuple_prior[1].value_for_arguments(arguments)
+            model_arguments[tuple_prior.name] = tuple_prior.prior.value_for_arguments(arguments)
 
-        constant_arguments = {t[0]: t[1].value for t in self.constant_tuples}
+        constant_arguments = {t.name: t.constant.value for t in self.constant_tuples}
 
         return self.cls(**{**model_arguments, **constant_arguments})
 
@@ -949,12 +950,13 @@ class PriorModel(AbstractPriorModel):
 
         model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
 
-        for tuple_prior in self.tuple_prior_tuples:
-            setattr(new_model, tuple_prior[0], tuple_prior[1].gaussian_tuple_prior_for_arguments(arguments))
-        for prior in self.direct_prior_tuples:
-            setattr(new_model, prior[0], model_arguments[prior[0]])
-        for constant in self.constant_tuples:
-            setattr(new_model, constant[0], constant[1])
+        for tuple_prior_tuple in self.tuple_prior_tuples:
+            setattr(new_model, tuple_prior_tuple.name,
+                    tuple_prior_tuple.prior.gaussian_tuple_prior_for_arguments(arguments))
+        for prior_tuple in self.direct_prior_tuples:
+            setattr(new_model, prior_tuple.name, model_arguments[prior_tuple.name])
+        for constant_tuple in self.constant_tuples:
+            setattr(new_model, constant_tuple.name, constant_tuple.constant)
 
         return new_model
 
