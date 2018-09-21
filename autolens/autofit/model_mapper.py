@@ -338,7 +338,7 @@ class ModelMapper(AbstractModel):
         arguments = dict(
             map(lambda prior, unit: (prior[1], prior[1].value_for(unit)), self.priors_ordered_by_id, unit_vector))
 
-        return self.instance_from_arguments(arguments)
+        return self.instance_for_arguments(arguments)
 
     def instance_from_physical_vector(self, physical_vector):
         """
@@ -361,9 +361,9 @@ class ModelMapper(AbstractModel):
         arguments = dict(
             map(lambda prior, physical_unit: (prior[1], physical_unit), self.priors_ordered_by_id, physical_vector))
 
-        return self.instance_from_arguments(arguments)
+        return self.instance_for_arguments(arguments)
 
-    def instance_from_arguments(self, arguments):
+    def instance_for_arguments(self, arguments):
         """
         Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel \
         attributed to this instance.
@@ -639,6 +639,14 @@ class TuplePrior(object):
     """
     A prior comprising one or more priors in a tuple
     """
+    def __setattr__(self, key, value):
+        try:
+            if isinstance(value, float) or isinstance(value, int):
+                super().__setattr__(key, Constant(value))
+                return
+        except IndexError:
+            pass
+        super(TuplePrior, self).__setattr__(key, value)
 
     @property
     def priors(self):
@@ -649,6 +657,16 @@ class TuplePrior(object):
             A list of priors contained in this tuple
         """
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
+
+    @property
+    def constants(self):
+        """
+        Returns
+        -------
+        constants: [(String, Constant)]
+            A list of constants
+        """
+        return list(sorted(filter(lambda t: isinstance(t[1], Constant), self.__dict__.items()), key=lambda tup: tup[0]))
 
     def value_for_arguments(self, arguments):
         """
@@ -662,7 +680,8 @@ class TuplePrior(object):
         tuple: (float,...)
             A tuple of float values
         """
-        return tuple([arguments[prior[1]] for prior in self.priors])
+        return tuple(
+            [arguments[prior[1]] for prior in self.priors] + [constant[1].value for constant in self.constants])
 
     def gaussian_tuple_prior_for_arguments(self, arguments):
         """
@@ -762,7 +781,9 @@ class PriorModel(AbstractPriorModel):
     def __setattr__(self, key, value):
         try:
             if "_" in key:
-                setattr([v for k, v in self.tuple_priors if key.split("_")[0] == k][0], key, value)
+                tuple_name = key.split("_")[0]
+                tuple_prior = [v for k, v in self.tuple_priors if tuple_name == k][0]
+                setattr(tuple_prior, key, value)
                 return
             if isinstance(value, float) or isinstance(value, int):
                 super().__setattr__(key, Constant(value))
@@ -822,13 +843,13 @@ class PriorModel(AbstractPriorModel):
     def prior_class_dict(self):
         return {prior[1]: self.cls for prior in self.priors}
 
-    def instance_for_arguments(self, arguments):
+    def instance_for_arguments(self, arguments: {Prior: float}):
         """
         Create an instance of the associated class for a set of arguments
 
         Parameters
         ----------
-        arguments: {Prior: value}
+        arguments: {Prior: float}
             Dictionary mapping_matrix priors to attribute analysis_path and value pairs
 
         Returns
