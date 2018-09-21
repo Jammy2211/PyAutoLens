@@ -844,8 +844,25 @@ class TestConstant(object):
         prior_model = model_mapper.PriorModel(MockClassMM, MockConfig())
         prior_model.one = 3
         prior_model.two = 4.
+        assert isinstance(prior_model.one, model_mapper.Constant)
         assert prior_model.one == model_mapper.Constant(3)
         assert prior_model.two == model_mapper.Constant(4.)
+
+    def test_list_prior_model_constants(self, mapper):
+        prior_model = model_mapper.PriorModel(MockClassMM, MockConfig())
+        prior_model.one = 3
+        prior_model.two = 4.
+        assert isinstance(prior_model.one, model_mapper.Constant)
+        mapper.mock_list = [prior_model]
+        assert isinstance(mapper.mock_list, model_mapper.ListPriorModel)
+        assert isinstance(prior_model.one, model_mapper.Constant)
+        assert isinstance(mapper.mock_list[0].one, model_mapper.Constant)
+        assert len(mapper.constants) == 2
+
+
+@pytest.fixture(name="mapper")
+def make_mapper(test_config, width_config):
+    return model_mapper.ModelMapper(config=test_config, width_config=width_config)
 
 
 @pytest.fixture(name="mapper_with_one")
