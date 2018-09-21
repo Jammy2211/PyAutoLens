@@ -9,16 +9,16 @@ obs = scaled_array.ScaledArray.from_fits(file_path='/gpfs/data/pdtw24/PL_Data/Im
 
 obs = obs.trim(new_shape)
 
-array_plotters.plot_observed_image_array(array=obs, xticks=xticks, yticks=yticks, normalization='symmetric_log',
-                                         output_path='/home/jammy/Documents/', output_filename='SLACS1430_Obs', output_format='png')
+array_plotters.plot_image(image=obs, xticks=xticks, yticks=yticks, normalization='symmetric_log',
+                          output_path='/home/jammy/Documents/', output_filename='SLACS1430_Obs', output_format='png')
 
 residuals_one_sersic = scaled_array.ScaledArray.from_fits(file_path='/home/jammy/Documents/RichardImages/Residuals_fits/'
                                                                     'SLACSJ1430+4105_Decomp_Mass_x1Sersic.fits', hdu=0)
 
 residuals_one_sersic = residuals_one_sersic.trim(new_shape)
 
-array_plotters.plot_residuals_array(array=residuals_one_sersic, xticks=xticks, yticks=yticks, norm_min=-0.1, norm_max=0.1,
-                                    output_path='/home/jammy/Documents/', output_filename='SLACS1430_x1Sersic', output_format='png')
+array_plotters.plot_residuals(residuals=residuals_one_sersic, xticks=xticks, yticks=yticks, norm_min=-0.1, norm_max=0.1,
+                              output_path='/home/jammy/Documents/', output_filename='SLACS1430_x1Sersic', output_format='png')
 
 # stop
 
@@ -27,5 +27,5 @@ residuals_one_sersic = scaled_array.ScaledArray.from_fits(file_path='/home/jammy
 
 residuals_one_sersic = residuals_one_sersic.trim(new_shape)
 
-array_plotters.plot_residuals_array(array=residuals_one_sersic, xticks=xticks, yticks=yticks, norm_min=-0.1, norm_max=0.1,
-                                    output_path='/home/jammy/Documents/', output_filename='SLACS1430_x2Sersic', output_format='png')
+array_plotters.plot_residuals(residuals=residuals_one_sersic, xticks=xticks, yticks=yticks, norm_min=-0.1, norm_max=0.1,
+                              output_path='/home/jammy/Documents/', output_filename='SLACS1430_x2Sersic', output_format='png')

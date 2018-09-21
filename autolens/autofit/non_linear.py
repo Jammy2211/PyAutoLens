@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 SIMPLEX_TUPLE_WIDTH = 0.1
 
-
 class Result(object):
 
     def __init__(self, constant, likelihood, variable=None):
@@ -65,12 +64,16 @@ class NonLinearOptimizer(object):
         self.path = "{}/{}".format(conf.instance.output_path, name)
         if not os.path.exists(self.path):
             os.makedirs(self.path)
+        self.chains_path = "{}/{}".format(self.path, 'chains')
+        if not os.path.exists(self.chains_path):
+            os.makedirs(self.chains_path)
+
         self.variable = model_mapper or mm.ModelMapper()
         self.constant = mm.ModelInstance()
 
         self.label_config = label_config or conf.instance.label
 
-        self.file_param_names = "{}/{}".format(self.path, 'mn.paramnames')
+        self.file_param_names = "{}/{}".format(self.chains_path, 'mn.paramnames')
         self.file_model_info = "{}/{}".format(self.path, 'model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
@@ -239,8 +242,8 @@ class MultiNest(NonLinearOptimizer):
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name,
                                         label_config=label_config)
 
-        self.file_summary = "{}/{}".format(self.path, 'mnsummary.txt')
-        self.file_weighted_samples = "{}/{}".format(self.path, 'mn.txt')
+        self.file_summary = "{}/{}".format(self.chains_path, 'mnsummary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.chains_path, 'mn.txt')
         self.file_results = "{}/{}".format(self.path, 'mn.results')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
@@ -270,7 +273,7 @@ class MultiNest(NonLinearOptimizer):
 
     @property
     def pdf(self):
-        return getdist.mcsamples.loadMCSamples(self.path + '/mn')
+        return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
 
@@ -296,7 +299,7 @@ class MultiNest(NonLinearOptimizer):
 
                 try:
                     _likelihood = analysis.fit(instance)
-                except exc.ReconstructionException or exc.RayTracingException:
+                except exc.InversionException or exc.RayTracingException:
                     _likelihood = -np.inf
 
                 # TODO: Use multinest to provide best model
@@ -321,7 +324,7 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename="{}/mn".format(self.path), n_live_points=self.n_live_points,
+                 outputfiles_basename="{}/mn".format(self.chains_path), n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
                  evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,

@@ -1,0 +1,10 @@
+The inversion module is used to reconstruct the intrinsic surface brightness distribution of the strongly lensed source
+galaxy(s) in an observed image on a pixelized-grid. It is composed of the following 5 modules:
+
+1) mappers_of_planes - The different mappers_of_planes (e.g. rectangular, Voronoi) which can be used to reconstruct sources.
+
+2) pixelization_mappers - Describes the mappings between a mapper's pixels and observed image's pixels.
+
+3) regularization - The regularization schemes that are used to apply smoothing to the reconstructed source.
+
+5) inversion - Performs the inversion, reconstructing the source in a linear fashion which best fits the observed image.
