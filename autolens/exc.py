@@ -14,19 +14,23 @@ class MaskException(Exception):
     pass
 
 
-class PixelizationException(Exception):
-    pass
-
-
-class ReconstructionException(Exception):
-    pass
-
-
-class FittingException(Exception):
+class GalaxyException(Exception):
     pass
 
 
 class RayTracingException(Exception):
+    pass
+
+
+class PixelizationException(Exception):
+    pass
+
+
+class InversionException(Exception):
+    pass
+
+
+class FittingException(Exception):
     pass
 
 
