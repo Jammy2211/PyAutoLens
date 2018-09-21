@@ -95,14 +95,6 @@ class ModelMapper(AbstractModel):
         for name, cls in classes.items():
             self.__setattr__(name, cls)
 
-    @property
-    def total_parameters(self):
-        return len(self.priors_ordered_by_id)
-
-    @property
-    def total_constants(self):
-        return len(self.constants_ordered_by_id)
-
     def __setattr__(self, key, value):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
             value = ListPriorModel(value)
@@ -110,9 +102,13 @@ class ModelMapper(AbstractModel):
             value = PriorModel(value, config=self.config)
         super(ModelMapper, self).__setattr__(key, value)
 
-    def add_classes(self, **kwargs):
-        for key, value in kwargs.items():
-            self.__setattr__(key, value)
+    @property
+    def total_parameters(self):
+        return len(self.priors_ordered_by_id)
+
+    @property
+    def total_constants(self):
+        return len(self.constants_ordered_by_id)
 
     @property
     def prior_models(self):
@@ -168,6 +164,16 @@ class ModelMapper(AbstractModel):
         """
         return {constant[1]: constant for name, prior_model in self.prior_models for constant in
                 prior_model.constants}.values()
+
+    @property
+    def priors_ordered_by_id(self):
+        """
+        Returns
+        -------
+        priors: [Prior]
+            An ordered list of unique priors associated with this mapper
+        """
+        return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
 
     @property
     def constants_ordered_by_id(self):
@@ -226,16 +232,6 @@ class ModelMapper(AbstractModel):
         """
         return {constant: prior_model[0] for prior_model in self.prior_models for _, constant in
                 prior_model[1].constants}
-
-    @property
-    def priors_ordered_by_id(self):
-        """
-        Returns
-        -------
-        priors: [Prior]
-            An ordered list of unique priors associated with this mapper
-        """
-        return sorted(list(self.prior_set), key=lambda prior: prior[1].id)
 
     @property
     def class_priors_dict(self):
@@ -367,6 +363,31 @@ class ModelMapper(AbstractModel):
 
         return self.instance_from_arguments(arguments)
 
+    def instance_from_arguments(self, arguments):
+        """
+        Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel \
+        attributed to this instance.
+
+        Parameters
+        ----------
+        arguments : dict
+            The dictionary representation of prior and parameter values. This is created in the model_instance_from_* \
+            routines.
+
+        Returns
+        -------
+        model_instance : ModelInstance
+            An object containing reconstructed model_mapper instances
+
+        """
+
+        model_instance = ModelInstance()
+
+        for prior_model in self.prior_models:
+            setattr(model_instance, prior_model[0], prior_model[1].instance_for_arguments(arguments))
+
+        return model_instance
+
     def mapper_from_prior_arguments(self, arguments):
         """
         Creates a new model mapper from a dictionary mapping_matrix existing priors to new priors.
@@ -440,31 +461,6 @@ class ModelMapper(AbstractModel):
             arguments[prior[1]] = GaussianPrior(means[i], width)
 
         return self.mapper_from_prior_arguments(arguments)
-
-    def instance_from_arguments(self, arguments):
-        """
-        Creates a ModelInstance, which has an attribute and class instance corresponding to every PriorModel \
-        attributed to this instance.
-
-        Parameters
-        ----------
-        arguments : dict
-            The dictionary representation of prior and parameter values. This is created in the model_instance_from_* \
-            routines.
-
-        Returns
-        -------
-        model_instance : ModelInstance
-            An object containing reconstructed model_mapper instances
-
-        """
-
-        model_instance = ModelInstance()
-
-        for prior_model in self.prior_models:
-            setattr(model_instance, prior_model[0], prior_model[1].instance_for_arguments(arguments))
-
-        return model_instance
 
     @property
     def model_info(self):
