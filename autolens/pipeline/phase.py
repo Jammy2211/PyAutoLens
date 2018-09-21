@@ -740,7 +740,7 @@ class LensSourcePlanePhase(PhaseImaging):
     lens_galaxies = PhasePropertyList("lens_galaxies")
     source_galaxies = PhasePropertyList("source_galaxies")
 
-    def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
+    def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function,
                  positions=None, phase_name="source_lens_phase"):
         """
@@ -845,7 +845,7 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
     lens_galaxies = PhasePropertyList("lens_galaxies")
     source_galaxies = PhasePropertyList("source_galaxies")
 
-    def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.DownhillSimplex,
+    def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=1, positions=None, image_psf_shape=None, mask_function=default_mask_function,
                  phase_name="source_lens_phase"):
         """
@@ -1007,7 +1007,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
     lens_galaxies = PhasePropertyList("lens_galaxies")
     source_galaxies = PhasePropertyList("source_galaxies")
 
-    def __init__(self, lens_galaxies, source_galaxies, optimizer_class=non_linear.DownhillSimplex,
+    def __init__(self, lens_galaxies, source_galaxies, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=1, image_psf_shape=None, pixelization_psf_shape=None,
                  mask_function=default_mask_function, positions=None,
                  phase_name="source_lens_phase"):
@@ -1095,7 +1095,7 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
 
 class MultiPlanePhase(PhaseImaging):
 
-    def __init__(self, galaxies=None, optimizer_class=non_linear.DownhillSimplex,
+    def __init__(self, galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function,
                  positions=None, phase_name="source_lens_phase", cosmology=cosmo.LambdaCDM):
         super(MultiPlanePhase, self).__init__()

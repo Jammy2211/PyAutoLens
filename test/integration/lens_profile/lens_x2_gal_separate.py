@@ -46,8 +46,8 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, 0.0)
-            self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, 0.0)
+            self.lens_galaxies[0].elliptical_sersic.centre_0 = -1.0
+            self.lens_galaxies[0].elliptical_sersic.centre_1 = -1.0
 
     phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gp.GalaxyModel(elliptical_sersic=lp.EllipticalSersic)],
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
