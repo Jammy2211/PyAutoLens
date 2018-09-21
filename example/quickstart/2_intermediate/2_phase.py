@@ -8,19 +8,21 @@ from autolens.visualize import object_plotters
 import shutil
 import os
 
-# In this example, we'll generate a phase which fits a lens + source plane system.
-# The example data we fit is generated using the example in 'example/1_basic/1_simulate.py
+# In this example, we'll generate a phase which fits a complex lens + source plane system. However, the complexity of
+# the lens galaxy and source galaxy system will prevent us from getting a perfect fit.
+
+# The example data we fit is generated using the example in 'example/2_intermediate/1_simulate.py
 
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Load an image from the 'data/1_basic' folder.
-image = im.load_from_path(image_path=path + '/../data/1_basic/image.fits',
-                          noise_path=path+'/../data/1_basic/noise_map.fits',
-                          psf_path=path + '/../data/1_basic/psf.fits', pixel_scale=0.1)
+image = im.load_from_path(image_path=path + '/../data/2_intermediate/image.fits',
+                          noise_path=path+'/../data/2_intermediate/noise_map.fits',
+                          psf_path=path + '/../data/2_intermediate/psf.fits', pixel_scale=0.1)
 
-# A quick visual inspection of the image will remind us that we didn't simulate the lens galaxy's light, thus the
-# model used in this phase needs to only represent the lens's mass and source's light.
+# In this example, we simulated the lens galaxy's light as well as the source - this means we need a more complex model
+# To fit all these different components.
 object_plotters.plot_image_data_from_image(image=image)
 
 # To model galaxies in a lensing system, we create 'GalaxyModel' (gp) objects, which as the name suggests is an object

@@ -10,7 +10,7 @@ from autolens.visualize import array_plotters
 import os
 
 # In this example, we'll simulate a lensed source galaxy and output the images (as .fits). This image is used to
-# demonstrate lens modeling in example/phase/1_simulate.py.
+# demonstrate lens modeling in example/phase/2_phase.py.
 
 # First, lets setup the PSF we are going to blur our simulated image with, using a Gaussian profile on an 11x11 grid.
 psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
@@ -21,8 +21,8 @@ array_plotters.plot_psf(psf=psf)
 # required to ensure that edge-effects do not impact PSF blurring later in the simulation.
 imaging_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 
-# Use the 'galaxy' module (imported as 'g'), 'light_profiles' module (imported as 'lp') and 'mass profiles' module
-# (imported as 'mp') to setup the lens and source galaxies.
+# Now lets make our lens and source galaxies, using the 'galaxy' module (imported as 'g'), 'light_profiles' module
+# (imported as 'lp') and 'mass profiles' module (imported as 'mp') to setup the lens and source galaxies.
 
 # For the lens galaxy, we'll use a singular isothermal ellipsoid (SIE) mass profile.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=40.0, einstein_radius=1.8))
@@ -46,13 +46,11 @@ array_plotters.plot_image(image=tracer.image_plane_image_for_simulation)
 # To simulate the image, we pass this image to the imaging module's simulate function. We add various effects,
 # including PSF blurring, the background sky and noise.
 image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                  exposure_time=300.0, psf=psf, background_sky_level=0.1,
-                                                  add_noise=True)
+                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Now we can visualize the image, noise-map and psf. Note we're using an object plotter (rather than the array
 # plotters that we used above), which automatically plots all of the simulated image data.
-# You should also note that now we're using an image with a defined pixel scale, the x and y axis of these figures
-# are in arc-seconds
+# Now we're using an image with a defined pixel scale, the x and y axis of these figures are in arc-seconds
 object_plotters.plot_image_data_from_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
