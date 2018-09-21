@@ -35,17 +35,14 @@ source_galaxy = g.Galaxy(disk=lp.EllipticalExponential(centre=(0.01, 0.01), axis
                                                    effective_radius=0.3, sersic_index=2.5))
 
 # The attentive amongst you might of notice that whereas in 1_basic/1_simulate.py the inputs we gave the Galaxy were
-# specified as 'light' and 'mass', whereas above we use accryonums of the profiles e.g. 'dev', 'sie', 'disk', etc.).
-# You can actually use whatever term you want - a Galaxy only cares about the types of profiles you supply it.
+# specified as 'light' and 'mass'. Above, we've used accronyms of the profiles e.g. 'dev', 'sie', 'disk', etc.).
+# You can use whatever term you want - a Galaxy only cares about the type of profile you supply it.
 
-# Pass into the ray-tracing module and simulate the image.
+# Pass into the ray-tracing module and simulate the image - refer to example/simulate/1_simulate.py is unclear!
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=imaging_grids)
-
 image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                  exposure_time=300.0, psf=psf, background_sky_level=0.1,
-                                                  add_noise=True)
-
+                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 object_plotters.plot_image_data_from_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
