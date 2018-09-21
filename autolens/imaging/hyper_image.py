@@ -25,7 +25,7 @@ class HyperImage(object):
         return image + self.background_sky_scale
 
     def scaled_noise_from_background_noise(self, noise, background_noise):
-        """Compute a scaled noise_map map from the background noise_map map.
+        """Compute a scaled noise_map mappers from the background noise_map mappers.
 
         Parameters
         -----------
