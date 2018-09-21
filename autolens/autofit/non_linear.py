@@ -565,13 +565,13 @@ class MultiNest(NonLinearOptimizer):
                             upper_limit[i]) + ')'
                         results.write(line + '\n')
 
-            results.write('\n')
-            results.write('Constants' + '\n')
-            results.write('\n')
+                results.write('\n')
+                results.write('Constants' + '\n')
+                results.write('\n')
 
-            constant_names = self.constant_names
-            constants = self.variable.constant_tuples_ordered_by_id
+                constant_names = self.constant_names
+                constants = self.variable.constant_tuples_ordered_by_id
 
-            for i in range(self.variable.total_constants):
-                line = constant_names[i]
-                line += ' ' * (50 - len(line)) + str(constants[i][1].value)
+                for i in range(self.variable.total_constants):
+                    line = constant_names[i]
+                    line += ' ' * (50 - len(line)) + str(constants[i][1].value)
