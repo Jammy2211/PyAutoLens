@@ -59,8 +59,8 @@ def set_ticks(array, units, xticks, yticks, xyticksize):
 
     if units is 'pixels':
 
-        plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99])),0))
-        plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99])),0))
+        plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
+        plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]))))
 
     elif units is 'arcsec' or units is 'kpc':
 

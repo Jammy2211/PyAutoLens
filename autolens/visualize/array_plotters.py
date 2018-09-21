@@ -52,7 +52,7 @@ def plot_model_image(model_image, xticks=None, yticks=None, units='pixels', xyti
                output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_residuals(residuals, xticks=None, yticks=None, units='pixels', xyticksize=40,
-                   norm='symmetric_log', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
+                   norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                    figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                    title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
                    output_path=None, output_filename='residuals', output_format='show'):
@@ -70,6 +70,18 @@ def plot_chi_squareds(chi_squareds, xticks=None, yticks=None, units='pixels', xy
                       output_path=None, output_filename='chi_squareds', output_type='show'):
 
     plot_array(array=chi_squareds, xticks=xticks, yticks=yticks, units=units, xyticksize=xyticksize,
+               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+               figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+               title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+               output_path=output_path, output_filename=output_filename, output_format=output_type)
+
+def plot_contributions(contributions, xticks=None, yticks=None, units='pixels', xyticksize=40,
+                      norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
+                      figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                      title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                      output_path=None, output_filename='contributions', output_type='show'):
+
+    plot_array(array=contributions, xticks=xticks, yticks=yticks, units=units, xyticksize=xyticksize,
                norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
