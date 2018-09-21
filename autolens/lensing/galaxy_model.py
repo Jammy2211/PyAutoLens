@@ -3,6 +3,7 @@ from autolens.lensing import galaxy
 import inspect
 from autolens.profiles import light_profiles, mass_profiles
 from autolens.autofit import model_mapper
+from autolens.autofit.model_mapper import PriorTuple, ConstantTuple, PriorModelTuple, cast_collection
 
 
 def is_light_profile_class(cls):
@@ -56,9 +57,9 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
     """
 
     @property
-    def flat_prior_models(self):
+    def flat_prior_model_tuples(self):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
-                prior_model.flat_prior_models]
+                prior_model.flat_prior_model_tuples]
 
     def __init__(self, align_centres=False, align_orientations=False, redshift=None, variable_redshift=False,
                  pixelization=None, regularization=None, hyper_galaxy=None, config=None, **kwargs):
@@ -208,24 +209,26 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
     @property
-    def priors(self):
+    @cast_collection(PriorTuple)
+    def prior_tuples(self):
         """
         Returns
         -------
-        priors: [Prior]
+        priors: [PriorTuple]
             A list of priors associated with prior models in this galaxy prior.
         """
-        return [prior for prior_model in self.prior_models for prior in prior_model.priors]
+        return [prior for prior_model in self.prior_models for prior in prior_model.prior_tuples]
 
     @property
-    def constants(self):
+    @cast_collection(ConstantTuple)
+    def constant_tuples(self):
         """
         Returns
         -------
-        constant: [Constant]
+        constant: [ConstantTuple]
             A list of constants associated with prior models in this galaxy prior.
         """
-        return [constant for prior_model in self.prior_models for constant in prior_model.constants]
+        return [constant for prior_model in self.prior_models for constant in prior_model.constant_tuples]
 
     @property
     def prior_class_dict(self):
