@@ -55,6 +55,13 @@ class AbstractFitter(object):
     def noise(self):
         return self.map_to_2d(self._noise)
 
+    @property
+    def xticks(self):
+        return self.lensing_image.image.xticks
+
+    @property
+    def yticks(self):
+        return self.lensing_image.image.yticks
 
 class AbstractHyperFitter(object):
 
