@@ -5,7 +5,7 @@ from autolens.imaging import mask as msk
 from autolens.imaging import image as img
 from autolens.lensing import lensing_image as li
 from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens import conf
@@ -88,7 +88,7 @@ def make_galaxy():
 
 @pytest.fixture(name="galaxy_prior")
 def make_galaxy_prior():
-    return gp.GalaxyPrior()
+    return gp.GalaxyModel()
 
 
 @pytest.fixture(name="image")
@@ -160,7 +160,7 @@ class TestPhase(object):
                 self.source_galaxies = previous_results.last.variable.source_galaxies
 
         galaxy = g.Galaxy()
-        galaxy_prior = gp.GalaxyPrior()
+        galaxy_prior = gp.GalaxyModel()
 
         setattr(results.constant, "lens_galaxies", [galaxy])
         setattr(results.variable, "source_galaxies", [galaxy_prior])
@@ -183,7 +183,7 @@ class TestPhase(object):
     #     assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior()], source_galaxies=[gp.GalaxyPrior()])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel()], source_galaxies=[gp.GalaxyModel()])
 
         ph.LensSourcePlanePhase()
 
@@ -224,7 +224,8 @@ class TestPhase(object):
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
         analysis = phase.make_analysis(image)
         instance = phase.constant
-        unmasked_model_image = analysis.unmasked_model_image_for_instance(instance)
+        unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
+        unmasked_model_image = analysis.unmasked_model_image_for_tracer(unmasked_tracer)
 
         assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
 
@@ -248,16 +249,17 @@ class TestPhase(object):
         phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
         analysis = phase.make_analysis(image)
         instance = phase.constant
-        unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_instance(instance)
+        unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
+        unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(unmasked_tracer)
 
         assert g0_blurred_image == pytest.approx(unmasked_model_images[0], 1e-4)
         assert g1_blurred_image == pytest.approx(unmasked_model_images[1], 1e-4)
 
     def test__phase_can_receive_list_of_galaxy_priors(self):
-        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic,
+        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic,
                                                                 sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
-                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermal,
+                                                 gp.GalaxyModel(sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True)],
                                   optimizer_class=non_linear.MultiNest)
 
@@ -279,10 +281,10 @@ class TestPhase(object):
             def pass_priors(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
-        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic,
+        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
                                                               variable_redshift=True),
-                                               gp.GalaxyPrior(sis=mp.SphericalIsothermal,
+                                               gp.GalaxyModel(sis=mp.SphericalIsothermal,
                                                               variable_redshift=True)],
                                 optimizer_class=non_linear.MultiNest)
 
@@ -309,7 +311,7 @@ class TestPhase(object):
 # class TestPixelizedPhase(object):
 #     def test_constructor(self):
 #         phase = ph.PixelizedSourceLensAndPhase()
-#         assert isinstance(phase.source_galaxies, gp.GalaxyPrior)
+#         assert isinstance(phase.source_galaxies, gp.GalaxyModel)
 #         assert phase.lens_galaxies is None
 
 
