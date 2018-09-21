@@ -476,6 +476,8 @@ class ModelMapper(AbstractModel):
                 line = prior_model_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
 
+            model_info.append('')
+
         return '\n'.join(model_info)
 
     def output_model_info(self, filename):
