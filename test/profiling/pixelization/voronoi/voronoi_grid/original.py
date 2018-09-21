@@ -14,7 +14,7 @@ class Voronoi(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
-        Abstract base class for a Voronoi pixelization, which represents pixels as a set of centers where \
+        Abstract base class for a Voronoi inversion, which represents pixels as a set of centers where \
         all of the nearest-neighbor pix-grid (i.e. traced masked_image-pixels) are mapped to them.
 
         This forms a Voronoi grid pix-plane, the properties of which are used for fast calculations, defining the \
@@ -23,7 +23,7 @@ class Voronoi(object):
         Parameters
         ----------
         pixels : int
-            The number of pixels in the pixelization.
+            The number of pixels in the inversion.
         regularization_coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
@@ -32,7 +32,7 @@ class Voronoi(object):
 
     @staticmethod
     def voronoi_from_cluster_grid(cluster_grid):
-        """Compute the Voronoi grid of the pixelization, using the pixel centers.
+        """Compute the Voronoi grid of the inversion, using the pixel centers.
 
         Parameters
         ----------
