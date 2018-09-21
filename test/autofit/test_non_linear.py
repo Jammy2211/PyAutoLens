@@ -1357,7 +1357,7 @@ class TestLabels(object):
                           r"n_{\mathrm{s1}}",
                           r"Psi_{\mathrm{s1}}"]
 
-        priors = label_optimizer.variable.priors_ordered_by_id
+        priors = label_optimizer.variable.prior_tuples_ordered_by_id
         names = [key for key, value in priors]
 
         assert names == [
@@ -1388,7 +1388,7 @@ class TestLabels(object):
                           r"Psi_{\mathrm{s1}}",
                           r"q_{\mathrm{s1}}"]
 
-        priors = label_optimizer.variable.priors_ordered_by_id
+        priors = label_optimizer.variable.prior_tuples_ordered_by_id
         names = [key for key, value in priors]
 
         assert names == [
@@ -1410,7 +1410,7 @@ class TestLabels(object):
         # noinspection PyUnresolvedReferences
         label_optimizer.variable.mass_profile_1.axis_ratio = label_optimizer.variable.mass_profile_2.axis_ratio
 
-        assert len(label_optimizer.variable.priors_ordered_by_id) == 15
+        assert len(label_optimizer.variable.prior_tuples_ordered_by_id) == 15
         assert len(label_optimizer.param_labels) == 15
 
         labels = label_optimizer.param_labels
