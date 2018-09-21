@@ -171,7 +171,13 @@ class ModelMapper(AbstractModel):
 
     @property
     def constants(self):
-        return list(self.constant_set)
+        """
+        Returns
+        -------
+        constants: [(str, Constant)]
+            A list of tuples mapping strings to constants constants ordered by id
+        """
+        return sorted(list(self.constant_set), key=lambda constant: constant[1].id)
 
     @property
     def prior_class_dict(self):
