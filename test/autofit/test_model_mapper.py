@@ -812,7 +812,7 @@ class TestConstant(object):
         mapper = model_mapper.ModelMapper()
         mapper.mock_class = mock_with_constant
 
-        instance = mapper.instance_from_arguments({mock_with_constant.two: 5})
+        instance = mapper.instance_for_arguments({mock_with_constant.two: 5})
 
         assert instance.mock_class.one == 3
         assert instance.mock_class.two == 5
@@ -825,7 +825,7 @@ class TestConstant(object):
 
         mapper.mock_class = mock_with_constant
 
-        instance = mapper.instance_from_arguments({mock_with_constant.two: 5})
+        instance = mapper.instance_for_arguments({mock_with_constant.two: 5})
 
         assert instance.mock_class.one == 3
         assert instance.mock_class.two == 5
@@ -856,6 +856,18 @@ class TestConstant(object):
         assert isinstance(prior_model.one, model_mapper.Constant)
         assert isinstance(mapper.mock_list[0].one, model_mapper.Constant)
         assert len(mapper.constants_ordered_by_id) == 2
+
+    def test_set_for_tuple_prior(self):
+        prior_model = model_mapper.PriorModel(light_profiles.EllipticalSersic, MockConfig())
+        prior_model.centre_0 = 1.
+        prior_model.centre_1 = 2.
+        prior_model.axis_ratio = 1.
+        prior_model.phi = 1.
+        prior_model.intensity = 1.
+        prior_model.effective_radius = 1.
+        prior_model.sersic_index = 1.
+        instance = prior_model.instance_for_arguments({})
+        assert instance.centre == (1., 2.)
 
 
 @pytest.fixture(name="mapper")
