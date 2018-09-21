@@ -89,8 +89,8 @@ class ModelMapper(AbstractModel):
         """
         super(ModelMapper, self).__init__()
 
-        self.config = (config if config is not None else conf.instance.prior_default)
-        self.width_config = (width_config if width_config is not None else conf.instance.prior_width)
+        self.config = (config or conf.instance.prior_default)
+        self.width_config = (width_config or conf.instance.prior_width)
 
         for name, cls in classes.items():
             self.__setattr__(name, cls)
@@ -748,8 +748,8 @@ class PriorModel(AbstractPriorModel):
         """
 
         self.cls = cls
-        self.config = (config if config is not None else conf.instance.prior_default)
-        self.width_config = (config if config is not None else conf.instance.prior_width)
+        self.config = (config or conf.instance.prior_default)
+        self.width_config = (config or conf.instance.prior_width)
 
         self.component_number = next(self._ids)
 
