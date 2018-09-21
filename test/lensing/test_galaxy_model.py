@@ -111,14 +111,14 @@ class TestGalaxyPrior:
     def test_init_to_model_mapper(self, mapper, test_config):
         mapper.galaxy_1 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
-        assert len(mapper.priors_ordered_by_id) == 13
+        assert len(mapper.prior_tuples_ordered_by_id) == 13
 
     def test_multiple_galaxies(self, mapper, test_config):
         mapper.galaxy_1 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
         mapper.galaxy_2 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
-        assert len(mapper.prior_models) == 2
+        assert len(mapper.prior_model_tuples) == 2
 
     def test_align_centres(self, galaxy_prior, test_config):
         prior_models = galaxy_prior.prior_models
@@ -159,11 +159,11 @@ class TestNamedProfiles:
 
         mapper.galaxy = galaxy_prior
 
-        assert 16 == len(mapper.priors_ordered_by_id)
+        assert 16 == len(mapper.prior_tuples_ordered_by_id)
 
         galaxy_prior.light_profile = mm.PriorModel(light_profiles.LightProfile)
 
-        assert 9 == len(mapper.priors_ordered_by_id)
+        assert 9 == len(mapper.prior_tuples_ordered_by_id)
 
 
 class TestResultForArguments:
