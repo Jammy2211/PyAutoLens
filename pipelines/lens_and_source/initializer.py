@@ -17,13 +17,13 @@ def make():
     from autolens.pipeline import pipeline
     from autolens.autofit import non_linear as nl
     from autolens.imaging import mask
-    from autolens.lensing import galaxy_prior as gp
+    from autolens.lensing import galaxy_model as gp
     from autolens.profiles import light_profiles as lp
     from autolens.profiles import mass_profiles as mp
 
     pipeline.setup_pipeline_path(pipeline_name)
 
-    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1_subtract_lens')
 
     phase1.optimizer.n_live_points = 50
@@ -42,8 +42,8 @@ def make():
         return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.4,
                                  outer_radius_arcsec=3.)
 
-    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.SphericalIsothermal)],
-                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyModel(sie=mp.SphericalIsothermal)],
+                                 source_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                  optimizer_class=nl.MultiNest, mask_function=annular_mask_function,
                                  phase_name='ph2_fit_source')
 
@@ -53,7 +53,7 @@ def make():
     class LensSourcePhase(phase.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0] = gp.GalaxyPrior(
+            self.lens_galaxies[0] = gp.GalaxyModel(
                 sersic=previous_results.first.variable.lens_galaxies[0].sersic,
                 sie=previous_results.last.variable.lens_galaxies[0].sie)
             self.source_galaxies = previous_results.last.variable.source_galaxies
